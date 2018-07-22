@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-22 10:43+0200\n"
+"POT-Creation-Date: 2018-07-22 11:17+0200\n"
 "PO-Revision-Date: 2018-04-19 12:38+0000\n"
 "Last-Translator: Stasys Petraitis <stasyspetraitis2008@gmail.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/conversejs/"
@@ -581,20 +581,23 @@ msgid "Server address"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:48717
-msgid "Show rooms"
-msgstr ""
+#, fuzzy
+msgid "Show groupchats"
+msgstr "Grupės"
 
 #: dist/converse-no-dependencies.js:48718
 msgid "conference.example.org"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:48767
-msgid "No rooms found"
-msgstr ""
+#, fuzzy
+msgid "No groupchats found"
+msgstr "Grupės"
 
 #: dist/converse-no-dependencies.js:48784
-msgid "Rooms found:"
-msgstr ""
+#, fuzzy
+msgid "groupchats found:"
+msgstr "Grupės"
 
 #: dist/converse-no-dependencies.js:48836
 msgid "Enter a new Groupchat"
@@ -819,8 +822,9 @@ msgid "No nickname was specified."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:49940
-msgid "You are not allowed to create new rooms."
-msgstr ""
+#, fuzzy
+msgid "You are not allowed to create new groupchats."
+msgstr "Jums buvo uždrausta prieeiga prie šio kambario"
 
 #: dist/converse-no-dependencies.js:49942
 msgid "Your nickname doesn't conform to this groupchat's policies."
@@ -854,12 +858,14 @@ msgid "Groupchats"
 msgstr "Grupės"
 
 #: dist/converse-no-dependencies.js:50032
-msgid "Add a new room"
-msgstr ""
+#, fuzzy
+msgid "Add a new groupchat"
+msgstr "%1$s buvo pašalintas"
 
 #: dist/converse-no-dependencies.js:50033
-msgid "Query for rooms"
-msgstr ""
+#, fuzzy
+msgid "Query for groupchats"
+msgstr "Grupės"
 
 #: dist/converse-no-dependencies.js:50071
 #, javascript-format
@@ -910,7 +916,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:50196
 #, javascript-format
 msgid ""
-"You are about to invite %1$s to the chat room \"%2$s\". You may optionally "
+"You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
 
@@ -919,14 +925,14 @@ msgid "Please enter a valid XMPP username"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:51591
-#, javascript-format
-msgid "%1$s has invited you to join a chat room: %2$s"
-msgstr ""
+#, fuzzy, javascript-format
+msgid "%1$s has invited you to join a groupchat: %2$s"
+msgstr "%1$s buvo pašalintas"
 
 #: dist/converse-no-dependencies.js:51593
 #, javascript-format
 msgid ""
-"%1$s has invited you to join a chat room: %2$s, and left the following "
+"%1$s has invited you to join a groupchat: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr ""
 
@@ -1287,7 +1293,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:57115
 #, fuzzy
-msgid "Room address (JID)"
+msgid "Groupchat address (JID)"
 msgstr "XMPP adresas"
 
 #: dist/converse-no-dependencies.js:57119
@@ -1318,7 +1324,8 @@ msgid "Password protected"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57145
-msgid "This room requires a password before entry"
+#: dist/converse-no-dependencies.js:57297
+msgid "This groupchat requires a password before entry"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57151
@@ -1326,15 +1333,18 @@ msgid "No password required"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57153
-msgid "This room does not require a password upon entry"
+#: dist/converse-no-dependencies.js:57305
+msgid "This groupchat does not require a password upon entry"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57161
-msgid "This room is not publicly searchable"
+#: dist/converse-no-dependencies.js:57313
+msgid "This groupchat is not publicly searchable"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57169
-msgid "This room is publicly searchable"
+#: dist/converse-no-dependencies.js:57321
+msgid "This groupchat is publicly searchable"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57175
@@ -1343,11 +1353,13 @@ msgid "Members only"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57177
-msgid "this room is restricted to members only"
-msgstr ""
+#, fuzzy
+msgid "This groupchat is restricted to members only"
+msgstr "Šis kambarys nebėra anonimiškas"
 
 #: dist/converse-no-dependencies.js:57185
-msgid "Anyone can join this room"
+#: dist/converse-no-dependencies.js:57337
+msgid "Anyone can join this groupchat"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57191
@@ -1356,11 +1368,13 @@ msgid "Persistent"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57193
-msgid "This room persists even if it's unoccupied"
+#: dist/converse-no-dependencies.js:57345
+msgid "This groupchat persists even if it's unoccupied"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57201
-msgid "This room will disappear once the last person leaves"
+#: dist/converse-no-dependencies.js:57353
+msgid "This groupchat will disappear once the last person leaves"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57207
@@ -1370,7 +1384,8 @@ msgid "Not anonymous"
 msgstr "Šis pokalbių kambarys nėra anonimiškas"
 
 #: dist/converse-no-dependencies.js:57209
-msgid "All other room occupants can see your XMPP username"
+#: dist/converse-no-dependencies.js:57361
+msgid "All other groupchat participants can see your XMPP username"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57217
@@ -1379,7 +1394,8 @@ msgid "Only moderators can see your XMPP username"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57225
-msgid "This room is being moderated"
+#: dist/converse-no-dependencies.js:57377
+msgid "This groupchat is being moderated"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57231
@@ -1388,7 +1404,8 @@ msgid "Not moderated"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57233
-msgid "This room is not being moderated"
+#: dist/converse-no-dependencies.js:57385
+msgid "This groupchat is not being moderated"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:57239
@@ -1401,52 +1418,12 @@ msgstr ""
 msgid "Messages are archived on the server"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:57297
-msgid "This groupchat requires a password before entry"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:57305
-msgid "This groupchat does not require a password upon entry"
-msgstr ""
-
 #: dist/converse-no-dependencies.js:57307
 msgid "No password"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:57313
-msgid "This groupchat is not publicly searchable"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:57321
-msgid "This groupchat is publicly searchable"
-msgstr ""
-
 #: dist/converse-no-dependencies.js:57329
 msgid "this groupchat is restricted to members only"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:57337
-msgid "Anyone can join this groupchat"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:57345
-msgid "This groupchat persists even if it's unoccupied"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:57353
-msgid "This groupchat will disappear once the last person leaves"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:57361
-msgid "All other groupchat participants can see your XMPP username"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:57377
-msgid "This groupchat is being moderated"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:57385
-msgid "This groupchat is not being moderated"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:58267
@@ -1552,6 +1529,10 @@ msgstr ""
 #: dist/converse-no-dependencies.js:60032
 msgid "Download audio file"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Room address (JID)"
+#~ msgstr "XMPP adresas"
 
 #~ msgid "Show hidden message"
 #~ msgstr "Rodyti paslėptą pranešimą"

@@ -40710,7 +40710,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
         checkForReservedNick: function checkForReservedNick() {
           /* Check if the user has a bookmark with a saved nickanme
-           * for this room, and if so use it.
+           * for this groupchat, and if so use it.
            * Otherwise delegate to the super method.
            */
           var _converse = this.__super__._converse;
@@ -40743,7 +40743,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
         setBookmarkState: function setBookmarkState() {
-          /* Set whether the room is bookmarked or not.
+          /* Set whether the groupchat is bookmarked or not.
            */
           var _converse = this.__super__._converse;
 
@@ -40886,10 +40886,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
         openBookmarkedRoom: function openBookmarkedRoom(bookmark) {
           if (bookmark.get('autojoin')) {
-            var room = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+            var groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
 
-            if (!room.get('hidden')) {
-              room.trigger('show');
+            if (!groupchat.get('hidden')) {
+              groupchat.trigger('show');
             }
           }
 
@@ -40988,17 +40988,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
         },
         markRoomAsBookmarked: function markRoomAsBookmarked(bookmark) {
-          var room = _converse.chatboxes.get(bookmark.get('jid'));
+          var groupchat = _converse.chatboxes.get(bookmark.get('jid'));
 
-          if (!_.isUndefined(room)) {
-            room.save('bookmarked', true);
+          if (!_.isUndefined(groupchat)) {
+            groupchat.save('bookmarked', true);
           }
         },
         markRoomAsUnbookmarked: function markRoomAsUnbookmarked(bookmark) {
-          var room = _converse.chatboxes.get(bookmark.get('jid'));
+          var groupchat = _converse.chatboxes.get(bookmark.get('jid'));
 
-          if (!_.isUndefined(room)) {
-            room.save('bookmarked', false);
+          if (!_.isUndefined(groupchat)) {
+            groupchat.save('bookmarked', false);
           }
         },
         createBookmarksFromStanza: function createBookmarksFromStanza(stanza) {
@@ -48570,25 +48570,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
       /* http://xmpp.org/extensions/xep-0045.html
        * ----------------------------------------
-       * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
-       * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
-       * 102 message      Configuration change    Inform occupants that room now shows unavailable members
-       * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
-       * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
-       * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
-       * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
-       * 171 message      Configuration change    Inform occupants that room logging is now disabled
-       * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
-       * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
-       * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
-       * 201 presence     Entering a room         Inform user that a new room has been created
-       * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
-       * 301 presence     Removal from room       Inform user that he or she has been banned from the room
-       * 303 presence     Exiting a room          Inform all occupants of new room nickname
-       * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
-       * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
-       * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
-       * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
+       * 100 message      Entering a groupchat         Inform user that any occupant is allowed to see the user's full JID
+       * 101 message (out of band)                     Affiliation change  Inform user that his or her affiliation changed while not in the groupchat
+       * 102 message      Configuration change         Inform occupants that groupchat now shows unavailable members
+       * 103 message      Configuration change         Inform occupants that groupchat now does not show unavailable members
+       * 104 message      Configuration change         Inform occupants that a non-privacy-related groupchat configuration change has occurred
+       * 110 presence     Any groupchat presence       Inform user that presence refers to one of its own groupchat occupants
+       * 170 message or initial presence               Configuration change    Inform occupants that groupchat logging is now enabled
+       * 171 message      Configuration change         Inform occupants that groupchat logging is now disabled
+       * 172 message      Configuration change         Inform occupants that the groupchat is now non-anonymous
+       * 173 message      Configuration change         Inform occupants that the groupchat is now semi-anonymous
+       * 174 message      Configuration change         Inform occupants that the groupchat is now fully-anonymous
+       * 201 presence     Entering a groupchat         Inform user that a new groupchat has been created
+       * 210 presence     Entering a groupchat         Inform user that the service has assigned or modified the occupant's roomnick
+       * 301 presence     Removal from groupchat       Inform user that he or she has been banned from the groupchat
+       * 303 presence     Exiting a groupchat          Inform all occupants of new groupchat nickname
+       * 307 presence     Removal from groupchat       Inform user that he or she has been kicked from the groupchat
+       * 321 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because of an affiliation change
+       * 322 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because the groupchat has been changed to members-only and the user is not a member
+       * 332 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because of a system shutdown
        */
 
 
@@ -48636,12 +48636,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       };
 
       function insertRoomInfo(el, stanza) {
-        /* Insert room info (based on returned #disco IQ stanza)
+        /* Insert groupchat info (based on returned #disco IQ stanza)
          *
          * Parameters:
          *  (HTMLElement) el: The HTML DOM element that should
          *      contain the info.
-         *  (XMLElement) stanza: The IQ stanza containing the room
+         *  (XMLElement) stanza: The IQ stanza containing the groupchat
          *      info.
          */
         // All MUC features found here: http://xmpp.org/registrar/disco-features.html
@@ -48681,7 +48681,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
       function _toggleRoomInfo(ev) {
-        /* Show/hide extra information about a room in a listing. */
+        /* Show/hide extra information about a groupchat in a listing. */
         var parent_el = u.ancestor(ev.target, '.room-item'),
             div_el = parent_el.querySelector('div.room-info');
 
@@ -48714,7 +48714,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return tpl_list_chatrooms_modal(_.extend(this.model.toJSON(), {
             'heading_list_chatrooms': __('Query for Groupchats'),
             'label_server_address': __('Server address'),
-            'label_query': __('Show rooms'),
+            'label_query': __('Show groupchats'),
             'server_placeholder': __('conference.example.org')
           }));
         },
@@ -48745,12 +48745,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.updateRoomsList();
           }
         },
-        roomStanzaItemToHTMLElement: function roomStanzaItemToHTMLElement(room) {
-          var name = Strophe.unescapeNode(room.getAttribute('name') || room.getAttribute('jid'));
+        roomStanzaItemToHTMLElement: function roomStanzaItemToHTMLElement(groupchat) {
+          var name = Strophe.unescapeNode(groupchat.getAttribute('name') || groupchat.getAttribute('jid'));
           var div = document.createElement('div');
           div.innerHTML = tpl_room_item({
             'name': Strophe.xmlunescape(name),
-            'jid': room.getAttribute('jid'),
+            'jid': groupchat.getAttribute('jid'),
             'open_title': __('Click to open this groupchat'),
             'info_title': __('Show more information on this groupchat')
           });
@@ -48764,7 +48764,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         informNoRoomsFound: function informNoRoomsFound() {
           var chatrooms_el = this.el.querySelector('.available-chatrooms');
           chatrooms_el.innerHTML = tpl_rooms_results({
-            'feedback_text': __('No rooms found')
+            'feedback_text': __('No groupchats found')
           });
           var input_el = this.el.querySelector('input[name="server"]');
           input_el.classList.remove('hidden');
@@ -48772,7 +48772,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
         onRoomsFound: function onRoomsFound(iq) {
           /* Handle the IQ stanza returned from the server, containing
-           * all its public rooms.
+           * all its public groupchats.
            */
           var available_chatrooms = this.el.querySelector('.available-chatrooms');
           this.rooms = iq.querySelectorAll('query item');
@@ -48781,7 +48781,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // For translators: %1$s is a variable and will be
             // replaced with the XMPP server name
             available_chatrooms.innerHTML = tpl_rooms_results({
-              'feedback_text': __('Rooms found:')
+              'feedback_text': __('groupchats found:')
             });
             var fragment = document.createDocumentFragment();
 
@@ -48800,7 +48800,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return true;
         },
         updateRoomsList: function updateRoomsList() {
-          /* Send an IQ stanza to the server asking for all rooms
+          /* Send an IQ stanza to the server asking for all groupchats
            */
           _converse.connection.sendIQ($iq({
             to: this.model.get('muc_domain'),
@@ -48887,7 +48887,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }
       });
       _converse.ChatRoomView = _converse.ChatBoxView.extend({
-        /* Backbone.NativeView which renders a chat room, based upon the view
+        /* Backbone.NativeView which renders a groupchat, based upon the view
          * for normal one-on-one chat boxes.
          */
         length: 300,
@@ -48978,11 +48978,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return this;
         },
         renderHeading: function renderHeading() {
-          /* Render the heading UI of the chat room. */
+          /* Render the heading UI of the groupchat. */
           this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
         },
         renderChatArea: function renderChatArea() {
-          /* Render the UI container in which chat room messages will appear.
+          /* Render the UI container in which groupchat messages will appear.
            */
           if (_.isNull(this.el.querySelector('.chat-area'))) {
             var container_el = this.el.querySelector('.chatroom-body');
@@ -49100,7 +49100,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
         },
         close: function close(ev) {
-          /* Close this chat box, which implies leaving the room as
+          /* Close this chat box, which implies leaving the groupchat as
            * well.
            */
           this.hide();
@@ -49187,13 +49187,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             _converse.ChatBoxView.prototype.handleChatStateNotification.apply(this, arguments);
           }
         },
-        modifyRole: function modifyRole(room, nick, role, reason, onSuccess, onError) {
+        modifyRole: function modifyRole(groupchat, nick, role, reason, onSuccess, onError) {
           var item = $build("item", {
             nick: nick,
             role: role
           });
           var iq = $iq({
-            to: room,
+            to: groupchat,
             type: "set"
           }).c("query", {
             xmlns: Strophe.NS.MUC_ADMIN
@@ -49206,7 +49206,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return _converse.connection.sendIQ(iq, onSuccess, onError);
         },
         validateRoleChangeCommand: function validateRoleChangeCommand(command, args) {
-          /* Check that a command to change a chat room user's role or
+          /* Check that a command to change a groupchat user's role or
            * affiliation has anough arguments.
            */
           // TODO check if first argument is valid
@@ -49388,7 +49388,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
         registerHandlers: function registerHandlers() {
           /* Register presence and message handlers for this chat
-           * room
+           * groupchat
            */
           // XXX: Ideally this can be refactored out so that we don't
           // need to do stanza processing inside the views in this
@@ -49425,12 +49425,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.fetchMessages();
         },
         join: function join(nick, password) {
-          /* Join the chat room.
+          /* Join the groupchat.
            *
            * Parameters:
            *  (String) nick: The user's nickname
            *  (String) password: Optional password, if required by
-           *      the room.
+           *      the groupchat.
            */
           if (!nick && !this.model.get('nick')) {
             this.checkForReservedNick();
@@ -49444,13 +49444,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           var _this5 = this;
 
           /* Renders a form given an IQ stanza containing the current
-           * room configuration.
+           * groupchat configuration.
            *
            * Returns a promise which resolves once the user has
            * either submitted the form, or canceled it.
            *
            * Parameters:
-           *  (XMLElement) stanza: The IQ stanza containing the room
+           *  (XMLElement) stanza: The IQ stanza containing the groupchat
            *      config.
            */
           var container_el = this.el.querySelector('.chatroom-body');
@@ -49504,7 +49504,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.renderAfterTransition();
         },
         getAndRenderConfigurationForm: function getAndRenderConfigurationForm(ev) {
-          /* Start the process of configuring a chat room, either by
+          /* Start the process of configuring a groupchat, either by
            * rendering a configuration form, or by auto-configuring
            * based on the "roomconfig" data stored on the
            * Backbone.Model.
@@ -49523,7 +49523,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
         submitNickname: function submitNickname(ev) {
           /* Get the nickname value from the form and then join the
-           * chat room with it.
+           * groupchat with it.
            */
           ev.preventDefault();
           var nick_el = ev.target.nick;
@@ -49541,7 +49541,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
         checkForReservedNick: function checkForReservedNick() {
           /* User service-discovery to ask the XMPP server whether
-           * this user has a reserved nickname for this room.
+           * this user has a reserved nickname for this groupchat.
            * If so, we'll use that, otherwise we render the nickname form.
            */
           this.showSpinner();
@@ -49551,7 +49551,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           /* We've received an IQ response from the server which
            * might contain the user's reserved nickname.
            * If no nickname is found we either render a form for
-           * them to specify one, or we try to join the room with the
+           * them to specify one, or we try to join the groupchat with the
            * node of the user's JID.
            *
            * Parameters:
@@ -49920,7 +49920,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           _.each(notifications, this.showNotificationsforUser.bind(this));
         },
         showErrorMessageFromPresence: function showErrorMessageFromPresence(presence) {
-          // We didn't enter the room, so we must remove it from the MUC add-on
+          // We didn't enter the groupchat, so we must remove it from the MUC add-on
           var error = presence.querySelector('error');
 
           if (error.getAttribute('type') === 'auth') {
@@ -49937,7 +49937,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }
           } else if (error.getAttribute('type') === 'cancel') {
             if (!_.isNull(error.querySelector('not-allowed'))) {
-              this.showDisconnectMessages(__('You are not allowed to create new rooms.'));
+              this.showDisconnectMessages(__('You are not allowed to create new groupchats.'));
             } else if (!_.isNull(error.querySelector('not-acceptable'))) {
               this.showDisconnectMessages(__("Your nickname doesn't conform to this groupchat's policies."));
             } else if (!_.isNull(error.querySelector('conflict'))) {
@@ -49960,7 +49960,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
         renderAfterTransition: function renderAfterTransition() {
-          /* Rerender the room after some kind of transition. For
+          /* Rerender the groupchat after some kind of transition. For
            * example after the spinner has been removed or after a
            * form has been submitted and removed.
            */
@@ -50029,8 +50029,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         render: function render() {
           this.el.innerHTML = tpl_room_panel({
             'heading_chatrooms': __('Groupchats'),
-            'title_new_room': __('Add a new room'),
-            'title_list_rooms': __('Query for rooms')
+            'title_new_room': __('Add a new groupchat'),
+            'title_list_rooms': __('Query for groupchats')
           });
           return this;
         },
@@ -50193,7 +50193,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.el.querySelector('.occupant-list').style.cssText = "height: calc(100% - ".concat(el.offsetHeight, "px - 5em);");
         },
         promptForInvite: function promptForInvite(suggestion) {
-          var reason = prompt(__('You are about to invite %1$s to the chat room "%2$s". ' + 'You may optionally include a message, explaining the reason for the invitation.', suggestion.text.label, this.model.get('id')));
+          var reason = prompt(__('You are about to invite %1$s to the groupchat "%2$s". ' + 'You may optionally include a message, explaining the reason for the invitation.', suggestion.text.label, this.model.get('id')));
 
           if (reason !== null) {
             this.chatroomview.model.directInvite(suggestion.text.value, reason);
@@ -50269,7 +50269,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       function setMUCDomainFromDisco(controlboxview) {
         /* Check whether service discovery for the user's domain
          * returned MUC information and use that to automatically
-         * set the MUC domain for the "Rooms" panel of the controlbox.
+         * set the MUC domain in the "Add groupchat" modal.
          */
         function featureAdded(feature) {
           if (feature.get('var') === Strophe.NS.MUC && f.includes('conference', feature.entity.identities.pluck('category'))) {
@@ -50319,7 +50319,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       function reconnectToChatRooms() {
         /* Upon a reconnection event from converse, join again
-         * all the open chat rooms.
+         * all the open groupchats.
          */
         _converse.chatboxviews.each(function (view) {
           if (view.model.get('type') === converse.CHATROOMS_TYPE) {
@@ -50420,12 +50420,12 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       //
       // New functions which don't exist yet can also be added.
       tearDown: function tearDown() {
-        var rooms = this.chatboxes.where({
+        var groupchats = this.chatboxes.where({
           'type': converse.CHATROOMS_TYPE
         });
 
-        _.each(rooms, function (room) {
-          u.safeSave(room, {
+        _.each(groupchats, function (groupchat) {
+          u.safeSave(groupchat, {
             'connection_status': converse.ROOMSTATUS.DISCONNECTED
           });
         });
@@ -50486,7 +50486,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       _converse.router.route('converse/room?jid=:jid', openRoom);
 
       _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
-        /* Opens a chat room, making sure that certain attributes
+        /* Opens a groupchat, making sure that certain attributes
          * are correct, for example that the "type" is set to
          * "chatroom".
          */
@@ -50536,7 +50536,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           var _this = this;
 
           /* Register presence and message handlers for this chat
-           * room
+           * groupchat
            */
           var room_jid = this.get('jid');
           this.removeHandlers();
@@ -50566,7 +50566,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
         },
         removeHandlers: function removeHandlers() {
           /* Remove the presence and message handlers that were
-           * registered for this chat room.
+           * registered for this groupchat.
            */
           if (this.message_handler) {
             _converse.connection.deleteHandler(this.message_handler);
@@ -50602,12 +50602,12 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           return this.get('name') || this.get('jid');
         },
         join: function join(nick, password) {
-          /* Join the chat room.
+          /* Join the groupchat.
            *
            * Parameters:
            *  (String) nick: The user's nickname
            *  (String) password: Optional password, if required by
-           *      the room.
+           *      the groupchat.
            */
           nick = nick ? nick : this.get('nick');
 
@@ -50616,7 +50616,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           }
 
           if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-            // We have restored a chat room from session storage,
+            // We have restored a groupchat from session storage,
             // so we don't send out a presence stanza again.
             return this;
           }
@@ -50641,7 +50641,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           return this;
         },
         leave: function leave(exit_msg) {
-          /* Leave the chat room.
+          /* Leave the groupchat.
            *
            * Parameters:
            *  (String) exit_msg: Optional message to indicate your
@@ -50689,7 +50689,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
         getRoomFeatures: function getRoomFeatures() {
           var _this2 = this;
 
-          /* Fetch the room disco info, parse it and then save it.
+          /* Fetch the groupchat disco info, parse it and then save it.
            */
           return new Promise(function (resolve, reject) {
             _converse.api.disco.info(_this2.get('jid'), null).then(function (stanza) {
@@ -50697,7 +50697,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
               resolve();
             }).catch(function (err) {
-              _converse.log("Could not parse the room features", Strophe.LogLevel.WARN);
+              _converse.log("Could not parse the groupchat features", Strophe.LogLevel.WARN);
 
               _converse.log(err, Strophe.LogLevel.WARN);
 
@@ -50707,12 +50707,12 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
         },
         getRoomJIDAndNick: function getRoomJIDAndNick(nick) {
           /* Utility method to construct the JID for the current user
-           * as occupant of the room.
+           * as occupant of the groupchat.
            *
-           * This is the room JID, with the user's nick added at the
+           * This is the groupchat JID, with the user's nick added at the
            * end.
            *
-           * For example: room@conference.example.org/nickname
+           * For example: groupchat@conference.example.org/nickname
            */
           if (nick) {
             this.save({
@@ -50722,8 +50722,8 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
             nick = this.get('nick');
           }
 
-          var room = this.get('jid');
-          var jid = Strophe.getBareJidFromJid(room);
+          var groupchat = this.get('jid');
+          var jid = Strophe.getBareJidFromJid(groupchat);
           return jid + (nick !== null ? "/".concat(nick) : "");
         },
         sendChatState: function sendChatState() {
@@ -50761,7 +50761,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
            *    (String) reason - Optional reason for the invitation
            */
           if (this.get('membersonly')) {
-            // When inviting to a members-only room, we first add
+            // When inviting to a members-only groupchat, we first add
             // the person to the member list by giving them an
             // affiliation of 'member' (if they're not affiliated
             // already), otherwise they won't be able to join.
@@ -50805,7 +50805,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           });
         },
         parseRoomFeatures: function parseRoomFeatures(iq) {
-          /* Parses an IQ stanza containing the room's features.
+          /* Parses an IQ stanza containing the groupchat's features.
            *
            * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
            *
@@ -50853,7 +50853,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           var _this3 = this;
 
           /* Send an IQ stanza to the server, asking it for the
-           * member-list of this room.
+           * member-list of this groupchat.
            *
            * See: http://xmpp.org/extensions/xep-0045.html#modifymember
            *
@@ -50915,7 +50915,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
         saveConfiguration: function saveConfiguration(form) {
           var _this4 = this;
 
-          /* Submit the room configuration form by sending an IQ
+          /* Submit the groupchat configuration form by sending an IQ
            * stanza to the server.
            *
            * Returns a promise which resolves once the XMPP server
@@ -50936,7 +50936,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
         autoConfigureChatRoom: function autoConfigureChatRoom() {
           var _this5 = this;
 
-          /* Automatically configure room based on this model's
+          /* Automatically configure groupchat based on this model's
            * 'roomconfig' data.
            *
            * Returns a promise which resolves once a response IQ has
@@ -50985,7 +50985,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
         fetchRoomConfiguration: function fetchRoomConfiguration() {
           var _this6 = this;
 
-          /* Send an IQ stanza to fetch the room configuration data.
+          /* Send an IQ stanza to fetch the groupchat configuration data.
            * Returns a promise which resolves once the response IQ
            * has been received.
            */
@@ -50999,17 +50999,17 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           });
         },
         sendConfiguration: function sendConfiguration(config, callback, errback) {
-          /* Send an IQ stanza with the room configuration.
+          /* Send an IQ stanza with the groupchat configuration.
            *
            * Parameters:
-           *  (Array) config: The room configuration
+           *  (Array) config: The groupchat configuration
            *  (Function) callback: Callback upon succesful IQ response
            *      The first parameter passed in is IQ containing the
-           *      room configuration.
+           *      groupchat configuration.
            *      The second is the response IQ from the server.
            *  (Function) errback: Callback upon error IQ response
            *      The first parameter passed in is IQ containing the
-           *      room configuration.
+           *      groupchat configuration.
            *      The second is the response IQ from the server.
            */
           var iq = $iq({
@@ -51088,7 +51088,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
         },
         setAffiliations: function setAffiliations(members) {
           /* Send IQ stanzas to the server to modify the
-           * affiliations in this room.
+           * affiliations in this groupchat.
            *
            * See: http://xmpp.org/extensions/xep-0045.html#modifymember
            *
@@ -51145,7 +51145,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
         },
         checkForReservedNick: function checkForReservedNick(callback, errback) {
           /* Use service-discovery to ask the XMPP server whether
-           * this user has a reserved nickname for this room.
+           * this user has a reserved nickname for this groupchat.
            * If so, we'll use that, otherwise we render the nickname form.
            *
            * Parameters:
@@ -51277,7 +51277,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           }
         },
         onMessage: function onMessage(stanza) {
-          /* Handler for all MUC messages sent to this chat room.
+          /* Handler for all MUC messages sent to this groupchat.
            *
            * Parameters:
            *  (XMLElement) stanza: The message stanza.
@@ -51353,14 +51353,14 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           /* Handles a received presence relating to the current
            * user.
            *
-           * For locked rooms (which are by definition "new"), the
-           * room will either be auto-configured or created instantly
-           * (with default config) or a configuration room will be
+           * For locked groupchats (which are by definition "new"), the
+           * groupchat will either be auto-configured or created instantly
+           * (with default config) or a configuration groupchat will be
            * rendered.
            *
-           * If the room is not locked, then the room will be
+           * If the groupchat is not locked, then the groupchat will be
            * auto-configured only if applicable and if the current
-           * user is the room's owner.
+           * user is the groupchat's owner.
            *
            * Parameters:
            *  (XMLElement) pres: The stanza
@@ -51376,11 +51376,11 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
               this.saveConfiguration().then(this.getRoomFeatures.bind(this));
             } else {
               this.trigger('configurationNeeded');
-              return; // We haven't yet entered the room, so bail here.
+              return; // We haven't yet entered the groupchat, so bail here.
             }
           } else if (!this.get('features_fetched')) {
-            // The features for this room weren't fetched.
-            // That must mean it's a new room without locking
+            // The features for this groupchat weren't fetched.
+            // That must mean it's a new groupchat without locking
             // (in which case Prosody doesn't send a 201 status),
             // otherwise the features would have been fetched in
             // the "initialize" method already.
@@ -51566,7 +51566,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       });
 
       _converse.onDirectMUCInvitation = function (message) {
-        /* A direct MUC invitation to join a room has been received
+        /* A direct MUC invitation to join a groupchat has been received
          * See XEP-0249: Direct MUC invitations.
          *
          * Parameters:
@@ -51588,9 +51588,9 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           contact = contact ? contact.get('fullname') : Strophe.getNodeFromJid(from);
 
           if (!reason) {
-            result = confirm(__("%1$s has invited you to join a chat room: %2$s", contact, room_jid));
+            result = confirm(__("%1$s has invited you to join a groupchat: %2$s", contact, room_jid));
           } else {
-            result = confirm(__('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"', contact, room_jid, reason));
+            result = confirm(__('%1$s has invited you to join a groupchat: %2$s, and left the following reason: "%3$s"', contact, room_jid, reason));
           }
         }
 
@@ -51632,24 +51632,24 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       };
 
       function autoJoinRooms() {
-        /* Automatically join chat rooms, based on the
+        /* Automatically join groupchats, based on the
          * "auto_join_rooms" configuration setting, which is an array
-         * of strings (room JIDs) or objects (with room JID and other
+         * of strings (groupchat JIDs) or objects (with groupchat JID and other
          * settings).
          */
-        _.each(_converse.auto_join_rooms, function (room) {
+        _.each(_converse.auto_join_rooms, function (groupchat) {
           if (_converse.chatboxes.where({
-            'jid': room
+            'jid': groupchat
           }).length) {
             return;
           }
 
-          if (_.isString(room)) {
-            _converse.api.rooms.open(room);
-          } else if (_.isObject(room)) {
-            _converse.api.rooms.open(room.jid, room.nick);
+          if (_.isString(groupchat)) {
+            _converse.api.rooms.open(groupchat);
+          } else if (_.isObject(groupchat)) {
+            _converse.api.rooms.open(groupchat.jid, groupchat.nick);
           } else {
-            _converse.log('Invalid room criteria specified for "auto_join_rooms"', Strophe.LogLevel.ERROR);
+            _converse.log('Invalid groupchat criteria specified for "auto_join_rooms"', Strophe.LogLevel.ERROR);
           }
         });
 
@@ -51657,7 +51657,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       }
 
       function disconnectChatRooms() {
-        /* When disconnecting, mark all chat rooms as
+        /* When disconnecting, mark all groupchats as
          * disconnected, so that they will be properly entered again
          * when fetched from session storage.
          */
@@ -51702,7 +51702,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       /************************ END Event Handlers ************************/
 
       /************************ BEGIN API ************************/
-      // We extend the default converse.js API to add methods specific to MUC chat rooms.
+      // We extend the default converse.js API to add methods specific to MUC groupchats.
 
 
       _.extend(_converse.api, {
@@ -57112,7 +57112,7 @@ __e(o.__('Name')) +
 '</strong>: ' +
 __e(o.name) +
 '</p>\n                    <p class="room-info"><strong>' +
-__e(o.__('Room address (JID)')) +
+__e(o.__('Groupchat address (JID)')) +
 '</strong>: ' +
 __e(o.jid) +
 '</p>\n                    <p class="room-info"><strong>' +
@@ -57142,7 +57142,7 @@ __e(o.__('Features')) +
 __p += '\n                        <li class="feature" ><span class="fa fa-lock"></span>' +
 __e( o.__('Password protected') ) +
 ' - <em>' +
-__e( o.__('This room requires a password before entry') ) +
+__e( o.__('This groupchat requires a password before entry') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -57150,7 +57150,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-unlock"></span>' +
 __e( o.__('No password required') ) +
 ' - <em>' +
-__e( o.__('This room does not require a password upon entry') ) +
+__e( o.__('This groupchat does not require a password upon entry') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -57158,7 +57158,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-eye-slash"></span>' +
 __e( o.__('Hidden') ) +
 ' - <em>' +
-__e( o.__('This room is not publicly searchable') ) +
+__e( o.__('This groupchat is not publicly searchable') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -57166,7 +57166,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-eye"></span>' +
 __e( o.__('Public') ) +
 ' - <em>' +
-__e( o.__('This room is publicly searchable') ) +
+__e( o.__('This groupchat is publicly searchable') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -57174,7 +57174,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-address-book"></span>' +
 __e( o.__('Members only') ) +
 ' - <em>' +
-__e( o.__('this room is restricted to members only') ) +
+__e( o.__('This groupchat is restricted to members only') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -57182,7 +57182,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-globe"></span>' +
 __e( o.__('Open') ) +
 ' - <em>' +
-__e( o.__('Anyone can join this room') ) +
+__e( o.__('Anyone can join this groupchat') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -57190,7 +57190,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-save"></span>' +
 __e( o.__('Persistent') ) +
 ' - <em>' +
-__e( o.__('This room persists even if it\'s unoccupied') ) +
+__e( o.__('This groupchat persists even if it\'s unoccupied') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -57198,7 +57198,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-snowflake-o"></span>' +
 __e( o.__('Temporary') ) +
 ' - <em>' +
-__e( o.__('This room will disappear once the last person leaves') ) +
+__e( o.__('This groupchat will disappear once the last person leaves') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -57206,7 +57206,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-id-card"></span>' +
 __e( o.__('Not anonymous') ) +
 ' - <em>' +
-__e( o.__('All other room occupants can see your XMPP username') ) +
+__e( o.__('All other groupchat participants can see your XMPP username') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -57222,7 +57222,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-gavel"></span>' +
 __e( o.__('Moderated') ) +
 ' - <em>' +
-__e( o.__('This room is being moderated') ) +
+__e( o.__('This groupchat is being moderated') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -57230,7 +57230,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-info-circle"></span>' +
 __e( o.__('Not moderated') ) +
 ' - <em>' +
-__e( o.__('This room is not being moderated') ) +
+__e( o.__('This groupchat is not being moderated') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';

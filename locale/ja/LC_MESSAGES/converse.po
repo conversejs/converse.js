@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-22 10:43+0200\n"
+"POT-Creation-Date: 2018-07-22 11:17+0200\n"
 "PO-Revision-Date: 2018-07-05 02:38+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
@@ -558,20 +558,23 @@ msgid "Server address"
 msgstr "サーバーアドレス"
 
 #: dist/converse-no-dependencies.js:48717
-msgid "Show rooms"
-msgstr "談話室一覧を見る"
+#, fuzzy
+msgid "Show groupchats"
+msgstr "グループチャット"
 
 #: dist/converse-no-dependencies.js:48718
 msgid "conference.example.org"
 msgstr "conference@example.org"
 
 #: dist/converse-no-dependencies.js:48767
-msgid "No rooms found"
+#, fuzzy
+msgid "No groupchats found"
 msgstr "談話室が見つかりません"
 
 #: dist/converse-no-dependencies.js:48784
-msgid "Rooms found:"
-msgstr "談話室が見つかりました:"
+#, fuzzy
+msgid "groupchats found:"
+msgstr "グループチャット"
 
 #: dist/converse-no-dependencies.js:48836
 msgid "Enter a new Groupchat"
@@ -799,7 +802,8 @@ msgid "No nickname was specified."
 msgstr "ニックネームがありません。"
 
 #: dist/converse-no-dependencies.js:49940
-msgid "You are not allowed to create new rooms."
+#, fuzzy
+msgid "You are not allowed to create new groupchats."
 msgstr "新しい談話室を作成する権限がありません。"
 
 #: dist/converse-no-dependencies.js:49942
@@ -833,11 +837,13 @@ msgid "Groupchats"
 msgstr "グループチャット"
 
 #: dist/converse-no-dependencies.js:50032
-msgid "Add a new room"
-msgstr "新しい談話室を追加"
+#, fuzzy
+msgid "Add a new groupchat"
+msgstr "新しい談話室に入る"
 
 #: dist/converse-no-dependencies.js:50033
-msgid "Query for rooms"
+#, fuzzy
+msgid "Query for groupchats"
 msgstr "談話室へのクエリ"
 
 #: dist/converse-no-dependencies.js:50071
@@ -887,9 +893,9 @@ msgid "Invite"
 msgstr "招待"
 
 #: dist/converse-no-dependencies.js:50196
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
-"You are about to invite %1$s to the chat room \"%2$s\". You may optionally "
+"You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
 "%1$s を談話室 \"%2$s\" に招待しようとしています。招待の理由や説明を付けてもか"
@@ -900,14 +906,14 @@ msgid "Please enter a valid XMPP username"
 msgstr "正しい XMPP ユーザー名を入力してください"
 
 #: dist/converse-no-dependencies.js:51591
-#, javascript-format
-msgid "%1$s has invited you to join a chat room: %2$s"
+#, fuzzy, javascript-format
+msgid "%1$s has invited you to join a groupchat: %2$s"
 msgstr "%1$s があなたを談話室 %2$s へ招待しています"
 
 #: dist/converse-no-dependencies.js:51593
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
-"%1$s has invited you to join a chat room: %2$s, and left the following "
+"%1$s has invited you to join a groupchat: %2$s, and left the following "
 "reason: \"%3$s\""
 msgstr "%1$s があなたを談話室%2$s へ招待しています。案内: \"%3$s\""
 
@@ -1269,8 +1275,9 @@ msgid "Name"
 msgstr "名前"
 
 #: dist/converse-no-dependencies.js:57115
-msgid "Room address (JID)"
-msgstr "談話室のアドレス (JID)"
+#, fuzzy
+msgid "Groupchat address (JID)"
+msgstr "談話室のアドレス (JID):"
 
 #: dist/converse-no-dependencies.js:57119
 msgid "Description"
@@ -1299,7 +1306,8 @@ msgid "Password protected"
 msgstr "パスワード制"
 
 #: dist/converse-no-dependencies.js:57145
-msgid "This room requires a password before entry"
+#: dist/converse-no-dependencies.js:57297
+msgid "This groupchat requires a password before entry"
 msgstr "この談話室に入るにはパスワードが必要です"
 
 #: dist/converse-no-dependencies.js:57151
@@ -1307,15 +1315,18 @@ msgid "No password required"
 msgstr "パスワード不要"
 
 #: dist/converse-no-dependencies.js:57153
-msgid "This room does not require a password upon entry"
+#: dist/converse-no-dependencies.js:57305
+msgid "This groupchat does not require a password upon entry"
 msgstr "この談話室に入るにはパスワードは不要です"
 
 #: dist/converse-no-dependencies.js:57161
-msgid "This room is not publicly searchable"
+#: dist/converse-no-dependencies.js:57313
+msgid "This groupchat is not publicly searchable"
 msgstr "この談話室は公に検索されません"
 
 #: dist/converse-no-dependencies.js:57169
-msgid "This room is publicly searchable"
+#: dist/converse-no-dependencies.js:57321
+msgid "This groupchat is publicly searchable"
 msgstr "この談話室は公に検索されます"
 
 #: dist/converse-no-dependencies.js:57175
@@ -1324,11 +1335,13 @@ msgid "Members only"
 msgstr "メンバー制"
 
 #: dist/converse-no-dependencies.js:57177
-msgid "this room is restricted to members only"
+#, fuzzy
+msgid "This groupchat is restricted to members only"
 msgstr "この談話室はメンバーのみ入室できます"
 
 #: dist/converse-no-dependencies.js:57185
-msgid "Anyone can join this room"
+#: dist/converse-no-dependencies.js:57337
+msgid "Anyone can join this groupchat"
 msgstr "誰でもこの談話室に参加できます"
 
 #: dist/converse-no-dependencies.js:57191
@@ -1337,11 +1350,13 @@ msgid "Persistent"
 msgstr "常設"
 
 #: dist/converse-no-dependencies.js:57193
-msgid "This room persists even if it's unoccupied"
+#: dist/converse-no-dependencies.js:57345
+msgid "This groupchat persists even if it's unoccupied"
 msgstr "この談話室は誰もいなくなっても存続します"
 
 #: dist/converse-no-dependencies.js:57201
-msgid "This room will disappear once the last person leaves"
+#: dist/converse-no-dependencies.js:57353
+msgid "This groupchat will disappear once the last person leaves"
 msgstr "この談話室は最後の在室者が退出すると消滅します"
 
 #: dist/converse-no-dependencies.js:57207
@@ -1350,7 +1365,8 @@ msgid "Not anonymous"
 msgstr "非匿名"
 
 #: dist/converse-no-dependencies.js:57209
-msgid "All other room occupants can see your XMPP username"
+#: dist/converse-no-dependencies.js:57361
+msgid "All other groupchat participants can see your XMPP username"
 msgstr "すべての入室者が相互の XMPP ユーザー名を見ることができます"
 
 #: dist/converse-no-dependencies.js:57217
@@ -1359,7 +1375,8 @@ msgid "Only moderators can see your XMPP username"
 msgstr "司会者のみが XMPP ユーザー名を見ることができます"
 
 #: dist/converse-no-dependencies.js:57225
-msgid "This room is being moderated"
+#: dist/converse-no-dependencies.js:57377
+msgid "This groupchat is being moderated"
 msgstr "この談話室は権限のある者のみが発言できます"
 
 #: dist/converse-no-dependencies.js:57231
@@ -1368,7 +1385,8 @@ msgid "Not moderated"
 msgstr "発言制限なし"
 
 #: dist/converse-no-dependencies.js:57233
-msgid "This room is not being moderated"
+#: dist/converse-no-dependencies.js:57385
+msgid "This groupchat is not being moderated"
 msgstr "この談話室は誰でも発言できます"
 
 #: dist/converse-no-dependencies.js:57239
@@ -1381,53 +1399,13 @@ msgstr "記録保管"
 msgid "Messages are archived on the server"
 msgstr "メッセージはサーバ上に保管されます"
 
-#: dist/converse-no-dependencies.js:57297
-msgid "This groupchat requires a password before entry"
-msgstr "この談話室に入るにはパスワードが必要です"
-
-#: dist/converse-no-dependencies.js:57305
-msgid "This groupchat does not require a password upon entry"
-msgstr "この談話室に入るにはパスワードは不要です"
-
 #: dist/converse-no-dependencies.js:57307
 msgid "No password"
 msgstr "パスワードなし"
 
-#: dist/converse-no-dependencies.js:57313
-msgid "This groupchat is not publicly searchable"
-msgstr "この談話室は公に検索されません"
-
-#: dist/converse-no-dependencies.js:57321
-msgid "This groupchat is publicly searchable"
-msgstr "この談話室は公に検索されます"
-
 #: dist/converse-no-dependencies.js:57329
 msgid "this groupchat is restricted to members only"
 msgstr "この談話室はメンバーのみ入室できます"
-
-#: dist/converse-no-dependencies.js:57337
-msgid "Anyone can join this groupchat"
-msgstr "誰でもこの談話室に参加できます"
-
-#: dist/converse-no-dependencies.js:57345
-msgid "This groupchat persists even if it's unoccupied"
-msgstr "この談話室は誰もいなくなっても存続します"
-
-#: dist/converse-no-dependencies.js:57353
-msgid "This groupchat will disappear once the last person leaves"
-msgstr "この談話室は最後の在室者が退出すると消滅します"
-
-#: dist/converse-no-dependencies.js:57361
-msgid "All other groupchat participants can see your XMPP username"
-msgstr "すべての入室者が相互の XMPP ユーザー名を見ることができます"
-
-#: dist/converse-no-dependencies.js:57377
-msgid "This groupchat is being moderated"
-msgstr "この談話室は権限のある者のみが発言できます"
-
-#: dist/converse-no-dependencies.js:57385
-msgid "This groupchat is not being moderated"
-msgstr "この談話室は誰でも発言できます"
 
 #: dist/converse-no-dependencies.js:58267
 msgid "XMPP Username:"
@@ -1533,6 +1511,54 @@ msgstr "動画ファイルをダウンロード"
 #: dist/converse-no-dependencies.js:60032
 msgid "Download audio file"
 msgstr "音声ファイルをダウンロード"
+
+#~ msgid "Room address (JID)"
+#~ msgstr "談話室のアドレス (JID)"
+
+#~ msgid "This room requires a password before entry"
+#~ msgstr "この談話室に入るにはパスワードが必要です"
+
+#~ msgid "This room does not require a password upon entry"
+#~ msgstr "この談話室に入るにはパスワードは不要です"
+
+#~ msgid "This room is not publicly searchable"
+#~ msgstr "この談話室は公に検索されません"
+
+#~ msgid "This room is publicly searchable"
+#~ msgstr "この談話室は公に検索されます"
+
+#~ msgid "this room is restricted to members only"
+#~ msgstr "この談話室はメンバーのみ入室できます"
+
+#~ msgid "Anyone can join this room"
+#~ msgstr "誰でもこの談話室に参加できます"
+
+#~ msgid "This room persists even if it's unoccupied"
+#~ msgstr "この談話室は誰もいなくなっても存続します"
+
+#~ msgid "This room will disappear once the last person leaves"
+#~ msgstr "この談話室は最後の在室者が退出すると消滅します"
+
+#~ msgid "All other room occupants can see your XMPP username"
+#~ msgstr "すべての入室者が相互の XMPP ユーザー名を見ることができます"
+
+#~ msgid "This room is being moderated"
+#~ msgstr "この談話室は権限のある者のみが発言できます"
+
+#~ msgid "This room is not being moderated"
+#~ msgstr "この談話室は誰でも発言できます"
+
+#~ msgid "Show rooms"
+#~ msgstr "談話室一覧を見る"
+
+#~ msgid "Rooms found:"
+#~ msgstr "談話室が見つかりました:"
+
+#~ msgid "Add a new room"
+#~ msgstr "新しい談話室を追加"
+
+#~ msgid "Query for rooms"
+#~ msgstr "談話室へのクエリ"
 
 #~ msgid "Your server's response: \"%1$s\""
 #~ msgstr "サーバーの応答: %1$s"

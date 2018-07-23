@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-07-22 11:17+0200\n"
-"PO-Revision-Date: 2018-07-22 11:50+0200\n"
+"PO-Revision-Date: 2018-07-24 19:38+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -55,7 +55,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:52564
 #: dist/converse-no-dependencies.js:58864
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: dist/converse-no-dependencies.js:40854
 #, fuzzy, javascript-format
@@ -74,9 +74,8 @@ msgid "Leave this groupchat"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:41056
-#, fuzzy
 msgid "Remove this bookmark"
-msgstr "Nom de ce marque-page :"
+msgstr "Supprimer ce marque-page"
 
 #: dist/converse-no-dependencies.js:41057
 #: dist/converse-no-dependencies.js:53688
@@ -115,11 +114,11 @@ msgid "Sorry, could not determine upload URL."
 msgstr "Désolé, impossible de déterminer l’URL d’envoi de fichier."
 
 #: dist/converse-no-dependencies.js:41573
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
-msgstr "Désolé, l’envoi de fichier a échoué."
+msgstr "Désolé, l’envoi de fichier a échoué. Votre serveur a répondu : « %1$s »"
 
 #: dist/converse-no-dependencies.js:41575
 msgid "Sorry, could not succesfully upload your file."
@@ -140,7 +139,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:41996
 msgid "Sorry, an error occurred:"
-msgstr ""
+msgstr "Désolé, une erreur s’est produite :"
 
 #: dist/converse-no-dependencies.js:42538
 msgid "Close this chat box"
@@ -280,25 +279,25 @@ msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "Voulez-vous vraiment effacer les messages de cette conversation ?"
 
 #: dist/converse-no-dependencies.js:43413
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone offline"
-msgstr "s’est déconnecté"
+msgstr "%1$s s’est déconnecté"
 
 #: dist/converse-no-dependencies.js:43415
 #: dist/converse-no-dependencies.js:47662
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone away"
-msgstr "%1$s a été banni"
+msgstr "%1$s n’est plus disponible"
 
 #: dist/converse-no-dependencies.js:43417
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is busy"
-msgstr "est occupé"
+msgstr "%1$s est occupé"
 
 #: dist/converse-no-dependencies.js:43419
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is online"
-msgstr "est en ligne"
+msgstr "%1$s est en ligne"
 
 #: dist/converse-no-dependencies.js:44042
 msgid "Username"
@@ -354,21 +353,21 @@ msgstr "Afficher plus"
 
 #: dist/converse-no-dependencies.js:47651
 msgid "Typing from another device"
-msgstr ""
+msgstr "En train d’écrire depuis un autre client"
 
 #: dist/converse-no-dependencies.js:47653
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is typing"
-msgstr "%1$s dit"
+msgstr "%1$s est en train d’écrire"
 
 #: dist/converse-no-dependencies.js:47657
 msgid "Stopped typing on the other device"
-msgstr ""
+msgstr "A arrêté d’écrire sur l’autre client"
 
 #: dist/converse-no-dependencies.js:47659
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr ""
+msgstr "%1$s a arrêté d’écrire"
 
 #: dist/converse-no-dependencies.js:47905
 #: dist/converse-no-dependencies.js:47948
@@ -878,7 +877,7 @@ msgstr "Ce salon a atteint sa limite maximale d’occupants."
 
 #: dist/converse-no-dependencies.js:49950
 msgid "Remote server not found"
-msgstr ""
+msgstr "Serveur distant introuvable"
 
 #: dist/converse-no-dependencies.js:49955
 #, fuzzy, javascript-format
@@ -946,7 +945,7 @@ msgstr "Administrateur"
 
 #: dist/converse-no-dependencies.js:50121
 msgid "Participants"
-msgstr ""
+msgstr "Participants"
 
 #: dist/converse-no-dependencies.js:50138
 #: dist/converse-no-dependencies.js:50219
@@ -1018,7 +1017,7 @@ msgstr "veut être votre contact"
 #: dist/converse-no-dependencies.js:52229
 #, javascript-format
 msgid "Log in with %1$s"
-msgstr ""
+msgstr "Se connecter avec %1$s"
 
 #: dist/converse-no-dependencies.js:52476
 msgid "Your Profile"
@@ -1361,11 +1360,11 @@ msgstr "Description :"
 
 #: dist/converse-no-dependencies.js:57125
 msgid "Topic"
-msgstr ""
+msgstr "Sujet"
 
 #: dist/converse-no-dependencies.js:57129
 msgid "Topic author"
-msgstr ""
+msgstr "Auteur du sujet"
 
 #: dist/converse-no-dependencies.js:57135
 #, fuzzy
@@ -1514,7 +1513,7 @@ msgstr "Mot de passe"
 
 #: dist/converse-no-dependencies.js:58283
 msgid "This is a trusted device"
-msgstr ""
+msgstr "Ceci est un appareil de confiance"
 
 #: dist/converse-no-dependencies.js:58285
 msgid ""

@@ -10,6 +10,122 @@
 
     describe("The OMEMO module", function() {
 
+        it("enables encrypted messages to be sent",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                function (done, _converse) {
+
+            var sent_stanza;
+            let iq_stanza;
+            test_utils.createContacts(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+
+            // First, fetch own device list
+            return test_utils.waitUntil(() => {
+                return _.filter(
+                    _converse.connection.IQ_stanzas,
+                    (iq) => {
+                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                        if (node) { iq_stanza = iq.nodeTree;}
+                        return node;
+                    }).length;
+            }).then(() => {
+                const stanza = $iq({
+                    'from': contact_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result',
+                }).c('query', {
+                    'xmlns': 'http://jabber.org/protocol/disco#items',
+                    'node': 'eu.siacs.conversations.axolotl.devicelist'
+                }).c('device', {'id': '482886413b977930064a5888b92134fe'}).up()
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                _converse.emit('OMEMOInitialized');
+
+                // Check that device list for contact is fetched when chat is opened.
+                test_utils.openChatBoxFor(_converse, contact_jid);
+                return test_utils.waitUntil(() => {
+                    return _.filter(
+                        _converse.connection.IQ_stanzas,
+                        (iq) => {
+                            const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                            if (node) { iq_stanza = iq.nodeTree; }
+                            return node;
+                        }).length;
+                });
+            }).then(() => {
+                const stanza = $iq({
+                    'from': contact_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result',
+                }).c('query', {
+                    'xmlns': 'http://jabber.org/protocol/disco#items',
+                    'node': 'eu.siacs.conversations.axolotl.devicelist'
+                }).c('device', {'id': '555'}).up()
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                const devicelist = _converse.devicelists.create({'jid': contact_jid});
+                expect(devicelist.devices.length).toBe(1);
+
+                const view = _converse.chatboxviews.get(contact_jid);
+                view.model.set('omemo_active', true);
+
+                const textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = 'This message will be encrypted';
+                view.keyPressed({
+                    target: textarea,
+                    preventDefault: _.noop,
+                    keyCode: 13 // Enter
+                });
+                return test_utils.waitUntil(() => {
+                    return _.filter(
+                        _converse.connection.IQ_stanzas,
+                        (iq) => {
+                            const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] items[node="eu.siacs.conversations.axolotl.bundles:555"]');
+                            if (node) { iq_stanza = iq.nodeTree; }
+                            return node;
+                        }).length;
+                });
+            }).then(() => {
+                const stanza = $iq({
+                    'from': contact_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result',
+                }).c('pubsub', {
+                    'xmlns': 'http://jabber.org/protocol/pubsub'
+                    }).c('items', {'node': "eu.siacs.conversations.axolotl.bundles:555"})
+                        .c('item')
+                            .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                                .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t(btoa('1111')).up()
+                                .c('signedPreKeySignature').t(btoa('2222')).up()
+                                .c('identityKey').t(btoa('3333')).up()
+                                .c('prekeys')
+                                    .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1001')).up()
+                                    .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
+                                    .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
+
+                spyOn(_converse.connection, 'send').and.callFake(stanza => { sent_stanza = stanza });
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                return test_utils.waitUntil(() => sent_stanza);
+            }).then(function () {
+                expect(sent_stanza.toLocaleString()).toBe(
+                    `<message from='dummy@localhost/resource' to='max.frankfurter@localhost' `+
+                             `type='chat' id='${sent_stanza.nodeTree.getAttribute('id')}' xmlns='jabber:client'>`+
+                        `<body>This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo</body>`+
+                        `<encrypted xmlns='eu.siacs.conversations.axolotl'>`+
+                            `<header sid='123456789'>`+
+                                `<key>eyJpdiI6IjEyMzQ1In0=</key>`+
+                                `<iv>12345</iv>`+
+                            `</header>`+
+                        `</encrypted>`+
+                    `</message>`);
+                done();
+            });
+        }));
+
         it("will add processing hints to sent out encrypted <message> stanzas",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
@@ -24,8 +140,8 @@
                 function (done, _converse) {
 
             let iq_stanza;
-            test_utils.createContacts(_converse, 'current');
-            const contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
+            test_utils.createContacts(_converse, 'current', 1);
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             test_utils.waitUntil(function () {
                 return _.filter(

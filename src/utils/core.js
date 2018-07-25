@@ -883,6 +883,10 @@
         return bytes.buffer
     };
 
+    u.getRandomInt = function (max) {
+        return Math.floor(Math.random() * Math.floor(max));
+    };
+
     u.getUniqueId = function () {
         return 'xxxxxxxx-xxxx'.replace(/[x]/g, function(c) {
             var r = Math.random() * 16 | 0,

@@ -8,6 +8,22 @@
     var $iq = converse.env.$iq;
 
     window.libsignal = {
+        'SignalProtocolAddress': function (name, device_id) {
+            this.name = name;
+            this.deviceId = device_id;
+        },
+        'SessionCipher': function (storage, remote_address) {
+            this.remoteAddress = remote_address;
+            this.storage = storage;
+            this.encrypt = () => Promise.resolve({
+                'iv': '12345'
+            });
+        },
+        'SessionBuilder': function (storage, remote_address) {
+            this.processPreKey = function () {
+                return Promise.resolve();
+            }
+        },
         'KeyHelper': {
             'generateIdentityKeyPair': function () {
                 return Promise.resolve({

@@ -54,7 +54,7 @@
                 }).catch(_.partial(console.error, _));
             }));
 
-            it("has a method 'get' which returns a wrapped chat room (if it exists)",
+            it("has a method 'get' which returns a wrapped groupchat (if it exists)",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -126,7 +126,7 @@
                 }, 300).then(function () {
                     var jid = 'lounge@localhost';
                     var room = _converse.api.rooms.open(jid);
-                    // Test on chat room that's not yet open
+                    // Test on groupchat that's not yet open
                     expect(room instanceof Object).toBeTruthy();
                     var chatroomview = _converse.chatboxviews.get(jid);
                     expect(chatroomview.is_chatroom).toBeTruthy();
@@ -275,7 +275,7 @@
             }));
         });
 
-        describe("An instant chat room", function () {
+        describe("An instant groupchat", function () {
 
             it("will be created when muc_instant_rooms is set to true",
                 mock.initConverseWithPromises(
@@ -407,9 +407,9 @@
             }));
         });
 
-        describe("A Chat Room", function () {
+        describe("A Groupchat", function () {
 
-            it("shows join/leave messages when users enter or exit a room",
+            it("shows join/leave messages when users enter or exit a groupchat",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -664,7 +664,7 @@
 
                     jasmine.clock().tick(ONE_DAY_LATER);
 
-                    // Test a user leaving a chat room
+                    // Test a user leaving a groupchat
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
                             type: 'unavailable',
@@ -738,7 +738,7 @@
 
                     jasmine.clock().tick(ONE_DAY_LATER);
 
-                    // Test a user leaving a chat room
+                    // Test a user leaving a groupchat
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
                             type: 'unavailable',
@@ -1419,7 +1419,7 @@
                 });
             }));
 
-            it("allows the user to invite their roster contacts to enter the chat room",
+            it("allows the user to invite their roster contacts to enter the groupchat",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -1497,7 +1497,7 @@
                     var name = mock.cur_names[0];
                     var from_jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
                     var room_jid = 'lounge@localhost';
-                    var reason = "Please join this chat room";
+                    var reason = "Please join this groupchat";
 
                     expect(_converse.chatboxes.models.length).toBe(1);
                     expect(_converse.chatboxes.models[0].id).toBe("controlbox");
@@ -1508,7 +1508,7 @@
                         '</message>').firstChild;
                     _converse.onDirectMUCInvitation(stanza);
                     expect(window.confirm).toHaveBeenCalledWith(
-                        name + ' has invited you to join a chat room: '+ room_jid +
+                        name + ' has invited you to join a groupchat: '+ room_jid +
                         ', and left the following reason: "'+reason+'"');
                     expect(_converse.chatboxes.models.length).toBe(2);
                     expect(_converse.chatboxes.models[0].id).toBe('controlbox');
@@ -1959,7 +1959,7 @@
                 });
             }));
 
-            it("informs users if they have been kicked out of the chat room",
+            it("informs users if they have been kicked out of the groupchat",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -2871,7 +2871,7 @@
                     spyOn(view, 'showErrorMessage').and.callThrough();
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
-                        .toBe('You are not allowed to create new rooms.');
+                        .toBe('You are not allowed to create new groupchats.');
                     done();
                 }).catch(_.partial(console.error, _));
             }));
@@ -2949,9 +2949,9 @@
             }));
         });
 
-        describe("Someone being invited to a chat room", function () {
+        describe("Someone being invited to a groupchat", function () {
 
-            it("will first be added to the member list if the chat room is members only",
+            it("will first be added to the member list if the groupchat is members only",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -3002,7 +3002,7 @@
                    });
                    var name = mock.cur_names[0];
                    invitee_jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                   var reason = "Please join this chat room";
+                   var reason = "Please join this groupchat";
                    view.model.directInvite(invitee_jid, reason);
 
                    // Check in reverse order that we requested all three lists
@@ -3088,7 +3088,7 @@
                     var iq = "<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+IQ_ids.pop()+"'>"+
                             "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
                                 "<item affiliation='member' jid='"+invitee_jid+"'>"+
-                                    "<reason>Please join this chat room</reason>"+
+                                    "<reason>Please join this groupchat</reason>"+
                                 "</item>"+
                             "</query>"+
                         "</iq>";
@@ -3097,8 +3097,9 @@
                     // Finally check that the user gets invited.
                     expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
                         "<message from='dummy@localhost/resource' to='"+invitee_jid+"' id='"+sent_id+"' xmlns='jabber:client'>"+
-                            "<x xmlns='jabber:x:conference' jid='coven@chat.shakespeare.lit' reason='Please join this chat room'/>"+
-                        "</message>");
+                            "<x xmlns='jabber:x:conference' jid='coven@chat.shakespeare.lit' reason='Please join this groupchat'/>"+
+                        "</message>"
+                    );
                     done();
                 });
             }));
@@ -3169,7 +3170,7 @@
             }));
         });
 
-        describe("The \"Chatrooms\" section", function () {
+        describe("The \"Groupchats\" section", function () {
 
             it("contains a link to a modal through which a new chatroom can be created",
                 mock.initConverseWithPromises(
@@ -3197,7 +3198,7 @@
                 }).catch(_.partial(console.error, _));
             }));
 
-            it("contains a link to a modal which can list rooms publically available on the server",
+            it("contains a link to a modal which can list groupchats publically available on the server",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -3252,7 +3253,7 @@
                     expect(modal.el.querySelectorAll('.available-chatrooms li').length).toBe(5);
 
                     const rooms = modal.el.querySelectorAll('.available-chatrooms li');
-                    expect(rooms[0].textContent.trim()).toBe("Rooms found:");
+                    expect(rooms[0].textContent.trim()).toBe("Groupchats found:");
                     expect(rooms[1].textContent.trim()).toBe("A Lonely Heath");
                     expect(rooms[2].textContent.trim()).toBe("A Dark Cave");
                     expect(rooms[3].textContent.trim()).toBe("The Palace");

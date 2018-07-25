@@ -86,108 +86,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "../backbone.vdomview/backbone.vdomview.js":
-/*!*************************************************!*\
-  !*** ../backbone.vdomview/backbone.vdomview.js ***!
-  \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-/*!
- * Backbone.VDOMView
- *
- * MIT Licensed. Copyright (c) 2017, JC Brand <jc@opkode.com>
- */
-(function (root, factory) {
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! snabbdom */ "./node_modules/snabbdom/dist/snabbdom.js"), __webpack_require__(/*! snabbdom-attributes */ "./node_modules/snabbdom/dist/snabbdom-attributes.js"), __webpack_require__(/*! snabbdom-class */ "./node_modules/snabbdom/dist/snabbdom-class.js"), __webpack_require__(/*! snabbdom-dataset */ "./node_modules/snabbdom/dist/snabbdom-dataset.js"), __webpack_require__(/*! snabbdom-props */ "./node_modules/snabbdom/dist/snabbdom-props.js"), __webpack_require__(/*! snabbdom-style */ "./node_modules/snabbdom/dist/snabbdom-style.js"), __webpack_require__(/*! tovnode */ "./node_modules/snabbdom/dist/tovnode.js"), __webpack_require__(/*! underscore */ "./src/underscore-shim.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else {}
-})(void 0, function (snabbdom, snabbdom_attributes, snabbdom_class, snabbdom_dataset, snabbdom_props, snabbdom_style, tovnode, _, Backbone) {
-  "use strict";
-
-  let domParser = new DOMParser();
-  const patch = snabbdom.init([snabbdom_attributes.default, snabbdom_class.default, snabbdom_dataset.default, snabbdom_props.default, snabbdom_style.default]);
-  const View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
-
-  function parseHTMLToDOM(html_str) {
-    /* Parses a string with HTML and returns a DOM element.
-     *
-     * Forked from vdom_parser:
-     *      https://github.com/bitinn/vdom-parser
-     */
-    if (typeof html_str !== 'string') {
-      throw new Error('Invalid parameter type in parseHTMLToDOM');
-    }
-
-    if (!('DOMParser' in window)) {
-      throw new Error('DOMParser is not available, ' + 'so parsing string to DOM node is not possible.');
-    }
-
-    if (!html_str) {
-      return document.createTextNode('');
-    }
-
-    domParser = domParser || new DOMParser();
-    const doc = domParser.parseFromString(html_str, 'text/html'); // most tags default to body
-
-    if (doc.body.firstChild) {
-      return doc.getElementsByTagName('body')[0].firstChild; // some tags, like script and style, default to head
-    } else if (doc.head.firstChild && (doc.head.firstChild.tagName !== 'TITLE' || doc.title)) {
-      return doc.head.firstChild; // special case for html comment, cdata, doctype
-    } else if (doc.firstChild && doc.firstChild.tagName !== 'HTML') {
-      return doc.firstChild; // other element, such as whitespace, or html/body/head tag, fallback to empty text node
-    } else {
-      return document.createTextNode('');
-    }
-  }
-
-  Backbone.VDOMView = View.extend({
-    updateEventListeners(old_vnode, new_vnode) {
-      this.setElement(new_vnode.elm);
-    },
-
-    render() {
-      if (_.isFunction(this.beforeRender)) {
-        this.beforeRender();
-      }
-
-      let new_vnode;
-
-      if (!_.isNil(this.toHTML)) {
-        new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
-      } else {
-        new_vnode = tovnode.toVNode(this.toDOM());
-      }
-
-      new_vnode.data.hook = _.extend({
-        create: this.updateEventListeners.bind(this),
-        update: this.updateEventListeners.bind(this)
-      });
-      const el = this.vnode ? this.vnode.elm : this.el;
-
-      if (el.outerHTML !== new_vnode.elm.outerHTML) {
-        this.vnode = patch(this.vnode || this.el, new_vnode);
-      }
-
-      if (_.isFunction(this.afterRender)) {
-        this.afterRender();
-      }
-
-      return this;
-    }
-
-  });
-  return Backbone.VDOMView;
-});
-
-/***/ }),
-
 /***/ "./3rdparty/lodash.fp.js":
 /*!*******************************!*\
   !*** ./3rdparty/lodash.fp.js ***!
@@ -2567,6 +2465,132 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     });
 
     return Backbone.Overview;
+}));
+
+
+
+/***/ }),
+
+/***/ "./node_modules/backbone.vdomview/backbone.vdomview.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/backbone.vdomview/backbone.vdomview.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*** IMPORTS FROM imports-loader ***/
+var backbone = (backbone || {});
+backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_modules/backbone.nativeview/backbone.nativeview.js");
+
+/*!
+ * Backbone.VDOMView
+ *
+ * MIT Licensed. Copyright (c) 2017, JC Brand <jc@opkode.com>
+ */
+(function (root, factory) {
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
+            __webpack_require__(/*! snabbdom */ "./node_modules/snabbdom/dist/snabbdom.js"),
+            __webpack_require__(/*! snabbdom-attributes */ "./node_modules/snabbdom/dist/snabbdom-attributes.js"),
+            __webpack_require__(/*! snabbdom-class */ "./node_modules/snabbdom/dist/snabbdom-class.js"),
+            __webpack_require__(/*! snabbdom-dataset */ "./node_modules/snabbdom/dist/snabbdom-dataset.js"),
+            __webpack_require__(/*! snabbdom-props */ "./node_modules/snabbdom/dist/snabbdom-props.js"),
+            __webpack_require__(/*! snabbdom-style */ "./node_modules/snabbdom/dist/snabbdom-style.js"),
+            __webpack_require__(/*! tovnode */ "./node_modules/snabbdom/dist/tovnode.js"),
+            __webpack_require__(/*! underscore */ "./src/underscore-shim.js"),
+            __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")
+        ], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else {}
+}(this, function (
+        snabbdom,
+        snabbdom_attributes,
+        snabbdom_class,
+        snabbdom_dataset,
+        snabbdom_props,
+        snabbdom_style,
+        tovnode,
+        _,
+        Backbone) {
+    "use strict";
+
+    let domParser = new DOMParser();
+    const patch = snabbdom.init([
+        snabbdom_attributes.default,
+        snabbdom_class.default,
+        snabbdom_dataset.default,
+        snabbdom_props.default,
+        snabbdom_style.default
+    ]);
+
+    const View = _.isUndefined(Backbone.NativeView) ? Backbone.View : Backbone.NativeView;
+
+    function parseHTMLToDOM (html_str) {
+        /* Parses a string with HTML and returns a DOM element.
+         *
+         * Forked from vdom_parser:
+         *      https://github.com/bitinn/vdom-parser
+         */
+        if (typeof html_str !== 'string') {
+            throw new Error('Invalid parameter type in parseHTMLToDOM');
+        }
+        if ( !('DOMParser' in window) ) {
+            throw new Error(
+                'DOMParser is not available, '+
+                'so parsing string to DOM node is not possible.');
+        }
+        if (!html_str) {
+            return document.createTextNode('');
+        }
+        domParser = domParser || new DOMParser();
+        const doc = domParser.parseFromString(html_str, 'text/html');
+
+        // most tags default to body
+        if (doc.body.firstChild) {
+            return doc.getElementsByTagName('body')[0].firstChild;
+
+        // some tags, like script and style, default to head
+        } else if (doc.head.firstChild && (doc.head.firstChild.tagName !== 'TITLE' || doc.title)) {
+            return doc.head.firstChild;
+
+        // special case for html comment, cdata, doctype
+        } else if (doc.firstChild && doc.firstChild.tagName !== 'HTML') {
+            return doc.firstChild;
+
+        // other element, such as whitespace, or html/body/head tag, fallback to empty text node
+        } else {
+            return document.createTextNode('');
+        }
+    }
+
+    Backbone.VDOMView = View.extend({
+
+        updateEventListeners (old_vnode, new_vnode) {
+            this.setElement(new_vnode.elm);
+        },
+
+        render () {
+            if (_.isFunction(this.beforeRender)) {
+                this.beforeRender();
+            }
+            const new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
+            new_vnode.data.hook = _.extend({
+               create: this.updateEventListeners.bind(this),
+               update: this.updateEventListeners.bind(this)
+            });
+            const el = this.vnode ? this.vnode.elm : this.el;
+            if (el.outerHTML !== new_vnode.elm.outerHTML) {
+                this.vnode = patch(this.vnode || this.el, new_vnode);
+            }
+            if (_.isFunction(this.afterRender)) {
+                this.afterRender();
+            }
+            return this;
+        }
+    });
+    return Backbone.VDOMView;
 }));
 
 
@@ -69263,7 +69287,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/alert_modal.html */ "./src/templates/alert_modal.html"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! backbone.vdomview */ "../backbone.vdomview/backbone.vdomview.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/alert_modal.html */ "./src/templates/alert_modal.html"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/backbone.vdomview.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -69733,7 +69757,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // For translators: %1$s is a variable and will be
             // replaced with the XMPP server name
             available_chatrooms.innerHTML = tpl_rooms_results({
-              'feedback_text': __('groupchats found:')
+              'feedback_text': __('Groupchats found:')
             });
             const fragment = document.createDocumentFragment();
 
@@ -71355,7 +71379,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils/form */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/backbone.overview.js"), __webpack_require__(/*! backbone.orderedlistview */ "./node_modules/backbone.overview/backbone.orderedlistview.js"), __webpack_require__(/*! backbone.vdomview */ "../backbone.vdomview/backbone.vdomview.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils/form */ "./src/utils/form.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! emojione */ "./node_modules/emojione/lib/js/emojione.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/backbone.overview.js"), __webpack_require__(/*! backbone.orderedlistview */ "./node_modules/backbone.overview/backbone.orderedlistview.js"), __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/backbone.vdomview.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));

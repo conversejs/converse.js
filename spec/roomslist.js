@@ -154,17 +154,17 @@
                 const modal = view.model.room_details_modal;
                 let els = modal.el.querySelectorAll('p.room-info');
                 expect(els[0].textContent).toBe("Name: A Dark Cave")
-                expect(els[1].textContent).toBe("Room address (JID): coven@chat.shakespeare.lit")
+                expect(els[1].textContent).toBe("Groupchat address (JID): coven@chat.shakespeare.lit")
                 expect(els[2].textContent).toBe("Description: This is the description")
                 expect(els[3].textContent).toBe("Online users: 1")
                 const features_list = modal.el.querySelector('.features-list');
                 expect(features_list.textContent.replace(/(\n|\s{2,})/g, '')).toBe(
-                    'Password protected - This room requires a password before entry'+
-                    'Hidden - This room is not publicly searchable'+
-                    'Open - Anyone can join this room'+
-                    'Temporary - This room will disappear once the last person leaves'+
-                    'Not anonymous - All other room occupants can see your XMPP username'+
-                    'Not moderated - This room is not being moderated'
+                    'Password protected - This groupchat requires a password before entry'+
+                    'Hidden - This groupchat is not publicly searchable'+
+                    'Open - Anyone can join this groupchat'+
+                    'Temporary - This groupchat will disappear once the last person leaves'+
+                    'Not anonymous - All other groupchat participants can see your XMPP username'+
+                    'Not moderated - This groupchat is not being moderated'
                 );
                 const presence = $pres({
                         to: 'dummy@localhost/_converse.js-29092160',
@@ -184,7 +184,7 @@
                 view.model.set({'subject': {'author': 'someone', 'text': 'Hatching dark plots'}});
                 els = modal.el.querySelectorAll('p.room-info');
                 expect(els[0].textContent).toBe("Name: A Dark Cave")
-                expect(els[1].textContent).toBe("Room address (JID): coven@chat.shakespeare.lit")
+                expect(els[1].textContent).toBe("Groupchat address (JID): coven@chat.shakespeare.lit")
                 expect(els[2].textContent).toBe("Description: This is the description")
                 expect(els[3].textContent).toBe("Topic: Hatching dark plots")
                 expect(els[4].textContent).toBe("Topic author: someone")

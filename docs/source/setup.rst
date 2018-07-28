@@ -202,7 +202,10 @@ Apache
         Line Number 6, Column 3: bosh-anon:6:3
         Also ERROR: request id 12.2 error 504 happened
 
-    Then it might be because your webserver and BOSH proxy have the same timeout
+    Then your BOSH proxy is returning an HTML error page (for a 504 error in
+    the above example).
+
+    This might be because your webserver and BOSH proxy have the same timeout
     for BOSH requests. Because the webserver receives the request slightly earlier, 
     it gives up a few microseconds before the XMPP server’s empty result and thus returns a
     504 error page containing HTML to browser, which then gets parsed as if its
@@ -210,6 +213,9 @@ Apache
 
     To fix this, make sure that the webserver's timeout is slightly higher.
     In Nginx you can do this by adding ``proxy_read_timeout 61;``;
+
+    From Converse 4.0.0 onwards the default ``wait`` time is set to 59 seconds, to avoid
+    this problem.
 
 
 .. _`session-support`:

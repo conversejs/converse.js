@@ -10,7 +10,7 @@
 
     describe("The OMEMO module", function() {
 
-        it("enables encrypted messages to be sent",
+        it("enables encrypted messages to be sent and received",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
@@ -83,7 +83,9 @@
                     return _.filter(
                         _converse.connection.IQ_stanzas,
                         (iq) => {
-                            const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] items[node="eu.siacs.conversations.axolotl.bundles:555"]');
+                            const node = iq.nodeTree.querySelector(
+                                'iq[to="'+contact_jid+'"] items[node="eu.siacs.conversations.axolotl.bundles:555"]'
+                            );
                             if (node) { iq_stanza = iq.nodeTree; }
                             return node;
                         }).length;
@@ -106,6 +108,36 @@
                                     .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1001')).up()
                                     .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
                                     .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                return test_utils.waitUntil(() => {
+                    return _.filter(
+                        _converse.connection.IQ_stanzas,
+                        (iq) => {
+                            const node = iq.nodeTree.querySelector(
+                                'iq[to="'+_converse.bare_jid+'"] items[node="eu.siacs.conversations.axolotl.bundles:482886413b977930064a5888b92134fe"]'
+                            );
+                            if (node) { iq_stanza = iq.nodeTree; }
+                            return node;
+                        }).length;
+                });
+            }).then(() => {
+                const stanza = $iq({
+                    'from': _converse.bare_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result',
+                }).c('pubsub', {
+                    'xmlns': 'http://jabber.org/protocol/pubsub'
+                    }).c('items', {'node': "eu.siacs.conversations.axolotl.bundles:482886413b977930064a5888b92134fe"})
+                        .c('item')
+                            .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                                .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t(btoa('100000')).up()
+                                .c('signedPreKeySignature').t(btoa('200000')).up()
+                                .c('identityKey').t(btoa('300000')).up()
+                                .c('prekeys')
+                                    .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1991')).up()
+                                    .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1992')).up()
+                                    .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1993'));
 
                 spyOn(_converse.connection, 'send').and.callFake(stanza => { sent_stanza = stanza });
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
@@ -117,11 +149,25 @@
                         `<body>This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo</body>`+
                         `<encrypted xmlns='eu.siacs.conversations.axolotl'>`+
                             `<header sid='123456789'>`+
-                                `<key>eyJpdiI6IjEyMzQ1In0=</key>`+
-                                `<iv>12345</iv>`+
+                                `<key rid='482886413b977930064a5888b92134fe'>eyJ0eXBlIjoxLCJib2R5IjoiYzFwaDNSNzNYNyIsInJlZ2lzdHJhdGlvbklkIjoiMTMzNyJ9</key>`+
+                                `<key rid='555'>eyJ0eXBlIjoxLCJib2R5IjoiYzFwaDNSNzNYNyIsInJlZ2lzdHJhdGlvbklkIjoiMTMzNyJ9</key>`+
+                                `<iv>${sent_stanza.nodeTree.querySelector('iv').textContent}</iv>`+
                             `</header>`+
                         `</encrypted>`+
                     `</message>`);
+
+                // Test reception of an encrypted message
+                const stanza = $msg({
+                        'from': contact_jid,
+                        'to': _converse.connection.jid,
+                        'type': 'chat',
+                        'id': 'qwerty' 
+                    }).c('body').t('This is a fallback message').up()
+                        .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
+                            .c('header', {'sid':  '555'})
+                                .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t('c1ph3R73X7').up()
+                                .c('iv').t('1234');
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 done();
             });
         }));

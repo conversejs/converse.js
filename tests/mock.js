@@ -16,7 +16,9 @@
             this.remoteAddress = remote_address;
             this.storage = storage;
             this.encrypt = () => Promise.resolve({
-                'iv': '12345'
+                'type': 1,
+                'body': 'c1ph3R73X7',
+                'registrationId': '1337' 
             });
         },
         'SessionBuilder': function (storage, remote_address) {

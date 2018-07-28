@@ -92,8 +92,13 @@
                     const { _converse } = this.__super__;
                     return new Promise((resolve, reject) => {
                         _converse.getDevicesForContact(this.get('jid'))
-                            .then((devices) => {
-                                Promise.all(devices.map((device) => device.getBundle()))
+                            .then((their_devices) => {
+                                const device_id = _converse.omemo_store.get('device_id'),
+                                      devicelist = _converse.devicelists.get(_converse.bare_jid),
+                                      own_devices = devicelist.devices.filter(device => device.get('id') !== device_id),
+                                      devices = _.concat(own_devices, their_devices.models);
+
+                                Promise.all(devices.map(device => device.getBundle()))
                                     .then(() => this.buildSessions(devices))
                                     .then(() => resolve(devices))
                                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
@@ -165,22 +170,27 @@
                           address = new libsignal.SignalProtocolAddress(this.get('jid'), device.get('id')),
                           sessionCipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
 
-                    return sessionCipher.encrypt(plaintext);
+                    return new Promise((resolve, reject) => {
+                        sessionCipher.encrypt(plaintext)
+                            .then(payload => resolve({'payload': payload, 'device': device}))
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                        });
                 },
 
-                addKeysToMessageStanza (stanza, devices, payloads) {
-                    for (var i in payloads) {
-                        if (Object.prototype.hasOwnProperty.call(payloads, i)) {
-                            const payload = btoa(JSON.stringify(payloads[i]))
-                            const prekey = 3 == parseInt(payloads[i].type, 10)
-                            if (i == payloads.length-1) {
-                                stanza.c('key', {'rid': devices.get('id') }).t(payload)
-                                if (prekey) {
-                                    stanza.attrs({'prekey': prekey});
-                                }
-                                stanza.up().c('iv').t(payloads[0].iv).up().up()
-                            } else {
-                                stanza.c('key', {prekey: prekey, rid: devices.get('id') }).t(payload).up()
+                addKeysToMessageStanza (stanza, dicts, iv) {
+                    for (var i in dicts) {
+                        if (Object.prototype.hasOwnProperty.call(dicts, i)) {
+                            const payload = dicts[i].payload,
+                                  device = dicts[i].device,
+                                  prekey = 3 == parseInt(payload.type, 10);
+
+                            stanza.c('key', {'rid': device.get('id') }).t(btoa(JSON.stringify(dicts[i].payload)));
+                            if (prekey) {
+                                stanza.attrs({'prekey': prekey});
+                            }
+                            stanza.up();
+                            if (i == dicts.length-1) {
+                                stanza.c('iv').t(iv).up().up()
                             }
                         }
                     }
@@ -213,8 +223,13 @@
                         // long-standing SignalProtocol session.
 
                         // TODO: need to include own devices here as well (and filter out distrusted devices)
-                        const promises = devices.map(device => this.encryptKey(payload.key_str+payload.tag, device));
-                        return Promise.all(promises).then((payloads) => this.addKeysToMessageStanza(stanza, devices, payloads));
+                        const promises = devices
+                            .filter(device => device.get('trusted') != UNTRUSTED)
+                            .map(device => this.encryptKey(payload.key_str+payload.tag, device));
+
+                        return Promise.all(promises)
+                            .then((dicts) => this.addKeysToMessageStanza(stanza, dicts, payload.iv))
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                     });
                 },
 

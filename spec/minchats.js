@@ -13,32 +13,37 @@
                 function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
+            _converse.emit('rosterContactsFetched');
+
             test_utils.openControlBox();
             _converse.minimized_chats.toggleview.model.browserStorage._clear();
             _converse.minimized_chats.initToggle();
 
-            var contact_jid, chatview;
-            contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-            test_utils.openChatBoxFor(_converse, contact_jid);
-            chatview = _converse.chatboxviews.get(contact_jid);
-            expect(chatview.model.get('minimized')).toBeFalsy();
-            expect($(_converse.minimized_chats.el).is(':visible')).toBeFalsy();
-            chatview.el.querySelector('.toggle-chatbox-button').click();
-            expect(chatview.model.get('minimized')).toBeTruthy();
-            expect($(_converse.minimized_chats.el).is(':visible')).toBeTruthy();
-            expect(_converse.minimized_chats.keys().length).toBe(1);
-            expect(_converse.minimized_chats.keys()[0]).toBe(contact_jid);
+            let contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            let chatview;
+            test_utils.openChatBoxFor(_converse, contact_jid)
+            .then(() => {
+                chatview = _converse.chatboxviews.get(contact_jid);
+                expect(chatview.model.get('minimized')).toBeFalsy();
+                expect($(_converse.minimized_chats.el).is(':visible')).toBeFalsy();
+                chatview.el.querySelector('.toggle-chatbox-button').click();
+                expect(chatview.model.get('minimized')).toBeTruthy();
+                expect($(_converse.minimized_chats.el).is(':visible')).toBeTruthy();
+                expect(_converse.minimized_chats.keys().length).toBe(1);
+                expect(_converse.minimized_chats.keys()[0]).toBe(contact_jid);
 
-            contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-            test_utils.openChatBoxFor(_converse, contact_jid);
-            chatview = _converse.chatboxviews.get(contact_jid);
-            expect(chatview.model.get('minimized')).toBeFalsy();
-            chatview.el.querySelector('.toggle-chatbox-button').click();
-            expect(chatview.model.get('minimized')).toBeTruthy();
-            expect($(_converse.minimized_chats.el).is(':visible')).toBeTruthy();
-            expect(_converse.minimized_chats.keys().length).toBe(2);
-            expect(_.includes(_converse.minimized_chats.keys(), contact_jid)).toBeTruthy();
-            done();
+                contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                return test_utils.openChatBoxFor(_converse, contact_jid);
+            }).then(() => {
+                chatview = _converse.chatboxviews.get(contact_jid);
+                expect(chatview.model.get('minimized')).toBeFalsy();
+                chatview.el.querySelector('.toggle-chatbox-button').click();
+                expect(chatview.model.get('minimized')).toBeTruthy();
+                expect($(_converse.minimized_chats.el).is(':visible')).toBeTruthy();
+                expect(_converse.minimized_chats.keys().length).toBe(2);
+                expect(_.includes(_converse.minimized_chats.keys(), contact_jid)).toBeTruthy();
+                done();
+            });
         }));
 
         it("can be toggled to hide or show minimized chats",
@@ -47,24 +52,26 @@
                 function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
+            _converse.emit('rosterContactsFetched');
+
             test_utils.openControlBox();
             _converse.minimized_chats.toggleview.model.browserStorage._clear();
             _converse.minimized_chats.initToggle();
 
-            var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-            test_utils.openChatBoxFor(_converse, contact_jid);
-            var chatview = _converse.chatboxviews.get(contact_jid);
-            expect($(_converse.minimized_chats.el).is(':visible')).toBeFalsy();
-            chatview.model.set({'minimized': true});
-            expect($(_converse.minimized_chats.el).is(':visible')).toBeTruthy();
-            expect(_converse.minimized_chats.keys().length).toBe(1);
-            expect(_converse.minimized_chats.keys()[0]).toBe(contact_jid);
-            expect($(_converse.minimized_chats.el.querySelector('.minimized-chats-flyout')).is(':visible')).toBeTruthy();
-            expect(_converse.minimized_chats.toggleview.model.get('collapsed')).toBeFalsy();
-            _converse.minimized_chats.el.querySelector('#toggle-minimized-chats').click();
-
-            return test_utils.waitUntil(() => u.isVisible(u.isVisible(_converse.minimized_chats.el.querySelector('.minimized-chats-flyout'))))
-            .then(function () {
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            test_utils.openChatBoxFor(_converse, contact_jid)
+            .then(() => {
+                const chatview = _converse.chatboxviews.get(contact_jid);
+                expect(u.isVisible(_converse.minimized_chats.el)).toBeFalsy();
+                chatview.model.set({'minimized': true});
+                expect(u.isVisible(_converse.minimized_chats.el)).toBeTruthy();
+                expect(_converse.minimized_chats.keys().length).toBe(1);
+                expect(_converse.minimized_chats.keys()[0]).toBe(contact_jid);
+                expect(u.isVisible(_converse.minimized_chats.el.querySelector('.minimized-chats-flyout'))).toBeTruthy();
+                expect(_converse.minimized_chats.toggleview.model.get('collapsed')).toBeFalsy();
+                _converse.minimized_chats.el.querySelector('#toggle-minimized-chats').click();
+                return test_utils.waitUntil(() => u.isVisible(_converse.minimized_chats.el.querySelector('.minimized-chats-flyout')));
+            }).then(() => {
                 expect(_converse.minimized_chats.toggleview.model.get('collapsed')).toBeTruthy();
                 done();
             });

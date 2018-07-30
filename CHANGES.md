@@ -39,6 +39,9 @@
 - New API method `_converse.api.vcard.update`.
 - The `contactStatusChanged` event has been renamed to `contactPresenceChanged`
   and a event `presenceChanged` is now also triggered on the contact.
+- `_converse.api.chats.open` and `_converse.api.rooms.open` now returns a 
+  `Presence` which resolves with the `Backbone.Model` representing the chat
+  object.
 
 ## UI changes
 

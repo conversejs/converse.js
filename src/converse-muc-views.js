@@ -561,8 +561,7 @@
                         const handler = () => {
                             if (!u.isPersistableModel(this.model)) {
                                 // Happens during tests, nothing to do if this
-                                // is a hanging chatbox (i.e. not in the
-                                // collection anymore).
+                                // is a hanging chatbox (i.e. not in the collection anymore).
                                 return;
                             }
                             this.populateAndJoin();

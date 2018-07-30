@@ -34,24 +34,24 @@
                 });
                 spyOn(_converse.connection, 'getUniqueId').and.callThrough();
 
-                test_utils.openChatRoom(_converse, 'theplay', 'conference.shakespeare.lit', 'JC');
-                var jid = 'theplay@conference.shakespeare.lit';
-                var view = _converse.chatboxviews.get(jid);
-                spyOn(view, 'renderBookmarkForm').and.callThrough();
-                spyOn(view, 'closeForm').and.callThrough();
-
-                test_utils.waitUntil(function () {
-                    return !_.isNull(view.el.querySelector('.toggle-bookmark'));
-                }, 300).then(function () {
-                    var $bookmark = $(view.el).find('.toggle-bookmark');
-                    $bookmark[0].click();
+                let view;
+                test_utils.openChatRoom(_converse, 'theplay', 'conference.shakespeare.lit', 'JC')
+                .then(() => {
+                    var jid = 'theplay@conference.shakespeare.lit';
+                    view = _converse.chatboxviews.get(jid);
+                    spyOn(view, 'renderBookmarkForm').and.callThrough();
+                    spyOn(view, 'closeForm').and.callThrough();
+                    return test_utils.waitUntil(() => !_.isNull(view.el.querySelector('.toggle-bookmark')));
+                }).then(() => {
+                    var bookmark = view.el.querySelector('.toggle-bookmark');
+                    bookmark.click();
                     expect(view.renderBookmarkForm).toHaveBeenCalled();
 
                     view.el.querySelector('.button-cancel').click();
                     expect(view.closeForm).toHaveBeenCalled();
-                    expect($bookmark.hasClass('on-button'), false);
+                    expect(u.hasClass('on-button', bookmark), false);
 
-                    $bookmark[0].click();
+                    bookmark.click();
                     expect(view.renderBookmarkForm).toHaveBeenCalled();
 
                     /* Client uploads data:
@@ -93,7 +93,7 @@
                     view.el.querySelector('.btn-primary').click();
 
                     expect(view.model.get('bookmarked')).toBeTruthy();
-                    expect($bookmark.hasClass('on-button'), true);
+                    expect(u.hasClass('on-button', bookmark), true);
 
                     expect(sent_stanza.toLocaleString()).toBe(
                         "<iq type='set' from='dummy@localhost/resource' xmlns='jabber:client' id='"+IQ_id+"'>"+
@@ -175,100 +175,96 @@
             it("displays that it's bookmarked through its bookmark icon", mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {}, function (done, _converse) {
 
+                let view;
                 test_utils.waitUntilDiscoConfirmed(
                     _converse, _converse.bare_jid,
                     [{'category': 'pubsub', 'type': 'pep'}],
                     ['http://jabber.org/protocol/pubsub#publish-options']
-                ).then(function () {
-                    test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                    var view = _converse.chatboxviews.get('lounge@localhost');
-
-                    test_utils.waitUntil(function () {
-                        return !_.isNull(view.el.querySelector('.toggle-bookmark'));
-                    }, 300).then(function () {
-                        var bookmark_icon = view.el.querySelector('.toggle-bookmark');
-                        expect(_.includes(bookmark_icon.classList, 'button-on')).toBeFalsy();
-                        view.model.set('bookmarked', true);
-                        expect(_.includes(bookmark_icon.classList, 'button-on')).toBeTruthy();
-                        view.model.set('bookmarked', false);
-                        expect(_.includes(bookmark_icon.classList, 'button-on')).toBeFalsy();
-                        done();
-                    });
+                ).then(() => test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy'))
+                .then(() => {
+                    view = _converse.chatboxviews.get('lounge@localhost');
+                    return test_utils.waitUntil(() => !_.isNull(view.el.querySelector('.toggle-bookmark')))
+                }).then(function () {
+                    var bookmark_icon = view.el.querySelector('.toggle-bookmark');
+                    expect(_.includes(bookmark_icon.classList, 'button-on')).toBeFalsy();
+                    view.model.set('bookmarked', true);
+                    expect(_.includes(bookmark_icon.classList, 'button-on')).toBeTruthy();
+                    view.model.set('bookmarked', false);
+                    expect(_.includes(bookmark_icon.classList, 'button-on')).toBeFalsy();
+                    done();
                 });
             }));
 
             it("can be unbookmarked", mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {}, function (done, _converse) {
 
+                let sent_stanza, IQ_id, view, sendIQ;
+
                 test_utils.waitUntilDiscoConfirmed(
                     _converse, _converse.bare_jid,
                     [{'category': 'pubsub', 'type': 'pep'}],
                     ['http://jabber.org/protocol/pubsub#publish-options']
-                ).then(function () {
-                    var sent_stanza, IQ_id;
-                    var sendIQ = _converse.connection.sendIQ;
-
-                    test_utils.openChatRoom(_converse, 'theplay', 'conference.shakespeare.lit', 'JC');
+                ).then(() => {
+                    sendIQ = _converse.connection.sendIQ;
+                    return test_utils.openChatRoom(_converse, 'theplay', 'conference.shakespeare.lit', 'JC');
+                }).then(() => {
                     var jid = 'theplay@conference.shakespeare.lit';
-                    var view = _converse.chatboxviews.get(jid);
+                    view = _converse.chatboxviews.get(jid);
+                    return test_utils.waitUntil(() => !_.isNull(view.el.querySelector('.toggle-bookmark')));
+                }).then(function () {
+                    spyOn(view, 'toggleBookmark').and.callThrough();
+                    spyOn(_converse.bookmarks, 'sendBookmarkStanza').and.callThrough();
+                    view.delegateEvents();
 
-                    test_utils.waitUntil(function () {
-                        return !_.isNull(view.el.querySelector('.toggle-bookmark'));
-                    }, 300).then(function () {
-                        spyOn(view, 'toggleBookmark').and.callThrough();
-                        spyOn(_converse.bookmarks, 'sendBookmarkStanza').and.callThrough();
-                        view.delegateEvents();
-
-                        _converse.bookmarks.create({
-                            'jid': view.model.get('jid'),
-                            'autojoin': false,
-                            'name':  'The Play',
-                            'nick': ' Othello'
-                        });
-                        expect(_converse.bookmarks.length).toBe(1);
-                        expect(view.model.get('bookmarked')).toBeTruthy();
-                        var $bookmark_icon = $(view.el.querySelector('.toggle-bookmark'));
-                        expect($bookmark_icon.hasClass('button-on')).toBeTruthy();
-
-                        spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                            sent_stanza = iq;
-                            IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                        });
-                        spyOn(_converse.connection, 'getUniqueId').and.callThrough();
-                        $bookmark_icon[0].click();
-                        expect(view.toggleBookmark).toHaveBeenCalled();
-                        expect($bookmark_icon.hasClass('button-on')).toBeFalsy();
-                        expect(_converse.bookmarks.length).toBe(0);
-
-                        // Check that an IQ stanza is sent out, containing no
-                        // conferences to bookmark (since we removed the one and
-                        // only bookmark).
-                        expect(sent_stanza.toLocaleString()).toBe(
-                            "<iq type='set' from='dummy@localhost/resource' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                                "<pubsub xmlns='http://jabber.org/protocol/pubsub'>"+
-                                    "<publish node='storage:bookmarks'>"+
-                                        "<item id='current'>"+
-                                            "<storage xmlns='storage:bookmarks'/>"+
-                                        "</item>"+
-                                    "</publish>"+
-                                    "<publish-options>"+
-                                        "<x xmlns='jabber:x:data' type='submit'>"+
-                                            "<field var='FORM_TYPE' type='hidden'>"+
-                                                "<value>http://jabber.org/protocol/pubsub#publish-options</value>"+
-                                            "</field>"+
-                                            "<field var='pubsub#persist_items'>"+
-                                                "<value>true</value>"+
-                                            "</field>"+
-                                            "<field var='pubsub#access_model'>"+
-                                                "<value>whitelist</value>"+
-                                            "</field>"+
-                                        "</x>"+
-                                    "</publish-options>"+
-                                "</pubsub>"+
-                            "</iq>"
-                        );
-                        done();
+                    _converse.bookmarks.create({
+                        'jid': view.model.get('jid'),
+                        'autojoin': false,
+                        'name':  'The Play',
+                        'nick': ' Othello'
                     });
+                    expect(_converse.bookmarks.length).toBe(1);
+                    expect(view.model.get('bookmarked')).toBeTruthy();
+                    var bookmark_icon = view.el.querySelector('.toggle-bookmark');
+                    expect(u.hasClass('button-on', bookmark_icon)).toBeTruthy();
+
+                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                        sent_stanza = iq;
+                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                    });
+                    spyOn(_converse.connection, 'getUniqueId').and.callThrough();
+                    bookmark_icon.click();
+                    expect(view.toggleBookmark).toHaveBeenCalled();
+                    expect(u.hasClass('button-on', bookmark_icon)).toBeFalsy();
+                    expect(_converse.bookmarks.length).toBe(0);
+
+                    // Check that an IQ stanza is sent out, containing no
+                    // conferences to bookmark (since we removed the one and
+                    // only bookmark).
+                    expect(sent_stanza.toLocaleString()).toBe(
+                        "<iq type='set' from='dummy@localhost/resource' xmlns='jabber:client' id='"+IQ_id+"'>"+
+                            "<pubsub xmlns='http://jabber.org/protocol/pubsub'>"+
+                                "<publish node='storage:bookmarks'>"+
+                                    "<item id='current'>"+
+                                        "<storage xmlns='storage:bookmarks'/>"+
+                                    "</item>"+
+                                "</publish>"+
+                                "<publish-options>"+
+                                    "<x xmlns='jabber:x:data' type='submit'>"+
+                                        "<field var='FORM_TYPE' type='hidden'>"+
+                                            "<value>http://jabber.org/protocol/pubsub#publish-options</value>"+
+                                        "</field>"+
+                                        "<field var='pubsub#persist_items'>"+
+                                            "<value>true</value>"+
+                                        "</field>"+
+                                        "<field var='pubsub#access_model'>"+
+                                            "<value>whitelist</value>"+
+                                        "</field>"+
+                                    "</x>"+
+                                "</publish-options>"+
+                            "</pubsub>"+
+                        "</iq>"
+                    );
+                    done();
                 });
             }));
         });
@@ -585,9 +581,8 @@
                         'name':  'The Play',
                         'nick': ''
                     });
-                    test_utils.waitUntil(function () {
-                        return $('#chatrooms .bookmarks.rooms-list .room-item:visible').length;
-                    }, 300).then(function () {
+                    test_utils.waitUntil(() => $('#chatrooms .bookmarks.rooms-list .room-item:visible').length
+                    ).then(function () {
                         expect($('#chatrooms .bookmarks.rooms-list').hasClass('collapsed')).toBeFalsy();
                         expect($('#chatrooms .bookmarks.rooms-list .room-item:visible').length).toBe(1);
                         expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
@@ -612,6 +607,7 @@
             { hide_open_bookmarks: true },
             function (done, _converse) {
 
+            const jid = 'room@conference.example.org';
             test_utils.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
                 [{'category': 'pubsub', 'type': 'pep'}],
@@ -625,14 +621,12 @@
                 _converse.emit('bookmarksInitialized');
 
                 // Check that it's there
-                var jid = 'room@conference.example.org';
                 _converse.bookmarks.create({
                     'jid': jid,
                     'autojoin': false,
                     'name':  'The Play',
                     'nick': ' Othello'
                 });
-
                 expect(_converse.bookmarks.length).toBe(1);
                 var room_els = _converse.bookmarksview.el.querySelectorAll(".open-room");
                 expect(room_els.length).toBe(1);
@@ -640,9 +634,11 @@
                 // Check that it disappears once the room is opened
                 var bookmark = _converse.bookmarksview.el.querySelector(".open-room");
                 bookmark.click();
+                return test_utils.waitUntil(() => _converse.chatboxviews.get(jid));
+            }).then(() => {
                 expect(u.hasClass('hidden', _converse.bookmarksview.el.querySelector(".available-chatroom"))).toBeTruthy();
                 // Check that it reappears once the room is closed
-                var view = _converse.chatboxviews.get(jid);
+                const view = _converse.chatboxviews.get(jid);
                 view.close();
                 expect(u.hasClass('hidden', _converse.bookmarksview.el.querySelector(".available-chatroom"))).toBeFalsy();
                 done();

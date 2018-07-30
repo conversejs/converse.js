@@ -58,16 +58,17 @@
             test_utils.createContacts(_converse, 'current');
             _converse.emit('rosterContactsFetched');
 
+            let view, modal;
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-            test_utils.openChatBoxFor(_converse, contact_jid);
-
-            const view = _converse.chatboxviews.get(contact_jid);
-            const show_modal_button = view.el.querySelector('.show-user-details-modal');
-            expect(u.isVisible(show_modal_button)).toBeTruthy();
-            show_modal_button.click();
-            const modal = view.user_details_modal;
-            test_utils.waitUntil(() => u.isVisible(modal.el), 2000)
-            .then(function () {
+            test_utils.openChatBoxFor(_converse, contact_jid)
+            .then(() => {
+                view = _converse.chatboxviews.get(contact_jid);
+                const show_modal_button = view.el.querySelector('.show-user-details-modal');
+                expect(u.isVisible(show_modal_button)).toBeTruthy();
+                show_modal_button.click();
+                modal = view.user_details_modal;
+                return test_utils.waitUntil(() => u.isVisible(modal.el), 2000);
+            }).then(function () {
                 spyOn(window, 'confirm').and.returnValue(true);
                 spyOn(view.model.contact, 'removeFromRoster').and.callFake(function (callback, errback) {
                     errback();

@@ -76149,17 +76149,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.on('show', this.show, this);
           this.model.occupants.on('add', this.showJoinNotification, this);
           this.model.occupants.on('remove', this.showLeaveNotification, this);
-          this.model.occupants.on('change:show', occupant => {
-            if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
-              return;
-            }
-
-            if (occupant.get('show') === 'offline') {
-              this.showLeaveNotification(occupant);
-            } else if (occupant.get('show') === 'online') {
-              this.showJoinNotification(occupant);
-            }
-          });
+          this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
           this.createEmojiPicker();
           this.createOccupantsView();
           this.render().insertIntoDOM();
@@ -76169,8 +76159,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             const handler = () => {
               if (!u.isPersistableModel(this.model)) {
                 // Happens during tests, nothing to do if this
-                // is a hanging chatbox (i.e. not in the
-                // collection anymore).
+                // is a hanging chatbox (i.e. not in the collection anymore).
                 return;
               }
 
@@ -77047,6 +77036,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
 
+        showJoinOrLeaveNotification(occupant) {
+          if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+            return;
+          }
+
+          if (occupant.get('show') === 'offline') {
+            this.showLeaveNotification(occupant);
+          } else if (occupant.get('show') === 'online') {
+            this.showJoinNotification(occupant);
+          }
+        },
+
         showJoinNotification(occupant) {
           if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
             return;
@@ -77094,10 +77095,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         showLeaveNotification(occupant) {
           const nick = occupant.get('nick'),
                 stat = occupant.get('status'),
-                last_el = this.content.lastElementChild,
-                last_msg_date = last_el.getAttribute('data-isodate');
+                last_el = this.content.lastElementChild;
 
-          if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && moment(last_msg_date).isSame(new Date(), "day") && _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
+          if (last_el && _.includes(_.get(last_el, 'classList', []), 'chat-info') && moment(last_el.getAttribute('data-isodate')).isSame(new Date(), "day") && _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
             let message;
 
             if (_.isNil(stat)) {
@@ -77128,7 +77128,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'data': `data-leave="${nick}"`
             };
 
-            if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leavejoin === `"${nick}"`) {
+            if (last_el && _.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leavejoin === `"${nick}"`) {
               last_el.outerHTML = tpl_info(data);
             } else {
               const el = u.stringToElement(tpl_info(data));
@@ -83843,8 +83843,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         xhr.onload = function () {
           if (xhr.status >= 200 && xhr.status < 400) {
-            jed_instance = new Jed(window.JSON.parse(xhr.responseText));
-            resolve();
+            try {
+              const data = window.JSON.parse(xhr.responseText);
+              jed_instance = new Jed(data);
+              resolve();
+            } catch (e) {
+              xhr.onerror(e);
+            }
           } else {
             xhr.onerror();
           }

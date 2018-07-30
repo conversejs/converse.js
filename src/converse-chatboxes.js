@@ -69,12 +69,7 @@
                         Strophe.LogLevel.WARN
                     );
                 }
-                Promise.all([
-                    _converse.api.waitUntil('rosterContactsFetched'),
-                    _converse.api.waitUntil('chatBoxesFetched')
-                ]).then(() => {
-                    _converse.api.chats.open(jid);
-                });
+                _converse.api.chats.open(jid);
             }
             _converse.router.route('converse/chat?jid=:jid', openChat);
 
@@ -905,15 +900,22 @@
                         });
                     },
                     'open' (jids, attrs) {
-                        if (_.isUndefined(jids)) {
-                            _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
-                            return null;
-                        } else if (_.isString(jids)) {
-                            const chatbox = _converse.api.chats.create(jids, attrs);
-                            chatbox.trigger('show');
-                            return chatbox;
-                        }
-                        return _.map(jids, (jid) => _converse.api.chats.create(jid, attrs).trigger('show'));
+                        return new Promise((resolve, reject) => {
+                            Promise.all([
+                                _converse.api.waitUntil('rosterContactsFetched'),
+                                _converse.api.waitUntil('chatBoxesFetched')
+                            ]).then(() => {
+                                if (_.isUndefined(jids)) {
+                                    const err_msg = "chats.open: You need to provide at least one JID";
+                                    _converse.log(err_msg, Strophe.LogLevel.ERROR);
+                                    reject(new Error(err_msg));
+                                } else if (_.isString(jids)) {
+                                    resolve(_converse.api.chats.create(jids, attrs).trigger('show'));
+                                } else {
+                                    resolve(_.map(jids, (jid) => _converse.api.chats.create(jid, attrs).trigger('show')));
+                                }
+                            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        });
                     },
                     'get' (jids) {
                         if (_.isUndefined(jids)) {

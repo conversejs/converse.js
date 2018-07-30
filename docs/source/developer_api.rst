@@ -816,86 +816,75 @@ Note, for MUC chatrooms, you need to use the "rooms" grouping instead.
 get
 ~~~
 
-Returns an object representing a chatbox. The chatbox should already be open.
+Returns an object representing a chat. The chat should already be open.
 
-To return a single chatbox, provide the JID of the contact you're chatting
-with in that chatbox:
+To return a single chat, provide the JID of the contact you're chatting
+with in that chat:
 
 .. code-block:: javascript
 
     _converse.api.chats.get('buddy@example.com')
 
-To return an array of chatboxes, provide an array of JIDs:
+To return an array of chats, provide an array of JIDs:
 
 .. code-block:: javascript
 
     _converse.api.chats.get(['buddy1@example.com', 'buddy2@example.com'])
 
-To return all open chatboxes, call the method without any JIDs::
+To return all open chats, call the method without any JIDs::
 
     _converse.api.chats.get()
 
 open
 ~~~~
 
-Opens a chatbox and returns a `Backbone.View <http://backbonejs.org/#View>`_ object
-representing a chatbox.
+Opens a new chat.
+
+It returns an promise which will resolve with a `Backbone.Model <https://backbonejs.org/#Model>`_ representing the chat.
 
 Note that converse doesn't allow opening chats with users who aren't in your roster
 (unless you have set :ref:`allow_non_roster_messaging` to ``true``).
 
-Before opening a chat, you should first wait until the roster has been populated.
-This is the :ref:`rosterContactsFetched` event/promise.
-
-Besides that, it's a good idea to also first wait until already opened chatboxes
-(which are cached in sessionStorage) have also been fetched from the cache.
-This is the :ref:`chatBoxesFetched` event/promise.
-
 These two events fire only once per session, so they're also available as promises.
 
-So, to open a single chatbox:
+So, to open a single chat:
 
 .. code-block:: javascript
 
     converse.plugins.add('myplugin', {
-      initialize: function() {
-        var _converse = this._converse;
-        Promise.all([
-            _converse.api.waitUntil('rosterContactsFetched'),
-            _converse.api.waitUntil('chatBoxesFetched')
-        ]).then(function() {
+        initialize: function() {
+            var _converse = this._converse;
+
             // Note, buddy@example.org must be in your contacts roster!
-            _converse.api.chats.open('buddy@example.com')
-        });
-      }
+            _converse.api.chats.open('buddy@example.com').then((chat) => {
+                // Now you can do something with the chat model
+            });
+        }
     });
 
-To return an array of chatboxes, provide an array of JIDs:
+To return an array of chats, provide an array of JIDs:
 
 .. code-block:: javascript
 
     converse.plugins.add('myplugin', {
         initialize: function () {
             var _converse = this._converse;
-            Promise.all([
-                _converse.api.waitUntil('rosterContactsFetched'),
-                _converse.api.waitUntil('chatBoxesFetched')
-            ]).then(function() {
-                // Note, these users must first be in your contacts roster!
-                _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com'])
+            // Note, these users must first be in your contacts roster!
+            _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then((chats) => {
+                // Now you can do something with the chat models
             });
         }
     });
 
 
-*The returned chatbox object contains the following methods:*
+*The returned chat object contains the following methods:*
 
 +-------------------+------------------------------------------+
 | Method            | Description                              |
 +===================+==========================================+
-| close             | Close the chatbox.                       |
+| close             | Close the chat.                          |
 +-------------------+------------------------------------------+
-| focus             | Focuses the chatbox textarea             |
+| focus             | Focuses the chat textarea                |
 +-------------------+------------------------------------------+
 | model.endOTR      | End an OTR (Off-the-record) session.     |
 +-------------------+------------------------------------------+
@@ -903,13 +892,13 @@ To return an array of chatboxes, provide an array of JIDs:
 +-------------------+------------------------------------------+
 | model.initiateOTR | Start an OTR (off-the-record) session.   |
 +-------------------+------------------------------------------+
-| model.maximize    | Minimize the chatbox.                    |
+| model.maximize    | Minimize the chat.                       |
 +-------------------+------------------------------------------+
-| model.minimize    | Maximize the chatbox.                    |
+| model.minimize    | Maximize the chat.                       |
 +-------------------+------------------------------------------+
 | model.set         | Set an attribute (i.e. mutator).         |
 +-------------------+------------------------------------------+
-| show              | Opens/shows the chatbox.                 |
+| show              | Opens/shows the chat.                    |
 +-------------------+------------------------------------------+
 
 *The get and set methods can be used to retrieve and change the following attributes:*
@@ -917,9 +906,9 @@ To return an array of chatboxes, provide an array of JIDs:
 +-------------+-----------------------------------------------------+
 | Attribute   | Description                                         |
 +=============+=====================================================+
-| height      | The height of the chatbox.                          |
+| height      | The height of the chat.                             |
 +-------------+-----------------------------------------------------+
-| url         | The URL of the chatbox heading.                     |
+| url         | The URL of the chat heading.                        |
 +-------------+-----------------------------------------------------+
 
 The **chatviews** grouping
@@ -1014,7 +1003,7 @@ The **rooms** grouping
 get
 ~~~
 
-Returns an object representing a multi user chatbox (room).
+Returns an object representing a multi user chat (room).
 It takes 3 parameters:
 
 * the room JID (if not specified, all rooms will be returned).
@@ -1046,7 +1035,7 @@ It takes 3 parameters:
 open
 ~~~~
 
-Opens a multi user chatbox and returns an object representing it.
+Opens a multi user chat and returns an object representing it.
 Similar to the ``chats.get`` API.
 
 It takes 2 parameters:
@@ -1055,7 +1044,7 @@ It takes 2 parameters:
 * A map (object) containing any extra room attributes. For example, if you want
   to specify the nickname, use ``{'nick': 'bloodninja'}``.
 
-To open a single multi user chatbox, provide the JID of the room:
+To open a single multi user chat, provide the JID of the room:
 
 .. code-block:: javascript
 
@@ -1328,7 +1317,7 @@ Parameters:
 
 Returns a Promise which results with the VCard data for a particular JID or for
 a `Backbone.Model` instance which represents an entity with a JID (such as a roster contact,
-chatbox or chatroom occupant).
+chat or chatroom occupant).
 
 If a `Backbone.Model` instance is passed in, then it must have either a `jid`
 attribute or a `muc_jid` attribute.

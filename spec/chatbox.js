@@ -19,32 +19,35 @@
 
             it("has a /help command to show the available commands",
                 mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
+                test_utils.createContacts(_converse, 'current', 1);
+                _converse.emit('rosterContactsFetched');
                 test_utils.openControlBox();
 
-                var contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 test_utils.openChatBoxFor(_converse, contact_jid);
-                var view = _converse.chatboxviews.get(contact_jid);
-                test_utils.sendMessage(view, '/help');
+                test_utils.waitUntil(() => _converse.chatboxes.length == 2).then(() => {
+                    var view = _converse.chatboxviews.get(contact_jid);
+                    test_utils.sendMessage(view, '/help');
 
-                const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info:not(.chat-date)'), 0);
-                expect(info_messages.length).toBe(3);
-                expect(info_messages.pop().textContent).toBe('/help: Show this menu');
-                expect(info_messages.pop().textContent).toBe('/me: Write in the third person');
-                expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
+                    const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info:not(.chat-date)'), 0);
+                    expect(info_messages.length).toBe(3);
+                    expect(info_messages.pop().textContent).toBe('/help: Show this menu');
+                    expect(info_messages.pop().textContent).toBe('/me: Write in the third person');
+                    expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
 
-                var msg = $msg({
-                        from: contact_jid,
-                        to: _converse.connection.jid,
-                        type: 'chat',
-                        id: (new Date()).getTime()
-                    }).c('body').t('hello world').tree();
-                _converse.chatboxes.onMessage(msg);
-                expect(view.content.lastElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
-                done();
+                    var msg = $msg({
+                            from: contact_jid,
+                            to: _converse.connection.jid,
+                            type: 'chat',
+                            id: (new Date()).getTime()
+                        }).c('body').t('hello world').tree();
+                    _converse.chatboxes.onMessage(msg);
+                    expect(view.content.lastElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
+                    done();
+                });
             }));
 
 
@@ -108,38 +111,48 @@
                 });
             }));
 
-            it("is created when you click on a roster item",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
+            it("is created when you click on a roster item", mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
+                _converse.emit('rosterContactsFetched');
                 test_utils.openControlBox();
 
-                var i, $el, jid, chatboxview;
+                let jid, online_contacts;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
                 expect(_converse.chatboxes.length).toEqual(1);
                 spyOn(_converse.chatboxviews, 'trimChats');
-                expect($("#conversejs .chatbox").length).toBe(1); // Controlbox is open
+                expect(document.querySelectorAll("#conversejs .chatbox").length).toBe(1); // Controlbox is open
 
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group li').length;
-                }, 700).then(function () {
-                    var online_contacts = $(_converse.rosterview.el).find('.roster-group .current-xmpp-contact a.open-chat');
+                test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length, 700).then(function () {
+                    online_contacts = _converse.rosterview.el.querySelectorAll('.roster-group .current-xmpp-contact a.open-chat');
                     expect(online_contacts.length).toBe(15);
-                    for (i=0; i<online_contacts.length; i++) {
-                        $el = $(online_contacts[i]);
-                        jid = $el.text().trim().replace(/ /g,'.').toLowerCase() + '@localhost';
-                        $el[0].click();
-                        chatboxview = _converse.chatboxviews.get(jid);
-                        expect(_converse.chatboxes.length).toEqual(i+2);
-                        expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
-                        // Check that new chat boxes are created to the left of the
-                        // controlbox (but to the right of all existing chat boxes)
-                        expect($("#conversejs .chatbox").length).toBe(i+2);
-                        expect($("#conversejs .chatbox")[1].id).toBe(chatboxview.model.get('box_id'));
-                    }
+                    const el = online_contacts[0];
+                    jid = el.textContent.trim().replace(/ /g,'.').toLowerCase() + '@localhost';
+                    el.click();
+                    return test_utils.waitUntil(() => _converse.chatboxes.length == 2);
+                }).then(() => {
+                    const chatboxview = _converse.chatboxviews.get(jid);
+                    expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
+                    // Check that new chat boxes are created to the left of the
+                    // controlbox (but to the right of all existing chat boxes)
+                    expect(document.querySelectorAll("#conversejs .chatbox").length).toBe(2);
+                    expect(document.querySelectorAll("#conversejs .chatbox")[1].id).toBe(chatboxview.model.get('box_id'));
+                    online_contacts[1].click();
+                    return test_utils.waitUntil(() => _converse.chatboxes.length == 3);
+                }).then(() => {
+                    const el = online_contacts[1];
+                    const new_jid = el.textContent.trim().replace(/ /g,'.').toLowerCase() + '@localhost';
+                    const chatboxview = _converse.chatboxviews.get(jid);
+                    const new_chatboxview = _converse.chatboxviews.get(new_jid);
+                    expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
+                    // Check that new chat boxes are created to the left of the
+                    // controlbox (but to the right of all existing chat boxes)
+                    expect(document.querySelectorAll("#conversejs .chatbox").length).toBe(3);
+                    expect(document.querySelectorAll("#conversejs .chatbox")[2].id).toBe(chatboxview.model.get('box_id'));
+                    expect(document.querySelectorAll("#conversejs .chatbox")[1].id).toBe(new_chatboxview.model.get('box_id'));
                     done();
                 });
             }));

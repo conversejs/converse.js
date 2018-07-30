@@ -36,32 +36,17 @@
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
 /******/ 		}
 /******/ 	};
 /******/
 /******/ 	// define __esModule on exports
 /******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
 /******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -2575,7 +2560,13 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
             if (_.isFunction(this.beforeRender)) {
                 this.beforeRender();
             }
-            const new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
+            let new_vnode;
+            if (!_.isNil(this.toHTML)) {
+                new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
+            } else {
+                new_vnode = tovnode.toVNode(this.toDOM());
+            }
+
             new_vnode.data.hook = _.extend({
                create: this.updateEventListeners.bind(this),
                update: this.updateEventListeners.bind(this)
@@ -4529,7 +4520,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.22 | © dnp_theme | MIT-License
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.23 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (true) {
     // AMD support:
@@ -4612,7 +4603,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     clickEvent    = 'click',
     hoverEvent    = 'hover',
     keydownEvent  = 'keydown',
-    keyupEvent    = 'keyup', 
+    keyupEvent    = 'keyup',
     resizeEvent   = 'resize',
     scrollEvent   = 'scroll',
     // originalEvents
@@ -4632,18 +4623,20 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     hasAttribute           = 'hasAttribute',
     createElement          = 'createElement',
     appendChild            = 'appendChild',
-    innerHTML              = 'innerHTML',  
+    innerHTML              = 'innerHTML',
     getElementsByTagName   = 'getElementsByTagName',
     preventDefault         = 'preventDefault',
     getBoundingClientRect  = 'getBoundingClientRect',
     querySelectorAll       = 'querySelectorAll',
     getElementsByCLASSNAME = 'getElementsByClassName',
+    getComputedStyle       = 'getComputedStyle',  
   
     indexOf      = 'indexOf',
     parentNode   = 'parentNode',
     length       = 'length',
     toLowerCase  = 'toLowerCase',
     Transition   = 'Transition',
+    Duration     = 'Duration',
     Webkit       = 'Webkit',
     style        = 'style',
     push         = 'push',
@@ -4663,15 +4656,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // tooltip / popover
     mouseHover = ('onmouseleave' in DOC) ? [ 'mouseenter', 'mouseleave'] : [ 'mouseover', 'mouseout' ],
     tipPositions = /\b(top|bottom|left|right)+/,
-    
+  
     // modal
     modalOverlay = 0,
     fixedTop = 'fixed-top',
     fixedBottom = 'fixed-bottom',
-    
+  
     // transitionEnd since 2.0.4
     supportTransitions = Webkit+Transition in HTML[style] || Transition[toLowerCase]() in HTML[style],
     transitionEndEvent = Webkit+Transition in HTML[style] ? Webkit[toLowerCase]()+Transition+'End' : Transition[toLowerCase]()+'end',
+    transitionDuration = Webkit+Duration in HTML[style] ? Webkit[toLowerCase]()+Transition+Duration : Transition[toLowerCase]()+Duration,
   
     // set new focus element since 2.0.3
     setFocus = function(element){
@@ -4725,9 +4719,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         off(element, event, handlerWrapper);
       });
     },
+    getTransitionDurationFromElement = function(element) {
+      var duration = globalObject[getComputedStyle](element)[transitionDuration];
+      duration = parseFloat(duration);
+      duration = typeof duration === 'number' && !isNaN(duration) ? duration * 1000 : 0;
+      return duration + 50; // we take a short offset to make sure we fire on the next frame after animation
+    },
     emulateTransitionEnd = function(element,handler){ // emulateTransitionEnd since 2.0.4
-      if (supportTransitions) { one(element, transitionEndEvent, function(e){ handler(e); }); }
-      else { handler(); }
+      var called = 0, duration = getTransitionDurationFromElement(element);
+      supportTransitions && one(element, transitionEndEvent, function(e){ handler(e); called = 1; });
+      setTimeout(function() { !called && handler(); }, duration);
     },
     bootstrapCustomEvent = function (eventName, componentName, related) {
       var OriginalCustomEvent = new CustomEvent( eventName + '.bs.' + componentName);
@@ -4750,8 +4751,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
           scroll = parent === DOC[body] ? getScroll() : { x: parent[offsetLeft] + parent[scrollLeft], y: parent[offsetTop] + parent[scrollTop] },
           linkDimensions = { w: rect[right] - rect[left], h: rect[bottom] - rect[top] },
           isPopover = hasClass(element,'popover'),
-          topPosition, leftPosition, 
-          
+          topPosition, leftPosition,
+  
           arrow = queryElement('.arrow',element),
           arrowTop, arrowLeft, arrowWidth, arrowHeight,
   
@@ -4770,7 +4771,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       position = position === bottom && bottomExceed ? top : position;
       position = position === left && leftExceed ? right : position;
       position = position === right && rightExceed ? left : position;
-      
+  
       // update tooltip/popover class
       element.className[indexOf](position) === -1 && (element.className = element.className.replace(tipPositions,position));
   
@@ -4823,7 +4824,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       arrowLeft && (arrow[style][left] = arrowLeft + 'px');
     };
   
-  BSN.version = '2.0.22';
+  BSN.version = '2.0.23';
   
   /* Native Javascript for Bootstrap 4 | Alert
   -------------------------------------------*/
@@ -4993,7 +4994,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // DATA API
     var intervalAttribute = element[getAttribute](dataInterval),
         intervalOption = options[interval],
-        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute) || 5000,  // bootstrap carousel default interval
+        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute),  
         pauseData = element[getAttribute](dataPause) === hoverEvent || false,
         keyboardData = element[getAttribute](dataKeyboard) === 'true' || false,
       
@@ -5008,8 +5009,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     this[pause] = (options[pause] === hoverEvent || pauseData) ? hoverEvent : false; // false / hover
   
     this[interval] = typeof intervalOption === 'number' ? intervalOption
-                   : intervalData === 0 ? 0
-                   : intervalData;
+                   : intervalOption === false || intervalData === 0 || intervalData === false ? 0
+                   : 5000; // bootstrap carousel default interval
   
     // bind, event targets
     var self = this, index = element.index = 0, timer = element.timer = 0, 
@@ -5128,10 +5129,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         addClass(slides[next],carouselItem +'-'+ slideDirection);
         addClass(slides[activeItem],carouselItem +'-'+ slideDirection);
   
-        one(slides[activeItem], transitionEndEvent, function(e) {
-          var timeout = e[target] !== slides[activeItem] ? e.elapsedTime*1000 : 0;
+        one(slides[next], transitionEndEvent, function(e) {
+          var timeout = e[target] !== slides[next] ? e.elapsedTime*1000+100 : 20;
           
-          setTimeout(function(){
+          isSliding && setTimeout(function(){
             isSliding = false;
   
             addClass(slides[next],active);
@@ -5146,7 +5147,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
             if ( !DOC.hidden && self[interval] && !hasClass(element,paused) ) {
               self.cycle();
             }
-          },timeout+100);
+          }, timeout);
         });
   
       } else {
@@ -5211,23 +5212,24 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
     // event targets and constants
     var accordion = null, collapse = null, self = this, 
-      isAnimating = false, // when true it will prevent click handlers
       accordionData = element[getAttribute]('data-parent'),
+      activeCollapse, activeElement,
   
       // component strings
       component = 'collapse',
       collapsed = 'collapsed',
+      isAnimating = 'isAnimating',
   
       // private methods
       openAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, showEvent, component);
-        isAnimating = true;
+        collapseElement[isAnimating] = true;
         addClass(collapseElement,collapsing);
         removeClass(collapseElement,component);
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px';
         
         emulateTransitionEnd(collapseElement, function() {
-          isAnimating = false;
+          collapseElement[isAnimating] = false;
           collapseElement[setAttribute](ariaExpanded,'true');
           toggle[setAttribute](ariaExpanded,'true');
           removeClass(collapseElement,collapsing);
@@ -5239,7 +5241,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       },
       closeAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, hideEvent, component);
-        isAnimating = true;
+        collapseElement[isAnimating] = true;
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px'; // set height first
         removeClass(collapseElement,component);
         removeClass(collapseElement,showClass);
@@ -5248,7 +5250,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         collapseElement[style][height] = '0px';
         
         emulateTransitionEnd(collapseElement, function() {
-          isAnimating = false;
+          collapseElement[isAnimating] = false;
           collapseElement[setAttribute](ariaExpanded,'false');
           toggle[setAttribute](ariaExpanded,'false');
           removeClass(collapseElement,collapsing);
@@ -5267,29 +5269,29 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // public methods
     this.toggle = function(e) {
       e[preventDefault]();
-      if (isAnimating) return;
       if (!hasClass(collapse,showClass)) { self.show(); } 
       else { self.hide(); }
     };
     this.hide = function() {
+      if ( collapse[isAnimating] ) return;    
       closeAction(collapse,element);
       addClass(element,collapsed);
     };
     this.show = function() {
       if ( accordion ) {
-        var activeCollapse = queryElement('.'+component+'.'+showClass,accordion),
-            toggle = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
-                   || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) ),
-            correspondingCollapse = toggle && (toggle[getAttribute](dataTarget) || toggle.href);
-        if ( activeCollapse && toggle && activeCollapse !== collapse ) {
-          closeAction(activeCollapse,toggle); 
-          if ( correspondingCollapse.split('#')[1] !== collapse.id ) { addClass(toggle,collapsed); } 
-          else { removeClass(toggle,collapsed); }
-        }
+        activeCollapse = queryElement('.'+component+'.'+showClass,accordion);
+        activeElement = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
+                      || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) );
       }
   
-      openAction(collapse,element);
-      removeClass(element,collapsed);
+      if ( !collapse[isAnimating] || activeCollapse && !activeCollapse[isAnimating] ) {
+        if ( activeElement && activeCollapse !== collapse ) {
+          closeAction(activeCollapse,activeElement); 
+          addClass(activeElement,collapsed);
+        }
+        openAction(collapse,element);
+        removeClass(element,collapsed);
+      }
     };
   
     // init
@@ -5297,6 +5299,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       on(element, clickEvent, self.toggle);
     }
     collapse = getTarget();
+    collapse[isAnimating] = false;  // when true it will prevent click handlers  
     accordion = queryElement(options.parent) || accordionData && getClosest(element, accordionData);
     element[stringCollapse] = self;
   };
@@ -5454,6 +5457,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     var btnCheck = element[getAttribute](dataTarget)||element[getAttribute]('href'),
       checkModal = queryElement( btnCheck ),
       modal = hasClass(element,'modal') ? element : checkModal,
+      overlayDelay,
   
       // strings
       component = 'modal',
@@ -5487,13 +5491,13 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         return globalObject[innerWidth] || (htmlRect[right] - Math.abs(htmlRect[left]));
       },
       setScrollbar = function () {
-        var bodyStyle = globalObject.getComputedStyle(DOC[body]),
+        var bodyStyle = globalObject[getComputedStyle](DOC[body]),
             bodyPad = parseInt((bodyStyle[paddingRight]), 10), itemPad;
         if (bodyIsOverflowing) {
           DOC[body][style][paddingRight] = (bodyPad + scrollbarWidth) + 'px';
           if (fixedItems[length]){
             for (var i = 0; i < fixedItems[length]; i++) {
-              itemPad = globalObject.getComputedStyle(fixedItems[i])[paddingRight];
+              itemPad = globalObject[getComputedStyle](fixedItems[i])[paddingRight];
               fixedItems[i][style][paddingRight] = ( parseInt(itemPad) + scrollbarWidth) + 'px';
             }
           }
@@ -5635,6 +5639,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
       if ( overlay && modalOverlay && !hasClass(overlay,showClass)) {
         overlay[offsetWidth]; // force reflow to enable trasition
+        overlayDelay = getTransitionDurationFromElement(overlay);              
         addClass(overlay, showClass);
       }
   
@@ -5654,18 +5659,19 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         keydownHandlerToggle();
   
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerShow) : triggerShow();
-      }, supportTransitions ? 150 : 0);
+      }, supportTransitions && overlay ? overlayDelay : 0);
     };
     this.hide = function() {
       bootstrapCustomEvent.call(modal, hideEvent, component);
       overlay = queryElement('.'+modalBackdropString);
+      overlayDelay = overlay && getTransitionDurationFromElement(overlay);    
   
       removeClass(modal,showClass);
       modal[setAttribute](ariaHidden, true);
   
-      (function(){
+      setTimeout(function(){
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerHide) : triggerHide();
-      }());
+      }, supportTransitions && overlay ? overlayDelay : 0);
     };
     this.setContent = function( content ) {
       queryElement('.'+component+'-content',modal)[innerHTML] = content;
@@ -6021,7 +6027,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
               tabsContentContainer[style][height] = nextHeight + 'px'; // height animation
               tabsContentContainer[offsetWidth];
               emulateTransitionEnd(tabsContentContainer, triggerEnd);
-            },1);
+            },50);
           }
         } else {
           tabs[isAnimating] = false; 
@@ -6048,7 +6054,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
           tabsContentContainer[style][height] = containerHeight + 'px'; // height animation
           tabsContentContainer[offsetHeight];
           activeContent[style][float] = '';
-          nextContent[style][float] = '';   
+          nextContent[style][float] = '';
         }
   
         if ( hasClass(nextContent, 'fade') ) {
@@ -33088,12 +33094,13 @@ var map = {
 
 function webpackContext(req) {
 	var id = webpackContextResolve(req);
-	return __webpack_require__(id);
+	var module = __webpack_require__(id);
+	return module;
 }
 function webpackContextResolve(req) {
 	var id = map[req];
 	if(!(id + 1)) { // check for number or string
-		var e = new Error("Cannot find module '" + req + "'");
+		var e = new Error('Cannot find module "' + req + '".');
 		e.code = 'MODULE_NOT_FOUND';
 		throw e;
 	}
@@ -68354,9 +68361,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return _converse.log(`Invalid JID "${jid}" provided in URL fragment`, Strophe.LogLevel.WARN);
         }
 
-        Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(() => {
-          _converse.api.chats.open(jid);
-        });
+        _converse.api.chats.open(jid);
       }
 
       _converse.router.route('converse/chat?jid=:jid', openChat);
@@ -69279,18 +69284,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           },
 
           'open'(jids, attrs) {
-            if (_.isUndefined(jids)) {
-              _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+            return new Promise((resolve, reject) => {
+              Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(() => {
+                if (_.isUndefined(jids)) {
+                  const err_msg = "chats.open: You need to provide at least one JID";
 
-              return null;
-            } else if (_.isString(jids)) {
-              const chatbox = _converse.api.chats.create(jids, attrs);
+                  _converse.log(err_msg, Strophe.LogLevel.ERROR);
 
-              chatbox.trigger('show');
-              return chatbox;
-            }
-
-            return _.map(jids, jid => _converse.api.chats.create(jid, attrs).trigger('show'));
+                  reject(new Error(err_msg));
+                } else if (_.isString(jids)) {
+                  resolve(_converse.api.chats.create(jids, attrs).trigger('show'));
+                } else {
+                  resolve(_.map(jids, jid => _converse.api.chats.create(jid, attrs).trigger('show')));
+                }
+              }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            });
           },
 
           'get'(jids) {
@@ -73835,8 +73843,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         throw new Error("converse-embedded: auto_join_rooms must be an Array");
       }
 
-      if (_converse.auto_join_rooms.length !== 1 && _converse.auto_join_private_chats.length !== 1) {
-        throw new Error("converse-embedded: It doesn't make " + "sense to have the auto_join_rooms setting to zero or " + "more then one, since only one chat room can be open " + "at any time.");
+      if (_converse.auto_join_rooms.length > 1 && _converse.auto_join_private_chats.length > 1) {
+        throw new Error("converse-embedded: It doesn't make " + "sense to have the auto_join_rooms setting more then one, " + "since only one chat room can be open at any time.");
       }
     }
 
@@ -79019,13 +79027,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           },
 
           'open'(jids, attrs) {
-            if (_.isUndefined(jids)) {
-              throw new TypeError('rooms.open: You need to provide at least one JID');
-            } else if (_.isString(jids)) {
-              return _converse.api.rooms.create(jids, attrs).trigger('show');
-            }
+            return new Promise((resolve, reject) => {
+              _converse.api.waitUntil('chatBoxesFetched').then(() => {
+                if (_.isUndefined(jids)) {
+                  const err_msg = 'rooms.open: You need to provide at least one JID';
 
-            return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).trigger('show'));
+                  _converse.log(err_msg, Strophe.LogLevel.ERROR);
+
+                  reject(new TypeError(err_msg));
+                } else if (_.isString(jids)) {
+                  resolve(_converse.api.rooms.create(jids, attrs).trigger('show'));
+                } else {
+                  resolve(_.map(jids, jid => _converse.api.rooms.create(jid, attrs).trigger('show')));
+                }
+              });
+            });
           },
 
           'get'(jids, attrs, create) {

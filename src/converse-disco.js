@@ -297,6 +297,7 @@
                 if (from !== null) {
                     iqresult.attrs({'to': from});
                 }
+                iqresult.c('query', attrs);
                 _.each(plugin._identities, (identity) => {
                     const attrs = {
                         'category': identity.category,

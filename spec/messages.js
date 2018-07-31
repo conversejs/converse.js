@@ -1815,10 +1815,10 @@
                     expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you seen this funny image?</div>');
                     const media = view.el.querySelector('.chat-msg .chat-msg__media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                        '<!-- src/templates/image.html -->'+
-                        '<a href="http://localhost:8000/logo/conversejs-filled.svg" target="_blank" rel="noopener">'+
-                            '<img class="chat-image img-thumbnail" src="http://localhost:8000/logo/conversejs-filled.svg">'+
-                        '</a>');
+                        `<!-- src/templates/image.html -->`+
+                        `<a href="${window.location.origin}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
+                            `<img class="chat-image img-thumbnail" src="${window.location.origin}/logo/conversejs-filled.svg">`+
+                        `</a>`);
                     done();
                 }).catch(_.partial(console.error, _));
             }));

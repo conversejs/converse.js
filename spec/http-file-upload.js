@@ -365,10 +365,10 @@
                                         }).then(function () {
                                             // Check that the image renders
                                             expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
-                                                '<!-- src/templates/image.html -->\n'+
-                                                '<a href="http://localhost:8000/logo/conversejs-filled.svg" target="_blank" rel="noopener">'+
-                                                    '<img class="chat-image img-thumbnail" src="http://localhost:8000/logo/conversejs-filled.svg">'+
-                                                '</a>');
+                                                `<!-- src/templates/image.html -->\n`+
+                                                `<a href="${window.location.origin}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
+                                                    `<img class="chat-image img-thumbnail" src="${window.location.origin}/logo/conversejs-filled.svg">`+
+                                                `</a>`);
                                             XMLHttpRequest.prototype.send = send_backup;
                                             done();
                                         });
@@ -473,9 +473,10 @@
                                             }).then(function () {
                                                 // Check that the image renders
                                                 expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
-                                                    '<!-- src/templates/image.html -->\n'+
-                                                    '<a href="http://localhost:8000/logo/conversejs-filled.svg" target="_blank" rel="noopener">'+
-                                                        '<img class="chat-image img-thumbnail" src="http://localhost:8000/logo/conversejs-filled.svg"></a>')
+                                                    `<!-- src/templates/image.html -->\n`+
+                                                    `<a href="${window.location.origin}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
+                                                        `<img class="chat-image img-thumbnail" src="${window.location.origin}/logo/conversejs-filled.svg">`+
+                                                    `</a>`);
                                                 XMLHttpRequest.prototype.send = send_backup;
                                                 done();
                                             });

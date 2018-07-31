@@ -550,16 +550,7 @@
 
                     this.model.occupants.on('add', this.showJoinNotification, this);
                     this.model.occupants.on('remove', this.showLeaveNotification, this);
-                    this.model.occupants.on('change:show', (occupant) => {
-                        if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
-                            return;
-                        }
-                        if (occupant.get('show') === 'offline') {
-                            this.showLeaveNotification(occupant);
-                        } else if (occupant.get('show') === 'online') {
-                            this.showJoinNotification(occupant);
-                        }
-                    });
+                    this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
 
                     this.createEmojiPicker();
                     this.createOccupantsView();
@@ -1380,6 +1371,17 @@
                     }
                     if (_.get(notification.messages, 'length')) {
                         this.scrollDown();
+                    }
+                },
+
+                showJoinOrLeaveNotification (occupant) {
+                    if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+                        return;
+                    }
+                    if (occupant.get('show') === 'offline') {
+                        this.showLeaveNotification(occupant);
+                    } else if (occupant.get('show') === 'online') {
+                        this.showJoinNotification(occupant);
                     }
                 },
 

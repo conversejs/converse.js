@@ -2,12 +2,12 @@
 
     <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
 
-=============================
-The converse.js developer API
-=============================
+=========================
+The old API documentation
+=========================
 
-.. note:: The API documented here is available in Converse.js 0.8.4 and higher.
-        Earlier versions of Converse.js might have different API methods or none at all.
+.. note:: The API documented here is available in Converse 0.8.4 and higher.
+        Earlier versions of Converse might have different API methods or none at all.
 
 .. note:: From version 3.0.0 and onwards many API methods have been made
         private and available to plugins only. This means that if you want to
@@ -15,7 +15,7 @@ The converse.js developer API
         access it. This change is done to avoid leakage of sensitive data to
         malicious or non-whitelisted scripts.
 
-The Converse.js API is broken up into different logical "groupings" (for
+The Converse API is broken up into different logical "groupings" (for
 example ``converse.plugins`` or ``converse.contacts``).
 
 There are some exceptions to this, like ``converse.initialize``, which aren't
@@ -58,8 +58,8 @@ initialize
 
 .. note:: This method is the one exception of a method which is not logically grouped as explained above.
 
-Publich API method which initializes converse.js.
-This method must always be called when using converse.js.
+Publich API method which initializes Converse.
+This method must always be called when using Converse.
 
 The `initialize` method takes a map of :ref:`configuration-settings`.
 
@@ -105,7 +105,7 @@ Registers a new plugin.
 
             // Inside this method, you have access to the closured
             // _converse object, which contains the core logic and data
-            // structures of converse.js
+            // structures of Converse
         }
     }
     converse.plugins.add('myplugin', plugin);
@@ -182,7 +182,7 @@ two important ways:
 * A handler registered for a promise, will still fire *after* the promise has
   been resolved, which is not the case with an event handler.
 
-Converse.js has the following promises:
+Converse has the following promises:
 
 * :ref:`cachedRoster`
 * :ref:`chatBoxesFetched`
@@ -210,7 +210,7 @@ already by that time.
 The **archive** grouping
 ------------------------
 
-Converse.js supports the *Message Archive Management*
+Converse supports the *Message Archive Management*
 (`XEP-0313 <https://xmpp.org/extensions/xep-0313.html>`_) protocol,
 through which it is able to query an XMPP server for archived messages.
 
@@ -263,12 +263,12 @@ the returned messages.
 
 **Waiting until server support has been determined**
 
-The query method will only work if converse.js has been able to determine that
+The query method will only work if Converse has been able to determine that
 the server supports MAM queries, otherwise the following error will be raised:
 
 - *This server does not support XEP-0313, Message Archive Management*
 
-The very first time converse.js loads in a browser tab, if you call the query
+The very first time Converse loads in a browser tab, if you call the query
 API too quickly, the above error might appear because service discovery has not
 yet been completed.
 
@@ -453,7 +453,7 @@ Paramters:
 get
 ***
 
-Returns all of the identities registered for this client (i.e. instance of Converse.js).
+Returns all of the identities registered for this client (i.e. instance of Converse).
 
 .. code-block:: javascript
 
@@ -473,17 +473,17 @@ Paramters:
 * (String) name
 * (String) lang
 
-Lets you add new identities for this client (i.e. instance of Converse.js).
+Lets you add new identities for this client (i.e. instance of Converse).
 
 .. code-block:: javascript
 
-    _converse.api.disco.own.identities.add('client', 'web', 'Converse.js');
+    _converse.api.disco.own.identities.add('client', 'web', 'Converse');
 
 
 get
 ***
 
-Returns all of the identities registered for this client (i.e. instance of Converse.js).
+Returns all of the identities registered for this client (i.e. instance of Converse).
 
 .. code-block:: javascript
 
@@ -602,7 +602,7 @@ Logs the user in. This method can accept a map with the credentials, like this:
         }
     });
 
-or it can be called without any parameters, in which case converse.js will try
+or it can be called without any parameters, in which case Converse will try
 to log the user in by calling the `prebind_url` or `credentials_url` depending
 on whether prebinding is used or not.
 
@@ -877,40 +877,6 @@ To return an array of chats, provide an array of JIDs:
     });
 
 
-*The returned chat object contains the following methods:*
-
-+-------------------+------------------------------------------+
-| Method            | Description                              |
-+===================+==========================================+
-| close             | Close the chat.                          |
-+-------------------+------------------------------------------+
-| focus             | Focuses the chat textarea                |
-+-------------------+------------------------------------------+
-| model.endOTR      | End an OTR (Off-the-record) session.     |
-+-------------------+------------------------------------------+
-| model.get         | Get an attribute (i.e. accessor).        |
-+-------------------+------------------------------------------+
-| model.initiateOTR | Start an OTR (off-the-record) session.   |
-+-------------------+------------------------------------------+
-| model.maximize    | Minimize the chat.                       |
-+-------------------+------------------------------------------+
-| model.minimize    | Maximize the chat.                       |
-+-------------------+------------------------------------------+
-| model.set         | Set an attribute (i.e. mutator).         |
-+-------------------+------------------------------------------+
-| show              | Opens/shows the chat.                    |
-+-------------------+------------------------------------------+
-
-*The get and set methods can be used to retrieve and change the following attributes:*
-
-+-------------+-----------------------------------------------------+
-| Attribute   | Description                                         |
-+=============+=====================================================+
-| height      | The height of the chat.                             |
-+-------------+-----------------------------------------------------+
-| url         | The URL of the chat heading.                        |
-+-------------+-----------------------------------------------------+
-
 The **chatviews** grouping
 --------------------------
 
@@ -941,7 +907,7 @@ To return an array of views, provide an array of JIDs:
 The **listen** grouping
 -----------------------
 
-Converse.js emits events to which you can subscribe from your own JavaScript.
+Converse emits events to which you can subscribe from your own JavaScript.
 
 Concerning events, the following methods are available under the "listen"
 grouping:
@@ -1139,7 +1105,7 @@ JIDs.
 The **promises** grouping
 -------------------------
 
-Converse.js and its plugins emit various events which you can listen to via the
+Converse and its plugins emit various events which you can listen to via the
 :ref:`listen-grouping`.
 
 Some of these events are also available as `ES2015 Promises <http://es6-features.org/#PromiseUsage>`_,
@@ -1198,7 +1164,7 @@ For example:
 The **settings** grouping
 -------------------------
 
-This grouping allows access to the configuration settings of converse.js.
+This grouping allows access to the configuration settings of Converse.
 
 .. _`settings-update`:
 
@@ -1279,7 +1245,7 @@ or :
     });
 
 Note, this is not an alternative to calling ``converse.initialize``, which still needs
-to be called. Generally, you'd use this method after converse.js is already
+to be called. Generally, you'd use this method after Converse is already
 running and you want to change the configuration on-the-fly.
 
 The **tokens** grouping

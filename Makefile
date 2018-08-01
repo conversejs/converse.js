@@ -227,6 +227,7 @@ check: eslint
 html:
 	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	make apidoc
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 

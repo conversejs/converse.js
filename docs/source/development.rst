@@ -8,13 +8,13 @@
 Development
 ===========
 
-Welcome to the developer documentation of converse.js. Read the documentation
+Welcome to the developer documentation of Converse. Read the documentation
 linked to below, if you want to add new features or create your own customized
-version of converse.js.
+version of Converse.
 
-Converse.js itself composed of plugins, and exposes an API with which you can
+Converse itself composed of plugins, and exposes an API with which you can
 create and register your own plugins. This is the recommended way to customize
-or add new functionality to converse.js.
+or add new functionality to Converse.
 
 .. toctree::
    :maxdepth: 2
@@ -22,6 +22,7 @@ or add new functionality to converse.js.
    developer_guidelines
    style_guide
    plugin_development
+   api/index
    developer_api
    events 
    other_frameworks

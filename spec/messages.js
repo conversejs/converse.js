@@ -1866,6 +1866,50 @@
 
     describe("A Groupchat Message", function () {
 
+        it("is specially marked when you are mentioned in it",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+            test_utils.createContacts(_converse, 'current');
+            test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                const view = _converse.chatboxviews.get('lounge@localhost');
+                if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
+                const message = 'dummy: Your attention is required';
+                const nick = mock.chatroom_names[0],
+                    msg = $msg({
+                        from: 'lounge@localhost/'+nick,
+                        id: (new Date()).getTime(),
+                        to: 'dummy@localhost',
+                        type: 'groupchat'
+                    }).c('body').t(message).tree();
+                view.model.onMessage(msg);
+                expect($(view.el).find('.chat-msg').hasClass('mentioned')).toBeTruthy();
+                done();
+            });
+        }));
+
+
+        it("keeps track whether you are the sender or not",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+            test_utils.createContacts(_converse, 'current');
+            test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                const view = _converse.chatboxviews.get('lounge@localhost');
+                const msg = $msg({
+                        from: 'lounge@localhost/dummy',
+                        id: (new Date()).getTime(),
+                        to: 'dummy@localhost',
+                        type: 'groupchat'
+                    }).c('body').t('I wrote this message!').tree();
+                view.model.onMessage(msg);
+                expect(view.model.messages.last().get('sender')).toBe('me');
+                done();
+            });
+        }));
+
         it("can be replaced with a correction",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},

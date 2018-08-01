@@ -822,29 +822,6 @@
                 });
             }));
 
-            it("will specially mark messages in which you are mentioned",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
-
-                test_utils.createContacts(_converse, 'current');
-                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                    var view = _converse.chatboxviews.get('lounge@localhost');
-                    if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
-                    var message = 'dummy: Your attention is required';
-                    var nick = mock.chatroom_names[0],
-                        msg = $msg({
-                            from: 'lounge@localhost/'+nick,
-                            id: (new Date()).getTime(),
-                            to: 'dummy@localhost',
-                            type: 'groupchat'
-                        }).c('body').t(message).tree();
-                    view.model.onMessage(msg);
-                    expect($(view.el).find('.chat-msg').hasClass('mentioned')).toBeTruthy();
-                    done();
-                });
-            }));
-
             it("supports the /me command",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},

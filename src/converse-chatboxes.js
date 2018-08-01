@@ -482,7 +482,7 @@
                     if (attrs.type === 'groupchat') {
                         attrs.from = stanza.getAttribute('from');
                         attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
-                        if (attrs.from === this.get('nick')) {
+                        if (Strophe.getResourceFromJid(attrs.from) === this.get('nick')) {
                             attrs.sender = 'me';
                         } else {
                             attrs.sender = 'them';

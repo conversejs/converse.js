@@ -30,6 +30,7 @@
 - Documentation includes utf-8 charset to make minfied versions compatible across platforms. #1017
 - #1026 Typing in MUC shows "Typing from another device"
 - #1039 Multi-option data form elements not shown and saved correctly
+- #1143 Able to send blank message
 
 ### API changes
 

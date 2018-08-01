@@ -70266,6 +70266,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           ev.preventDefault();
           const textarea = this.el.querySelector('.chat-textarea'),
                 message = textarea.value;
+
+          if (!message.replace(/\s/g, '').length) {
+            return;
+          }
+
           let spoiler_hint;
 
           if (this.model.get('composing_spoiler')) {
@@ -70280,12 +70285,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const event = document.createEvent('Event');
           event.initEvent('input', true, true);
           textarea.dispatchEvent(event);
+          this.onMessageSubmitted(message, spoiler_hint);
 
-          if (message !== '') {
-            this.onMessageSubmitted(message, spoiler_hint);
-
-            _converse.emit('messageSend', message);
-          }
+          _converse.emit('messageSend', message);
 
           this.setChatState(_converse.ACTIVE);
         },

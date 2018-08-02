@@ -922,63 +922,63 @@
                 describe("An inactive notifciation", function () {
 
                     it("is sent if the user has stopped typing since 2 minutes",
-                        mock.initConverseWithPromises(
-                            null, ['rosterGroupsFetched'], {},
-                            function (done, _converse) {
+                            mock.initConverseWithPromises(
+                                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                                function (done, _converse) {
 
-                        var view, contact_jid;
+                        // Make the timeouts shorter so that we can test
+                        _converse.TIMEOUTS.PAUSED = 200;
+                        _converse.TIMEOUTS.INACTIVE = 200;
+
                         test_utils.createContacts(_converse, 'current');
+                        _converse.emit('rosterContactsFetched');
+
+                        let view;
+                        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openControlBox();
-                        test_utils.waitUntil(function () {
-                            return $(_converse.rosterview.el).find('.roster-group').length;
-                        }, 500).then(function () {
-                            // Make the timeouts shorter so that we can test
-                            _converse.TIMEOUTS.PAUSED = 200;
-                            _converse.TIMEOUTS.INACTIVE = 200;
-                            contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                            test_utils.openChatBoxFor(_converse, contact_jid);
+                        test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500)
+                        .then(() => test_utils.openChatBoxFor(_converse, contact_jid))
+                        .then(() => {
                             view = _converse.chatboxviews.get(contact_jid);
                             return test_utils.waitUntil(() => view.model.get('chat_state') === 'active', 500);
-                        }).then(function () {
+                        }).then(() => {
                             console.log('chat_state set to active');
-                            view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('active');
                             view.keyPressed({
                                 target: view.el.querySelector('textarea.chat-textarea'),
                                 keyCode: 1
                             });
                             return test_utils.waitUntil(() => view.model.get('chat_state') === 'composing', 500);
-                        }).then(function () {
+                        }).then(() => {
                             console.log('chat_state set to composing');
                             view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('composing');
                             spyOn(_converse.connection, 'send');
                             return test_utils.waitUntil(() => view.model.get('chat_state') === 'paused', 500);
-                        }).then(function () {
-                            console.log('chat_state set to paused');
+                        }).then(() => {
                             return test_utils.waitUntil(() => view.model.get('chat_state') === 'inactive', 500);
-                        }).then(function () {
+                        }).then(() => {
                             console.log('chat_state set to inactive');
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
                                 return call.args[0] instanceof Strophe.Builder;
                             });
                             expect(calls.length).toBe(2);
-                            var $stanza = $(calls[0].args[0].tree());
-                            expect($stanza.attr('to')).toBe(contact_jid);
-                            expect($stanza.children().length).toBe(3);
-                            expect($stanza.children().get(0).tagName).toBe('paused');
-                            expect($stanza.children().get(1).tagName).toBe('no-store');
-                            expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+                            var stanza = calls[0].args[0].tree();
+                            expect(stanza.getAttribute('to')).toBe(contact_jid);
+                            expect(stanza.children.length).toBe(3);
+                            expect(stanza.children[0].tagName).toBe('paused');
+                            expect(stanza.children[1].tagName).toBe('no-store');
+                            expect(stanza.children[2].tagName).toBe('no-permanent-store');
 
-                            $stanza = $(_converse.connection.send.calls.mostRecent().args[0].tree());
-                            expect($stanza.attr('to')).toBe(contact_jid);
-                            expect($stanza.children().length).toBe(3);
-                            expect($stanza.children().get(0).tagName).toBe('inactive');
-                            expect($stanza.children().get(1).tagName).toBe('no-store');
-                            expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+                            stanza = _converse.connection.send.calls.mostRecent().args[0].tree();
+                            expect(stanza.getAttribute('to')).toBe(contact_jid);
+                            expect(stanza.children.length).toBe(3);
+                            expect(stanza.children[0].tagName).toBe('inactive');
+                            expect(stanza.children[1].tagName).toBe('no-store');
+                            expect(stanza.children[2].tagName).toBe('no-permanent-store');
+                            done();
                         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
-                          .then(done);
                     }));
 
                     it("is sent when the user a minimizes a chat box",
@@ -1429,16 +1429,16 @@
                     var msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                     _converse.chatboxes.onMessage(msg);
 
-                    var msgIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
-                        $msgIndicator = $($(_converse.rosterview.el).find(msgIndicatorSelector));
+                    var selector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
+                        indicator_el = sizzle(selector, _converse.rosterview.el).pop();
 
-                    expect($msgIndicator.text()).toBe('1');
+                    expect(indicator_el.textContent).toBe('1');
 
                     msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
                     _converse.chatboxes.onMessage(msg);
 
-                    $msgIndicator = $($(_converse.rosterview.el).find(msgIndicatorSelector));
-                    expect($msgIndicator.text()).toBe('2');
+                    indicator_el = sizzle(selector, _converse.rosterview.el).pop();
+                    expect(indicator_el.textContent).toBe('2');
                     done();
                 });
             }));
@@ -1462,16 +1462,16 @@
                     var msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                     _converse.chatboxes.onMessage(msg);
 
-                    var msgIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
-                        $msgIndicator = $($(_converse.rosterview.el).find(msgIndicatorSelector));
+                    var selector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
+                        indicator_el = sizzle(selector, _converse.rosterview.el).pop();
 
-                    expect($msgIndicator.text()).toBe('1');
+                    expect(indicator_el.textContent).toBe('1');
 
                     msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
                     _converse.chatboxes.onMessage(msg);
 
-                    $msgIndicator = $($(_converse.rosterview.el).find(msgIndicatorSelector));
-                    expect($msgIndicator.text()).toBe('2');
+                    indicator_el = sizzle(selector, _converse.rosterview.el).pop();
+                    expect(indicator_el.textContent).toBe('2');
                     done();
                 });
             }));

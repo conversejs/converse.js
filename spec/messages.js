@@ -675,21 +675,17 @@
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
 
                     // Now check that the message appears inside the chatbox in the DOM
-                    var $chat_content = $(chatboxview.el).find('.chat-content');
-                    var msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
+                    const $chat_content = $(chatboxview.el).find('.chat-content');
+                    const  msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
                     expect(msg_txt).toEqual(message);
-                    return test_utils.waitUntil(function () {
-                        return u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator'));
-                    }, 500);
-                }).then(function () {
+                    return test_utils.waitUntil(() => u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator')), 900);
+                }).then(() => {
                     expect(chatboxview.model.get('scrolled')).toBe(true);
                     expect(chatboxview.content.scrollTop).toBe(0);
                     expect(u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator'))).toBeTruthy();
                     // Scroll down again
                     chatboxview.content.scrollTop = chatboxview.content.scrollHeight;
-                    return test_utils.waitUntil(function () {
-                        return !u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator'));
-                    }, 700);
+                    return test_utils.waitUntil(() => !u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator')), 900);
                 }).then(done);
             }));
 

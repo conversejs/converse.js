@@ -99,6 +99,11 @@
         'converse-vcard'
     ];
 
+    // Setting wait to 59 instead of 60 to avoid timing conflicts with the
+    // webserver, which is often also set to 60 and might therefore sometimes
+    // return a 504 error page instead of passing through to the BOSH proxy.
+    const BOSH_WAIT = 59;
+
     // Make converse pluggable
     pluggable.enable(_converse, '_converse', 'pluggable');
 
@@ -1026,7 +1031,7 @@
                 if (!this.connection.reconnecting) {
                     this.connection.reset();
                 }
-                this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
+                this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged, BOSH_WAIT);
             } else if (this.authentication === _converse.LOGIN) {
                 const password = _.isNil(credentials) ? (_converse.connection.pass || this.password) : credentials.password;
                 if (!password) {
@@ -1047,7 +1052,7 @@
                 if (!this.connection.reconnecting) {
                     this.connection.reset();
                 }
-                this.connection.connect(this.jid, password, this.onConnectStatusChanged);
+                this.connection.connect(this.jid, password, this.onConnectStatusChanged, BOSH_WAIT);
             }
         };
 

@@ -8,19 +8,19 @@
 Setup and integration
 =====================
 
-This page documents what you'll need to do to be able to connect Converse.js with
+This page documents what you'll need to do to be able to connect Converse with
 your own XMPP server and to better integrate it into your website.
 
-At the very least you'll need Converse.js and an :ref:`XMPP server` with
+At the very least you'll need Converse and an :ref:`XMPP server` with
 :ref:`websocket-section` or :ref:`BOSH-section` enabled. That's definitely
-enough to simply demo Converse.js or to do development work on it.
+enough to simply demo Converse or to do development work on it.
 
-However, if you want to more fully integrate it into a website or intranet,
+However, if you want to more fully integrate it into a website
 then you'll likely need to set up more services and components.
 
 The diagram below shows a fairly common setup for a website or intranet:
 
-* Converse.js runs in the web-browser on the user's device.
+* Converse runs in the web-browser on the user's device.
 
 * It communicates with the XMPP server via BOSH or websocket which is usually
   reverse-proxied by a web-server in order to overcome cross-site scripting
@@ -34,13 +34,12 @@ The diagram below shows a fairly common setup for a website or intranet:
   the XMPP server is configured to use, so that users can log in with those
   credentials.
 
-
 * Usually (but optionally) there is a backend web application which hosts a
-  website in which Converse.js appears.
+  website in which Converse appears.
 
 .. figure:: images/diagram.png
    :align: center
-   :alt: A diagram of a possible setup, consisting of Converse.js, a web server, a backend web application, an XMPP server, a user directory such as LDAP and an XMPP server.
+   :alt: A diagram of a possible setup, consisting of Converse, a web server, a backend web application, an XMPP server, a user directory such as LDAP and an XMPP server.
 
    This diagram shows the various services in a fairly common setup (image generated with `draw.io <https://draw.io>`_).
 
@@ -53,11 +52,11 @@ The various components
 An XMPP server
 ==============
 
-*Converse.js* implements `XMPP <http://xmpp.org/about-xmpp/>`_ as its
+*Converse* uses `XMPP <http://xmpp.org/about-xmpp/>`_ as its
 messaging protocol, and therefore needs to connect to an XMPP/Jabber
 server (Jabber® is an older and more user-friendly synonym for XMPP).
 
-You can connect to public XMPP servers like ``jabber.org`` but if you want to
+You can connect to public XMPP servers like ``conversejs.org`` but if you want to
 have :ref:`session support <session-support>` you'll have to set up your own XMPP server.
 
 You can find a list of public XMPP servers/providers on `xmpp.net <https://list.jabber.at>`_
@@ -79,7 +78,7 @@ stanzas to be sent over an HTTP connection.
 HTTP connections are stateless and usually shortlived.
 XMPP connections on the other hand are stateful and usually last much longer.
 
-So to enable a web application like *Converse.js* to communicate with an XMPP
+So to enable a web application like *Converse* to communicate with an XMPP
 server, we need a proxy which acts as a bridge between these two protocols.
 
 This is the job of a BOSH connection manager. BOSH (Bidirectional-streams Over
@@ -87,7 +86,7 @@ Synchronous HTTP) is a protocol for allowing XMPP communication over HTTP. The
 protocol is defined in `XEP-0206: XMPP Over BOSH <http://xmpp.org/extensions/xep-0206.html>`_.
 
 Popular XMPP servers such as `Ejabberd <http://www.ejabberd.im>`_,
-prosody `(mod_bosh) <http://prosody.im/doc/setting_up_bosh>`_ and
+Prosody `(mod_bosh) <http://prosody.im/doc/setting_up_bosh>`_ and
 `OpenFire <http://www.igniterealtime.org/projects/openfire/>`_ all include
 their own BOSH connection managers (but you usually have to enable them in the
 configuration).
@@ -98,14 +97,15 @@ https://conversejs.org does), then you'll need a standalone connection manager.
 For a standalone manager, see for example `Punjab <https://github.com/twonds/punjab>`_
 and `node-xmpp-bosh <https://github.com/dhruvbird/node-xmpp-bosh>`_.
 
-The demo on the `Converse.js homepage <http://conversejs.org>`_ uses a connection
+The demo on the `Converse homepage <http://conversejs.org>`_ uses a connection
 manager located at https://conversejs.org/http-bind.
 
 This connection manager is available for testing purposes only, please don't
 use it in production.
 
 Refer to the :ref:`bosh-service-url` configuration setting for information on
-how to configure Converse.js to connect to a BOSH URL.
+how to configure Converse to connect to a BOSH URL.
+
 
 .. _`websocket-section`:
 
@@ -122,7 +122,7 @@ HTTP. Therefore BOSH, which operates over HTTP, doesn't apply to websockets.
 does the node-xmpp-bosh connection manager.
 
 Refer to the :ref:`websocket-url` configuration setting for information on how to
-configure Converse.js to connect to a websocket URL.
+configure Converse to connect to a websocket URL.
 
 The Webserver
 =============
@@ -133,7 +133,7 @@ Overcoming cross-domain request restrictions
 Lets say your domain is *example.org*, but the domain of your connection
 manager is *example.com*.
 
-HTTP requests are made by *Converse.js* to the BOSH connection manager via
+HTTP requests are made by *Converse* to the BOSH connection manager via
 XmlHttpRequests (XHR). Until recently, it was not possible to make such
 requests to a different domain than the one currently being served
 (to prevent XSS attacks).
@@ -159,7 +159,7 @@ Examples:
 Assuming your site is accessible on port ``80`` for the domain ``mysite.com``
 and your connection manager manager is running at ``someothersite.com/http-bind``.
 
-The *bosh_service_url* value you want to give Converse.js to overcome
+The *bosh_service_url* value you want to give Converse to overcome
 the cross-domain restriction is ``mysite.com/http-bind`` and not
 ``someothersite.com/http-bind``.
 
@@ -192,6 +192,32 @@ Apache
     </VirtualHost>
 
 
+.. note::
+
+    If you're getting XML parsing errors for your BOSH endpoint, for
+    example::
+
+        XML Parsing Error: mismatched tag. Expected: </hr>.
+        Location: https://example.org/http-bind/
+        Line Number 6, Column 3: bosh-anon:6:3
+        Also ERROR: request id 12.2 error 504 happened
+
+    Then your BOSH proxy is returning an HTML error page (for a 504 error in
+    the above example).
+
+    This might be because your webserver and BOSH proxy have the same timeout
+    for BOSH requests. Because the webserver receives the request slightly earlier, 
+    it gives up a few microseconds before the XMPP server’s empty result and thus returns a
+    504 error page containing HTML to browser, which then gets parsed as if its
+    XML.
+
+    To fix this, make sure that the webserver's timeout is slightly higher.
+    In Nginx you can do this by adding ``proxy_read_timeout 61;``;
+
+    From Converse 4.0.0 onwards the default ``wait`` time is set to 59 seconds, to avoid
+    this problem.
+
+
 .. _`session-support`:
 
 Single Session Support
@@ -215,7 +241,7 @@ authenticated BOSH session with the XMPP server or a standalone `BOSH <http://xm
 connection manager.
 
 Once authenticated, it receives RID and SID tokens which need to be passed
-on to converse.js upon pa. Converse.js will then attach to that same session using
+on to converse.js upon pa. Converse will then attach to that same session using
 those tokens.
 
 It's called "prebind" because you bind to the BOSH session beforehand, and then
@@ -250,7 +276,7 @@ converse.js can then attach to.
     A BOSH server acts as a bridge between HTTP, the protocol of the web, and
     XMPP, the instant messaging protocol.
 
-    Converse.js can only communicate via HTTP (or websocket, in which case BOSH can't be used).
+    Converse can only communicate via HTTP (or websocket, in which case BOSH can't be used).
     It cannot open TCP sockets to communicate to an XMPP server directly.
 
     So the BOSH server acts as a middle man, translating our HTTP requests into XMPP stanzas and vice versa.
@@ -303,7 +329,7 @@ authentication to external services. They are listed in the `Prosody community m
 page <https://modules.prosody.im/>`_. Other XMPP servers have similar plugin modules.
 
 If your web-application has access to the same credentials, it can send those
-credentials to Converse.js so that user's are automatically logged in when the
+credentials to Converse so that user's are automatically logged in when the
 page loads.
 
 This is can be done by setting :ref:`auto_login` to true and configuring the 
@@ -316,7 +342,7 @@ The first option has the drawback that your web-application needs to know the
 XMPP credentials of your users and that they need to be stored in the clear.
 
 The second option has that same drawback and it also needs to pass those
-credentials to Converse.js.
+credentials to Converse.
 
 To avoid these drawbacks, you can instead let your backend web application
 generate temporary authentication tokens which are then sent to the XMPP server

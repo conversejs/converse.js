@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-07-22 11:17+0200\n"
-"PO-Revision-Date: 2018-07-22 11:49+0200\n"
+"PO-Revision-Date: 2018-08-02 05:34+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,28 +18,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 3.0\n"
+"X-Generator: Weblate 3.1.1\n"
 
 #: dist/converse-no-dependencies.js:40690
 #: dist/converse-no-dependencies.js:40775
 #: dist/converse-no-dependencies.js:53689
-#, fuzzy
 msgid "Bookmark this groupchat"
-msgstr "إضافة هذه الغرفة إلى الفواصل المرجعية"
+msgstr "إضافة فريق المحادثة هذا إلى الفواصل المرجعية"
 
 #: dist/converse-no-dependencies.js:40776
 msgid "The name for this bookmark:"
 msgstr "تسمية الفاصلة المرجعية :"
 
 #: dist/converse-no-dependencies.js:40777
-#, fuzzy
 msgid "Would you like this groupchat to be automatically joined upon startup?"
-msgstr "هل تود الإلتحاق بهذه الغرفة آليا مباشَرةً بعد الإتصال ؟"
+msgstr "هل تريد الإلتحاق آليًا بفريق المحادثة هذا مباشَرةً بعد الإتصال ؟"
 
 #: dist/converse-no-dependencies.js:40778
-#, fuzzy
 msgid "What should your nickname for this groupchat be?"
-msgstr "ما هو الإسم المُستعار الذي تريد استخدامه في غرفة المحادثة هذه ؟"
+msgstr "ما هو الإسم المُستعار الذي تريد استخدامه في فريق المحادثة هذا ؟"
 
 #: dist/converse-no-dependencies.js:40780
 #: dist/converse-no-dependencies.js:49483
@@ -66,9 +63,8 @@ msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة �
 
 #: dist/converse-no-dependencies.js:41055
 #: dist/converse-no-dependencies.js:53687
-#, fuzzy
 msgid "Leave this groupchat"
-msgstr "الخروج مِن هذه الغرفة"
+msgstr "مغادرة فريق المحادثة"
 
 #: dist/converse-no-dependencies.js:41056
 msgid "Remove this bookmark"
@@ -76,23 +72,20 @@ msgstr "إزالة هذه الفاصلة المرجعية"
 
 #: dist/converse-no-dependencies.js:41057
 #: dist/converse-no-dependencies.js:53688
-#, fuzzy
 msgid "Unbookmark this groupchat"
-msgstr "تنحية غرفة المحادثة مِن الفواصل المرجعية"
+msgstr "تنحية فريق المحادثة مِن الفواصل المرجعية"
 
 #: dist/converse-no-dependencies.js:41058
 #: dist/converse-no-dependencies.js:48755
 #: dist/converse-no-dependencies.js:53690
-#, fuzzy
 msgid "Show more information on this groupchat"
-msgstr "عرض المزيد مِن التفاصيل عن هذه الغرفة"
+msgstr "عرض المزيد مِن التفاصيل عن فريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:41061
 #: dist/converse-no-dependencies.js:48754
 #: dist/converse-no-dependencies.js:53692
-#, fuzzy
 msgid "Click to open this groupchat"
-msgstr "أنقر لفتح غرفة المحادثة هذه"
+msgstr "أنقر لفتح فريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:41097
 msgid "Click to toggle the bookmarks list"
@@ -111,11 +104,11 @@ msgid "Sorry, could not determine upload URL."
 msgstr ""
 
 #: dist/converse-no-dependencies.js:41573
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
-msgstr "للأسف لم نتمكّن مِن القيام برفع ملفك بنجاح."
+msgstr "للأسف لم نتمكّن مِن القيام برفع ملفك بنجاح. أجاب خادومك : \"%1$s\""
 
 #: dist/converse-no-dependencies.js:41575
 msgid "Sorry, could not succesfully upload your file."
@@ -163,9 +156,8 @@ msgid "Full Name"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:42572
-#, fuzzy
 msgid "Jabber ID"
-msgstr "مُعرَّف حساب جابر :"
+msgstr "مُعرَّف حساب جابر"
 
 #: dist/converse-no-dependencies.js:42573
 #: dist/converse-no-dependencies.js:49639
@@ -174,9 +166,8 @@ msgid "Nickname"
 msgstr "الإسم المُستعار"
 
 #: dist/converse-no-dependencies.js:42574
-#, fuzzy
 msgid "Remove as contact"
-msgstr "إضافة مراسل"
+msgstr "إزالة مِن المراسِلين"
 
 #: dist/converse-no-dependencies.js:42575
 msgid "Refresh"
@@ -248,7 +239,6 @@ msgid "Clear all messages"
 msgstr "تنظيف كافة الرسائل"
 
 #: dist/converse-no-dependencies.js:42815
-#, fuzzy
 msgid "Insert emojis"
 msgstr "إدراج وجه مبتسم"
 
@@ -275,25 +265,25 @@ msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "هل أنت متأكد أنك تود مسح الرسائل مِن نافذة المحادثة هذه ؟"
 
 #: dist/converse-no-dependencies.js:43413
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone offline"
-msgstr "قد قطع الإتصال"
+msgstr "%1$s قد قطع الإتصال"
 
 #: dist/converse-no-dependencies.js:43415
 #: dist/converse-no-dependencies.js:47662
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone away"
-msgstr "قد غاب"
+msgstr "%1$s قد غاب"
 
 #: dist/converse-no-dependencies.js:43417
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is busy"
-msgstr "مشغول"
+msgstr "%1$s مشغول"
 
 #: dist/converse-no-dependencies.js:43419
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is online"
-msgstr "متصل"
+msgstr "%1$s متصل"
 
 #: dist/converse-no-dependencies.js:44042
 msgid "Username"
@@ -346,18 +336,18 @@ msgid "Typing from another device"
 msgstr "يكتب عبر جهاز آخَر"
 
 #: dist/converse-no-dependencies.js:47653
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is typing"
-msgstr "يكتب حاليا"
+msgstr "%1$s يكتب حاليا"
 
 #: dist/converse-no-dependencies.js:47657
 msgid "Stopped typing on the other device"
 msgstr "توقّف عن الكتابة عبر الجهاز الآخَر"
 
 #: dist/converse-no-dependencies.js:47659
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has stopped typing"
-msgstr "توقّفَ عن الكتابة"
+msgstr "%1$s توقّفَ عن الكتابة"
 
 #: dist/converse-no-dependencies.js:47905
 #: dist/converse-no-dependencies.js:47948
@@ -373,29 +363,24 @@ msgid "Minimized"
 msgstr "تصغير"
 
 #: dist/converse-no-dependencies.js:48597
-#, fuzzy
 msgid "This groupchat is not anonymous"
-msgstr "غرفة المحادثة هذه ليست مجهولة"
+msgstr "فريق المحادثة هذا ليس مجهولًا"
 
 #: dist/converse-no-dependencies.js:48598
-#, fuzzy
 msgid "This groupchat now shows unavailable members"
-msgstr "هذه القاعة لا تقوم بعرض الأعضاء المشغولين"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:48599
-#, fuzzy
 msgid "This groupchat does not show unavailable members"
-msgstr "هذه القاعة لا تقوم بعرض الأعضاء المشغولين"
+msgstr "فريق المحادثة هذا لا يعرض الأعضاء المشغولين"
 
 #: dist/converse-no-dependencies.js:48600
-#, fuzzy
 msgid "The groupchat configuration has changed"
-msgstr "تم تعديل إعدادات غرفة المحادثة"
+msgstr "تم تعديل خيارات فريق المحادثة"
 
 #: dist/converse-no-dependencies.js:48601
-#, fuzzy
 msgid "groupchat logging is now enabled"
-msgstr "الإلتحاق بالغرفة مسموح للجميع الآن"
+msgstr "الإلتحاق بفريق المحادثة مسموح الآن للجميع"
 
 #: dist/converse-no-dependencies.js:48602
 #, fuzzy
@@ -403,34 +388,28 @@ msgid "groupchat logging is now disabled"
 msgstr "مُنِع الآن الإلتحاق بغرفة المحادثة"
 
 #: dist/converse-no-dependencies.js:48603
-#, fuzzy
 msgid "This groupchat is now no longer anonymous"
-msgstr "لم تَعُد غرفة المحادثة مجهولة الآن"
+msgstr "لم يَعُد فريق المحادثة مجهولا بعد الآن"
 
 #: dist/converse-no-dependencies.js:48604
-#, fuzzy
 msgid "This groupchat is now semi-anonymous"
-msgstr "أصبحت غرفة المحادثة مجهولة نسبيًا"
+msgstr "أصبح فريق المحادثة مجهولا نسبيًا"
 
 #: dist/converse-no-dependencies.js:48605
-#, fuzzy
 msgid "This groupchat is now fully-anonymous"
-msgstr "أصبحت غرفة المحادثة الآن مجهولة تمامًا"
+msgstr "أصبح فريق المحادثة الآن مجهولا تمامًا"
 
 #: dist/converse-no-dependencies.js:48606
-#, fuzzy
 msgid "A new groupchat has been created"
-msgstr "تم إنشاء غرفة محادثة جديدة"
+msgstr "تم إنشاء فريق محادثة جديد"
 
 #: dist/converse-no-dependencies.js:48609
-#, fuzzy
 msgid "You have been banned from this groupchat"
-msgstr "لقد تم طردُك مِن غرفة المحادثة هذه"
+msgstr "لقد تم طردُك مِن فريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:48610
-#, fuzzy
 msgid "You have been kicked from this groupchat"
-msgstr "لقد تم طردُك مؤقتًا مِن غرفة المحادثة هذه"
+msgstr "لقد تم طردُك مؤقتًا مِن فريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:48611
 msgid ""
@@ -499,14 +478,12 @@ msgid "Description:"
 msgstr "التفاصيل :"
 
 #: dist/converse-no-dependencies.js:48666
-#, fuzzy
 msgid "Groupchat Address (JID):"
-msgstr "عنوان غرفة المحادثة (JID) :"
+msgstr "عنوان فريق المحادثة (JID) :"
 
 #: dist/converse-no-dependencies.js:48667
-#, fuzzy
 msgid "Participants:"
-msgstr "المستخدِمون المُقِيمون :"
+msgstr "المشتركون :"
 
 #: dist/converse-no-dependencies.js:48668
 msgid "Features:"
@@ -543,9 +520,8 @@ msgid "Open"
 msgstr "مفتوحة"
 
 #: dist/converse-no-dependencies.js:48675
-#, fuzzy
 msgid "Permanent"
-msgstr "غرفة محادثة دائمة"
+msgstr "دائم"
 
 #: dist/converse-no-dependencies.js:48676
 #: dist/converse-no-dependencies.js:57167
@@ -570,32 +546,28 @@ msgid "Unmoderated"
 msgstr "ليست تحت الإشراف"
 
 #: dist/converse-no-dependencies.js:48715
-#, fuzzy
 msgid "Query for Groupchats"
-msgstr "البحث عن قاعات"
+msgstr "البحث عن فِرق محادثة"
 
 #: dist/converse-no-dependencies.js:48716
 msgid "Server address"
 msgstr "عنوان الخادوم"
 
 #: dist/converse-no-dependencies.js:48717
-#, fuzzy
 msgid "Show groupchats"
-msgstr "عرض غُرف المحادثة"
+msgstr "عرض فِرَق المحادثة"
 
 #: dist/converse-no-dependencies.js:48718
 msgid "conference.example.org"
 msgstr "conference.example.org"
 
 #: dist/converse-no-dependencies.js:48767
-#, fuzzy
 msgid "No groupchats found"
-msgstr "لم يتم العثور على أية غُرفة محادثة"
+msgstr "لم يتم العثور على أي فريق محادثة"
 
 #: dist/converse-no-dependencies.js:48784
-#, fuzzy
 msgid "groupchats found:"
-msgstr "تم العثور على غرف المحادثة :"
+msgstr "تم العثور على فِرَق المحادثة :"
 
 #: dist/converse-no-dependencies.js:48836
 #, fuzzy
@@ -603,9 +575,8 @@ msgid "Enter a new Groupchat"
 msgstr "الدخول إلى غرفة محادثة جديدة"
 
 #: dist/converse-no-dependencies.js:48837
-#, fuzzy
 msgid "Groupchat address"
-msgstr "عنوان غرفة المحادثة"
+msgstr "عنوان فريق المحادثة"
 
 #: dist/converse-no-dependencies.js:48838
 #: dist/converse-no-dependencies.js:55005
@@ -621,18 +592,18 @@ msgid "Join"
 msgstr "الإلتحاق بالغرفة"
 
 #: dist/converse-no-dependencies.js:48884
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Groupchat info for %1$s"
-msgstr "إشعار مِن %1$s"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:48990
 msgid "Message"
 msgstr "رسالة"
 
 #: dist/converse-no-dependencies.js:49036
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr "لم يعُد %1$s مِن مُشْرِفي غرفة المحادثة"
+msgstr "لم يعُد %1$s مِن المُشْرِفين"
 
 #: dist/converse-no-dependencies.js:49040
 #, fuzzy, javascript-format

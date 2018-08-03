@@ -148,8 +148,13 @@
                 );
                 xhr.onload = function () {
                     if (xhr.status >= 200 && xhr.status < 400) {
-                        jed_instance = new Jed(window.JSON.parse(xhr.responseText));
-                        resolve();
+                        try {
+                            const data = window.JSON.parse(xhr.responseText);
+                            jed_instance = new Jed(data);
+                            resolve();
+                        } catch (e) {
+                            xhr.onerror(e);
+                        }
                     } else {
                         xhr.onerror();
                     }

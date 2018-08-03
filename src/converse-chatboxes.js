@@ -69,12 +69,7 @@
                         Strophe.LogLevel.WARN
                     );
                 }
-                Promise.all([
-                    _converse.api.waitUntil('rosterContactsFetched'),
-                    _converse.api.waitUntil('chatBoxesFetched')
-                ]).then(() => {
-                    _converse.api.chats.open(jid);
-                });
+                _converse.api.chats.open(jid);
             }
             _converse.router.route('converse/chat?jid=:jid', openChat);
 
@@ -485,7 +480,7 @@
                     if (attrs.type === 'groupchat') {
                         attrs.from = stanza.getAttribute('from');
                         attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
-                        if (attrs.from === this.get('nick')) {
+                        if (Strophe.getResourceFromJid(attrs.from) === this.get('nick')) {
                             attrs.sender = 'me';
                         } else {
                             attrs.sender = 'them';
@@ -876,6 +871,11 @@
 
             /************************ BEGIN API ************************/
             _.extend(_converse.api, {
+                /**
+                 * The "chats" grouping (used for one-on-one chats)
+                 *
+                 * @namespace
+                 */
                 'chats': {
                     'create' (jids, attrs) {
                         if (_.isUndefined(jids)) {
@@ -885,7 +885,6 @@
                             );
                             return null;
                         }
-
                         if (_.isString(jids)) {
                             if (attrs && !_.get(attrs, 'fullname')) {
                                 attrs.fullname = _.get(_converse.api.contacts.get(jids), 'attributes.fullname');
@@ -902,17 +901,80 @@
                             return _converse.chatboxes.getChatBox(jid, attrs, true).trigger('show');
                         });
                     },
+
+                    /**
+                     * Opens a new one-on-one chat.
+                     *
+                     * @function
+                     *
+                     * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+                     * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
+                     *
+                     * @example
+                     * // To open a single chat, provide the JID of the contact you're chatting with in that chat:
+                     * converse.plugins.add('myplugin', {
+                     *     initialize: function() {
+                     *         var _converse = this._converse;
+                     *         // Note, buddy@example.org must be in your contacts roster!
+                     *         _converse.api.chats.open('buddy@example.com').then((chat) => {
+                     *             // Now you can do something with the chat model
+                     *         });
+                     *     }
+                     * });
+                     *
+                     * @example
+                     * // To open an array of chats, provide an array of JIDs:
+                     * converse.plugins.add('myplugin', {
+                     *     initialize: function () {
+                     *         var _converse = this._converse;
+                     *         // Note, these users must first be in your contacts roster!
+                     *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then((chats) => {
+                     *             // Now you can do something with the chat models
+                     *         });
+                     *     }
+                     * });
+                     *
+                     */
                     'open' (jids, attrs) {
-                        if (_.isUndefined(jids)) {
-                            _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
-                            return null;
-                        } else if (_.isString(jids)) {
-                            const chatbox = _converse.api.chats.create(jids, attrs);
-                            chatbox.trigger('show');
-                            return chatbox;
-                        }
-                        return _.map(jids, (jid) => _converse.api.chats.create(jid, attrs).trigger('show'));
+                        return new Promise((resolve, reject) => {
+                            Promise.all([
+                                _converse.api.waitUntil('rosterContactsFetched'),
+                                _converse.api.waitUntil('chatBoxesFetched')
+                            ]).then(() => {
+                                if (_.isUndefined(jids)) {
+                                    const err_msg = "chats.open: You need to provide at least one JID";
+                                    _converse.log(err_msg, Strophe.LogLevel.ERROR);
+                                    reject(new Error(err_msg));
+                                } else if (_.isString(jids)) {
+                                    resolve(_converse.api.chats.create(jids, attrs).trigger('show'));
+                                } else {
+                                    resolve(_.map(jids, (jid) => _converse.api.chats.create(jid, attrs).trigger('show')));
+                                }
+                            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        });
                     },
+
+                    /**
+                     * Returns a chat model. The chat should already be open.
+                     *
+                     * @function
+                     *
+                     * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+                     * @returns {Backbone.Model}
+                     *
+                     * @example
+                     * // To return a single chat, provide the JID of the contact you're chatting with in that chat:
+                     * const model = _converse.api.chats.get('buddy@example.com');
+                     *
+                     * @example
+                     * // To return an array of chats, provide an array of JIDs:
+                     * const models = _converse.api.chats.get(['buddy1@example.com', 'buddy2@example.com']);
+                     *
+                     * @example
+                     * // To return all open chats, call the method without any parameters::
+                     * const models = _converse.api.chats.get();
+                     *
+                     */
                     'get' (jids) {
                         if (_.isUndefined(jids)) {
                             const result = [];

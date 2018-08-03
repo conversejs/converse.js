@@ -888,6 +888,9 @@
                     const textarea = this.el.querySelector('.chat-textarea'),
                           message = textarea.value;
 
+                    if (!message.replace(/\s/g, '').length) {
+                        return;
+                    }
                     let spoiler_hint;
                     if (this.model.get('composing_spoiler')) {
                         const hint_el = this.el.querySelector('form.sendXMPPMessage input.spoiler-hint');
@@ -901,10 +904,8 @@
                     event.initEvent('input', true, true);
                     textarea.dispatchEvent(event);
 
-                    if (message !== '') {
-                        this.onMessageSubmitted(message, spoiler_hint);
-                        _converse.emit('messageSend', message);
-                    }
+                    this.onMessageSubmitted(message, spoiler_hint);
+                    _converse.emit('messageSend', message);
                     this.setChatState(_converse.ACTIVE);
                 },
 

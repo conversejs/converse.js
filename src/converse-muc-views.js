@@ -550,16 +550,7 @@
 
                     this.model.occupants.on('add', this.showJoinNotification, this);
                     this.model.occupants.on('remove', this.showLeaveNotification, this);
-                    this.model.occupants.on('change:show', (occupant) => {
-                        if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
-                            return;
-                        }
-                        if (occupant.get('show') === 'offline') {
-                            this.showLeaveNotification(occupant);
-                        } else if (occupant.get('show') === 'online') {
-                            this.showJoinNotification(occupant);
-                        }
-                    });
+                    this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
 
                     this.createEmojiPicker();
                     this.createOccupantsView();
@@ -570,8 +561,7 @@
                         const handler = () => {
                             if (!u.isPersistableModel(this.model)) {
                                 // Happens during tests, nothing to do if this
-                                // is a hanging chatbox (i.e. not in the
-                                // collection anymore).
+                                // is a hanging chatbox (i.e. not in the collection anymore).
                                 return;
                             }
                             this.populateAndJoin();
@@ -1383,6 +1373,17 @@
                     }
                 },
 
+                showJoinOrLeaveNotification (occupant) {
+                    if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+                        return;
+                    }
+                    if (occupant.get('show') === 'offline') {
+                        this.showLeaveNotification(occupant);
+                    } else if (occupant.get('show') === 'online') {
+                        this.showJoinNotification(occupant);
+                    }
+                },
+
                 showJoinNotification (occupant) {
                     if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                         return;
@@ -1429,11 +1430,11 @@
                 showLeaveNotification (occupant) {
                     const nick = occupant.get('nick'),
                           stat = occupant.get('status'),
-                          last_el = this.content.lastElementChild,
-                          last_msg_date = last_el.getAttribute('data-isodate');
+                          last_el = this.content.lastElementChild;
 
-                    if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
-                            moment(last_msg_date).isSame(new Date(), "day") &&
+                    if (last_el &&
+                            _.includes(_.get(last_el, 'classList', []), 'chat-info') &&
+                            moment(last_el.getAttribute('data-isodate')).isSame(new Date(), "day") &&
                             _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
 
                         let message;
@@ -1462,7 +1463,8 @@
                             'extra_classes': 'chat-event',
                             'data': `data-leave="${nick}"`
                         }
-                        if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
+                        if (last_el &&
+                            _.includes(_.get(last_el, 'classList', []), 'chat-info') &&
                             _.get(last_el, 'dataset', {}).leavejoin === `"${nick}"`) {
 
                             last_el.outerHTML = tpl_info(data);

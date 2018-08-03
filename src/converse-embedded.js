@@ -30,11 +30,10 @@
             if (!_.isArray(_converse.auto_join_rooms) && !_.isArray(_converse.auto_join_private_chats)) {
                 throw new Error("converse-embedded: auto_join_rooms must be an Array");
             }
-            if (_converse.auto_join_rooms.length !== 1 && _converse.auto_join_private_chats.length !== 1) {
+            if (_converse.auto_join_rooms.length > 1 && _converse.auto_join_private_chats.length > 1) {
                 throw new Error("converse-embedded: It doesn't make "+
-                    "sense to have the auto_join_rooms setting to zero or "+
-                    "more then one, since only one chat room can be open "+
-                    "at any time.");
+                    "sense to have the auto_join_rooms setting more then one, "+
+                    "since only one chat room can be open at any time.");
             }
         }
     });

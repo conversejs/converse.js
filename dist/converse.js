@@ -4529,7 +4529,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.22 | © dnp_theme | MIT-License
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.23 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (true) {
     // AMD support:
@@ -4612,7 +4612,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     clickEvent    = 'click',
     hoverEvent    = 'hover',
     keydownEvent  = 'keydown',
-    keyupEvent    = 'keyup', 
+    keyupEvent    = 'keyup',
     resizeEvent   = 'resize',
     scrollEvent   = 'scroll',
     // originalEvents
@@ -4632,18 +4632,20 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     hasAttribute           = 'hasAttribute',
     createElement          = 'createElement',
     appendChild            = 'appendChild',
-    innerHTML              = 'innerHTML',  
+    innerHTML              = 'innerHTML',
     getElementsByTagName   = 'getElementsByTagName',
     preventDefault         = 'preventDefault',
     getBoundingClientRect  = 'getBoundingClientRect',
     querySelectorAll       = 'querySelectorAll',
     getElementsByCLASSNAME = 'getElementsByClassName',
+    getComputedStyle       = 'getComputedStyle',  
   
     indexOf      = 'indexOf',
     parentNode   = 'parentNode',
     length       = 'length',
     toLowerCase  = 'toLowerCase',
     Transition   = 'Transition',
+    Duration     = 'Duration',
     Webkit       = 'Webkit',
     style        = 'style',
     push         = 'push',
@@ -4663,15 +4665,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // tooltip / popover
     mouseHover = ('onmouseleave' in DOC) ? [ 'mouseenter', 'mouseleave'] : [ 'mouseover', 'mouseout' ],
     tipPositions = /\b(top|bottom|left|right)+/,
-    
+  
     // modal
     modalOverlay = 0,
     fixedTop = 'fixed-top',
     fixedBottom = 'fixed-bottom',
-    
+  
     // transitionEnd since 2.0.4
     supportTransitions = Webkit+Transition in HTML[style] || Transition[toLowerCase]() in HTML[style],
     transitionEndEvent = Webkit+Transition in HTML[style] ? Webkit[toLowerCase]()+Transition+'End' : Transition[toLowerCase]()+'end',
+    transitionDuration = Webkit+Duration in HTML[style] ? Webkit[toLowerCase]()+Transition+Duration : Transition[toLowerCase]()+Duration,
   
     // set new focus element since 2.0.3
     setFocus = function(element){
@@ -4725,9 +4728,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         off(element, event, handlerWrapper);
       });
     },
+    getTransitionDurationFromElement = function(element) {
+      var duration = globalObject[getComputedStyle](element)[transitionDuration];
+      duration = parseFloat(duration);
+      duration = typeof duration === 'number' && !isNaN(duration) ? duration * 1000 : 0;
+      return duration + 50; // we take a short offset to make sure we fire on the next frame after animation
+    },
     emulateTransitionEnd = function(element,handler){ // emulateTransitionEnd since 2.0.4
-      if (supportTransitions) { one(element, transitionEndEvent, function(e){ handler(e); }); }
-      else { handler(); }
+      var called = 0, duration = getTransitionDurationFromElement(element);
+      supportTransitions && one(element, transitionEndEvent, function(e){ handler(e); called = 1; });
+      setTimeout(function() { !called && handler(); }, duration);
     },
     bootstrapCustomEvent = function (eventName, componentName, related) {
       var OriginalCustomEvent = new CustomEvent( eventName + '.bs.' + componentName);
@@ -4750,8 +4760,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
           scroll = parent === DOC[body] ? getScroll() : { x: parent[offsetLeft] + parent[scrollLeft], y: parent[offsetTop] + parent[scrollTop] },
           linkDimensions = { w: rect[right] - rect[left], h: rect[bottom] - rect[top] },
           isPopover = hasClass(element,'popover'),
-          topPosition, leftPosition, 
-          
+          topPosition, leftPosition,
+  
           arrow = queryElement('.arrow',element),
           arrowTop, arrowLeft, arrowWidth, arrowHeight,
   
@@ -4770,7 +4780,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       position = position === bottom && bottomExceed ? top : position;
       position = position === left && leftExceed ? right : position;
       position = position === right && rightExceed ? left : position;
-      
+  
       // update tooltip/popover class
       element.className[indexOf](position) === -1 && (element.className = element.className.replace(tipPositions,position));
   
@@ -4823,7 +4833,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       arrowLeft && (arrow[style][left] = arrowLeft + 'px');
     };
   
-  BSN.version = '2.0.22';
+  BSN.version = '2.0.23';
   
   /* Native Javascript for Bootstrap 4 | Alert
   -------------------------------------------*/
@@ -4993,7 +5003,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // DATA API
     var intervalAttribute = element[getAttribute](dataInterval),
         intervalOption = options[interval],
-        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute) || 5000,  // bootstrap carousel default interval
+        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute),  
         pauseData = element[getAttribute](dataPause) === hoverEvent || false,
         keyboardData = element[getAttribute](dataKeyboard) === 'true' || false,
       
@@ -5008,8 +5018,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     this[pause] = (options[pause] === hoverEvent || pauseData) ? hoverEvent : false; // false / hover
   
     this[interval] = typeof intervalOption === 'number' ? intervalOption
-                   : intervalData === 0 ? 0
-                   : intervalData;
+                   : intervalOption === false || intervalData === 0 || intervalData === false ? 0
+                   : 5000; // bootstrap carousel default interval
   
     // bind, event targets
     var self = this, index = element.index = 0, timer = element.timer = 0, 
@@ -5128,10 +5138,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         addClass(slides[next],carouselItem +'-'+ slideDirection);
         addClass(slides[activeItem],carouselItem +'-'+ slideDirection);
   
-        one(slides[activeItem], transitionEndEvent, function(e) {
-          var timeout = e[target] !== slides[activeItem] ? e.elapsedTime*1000 : 0;
+        one(slides[next], transitionEndEvent, function(e) {
+          var timeout = e[target] !== slides[next] ? e.elapsedTime*1000+100 : 20;
           
-          setTimeout(function(){
+          isSliding && setTimeout(function(){
             isSliding = false;
   
             addClass(slides[next],active);
@@ -5146,7 +5156,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
             if ( !DOC.hidden && self[interval] && !hasClass(element,paused) ) {
               self.cycle();
             }
-          },timeout+100);
+          }, timeout);
         });
   
       } else {
@@ -5211,23 +5221,24 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
     // event targets and constants
     var accordion = null, collapse = null, self = this, 
-      isAnimating = false, // when true it will prevent click handlers
       accordionData = element[getAttribute]('data-parent'),
+      activeCollapse, activeElement,
   
       // component strings
       component = 'collapse',
       collapsed = 'collapsed',
+      isAnimating = 'isAnimating',
   
       // private methods
       openAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, showEvent, component);
-        isAnimating = true;
+        collapseElement[isAnimating] = true;
         addClass(collapseElement,collapsing);
         removeClass(collapseElement,component);
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px';
         
         emulateTransitionEnd(collapseElement, function() {
-          isAnimating = false;
+          collapseElement[isAnimating] = false;
           collapseElement[setAttribute](ariaExpanded,'true');
           toggle[setAttribute](ariaExpanded,'true');
           removeClass(collapseElement,collapsing);
@@ -5239,7 +5250,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       },
       closeAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, hideEvent, component);
-        isAnimating = true;
+        collapseElement[isAnimating] = true;
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px'; // set height first
         removeClass(collapseElement,component);
         removeClass(collapseElement,showClass);
@@ -5248,7 +5259,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         collapseElement[style][height] = '0px';
         
         emulateTransitionEnd(collapseElement, function() {
-          isAnimating = false;
+          collapseElement[isAnimating] = false;
           collapseElement[setAttribute](ariaExpanded,'false');
           toggle[setAttribute](ariaExpanded,'false');
           removeClass(collapseElement,collapsing);
@@ -5267,29 +5278,29 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // public methods
     this.toggle = function(e) {
       e[preventDefault]();
-      if (isAnimating) return;
       if (!hasClass(collapse,showClass)) { self.show(); } 
       else { self.hide(); }
     };
     this.hide = function() {
+      if ( collapse[isAnimating] ) return;    
       closeAction(collapse,element);
       addClass(element,collapsed);
     };
     this.show = function() {
       if ( accordion ) {
-        var activeCollapse = queryElement('.'+component+'.'+showClass,accordion),
-            toggle = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
-                   || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) ),
-            correspondingCollapse = toggle && (toggle[getAttribute](dataTarget) || toggle.href);
-        if ( activeCollapse && toggle && activeCollapse !== collapse ) {
-          closeAction(activeCollapse,toggle); 
-          if ( correspondingCollapse.split('#')[1] !== collapse.id ) { addClass(toggle,collapsed); } 
-          else { removeClass(toggle,collapsed); }
-        }
+        activeCollapse = queryElement('.'+component+'.'+showClass,accordion);
+        activeElement = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
+                      || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) );
       }
   
-      openAction(collapse,element);
-      removeClass(element,collapsed);
+      if ( !collapse[isAnimating] || activeCollapse && !activeCollapse[isAnimating] ) {
+        if ( activeElement && activeCollapse !== collapse ) {
+          closeAction(activeCollapse,activeElement); 
+          addClass(activeElement,collapsed);
+        }
+        openAction(collapse,element);
+        removeClass(element,collapsed);
+      }
     };
   
     // init
@@ -5297,6 +5308,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       on(element, clickEvent, self.toggle);
     }
     collapse = getTarget();
+    collapse[isAnimating] = false;  // when true it will prevent click handlers  
     accordion = queryElement(options.parent) || accordionData && getClosest(element, accordionData);
     element[stringCollapse] = self;
   };
@@ -5454,6 +5466,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     var btnCheck = element[getAttribute](dataTarget)||element[getAttribute]('href'),
       checkModal = queryElement( btnCheck ),
       modal = hasClass(element,'modal') ? element : checkModal,
+      overlayDelay,
   
       // strings
       component = 'modal',
@@ -5487,13 +5500,13 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         return globalObject[innerWidth] || (htmlRect[right] - Math.abs(htmlRect[left]));
       },
       setScrollbar = function () {
-        var bodyStyle = globalObject.getComputedStyle(DOC[body]),
+        var bodyStyle = globalObject[getComputedStyle](DOC[body]),
             bodyPad = parseInt((bodyStyle[paddingRight]), 10), itemPad;
         if (bodyIsOverflowing) {
           DOC[body][style][paddingRight] = (bodyPad + scrollbarWidth) + 'px';
           if (fixedItems[length]){
             for (var i = 0; i < fixedItems[length]; i++) {
-              itemPad = globalObject.getComputedStyle(fixedItems[i])[paddingRight];
+              itemPad = globalObject[getComputedStyle](fixedItems[i])[paddingRight];
               fixedItems[i][style][paddingRight] = ( parseInt(itemPad) + scrollbarWidth) + 'px';
             }
           }
@@ -5635,6 +5648,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
       if ( overlay && modalOverlay && !hasClass(overlay,showClass)) {
         overlay[offsetWidth]; // force reflow to enable trasition
+        overlayDelay = getTransitionDurationFromElement(overlay);              
         addClass(overlay, showClass);
       }
   
@@ -5654,18 +5668,19 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         keydownHandlerToggle();
   
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerShow) : triggerShow();
-      }, supportTransitions ? 150 : 0);
+      }, supportTransitions && overlay ? overlayDelay : 0);
     };
     this.hide = function() {
       bootstrapCustomEvent.call(modal, hideEvent, component);
       overlay = queryElement('.'+modalBackdropString);
+      overlayDelay = overlay && getTransitionDurationFromElement(overlay);    
   
       removeClass(modal,showClass);
       modal[setAttribute](ariaHidden, true);
   
-      (function(){
+      setTimeout(function(){
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerHide) : triggerHide();
-      }());
+      }, supportTransitions && overlay ? overlayDelay : 0);
     };
     this.setContent = function( content ) {
       queryElement('.'+component+'-content',modal)[innerHTML] = content;
@@ -6021,7 +6036,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
               tabsContentContainer[style][height] = nextHeight + 'px'; // height animation
               tabsContentContainer[offsetWidth];
               emulateTransitionEnd(tabsContentContainer, triggerEnd);
-            },1);
+            },50);
           }
         } else {
           tabs[isAnimating] = false; 
@@ -6048,7 +6063,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
           tabsContentContainer[style][height] = containerHeight + 'px'; // height animation
           tabsContentContainer[offsetHeight];
           activeContent[style][float] = '';
-          nextContent[style][float] = '';   
+          nextContent[style][float] = '';
         }
   
         if ( hasClass(nextContent, 'fade') ) {
@@ -62132,9 +62147,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return _converse.log(`Invalid JID "${jid}" provided in URL fragment`, Strophe.LogLevel.WARN);
         }
 
-        Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(() => {
-          _converse.api.chats.open(jid);
-        });
+        _converse.api.chats.open(jid);
       }
 
       _converse.router.route('converse/chat?jid=:jid', openChat);
@@ -62589,7 +62602,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             attrs.from = stanza.getAttribute('from');
             attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
 
-            if (attrs.from === this.get('nick')) {
+            if (Strophe.getResourceFromJid(attrs.from) === this.get('nick')) {
               attrs.sender = 'me';
             } else {
               attrs.sender = 'them';
@@ -63023,6 +63036,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
       _.extend(_converse.api, {
+        /**
+         * The "chats" grouping (used for one-on-one chats)
+         *
+         * @namespace
+         */
         'chats': {
           'create'(jids, attrs) {
             if (_.isUndefined(jids)) {
@@ -63053,21 +63071,78 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             });
           },
 
+          /**
+           * Opens a new one-on-one chat.
+           *
+           * @function
+           *
+           * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+           * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
+           *
+           * @example
+           * // To open a single chat, provide the JID of the contact you're chatting with in that chat:
+           * converse.plugins.add('myplugin', {
+           *     initialize: function() {
+           *         var _converse = this._converse;
+           *         // Note, buddy@example.org must be in your contacts roster!
+           *         _converse.api.chats.open('buddy@example.com').then((chat) => {
+           *             // Now you can do something with the chat model
+           *         });
+           *     }
+           * });
+           *
+           * @example
+           * // To open an array of chats, provide an array of JIDs:
+           * converse.plugins.add('myplugin', {
+           *     initialize: function () {
+           *         var _converse = this._converse;
+           *         // Note, these users must first be in your contacts roster!
+           *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then((chats) => {
+           *             // Now you can do something with the chat models
+           *         });
+           *     }
+           * });
+           *
+           */
           'open'(jids, attrs) {
-            if (_.isUndefined(jids)) {
-              _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+            return new Promise((resolve, reject) => {
+              Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(() => {
+                if (_.isUndefined(jids)) {
+                  const err_msg = "chats.open: You need to provide at least one JID";
 
-              return null;
-            } else if (_.isString(jids)) {
-              const chatbox = _converse.api.chats.create(jids, attrs);
+                  _converse.log(err_msg, Strophe.LogLevel.ERROR);
 
-              chatbox.trigger('show');
-              return chatbox;
-            }
-
-            return _.map(jids, jid => _converse.api.chats.create(jid, attrs).trigger('show'));
+                  reject(new Error(err_msg));
+                } else if (_.isString(jids)) {
+                  resolve(_converse.api.chats.create(jids, attrs).trigger('show'));
+                } else {
+                  resolve(_.map(jids, jid => _converse.api.chats.create(jid, attrs).trigger('show')));
+                }
+              }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            });
           },
 
+          /**
+           * Returns a chat model. The chat should already be open.
+           *
+           * @function
+           *
+           * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+           * @returns {Backbone.Model}
+           *
+           * @example
+           * // To return a single chat, provide the JID of the contact you're chatting with in that chat:
+           * const model = _converse.api.chats.get('buddy@example.com');
+           *
+           * @example
+           * // To return an array of chats, provide an array of JIDs:
+           * const models = _converse.api.chats.get(['buddy1@example.com', 'buddy2@example.com']);
+           *
+           * @example
+           * // To return all open chats, call the method without any parameters::
+           * const models = _converse.api.chats.get();
+           *
+           */
           'get'(jids) {
             if (_.isUndefined(jids)) {
               const result = [];
@@ -63975,6 +64050,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           ev.preventDefault();
           const textarea = this.el.querySelector('.chat-textarea'),
                 message = textarea.value;
+
+          if (!message.replace(/\s/g, '').length) {
+            return;
+          }
+
           let spoiler_hint;
 
           if (this.model.get('composing_spoiler')) {
@@ -63989,12 +64069,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const event = document.createEvent('Event');
           event.initEvent('input', true, true);
           textarea.dispatchEvent(event);
+          this.onMessageSubmitted(message, spoiler_hint);
 
-          if (message !== '') {
-            this.onMessageSubmitted(message, spoiler_hint);
-
-            _converse.emit('messageSend', message);
-          }
+          _converse.emit('messageSend', message);
 
           this.setChatState(_converse.ACTIVE);
         },
@@ -65155,7 +65232,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   _.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
 
 
-  _converse.core_plugins = ['converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-omemo', 'converse-oauth', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
+  _converse.core_plugins = ['converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-omemo', 'converse-oauth', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Setting wait to 59 instead of 60 to avoid timing conflicts with the
+  // webserver, which is often also set to 60 and might therefore sometimes
+  // return a 504 error page instead of passing through to the BOSH proxy.
+
+  const BOSH_WAIT = 59; // Make converse pluggable
 
   pluggable.enable(_converse, '_converse', 'pluggable'); // Module-level constants
 
@@ -66159,7 +66240,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.connection.reset();
         }
 
-        this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
+        this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged, BOSH_WAIT);
       } else if (this.authentication === _converse.LOGIN) {
         const password = _.isNil(credentials) ? _converse.connection.pass || this.password : credentials.password;
 
@@ -66187,7 +66268,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.connection.reset();
         }
 
-        this.connection.connect(this.jid, password, this.onConnectStatusChanged);
+        this.connection.connect(this.jid, password, this.onConnectStatusChanged, BOSH_WAIT);
       }
     };
 
@@ -66849,6 +66930,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'to': from
           });
         }
+
+        iqresult.c('query', attrs);
 
         _.each(plugin._identities, identity => {
           const attrs = {
@@ -67605,8 +67688,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         throw new Error("converse-embedded: auto_join_rooms must be an Array");
       }
 
-      if (_converse.auto_join_rooms.length !== 1 && _converse.auto_join_private_chats.length !== 1) {
-        throw new Error("converse-embedded: It doesn't make " + "sense to have the auto_join_rooms setting to zero or " + "more then one, since only one chat room can be open " + "at any time.");
+      if (_converse.auto_join_rooms.length > 1 && _converse.auto_join_private_chats.length > 1) {
+        throw new Error("converse-embedded: It doesn't make " + "sense to have the auto_join_rooms setting more then one, " + "since only one chat room can be open at any time.");
       }
     }
 
@@ -69911,17 +69994,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.on('show', this.show, this);
           this.model.occupants.on('add', this.showJoinNotification, this);
           this.model.occupants.on('remove', this.showLeaveNotification, this);
-          this.model.occupants.on('change:show', occupant => {
-            if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
-              return;
-            }
-
-            if (occupant.get('show') === 'offline') {
-              this.showLeaveNotification(occupant);
-            } else if (occupant.get('show') === 'online') {
-              this.showJoinNotification(occupant);
-            }
-          });
+          this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
           this.createEmojiPicker();
           this.createOccupantsView();
           this.render().insertIntoDOM();
@@ -69931,8 +70004,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             const handler = () => {
               if (!u.isPersistableModel(this.model)) {
                 // Happens during tests, nothing to do if this
-                // is a hanging chatbox (i.e. not in the
-                // collection anymore).
+                // is a hanging chatbox (i.e. not in the collection anymore).
                 return;
               }
 
@@ -70809,6 +70881,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
 
+        showJoinOrLeaveNotification(occupant) {
+          if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+            return;
+          }
+
+          if (occupant.get('show') === 'offline') {
+            this.showLeaveNotification(occupant);
+          } else if (occupant.get('show') === 'online') {
+            this.showJoinNotification(occupant);
+          }
+        },
+
         showJoinNotification(occupant) {
           if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
             return;
@@ -70856,10 +70940,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         showLeaveNotification(occupant) {
           const nick = occupant.get('nick'),
                 stat = occupant.get('status'),
-                last_el = this.content.lastElementChild,
-                last_msg_date = last_el.getAttribute('data-isodate');
+                last_el = this.content.lastElementChild;
 
-          if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && moment(last_msg_date).isSame(new Date(), "day") && _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
+          if (last_el && _.includes(_.get(last_el, 'classList', []), 'chat-info') && moment(last_el.getAttribute('data-isodate')).isSame(new Date(), "day") && _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
             let message;
 
             if (_.isNil(stat)) {
@@ -70890,7 +70973,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'data': `data-leave="${nick}"`
             };
 
-            if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leavejoin === `"${nick}"`) {
+            if (last_el && _.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leavejoin === `"${nick}"`) {
               last_el.outerHTML = tpl_info(data);
             } else {
               const el = u.stringToElement(tpl_info(data));
@@ -72789,13 +72872,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           },
 
           'open'(jids, attrs) {
-            if (_.isUndefined(jids)) {
-              throw new TypeError('rooms.open: You need to provide at least one JID');
-            } else if (_.isString(jids)) {
-              return _converse.api.rooms.create(jids, attrs).trigger('show');
-            }
+            return new Promise((resolve, reject) => {
+              _converse.api.waitUntil('chatBoxesFetched').then(() => {
+                if (_.isUndefined(jids)) {
+                  const err_msg = 'rooms.open: You need to provide at least one JID';
 
-            return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).trigger('show'));
+                  _converse.log(err_msg, Strophe.LogLevel.ERROR);
+
+                  reject(new TypeError(err_msg));
+                } else if (_.isString(jids)) {
+                  resolve(_converse.api.rooms.create(jids, attrs).trigger('show'));
+                } else {
+                  resolve(_.map(jids, jid => _converse.api.rooms.create(jid, attrs).trigger('show')));
+                }
+              });
+            });
           },
 
           'get'(jids, attrs, create) {
@@ -73262,7 +73353,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         getBundlesAndBuildSessions() {
           const _converse = this.__super__._converse;
           return new Promise((resolve, reject) => {
-            _converse.getDevicesForContact(this.get('jid')).then(devices => {
+            _converse.getDevicesForContact(this.get('jid')).then(their_devices => {
+              const device_id = _converse.omemo_store.get('device_id'),
+                    devicelist = _converse.devicelists.get(_converse.bare_jid),
+                    own_devices = devicelist.devices.filter(device => device.get('id') !== device_id),
+                    devices = _.concat(own_devices, their_devices.models);
+
               Promise.all(devices.map(device => device.getBundle())).then(() => this.buildSessions(devices)).then(() => resolve(devices)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
           });
@@ -73329,32 +73425,34 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const _converse = this.__super__._converse,
                 address = new libsignal.SignalProtocolAddress(this.get('jid'), device.get('id')),
                 sessionCipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
-          return sessionCipher.encrypt(plaintext);
+          return new Promise((resolve, reject) => {
+            sessionCipher.encrypt(plaintext).then(payload => resolve({
+              'payload': payload,
+              'device': device
+            })).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+          });
         },
 
-        addKeysToMessageStanza(stanza, devices, payloads) {
-          for (var i in payloads) {
-            if (Object.prototype.hasOwnProperty.call(payloads, i)) {
-              const payload = btoa(JSON.stringify(payloads[i]));
-              const prekey = 3 == parseInt(payloads[i].type, 10);
+        addKeysToMessageStanza(stanza, dicts, iv) {
+          for (var i in dicts) {
+            if (Object.prototype.hasOwnProperty.call(dicts, i)) {
+              const payload = dicts[i].payload,
+                    device = dicts[i].device,
+                    prekey = 3 == parseInt(payload.type, 10);
+              stanza.c('key', {
+                'rid': device.get('id')
+              }).t(btoa(JSON.stringify(dicts[i].payload)));
 
-              if (i == payloads.length - 1) {
-                stanza.c('key', {
-                  'rid': devices.get('id')
-                }).t(payload);
+              if (prekey) {
+                stanza.attrs({
+                  'prekey': prekey
+                });
+              }
 
-                if (prekey) {
-                  stanza.attrs({
-                    'prekey': prekey
-                  });
-                }
+              stanza.up();
 
-                stanza.up().c('iv').t(payloads[0].iv).up().up();
-              } else {
-                stanza.c('key', {
-                  prekey: prekey,
-                  rid: devices.get('id')
-                }).t(payload).up();
+              if (i == dicts.length - 1) {
+                stanza.c('iv').t(iv).up().up();
               }
             }
           }
@@ -73389,8 +73487,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // concatenation is encrypted using the corresponding
             // long-standing SignalProtocol session.
             // TODO: need to include own devices here as well (and filter out distrusted devices)
-            const promises = devices.map(device => this.encryptKey(payload.key_str + payload.tag, device));
-            return Promise.all(promises).then(payloads => this.addKeysToMessageStanza(stanza, devices, payloads));
+            const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => this.encryptKey(payload.key_str + payload.tag, device));
+            return Promise.all(promises).then(dicts => this.addKeysToMessageStanza(stanza, dicts, payload.iv)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
           });
         },
 
@@ -78295,8 +78393,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         xhr.onload = function () {
           if (xhr.status >= 200 && xhr.status < 400) {
-            jed_instance = new Jed(window.JSON.parse(xhr.responseText));
-            resolve();
+            try {
+              const data = window.JSON.parse(xhr.responseText);
+              jed_instance = new Jed(data);
+              resolve();
+            } catch (e) {
+              xhr.onerror(e);
+            }
           } else {
             xhr.onerror();
           }

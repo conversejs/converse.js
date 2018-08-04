@@ -16,7 +16,7 @@
                     function (done, _converse) {
 
             var sent_stanza;
-            let iq_stanza;
+            let iq_stanza, view;
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -70,7 +70,7 @@
                 const devicelist = _converse.devicelists.create({'jid': contact_jid});
                 expect(devicelist.devices.length).toBe(1);
 
-                const view = _converse.chatboxviews.get(contact_jid);
+                view = _converse.chatboxviews.get(contact_jid);
                 view.model.set('omemo_active', true);
 
                 const textarea = view.el.querySelector('.chat-textarea');
@@ -167,8 +167,20 @@
                         .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                             .c('header', {'sid':  '555'})
                                 .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t('c1ph3R73X7').up()
-                                .c('iv').t('1234');
+                                .c('iv').t('1234')
+                                .up().up()
+                            .c('payload').t('M04R-c1ph3R73X7');
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(view.model.messages.length).toBe(2);
+                const last_msg = view.model.messages.at(1),
+                      encrypted = last_msg.get('encrypted');
+
+                expect(encrypted instanceof Object).toBe(true);
+                expect(encrypted.device_id).toBe('555');
+                expect(encrypted.iv).toBe('1234');
+                expect(encrypted.key).toBe('c1ph3R73X7');
+                expect(encrypted.payload).toBe('M04R-c1ph3R73X7');
                 done();
             });
         }));

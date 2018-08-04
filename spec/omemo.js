@@ -11,13 +11,14 @@
     describe("The OMEMO module", function() {
 
         it("enables encrypted messages to be sent and received",
-            mock.initConverseWithPromises(
-                null, ['rosterGroupsFetched'], {},
-                function (done, _converse) {
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    function (done, _converse) {
 
             var sent_stanza;
             let iq_stanza;
             test_utils.createContacts(_converse, 'current', 1);
+            _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             // First, fetch own device list
@@ -42,9 +43,9 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 _converse.emit('OMEMOInitialized');
-
                 // Check that device list for contact is fetched when chat is opened.
-                test_utils.openChatBoxFor(_converse, contact_jid);
+                return test_utils.openChatBoxFor(_converse, contact_jid);
+            }).then(() => {
                 return test_utils.waitUntil(() => {
                     return _.filter(
                         _converse.connection.IQ_stanzas,
@@ -484,14 +485,15 @@
         }));
 
         it("publishes a bundle with which an encrypted session can be created",
-            mock.initConverseWithPromises(
-                null, ['rosterGroupsFetched'], {},
-                function (done, _converse) {
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    function (done, _converse) {
 
             _converse.NUM_PREKEYS = 2; // Restrict to 2, otherwise the resulting stanza is too large to easily test
 
             let iq_stanza;
             test_utils.createContacts(_converse, 'current', 1);
+            _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             test_utils.waitUntil(function () {
@@ -516,7 +518,8 @@
 
                 expect(_converse.devicelists.length).toBe(1);
 
-                test_utils.openChatBoxFor(_converse, contact_jid);
+                return test_utils.openChatBoxFor(_converse, contact_jid);
+            }).then(() => {
                 return test_utils.waitUntil(() => {
                     return _.filter(_converse.connection.IQ_stanzas, function (iq) {
                         const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.devicelist"]');
@@ -571,11 +574,12 @@
 
         it("adds a toolbar button for starting an encrypted chat session",
             mock.initConverseWithPromises(
-                null, ['rosterGroupsFetched'], {},
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 function (done, _converse) {
 
-            let iq_stanza;
+            let iq_stanza, modal;
             test_utils.createContacts(_converse, 'current', 1);
+            _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             test_utils.waitUntil(function () {
@@ -609,7 +613,8 @@
                 expect(devicelist.devices.length).toBe(1);
                 expect(devicelist.devices.at(0).get('id')).toBe('482886413b977930064a5888b92134fe');
 
-                test_utils.openChatBoxFor(_converse, contact_jid);
+                return test_utils.openChatBoxFor(_converse, contact_jid);
+            }).then(() => {
                 return test_utils.waitUntil(() => {
                     return _.filter(_converse.connection.IQ_stanzas, function (iq) {
                         const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.devicelist"]');
@@ -736,31 +741,33 @@
 
         it("shows OMEMO device fingerprints in the user details modal",
             mock.initConverseWithPromises(
-                null, ['rosterGroupsFetched'], {},
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 function (done, _converse) {
 
-            let iq_stanza;
+            let iq_stanza, modal;
             test_utils.createContacts(_converse, 'current', 1);
+            _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-            test_utils.openChatBoxFor(_converse, contact_jid);
+            test_utils.openChatBoxFor(_converse, contact_jid)
+            .then(() => {
+                // We simply emit, to avoid doing all the setup work
+                _converse.emit('OMEMOInitialized');
 
-            // We simply emit, to avoid doing all the setup work
-            _converse.emit('OMEMOInitialized');
+                const view = _converse.chatboxviews.get(contact_jid);
+                const show_modal_button = view.el.querySelector('.show-user-details-modal');
+                show_modal_button.click();
+                modal = view.user_details_modal;
 
-            const view = _converse.chatboxviews.get(contact_jid);
-            const show_modal_button = view.el.querySelector('.show-user-details-modal');
-            show_modal_button.click();
-            const modal = view.user_details_modal;
-
-            test_utils.waitUntil(() => u.isVisible(modal.el), 1000).then(() => {
-                return test_utils.waitUntil(() => {
-                    return _.filter(
-                        _converse.connection.IQ_stanzas,
-                        (iq) => {
-                            const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
-                            if (node) { iq_stanza = iq.nodeTree; }
-                            return node;
-                        }).length;});
+                return test_utils.waitUntil(() => u.isVisible(modal.el), 1000).then(() => {
+                    return test_utils.waitUntil(() => {
+                        return _.filter(
+                            _converse.connection.IQ_stanzas,
+                            (iq) => {
+                                const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                                if (node) { iq_stanza = iq.nodeTree; }
+                                return node;
+                            }).length;});
+                });
             }).then(() => {
                 iq_stanza;
                 expect(iq_stanza.outerHTML).toBe(

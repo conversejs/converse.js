@@ -15,16 +15,21 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     function (done, _converse) {
 
-            let iq_stanza, view, sent_stanza;
+            const message = 'This message will be encrypted'
+            let view;
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             test_utils.openChatBoxFor(_converse, contact_jid)
-            .then((view) => view.model.encryptMessage('This message will be encrypted'))
-            .then((payload) => {
-                debugger;
+            .then((v) => {
+                view = v;
+                return view.model.encryptMessage(message);
+            }).then((payload) => {
                 return view.model.decryptMessage(payload);
-            }).then(done);
+            }).then((result) => {
+                expect(result).toBe(message);
+                done();
+            });
         }));
 
 

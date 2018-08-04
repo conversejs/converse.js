@@ -9,6 +9,7 @@
     "plugins": ["lodash"],
     "extends": ["eslint:recommended", "plugin:lodash/canonical"],
     "globals": {
+        "Uint8Array": true,
         "Promise": true,
         "converse": true,
         "define": true,

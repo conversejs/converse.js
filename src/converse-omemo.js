@@ -25,6 +25,11 @@
     const UNDECIDED = 0;
     const TRUSTED = 1;
     const UNTRUSTED = -1;
+    const TAG_LENGTH = 128;
+    const KEY_ALGO = {
+        'name': "AES-GCM",
+        'length': 256
+    };
 
 
     function parseBundle (bundle_el) {
@@ -135,26 +140,25 @@
                     }
                 },
 
-                decryptMessage (key_and_tag, attrs) {
-                    const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
-                    const CryptoKeyObject = {
-                        "alg": "A256GCM",
-                        "ext": true,
-                        "k": aes_data.key,
-                        "key_ops": ["encrypt","decrypt"],
-                        "kty": "oct"
-                    }
-                    return crypto.subtle.importKey('jwk', CryptoKeyObject, 'AES-GCM', true, ['encrypt','decrypt'])
+                decryptMessage (obj) {
+                    const { _converse } = this.__super__,
+                          key_obj = {
+                              "alg": "A256GCM",
+                              "ext": true,
+                              "k": obj.key,
+                              "key_ops": ["encrypt","decrypt"],
+                              "kty": "oct"
+                          };
+                    return crypto.subtle.importKey('jwk', key_obj, KEY_ALGO, true, ['encrypt','decrypt'])
                         .then((key_obj) => {
-                            return window.crypto.subtle.decrypt(
-                                {'name': "AES-GCM", 'iv': u.base64ToArrayBuffer(attrs.iv), 'tagLength': 128},
-                                key_obj,
-                                u.stringToArrayBuffer(attrs.payload)
-                            );
-                        }).then((out) =>  {
-                            const decoder = new TextDecoder()
-                            return decoder.decode(out)
-                        })
+                            const algo = {
+                                'name': "AES-GCM",
+                                'iv': u.base64ToArrayBuffer(obj.iv),
+                                'tagLength': TAG_LENGTH 
+                            }
+                            return window.crypto.subtle.decrypt(algo, key_obj, u.base64ToArrayBuffer(obj.payload));
+                        }).then(out => (new TextDecoder()).decode(out))
+                          .catch(e => _converse.log(e.toString(), Strophe.LogLevel.ERROR));
                 },
 
                 decrypt (attrs) {
@@ -200,7 +204,7 @@
                                           libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
 
                                     session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary')
-                                    .then(key_and_tag => this.decryptMessage(key_and_tag, attrs.encrypted))
+                                    .then(key_and_tag => this.decryptMessage(attrs.encrypted))
                                     .then((f) => {
                                         // TODO handle new key...
                                         // _converse.omemo.publishBundle()
@@ -236,14 +240,10 @@
                 encryptMessage (plaintext) {
                     // The client MUST use fresh, randomly generated key/IV pairs
                     // with AES-128 in Galois/Counter Mode (GCM).
-                    const TAG_LENGTH = 128,
-                          iv = window.crypto.getRandomValues(new window.Uint8Array(16));
-
+                    const iv = window.crypto.getRandomValues(new window.Uint8Array(16));
                     let key;
-                    return window.crypto.subtle.generateKey({
-                            'name': "AES-GCM",
-                            'length': 256
-                        },
+                    return window.crypto.subtle.generateKey(
+                        KEY_ALGO,
                         true, // extractable
                         ["encrypt", "decrypt"] // key usages
                     ).then((result) => {
@@ -258,10 +258,10 @@
                         return window.crypto.subtle.exportKey("jwk", key)
                             .then((key_obj) => {
                                 return Promise.resolve({
-                                    'key_str': key_obj.k,
-                                    'tag': btoa(ciphertext.slice(ciphertext.byteLength - ((TAG_LENGTH + 7) >> 3))),
-                                    'ciphertext': btoa(ciphertext),
-                                    'iv': btoa(iv)
+                                    'key': key_obj.k,
+                                    'tag': u.arrayBufferToBase64(ciphertext.slice(ciphertext.byteLength - ((TAG_LENGTH + 7) >> 3))),
+                                    'payload': u.arrayBufferToBase64(ciphertext),
+                                    'iv': u.arrayBufferToBase64(iv)
                                 });
                             });
                     });
@@ -319,7 +319,7 @@
                             .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                                 .c('header', {'sid':  _converse.omemo_store.get('device_id')});
 
-                    return this.encryptMessage(message).then((payload) => {
+                    return this.encryptMessage(message).then((obj) => {
                         // The 16 bytes key and the GCM authentication tag (The tag
                         // SHOULD have at least 128 bit) are concatenated and for each
                         // intended recipient device, i.e. both own devices as well as
@@ -328,11 +328,11 @@
                         // long-standing SignalProtocol session.
                         const promises = devices
                             .filter(device => device.get('trusted') != UNTRUSTED)
-                            .map(device => this.encryptKey(payload.key_str+payload.tag, device));
+                            .map(device => this.encryptKey(obj.key+obj.tag, device));
 
                         return Promise.all(promises)
-                            .then((dicts) => this.addKeysToMessageStanza(stanza, dicts, payload.iv))
-                            .then((stanza) => stanza.c('payload').t(payload.ciphertext))
+                            .then((dicts) => this.addKeysToMessageStanza(stanza, dicts, obj.iv))
+                            .then((stanza) => stanza.c('payload').t(obj.payload))
                             .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                     });
                 },

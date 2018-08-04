@@ -158,7 +158,8 @@
                             _.partial(u.renderImageURL, _converse))(url);
                     }
 
-                    let text = this.model.get('message');
+                    const encrypted = this.model.get('encrypted');
+                    let text = encrypted ? this.model.get('plaintext') : this.model.get('message');
                     if (is_me_message) {
                         text = text.replace(/^\/me/, '');
                     }

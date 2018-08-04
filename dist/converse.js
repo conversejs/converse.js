@@ -68608,7 +68608,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             msg.querySelector('.chat-msg__media').innerHTML = _.flow(_.partial(u.renderFileURL, _converse), _.partial(u.renderMovieURL, _converse), _.partial(u.renderAudioURL, _converse), _.partial(u.renderImageURL, _converse))(url);
           }
 
-          let text = this.model.get('message');
+          const encrypted = this.model.get('encrypted');
+          let text = encrypted ? this.model.get('plaintext') : this.model.get('message');
 
           if (is_me_message) {
             text = text.replace(/^\/me/, '');
@@ -73420,21 +73421,47 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }).then(out => new TextDecoder().decode(out)).catch(e => _converse.log(e.toString(), Strophe.LogLevel.ERROR));
         },
 
+        decryptFromKeyAndTag(key_and_tag, obj) {
+          const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
+          return this.decryptMessage(_.extend(obj, {
+            'key': aes_data.key,
+            'tag': aes_data.tag
+          }));
+        },
+
+        handlePreKeyMessage(attrs) {
+          // TODO
+          const _converse = this.__super__._converse; // If this is the case, a new session is built from this received element. The client
+          // SHOULD then republish their bundle information, replacing the used PreKey, such
+          // that it won't be used again by a different client. If the client already has a session
+          // with the sender's device, it MUST replace this session with the newly built session.
+          // The client MUST delete the private key belonging to the PreKey after use.
+
+          const address = new libsignal.SignalProtocolAddress(attrs.from, attrs.encrypted.device_id),
+                session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
+                libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
+          return session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => this.decryptFromKeyAndTag(key_and_tag, attrs.encrypted)).then(f => {// TODO handle new key...
+            // _converse.omemo.publishBundle()
+          });
+        },
+
         decrypt(attrs) {
+          if (attrs.prekey === 'true') {
+            return this.handlePreKeyMessage(attrs);
+          }
+
           const _converse = this.__super__._converse,
                 address = new libsignal.SignalProtocolAddress(attrs.from, attrs.encrypted.device_id),
                 session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
                 libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
           return new Promise((resolve, reject) => {
-            session_cipher.decryptWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => this.decryptMessage(key_and_tag, attrs.encrypted)).then(f => {
-              // TODO handle decrypted messagej
-              //
-              resolve(f);
-            }).catch(reject);
+            session_cipher.decryptWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => this.decryptFromKeyAndTag(key_and_tag, attrs.encrypted)).then(resolve).catch(reject);
           });
         },
 
-        getEncryptionAttributesfromStanza(encrypted) {
+        getEncryptionAttributesfromStanza(stanza, original_stanza) {
+          const _converse = this.__super__._converse;
+          const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
           return new Promise((resolve, reject) => {
             this.__super__.getMessageAttributesFromStanza.apply(this, arguments).then(attrs => {
               const _converse = this.__super__._converse,
@@ -73446,33 +73473,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                   'device_id': header.getAttribute('sid'),
                   'iv': header.querySelector('iv').textContent,
                   'key': key.textContent,
-                  'payload': _.get(encrypted.querySelector('payload'), 'textContent', null)
+                  'payload': _.get(encrypted.querySelector('payload'), 'textContent', null),
+                  'prekey': key.getAttribute('prekey')
                 };
-
-                if (key.getAttribute('prekey') === 'true') {
-                  // If this is the case, a new session is built from this received element. The client
-                  // SHOULD then republish their bundle information, replacing the used PreKey, such
-                  // that it won't be used again by a different client. If the client already has a session
-                  // with the sender's device, it MUST replace this session with the newly built session.
-                  // The client MUST delete the private key belonging to the PreKey after use.
-                  const address = new libsignal.SignalProtocolAddress(attrs.from, attrs.encrypted.device_id),
-                        session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
-                        libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
-                  session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => this.decryptMessage(attrs.encrypted)).then(f => {
-                    // TODO handle new key...
-                    // _converse.omemo.publishBundle()
-                    resolve(f);
-                  }).catch(reject);
-                }
-
-                if (attrs.encrypted.payload) {
-                  this.decrypt(attrs).then(text => {
-                    attrs.plaintext = text;
-                    resolve(attrs);
-                  }).catch(reject);
-                }
+                this.decrypt(attrs).then(plaintext => resolve(_.extend(attrs, {
+                  'plaintext': plaintext
+                }))).catch(reject);
               }
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
           });
         },
 
@@ -73482,7 +73490,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (!encrypted) {
             return this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
           } else {
-            return this.getEncryptionAttributesfromStanza(encrypted);
+            return this.getEncryptionAttributesfromStanza(stanza, original_stanza);
           }
         },
 
@@ -73507,9 +73515,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return window.crypto.subtle.encrypt(algo, key, new TextEncoder().encode(plaintext));
           }).then(ciphertext => {
             return window.crypto.subtle.exportKey("jwk", key).then(key_obj => {
+              const tag = u.arrayBufferToBase64(ciphertext.slice(ciphertext.byteLength - (TAG_LENGTH + 7 >> 3)));
+              console.log('XXXX: Base64 TAG is ' + tag);
+              console.log('YYY: KEY is ' + key_obj.k);
               return Promise.resolve({
                 'key': key_obj.k,
-                'tag': u.arrayBufferToBase64(ciphertext.slice(ciphertext.byteLength - (TAG_LENGTH + 7 >> 3))),
+                'tag': tag,
+                'key_and_tag': btoa(key_obj.k + tag),
                 'payload': u.arrayBufferToBase64(ciphertext),
                 'iv': u.arrayBufferToBase64(iv)
               });
@@ -73585,7 +73597,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // devices associated with the contact, the result of this
             // concatenation is encrypted using the corresponding
             // long-standing SignalProtocol session.
-            const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => this.encryptKey(obj.key + obj.tag, device));
+            const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => this.encryptKey(obj.key_and_tag, device));
             return Promise.all(promises).then(dicts => this.addKeysToMessageStanza(stanza, dicts, obj.iv)).then(stanza => stanza.c('payload').t(obj.payload)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
           });
         },

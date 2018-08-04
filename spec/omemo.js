@@ -182,13 +182,13 @@
 
                 // Test reception of an encrypted message
                 return view.model.encryptMessage('This is an encrypted message from the contact')
-            }).then((payload) => {
+            }).then((obj) => {
                 // XXX: Normally the key will be encrypted via libsignal.
                 // However, we're mocking libsignal in the tests, so we include
                 // it as plaintext in the message.
                 const key = btoa(JSON.stringify({
                     'type': 1,
-                    'body': payload.key_str+payload.tag,
+                    'body': obj.key_and_tag,
                     'registrationId': '1337' 
                 }));
                 const stanza = $msg({
@@ -200,21 +200,16 @@
                         .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                             .c('header', {'sid':  '555'})
                                 .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(key).up()
-                                .c('iv').t(payload.iv)
+                                .c('iv').t(obj.iv)
                                 .up().up()
-                            .c('payload').t(payload.ciphertext);
+                            .c('payload').t(obj.payload);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 return test_utils.waitUntil(() => view.model.messages.length > 1);
             }).then(() => {
                 expect(view.model.messages.length).toBe(2);
-                const last_msg = view.model.messages.at(1),
-                      encrypted = last_msg.get('encrypted');
-
-                expect(encrypted instanceof Object).toBe(true);
-                expect(encrypted.device_id).toBe('555');
-                expect(encrypted.iv).toBe(btoa('1234'));
-                expect(encrypted.key).toBe(btoa('c1ph3R73X7'));
-                expect(encrypted.payload).toBe(btoa('M04R-c1ph3R73X7'));
+                const last_msg = view.model.messages.at(1);
+                expect(view.el.querySelectorAll('.chat-msg__body')[1].textContent.trim())
+                    .toBe('This is an encrypted message from the contact');
                 done();
             });
         }));

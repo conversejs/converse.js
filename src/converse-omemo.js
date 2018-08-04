@@ -128,6 +128,42 @@
                     })
                 },
 
+                getMessageAttributesFromStanza (stanza, original_stanza) {
+                    const { _converse } = this.__super__,
+                          attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments),
+                          encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
+
+                    if (encrypted) {
+                        const header = encrypted.firstElementChild;
+                        if (header.nodeName != "header") {
+                            throw new Error("Error parsing encrypted OMEMO message. Wrong format");
+                        }
+                        const key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
+                        if (key) {
+                            attrs['encrypted'] = {
+                                'device_id': header.getAttribute('sid'),
+                                'iv': header.querySelector('iv').textContent,
+                                'key': key.textContent
+                            }
+                            if (key.getAttribute('prekey') === 'true') {
+                                // TODO:
+                                // If this is the case, a new session is built
+                                // from this received element. The client
+                                // SHOULD then republish their bundle
+                                // information, replacing the used PreKey, such
+                                // that it won't be used again by a different
+                                // client. If the client already has a session
+                                // with the sender's device, it MUST replace
+                                // this session with the newly built session.
+                                // The client MUST delete the private key
+                                // belonging to the PreKey after use.
+                                throw new Error("Not yet implemented");
+                            }
+                        }
+                    }
+                    return attrs;
+                },
+
                 buildSessions (devices) {
                     return Promise.all(devices.map((device) => this.buildSession(device)));
                 },

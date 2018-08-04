@@ -10,13 +10,30 @@
 
     describe("The OMEMO module", function() {
 
+        it("adds methods for encrypting and decrypting messages via AES GCM",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    function (done, _converse) {
+
+            let iq_stanza, view, sent_stanza;
+            test_utils.createContacts(_converse, 'current', 1);
+            _converse.emit('rosterContactsFetched');
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            test_utils.openChatBoxFor(_converse, contact_jid)
+            .then((view) => view.model.encryptMessage('This message will be encrypted'))
+            .then((payload) => {
+                debugger;
+                return view.model.decryptMessage(payload);
+            }).then(done);
+        }));
+
+
         it("enables encrypted messages to be sent and received",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     function (done, _converse) {
 
-            var sent_stanza;
-            let iq_stanza, view;
+            let iq_stanza, view, sent_stanza;
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -143,7 +160,7 @@
                 spyOn(_converse.connection, 'send').and.callFake(stanza => { sent_stanza = stanza });
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 return test_utils.waitUntil(() => sent_stanza);
-            }).then(function () {
+            }).then(() => {
                 expect(sent_stanza.toLocaleString()).toBe(
                     `<message from='dummy@localhost/resource' to='max.frankfurter@localhost' `+
                              `type='chat' id='${sent_stanza.nodeTree.getAttribute('id')}' xmlns='jabber:client'>`+
@@ -154,10 +171,21 @@
                                 `<key rid='555'>eyJ0eXBlIjoxLCJib2R5IjoiYzFwaDNSNzNYNyIsInJlZ2lzdHJhdGlvbklkIjoiMTMzNyJ9</key>`+
                                 `<iv>${sent_stanza.nodeTree.querySelector('iv').textContent}</iv>`+
                             `</header>`+
+                            `<payload>${sent_stanza.nodeTree.querySelector('payload').textContent}</payload>`+
                         `</encrypted>`+
                     `</message>`);
 
                 // Test reception of an encrypted message
+                return view.model.encryptMessage('This is an encrypted message from the contact')
+            }).then((payload) => {
+                // XXX: Normally the key will be encrypted via libsignal.
+                // However, we're mocking libsignal in the tests, so we include
+                // it as plaintext in the message.
+                const key = btoa(JSON.stringify({
+                    'type': 1,
+                    'body': payload.key_str+payload.tag,
+                    'registrationId': '1337' 
+                }));
                 const stanza = $msg({
                         'from': contact_jid,
                         'to': _converse.connection.jid,
@@ -166,21 +194,22 @@
                     }).c('body').t('This is a fallback message').up()
                         .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                             .c('header', {'sid':  '555'})
-                                .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t('c1ph3R73X7').up()
-                                .c('iv').t('1234')
+                                .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(key).up()
+                                .c('iv').t(payload.iv)
                                 .up().up()
-                            .c('payload').t('M04R-c1ph3R73X7');
+                            .c('payload').t(payload.ciphertext);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
+                return test_utils.waitUntil(() => view.model.messages.length > 1);
+            }).then(() => {
                 expect(view.model.messages.length).toBe(2);
                 const last_msg = view.model.messages.at(1),
                       encrypted = last_msg.get('encrypted');
 
                 expect(encrypted instanceof Object).toBe(true);
                 expect(encrypted.device_id).toBe('555');
-                expect(encrypted.iv).toBe('1234');
-                expect(encrypted.key).toBe('c1ph3R73X7');
-                expect(encrypted.payload).toBe('M04R-c1ph3R73X7');
+                expect(encrypted.iv).toBe(btoa('1234'));
+                expect(encrypted.key).toBe(btoa('c1ph3R73X7'));
+                expect(encrypted.payload).toBe(btoa('M04R-c1ph3R73X7'));
                 done();
             });
         }));

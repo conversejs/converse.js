@@ -6,6 +6,7 @@
     var Strophe = converse.env.Strophe;
     var moment = converse.env.moment;
     var $iq = converse.env.$iq;
+    var u = converse.env.utils;
 
     window.libsignal = {
         'SignalProtocolAddress': function (name, device_id) {
@@ -20,6 +21,9 @@
                 'body': 'c1ph3R73X7',
                 'registrationId': '1337' 
             });
+            this.decryptWhisperMessage = (key_and_tag) => {
+                return Promise.resolve(u.stringToArrayBuffer(key_and_tag));
+            }
         },
         'SessionBuilder': function (storage, remote_address) {
             this.processPreKey = function () {

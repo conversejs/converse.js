@@ -863,13 +863,18 @@
     };
 
     u.arrayBufferToString = function (ab) {
-        var enc = new TextDecoder("utf-8");
-        return enc.decode(new Uint8Array(ab));
+        const enc = new TextDecoder("utf-8");
+        return enc.decode(ab);
     };
 
     u.arrayBufferToBase64 = function (ab) {
         return btoa(new Uint8Array(ab)
             .reduce((data, byte) => data + String.fromCharCode(byte), ''));
+    };
+
+    u.stringToArrayBuffer = function (string) {
+        const enc = new TextEncoder(); // always utf-8
+        return enc.encode(string);
     };
 
     u.base64ToArrayBuffer = function (b64) {

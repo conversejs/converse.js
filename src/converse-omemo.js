@@ -128,38 +128,105 @@
                     })
                 },
 
-                getMessageAttributesFromStanza (stanza, original_stanza) {
-                    const { _converse } = this.__super__,
-                          attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments),
-                          encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
-
-                    if (encrypted) {
-                        const header = encrypted.querySelector('header'),
-                              key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
-                        if (key) {
-                            attrs['encrypted'] = {
-                                'device_id': header.getAttribute('sid'),
-                                'iv': header.querySelector('iv').textContent,
-                                'key': key.textContent,
-                                'payload': _.get(encrypted.querySelector('payload'), 'textContent', null)
-                            }
-                            if (key.getAttribute('prekey') === 'true') {
-                                // TODO:
-                                // If this is the case, a new session is built
-                                // from this received element. The client
-                                // SHOULD then republish their bundle
-                                // information, replacing the used PreKey, such
-                                // that it won't be used again by a different
-                                // client. If the client already has a session
-                                // with the sender's device, it MUST replace
-                                // this session with the newly built session.
-                                // The client MUST delete the private key
-                                // belonging to the PreKey after use.
-                                throw new Error("Not yet implemented");
-                            }
-                        }
+                getKeyAndTag (string) {
+                    return {
+                        'key': string.slice(0, 43), // 256bit key
+                        'tag': string.slice(43, string.length) // rest is tag
                     }
-                    return attrs;
+                },
+
+                decryptMessage (key_and_tag, attrs) {
+                    const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
+                    const CryptoKeyObject = {
+                        "alg": "A256GCM",
+                        "ext": true,
+                        "k": aes_data.key,
+                        "key_ops": ["encrypt","decrypt"],
+                        "kty": "oct"
+                    }
+                    return crypto.subtle.importKey('jwk', CryptoKeyObject, 'AES-GCM', true, ['encrypt','decrypt'])
+                        .then((key_obj) => {
+                            return window.crypto.subtle.decrypt(
+                                {'name': "AES-GCM", 'iv': u.base64ToArrayBuffer(attrs.iv), 'tagLength': 128},
+                                key_obj,
+                                u.stringToArrayBuffer(attrs.payload)
+                            );
+                        }).then((out) =>  {
+                            const decoder = new TextDecoder()
+                            return decoder.decode(out)
+                        })
+                },
+
+                decrypt (attrs) {
+                    const { _converse } = this.__super__,
+                          address  = new libsignal.SignalProtocolAddress(attrs.from, attrs.encrypted.device_id),
+                          session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
+                          libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
+
+                    return new Promise((resolve, reject) => {
+                        session_cipher.decryptWhisperMessage(libsignal_payload.body, 'binary')
+                        .then((key_and_tag) => this.decryptMessage(key_and_tag, attrs.encrypted))
+                        .then((f) => {
+                            // TODO handle decrypted messagej
+                            //
+                            resolve(f);
+                        }).catch(reject);
+                    });
+                },
+
+                getEncryptionAttributesfromStanza (encrypted) {
+                    return new Promise((resolve, reject) => {
+                        this.__super__.getMessageAttributesFromStanza.apply(this, arguments)
+                        .then((attrs) => {
+                            const { _converse } = this.__super__,
+                                  header = encrypted.querySelector('header'),
+                                  key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
+
+                            if (key) {
+                                attrs['encrypted'] = {
+                                    'device_id': header.getAttribute('sid'),
+                                    'iv': header.querySelector('iv').textContent,
+                                    'key': key.textContent,
+                                    'payload': _.get(encrypted.querySelector('payload'), 'textContent', null)
+                                }
+                                if (key.getAttribute('prekey') === 'true') {
+                                    // If this is the case, a new session is built from this received element. The client
+                                    // SHOULD then republish their bundle information, replacing the used PreKey, such
+                                    // that it won't be used again by a different client. If the client already has a session
+                                    // with the sender's device, it MUST replace this session with the newly built session.
+                                    // The client MUST delete the private key belonging to the PreKey after use.
+                                    const address  = new libsignal.SignalProtocolAddress(attrs.from, attrs.encrypted.device_id),
+                                          session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
+                                          libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
+
+                                    session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary')
+                                    .then(key_and_tag => this.decryptMessage(key_and_tag, attrs.encrypted))
+                                    .then((f) => {
+                                        // TODO handle new key...
+                                        // _converse.omemo.publishBundle()
+                                        resolve(f);
+                                    }).catch(reject);
+                                }
+                                if (attrs.encrypted.payload) {
+                                    this.decrypt(attrs)
+                                    .then((text) => {
+                                        attrs.plaintext = text
+                                        resolve(attrs);
+                                    })
+                                    .catch(reject);
+                                }
+                            }
+                        });
+                    });
+                },
+
+                getMessageAttributesFromStanza (stanza, original_stanza) {
+                    const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
+                    if (!encrypted) {
+                        return this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+                    } else {
+                        return this.getEncryptionAttributesfromStanza(encrypted);
+                    }
                 },
 
                 buildSessions (devices) {
@@ -189,11 +256,12 @@
                         return window.crypto.subtle.encrypt(algo, key, new TextEncoder().encode(plaintext));
                     }).then((ciphertext) => {
                         return window.crypto.subtle.exportKey("jwk", key)
-                            .then((key_str) => {
+                            .then((key_obj) => {
                                 return Promise.resolve({
-                                    'key_str': key_str,
-                                    'tag': ciphertext.slice(ciphertext.byteLength - ((TAG_LENGTH + 7) >> 3)),
-                                    'iv': iv
+                                    'key_str': key_obj.k,
+                                    'tag': btoa(ciphertext.slice(ciphertext.byteLength - ((TAG_LENGTH + 7) >> 3))),
+                                    'ciphertext': btoa(ciphertext),
+                                    'iv': btoa(iv)
                                 });
                             });
                     });
@@ -202,10 +270,10 @@
                 encryptKey (plaintext, device) {
                     const { _converse } = this.__super__,
                           address = new libsignal.SignalProtocolAddress(this.get('jid'), device.get('id')),
-                          sessionCipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
+                          session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
 
                     return new Promise((resolve, reject) => {
-                        sessionCipher.encrypt(plaintext)
+                        session_cipher.encrypt(plaintext)
                             .then(payload => resolve({'payload': payload, 'device': device}))
                             .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                         });
@@ -236,15 +304,18 @@
                     const body = __("This is an OMEMO encrypted message which your client doesn’t seem to support. "+
                                     "Find more information on https://conversations.im/omemo");
 
-                    // An encrypted header is added to the message for each device that is supposed to receive it.
-                    // These headers simply contain the key that the payload message is encrypted with,
-                    // and they are separately encrypted using the session corresponding to the counterpart device.
                     const stanza = $msg({
                             'from': _converse.connection.jid,
                             'to': this.get('jid'),
                             'type': this.get('message_type'),
                             'id': message.get('msgid')
                         }).c('body').t(body).up()
+                            // An encrypted header is added to the message for
+                            // each device that is supposed to receive it.
+                            // These headers simply contain the key that the
+                            // payload message is encrypted with,
+                            // and they are separately encrypted using the
+                            // session corresponding to the counterpart device.
                             .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                                 .c('header', {'sid':  _converse.omemo_store.get('device_id')});
 
@@ -255,14 +326,13 @@
                         // devices associated with the contact, the result of this
                         // concatenation is encrypted using the corresponding
                         // long-standing SignalProtocol session.
-
-                        // TODO: need to include own devices here as well (and filter out distrusted devices)
                         const promises = devices
                             .filter(device => device.get('trusted') != UNTRUSTED)
                             .map(device => this.encryptKey(payload.key_str+payload.tag, device));
 
                         return Promise.all(promises)
                             .then((dicts) => this.addKeysToMessageStanza(stanza, dicts, payload.iv))
+                            .then((stanza) => stanza.c('payload').t(payload.ciphertext))
                             .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                     });
                 },
@@ -670,33 +740,36 @@
             });
 
 
-            function publishBundle () {
-                const store = _converse.omemo_store,
-                      signed_prekey = store.get('signed_prekey');
+            _converse.omemo = {
 
-                return new Promise((resolve, reject) => {
-                    const stanza = $iq({
-                        'from': _converse.bare_jid,
-                        'type': 'set'
-                    }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                        .c('publish', {'node': `${Strophe.NS.OMEMO_BUNDLES}:${store.get('device_id')}`})
-                            .c('item')
-                                .c('bundle', {'xmlns': Strophe.NS.OMEMO})
-                                    .c('signedPreKeyPublic', {'signedPreKeyId': signed_prekey.keyId})
-                                        .t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up()
-                                    .c('signedPreKeySignature')
-                                        .t(u.arrayBufferToBase64(signed_prekey.signature)).up()
-                                    .c('identityKey')
-                                        .t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up()
-                                    .c('prekeys');
-                    _.forEach(
-                        store.get('prekeys').slice(0, _converse.NUM_PREKEYS),
-                        (prekey) => {
-                            stanza.c('preKeyPublic', {'preKeyId': prekey.keyId})
-                                .t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();
-                        });
-                    _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
-                });
+                publishBundle () {
+                    const store = _converse.omemo_store,
+                        signed_prekey = store.get('signed_prekey');
+
+                    return new Promise((resolve, reject) => {
+                        const stanza = $iq({
+                            'from': _converse.bare_jid,
+                            'type': 'set'
+                        }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                            .c('publish', {'node': `${Strophe.NS.OMEMO_BUNDLES}:${store.get('device_id')}`})
+                                .c('item')
+                                    .c('bundle', {'xmlns': Strophe.NS.OMEMO})
+                                        .c('signedPreKeyPublic', {'signedPreKeyId': signed_prekey.keyId})
+                                            .t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up()
+                                        .c('signedPreKeySignature')
+                                            .t(u.arrayBufferToBase64(signed_prekey.signature)).up()
+                                        .c('identityKey')
+                                            .t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up()
+                                        .c('prekeys');
+                        _.forEach(
+                            store.get('prekeys').slice(0, _converse.NUM_PREKEYS),
+                            (prekey) => {
+                                stanza.c('preKeyPublic', {'preKeyId': prekey.keyId})
+                                    .t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();
+                            });
+                        _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+                    });
+                }
             }
 
             function fetchDeviceLists () {
@@ -804,7 +877,7 @@
                 fetchOwnDevices()
                     .then(() => restoreOMEMOSession())
                     .then(() => updateOwnDeviceList())
-                    .then(() => publishBundle())
+                    .then(() => _converse.omemo.publishBundle())
                     .then(() => _converse.emit('OMEMOInitialized'))
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             }

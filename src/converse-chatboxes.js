@@ -498,25 +498,29 @@
                     if (spoiler) {
                         attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
                     }
-                    return attrs;
+                    return Promise.resolve(attrs);
                 },
 
                 createMessage (message, original_stanza) {
                     /* Create a Backbone.Message object inside this chat box
                      * based on the identified message stanza.
                      */
-                    const attrs = this.getMessageAttributesFromStanza(message, original_stanza);
-                    const is_csn = u.isOnlyChatStateNotification(attrs);
-                    if (is_csn && (attrs.is_delayed || (attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick')))) {
-                        // XXX: MUC leakage
-                        // No need showing delayed or our own CSN messages
-                        return;
-                    } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
-                        // TODO: handle <subject> messages (currently being done by ChatRoom)
-                        return;
-                    } else {
-                        return this.messages.create(attrs);
-                    }
+                    return new Promise((resolve, reject) => {
+                        this.getMessageAttributesFromStanza(message, original_stanza)
+                        .then((attrs) => {
+                            const is_csn = u.isOnlyChatStateNotification(attrs);
+                            if (is_csn && (attrs.is_delayed || (attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick')))) {
+                                // XXX: MUC leakage
+                                // No need showing delayed or our own CSN messages
+                                resolve();
+                            } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
+                                // TODO: handle <subject> messages (currently being done by ChatRoom)
+                                resolve();
+                            } else {
+                                resolve(this.messages.create(attrs));
+                            }
+                        });
+                    });
                 },
 
                 isHidden () {

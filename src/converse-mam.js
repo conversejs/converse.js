@@ -129,12 +129,16 @@
             // New functions which don't exist yet can also be added.
             ChatBox: {
                 getMessageAttributesFromStanza (message, original_stanza) {
-                    const attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
-                    const archive_id = getMessageArchiveID(original_stanza);
-                    if (archive_id) {
-                        attrs.archive_id = archive_id;
-                    }
-                    return attrs;
+                    return new Promise((resolve, reject) => {
+                        this.__super__.getMessageAttributesFromStanza.apply(this, arguments)
+                        .then((attrs) => {
+                            const archive_id = getMessageArchiveID(original_stanza);
+                            if (archive_id) {
+                                attrs.archive_id = archive_id;
+                            }
+                            resolve(attrs);
+                        }).catch(reject);
+                    });
                 }
             },
 

@@ -62601,12 +62601,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (attrs.type === 'groupchat') {
             attrs.from = stanza.getAttribute('from');
             attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
-
-            if (Strophe.getResourceFromJid(attrs.from) === this.get('nick')) {
-              attrs.sender = 'me';
-            } else {
-              attrs.sender = 'them';
-            }
+            attrs.sender = attrs.nick === this.get('nick') ? 'me' : 'them';
           } else {
             attrs.from = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
 
@@ -62628,26 +62623,29 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
           }
 
-          return attrs;
+          return Promise.resolve(attrs);
         },
 
         createMessage(message, original_stanza) {
           /* Create a Backbone.Message object inside this chat box
            * based on the identified message stanza.
            */
-          const attrs = this.getMessageAttributesFromStanza(message, original_stanza);
-          const is_csn = u.isOnlyChatStateNotification(attrs);
+          return new Promise((resolve, reject) => {
+            this.getMessageAttributesFromStanza(message, original_stanza).then(attrs => {
+              const is_csn = u.isOnlyChatStateNotification(attrs);
 
-          if (is_csn && (attrs.is_delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick'))) {
-            // XXX: MUC leakage
-            // No need showing delayed or our own CSN messages
-            return;
-          } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
-            // TODO: handle <subject> messages (currently being done by ChatRoom)
-            return;
-          } else {
-            return this.messages.create(attrs);
-          }
+              if (is_csn && (attrs.is_delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick'))) {
+                // XXX: MUC leakage
+                // No need showing delayed or our own CSN messages
+                resolve();
+              } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
+                // TODO: handle <subject> messages (currently being done by ChatRoom)
+                resolve();
+              } else {
+                resolve(this.messages.create(attrs));
+              }
+            });
+          });
         },
 
         isHidden() {
@@ -68120,15 +68118,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // New functions which don't exist yet can also be added.
       ChatBox: {
         getMessageAttributesFromStanza(message, original_stanza) {
-          const attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+          return new Promise((resolve, reject) => {
+            this.__super__.getMessageAttributesFromStanza.apply(this, arguments).then(attrs => {
+              const archive_id = getMessageArchiveID(original_stanza);
 
-          const archive_id = getMessageArchiveID(original_stanza);
+              if (archive_id) {
+                attrs.archive_id = archive_id;
+              }
 
-          if (archive_id) {
-            attrs.archive_id = archive_id;
-          }
-
-          return attrs;
+              resolve(attrs);
+            }).catch(reject);
+          });
         }
 
       },
@@ -73387,6 +73387,102 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
         },
 
+        getKeyAndTag(string) {
+          return {
+            'key': string.slice(0, 43),
+            // 256bit key
+            'tag': string.slice(43, string.length) // rest is tag
+
+          };
+        },
+
+        decryptMessage(key_and_tag, attrs) {
+          const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
+          const CryptoKeyObject = {
+            "alg": "A256GCM",
+            "ext": true,
+            "k": aes_data.key,
+            "key_ops": ["encrypt", "decrypt"],
+            "kty": "oct"
+          };
+          return crypto.subtle.importKey('jwk', CryptoKeyObject, 'AES-GCM', true, ['encrypt', 'decrypt']).then(key_obj => {
+            return window.crypto.subtle.decrypt({
+              'name': "AES-GCM",
+              'iv': u.base64ToArrayBuffer(attrs.iv),
+              'tagLength': 128
+            }, key_obj, u.stringToArrayBuffer(attrs.payload));
+          }).then(out => {
+            const decoder = new TextDecoder();
+            return decoder.decode(out);
+          });
+        },
+
+        decrypt(attrs) {
+          const _converse = this.__super__._converse,
+                address = new libsignal.SignalProtocolAddress(attrs.from, attrs.encrypted.device_id),
+                session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
+                libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
+          return new Promise((resolve, reject) => {
+            session_cipher.decryptWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => this.decryptMessage(key_and_tag, attrs.encrypted)).then(f => {
+              // TODO handle decrypted messagej
+              //
+              resolve(f);
+            }).catch(reject);
+          });
+        },
+
+        getEncryptionAttributesfromStanza(encrypted) {
+          return new Promise((resolve, reject) => {
+            this.__super__.getMessageAttributesFromStanza.apply(this, arguments).then(attrs => {
+              const _converse = this.__super__._converse,
+                    header = encrypted.querySelector('header'),
+                    key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
+
+              if (key) {
+                attrs['encrypted'] = {
+                  'device_id': header.getAttribute('sid'),
+                  'iv': header.querySelector('iv').textContent,
+                  'key': key.textContent,
+                  'payload': _.get(encrypted.querySelector('payload'), 'textContent', null)
+                };
+
+                if (key.getAttribute('prekey') === 'true') {
+                  // If this is the case, a new session is built from this received element. The client
+                  // SHOULD then republish their bundle information, replacing the used PreKey, such
+                  // that it won't be used again by a different client. If the client already has a session
+                  // with the sender's device, it MUST replace this session with the newly built session.
+                  // The client MUST delete the private key belonging to the PreKey after use.
+                  const address = new libsignal.SignalProtocolAddress(attrs.from, attrs.encrypted.device_id),
+                        session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
+                        libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
+                  session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => this.decryptMessage(key_and_tag, attrs.encrypted)).then(f => {
+                    // TODO handle new key...
+                    // _converse.omemo.publishBundle()
+                    resolve(f);
+                  }).catch(reject);
+                }
+
+                if (attrs.encrypted.payload) {
+                  this.decrypt(attrs).then(text => {
+                    attrs.plaintext = text;
+                    resolve(attrs);
+                  }).catch(reject);
+                }
+              }
+            });
+          });
+        },
+
+        getMessageAttributesFromStanza(stanza, original_stanza) {
+          const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
+
+          if (!encrypted) {
+            return this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+          } else {
+            return this.getEncryptionAttributesfromStanza(encrypted);
+          }
+        },
+
         buildSessions(devices) {
           return Promise.all(devices.map(device => this.buildSession(device)));
         },
@@ -73411,11 +73507,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             };
             return window.crypto.subtle.encrypt(algo, key, new TextEncoder().encode(plaintext));
           }).then(ciphertext => {
-            return window.crypto.subtle.exportKey("jwk", key).then(key_str => {
+            return window.crypto.subtle.exportKey("jwk", key).then(key_obj => {
               return Promise.resolve({
-                'key_str': key_str,
-                'tag': ciphertext.slice(ciphertext.byteLength - (TAG_LENGTH + 7 >> 3)),
-                'iv': iv
+                'key_str': key_obj.k,
+                'tag': btoa(ciphertext.slice(ciphertext.byteLength - (TAG_LENGTH + 7 >> 3))),
+                'ciphertext': btoa(ciphertext),
+                'iv': btoa(iv)
               });
             });
           });
@@ -73424,9 +73521,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         encryptKey(plaintext, device) {
           const _converse = this.__super__._converse,
                 address = new libsignal.SignalProtocolAddress(this.get('jid'), device.get('id')),
-                sessionCipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
+                session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
           return new Promise((resolve, reject) => {
-            sessionCipher.encrypt(plaintext).then(payload => resolve({
+            session_cipher.encrypt(plaintext).then(payload => resolve({
               'payload': payload,
               'device': device
             })).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
@@ -73464,17 +73561,20 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const _converse = this.__super__._converse,
                 __ = _converse.__;
 
-          const body = __("This is an OMEMO encrypted message which your client doesn’t seem to support. " + "Find more information on https://conversations.im/omemo"); // An encrypted header is added to the message for each device that is supposed to receive it.
-          // These headers simply contain the key that the payload message is encrypted with,
-          // and they are separately encrypted using the session corresponding to the counterpart device.
-
+          const body = __("This is an OMEMO encrypted message which your client doesn’t seem to support. " + "Find more information on https://conversations.im/omemo");
 
           const stanza = $msg({
             'from': _converse.connection.jid,
             'to': this.get('jid'),
             'type': this.get('message_type'),
             'id': message.get('msgid')
-          }).c('body').t(body).up().c('encrypted', {
+          }).c('body').t(body).up() // An encrypted header is added to the message for
+          // each device that is supposed to receive it.
+          // These headers simply contain the key that the
+          // payload message is encrypted with,
+          // and they are separately encrypted using the
+          // session corresponding to the counterpart device.
+          .c('encrypted', {
             'xmlns': Strophe.NS.OMEMO
           }).c('header', {
             'sid': _converse.omemo_store.get('device_id')
@@ -73486,9 +73586,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // devices associated with the contact, the result of this
             // concatenation is encrypted using the corresponding
             // long-standing SignalProtocol session.
-            // TODO: need to include own devices here as well (and filter out distrusted devices)
             const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => this.encryptKey(payload.key_str + payload.tag, device));
-            return Promise.all(promises).then(dicts => this.addKeysToMessageStanza(stanza, dicts, payload.iv)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            return Promise.all(promises).then(dicts => this.addKeysToMessageStanza(stanza, dicts, payload.iv)).then(stanza => stanza.c('payload').t(payload.ciphertext)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
           });
         },
 
@@ -73928,33 +74027,35 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse.DeviceLists = Backbone.Collection.extend({
         model: _converse.DeviceList
       });
+      _converse.omemo = {
+        publishBundle() {
+          const store = _converse.omemo_store,
+                signed_prekey = store.get('signed_prekey');
+          return new Promise((resolve, reject) => {
+            const stanza = $iq({
+              'from': _converse.bare_jid,
+              'type': 'set'
+            }).c('pubsub', {
+              'xmlns': Strophe.NS.PUBSUB
+            }).c('publish', {
+              'node': `${Strophe.NS.OMEMO_BUNDLES}:${store.get('device_id')}`
+            }).c('item').c('bundle', {
+              'xmlns': Strophe.NS.OMEMO
+            }).c('signedPreKeyPublic', {
+              'signedPreKeyId': signed_prekey.keyId
+            }).t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up().c('signedPreKeySignature').t(u.arrayBufferToBase64(signed_prekey.signature)).up().c('identityKey').t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up().c('prekeys');
 
-      function publishBundle() {
-        const store = _converse.omemo_store,
-              signed_prekey = store.get('signed_prekey');
-        return new Promise((resolve, reject) => {
-          const stanza = $iq({
-            'from': _converse.bare_jid,
-            'type': 'set'
-          }).c('pubsub', {
-            'xmlns': Strophe.NS.PUBSUB
-          }).c('publish', {
-            'node': `${Strophe.NS.OMEMO_BUNDLES}:${store.get('device_id')}`
-          }).c('item').c('bundle', {
-            'xmlns': Strophe.NS.OMEMO
-          }).c('signedPreKeyPublic', {
-            'signedPreKeyId': signed_prekey.keyId
-          }).t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up().c('signedPreKeySignature').t(u.arrayBufferToBase64(signed_prekey.signature)).up().c('identityKey').t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up().c('prekeys');
+            _.forEach(store.get('prekeys').slice(0, _converse.NUM_PREKEYS), prekey => {
+              stanza.c('preKeyPublic', {
+                'preKeyId': prekey.keyId
+              }).t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();
+            });
 
-          _.forEach(store.get('prekeys').slice(0, _converse.NUM_PREKEYS), prekey => {
-            stanza.c('preKeyPublic', {
-              'preKeyId': prekey.keyId
-            }).t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();
+            _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
           });
+        }
 
-          _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
-        });
-      }
+      };
 
       function fetchDeviceLists() {
         return new Promise((resolve, reject) => _converse.devicelists.fetch({
@@ -74085,7 +74186,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       function initOMEMO() {
         _converse.devicelists = new _converse.DeviceLists();
         _converse.devicelists.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.devicelists-${_converse.bare_jid}`));
-        fetchOwnDevices().then(() => restoreOMEMOSession()).then(() => updateOwnDeviceList()).then(() => publishBundle()).then(() => _converse.emit('OMEMOInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        fetchOwnDevices().then(() => restoreOMEMOSession()).then(() => updateOwnDeviceList()).then(() => _converse.omemo.publishBundle()).then(() => _converse.emit('OMEMOInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
       }
 
       _converse.api.listen.on('afterTearDown', () => _converse.devices.reset());
@@ -82593,12 +82694,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   };
 
   u.arrayBufferToString = function (ab) {
-    var enc = new TextDecoder("utf-8");
-    return enc.decode(new Uint8Array(ab));
+    const enc = new TextDecoder("utf-8");
+    return enc.decode(ab);
   };
 
   u.arrayBufferToBase64 = function (ab) {
     return btoa(new Uint8Array(ab).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+  };
+
+  u.stringToArrayBuffer = function (string) {
+    const enc = new TextEncoder(); // always utf-8
+
+    return enc.encode(string);
   };
 
   u.base64ToArrayBuffer = function (b64) {

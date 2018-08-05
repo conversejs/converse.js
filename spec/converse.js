@@ -1,12 +1,12 @@
 (function (root, factory) {
     define([
-        "jquery",
         "jasmine",
         "mock",
         "test-utils"], factory);
-} (this, function ($, jasmine, mock, test_utils) {
-    var b64_sha1 = converse.env.b64_sha1;
-    var _ = converse.env._;
+} (this, function (jasmine, mock, test_utils) {
+    const b64_sha1 = converse.env.b64_sha1,
+          _ = converse.env._,
+          u = converse.env.utils;
 
     describe("Converse", function() {
         
@@ -274,59 +274,72 @@
 
         describe("The \"chats\" API", function() {
 
-            it("has a method 'get' which returns the chatbox model", mock.initConverseWithPromises(
-                null, ['rosterInitialized'], {}, function (done, _converse) {
+            it("has a method 'get' which returns the promise that resolves to a chat model", mock.initConverseWithPromises(
+                null, ['rosterInitialized', 'chatBoxesInitialized'], {}, function (done, _converse) {
                     test_utils.openControlBox();
-                    test_utils.createContacts(_converse, 'current');
+                    test_utils.createContacts(_converse, 'current', 2);
+                    _converse.emit('rosterContactsFetched');
+
                     // Test on chat that doesn't exist.
                     expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
-                    var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+
                     // Test on chat that's not open
-                    var box = _converse.api.chats.get(jid);
+                    let box = _converse.api.chats.get(jid);
                     expect(typeof box === 'undefined').toBeTruthy();
-                    var chatboxview = _converse.chatboxviews.get(jid);
-                    // Test for single JID
+                    expect(_converse.chatboxes.length).toBe(1);
+
+                    // Test for one JID
                     test_utils.openChatBoxFor(_converse, jid);
-                    box = _converse.api.chats.get(jid);
+                    test_utils.waitUntil(() => _converse.chatboxes.length == 1).then(() => {
+                        box = _converse.api.chats.get(jid);
+                        expect(box instanceof Object).toBeTruthy();
+                        expect(box.get('box_id')).toBe(b64_sha1(jid));
+
+                        const chatboxview = _converse.chatboxviews.get(jid);
+                        expect(u.isVisible(chatboxview.el)).toBeTruthy();
+                        // Test for multiple JIDs
+                        test_utils.openChatBoxFor(_converse, jid2);
+                        return test_utils.waitUntil(() => _converse.chatboxes.length == 2);
+                    }).then(() => {
+                        const list = _converse.api.chats.get([jid, jid2]);
+                        expect(_.isArray(list)).toBeTruthy();
+                        expect(list[0].get('box_id')).toBe(b64_sha1(jid));
+                        expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
+                        done();
+                    }).catch(_.partial(console.error, _));
+            }));
+
+            it("has a method 'open' which opens and returns promise that resolves to a chat model", mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesInitialized'], {}, function (done, _converse) {
+
+                test_utils.openControlBox();
+                test_utils.createContacts(_converse, 'current', 2);
+                _converse.emit('rosterContactsFetched');
+
+                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                // Test on chat that doesn't exist.
+                expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
+
+                return _converse.api.chats.open(jid).then((box) => {
                     expect(box instanceof Object).toBeTruthy();
                     expect(box.get('box_id')).toBe(b64_sha1(jid));
-                    chatboxview = _converse.chatboxviews.get(jid);
-                    expect($(chatboxview.el).is(':visible')).toBeTruthy();
+                    expect(
+                        _.keys(box),
+                        ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
+                    );
+                    const chatboxview = _converse.chatboxviews.get(jid);
+                    expect(u.isVisible(chatboxview.el)).toBeTruthy();
                     // Test for multiple JIDs
-                    var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    test_utils.openChatBoxFor(_converse, jid2);
-                    var list = _converse.api.chats.get([jid, jid2]);
+                    return _converse.api.chats.open([jid, jid2]);
+                }).then((list) => {
                     expect(_.isArray(list)).toBeTruthy();
                     expect(list[0].get('box_id')).toBe(b64_sha1(jid));
                     expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
                     done();
-            }));
-
-            it("has a method 'open' which opens and returns the chatbox model", mock.initConverseWithPromises(
-                null, ['rosterGroupsFetched'], {}, function (done, _converse) {
-
-                test_utils.openControlBox();
-                test_utils.createContacts(_converse, 'current');
-                var jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var chatboxview;
-                // Test on chat that doesn't exist.
-                expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
-                var box = _converse.api.chats.open(jid);
-                expect(box instanceof Object).toBeTruthy();
-                expect(box.get('box_id')).toBe(b64_sha1(jid));
-                expect(
-                    _.keys(box),
-                    ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
-                );
-                chatboxview = _converse.chatboxviews.get(jid);
-                expect($(chatboxview.el).is(':visible')).toBeTruthy();
-                // Test for multiple JIDs
-                var jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var list = _converse.api.chats.open([jid, jid2]);
-                expect(_.isArray(list)).toBeTruthy();
-                expect(list[0].get('box_id')).toBe(b64_sha1(jid));
-                expect(list[1].get('box_id')).toBe(b64_sha1(jid2));
-                done();
+                });
             }));
         });
 

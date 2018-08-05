@@ -1254,14 +1254,23 @@
                         }
                         return _.map(jids, _.partial(createChatRoom, _, attrs));
                     },
+
                     'open' (jids, attrs) {
-                        if (_.isUndefined(jids)) {
-                            throw new TypeError('rooms.open: You need to provide at least one JID');
-                        } else if (_.isString(jids)) {
-                            return _converse.api.rooms.create(jids, attrs).trigger('show');
-                        }
-                        return _.map(jids, (jid) => _converse.api.rooms.create(jid, attrs).trigger('show'));
+                        return new Promise((resolve, reject) => {
+                            _converse.api.waitUntil('chatBoxesFetched').then(() => {
+                                if (_.isUndefined(jids)) {
+                                    const err_msg = 'rooms.open: You need to provide at least one JID';
+                                    _converse.log(err_msg, Strophe.LogLevel.ERROR);
+                                    reject(new TypeError(err_msg));
+                                } else if (_.isString(jids)) {
+                                    resolve(_converse.api.rooms.create(jids, attrs).trigger('show'));
+                                } else {
+                                    resolve(_.map(jids, (jid) => _converse.api.rooms.create(jid, attrs).trigger('show')));
+                                }
+                            });
+                        });
                     },
+
                     'get' (jids, attrs, create) {
                         if (_.isString(attrs)) {
                             attrs = {'nick': attrs};

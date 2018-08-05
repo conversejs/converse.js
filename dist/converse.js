@@ -4520,7 +4520,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.22 | © dnp_theme | MIT-License
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.23 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (true) {
     // AMD support:
@@ -4603,7 +4603,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     clickEvent    = 'click',
     hoverEvent    = 'hover',
     keydownEvent  = 'keydown',
-    keyupEvent    = 'keyup', 
+    keyupEvent    = 'keyup',
     resizeEvent   = 'resize',
     scrollEvent   = 'scroll',
     // originalEvents
@@ -4623,18 +4623,20 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     hasAttribute           = 'hasAttribute',
     createElement          = 'createElement',
     appendChild            = 'appendChild',
-    innerHTML              = 'innerHTML',  
+    innerHTML              = 'innerHTML',
     getElementsByTagName   = 'getElementsByTagName',
     preventDefault         = 'preventDefault',
     getBoundingClientRect  = 'getBoundingClientRect',
     querySelectorAll       = 'querySelectorAll',
     getElementsByCLASSNAME = 'getElementsByClassName',
+    getComputedStyle       = 'getComputedStyle',  
   
     indexOf      = 'indexOf',
     parentNode   = 'parentNode',
     length       = 'length',
     toLowerCase  = 'toLowerCase',
     Transition   = 'Transition',
+    Duration     = 'Duration',
     Webkit       = 'Webkit',
     style        = 'style',
     push         = 'push',
@@ -4654,15 +4656,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // tooltip / popover
     mouseHover = ('onmouseleave' in DOC) ? [ 'mouseenter', 'mouseleave'] : [ 'mouseover', 'mouseout' ],
     tipPositions = /\b(top|bottom|left|right)+/,
-    
+  
     // modal
     modalOverlay = 0,
     fixedTop = 'fixed-top',
     fixedBottom = 'fixed-bottom',
-    
+  
     // transitionEnd since 2.0.4
     supportTransitions = Webkit+Transition in HTML[style] || Transition[toLowerCase]() in HTML[style],
     transitionEndEvent = Webkit+Transition in HTML[style] ? Webkit[toLowerCase]()+Transition+'End' : Transition[toLowerCase]()+'end',
+    transitionDuration = Webkit+Duration in HTML[style] ? Webkit[toLowerCase]()+Transition+Duration : Transition[toLowerCase]()+Duration,
   
     // set new focus element since 2.0.3
     setFocus = function(element){
@@ -4716,9 +4719,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         off(element, event, handlerWrapper);
       });
     },
+    getTransitionDurationFromElement = function(element) {
+      var duration = globalObject[getComputedStyle](element)[transitionDuration];
+      duration = parseFloat(duration);
+      duration = typeof duration === 'number' && !isNaN(duration) ? duration * 1000 : 0;
+      return duration + 50; // we take a short offset to make sure we fire on the next frame after animation
+    },
     emulateTransitionEnd = function(element,handler){ // emulateTransitionEnd since 2.0.4
-      if (supportTransitions) { one(element, transitionEndEvent, function(e){ handler(e); }); }
-      else { handler(); }
+      var called = 0, duration = getTransitionDurationFromElement(element);
+      supportTransitions && one(element, transitionEndEvent, function(e){ handler(e); called = 1; });
+      setTimeout(function() { !called && handler(); }, duration);
     },
     bootstrapCustomEvent = function (eventName, componentName, related) {
       var OriginalCustomEvent = new CustomEvent( eventName + '.bs.' + componentName);
@@ -4741,8 +4751,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
           scroll = parent === DOC[body] ? getScroll() : { x: parent[offsetLeft] + parent[scrollLeft], y: parent[offsetTop] + parent[scrollTop] },
           linkDimensions = { w: rect[right] - rect[left], h: rect[bottom] - rect[top] },
           isPopover = hasClass(element,'popover'),
-          topPosition, leftPosition, 
-          
+          topPosition, leftPosition,
+  
           arrow = queryElement('.arrow',element),
           arrowTop, arrowLeft, arrowWidth, arrowHeight,
   
@@ -4761,7 +4771,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       position = position === bottom && bottomExceed ? top : position;
       position = position === left && leftExceed ? right : position;
       position = position === right && rightExceed ? left : position;
-      
+  
       // update tooltip/popover class
       element.className[indexOf](position) === -1 && (element.className = element.className.replace(tipPositions,position));
   
@@ -4814,7 +4824,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       arrowLeft && (arrow[style][left] = arrowLeft + 'px');
     };
   
-  BSN.version = '2.0.22';
+  BSN.version = '2.0.23';
   
   /* Native Javascript for Bootstrap 4 | Alert
   -------------------------------------------*/
@@ -4984,7 +4994,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // DATA API
     var intervalAttribute = element[getAttribute](dataInterval),
         intervalOption = options[interval],
-        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute) || 5000,  // bootstrap carousel default interval
+        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute),  
         pauseData = element[getAttribute](dataPause) === hoverEvent || false,
         keyboardData = element[getAttribute](dataKeyboard) === 'true' || false,
       
@@ -4999,8 +5009,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     this[pause] = (options[pause] === hoverEvent || pauseData) ? hoverEvent : false; // false / hover
   
     this[interval] = typeof intervalOption === 'number' ? intervalOption
-                   : intervalData === 0 ? 0
-                   : intervalData;
+                   : intervalOption === false || intervalData === 0 || intervalData === false ? 0
+                   : 5000; // bootstrap carousel default interval
   
     // bind, event targets
     var self = this, index = element.index = 0, timer = element.timer = 0, 
@@ -5119,10 +5129,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         addClass(slides[next],carouselItem +'-'+ slideDirection);
         addClass(slides[activeItem],carouselItem +'-'+ slideDirection);
   
-        one(slides[activeItem], transitionEndEvent, function(e) {
-          var timeout = e[target] !== slides[activeItem] ? e.elapsedTime*1000 : 0;
+        one(slides[next], transitionEndEvent, function(e) {
+          var timeout = e[target] !== slides[next] ? e.elapsedTime*1000+100 : 20;
           
-          setTimeout(function(){
+          isSliding && setTimeout(function(){
             isSliding = false;
   
             addClass(slides[next],active);
@@ -5137,7 +5147,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
             if ( !DOC.hidden && self[interval] && !hasClass(element,paused) ) {
               self.cycle();
             }
-          },timeout+100);
+          }, timeout);
         });
   
       } else {
@@ -5202,23 +5212,24 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
     // event targets and constants
     var accordion = null, collapse = null, self = this, 
-      isAnimating = false, // when true it will prevent click handlers
       accordionData = element[getAttribute]('data-parent'),
+      activeCollapse, activeElement,
   
       // component strings
       component = 'collapse',
       collapsed = 'collapsed',
+      isAnimating = 'isAnimating',
   
       // private methods
       openAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, showEvent, component);
-        isAnimating = true;
+        collapseElement[isAnimating] = true;
         addClass(collapseElement,collapsing);
         removeClass(collapseElement,component);
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px';
         
         emulateTransitionEnd(collapseElement, function() {
-          isAnimating = false;
+          collapseElement[isAnimating] = false;
           collapseElement[setAttribute](ariaExpanded,'true');
           toggle[setAttribute](ariaExpanded,'true');
           removeClass(collapseElement,collapsing);
@@ -5230,7 +5241,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       },
       closeAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, hideEvent, component);
-        isAnimating = true;
+        collapseElement[isAnimating] = true;
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px'; // set height first
         removeClass(collapseElement,component);
         removeClass(collapseElement,showClass);
@@ -5239,7 +5250,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         collapseElement[style][height] = '0px';
         
         emulateTransitionEnd(collapseElement, function() {
-          isAnimating = false;
+          collapseElement[isAnimating] = false;
           collapseElement[setAttribute](ariaExpanded,'false');
           toggle[setAttribute](ariaExpanded,'false');
           removeClass(collapseElement,collapsing);
@@ -5258,29 +5269,29 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // public methods
     this.toggle = function(e) {
       e[preventDefault]();
-      if (isAnimating) return;
       if (!hasClass(collapse,showClass)) { self.show(); } 
       else { self.hide(); }
     };
     this.hide = function() {
+      if ( collapse[isAnimating] ) return;    
       closeAction(collapse,element);
       addClass(element,collapsed);
     };
     this.show = function() {
       if ( accordion ) {
-        var activeCollapse = queryElement('.'+component+'.'+showClass,accordion),
-            toggle = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
-                   || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) ),
-            correspondingCollapse = toggle && (toggle[getAttribute](dataTarget) || toggle.href);
-        if ( activeCollapse && toggle && activeCollapse !== collapse ) {
-          closeAction(activeCollapse,toggle); 
-          if ( correspondingCollapse.split('#')[1] !== collapse.id ) { addClass(toggle,collapsed); } 
-          else { removeClass(toggle,collapsed); }
-        }
+        activeCollapse = queryElement('.'+component+'.'+showClass,accordion);
+        activeElement = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
+                      || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) );
       }
   
-      openAction(collapse,element);
-      removeClass(element,collapsed);
+      if ( !collapse[isAnimating] || activeCollapse && !activeCollapse[isAnimating] ) {
+        if ( activeElement && activeCollapse !== collapse ) {
+          closeAction(activeCollapse,activeElement); 
+          addClass(activeElement,collapsed);
+        }
+        openAction(collapse,element);
+        removeClass(element,collapsed);
+      }
     };
   
     // init
@@ -5288,6 +5299,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       on(element, clickEvent, self.toggle);
     }
     collapse = getTarget();
+    collapse[isAnimating] = false;  // when true it will prevent click handlers  
     accordion = queryElement(options.parent) || accordionData && getClosest(element, accordionData);
     element[stringCollapse] = self;
   };
@@ -5445,6 +5457,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     var btnCheck = element[getAttribute](dataTarget)||element[getAttribute]('href'),
       checkModal = queryElement( btnCheck ),
       modal = hasClass(element,'modal') ? element : checkModal,
+      overlayDelay,
   
       // strings
       component = 'modal',
@@ -5478,13 +5491,13 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         return globalObject[innerWidth] || (htmlRect[right] - Math.abs(htmlRect[left]));
       },
       setScrollbar = function () {
-        var bodyStyle = globalObject.getComputedStyle(DOC[body]),
+        var bodyStyle = globalObject[getComputedStyle](DOC[body]),
             bodyPad = parseInt((bodyStyle[paddingRight]), 10), itemPad;
         if (bodyIsOverflowing) {
           DOC[body][style][paddingRight] = (bodyPad + scrollbarWidth) + 'px';
           if (fixedItems[length]){
             for (var i = 0; i < fixedItems[length]; i++) {
-              itemPad = globalObject.getComputedStyle(fixedItems[i])[paddingRight];
+              itemPad = globalObject[getComputedStyle](fixedItems[i])[paddingRight];
               fixedItems[i][style][paddingRight] = ( parseInt(itemPad) + scrollbarWidth) + 'px';
             }
           }
@@ -5626,6 +5639,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
       if ( overlay && modalOverlay && !hasClass(overlay,showClass)) {
         overlay[offsetWidth]; // force reflow to enable trasition
+        overlayDelay = getTransitionDurationFromElement(overlay);              
         addClass(overlay, showClass);
       }
   
@@ -5645,18 +5659,19 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         keydownHandlerToggle();
   
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerShow) : triggerShow();
-      }, supportTransitions ? 150 : 0);
+      }, supportTransitions && overlay ? overlayDelay : 0);
     };
     this.hide = function() {
       bootstrapCustomEvent.call(modal, hideEvent, component);
       overlay = queryElement('.'+modalBackdropString);
+      overlayDelay = overlay && getTransitionDurationFromElement(overlay);    
   
       removeClass(modal,showClass);
       modal[setAttribute](ariaHidden, true);
   
-      (function(){
+      setTimeout(function(){
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerHide) : triggerHide();
-      }());
+      }, supportTransitions && overlay ? overlayDelay : 0);
     };
     this.setContent = function( content ) {
       queryElement('.'+component+'-content',modal)[innerHTML] = content;
@@ -6012,7 +6027,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
               tabsContentContainer[style][height] = nextHeight + 'px'; // height animation
               tabsContentContainer[offsetWidth];
               emulateTransitionEnd(tabsContentContainer, triggerEnd);
-            },1);
+            },50);
           }
         } else {
           tabs[isAnimating] = false; 
@@ -6039,7 +6054,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
           tabsContentContainer[style][height] = containerHeight + 'px'; // height animation
           tabsContentContainer[offsetHeight];
           activeContent[style][float] = '';
-          nextContent[style][float] = '';   
+          nextContent[style][float] = '';
         }
   
         if ( hasClass(nextContent, 'fade') ) {
@@ -67639,7 +67654,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         checkForReservedNick() {
           /* Check if the user has a bookmark with a saved nickanme
-           * for this room, and if so use it.
+           * for this groupchat, and if so use it.
            * Otherwise delegate to the super method.
            */
           const _converse = this.__super__._converse;
@@ -67674,7 +67689,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         setBookmarkState() {
-          /* Set whether the room is bookmarked or not.
+          /* Set whether the groupchat is bookmarked or not.
            */
           const _converse = this.__super__._converse;
 
@@ -67826,10 +67841,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         openBookmarkedRoom(bookmark) {
           if (bookmark.get('autojoin')) {
-            const room = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+            const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
 
-            if (!room.get('hidden')) {
-              room.trigger('show');
+            if (!groupchat.get('hidden')) {
+              groupchat.trigger('show');
             }
           }
 
@@ -67929,18 +67944,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         markRoomAsBookmarked(bookmark) {
-          const room = _converse.chatboxes.get(bookmark.get('jid'));
+          const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
 
-          if (!_.isUndefined(room)) {
-            room.save('bookmarked', true);
+          if (!_.isUndefined(groupchat)) {
+            groupchat.save('bookmarked', true);
           }
         },
 
         markRoomAsUnbookmarked(bookmark) {
-          const room = _converse.chatboxes.get(bookmark.get('jid'));
+          const groupchat = _converse.chatboxes.get(bookmark.get('jid'));
 
-          if (!_.isUndefined(room)) {
-            room.save('bookmarked', false);
+          if (!_.isUndefined(groupchat)) {
+            groupchat.save('bookmarked', false);
           }
         },
 
@@ -68346,9 +68361,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return _converse.log(`Invalid JID "${jid}" provided in URL fragment`, Strophe.LogLevel.WARN);
         }
 
-        Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(() => {
-          _converse.api.chats.open(jid);
-        });
+        _converse.api.chats.open(jid);
       }
 
       _converse.router.route('converse/chat?jid=:jid', openChat);
@@ -68806,7 +68819,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             attrs.from = stanza.getAttribute('from');
             attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
 
-            if (attrs.from === this.get('nick')) {
+            if (Strophe.getResourceFromJid(attrs.from) === this.get('nick')) {
               attrs.sender = 'me';
             } else {
               attrs.sender = 'them';
@@ -69240,6 +69253,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
       _.extend(_converse.api, {
+        /**
+         * The "chats" grouping (used for one-on-one chats)
+         *
+         * @namespace
+         */
         'chats': {
           'create'(jids, attrs) {
             if (_.isUndefined(jids)) {
@@ -69270,21 +69288,78 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             });
           },
 
+          /**
+           * Opens a new one-on-one chat.
+           *
+           * @function
+           *
+           * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+           * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
+           *
+           * @example
+           * // To open a single chat, provide the JID of the contact you're chatting with in that chat:
+           * converse.plugins.add('myplugin', {
+           *     initialize: function() {
+           *         var _converse = this._converse;
+           *         // Note, buddy@example.org must be in your contacts roster!
+           *         _converse.api.chats.open('buddy@example.com').then((chat) => {
+           *             // Now you can do something with the chat model
+           *         });
+           *     }
+           * });
+           *
+           * @example
+           * // To open an array of chats, provide an array of JIDs:
+           * converse.plugins.add('myplugin', {
+           *     initialize: function () {
+           *         var _converse = this._converse;
+           *         // Note, these users must first be in your contacts roster!
+           *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then((chats) => {
+           *             // Now you can do something with the chat models
+           *         });
+           *     }
+           * });
+           *
+           */
           'open'(jids, attrs) {
-            if (_.isUndefined(jids)) {
-              _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+            return new Promise((resolve, reject) => {
+              Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(() => {
+                if (_.isUndefined(jids)) {
+                  const err_msg = "chats.open: You need to provide at least one JID";
 
-              return null;
-            } else if (_.isString(jids)) {
-              const chatbox = _converse.api.chats.create(jids, attrs);
+                  _converse.log(err_msg, Strophe.LogLevel.ERROR);
 
-              chatbox.trigger('show');
-              return chatbox;
-            }
-
-            return _.map(jids, jid => _converse.api.chats.create(jid, attrs).trigger('show'));
+                  reject(new Error(err_msg));
+                } else if (_.isString(jids)) {
+                  resolve(_converse.api.chats.create(jids, attrs).trigger('show'));
+                } else {
+                  resolve(_.map(jids, jid => _converse.api.chats.create(jid, attrs).trigger('show')));
+                }
+              }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            });
           },
 
+          /**
+           * Returns a chat model. The chat should already be open.
+           *
+           * @function
+           *
+           * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+           * @returns {Backbone.Model}
+           *
+           * @example
+           * // To return a single chat, provide the JID of the contact you're chatting with in that chat:
+           * const model = _converse.api.chats.get('buddy@example.com');
+           *
+           * @example
+           * // To return an array of chats, provide an array of JIDs:
+           * const models = _converse.api.chats.get(['buddy1@example.com', 'buddy2@example.com']);
+           *
+           * @example
+           * // To return all open chats, call the method without any parameters::
+           * const models = _converse.api.chats.get();
+           *
+           */
           'get'(jids) {
             if (_.isUndefined(jids)) {
               const result = [];
@@ -70191,6 +70266,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           ev.preventDefault();
           const textarea = this.el.querySelector('.chat-textarea'),
                 message = textarea.value;
+
+          if (!message.replace(/\s/g, '').length) {
+            return;
+          }
+
           let spoiler_hint;
 
           if (this.model.get('composing_spoiler')) {
@@ -70205,12 +70285,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const event = document.createEvent('Event');
           event.initEvent('input', true, true);
           textarea.dispatchEvent(event);
+          this.onMessageSubmitted(message, spoiler_hint);
 
-          if (message !== '') {
-            this.onMessageSubmitted(message, spoiler_hint);
-
-            _converse.emit('messageSend', message);
-          }
+          _converse.emit('messageSend', message);
 
           this.setChatState(_converse.ACTIVE);
         },
@@ -71371,7 +71448,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   _.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
 
 
-  _converse.core_plugins = ['converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-oauth', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
+  _converse.core_plugins = ['converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-oauth', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Setting wait to 59 instead of 60 to avoid timing conflicts with the
+  // webserver, which is often also set to 60 and might therefore sometimes
+  // return a 504 error page instead of passing through to the BOSH proxy.
+
+  const BOSH_WAIT = 59; // Make converse pluggable
 
   pluggable.enable(_converse, '_converse', 'pluggable'); // Module-level constants
 
@@ -72375,7 +72456,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.connection.reset();
         }
 
-        this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
+        this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged, BOSH_WAIT);
       } else if (this.authentication === _converse.LOGIN) {
         const password = _.isNil(credentials) ? _converse.connection.pass || this.password : credentials.password;
 
@@ -72403,7 +72484,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.connection.reset();
         }
 
-        this.connection.connect(this.jid, password, this.onConnectStatusChanged);
+        this.connection.connect(this.jid, password, this.onConnectStatusChanged, BOSH_WAIT);
       }
     };
 
@@ -73067,6 +73148,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'to': from
           });
         }
+
+        iqresult.c('query', attrs);
 
         _.each(plugin._identities, identity => {
           const attrs = {
@@ -73823,8 +73906,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         throw new Error("converse-embedded: auto_join_rooms must be an Array");
       }
 
-      if (_converse.auto_join_rooms.length !== 1 && _converse.auto_join_private_chats.length !== 1) {
-        throw new Error("converse-embedded: It doesn't make " + "sense to have the auto_join_rooms setting to zero or " + "more then one, since only one chat room can be open " + "at any time.");
+      if (_converse.auto_join_rooms.length > 1 && _converse.auto_join_private_chats.length > 1) {
+        throw new Error("converse-embedded: It doesn't make " + "sense to have the auto_join_rooms setting more then one, " + "since only one chat room can be open at any time.");
       }
     }
 
@@ -75761,25 +75844,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
       /* http://xmpp.org/extensions/xep-0045.html
        * ----------------------------------------
-       * 100 message      Entering a room         Inform user that any occupant is allowed to see the user's full JID
-       * 101 message (out of band)                Affiliation change  Inform user that his or her affiliation changed while not in the room
-       * 102 message      Configuration change    Inform occupants that room now shows unavailable members
-       * 103 message      Configuration change    Inform occupants that room now does not show unavailable members
-       * 104 message      Configuration change    Inform occupants that a non-privacy-related room configuration change has occurred
-       * 110 presence     Any room presence       Inform user that presence refers to one of its own room occupants
-       * 170 message or initial presence          Configuration change    Inform occupants that room logging is now enabled
-       * 171 message      Configuration change    Inform occupants that room logging is now disabled
-       * 172 message      Configuration change    Inform occupants that the room is now non-anonymous
-       * 173 message      Configuration change    Inform occupants that the room is now semi-anonymous
-       * 174 message      Configuration change    Inform occupants that the room is now fully-anonymous
-       * 201 presence     Entering a room         Inform user that a new room has been created
-       * 210 presence     Entering a room         Inform user that the service has assigned or modified the occupant's roomnick
-       * 301 presence     Removal from room       Inform user that he or she has been banned from the room
-       * 303 presence     Exiting a room          Inform all occupants of new room nickname
-       * 307 presence     Removal from room       Inform user that he or she has been kicked from the room
-       * 321 presence     Removal from room       Inform user that he or she is being removed from the room because of an affiliation change
-       * 322 presence     Removal from room       Inform user that he or she is being removed from the room because the room has been changed to members-only and the user is not a member
-       * 332 presence     Removal from room       Inform user that he or she is being removed from the room because of a system shutdown
+       * 100 message      Entering a groupchat         Inform user that any occupant is allowed to see the user's full JID
+       * 101 message (out of band)                     Affiliation change  Inform user that his or her affiliation changed while not in the groupchat
+       * 102 message      Configuration change         Inform occupants that groupchat now shows unavailable members
+       * 103 message      Configuration change         Inform occupants that groupchat now does not show unavailable members
+       * 104 message      Configuration change         Inform occupants that a non-privacy-related groupchat configuration change has occurred
+       * 110 presence     Any groupchat presence       Inform user that presence refers to one of its own groupchat occupants
+       * 170 message or initial presence               Configuration change    Inform occupants that groupchat logging is now enabled
+       * 171 message      Configuration change         Inform occupants that groupchat logging is now disabled
+       * 172 message      Configuration change         Inform occupants that the groupchat is now non-anonymous
+       * 173 message      Configuration change         Inform occupants that the groupchat is now semi-anonymous
+       * 174 message      Configuration change         Inform occupants that the groupchat is now fully-anonymous
+       * 201 presence     Entering a groupchat         Inform user that a new groupchat has been created
+       * 210 presence     Entering a groupchat         Inform user that the service has assigned or modified the occupant's roomnick
+       * 301 presence     Removal from groupchat       Inform user that he or she has been banned from the groupchat
+       * 303 presence     Exiting a groupchat          Inform all occupants of new groupchat nickname
+       * 307 presence     Removal from groupchat       Inform user that he or she has been kicked from the groupchat
+       * 321 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because of an affiliation change
+       * 322 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because the groupchat has been changed to members-only and the user is not a member
+       * 332 presence     Removal from groupchat       Inform user that he or she is being removed from the groupchat because of a system shutdown
        */
 
 
@@ -75827,12 +75910,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       };
 
       function insertRoomInfo(el, stanza) {
-        /* Insert room info (based on returned #disco IQ stanza)
+        /* Insert groupchat info (based on returned #disco IQ stanza)
          *
          * Parameters:
          *  (HTMLElement) el: The HTML DOM element that should
          *      contain the info.
-         *  (XMLElement) stanza: The IQ stanza containing the room
+         *  (XMLElement) stanza: The IQ stanza containing the groupchat
          *      info.
          */
         // All MUC features found here: http://xmpp.org/registrar/disco-features.html
@@ -75872,7 +75955,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
       function toggleRoomInfo(ev) {
-        /* Show/hide extra information about a room in a listing. */
+        /* Show/hide extra information about a groupchat in a listing. */
         const parent_el = u.ancestor(ev.target, '.room-item'),
               div_el = parent_el.querySelector('div.room-info');
 
@@ -75905,7 +75988,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return tpl_list_chatrooms_modal(_.extend(this.model.toJSON(), {
             'heading_list_chatrooms': __('Query for Groupchats'),
             'label_server_address': __('Server address'),
-            'label_query': __('Show rooms'),
+            'label_query': __('Show groupchats'),
             'server_placeholder': __('conference.example.org')
           }));
         },
@@ -75938,12 +76021,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
 
-        roomStanzaItemToHTMLElement(room) {
-          const name = Strophe.unescapeNode(room.getAttribute('name') || room.getAttribute('jid'));
+        roomStanzaItemToHTMLElement(groupchat) {
+          const name = Strophe.unescapeNode(groupchat.getAttribute('name') || groupchat.getAttribute('jid'));
           const div = document.createElement('div');
           div.innerHTML = tpl_room_item({
             'name': Strophe.xmlunescape(name),
-            'jid': room.getAttribute('jid'),
+            'jid': groupchat.getAttribute('jid'),
             'open_title': __('Click to open this groupchat'),
             'info_title': __('Show more information on this groupchat')
           });
@@ -75957,7 +76040,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         informNoRoomsFound() {
           const chatrooms_el = this.el.querySelector('.available-chatrooms');
           chatrooms_el.innerHTML = tpl_rooms_results({
-            'feedback_text': __('No rooms found')
+            'feedback_text': __('No groupchats found')
           });
           const input_el = this.el.querySelector('input[name="server"]');
           input_el.classList.remove('hidden');
@@ -75966,7 +76049,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         onRoomsFound(iq) {
           /* Handle the IQ stanza returned from the server, containing
-           * all its public rooms.
+           * all its public groupchats.
            */
           const available_chatrooms = this.el.querySelector('.available-chatrooms');
           this.rooms = iq.querySelectorAll('query item');
@@ -75975,7 +76058,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // For translators: %1$s is a variable and will be
             // replaced with the XMPP server name
             available_chatrooms.innerHTML = tpl_rooms_results({
-              'feedback_text': __('Rooms found:')
+              'feedback_text': __('Groupchats found:')
             });
             const fragment = document.createDocumentFragment();
 
@@ -75993,7 +76076,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         updateRoomsList() {
-          /* Send an IQ stanza to the server asking for all rooms
+          /* Send an IQ stanza to the server asking for all groupchats
            */
           _converse.connection.sendIQ($iq({
             to: this.model.get('muc_domain'),
@@ -76089,7 +76172,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       });
       _converse.ChatRoomView = _converse.ChatBoxView.extend({
-        /* Backbone.NativeView which renders a chat room, based upon the view
+        /* Backbone.NativeView which renders a groupchat, based upon the view
          * for normal one-on-one chat boxes.
          */
         length: 300,
@@ -76129,17 +76212,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.on('show', this.show, this);
           this.model.occupants.on('add', this.showJoinNotification, this);
           this.model.occupants.on('remove', this.showLeaveNotification, this);
-          this.model.occupants.on('change:show', occupant => {
-            if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
-              return;
-            }
-
-            if (occupant.get('show') === 'offline') {
-              this.showLeaveNotification(occupant);
-            } else if (occupant.get('show') === 'online') {
-              this.showJoinNotification(occupant);
-            }
-          });
+          this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
           this.createEmojiPicker();
           this.createOccupantsView();
           this.render().insertIntoDOM();
@@ -76149,8 +76222,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             const handler = () => {
               if (!u.isPersistableModel(this.model)) {
                 // Happens during tests, nothing to do if this
-                // is a hanging chatbox (i.e. not in the
-                // collection anymore).
+                // is a hanging chatbox (i.e. not in the collection anymore).
                 return;
               }
 
@@ -76181,12 +76253,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         renderHeading() {
-          /* Render the heading UI of the chat room. */
+          /* Render the heading UI of the groupchat. */
           this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
         },
 
         renderChatArea() {
-          /* Render the UI container in which chat room messages will appear.
+          /* Render the UI container in which groupchat messages will appear.
            */
           if (_.isNull(this.el.querySelector('.chat-area'))) {
             const container_el = this.el.querySelector('.chatroom-body');
@@ -76314,7 +76386,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         close(ev) {
-          /* Close this chat box, which implies leaving the room as
+          /* Close this chat box, which implies leaving the groupchat as
            * well.
            */
           this.hide();
@@ -76407,13 +76479,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
 
-        modifyRole(room, nick, role, reason, onSuccess, onError) {
+        modifyRole(groupchat, nick, role, reason, onSuccess, onError) {
           const item = $build("item", {
             nick,
             role
           });
           const iq = $iq({
-            to: room,
+            to: groupchat,
             type: "set"
           }).c("query", {
             xmlns: Strophe.NS.MUC_ADMIN
@@ -76427,7 +76499,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         validateRoleChangeCommand(command, args) {
-          /* Check that a command to change a chat room user's role or
+          /* Check that a command to change a groupchat user's role or
            * affiliation has anough arguments.
            */
           // TODO check if first argument is valid
@@ -76590,7 +76662,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         registerHandlers() {
           /* Register presence and message handlers for this chat
-           * room
+           * groupchat
            */
           // XXX: Ideally this can be refactored out so that we don't
           // need to do stanza processing inside the views in this
@@ -76630,12 +76702,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         join(nick, password) {
-          /* Join the chat room.
+          /* Join the groupchat.
            *
            * Parameters:
            *  (String) nick: The user's nickname
            *  (String) password: Optional password, if required by
-           *      the room.
+           *      the groupchat.
            */
           if (!nick && !this.model.get('nick')) {
             this.checkForReservedNick();
@@ -76648,13 +76720,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         renderConfigurationForm(stanza) {
           /* Renders a form given an IQ stanza containing the current
-           * room configuration.
+           * groupchat configuration.
            *
            * Returns a promise which resolves once the user has
            * either submitted the form, or canceled it.
            *
            * Parameters:
-           *  (XMLElement) stanza: The IQ stanza containing the room
+           *  (XMLElement) stanza: The IQ stanza containing the groupchat
            *      config.
            */
           const container_el = this.el.querySelector('.chatroom-body');
@@ -76707,7 +76779,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         getAndRenderConfigurationForm(ev) {
-          /* Start the process of configuring a chat room, either by
+          /* Start the process of configuring a groupchat, either by
            * rendering a configuration form, or by auto-configuring
            * based on the "roomconfig" data stored on the
            * Backbone.Model.
@@ -76727,7 +76799,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         submitNickname(ev) {
           /* Get the nickname value from the form and then join the
-           * chat room with it.
+           * groupchat with it.
            */
           ev.preventDefault();
           const nick_el = ev.target.nick;
@@ -76746,7 +76818,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         checkForReservedNick() {
           /* User service-discovery to ask the XMPP server whether
-           * this user has a reserved nickname for this room.
+           * this user has a reserved nickname for this groupchat.
            * If so, we'll use that, otherwise we render the nickname form.
            */
           this.showSpinner();
@@ -76757,7 +76829,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           /* We've received an IQ response from the server which
            * might contain the user's reserved nickname.
            * If no nickname is found we either render a form for
-           * them to specify one, or we try to join the room with the
+           * them to specify one, or we try to join the groupchat with the
            * node of the user's JID.
            *
            * Parameters:
@@ -77027,6 +77099,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
 
+        showJoinOrLeaveNotification(occupant) {
+          if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+            return;
+          }
+
+          if (occupant.get('show') === 'offline') {
+            this.showLeaveNotification(occupant);
+          } else if (occupant.get('show') === 'online') {
+            this.showJoinNotification(occupant);
+          }
+        },
+
         showJoinNotification(occupant) {
           if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
             return;
@@ -77074,10 +77158,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         showLeaveNotification(occupant) {
           const nick = occupant.get('nick'),
                 stat = occupant.get('status'),
-                last_el = this.content.lastElementChild,
-                last_msg_date = last_el.getAttribute('data-isodate');
+                last_el = this.content.lastElementChild;
 
-          if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && moment(last_msg_date).isSame(new Date(), "day") && _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
+          if (last_el && _.includes(_.get(last_el, 'classList', []), 'chat-info') && moment(last_el.getAttribute('data-isodate')).isSame(new Date(), "day") && _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
             let message;
 
             if (_.isNil(stat)) {
@@ -77108,7 +77191,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'data': `data-leave="${nick}"`
             };
 
-            if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leavejoin === `"${nick}"`) {
+            if (last_el && _.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leavejoin === `"${nick}"`) {
               last_el.outerHTML = tpl_info(data);
             } else {
               const el = u.stringToElement(tpl_info(data));
@@ -77139,7 +77222,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         showErrorMessageFromPresence(presence) {
-          // We didn't enter the room, so we must remove it from the MUC add-on
+          // We didn't enter the groupchat, so we must remove it from the MUC add-on
           const error = presence.querySelector('error');
 
           if (error.getAttribute('type') === 'auth') {
@@ -77156,7 +77239,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }
           } else if (error.getAttribute('type') === 'cancel') {
             if (!_.isNull(error.querySelector('not-allowed'))) {
-              this.showDisconnectMessages(__('You are not allowed to create new rooms.'));
+              this.showDisconnectMessages(__('You are not allowed to create new groupchats.'));
             } else if (!_.isNull(error.querySelector('not-acceptable'))) {
               this.showDisconnectMessages(__("Your nickname doesn't conform to this groupchat's policies."));
             } else if (!_.isNull(error.querySelector('conflict'))) {
@@ -77180,7 +77263,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         renderAfterTransition() {
-          /* Rerender the room after some kind of transition. For
+          /* Rerender the groupchat after some kind of transition. For
            * example after the spinner has been removed or after a
            * form has been submitted and removed.
            */
@@ -77254,8 +77337,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         render() {
           this.el.innerHTML = tpl_room_panel({
             'heading_chatrooms': __('Groupchats'),
-            'title_new_room': __('Add a new room'),
-            'title_list_rooms': __('Query for rooms')
+            'title_new_room': __('Add a new groupchat'),
+            'title_list_rooms': __('Query for groupchats')
           });
           return this;
         },
@@ -77430,7 +77513,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         promptForInvite(suggestion) {
-          const reason = prompt(__('You are about to invite %1$s to the chat room "%2$s". ' + 'You may optionally include a message, explaining the reason for the invitation.', suggestion.text.label, this.model.get('id')));
+          const reason = prompt(__('You are about to invite %1$s to the groupchat "%2$s". ' + 'You may optionally include a message, explaining the reason for the invitation.', suggestion.text.label, this.model.get('id')));
 
           if (reason !== null) {
             this.chatroomview.model.directInvite(suggestion.text.value, reason);
@@ -77510,7 +77593,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       function setMUCDomainFromDisco(controlboxview) {
         /* Check whether service discovery for the user's domain
          * returned MUC information and use that to automatically
-         * set the MUC domain for the "Rooms" panel of the controlbox.
+         * set the MUC domain in the "Add groupchat" modal.
          */
         function featureAdded(feature) {
           if (feature.get('var') === Strophe.NS.MUC && f.includes('conference', feature.entity.identities.pluck('category'))) {
@@ -77560,7 +77643,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       function reconnectToChatRooms() {
         /* Upon a reconnection event from converse, join again
-         * all the open chat rooms.
+         * all the open groupchats.
          */
         _converse.chatboxviews.each(function (view) {
           if (view.model.get('type') === converse.CHATROOMS_TYPE) {
@@ -77660,12 +77743,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       //
       // New functions which don't exist yet can also be added.
       tearDown() {
-        const rooms = this.chatboxes.where({
+        const groupchats = this.chatboxes.where({
           'type': converse.CHATROOMS_TYPE
         });
 
-        _.each(rooms, function (room) {
-          u.safeSave(room, {
+        _.each(groupchats, function (groupchat) {
+          u.safeSave(groupchat, {
             'connection_status': converse.ROOMSTATUS.DISCONNECTED
           });
         });
@@ -77729,7 +77812,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse.router.route('converse/room?jid=:jid', openRoom);
 
       _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
-        /* Opens a chat room, making sure that certain attributes
+        /* Opens a groupchat, making sure that certain attributes
          * are correct, for example that the "type" is set to
          * "chatroom".
          */
@@ -77779,7 +77862,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         registerHandlers() {
           /* Register presence and message handlers for this chat
-           * room
+           * groupchat
            */
           const room_jid = this.get('jid');
           this.removeHandlers();
@@ -77804,7 +77887,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         removeHandlers() {
           /* Remove the presence and message handlers that were
-           * registered for this chat room.
+           * registered for this groupchat.
            */
           if (this.message_handler) {
             _converse.connection.deleteHandler(this.message_handler);
@@ -77843,12 +77926,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         join(nick, password) {
-          /* Join the chat room.
+          /* Join the groupchat.
            *
            * Parameters:
            *  (String) nick: The user's nickname
            *  (String) password: Optional password, if required by
-           *      the room.
+           *      the groupchat.
            */
           nick = nick ? nick : this.get('nick');
 
@@ -77857,7 +77940,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
-            // We have restored a chat room from session storage,
+            // We have restored a groupchat from session storage,
             // so we don't send out a presence stanza again.
             return this;
           }
@@ -77883,7 +77966,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         leave(exit_msg) {
-          /* Leave the chat room.
+          /* Leave the groupchat.
            *
            * Parameters:
            *  (String) exit_msg: Optional message to indicate your
@@ -77932,14 +78015,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         getRoomFeatures() {
-          /* Fetch the room disco info, parse it and then save it.
+          /* Fetch the groupchat disco info, parse it and then save it.
            */
           return new Promise((resolve, reject) => {
             _converse.api.disco.info(this.get('jid'), null).then(stanza => {
               this.parseRoomFeatures(stanza);
               resolve();
             }).catch(err => {
-              _converse.log("Could not parse the room features", Strophe.LogLevel.WARN);
+              _converse.log("Could not parse the groupchat features", Strophe.LogLevel.WARN);
 
               _converse.log(err, Strophe.LogLevel.WARN);
 
@@ -77950,12 +78033,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         getRoomJIDAndNick(nick) {
           /* Utility method to construct the JID for the current user
-           * as occupant of the room.
+           * as occupant of the groupchat.
            *
-           * This is the room JID, with the user's nick added at the
+           * This is the groupchat JID, with the user's nick added at the
            * end.
            *
-           * For example: room@conference.example.org/nickname
+           * For example: groupchat@conference.example.org/nickname
            */
           if (nick) {
             this.save({
@@ -77965,8 +78048,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             nick = this.get('nick');
           }
 
-          const room = this.get('jid');
-          const jid = Strophe.getBareJidFromJid(room);
+          const groupchat = this.get('jid');
+          const jid = Strophe.getBareJidFromJid(groupchat);
           return jid + (nick !== null ? `/${nick}` : "");
         },
 
@@ -78006,7 +78089,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *    (String) reason - Optional reason for the invitation
            */
           if (this.get('membersonly')) {
-            // When inviting to a members-only room, we first add
+            // When inviting to a members-only groupchat, we first add
             // the person to the member list by giving them an
             // affiliation of 'member' (if they're not affiliated
             // already), otherwise they won't be able to join.
@@ -78051,7 +78134,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         parseRoomFeatures(iq) {
-          /* Parses an IQ stanza containing the room's features.
+          /* Parses an IQ stanza containing the groupchat's features.
            *
            * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
            *
@@ -78098,7 +78181,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         requestMemberList(affiliation) {
           /* Send an IQ stanza to the server, asking it for the
-           * member-list of this room.
+           * member-list of this groupchat.
            *
            * See: http://xmpp.org/extensions/xep-0045.html#modifymember
            *
@@ -78157,7 +78240,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         saveConfiguration(form) {
-          /* Submit the room configuration form by sending an IQ
+          /* Submit the groupchat configuration form by sending an IQ
            * stanza to the server.
            *
            * Returns a promise which resolves once the XMPP server
@@ -78177,7 +78260,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         autoConfigureChatRoom() {
-          /* Automatically configure room based on this model's
+          /* Automatically configure groupchat based on this model's
            * 'roomconfig' data.
            *
            * Returns a promise which resolves once a response IQ has
@@ -78224,7 +78307,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         fetchRoomConfiguration() {
-          /* Send an IQ stanza to fetch the room configuration data.
+          /* Send an IQ stanza to fetch the groupchat configuration data.
            * Returns a promise which resolves once the response IQ
            * has been received.
            */
@@ -78239,17 +78322,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         sendConfiguration(config, callback, errback) {
-          /* Send an IQ stanza with the room configuration.
+          /* Send an IQ stanza with the groupchat configuration.
            *
            * Parameters:
-           *  (Array) config: The room configuration
+           *  (Array) config: The groupchat configuration
            *  (Function) callback: Callback upon succesful IQ response
            *      The first parameter passed in is IQ containing the
-           *      room configuration.
+           *      groupchat configuration.
            *      The second is the response IQ from the server.
            *  (Function) errback: Callback upon error IQ response
            *      The first parameter passed in is IQ containing the
-           *      room configuration.
+           *      groupchat configuration.
            *      The second is the response IQ from the server.
            */
           const iq = $iq({
@@ -78329,7 +78412,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         setAffiliations(members) {
           /* Send IQ stanzas to the server to modify the
-           * affiliations in this room.
+           * affiliations in this groupchat.
            *
            * See: http://xmpp.org/extensions/xep-0045.html#modifymember
            *
@@ -78381,7 +78464,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         checkForReservedNick(callback, errback) {
           /* Use service-discovery to ask the XMPP server whether
-           * this user has a reserved nickname for this room.
+           * this user has a reserved nickname for this groupchat.
            * If so, we'll use that, otherwise we render the nickname form.
            *
            * Parameters:
@@ -78518,7 +78601,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         onMessage(stanza) {
-          /* Handler for all MUC messages sent to this chat room.
+          /* Handler for all MUC messages sent to this groupchat.
            *
            * Parameters:
            *  (XMLElement) stanza: The message stanza.
@@ -78596,14 +78679,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           /* Handles a received presence relating to the current
            * user.
            *
-           * For locked rooms (which are by definition "new"), the
-           * room will either be auto-configured or created instantly
-           * (with default config) or a configuration room will be
+           * For locked groupchats (which are by definition "new"), the
+           * groupchat will either be auto-configured or created instantly
+           * (with default config) or a configuration groupchat will be
            * rendered.
            *
-           * If the room is not locked, then the room will be
+           * If the groupchat is not locked, then the groupchat will be
            * auto-configured only if applicable and if the current
-           * user is the room's owner.
+           * user is the groupchat's owner.
            *
            * Parameters:
            *  (XMLElement) pres: The stanza
@@ -78619,11 +78702,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               this.saveConfiguration().then(this.getRoomFeatures.bind(this));
             } else {
               this.trigger('configurationNeeded');
-              return; // We haven't yet entered the room, so bail here.
+              return; // We haven't yet entered the groupchat, so bail here.
             }
           } else if (!this.get('features_fetched')) {
-            // The features for this room weren't fetched.
-            // That must mean it's a new room without locking
+            // The features for this groupchat weren't fetched.
+            // That must mean it's a new groupchat without locking
             // (in which case Prosody doesn't send a 201 status),
             // otherwise the features would have been fetched in
             // the "initialize" method already.
@@ -78814,7 +78897,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
 
       _converse.onDirectMUCInvitation = function (message) {
-        /* A direct MUC invitation to join a room has been received
+        /* A direct MUC invitation to join a groupchat has been received
          * See XEP-0249: Direct MUC invitations.
          *
          * Parameters:
@@ -78836,9 +78919,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           contact = contact ? contact.get('fullname') : Strophe.getNodeFromJid(from);
 
           if (!reason) {
-            result = confirm(__("%1$s has invited you to join a chat room: %2$s", contact, room_jid));
+            result = confirm(__("%1$s has invited you to join a groupchat: %2$s", contact, room_jid));
           } else {
-            result = confirm(__('%1$s has invited you to join a chat room: %2$s, and left the following reason: "%3$s"', contact, room_jid, reason));
+            result = confirm(__('%1$s has invited you to join a groupchat: %2$s, and left the following reason: "%3$s"', contact, room_jid, reason));
           }
         }
 
@@ -78880,24 +78963,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       };
 
       function autoJoinRooms() {
-        /* Automatically join chat rooms, based on the
+        /* Automatically join groupchats, based on the
          * "auto_join_rooms" configuration setting, which is an array
-         * of strings (room JIDs) or objects (with room JID and other
+         * of strings (groupchat JIDs) or objects (with groupchat JID and other
          * settings).
          */
-        _.each(_converse.auto_join_rooms, function (room) {
+        _.each(_converse.auto_join_rooms, function (groupchat) {
           if (_converse.chatboxes.where({
-            'jid': room
+            'jid': groupchat
           }).length) {
             return;
           }
 
-          if (_.isString(room)) {
-            _converse.api.rooms.open(room);
-          } else if (_.isObject(room)) {
-            _converse.api.rooms.open(room.jid, room.nick);
+          if (_.isString(groupchat)) {
+            _converse.api.rooms.open(groupchat);
+          } else if (_.isObject(groupchat)) {
+            _converse.api.rooms.open(groupchat.jid, groupchat.nick);
           } else {
-            _converse.log('Invalid room criteria specified for "auto_join_rooms"', Strophe.LogLevel.ERROR);
+            _converse.log('Invalid groupchat criteria specified for "auto_join_rooms"', Strophe.LogLevel.ERROR);
           }
         });
 
@@ -78905,7 +78988,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
       function disconnectChatRooms() {
-        /* When disconnecting, mark all chat rooms as
+        /* When disconnecting, mark all groupchats as
          * disconnected, so that they will be properly entered again
          * when fetched from session storage.
          */
@@ -78950,7 +79033,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       /************************ END Event Handlers ************************/
 
       /************************ BEGIN API ************************/
-      // We extend the default converse.js API to add methods specific to MUC chat rooms.
+      // We extend the default converse.js API to add methods specific to MUC groupchats.
 
 
       _.extend(_converse.api, {
@@ -79007,13 +79090,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           },
 
           'open'(jids, attrs) {
-            if (_.isUndefined(jids)) {
-              throw new TypeError('rooms.open: You need to provide at least one JID');
-            } else if (_.isString(jids)) {
-              return _converse.api.rooms.create(jids, attrs).trigger('show');
-            }
+            return new Promise((resolve, reject) => {
+              _converse.api.waitUntil('chatBoxesFetched').then(() => {
+                if (_.isUndefined(jids)) {
+                  const err_msg = 'rooms.open: You need to provide at least one JID';
 
-            return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).trigger('show'));
+                  _converse.log(err_msg, Strophe.LogLevel.ERROR);
+
+                  reject(new TypeError(err_msg));
+                } else if (_.isString(jids)) {
+                  resolve(_converse.api.rooms.create(jids, attrs).trigger('show'));
+                } else {
+                  resolve(_.map(jids, jid => _converse.api.rooms.create(jid, attrs).trigger('show')));
+                }
+              });
+            });
           },
 
           'get'(jids, attrs, create) {
@@ -83815,8 +83906,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         xhr.onload = function () {
           if (xhr.status >= 200 && xhr.status < 400) {
-            jed_instance = new Jed(window.JSON.parse(xhr.responseText));
-            resolve();
+            try {
+              const data = window.JSON.parse(xhr.responseText);
+              jed_instance = new Jed(data);
+              resolve();
+            } catch (e) {
+              xhr.onerror(e);
+            }
           } else {
             xhr.onerror();
           }
@@ -84497,7 +84593,7 @@ __e(o.__('Name')) +
 '</strong>: ' +
 __e(o.name) +
 '</p>\n                    <p class="room-info"><strong>' +
-__e(o.__('Room address (JID)')) +
+__e(o.__('Groupchat address (JID)')) +
 '</strong>: ' +
 __e(o.jid) +
 '</p>\n                    <p class="room-info"><strong>' +
@@ -84527,7 +84623,7 @@ __e(o.__('Features')) +
 __p += '\n                        <li class="feature" ><span class="fa fa-lock"></span>' +
 __e( o.__('Password protected') ) +
 ' - <em>' +
-__e( o.__('This room requires a password before entry') ) +
+__e( o.__('This groupchat requires a password before entry') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -84535,7 +84631,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-unlock"></span>' +
 __e( o.__('No password required') ) +
 ' - <em>' +
-__e( o.__('This room does not require a password upon entry') ) +
+__e( o.__('This groupchat does not require a password upon entry') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -84543,7 +84639,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-eye-slash"></span>' +
 __e( o.__('Hidden') ) +
 ' - <em>' +
-__e( o.__('This room is not publicly searchable') ) +
+__e( o.__('This groupchat is not publicly searchable') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -84551,7 +84647,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-eye"></span>' +
 __e( o.__('Public') ) +
 ' - <em>' +
-__e( o.__('This room is publicly searchable') ) +
+__e( o.__('This groupchat is publicly searchable') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -84559,7 +84655,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-address-book"></span>' +
 __e( o.__('Members only') ) +
 ' - <em>' +
-__e( o.__('this room is restricted to members only') ) +
+__e( o.__('This groupchat is restricted to members only') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -84567,7 +84663,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-globe"></span>' +
 __e( o.__('Open') ) +
 ' - <em>' +
-__e( o.__('Anyone can join this room') ) +
+__e( o.__('Anyone can join this groupchat') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -84575,7 +84671,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-save"></span>' +
 __e( o.__('Persistent') ) +
 ' - <em>' +
-__e( o.__('This room persists even if it\'s unoccupied') ) +
+__e( o.__('This groupchat persists even if it\'s unoccupied') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -84583,7 +84679,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-snowflake-o"></span>' +
 __e( o.__('Temporary') ) +
 ' - <em>' +
-__e( o.__('This room will disappear once the last person leaves') ) +
+__e( o.__('This groupchat will disappear once the last person leaves') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -84591,7 +84687,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-id-card"></span>' +
 __e( o.__('Not anonymous') ) +
 ' - <em>' +
-__e( o.__('All other room occupants can see your XMPP username') ) +
+__e( o.__('All other groupchat participants can see your XMPP username') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -84607,7 +84703,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-gavel"></span>' +
 __e( o.__('Moderated') ) +
 ' - <em>' +
-__e( o.__('This room is being moderated') ) +
+__e( o.__('This groupchat is being moderated') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -84615,7 +84711,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-info-circle"></span>' +
 __e( o.__('Not moderated') ) +
 ' - <em>' +
-__e( o.__('This room is not being moderated') ) +
+__e( o.__('This groupchat is not being moderated') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';

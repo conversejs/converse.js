@@ -12,44 +12,46 @@
     describe("A list of open rooms", function () {
 
         it("is shown in the \"Rooms\" panel", mock.initConverseWithPromises(
-            null, ['rosterGroupsFetched'],
+            null, ['rosterGroupsFetched', 'chatBoxesFetched'],
             { allow_bookmarks: false // Makes testing easier, otherwise we
                                      // have to mock stanza traffic.
             },
             function (done, _converse) {
                 test_utils.openControlBox();
-                var controlbox = _converse.chatboxviews.get('controlbox');
-
-                var list = controlbox.el.querySelector('div.rooms-list-container');
+                const controlbox = _converse.chatboxviews.get('controlbox');
+                let list = controlbox.el.querySelector('div.rooms-list-container');
                 expect(_.includes(list.classList, 'hidden')).toBeTruthy();
 
-                test_utils.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC');
+                let room_els;
 
-                expect(_.isUndefined(_converse.rooms_list_view)).toBeFalsy();
-                var room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                expect(room_els.length).toBe(1);
-                expect(room_els[0].innerText).toBe('room@conference.shakespeare.lit');
+                test_utils.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC')
+                .then(() => {
+                    expect(_.isUndefined(_converse.rooms_list_view)).toBeFalsy();
+                    room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+                    expect(room_els.length).toBe(1);
+                    expect(room_els[0].innerText).toBe('room@conference.shakespeare.lit');
+                    return test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                }).then(() => {
+                    room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+                    expect(room_els.length).toBe(2);
 
-                test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                expect(room_els.length).toBe(2);
+                    var view = _converse.chatboxviews.get('room@conference.shakespeare.lit');
+                    view.close();
+                    room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+                    expect(room_els.length).toBe(1);
+                    expect(room_els[0].innerText).toBe('lounge@localhost');
+                    list = controlbox.el.querySelector('div.rooms-list-container');
+                    expect(_.includes(list.classList, 'hidden')).toBeFalsy();
 
-                var view = _converse.chatboxviews.get('room@conference.shakespeare.lit');
-                view.close();
-                room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                expect(room_els.length).toBe(1);
-                expect(room_els[0].innerText).toBe('lounge@localhost');
-                list = controlbox.el.querySelector('div.rooms-list-container');
-                expect(_.includes(list.classList, 'hidden')).toBeFalsy();
+                    view = _converse.chatboxviews.get('lounge@localhost');
+                    view.close();
+                    room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+                    expect(room_els.length).toBe(0);
 
-                view = _converse.chatboxviews.get('lounge@localhost');
-                view.close();
-                room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                expect(room_els.length).toBe(0);
-
-                list = controlbox.el.querySelector('div.rooms-list-container');
-                expect(_.includes(list.classList, 'hidden')).toBeTruthy();
-                done();
+                    list = controlbox.el.querySelector('div.rooms-list-container');
+                    expect(_.includes(list.classList, 'hidden')).toBeTruthy();
+                    done();
+                });
             }
         ));
     });
@@ -57,79 +59,81 @@
     describe("A groupchat shown in the groupchats list", function () {
 
         it("is highlighted if its currently open", mock.initConverseWithPromises(
-            null, ['rosterGroupsFetched'],
+            null, ['rosterGroupsFetched', 'chatBoxesFetched'],
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we
                                      // have to mock stanza traffic.
             }, function (done, _converse) {
 
-            spyOn(_converse, 'isSingleton').and.callFake(function () {
-                return true;
-            });
+            spyOn(_converse, 'isSingleton').and.callFake(() => true);
 
+            let room_els, item;
             test_utils.openControlBox();
-            _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
-            let room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom");
-            expect(room_els.length).toBe(1);
+            _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'})
+            .then(() => {
+                room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom");
+                expect(room_els.length).toBe(1);
 
-            let item = room_els[0];
-            expect(u.hasClass('open', item)).toBe(true);
-            expect(item.textContent.trim()).toBe('coven@chat.shakespeare.lit');
+                item = room_els[0];
+                expect(u.hasClass('open', item)).toBe(true);
+                expect(item.textContent.trim()).toBe('coven@chat.shakespeare.lit');
+                return _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'});
+            }).then(() => {
+                room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+                expect(room_els.length).toBe(2);
 
-            _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'});
-            room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-            expect(room_els.length).toBe(2);
-
-            room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom.open");
-            expect(room_els.length).toBe(1);
-            item = room_els[0];
-            expect(item.textContent.trim()).toBe('balcony@chat.shakespeare.lit');
-            done();
+                room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom.open");
+                expect(room_els.length).toBe(1);
+                item = room_els[0];
+                expect(item.textContent.trim()).toBe('balcony@chat.shakespeare.lit');
+                done();
+            });
         }));
 
         it("has an info icon which opens a details modal when clicked", mock.initConverseWithPromises(
-            null, ['rosterGroupsFetched'],
+            null, ['rosterGroupsFetched', 'chatBoxesFetched'],
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we
                                      // have to mock stanza traffic.
             }, function (done, _converse) {
 
+            let view;
             test_utils.openControlBox();
-            _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
-            const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-            const last_stanza = _.last(_converse.connection.IQ_stanzas).nodeTree;
-            const IQ_id = last_stanza.getAttribute('id');
-            const features_stanza = $iq({
-                    'from': 'coven@chat.shakespeare.lit',
-                    'id': IQ_id,
-                    'to': 'dummy@localhost/desktop',
-                    'type': 'result'
-                })
-                .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
-                    .c('identity', {
-                        'category': 'conference',
-                        'name': 'A Dark Cave',
-                        'type': 'text'
-                    }).up()
-                    .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
-                    .c('feature', {'var': 'muc_passwordprotected'}).up()
-                    .c('feature', {'var': 'muc_hidden'}).up()
-                    .c('feature', {'var': 'muc_temporary'}).up()
-                    .c('feature', {'var': 'muc_open'}).up()
-                    .c('feature', {'var': 'muc_unmoderated'}).up()
-                    .c('feature', {'var': 'muc_nonanonymous'}).up()
-                    .c('feature', {'var': 'urn:xmpp:mam:0'}).up()
-                    .c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
-                        .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
-                            .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
-                        .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
-                            .c('value').t('This is the description').up().up()
-                        .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
-                            .c('value').t(0);
-            _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
-
-            test_utils.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING)
-            .then(function () {
+            _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'})
+            .then(() => {
+                view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                const last_stanza = _.last(_converse.connection.IQ_stanzas).nodeTree;
+                const IQ_id = last_stanza.getAttribute('id');
+                const features_stanza = $iq({
+                        'from': 'coven@chat.shakespeare.lit',
+                        'id': IQ_id,
+                        'to': 'dummy@localhost/desktop',
+                        'type': 'result'
+                    })
+                    .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                        .c('identity', {
+                            'category': 'conference',
+                            'name': 'A Dark Cave',
+                            'type': 'text'
+                        }).up()
+                        .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+                        .c('feature', {'var': 'muc_passwordprotected'}).up()
+                        .c('feature', {'var': 'muc_hidden'}).up()
+                        .c('feature', {'var': 'muc_temporary'}).up()
+                        .c('feature', {'var': 'muc_open'}).up()
+                        .c('feature', {'var': 'muc_unmoderated'}).up()
+                        .c('feature', {'var': 'muc_nonanonymous'}).up()
+                        .c('feature', {'var': 'urn:xmpp:mam:0'}).up()
+                        .c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
+                            .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
+                                .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
+                            .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
+                                .c('value').t('This is the description').up().up()
+                            .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
+                                .c('value').t(0);
+                _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
+                return test_utils.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING)
+            }).then(function () {
                 var presence = $pres({
                         to: _converse.connection.jid,
                         from: 'coven@chat.shakespeare.lit/some1',
@@ -201,23 +205,22 @@
             },
             function (done, _converse) {
 
-            spyOn(window, 'confirm').and.callFake(function () {
-                return true;
+            spyOn(window, 'confirm').and.callFake(() => true);
+            expect(_converse.chatboxes.length).toBe(1);
+            test_utils.openChatRoom(_converse, 'lounge', 'conference.shakespeare.lit', 'JC')
+            .then(() => {
+                expect(_converse.chatboxes.length).toBe(2);
+                var room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+                expect(room_els.length).toBe(1);
+                var close_el = _converse.rooms_list_view.el.querySelector(".close-room");
+                close_el.click();
+                expect(window.confirm).toHaveBeenCalledWith(
+                    'Are you sure you want to leave the groupchat lounge@conference.shakespeare.lit?');
+                room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+                expect(room_els.length).toBe(0);
+                expect(_converse.chatboxes.length).toBe(1);
+                done();
             });
-            expect(_converse.chatboxes.length).toBe(1);
-            test_utils.openChatRoom(
-                _converse, 'lounge', 'conference.shakespeare.lit', 'JC');
-            expect(_converse.chatboxes.length).toBe(2);
-            var room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-            expect(room_els.length).toBe(1);
-            var close_el = _converse.rooms_list_view.el.querySelector(".close-room");
-            close_el.click();
-            expect(window.confirm).toHaveBeenCalledWith(
-                'Are you sure you want to leave the groupchat lounge@conference.shakespeare.lit?');
-            room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-            expect(room_els.length).toBe(0);
-            expect(_converse.chatboxes.length).toBe(1);
-            done();
         }));
 
         it("shows unread messages directed at the user", mock.initConverseWithAsync(

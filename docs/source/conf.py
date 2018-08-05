@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Converse.js documentation build configuration file, created by
+# Converse documentation build configuration file, created by
 # sphinx-quickstart on Fri Apr 26 20:48:03 2013.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -40,8 +40,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Converse.js'
-copyright = u'2017, JC Brand'
+project = u'Converse'
+copyright = u'2018, JC Brand'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -108,7 +108,7 @@ html_logo = "_static/conversejs_small.png"
 # theme further.
 html_theme_options = {
     # Navigation bar title. (Default: ``project`` value)
-    'navbar_title': "Converse.js",
+    'navbar_title': "Converse",
     # Tab name for entire site. (Default: "Site")
     'navbar_site_name': "Table of Contents",
     # A list of tuples containing pages or urls to link to.
@@ -229,7 +229,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Conversejs.tex', u'Converse.js Documentation',
+  ('index', 'Conversejs.tex', u'Converse Documentation',
    u'JC Brand', 'manual'),
 ]
 
@@ -259,7 +259,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'conversejs', u'Converse.js Documentation',
+    ('index', 'conversejs', u'Converse Documentation',
      [u'JC Brand'], 1)
 ]
 
@@ -273,8 +273,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Conversejs', u'Converse.js Documentation',
-   u'JC Brand', 'Conversejs', 'Open Source XMPP webchat',
+  ('index', 'Conversejs', u'Converse Documentation',
+   u'JC Brand', 'Converse', 'Open Source XMPP webchat',
    'Miscellaneous'),
 ]
 

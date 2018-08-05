@@ -44,7 +44,7 @@
     "backbone.overview": "1.0.2",
     "backbone.vdomview": "1.0.1",
     "bootstrap": "^4.0.0",
-    "bootstrap.native": "^2.0.22",
+    "bootstrap.native": "^2.0.23",
     "bourbon": "^4.3.2",
     "clean-css-cli": "^4.0.10",
     "emojione": "^3.0.3",

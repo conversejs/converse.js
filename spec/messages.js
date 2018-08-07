@@ -1864,7 +1864,7 @@
 
         it("is specially marked when you are mentioned in it",
                 mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
@@ -1882,7 +1882,7 @@
                 view.model.onMessage(msg);
                 expect($(view.el).find('.chat-msg').hasClass('mentioned')).toBeTruthy();
                 done();
-            });
+            }).catch(_.partial(console.error, _));
         }));
 
 

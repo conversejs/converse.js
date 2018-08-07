@@ -583,6 +583,7 @@
                     this.el.innerHTML = tpl_chatroom();
                     this.renderHeading();
                     this.renderChatArea();
+                    this.renderMessageForm();
                     if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                         this.showSpinner();
                     }
@@ -600,14 +601,9 @@
                     if (_.isNull(this.el.querySelector('.chat-area'))) {
                         const container_el = this.el.querySelector('.chatroom-body');
                         container_el.insertAdjacentHTML('beforeend', tpl_chatarea({
-                            'label_message': __('Message'),
-                            'label_send': __('Send'),
-                            'show_send_button': _converse.show_send_button,
-                            'show_toolbar': _converse.show_toolbar,
-                            'unread_msgs': __('You have unread messages')
+                            'show_send_button': _converse.show_send_button
                         }));
                         container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
-                        this.renderToolbar(tpl_chatroom_toolbar);
                         this.content = this.el.querySelector('.chat-content');
                         this.toggleOccupants(null, true);
                     }

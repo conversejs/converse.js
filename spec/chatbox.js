@@ -707,7 +707,7 @@
                         .then(function () {
                             var view = _converse.chatboxviews.get(sender_jid);
                             // Check that the notification appears inside the chatbox in the DOM
-                            var events = view.el.querySelectorAll('.chat-state-notification');
+                            let events = view.el.querySelectorAll('.chat-state-notification');
                             expect(events.length).toBe(1);
                             expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
 

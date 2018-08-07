@@ -812,7 +812,7 @@
             defaults () {
                 return {
                     "jid": _converse.bare_jid,
-                    "status":  _converse.default_state,
+                    "status":  _converse.default_state
                 }
             },
 

@@ -2659,6 +2659,19 @@
 
         describe("When attempting to enter a groupchat", function () {
 
+            it("will use the nickname set in the global settings if the user doesn't have a VCard nickname",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'nickname': 'Benedict-Cucumberpatch'},
+                    function (done, _converse) {
+
+                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost')
+                .then(function () {
+                    const view = _converse.chatboxviews.get('problematic@muc.localhost');
+                    expect(view.model.get('nick')).toBe('Benedict-Cucumberpatch');
+                    done();
+                }).catch(_.partial(console.error, _));
+            }));
+
             it("will show an error message if the groupchat requires a password",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},

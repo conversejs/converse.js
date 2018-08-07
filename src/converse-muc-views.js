@@ -477,6 +477,10 @@
                 openChatRoom (ev) {
                     ev.preventDefault();
                     const data = this.parseRoomDataFromEvent(ev.target);
+                    if (data.nick === "") {
+                        // Make sure defaults apply if no nick is provided.
+                        data.nick = undefined;
+                    }
                     _converse.api.rooms.open(data.jid, data);
                     this.modal.hide();
                     ev.target.reset();

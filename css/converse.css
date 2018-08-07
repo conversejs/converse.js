@@ -7507,7 +7507,7 @@ body.reset {
       margin: 0;
       padding: 0.25em;
       display: block;
-      border-top: 8px solid #3AA569;
+      border-top: 4px solid #3AA569;
       background-color: white;
       color: #3AA569; }
       #conversejs .chatbox .sendXMPPMessage .chat-toolbar .fa, #conversejs .chatbox .sendXMPPMessage .chat-toolbar .fa:hover {
@@ -8672,7 +8672,7 @@ body.reset {
   #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-toolbar,
   #conversejs .chatroom .sendXMPPMessage .chat-toolbar {
     background-color: white;
-    border-top: 8px solid #E77051;
+    border-top: 4px solid #E77051;
     color: #E77051; }
     #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-toolbar .fa, #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-toolbar .fa:hover,
     #conversejs .chatroom .sendXMPPMessage .chat-toolbar .fa,

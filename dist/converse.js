@@ -70191,7 +70191,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.showMessage(message);
 
           if (message.get('correcting')) {
-            this.insertIntoTextArea(message.get('message'), true);
+            this.insertIntoTextArea(message.get('message'), true, true);
           }
 
           _converse.emit('messageAdded', {
@@ -70332,10 +70332,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }
 
             message.save('correcting', true);
-            this.insertIntoTextArea(message.get('message'), true);
+            this.insertIntoTextArea(message.get('message'), true, true);
           } else {
             message.save('correcting', false);
-            this.insertIntoTextArea('', true);
+            this.insertIntoTextArea('', true, false);
           }
         },
 
@@ -70358,10 +70358,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           if (message) {
-            this.insertIntoTextArea(message.get('message'), true);
+            this.insertIntoTextArea(message.get('message'), true, true);
             message.save('correcting', true);
           } else {
-            this.insertIntoTextArea('', true);
+            this.insertIntoTextArea('', true, false);
           }
         },
 
@@ -70386,7 +70386,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           message = message || this.getOwnMessages().findLast(msg => msg.get('message'));
 
           if (message) {
-            this.insertIntoTextArea(message.get('message'), true);
+            this.insertIntoTextArea(message.get('message'), true, true);
             message.save('correcting', true);
           }
         },
@@ -70414,10 +70414,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return this;
         },
 
-        insertIntoTextArea(value, replace = false) {
+        insertIntoTextArea(value, replace = false, correcting = false) {
           const textarea = this.el.querySelector('.chat-textarea');
 
+          if (correcting) {
+            u.addClass('correcting', textarea);
+          } else {
+            u.removeClass('correcting', textarea);
+          }
+
           if (replace) {
+            textarea.value = '';
             textarea.value = value;
           } else {
             let existing = textarea.value;
@@ -70426,10 +70433,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               existing = existing + ' ';
             }
 
+            textarea.value = '';
             textarea.value = existing + value + ' ';
           }
 
-          textarea.focus();
+          u.putCurserAtEnd(textarea);
         },
 
         createEmojiPicker() {
@@ -75823,11 +75831,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
       _converse.api.settings.update({
-        auto_list_rooms: false,
-        hide_muc_server: false,
+        'auto_list_rooms': false,
+        'hide_muc_server': false,
         // TODO: no longer implemented...
-        muc_disable_moderator_commands: false,
-        visible_toolbar_buttons: {
+        'muc_disable_moderator_commands': false,
+        'visible_toolbar_buttons': {
           'toggle_occupants': true
         }
       });
@@ -76143,6 +76151,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           ev.preventDefault();
           const data = this.parseRoomDataFromEvent(ev.target);
 
+          if (data.nick === "") {
+            // Make sure defaults apply if no nick is provided.
+            data.nick = undefined;
+          }
+
           _converse.api.rooms.open(data.jid, data);
 
           this.modal.hide();
@@ -76244,6 +76257,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.el.innerHTML = tpl_chatroom();
           this.renderHeading();
           this.renderChatArea();
+          this.renderMessageForm();
 
           if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
             this.showSpinner();
@@ -76263,14 +76277,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (_.isNull(this.el.querySelector('.chat-area'))) {
             const container_el = this.el.querySelector('.chatroom-body');
             container_el.insertAdjacentHTML('beforeend', tpl_chatarea({
-              'label_message': __('Message'),
-              'label_send': __('Send'),
-              'show_send_button': _converse.show_send_button,
-              'show_toolbar': _converse.show_toolbar,
-              'unread_msgs': __('You have unread messages')
+              'show_send_button': _converse.show_send_button
             }));
             container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
-            this.renderToolbar(tpl_chatroom_toolbar);
             this.content = this.el.querySelector('.chat-content');
             this.toggleOccupants(null, true);
           }
@@ -77841,7 +77850,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'affiliation': null,
             'connection_status': converse.ROOMSTATUS.DISCONNECTED,
             'name': '',
-            'nick': _converse.xmppstatus.get('nickname'),
+            'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
             'description': '',
             'features_fetched': false,
             'roomconfig': {},
@@ -84333,31 +84342,13 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/chatarea.html -->\n<div class="chat-area col">\n    <div class="chat-content ';
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;
-__p += '"></div>\n    <div class="new-msgs-indicator hidden">▼ ' +
-__e( o.unread_msgs ) +
-' ▼</div>\n    <form class="sendXMPPMessage">\n        ';
- if (o.show_toolbar) { ;
-__p += '\n            <ul class="chat-toolbar no-text-select"></ul>\n        ';
- } ;
-__p += '\n        <textarea type="text" class="chat-textarea ';
- if (o.show_send_button) { ;
-__p += 'chat-textarea-send-button';
- } ;
-__p += '"\n                  placeholder="' +
-__e(o.label_message) +
-'"></textarea>\n    ';
- if (o.show_send_button) { ;
-__p += '\n        <button type="submit" class="pure-button send-button">' +
-__e( o.label_send ) +
-'</button>\n    ';
- } ;
-__p += '\n    </form>\n</div>\n';
+__p += '"></div>\n    <div class="message-form-container"/>\n</div>\n';
 return __p
 };
 
@@ -88036,6 +88027,20 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
 
     return result;
+  };
+
+  u.putCurserAtEnd = function (textarea) {
+    if (textarea !== document.activeElement) {
+      textarea.focus();
+    } // Double the length because Opera is inconsistent about whether a carriage return is one character or two.
+
+
+    const len = textarea.value.length * 2; // Timeout seems to be required for Blink
+
+    setTimeout(() => textarea.setSelectionRange(len, len), 1); // Scroll to the bottom, in case we're in a tall textarea
+    // (Necessary for Firefox and Chrome)
+
+    this.scrollTop = 999999;
   };
 
   u.getUniqueId = function () {

@@ -271,6 +271,7 @@
             }
             .chat-textarea {
                 border-bottom-right-radius: 0;
+                resize: none;
                 &.correcting {
                     background-color: lighten($chatroom-head-color, 30%);
                 }

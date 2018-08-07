@@ -7620,6 +7620,9 @@ body.reset {
       left: 0; }
 
 /* ******************* Overlay and embedded styles *************************** */
+#conversejs.converse-embedded .chat-textarea {
+  max-height: 15em; }
+
 #conversejs.converse-embedded .chat-head,
 #conversejs.converse-overlayed .chat-head {
   border-top-left-radius: 4px;
@@ -7701,7 +7704,7 @@ body.reset {
     flex: 0 0 16.6666666667%;
     max-width: 16.6666666667%; }
 #conversejs.converse-fullscreen .chat-textarea {
-  max-height: 400px; }
+  max-height: 15em; }
 #conversejs.converse-fullscreen .emoji-picker {
   height: 150px; }
 #conversejs.converse-fullscreen .chatbox {
@@ -8677,7 +8680,8 @@ body.reset {
       color: #E77051; }
   #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-textarea,
   #conversejs .chatroom .sendXMPPMessage .chat-textarea {
-    border-bottom-right-radius: 0; }
+    border-bottom-right-radius: 0;
+    resize: none; }
     #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-textarea.correcting,
     #conversejs .chatroom .sendXMPPMessage .chat-textarea.correcting {
       background-color: #fadfd7; }

@@ -849,6 +849,19 @@
         return result;
     };
 
+    u.putCurserAtEnd = function (textarea) {
+        if (textarea !== document.activeElement) {
+            textarea.focus();
+        }
+        // Double the length because Opera is inconsistent about whether a carriage return is one character or two.
+        const len = textarea.value.length * 2;
+        // Timeout seems to be required for Blink
+        setTimeout(() => textarea.setSelectionRange(len, len), 1);
+        // Scroll to the bottom, in case we're in a tall textarea
+        // (Necessary for Firefox and Chrome)
+        this.scrollTop = 999999;
+    };
+
     u.getUniqueId = function () {
         return 'xxxxxxxx-xxxx'.replace(/[x]/g, function(c) {
             var r = Math.random() * 16 | 0,

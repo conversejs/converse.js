@@ -1012,21 +1012,23 @@
 
                 insertIntoTextArea (value, replace=false, correcting=false) {
                     const textarea = this.el.querySelector('.chat-textarea');
+                    if (correcting) {
+                        u.addClass('correcting', textarea);
+                    } else {
+                        u.removeClass('correcting', textarea);
+                    }
                     if (replace) {
+                        textarea.value = '';
                         textarea.value = value;
                     } else {
                         let existing = textarea.value;
                         if (existing && (existing[existing.length-1] !== ' ')) {
                             existing = existing + ' ';
                         }
+                        textarea.value = '';
                         textarea.value = existing+value+' ';
                     }
-                    if (correcting) {
-                        u.addClass('correcting', textarea);
-                    } else {
-                        u.removeClass('correcting', textarea);
-                    }
-                    textarea.focus()
+                    u.putCurserAtEnd(textarea);
                 },
 
                 createEmojiPicker () {

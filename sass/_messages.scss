@@ -80,7 +80,7 @@
             }
             &.correcting {
                 &.groupchat  {
-                    background-color: lighten($chatroom-head-color, 35%);
+                    background-color: lighten($chatroom-head-color, 30%);
                 }
                 &:not(.groupchat) {
                     background-color: lighten($chat-head-color, 50%);

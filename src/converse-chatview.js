@@ -803,7 +803,7 @@
                      */
                     this.showMessage(message);
                     if (message.get('correcting')) {
-                        this.insertIntoTextArea(message.get('message'), true);
+                        this.insertIntoTextArea(message.get('message'), true, true);
                     }
                     _converse.emit('messageAdded', {
                         'message': message,
@@ -944,10 +944,10 @@
                             currently_correcting.save('correcting', false);
                         }
                         message.save('correcting', true);
-                        this.insertIntoTextArea(message.get('message'), true);
+                        this.insertIntoTextArea(message.get('message'), true, true);
                     } else {
                         message.save('correcting', false);
-                        this.insertIntoTextArea('', true);
+                        this.insertIntoTextArea('', true, false);
                     }
                 },
 
@@ -966,10 +966,10 @@
                         }
                     }
                     if (message) {
-                        this.insertIntoTextArea(message.get('message'), true);
+                        this.insertIntoTextArea(message.get('message'), true, true);
                         message.save('correcting', true);
                     } else {
-                        this.insertIntoTextArea('', true);
+                        this.insertIntoTextArea('', true, false);
                     }
                 },
 
@@ -989,7 +989,7 @@
                     }
                     message = message || this.getOwnMessages().findLast((msg) => msg.get('message'));
                     if (message) {
-                        this.insertIntoTextArea(message.get('message'), true);
+                        this.insertIntoTextArea(message.get('message'), true, true);
                         message.save('correcting', true);
                     }
                 },
@@ -1010,7 +1010,7 @@
                     return this;
                 },
 
-                insertIntoTextArea (value, replace=false) {
+                insertIntoTextArea (value, replace=false, correcting=false) {
                     const textarea = this.el.querySelector('.chat-textarea');
                     if (replace) {
                         textarea.value = value;
@@ -1020,6 +1020,11 @@
                             existing = existing + ' ';
                         }
                         textarea.value = existing+value+' ';
+                    }
+                    if (correcting) {
+                        u.addClass('correcting', textarea);
+                    } else {
+                        u.removeClass('correcting', textarea);
                     }
                     textarea.focus()
                 },

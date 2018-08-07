@@ -154,10 +154,10 @@
             // Refer to docs/source/configuration.rst for explanations of these
             // configuration settings.
             _converse.api.settings.update({
-                auto_list_rooms: false,
-                hide_muc_server: false, // TODO: no longer implemented...
-                muc_disable_moderator_commands: false,
-                visible_toolbar_buttons: {
+                'auto_list_rooms': false,
+                'hide_muc_server': false, // TODO: no longer implemented...
+                'muc_disable_moderator_commands': false,
+                'visible_toolbar_buttons': {
                     'toggle_occupants': true
                 }
             });

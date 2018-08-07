@@ -271,6 +271,9 @@
             }
             .chat-textarea {
                 border-bottom-right-radius: 0;
+                &.correcting {
+                    background-color: lighten($chatroom-head-color, 30%);
+                }
             }
             .send-button {
                 background-color: $chatroom-head-color;

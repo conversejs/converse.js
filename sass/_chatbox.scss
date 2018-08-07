@@ -251,6 +251,9 @@
                 &.spoiler {
                     height: 42px;
                 }
+                &.correcting {
+                    background-color: lighten($chat-head-color, 50%);
+                }
             }
 
             .send-button {

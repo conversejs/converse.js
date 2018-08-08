@@ -80138,7 +80138,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               }).c('value').t(push_app_server.secret);
             }
 
-            _converse.api.sendIQ(stanza).then(() => _converse.session.set('push_enabled', true)).catch(e => {
+            _converse.api.sendIQ(stanza).then(() => _converse.session.save('push_enabled', true)).catch(e => {
               _converse.log(`Could not enable push app server for ${push_app_server.jid}`, Strophe.LogLevel.ERROR);
 
               _converse.log(e, Strophe.LogLevel.ERROR);

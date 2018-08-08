@@ -74563,7 +74563,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       });
 
-      _converse.onMAMError = function (iq) {
+      _converse.onMAMError = function (model, iq) {
         if (iq.querySelectorAll('feature-not-implemented').length) {
           _converse.log("Message Archive Management (XEP-0313) not supported by this server", Strophe.LogLevel.WARN);
         } else {

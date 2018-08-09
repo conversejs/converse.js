@@ -7744,7 +7744,7 @@ body.reset {
     border-top-right-radius: 4px; }
   #conversejs.converse-fullscreen .chatbox .chat-title {
     font-size: 20px;
-    line-height: 24px; }
+    line-height: 27px; }
   #conversejs.converse-fullscreen .chatbox .sendXMPPMessage ul {
     width: 100%; }
   #conversejs.converse-fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category-picker {
@@ -8111,7 +8111,7 @@ body.reset {
       padding: 3em 2em 3em; }
   #conversejs.converse-fullscreen #controlbox .toggle-register-login,
   #conversejs.converse-mobile #controlbox .toggle-register-login {
-    line-height: 24px; }
+    line-height: 27px; }
   #conversejs.converse-fullscreen #controlbox .brand-heading-container,
   #conversejs.converse-mobile #controlbox .brand-heading-container {
     flex: 0 0 100%;

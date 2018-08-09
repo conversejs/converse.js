@@ -471,13 +471,11 @@
                      *  A promise which resolves once the list has been
                      *  retrieved.
                      */
-                    return new Promise((resolve, reject) => {
-                        affiliation = affiliation || 'member';
-                        const iq = $iq({to: this.get('jid'), type: "get"})
-                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
-                                .c("item", {'affiliation': affiliation});
-                        _converse.connection.sendIQ(iq, resolve, reject);
-                    });
+                    affiliation = affiliation || 'member';
+                    const iq = $iq({to: this.get('jid'), type: "get"})
+                        .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                            .c("item", {'affiliation': affiliation});
+                    return _converse.api.sendIQ(iq);
                 },
 
                 setAffiliation (affiliation, members) {
@@ -678,16 +676,14 @@
                     if (_.isString(affiliations)) {
                         affiliations = [affiliations];
                     }
-                    return new Promise((resolve, reject) => {
-                        const promises = _.map(
-                            affiliations,
-                            _.partial(this.requestMemberList.bind(this))
-                        );
-                        Promise.all(promises).then(
-                            _.flow(u.marshallAffiliationIQs, resolve),
-                            _.flow(u.marshallAffiliationIQs, resolve)
-                        );
-                    });
+                    const promises = _.map(
+                        affiliations,
+                        _.partial(this.requestMemberList.bind(this))
+                    );
+                    return Promise.all(promises).then(
+                        (iq) => u.marshallAffiliationIQs(iq),
+                        (iq) => u.marshallAffiliationIQs(iq)
+                    );
                 },
 
                 updateMemberLists (members, affiliations, deltaFunc) {

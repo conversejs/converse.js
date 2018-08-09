@@ -172,7 +172,7 @@
                             id: 'DC352437-C019-40EC-B590-AF29E879AF97'
                     }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
                         .c('item').attrs({
-                            affiliation: 'member',
+                            affiliation: 'owner',
                             jid: _converse.bare_jid,
                             role: 'participant'
                         }).up()

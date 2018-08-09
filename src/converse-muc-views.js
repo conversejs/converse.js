@@ -789,11 +789,29 @@
                     }
                 },
 
-                modifyRole(groupchat, nick, role, reason, onSuccess, onError) {
+                modifyRole (groupchat, nick, role, reason, onSuccess, onError) {
                     const item = $build("item", {nick, role});
                     const iq = $iq({to: groupchat, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
                     if (reason !== null) { iq.c("reason", reason); }
                     return _converse.connection.sendIQ(iq, onSuccess, onError);
+                },
+
+                verifyRoles (roles) {
+                    const me = this.model.occupants.findWhere({'jid': _converse.bare_jid});
+                    if (!_.includes(roles, me.get('role'))) {
+                        this.showErrorMessage(__(`Forbidden: you do not have the necessary role in order to do that.`))
+                        return false;
+                    }
+                    return true;
+                },
+
+                verifyAffiliations (affiliations) {
+                    const me = this.model.occupants.findWhere({'jid': _converse.bare_jid});
+                    if (!_.includes(affiliations, me.get('affiliation'))) {
+                        this.showErrorMessage(__(`Forbidden: you do not have the necessary affiliation in order to do that.`))
+                        return false;
+                    }
+                    return true;
                 },
 
                 validateRoleChangeCommand (command, args) {
@@ -803,9 +821,7 @@
                     // TODO check if first argument is valid
                     if (args.length < 1 || args.length > 2) {
                         this.showErrorMessage(
-                            __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.',
-                                command),
-                            true
+                            __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command)
                         );
                         return false;
                     }
@@ -814,10 +830,7 @@
 
                 onCommandError (err) {
                     _converse.log(err, Strophe.LogLevel.FATAL);
-                    this.showErrorMessage(
-                        __("Sorry, an error happened while running the command. Check your browser's developer console for details."),
-                        true
-                    );
+                    this.showErrorMessage(__("Sorry, an error happened while running the command. Check your browser's developer console for details."));
                 },
 
                 parseMessageForCommands (text) {
@@ -833,7 +846,9 @@
                         command = match[1].toLowerCase();
                     switch (command) {
                         case 'admin':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.model.setAffiliation('admin',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -843,7 +858,9 @@
                                     );
                             break;
                         case 'ban':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyAffiliations(['owner', 'admin']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.model.setAffiliation('outcast',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -853,7 +870,9 @@
                                     );
                             break;
                         case 'deop':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'participant', args[1],
                                     undefined, this.onCommandError.bind(this));
@@ -879,28 +898,42 @@
                             ]);
                             break;
                         case 'kick':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'none', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'mute':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'visitor', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
-                        case 'member':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                        case 'member': {
+                            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
+                            const occupant = this.model.occupants.findWhere({'nick': args[0]});
+                            if (!occupant) {
+                                this.showErrorMessage(__(`Error: Can't find a groupchat participant with the nickname "${args[0]}"`));
+                                break;
+                            }
                             this.model.setAffiliation('member',
-                                    [{ 'jid': args[0],
+                                    [{ 'jid': occupant.get('jid'),
                                        'reason': args[1]
                                     }]).then(
                                         () => this.model.occupants.fetchMembers(),
                                         (err) => this.onCommandError(err)
                                     );
                             break;
-                        case 'nick':
+                        } case 'nick':
+                            if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
+                                break;
+                            }
                             _converse.connection.send($pres({
                                 from: _converse.connection.jid,
                                 to: this.model.getRoomJIDAndNick(match[2]),
@@ -908,7 +941,9 @@
                             }).tree());
                             break;
                         case 'owner':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.model.setAffiliation('owner',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -918,13 +953,17 @@
                                     );
                             break;
                         case 'op':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'moderator', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'revoke':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.model.setAffiliation('none',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -944,7 +983,9 @@
                             );
                             break;
                         case 'voice':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'participant', args[1],
                                     undefined, this.onCommandError.bind(this));

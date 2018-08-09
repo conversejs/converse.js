@@ -1240,8 +1240,9 @@
                     var occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
                     expect(occupants.length).toBe(1);
                     expect($(occupants).first().find('.occupant-nick').text().trim()).toBe("dummy");
-                    expect($(occupants).first().find('.badge').length).toBe(1);
-                    expect($(occupants).first().find('.badge').first().text()).toBe('Member');
+                    expect($(occupants).first().find('.badge').length).toBe(2);
+                    expect($(occupants).first().find('.badge').first().text()).toBe('Owner');
+                    expect($(occupants).first().find('.badge').last().text()).toBe('Moderator');
 
                     var presence = $pres({
                             to:'dummy@localhost/pda',
@@ -1255,15 +1256,15 @@
                     .c('status').attrs({code:'110'}).nodeTree;
 
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
+                    occupants = view.el.querySelectorAll('.occupant-list li');
                     expect(occupants.length).toBe(2);
-                    expect($(occupants).first().find('.occupant-nick').text().trim()).toBe("moderatorman");
-                    expect($(occupants).last().find('.occupant-nick').text().trim()).toBe("dummy");
-                    expect($(occupants).first().find('.badge').length).toBe(2);
-                    expect($(occupants).first().find('.badge').first().text()).toBe('Admin');
-                    expect($(occupants).first().find('.badge').last().text()).toBe('Moderator');
+                    expect($(occupants).first().find('.occupant-nick').text().trim()).toBe("dummy");
+                    expect($(occupants).last().find('.occupant-nick').text().trim()).toBe("moderatorman");
+                    expect($(occupants).last().find('.badge').length).toBe(2);
+                    expect($(occupants).last().find('.badge').first().text()).toBe('Admin');
+                    expect($(occupants).last().find('.badge').last().text()).toBe('Moderator');
 
-                    expect($(occupants).first().attr('title')).toBe(
+                    expect($(occupants).last().attr('title')).toBe(
                         contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.'
                     );
 
@@ -1706,10 +1707,10 @@
                         })
                         .c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
                         .c('item').attrs({
-                            affiliation: 'member',
+                            affiliation: 'owner',
                             jid: 'dummy@localhost/pda',
                             nick: 'newnick',
-                            role: 'participant'
+                            role: 'moderator'
                         }).up()
                         .c('status').attrs({code:'303'}).up()
                         .c('status').attrs({code:'110'}).nodeTree;
@@ -1730,9 +1731,9 @@
                         })
                         .c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
                         .c('item').attrs({
-                            affiliation: 'member',
+                            affiliation: 'owner',
                             jid: 'dummy@localhost/pda',
-                            role: 'participant'
+                            role: 'moderator'
                         }).up()
                         .c('status').attrs({code:'110'}).nodeTree;
 
@@ -2047,7 +2048,7 @@
                     expect(view.model.get('minimized')).toBeFalsy();
                     expect(_converse.emit.calls.count(), 3);
                     done();
-                    
+
                 });
             }));
 
@@ -2075,7 +2076,7 @@
 
         describe("Each chat groupchat can take special commands", function () {
 
-            it("/help to show the available commands",
+            it("takes /help to show the available commands",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -2111,10 +2112,176 @@
                     expect(info_messages.pop().textContent).toBe('/ban: Ban user from groupchat');
                     expect(info_messages.pop().textContent).toBe('/admin: Change user\'s affiliation to admin');
                     done();
-                });
+                }).catch(_.partial(console.error, _));
             }));
 
-            it("/topic to set the groupchat topic",
+            it("takes /member to make an occupant a member",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                let iq_stanza, view;
+
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'muc.localhost', 'dummy')
+                .then(() => {
+
+                    view = _converse.chatboxviews.get('lounge@muc.localhost');
+                    /* We don't show join/leave messages for existing occupants. We
+                     * know about them because we receive their presences before we
+                     * receive our own.
+                     */
+                    const presence = $pres({
+                            to: 'dummy@localhost/resource',
+                            from: 'lounge@muc.localhost/marc'
+                        }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': 'marc@localhost/_converse.js-290929789',
+                            'role': 'participant'
+                        });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(view.model.occupants.length).toBe(2);
+
+                    const textarea = view.el.querySelector('.chat-textarea');
+                    let sent_stanza;
+                    spyOn(_converse.connection, 'send').and.callFake((stanza) => {
+                        sent_stanza = stanza;
+                    });
+
+                    // First check that an error message appears when a
+                    // non-existent nick is used.
+                    textarea.value = '/member chris Welcome to the club!';
+                    view.keyPressed({
+                        target: textarea,
+                        preventDefault: _.noop,
+                        keyCode: 13
+                    });
+                    expect(_converse.connection.send).not.toHaveBeenCalled();
+                    expect(view.el.querySelectorAll('.chat-error').length).toBe(1);
+                    expect(view.el.querySelector('.chat-error').textContent.trim())
+                        .toBe(`Error: Can't find a groupchat participant with the nickname "chris"`)
+
+                    // Now test with an existing nick
+                    textarea.value = '/member marc Welcome to the club!';
+                    view.keyPressed({
+                        target: textarea,
+                        preventDefault: _.noop,
+                        keyCode: 13
+                    });
+                    expect(_converse.connection.send).toHaveBeenCalled();
+                    expect(sent_stanza.outerHTML).toBe(
+                        `<iq to="lounge@muc.localhost" type="set" xmlns="jabber:client" id="${sent_stanza.getAttribute('id')}">`+
+                            `<query xmlns="http://jabber.org/protocol/muc#admin">`+
+                                `<item affiliation="member" jid="marc@localhost">`+
+                                    `<reason>Welcome to the club!</reason>`+
+                                `</item>`+
+                            `</query>`+
+                        `</iq>`);
+
+                    const result = $iq({
+                        "xmlns": "jabber:client",
+                        "type": "result",
+                        "to": "dummy@localhost/resource",
+                        "from": "lounge@muc.localhost",
+                        "id": sent_stanza.getAttribute('id')
+                    });
+                    _converse.connection.IQ_stanzas = [];
+                    _converse.connection._dataRecv(test_utils.createRequest(result));
+
+                    return test_utils.waitUntil(() => {
+                        return _.filter(
+                            _converse.connection.IQ_stanzas,
+                            (iq) => {
+                                const node = iq.nodeTree.querySelector('iq[to="lounge@muc.localhost"][type="get"] item[affiliation="member"]');
+                                if (node) { iq_stanza = iq.nodeTree;}
+                                return node;
+                            }).length;
+                    });
+                }).then(() => {
+                    expect(iq_stanza.outerHTML).toBe(
+                        `<iq to="lounge@muc.localhost" type="get" xmlns="jabber:client" id="${iq_stanza.getAttribute('id')}">`+
+                            `<query xmlns="http://jabber.org/protocol/muc#admin">`+
+                                `<item affiliation="member"/>`+
+                            `</query>`+
+                        `</iq>`)
+                    expect(view.model.occupants.length).toBe(2);
+
+                    const result = $iq({
+                        "xmlns": "jabber:client",
+                        "type": "result",
+                        "to": "dummy@localhost/resource",
+                        "from": "lounge@muc.localhost",
+                        "id": iq_stanza.getAttribute("id")
+                    }).c("query", {"xmlns": "http://jabber.org/protocol/muc#admin"})
+                        .c("item", {"jid": "marc", "affiliation": "member"});
+                    _converse.connection._dataRecv(test_utils.createRequest(result));
+
+                    expect(view.model.occupants.length).toBe(2);
+                    return test_utils.waitUntil(() => {
+                        return _.filter(
+                            _converse.connection.IQ_stanzas,
+                            (iq) => {
+                                const node = iq.nodeTree.querySelector('iq[to="lounge@muc.localhost"][type="get"] item[affiliation="owner"]');
+                                if (node) { iq_stanza = iq.nodeTree;}
+                                return node;
+                            }).length;
+                    });
+                }).then(() => {
+                    expect(iq_stanza.outerHTML).toBe(
+                        `<iq to="lounge@muc.localhost" type="get" xmlns="jabber:client" id="${iq_stanza.getAttribute('id')}">`+
+                            `<query xmlns="http://jabber.org/protocol/muc#admin">`+
+                                `<item affiliation="owner"/>`+
+                            `</query>`+
+                        `</iq>`)
+                    expect(view.model.occupants.length).toBe(2);
+
+                    const result = $iq({
+                        "xmlns": "jabber:client",
+                        "type": "result",
+                        "to": "dummy@localhost/resource",
+                        "from": "lounge@muc.localhost",
+                        "id": iq_stanza.getAttribute("id")
+                    }).c("query", {"xmlns": "http://jabber.org/protocol/muc#admin"})
+                        .c("item", {"jid": "dummy@localhost", "affiliation": "owner"});
+                    _converse.connection._dataRecv(test_utils.createRequest(result));
+
+                    expect(view.model.occupants.length).toBe(2);
+                    return test_utils.waitUntil(() => {
+                        return _.filter(
+                            _converse.connection.IQ_stanzas,
+                            (iq) => {
+                                const node = iq.nodeTree.querySelector('iq[to="lounge@muc.localhost"][type="get"] item[affiliation="admin"]');
+                                if (node) { iq_stanza = iq.nodeTree;}
+                                return node;
+                            }).length;
+                    });
+                }).then(() => {
+                    expect(iq_stanza.outerHTML).toBe(
+                        `<iq to="lounge@muc.localhost" type="get" xmlns="jabber:client" id="${iq_stanza.getAttribute('id')}">`+
+                            `<query xmlns="http://jabber.org/protocol/muc#admin">`+
+                                `<item affiliation="admin"/>`+
+                            `</query>`+
+                        `</iq>`)
+                    expect(view.model.occupants.length).toBe(2);
+
+                    const result = $iq({
+                        "xmlns": "jabber:client",
+                        "type": "result",
+                        "to": "dummy@localhost/resource",
+                        "from": "lounge@muc.localhost",
+                        "id": iq_stanza.getAttribute("id")
+                    }).c("query", {"xmlns": "http://jabber.org/protocol/muc#admin"})
+                    _converse.connection._dataRecv(test_utils.createRequest(result));
+
+                    return test_utils.waitUntil(() => view.el.querySelectorAll('.badge').length > 1);
+                }).then(() => {
+                    expect(view.model.occupants.length).toBe(2);
+                    expect(view.el.querySelectorAll('.occupant').length).toBe(2);
+                    done();
+                }).catch(_.partial(console.error, _));
+            }));
+
+            it("takes /topic to set the groupchat topic",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -2169,7 +2336,7 @@
                 }).catch(_.partial(console.error, _));
             }));
 
-            it("/clear to clear messages",
+            it("takes /clear to clear messages",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -2192,7 +2359,7 @@
                 }).catch(_.partial(console.error, _));
             }));
 
-            it("/owner to make a user an owner",
+            it("takes /owner to make a user an owner",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -2219,9 +2386,7 @@
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
                     expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                     expect(view.showErrorMessage).toHaveBeenCalledWith(
-                        "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.",
-                        true
-                    );
+                        "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.");
                     expect(view.model.setAffiliation).not.toHaveBeenCalled();
 
                     // Call now with the correct amount of arguments.
@@ -2245,7 +2410,7 @@
                 }).catch(_.partial(console.error, _));
             }));
 
-            it("/ban to ban a user",
+            it("takes /ban to ban a user",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -2272,9 +2437,7 @@
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
                     expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                     expect(view.showErrorMessage).toHaveBeenCalledWith(
-                        "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.",
-                        true
-                    );
+                        "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.");
                     expect(view.model.setAffiliation).not.toHaveBeenCalled();
                     // Call now with the correct amount of arguments.
                     // XXX: Calling onMessageSubmitted directly, trying
@@ -2297,7 +2460,7 @@
                 }).catch(_.partial(console.error, _));
             }));
 
-            it("/kick to kick a user",
+            it("takes /kick to kick a user",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -2325,9 +2488,7 @@
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
                     expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                     expect(view.showErrorMessage).toHaveBeenCalledWith(
-                        "Error: the \"kick\" command takes two arguments, the user's nickname and optionally a reason.",
-                        true
-                    );
+                        "Error: the \"kick\" command takes two arguments, the user's nickname and optionally a reason.");
                     expect(view.modifyRole).not.toHaveBeenCalled();
                     // Call now with the correct amount of arguments.
                     // XXX: Calling onMessageSubmitted directly, trying
@@ -2376,7 +2537,7 @@
             }));
 
 
-            it("/op and /deop to make a user a moderator or not",
+            it("takes /op and /deop to make a user a moderator or not",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -2431,9 +2592,7 @@
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
                     expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                     expect(view.showErrorMessage).toHaveBeenCalledWith(
-                        "Error: the \"op\" command takes two arguments, the user's nickname and optionally a reason.",
-                        true
-                    );
+                        "Error: the \"op\" command takes two arguments, the user's nickname and optionally a reason.");
 
                     expect(view.modifyRole).not.toHaveBeenCalled();
                     // Call now with the correct amount of arguments.
@@ -2516,7 +2675,7 @@
                 }).catch(_.partial(console.error, _));
             }));
 
-            it("/mute and /voice to mute and unmute a user",
+            it("takes /mute and /voice to mute and unmute a user",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -2571,9 +2730,7 @@
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
                     expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                     expect(view.showErrorMessage).toHaveBeenCalledWith(
-                        "Error: the \"mute\" command takes two arguments, the user's nickname and optionally a reason.",
-                        true
-                    );
+                        "Error: the \"mute\" command takes two arguments, the user's nickname and optionally a reason.");
                     expect(view.modifyRole).not.toHaveBeenCalled();
                     // Call now with the correct amount of arguments.
                     // XXX: Calling onMessageSubmitted directly, trying
@@ -3337,30 +3494,9 @@
                             var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                             var $chat_content = $(view.el).find('.chat-content');
 
-                            /* <presence to="dummy@localhost/_converse.js-29092160"
-                            *           from="coven@chat.shakespeare.lit/some1">
-                            *      <x xmlns="http://jabber.org/protocol/muc#user">
-                            *          <item affiliation="owner" jid="dummy@localhost/_converse.js-29092160" role="moderator"/>
-                            *          <status code="110"/>
-                            *      </x>
-                            *  </presence></body>
-                            */
-                            var presence = $pres({
-                                    to: 'dummy@localhost/_converse.js-29092160',
-                                    from: 'coven@chat.shakespeare.lit/some1'
-                                }).c('x', {xmlns: Strophe.NS.MUC_USER})
-                                .c('item', {
-                                    'affiliation': 'owner',
-                                    'jid': 'dummy@localhost/_converse.js-29092160',
-                                    'role': 'moderator'
-                                }).up()
-                                .c('status', {code: '110'});
-                            _converse.connection._dataRecv(test_utils.createRequest(presence));
-                            expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(2);
                             expect($chat_content.find('div.chat-info:first').html()).toBe("some1 has entered the groupchat");
-                            expect($chat_content.find('div.chat-info:last').html()).toBe("some1 is now a moderator");
 
-                            presence = $pres({
+                            let presence = $pres({
                                     to: 'dummy@localhost/_converse.js-29092160',
                                     from: 'coven@chat.shakespeare.lit/newguy'
                                 })
@@ -3371,7 +3507,7 @@
                                     'role': 'participant'
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
-                            expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(3);
+                            expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(2);
                             expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the groupchat");
 
                             presence = $pres({
@@ -3385,7 +3521,7 @@
                                     'role': 'participant'
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
-                            expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(4);
+                            expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(3);
                             expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered the groupchat");
 
                             // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
@@ -3402,11 +3538,10 @@
 
                             // Check that the notification appears inside the chatbox in the DOM
                             var events = view.el.querySelectorAll('.chat-event');
-                            expect(events.length).toBe(4);
+                            expect(events.length).toBe(3);
                             expect(events[0].textContent).toEqual('some1 has entered the groupchat');
-                            expect(events[1].textContent).toEqual('some1 is now a moderator');
-                            expect(events[2].textContent).toEqual('newguy has entered the groupchat');
-                            expect(events[3].textContent).toEqual('nomorenicks has entered the groupchat');
+                            expect(events[1].textContent).toEqual('newguy has entered the groupchat');
+                            expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
                             var notifications = view.el.querySelectorAll('.chat-state-notification');
                             expect(notifications.length).toBe(1);
@@ -3427,11 +3562,10 @@
                             view.model.onMessage(msg);
 
                             events = view.el.querySelectorAll('.chat-event');
-                            expect(events.length).toBe(4);
+                            expect(events.length).toBe(3);
                             expect(events[0].textContent).toEqual('some1 has entered the groupchat');
-                            expect(events[1].textContent).toEqual('some1 is now a moderator');
-                            expect(events[2].textContent).toEqual('newguy has entered the groupchat');
-                            expect(events[3].textContent).toEqual('nomorenicks has entered the groupchat');
+                            expect(events[1].textContent).toEqual('newguy has entered the groupchat');
+                            expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
                             notifications = view.el.querySelectorAll('.chat-state-notification');
                             expect(notifications.length).toBe(1);
@@ -3448,11 +3582,10 @@
                                 }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                             view.model.onMessage(msg);
                             events = view.el.querySelectorAll('.chat-event');
-                            expect(events.length).toBe(4);
+                            expect(events.length).toBe(3);
                             expect(events[0].textContent).toEqual('some1 has entered the groupchat');
-                            expect(events[1].textContent).toEqual('some1 is now a moderator');
-                            expect(events[2].textContent).toEqual('newguy has entered the groupchat');
-                            expect(events[3].textContent).toEqual('nomorenicks has entered the groupchat');
+                            expect(events[1].textContent).toEqual('newguy has entered the groupchat');
+                            expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
                             notifications = view.el.querySelectorAll('.chat-state-notification');
                             expect(notifications.length).toBe(2);
@@ -3471,7 +3604,7 @@
                             view.model.onMessage(msg);
 
                             var messages = view.el.querySelectorAll('.message');
-                            expect(messages.length).toBe(8);
+                            expect(messages.length).toBe(7);
                             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
                             expect(view.el.querySelector('.chat-msg .chat-msg__text').textContent).toBe('hello world');
 
@@ -3479,11 +3612,10 @@
                             // via timeout.
                             timeout_functions[0]();
                             events = view.el.querySelectorAll('.chat-event');
-                            expect(events.length).toBe(4);
+                            expect(events.length).toBe(3);
                             expect(events[0].textContent).toEqual('some1 has entered the groupchat');
-                            expect(events[1].textContent).toEqual('some1 is now a moderator');
-                            expect(events[2].textContent).toEqual('newguy has entered the groupchat');
-                            expect(events[3].textContent).toEqual('nomorenicks has entered the groupchat');
+                            expect(events[1].textContent).toEqual('newguy has entered the groupchat');
+                            expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
                             notifications = view.el.querySelectorAll('.chat-state-notification');
                             expect(notifications.length).toBe(1);
@@ -3491,11 +3623,10 @@
 
                             timeout_functions[1]();
                             events = view.el.querySelectorAll('.chat-event');
-                            expect(events.length).toBe(4);
+                            expect(events.length).toBe(3);
                             expect(events[0].textContent).toEqual('some1 has entered the groupchat');
-                            expect(events[1].textContent).toEqual('some1 is now a moderator');
-                            expect(events[2].textContent).toEqual('newguy has entered the groupchat');
-                            expect(events[3].textContent).toEqual('nomorenicks has entered the groupchat');
+                            expect(events[1].textContent).toEqual('newguy has entered the groupchat');
+                            expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
                             notifications = view.el.querySelectorAll('.chat-state-notification');
                             expect(notifications.length).toBe(0);

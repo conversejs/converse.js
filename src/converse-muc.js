@@ -25,7 +25,7 @@
         'none':         2,
     };
 
-    const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, _, moment } = converse.env;
+    const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, f, moment, _ } = converse.env;
 
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -1028,26 +1028,29 @@
                 },
 
                 fetchMembers () {
-                    const old_jids = _.uniq(_.concat(
-                        _.map(this.where({'affiliation': 'admin'}), (item) => item.get('jid')),
-                        _.map(this.where({'affiliation': 'member'}), (item) => item.get('jid')),
-                        _.map(this.where({'affiliation': 'owner'}), (item) => item.get('jid'))
-                    ));
-
                     this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin'])
-                    .then((jids) => {
-                        _.each(_.difference(old_jids, jids), (removed_jid) => {
-                            // Remove absent occupants who've been removed from
-                            // the members lists.
-                            if (removed_jid === _converse.bare_jid) { return; }
-                            const occupant = this.findOccupant({'jid': removed_jid});
-                            if (!occupant) { return; }
+                    .then((new_members) => {
+                        const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m)),
+                              new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m)),
+                              removed_members = this.filter(m => {
+                                  return f.includes(m.get('affiliation'), ['admin', 'member', 'owner']) &&
+                                      !f.includes(m.get('nick'), new_nicks) &&
+                                        !f.includes(m.get('jid'), new_jids);
+                              });
+
+                        _.each(removed_members, (occupant) => {
+                            if (occupant.get('jid') === _converse.bare_jid) { return; }
                             if (occupant.get('show') === 'offline') {
                                 occupant.destroy();
                             }
                         });
-                        _.each(jids, (attrs) => {
-                            const occupant = this.findOccupant({'jid': attrs.jid});
+                        _.each(new_members, (attrs) => {
+                            let occupant;
+                            if (attrs.jid) {
+                                occupant = this.findOccupant({'jid': attrs.jid});
+                            } else {
+                                occupant = this.findOccupant({'nick': attrs.nick});
+                            }
                             if (occupant) {
                                 occupant.save(attrs);
                             } else {

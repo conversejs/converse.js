@@ -174,7 +174,7 @@
                         .c('item').attrs({
                             affiliation: 'owner',
                             jid: _converse.bare_jid,
-                            role: 'participant'
+                            role: 'moderator'
                         }).up()
                         .c('status').attrs({code:'110'});
                     _converse.connection._dataRecv(utils.createRequest(presence));

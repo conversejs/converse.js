@@ -900,6 +900,7 @@
                         hint_el.value = '';
                     }
                     textarea.value = '';
+                    u.removeClass('correcting', textarea);
                     textarea.focus();
                     // Trigger input event, so that the textarea resizes
                     const event = document.createEvent('Event');

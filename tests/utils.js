@@ -117,7 +117,7 @@
                 modal.el.querySelector('input[name="nickname"]').value = nick;
                 modal.el.querySelector('form input[type="submit"]').click();
                 resolve();
-            }).catch(_.partial(console.error, _));
+            });
         }).catch(_.partial(console.error, _));
     };
 

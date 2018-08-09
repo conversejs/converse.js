@@ -5,6 +5,7 @@
     var $iq = converse.env.$iq;
     var Strophe = converse.env.Strophe;
     var _ = converse.env._;
+    var f = converse.env.f;
 
     describe("XEP-0357 Push Notifications", function () {
 
@@ -53,9 +54,48 @@
                     'id': stanza.getAttribute('id')
                 })));
                 return test_utils.waitUntil(() => _converse.session.get('push_enabled'))
+            }).then(done).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        }));
+
+        it("can enabled for a MUC domain",
+            mock.initConverseWithPromises(null,
+                ['rosterGroupsFetched'], {
+                    'push_app_servers': [{
+                        'jid': 'push-5@client.example',
+                        'node': 'yxs32uqsflafdk3iuqo'
+                    }]
+                }, function (done, _converse) {
+
+            const IQ_stanzas = _converse.connection.IQ_stanzas,
+                  room_jid = 'coven@chat.shakespeare.lit';
+            expect(_converse.session.get('push_enabled')).toBeFalsy();
+
+            test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'oldhag')
+            .then(() => test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.push_app_servers[0].jid,
+                [{'category': 'pubsub', 'type':'push'}],
+                ['urn:xmpp:push:0'], [], 'info'))
+            .then(() => {
+                return test_utils.waitUntilDiscoConfirmed(
+                    _converse, 'chat.shakespeare.lit',
+                    [{'category': 'account', 'type':'registered'}],
+                    ['urn:xmpp:push:0'], [], 'info')
             }).then(() => {
-                done();
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                return test_utils.waitUntil(
+                    () => _.filter(IQ_stanzas, (iq) => iq.nodeTree.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop())
+            }).then(stanza => {
+                expect(stanza.nodeTree.outerHTML).toEqual(
+                    `<iq type="set" xmlns="jabber:client" to="chat.shakespeare.lit" id="${stanza.nodeTree.getAttribute('id')}">`+
+                        '<enable xmlns="urn:xmpp:push:0" jid="push-5@client.example" node="yxs32uqsflafdk3iuqo"/>'+
+                    '</iq>'
+                )
+                _converse.connection._dataRecv(test_utils.createRequest($iq({
+                    'to': _converse.connection.jid,
+                    'type': 'result',
+                    'id': stanza.nodeTree.getAttribute('id')
+                })));
+                return test_utils.waitUntil(() => f.includes('chat.shakespeare.lit', _converse.session.get('push_enabled')));
+            }).then(done).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }));
 
         it("can be disabled",
@@ -100,9 +140,7 @@
                     'id': stanza.getAttribute('id')
                 })));
                 return test_utils.waitUntil(() => _converse.session.get('push_enabled'))
-            }).then(() => {
-                done();
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            }).then(done).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }));
 
 
@@ -156,9 +194,7 @@
                     'id': stanza.getAttribute('id')
                 })));
                 return test_utils.waitUntil(() => _converse.session.get('push_enabled'))
-            }).then(() => {
-                done();
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            }).then(done).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }));
     });
 }));

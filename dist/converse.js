@@ -76507,13 +76507,39 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return _converse.connection.sendIQ(iq, onSuccess, onError);
         },
 
+        verifyRoles(roles) {
+          const me = this.model.occupants.findWhere({
+            'jid': _converse.bare_jid
+          });
+
+          if (!_.includes(roles, me.get('role'))) {
+            this.showErrorMessage(__(`Forbidden: you do not have the necessary role in order to do that.`));
+            return false;
+          }
+
+          return true;
+        },
+
+        verifyAffiliations(affiliations) {
+          const me = this.model.occupants.findWhere({
+            'jid': _converse.bare_jid
+          });
+
+          if (!_.includes(affiliations, me.get('affiliation'))) {
+            this.showErrorMessage(__(`Forbidden: you do not have the necessary affiliation in order to do that.`));
+            return false;
+          }
+
+          return true;
+        },
+
         validateRoleChangeCommand(command, args) {
           /* Check that a command to change a groupchat user's role or
            * affiliation has anough arguments.
            */
           // TODO check if first argument is valid
           if (args.length < 1 || args.length > 2) {
-            this.showErrorMessage(__('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command), true);
+            this.showErrorMessage(__('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command));
             return false;
           }
 
@@ -76523,7 +76549,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         onCommandError(err) {
           _converse.log(err, Strophe.LogLevel.FATAL);
 
-          this.showErrorMessage(__("Sorry, an error happened while running the command. Check your browser's developer console for details."), true);
+          this.showErrorMessage(__("Sorry, an error happened while running the command. Check your browser's developer console for details."));
         },
 
         parseMessageForCommands(text) {
@@ -76543,7 +76569,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           switch (command) {
             case 'admin':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -76554,7 +76580,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'ban':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyAffiliations(['owner', 'admin']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -76565,7 +76591,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'deop':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -76577,7 +76603,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'kick':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -76585,7 +76611,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'mute':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -76593,17 +76619,32 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'member':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              {
+                if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                  break;
+                }
+
+                const occupant = this.model.occupants.findWhere({
+                  'nick': args[0]
+                });
+
+                if (!occupant) {
+                  this.showErrorMessage(__(`Error: Can't find a groupchat participant with the nickname "${args[0]}"`));
+                  break;
+                }
+
+                this.model.setAffiliation('member', [{
+                  'jid': occupant.get('jid'),
+                  'reason': args[1]
+                }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
                 break;
               }
 
-              this.model.setAffiliation('member', [{
-                'jid': args[0],
-                'reason': args[1]
-              }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
-              break;
-
             case 'nick':
+              if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
+                break;
+              }
+
               _converse.connection.send($pres({
                 from: _converse.connection.jid,
                 to: this.model.getRoomJIDAndNick(match[2]),
@@ -76613,7 +76654,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'owner':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -76624,7 +76665,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'op':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -76632,7 +76673,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'revoke':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -76655,7 +76696,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'voice':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -77712,8 +77753,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         $pres = _converse$env.$pres,
         b64_sha1 = _converse$env.b64_sha1,
         sizzle = _converse$env.sizzle,
-        _ = _converse$env._,
-        moment = _converse$env.moment; // Add Strophe Namespaces
+        f = _converse$env.f,
+        moment = _converse$env.moment,
+        _ = _converse$env._; // Add Strophe Namespaces
 
   Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
   Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
@@ -78202,19 +78244,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *  A promise which resolves once the list has been
            *  retrieved.
            */
-          return new Promise((resolve, reject) => {
-            affiliation = affiliation || 'member';
-            const iq = $iq({
-              to: this.get('jid'),
-              type: "get"
-            }).c("query", {
-              xmlns: Strophe.NS.MUC_ADMIN
-            }).c("item", {
-              'affiliation': affiliation
-            });
-
-            _converse.connection.sendIQ(iq, resolve, reject);
+          affiliation = affiliation || 'member';
+          const iq = $iq({
+            to: this.get('jid'),
+            type: "get"
+          }).c("query", {
+            xmlns: Strophe.NS.MUC_ADMIN
+          }).c("item", {
+            'affiliation': affiliation
           });
+          return _converse.api.sendIQ(iq);
         },
 
         setAffiliation(affiliation, members) {
@@ -78443,11 +78482,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             affiliations = [affiliations];
           }
 
-          return new Promise((resolve, reject) => {
-            const promises = _.map(affiliations, _.partial(this.requestMemberList.bind(this)));
+          const promises = _.map(affiliations, _.partial(this.requestMemberList.bind(this)));
 
-            Promise.all(promises).then(_.flow(u.marshallAffiliationIQs, resolve), _.flow(u.marshallAffiliationIQs, resolve));
-          });
+          return Promise.all(promises).then(iq => u.marshallAffiliationIQs(iq), iq => u.marshallAffiliationIQs(iq));
         },
 
         updateMemberLists(members, affiliations, deltaFunc) {
@@ -78834,27 +78871,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         fetchMembers() {
-          const old_jids = _.uniq(_.concat(_.map(this.where({
-            'affiliation': 'admin'
-          }), item => item.get('jid')), _.map(this.where({
-            'affiliation': 'member'
-          }), item => item.get('jid')), _.map(this.where({
-            'affiliation': 'owner'
-          }), item => item.get('jid'))));
+          this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']).then(new_members => {
+            const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m)),
+                  new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m)),
+                  removed_members = this.filter(m => {
+              return f.includes(m.get('affiliation'), ['admin', 'member', 'owner']) && !f.includes(m.get('nick'), new_nicks) && !f.includes(m.get('jid'), new_jids);
+            });
 
-          this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']).then(jids => {
-            _.each(_.difference(old_jids, jids), removed_jid => {
-              // Remove absent occupants who've been removed from
-              // the members lists.
-              if (removed_jid === _converse.bare_jid) {
-                return;
-              }
-
-              const occupant = this.findOccupant({
-                'jid': removed_jid
-              });
-
-              if (!occupant) {
+            _.each(removed_members, occupant => {
+              if (occupant.get('jid') === _converse.bare_jid) {
                 return;
               }
 
@@ -78863,10 +78888,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               }
             });
 
-            _.each(jids, attrs => {
-              const occupant = this.findOccupant({
-                'jid': attrs.jid
-              });
+            _.each(new_members, attrs => {
+              let occupant;
+
+              if (attrs.jid) {
+                occupant = this.findOccupant({
+                  'jid': attrs.jid
+                });
+              } else {
+                occupant = this.findOccupant({
+                  'nick': attrs.nick
+                });
+              }
 
               if (occupant) {
                 occupant.save(attrs);

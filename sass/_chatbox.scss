@@ -248,6 +248,7 @@
                 border: none;
                 min-height: $chat-textarea-height;
                 margin-bottom: -4px; // Not clear why this is necessar :(
+                resize: none;
                 &.spoiler {
                     height: 42px;
                 }

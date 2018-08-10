@@ -7487,7 +7487,8 @@ body.reset {
       width: 100%;
       border: none;
       min-height: 60px;
-      margin-bottom: -4px; }
+      margin-bottom: -4px;
+      resize: none; }
       #conversejs .chatbox .sendXMPPMessage .chat-textarea.spoiler {
         height: 42px; }
       #conversejs .chatbox .sendXMPPMessage .chat-textarea.correcting {

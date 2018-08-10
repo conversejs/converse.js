@@ -808,7 +808,18 @@
         } else {
             model.set(attributes);
         }
-    }
+    };
+
+    u.siblingIndex = function (el) {
+        /* eslint-disable no-cond-assign */
+        for (var i = 0; el = el.previousElementSibling; i++);
+        return i;
+    };
+
+    u.getCurrentWord = function (input) {
+        const cursor = input.selectionEnd || undefined;
+        return _.last(input.value.slice(0, cursor).split(' '));
+    };
 
     u.isVisible = function (el) {
         if (u.hasClass('hidden', el)) {

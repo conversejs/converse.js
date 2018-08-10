@@ -605,6 +605,11 @@
             ul {
                 width: 100%;
             }
+            .suggestion-box__results {
+                &:after {
+                    display: none;
+                }
+            }
             .toggle-smiley {
                 ul {
                     &.emoji-toolbar {

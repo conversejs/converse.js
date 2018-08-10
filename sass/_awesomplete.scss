@@ -7,13 +7,14 @@
     }
 
     .form-group {
+        .suggestion-box,
         .awesomplete {
             width: 100%;
         }
     }
 
-    div.awesomplete {
-        display: inline-block;
+    .suggestion-box,
+    .awesomplete {
         position: relative;
         mark {
             background: $lightest-red;
@@ -23,6 +24,7 @@
             display: block;
         }
 
+        .suggestion-box__results,
         > ul {
             &:before {
                 content: "";
@@ -30,18 +32,19 @@
                 top: -.43em;
                 left: 1em;
                 width: 0; height: 0;
+                padding: .4em;
                 background: white;
                 border: inherit;
                 border-right: 0;
                 border-bottom: 0;
                 -webkit-transform: rotate(45deg);
                 transform: rotate(45deg);
+                z-index: 1;
             }
-
             position: absolute;
             left: 0;
             right: 0;
-            z-index: 1;
+            z-index: 2;
             min-width: 100%;
             box-sizing: border-box;
             list-style: none;
@@ -49,9 +52,9 @@
             border-radius: .3em;
             margin: .2em 0 0;
             background: hsla(0,0%,100%,.9);
-            background: linear-gradient(to bottom right, white, hsla(0,0%,100%,.8));
+            background: linear-gradient(to bottom right, white, hsla(0,0%,100%,.9));
             border: 1px solid rgba(0,0,0,.3);
-            box-shadow: .05em .2em .6em rgba(0,0,0,.2);
+            box-shadow: .05em .2em .6em rgba(0,0,0,.1);
             text-shadow: none;
 
             > li {
@@ -62,19 +65,45 @@
                 padding: 1em;
             }
         }
+        .suggestion-box__results--above {
+            bottom: 4.5em;
+            &:before {
+                display: none;
+            }
+            &:after {
+                z-index: 1;
+                content: "";
+                position: absolute;
+                bottom: -.43em;
+                left: 1em;
+                width: 0; height: 0;
+                padding: .4em;
+                background: white;
+                border: inherit;
+                border-left: 0;
+                border-top: 0;
+                -webkit-transform: rotate(45deg);
+                transform: rotate(45deg);
+            }
+        }
     }
 
+    .suggestion-box > ul[hidden],
+    .suggestion-box > ul:empty,
     div.awesomplete > ul[hidden],
     div.awesomplete > ul:empty {
         display: none;
     }
 
     @supports (transform: scale(0)) {
+        .suggestion-box > ul,
         div.awesomplete > ul {
             transition: .3s cubic-bezier(.4,.2,.5,1.4);
             transform-origin: 1.43em -.43em;
         }
         
+        .suggestion-box > ul[hidden],
+        .suggestion-box > ul:empty,
         div.awesomplete > ul[hidden],
         div.awesomplete > ul:empty {
             opacity: 0;
@@ -84,21 +113,26 @@
         }
     }
     
+    .suggestion-box > ul > li:hover,
     div.awesomplete > ul > li:hover {
+        z-index: 2;
         background: $red;
         color: $inverse-link-color;
     }
     
+    .suggestion-box > ul > li[aria-selected="true"],
     div.awesomplete > ul > li[aria-selected="true"] {
         background: hsl(205, 40%, 40%);
         color: white;
     }
     
+    .suggestion-box li:hover mark,
     div.awesomplete li:hover mark {
         background: $darkest-red;
         color: $inverse-link-color;
     }
     
+    .suggestion-box li[aria-selected="true"] mark,
     div.awesomplete li[aria-selected="true"] mark {
         background: hsl(86, 100%, 21%);
         color: inherit;

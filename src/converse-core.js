@@ -67,6 +67,7 @@
 
     // Core plugins are whitelisted automatically
     _converse.core_plugins = [
+        'converse-autocomplete',
         'converse-bookmarks',
         'converse-caps',
         'converse-chatboxes',
@@ -105,6 +106,21 @@
 
     // Make converse pluggable
     pluggable.enable(_converse, '_converse', 'pluggable');
+
+    _converse.keycodes = {
+        TAB: 9,
+        ENTER: 13,
+        SHIFT: 16,
+        CTRL: 17,
+        ALT: 18,
+        ESCAPE: 27,
+        UP_ARROW: 38,
+        DOWN_ARROW: 40,
+        FORWARD_SLASH: 47,
+        META: 91,
+        META_RIGHT: 93
+    };
+
 
     // Module-level constants
     _converse.STATUS_WEIGHTS = {

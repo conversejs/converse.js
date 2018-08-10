@@ -7748,6 +7748,8 @@ body.reset {
     line-height: 27px; }
   #conversejs.converse-fullscreen .chatbox .sendXMPPMessage ul {
     width: 100%; }
+  #conversejs.converse-fullscreen .chatbox .sendXMPPMessage .suggestion-box__results:after {
+    display: none; }
   #conversejs.converse-fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category-picker {
     margin-right: 5em; }
   #conversejs.converse-fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category {
@@ -8681,8 +8683,7 @@ body.reset {
       color: #E77051; }
   #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-textarea,
   #conversejs .chatroom .sendXMPPMessage .chat-textarea {
-    border-bottom-right-radius: 0;
-    resize: none; }
+    border-bottom-right-radius: 0; }
     #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-textarea.correcting,
     #conversejs .chatroom .sendXMPPMessage .chat-textarea.correcting {
       background-color: #fadfd7; }
@@ -9040,20 +9041,26 @@ body.reset {
 #conversejs .visually-hidden {
   position: absolute;
   clip: rect(0, 0, 0, 0); }
+#conversejs .form-group .suggestion-box,
 #conversejs .form-group .awesomplete {
   width: 100%; }
-#conversejs div.awesomplete {
-  display: inline-block;
+#conversejs .suggestion-box,
+#conversejs .awesomplete {
   position: relative; }
-  #conversejs div.awesomplete mark {
+  #conversejs .suggestion-box mark,
+  #conversejs .awesomplete mark {
     background: #FFB9A7; }
-  #conversejs div.awesomplete > input {
+  #conversejs .suggestion-box > input,
+  #conversejs .awesomplete > input {
     display: block; }
-  #conversejs div.awesomplete > ul {
+  #conversejs .suggestion-box .suggestion-box__results,
+  #conversejs .suggestion-box > ul,
+  #conversejs .awesomplete .suggestion-box__results,
+  #conversejs .awesomplete > ul {
     position: absolute;
     left: 0;
     right: 0;
-    z-index: 1;
+    z-index: 2;
     min-width: 100%;
     box-sizing: border-box;
     list-style: none;
@@ -9061,51 +9068,91 @@ body.reset {
     border-radius: .3em;
     margin: .2em 0 0;
     background: rgba(255, 255, 255, 0.9);
-    background: linear-gradient(to bottom right, white, rgba(255, 255, 255, 0.8));
+    background: linear-gradient(to bottom right, white, rgba(255, 255, 255, 0.9));
     border: 1px solid rgba(0, 0, 0, 0.3);
-    box-shadow: 0.05em 0.2em 0.6em rgba(0, 0, 0, 0.2);
+    box-shadow: 0.05em 0.2em 0.6em rgba(0, 0, 0, 0.1);
     text-shadow: none; }
-    #conversejs div.awesomplete > ul:before {
+    #conversejs .suggestion-box .suggestion-box__results:before,
+    #conversejs .suggestion-box > ul:before,
+    #conversejs .awesomplete .suggestion-box__results:before,
+    #conversejs .awesomplete > ul:before {
       content: "";
       position: absolute;
       top: -.43em;
       left: 1em;
       width: 0;
       height: 0;
+      padding: .4em;
       background: white;
       border: inherit;
       border-right: 0;
       border-bottom: 0;
       -webkit-transform: rotate(45deg);
-      transform: rotate(45deg); }
-    #conversejs div.awesomplete > ul > li {
+      transform: rotate(45deg);
+      z-index: 1; }
+    #conversejs .suggestion-box .suggestion-box__results > li,
+    #conversejs .suggestion-box > ul > li,
+    #conversejs .awesomplete .suggestion-box__results > li,
+    #conversejs .awesomplete > ul > li {
       text-overflow: ellipsis;
       overflow-x: hidden;
       position: relative;
       cursor: pointer;
       padding: 1em; }
+  #conversejs .suggestion-box .suggestion-box__results--above,
+  #conversejs .awesomplete .suggestion-box__results--above {
+    bottom: 4.5em; }
+    #conversejs .suggestion-box .suggestion-box__results--above:before,
+    #conversejs .awesomplete .suggestion-box__results--above:before {
+      display: none; }
+    #conversejs .suggestion-box .suggestion-box__results--above:after,
+    #conversejs .awesomplete .suggestion-box__results--above:after {
+      z-index: 1;
+      content: "";
+      position: absolute;
+      bottom: -.43em;
+      left: 1em;
+      width: 0;
+      height: 0;
+      padding: .4em;
+      background: white;
+      border: inherit;
+      border-left: 0;
+      border-top: 0;
+      -webkit-transform: rotate(45deg);
+      transform: rotate(45deg); }
+#conversejs .suggestion-box > ul[hidden],
+#conversejs .suggestion-box > ul:empty,
 #conversejs div.awesomplete > ul[hidden],
 #conversejs div.awesomplete > ul:empty {
   display: none; }
 @supports (transform: scale(0)) {
+  #conversejs .suggestion-box > ul,
   #conversejs div.awesomplete > ul {
     transition: 0.3s cubic-bezier(0.4, 0.2, 0.5, 1.4);
     transform-origin: 1.43em -.43em; }
+  #conversejs .suggestion-box > ul[hidden],
+  #conversejs .suggestion-box > ul:empty,
   #conversejs div.awesomplete > ul[hidden],
   #conversejs div.awesomplete > ul:empty {
     opacity: 0;
     transform: scale(0);
     display: block;
     transition-timing-function: ease; } }
+#conversejs .suggestion-box > ul > li:hover,
 #conversejs div.awesomplete > ul > li:hover {
+  z-index: 2;
   background: #E77051;
   color: white; }
+#conversejs .suggestion-box > ul > li[aria-selected="true"],
 #conversejs div.awesomplete > ul > li[aria-selected="true"] {
   background: #3d6d8f;
   color: white; }
+#conversejs .suggestion-box li:hover mark,
 #conversejs div.awesomplete li:hover mark {
   background: #A53214;
   color: white; }
+#conversejs .suggestion-box li[aria-selected="true"] mark,
 #conversejs div.awesomplete li[aria-selected="true"] mark {
   background: #3d6b00;
   color: inherit; }

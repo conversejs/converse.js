@@ -1,7 +1,7 @@
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
@@ -93,7 +93,7 @@
          * If the setting "strict_plugin_dependencies" is set to true,
          * an error will be raised if the plugin is not found.
          */
-        dependencies: ["converse-modal", "converse-controlbox", "converse-chatview"],
+        dependencies: ["converse-autocomplete", "converse-modal", "converse-controlbox", "converse-chatview"],
 
         overrides: {
 
@@ -584,6 +584,7 @@
                     this.renderHeading();
                     this.renderChatArea();
                     this.renderMessageForm();
+                    this.initAutoComplete();
                     if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                         this.showSpinner();
                     }
@@ -608,6 +609,23 @@
                         this.toggleOccupants(null, true);
                     }
                     return this;
+                },
+
+                initAutoComplete () {
+                    this.auto_complete = new _converse.AutoComplete(this.el, {
+                        'auto_evaluate': false,
+                        'min_chars': 1,
+                        'match_current_word': true,
+                        'match_on_tab': true,
+                        'list': this.model.occupants.map(o => ({'label': o.getDisplayName(), 'value': o.get('jid')})),
+                        'filter': _converse.FILTER_STARTSWITH
+                    });
+                    this.auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
+                },
+
+                keyPressed (ev) {
+                    this.auto_complete.keyPressed(ev);
+                    return _converse.ChatBoxView.prototype.keyPressed.apply(this, arguments);
                 },
 
                 showRoomDetailsModal (ev) {
@@ -834,8 +852,7 @@
                 },
 
                 parseMessageForCommands (text) {
-                    const _super_ = _converse.ChatBoxView.prototype;
-                    if (_super_.parseMessageForCommands.apply(this, arguments)) {
+                    if (_converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments)) {
                         return true;
                     }
                     if (_converse.muc_disable_moderator_commands) {

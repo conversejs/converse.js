@@ -6,14 +6,22 @@
     {[ } ]}
     <input type="text" placeholder="{{o.label_spoiler_hint}}" value="{{ o.hint_value }}"
            class="{[ if (!o.composing_spoiler) { ]} hidden {[ } ]} spoiler-hint"/>
-    <textarea
-        type="text"
-        class="chat-textarea
-            {[ if (o.show_send_button) { ]} chat-textarea-send-button {[ } ]}
-            {[ if (o.composing_spoiler) { ]} spoiler {[ } ]}"
-        placeholder="{{{o.label_personal_message}}}">{{ o.message_value }}</textarea>
-    {[ if (o.show_send_button) { ]}
-        <button type="submit" class="pure-button send-button">{{{ o.label_send }}}</button>
-    {[ } ]}
+
+    <div class="suggestion-box">
+        <ul class="suggestion-box__results suggestion-box__results--above" hidden></ul>
+        <textarea
+            type="text"
+            class="chat-textarea suggestion-box__input
+                {[ if (o.show_send_button) { ]} chat-textarea-send-button {[ } ]}
+                {[ if (o.composing_spoiler) { ]} spoiler {[ } ]}"
+            placeholder="{{{o.label_personal_message}}}">{{ o.message_value }}</textarea>
+        <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>
+
+
+
+        {[ if (o.show_send_button) { ]}
+            <button type="submit" class="pure-button send-button">{{{ o.label_send }}}</button>
+        {[ } ]}
+    </div>
 </form>
 </div>

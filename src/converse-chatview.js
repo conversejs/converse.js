@@ -52,9 +52,15 @@
     const u = converse.env.utils;
     const KEY = {
         ENTER: 13,
+        SHIFT: 17,
+        CTRL: 17,
+        ALT: 18,
+        ESCAPE: 27,
         UP_ARROW: 38,
         DOWN_ARROW: 40,
-        FORWARD_SLASH: 47
+        FORWARD_SLASH: 47,
+        META: 91,
+        META_RIGHT: 93
     };
 
     converse.plugins.add('converse-chatview', {
@@ -915,15 +921,28 @@
                 keyPressed (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
-                    if (ev.shiftKey) { return; }
-
-                    if (ev.keyCode === KEY.ENTER) {
-                        this.onFormSubmitted(ev);
-                    } else if (ev.keyCode === KEY.UP_ARROW && !ev.target.selectionEnd) {
-                        this.editEarlierMessage();
-                    } else if (ev.keyCode === KEY.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
-                        this.editLaterMessage();
-                    } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
+                    if (ev.ctrlKey) {
+                        // When ctrl is pressed, no chars are entered into the textarea.
+                        return;
+                    }
+                    if (!ev.shiftKey && !ev.altKey) {
+                        if (ev.keyCode === KEY.FORWARD_SLASH) {
+                            // Forward slash is used to run commands. Nothing to do here.
+                            return;
+                        } else if (ev.keyCode === KEY.ESCAPE) {
+                            return this.onEscapePressed(ev);
+                        } else if (ev.keyCode === KEY.ENTER) {
+                            return this.onFormSubmitted(ev);
+                        } else if (ev.keyCode === KEY.UP_ARROW && !ev.target.selectionEnd) {
+                            return this.editEarlierMessage();
+                        } else if (ev.keyCode === KEY.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
+                            return this.editLaterMessage();
+                        }
+                    } 
+                    if (_.includes([KEY.SHIFT, KEY.META, KEY.META_RIGHT, KEY.ESCAPE, KEY.ALT], ev.keyCode)) {
+                        return;
+                    }
+                    if (this.model.get('chat_state') !== _converse.COMPOSING) {
                         // Set chat state to composing if keyCode is not a forward-slash
                         // (which would imply an internal command and not a message).
                         this.setChatState(_converse.COMPOSING);
@@ -934,7 +953,19 @@
                     return f(this.model.messages.filter({'sender': 'me'}));
                 },
 
+                onEscapePressed (ev) {
+                    ev.preventDefault();
+                    const idx = this.model.messages.findLastIndex('correcting'),
+                          message = idx >=0 ? this.model.messages.at(idx) : null;
+
+                    if (message) {
+                        message.save('correcting', false);
+                    }
+                    this.insertIntoTextArea('', true, false);
+                },
+
                 onMessageEditButtonClicked (ev) {
+                    ev.preventDefault();
                     const idx = this.model.messages.findLastIndex('correcting'),
                           currently_correcting = idx >=0 ? this.model.messages.at(idx) : null,
                           message_el = u.ancestor(ev.target, '.chat-msg'),

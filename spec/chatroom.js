@@ -60,49 +60,49 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                let jid, room, chatroomview;
+
                 test_utils.createContacts(_converse, 'current');
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group .group-toggle').length;
-                }, 300).then(function () {
-                    test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                        var jid = 'lounge@localhost';
-                        var room = _converse.api.rooms.get(jid);
-                        expect(room instanceof Object).toBeTruthy();
+                test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group .group-toggle').length, 300)
+                .then(() => test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy'))
+                .then(() => {
+                    jid = 'lounge@localhost';
+                    room = _converse.api.rooms.get(jid);
+                    expect(room instanceof Object).toBeTruthy();
 
-                        var chatroomview = _converse.chatboxviews.get(jid);
-                        expect(chatroomview.is_chatroom).toBeTruthy();
+                    chatroomview = _converse.chatboxviews.get(jid);
+                    expect(chatroomview.is_chatroom).toBeTruthy();
 
-                        expect(u.isVisible(chatroomview.el)).toBeTruthy();
-                        chatroomview.close();
+                    expect(u.isVisible(chatroomview.el)).toBeTruthy();
+                    chatroomview.close();
 
-                        // Test with mixed case
-                        test_utils.openAndEnterChatRoom(_converse, 'Leisure', 'localhost', 'dummy').then(function () {
-                            jid = 'Leisure@localhost';
-                            room = _converse.api.rooms.get(jid);
-                            expect(room instanceof Object).toBeTruthy();
-                            chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
-                            expect(u.isVisible(chatroomview.el)).toBeTruthy();
+                    // Test with mixed case
+                    return test_utils.openAndEnterChatRoom(_converse, 'Leisure', 'localhost', 'dummy');
+                }).then(() => {
+                    jid = 'Leisure@localhost';
+                    room = _converse.api.rooms.get(jid);
+                    expect(room instanceof Object).toBeTruthy();
+                    chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
+                    expect(u.isVisible(chatroomview.el)).toBeTruthy();
 
-                            jid = 'leisure@localhost';
-                            room = _converse.api.rooms.get(jid);
-                            expect(room instanceof Object).toBeTruthy();
-                            chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
-                            expect(u.isVisible(chatroomview.el)).toBeTruthy();
+                    jid = 'leisure@localhost';
+                    room = _converse.api.rooms.get(jid);
+                    expect(room instanceof Object).toBeTruthy();
+                    chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
+                    expect(u.isVisible(chatroomview.el)).toBeTruthy();
 
-                            jid = 'leiSure@localhost';
-                            room = _converse.api.rooms.get(jid);
-                            expect(room instanceof Object).toBeTruthy();
-                            chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
-                            expect(u.isVisible(chatroomview.el)).toBeTruthy();
-                            chatroomview.close();
+                    jid = 'leiSure@localhost';
+                    room = _converse.api.rooms.get(jid);
+                    expect(room instanceof Object).toBeTruthy();
+                    chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
+                    expect(u.isVisible(chatroomview.el)).toBeTruthy();
+                    chatroomview.close();
 
-                            // Non-existing room
-                            jid = 'lounge2@localhost';
-                            room = _converse.api.rooms.get(jid);
-                            expect(typeof room === 'undefined').toBeTruthy();
-                            done();
-                        });
-                    });
+                    // Non-existing room
+                    jid = 'lounge2@localhost';
+                    room = _converse.api.rooms.get(jid);
+                    expect(typeof room === 'undefined').toBeTruthy();
+                    done();
                 });
             }));
 
@@ -2680,7 +2680,8 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy')
+                .then(() => {
                     var sent_IQ, IQ_id;
                     var sendIQ = _converse.connection.sendIQ;
                     spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {

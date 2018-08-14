@@ -14,10 +14,8 @@
             class="chat-textarea suggestion-box__input
                 {[ if (o.show_send_button) { ]} chat-textarea-send-button {[ } ]}
                 {[ if (o.composing_spoiler) { ]} spoiler {[ } ]}"
-            placeholder="{{{o.label_personal_message}}}">{{ o.message_value }}</textarea>
+            placeholder="{{{o.label_message}}}">{{ o.message_value }}</textarea>
         <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>
-
-
 
         {[ if (o.show_send_button) { ]}
             <button type="submit" class="pure-button send-button">{{{ o.label_send }}}</button>

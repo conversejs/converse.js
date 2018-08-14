@@ -392,13 +392,13 @@
                     if (this.model.get('composing_spoiler')) {
                         placeholder = __('Hidden message');
                     } else {
-                        placeholder = __('Personal message');
+                        placeholder = __('Message');
                     }
                     const form_container = this.el.querySelector('.message-form-container');
                     form_container.innerHTML = tpl_chatbox_message_form(
                         _.extend(this.model.toJSON(), {
                             'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
-                            'label_personal_message': placeholder,
+                            'label_message': placeholder,
                             'label_send': __('Send'),
                             'label_spoiler_hint': __('Optional hint'),
                             'message_value': _.get(this.el.querySelector('.chat-textarea'), 'value'),
@@ -909,7 +909,6 @@
                 keyPressed (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
-                    console.log('keypressed in chatview');
                     if (ev.ctrlKey) {
                         // When ctrl is pressed, no chars are entered into the textarea.
                         return;

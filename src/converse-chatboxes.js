@@ -224,9 +224,10 @@
                             'message': message
                         });
                     };
+                    const file = this.get('file');
                     xhr.open('PUT', this.get('put'), true);
-                    xhr.setRequestHeader("Content-type", 'application/octet-stream');
-                    xhr.send(this.get('file'));
+                    xhr.setRequestHeader("Content-type", file.type);
+                    xhr.send(file);
                 }
             });
 

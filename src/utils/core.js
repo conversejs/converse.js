@@ -821,6 +821,13 @@
         return _.last(input.value.slice(0, cursor).split(' '));
     };
 
+    u.replaceCurrentWord = function (input, new_value) {
+        const cursor = input.selectionEnd || undefined,
+              current_word = _.last(input.value.slice(0, cursor).split(' ')),
+              value = input.value;
+        input.value = value.slice(0, cursor - current_word.length) + new_value + value.slice(cursor);
+    };
+
     u.isVisible = function (el) {
         if (u.hasClass('hidden', el)) {
             return false;

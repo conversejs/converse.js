@@ -77,7 +77,7 @@
                     });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                textarea.value = "hello s";
+                textarea.value = "hello s s";
                 view.keyPressed(tab_event);
                 view.keyUp(tab_event);
                 expect(view.el.querySelector('.suggestion-box__results').hidden).toBeFalsy();
@@ -91,7 +91,17 @@
                 }
                 view.keyPressed(up_arrow_event);
                 view.keyUp(up_arrow_event);
+                expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(2);
+                expect(view.el.querySelector('.suggestion-box__results li[aria-selected="false"]').textContent).toBe('some1');
+                expect(view.el.querySelector('.suggestion-box__results li[aria-selected="true"]').textContent).toBe('some2');
 
+                view.keyPressed({
+                    'target': textarea,
+                    'preventDefault': _.noop,
+                    'stopPropagation': _.noop,
+                    'keyCode': 13
+                });
+                expect(textarea.value).toBe('hello s some2');
                 done();
             }).catch(_.partial(console.error, _));
         }));

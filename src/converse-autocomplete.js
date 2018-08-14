@@ -34,8 +34,6 @@
                 return a < b? -1 : 1;
             };
 
-            const REPLACE = (text) => (this.input.value = text.value);
-
             const ITEM = (text, input) => {
                 input = input.trim();
                 const element = document.createElement("li");
@@ -83,8 +81,7 @@
                         'data': _.identity,
                         'filter': _converse.FILTER_CONTAINS,
                         'sort': config.sort === false ? false : SORT_BYLENGTH,
-                        'item': ITEM,
-                        'replace': REPLACE
+                        'item': ITEM
                     }, config);
 
                     this.index = -1;
@@ -177,7 +174,16 @@
                     this.is_opened = false;
                     this.index = -1;
 
-                    helpers.fire(this.input, "suggestion-box-close", o || {});
+                    this.trigger("suggestion-box-close", o || {});
+                }
+
+                insertValue (suggestion) {
+                    let value;
+                    if (this.match_current_word) {
+                        u.replaceCurrentWord(this.input, suggestion.value);
+                    } else {
+                        this.input.value = suggestion.value;
+                    }
                 }
 
                 open () {
@@ -251,7 +257,7 @@
                             });
 
                         if (allowed) {
-                            this.replace(suggestion);
+                            this.insertValue(suggestion);
                             this.close({'reason': 'select'});
                             this.auto_completing = false;
                             this.trigger("suggestion-box-selectcomplete", {'text': suggestion});
@@ -264,6 +270,7 @@
                         if (ev.keyCode === _converse.keycodes.ENTER && this.selected) {
                             ev.preventDefault();
                             ev.stopPropagation();
+                            this.select();
                             return false;
                         } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
                             this.close({'reason': 'esc'});
@@ -306,7 +313,6 @@
                     }
 
                     const list = typeof this._list === "function" ? this._list() : this._list;
-
                     if (value.length >= this.min_chars && list.length > 0) {
                         this.index = -1;
                         // Populate list with options that match

@@ -7476,6 +7476,8 @@ body.reset {
     @media screen and (max-width: 480px) {
       #conversejs .chatbox .sendXMPPMessage {
         width: 100%; } }
+    #conversejs .chatbox .sendXMPPMessage .suggestion-box__results:after {
+      display: none; }
     #conversejs .chatbox .sendXMPPMessage .spoiler-hint {
       width: 100%; }
     #conversejs .chatbox .sendXMPPMessage .chat-textarea {
@@ -7748,8 +7750,6 @@ body.reset {
     line-height: 27px; }
   #conversejs.converse-fullscreen .chatbox .sendXMPPMessage ul {
     width: 100%; }
-  #conversejs.converse-fullscreen .chatbox .sendXMPPMessage .suggestion-box__results:after {
-    display: none; }
   #conversejs.converse-fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category-picker {
     margin-right: 5em; }
   #conversejs.converse-fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category {
@@ -9156,6 +9156,12 @@ body.reset {
 #conversejs div.awesomplete li[aria-selected="true"] mark {
   background: #3d6b00;
   color: inherit; }
+
+#conversejs.converse-fullscreen .suggestion-box__results--above {
+  bottom: 4.5em; }
+
+#conversejs.converse-overlayed .suggestion-box__results--above {
+  bottom: 5.5em; }
 
 #conversejs.converse-embedded {
   -webkit-box-sizing: border-box;

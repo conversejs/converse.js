@@ -235,6 +235,12 @@
                 width: 100%;
             }
 
+            .suggestion-box__results {
+                &:after {
+                    display: none;
+                }
+            }
+
             .spoiler-hint {
                 width: 100%;
             }
@@ -604,11 +610,6 @@
         .sendXMPPMessage {
             ul {
                 width: 100%;
-            }
-            .suggestion-box__results {
-                &:after {
-                    display: none;
-                }
             }
             .toggle-smiley {
                 ul {

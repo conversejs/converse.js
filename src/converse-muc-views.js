@@ -618,7 +618,8 @@
                         'match_current_word': true,
                         'match_on_tab': true,
                         'list': () => this.model.occupants.map(o => ({'label': o.get('nick'), 'value': o.get('nick')})),
-                        'filter': _converse.FILTER_STARTSWITH
+                        'filter': _converse.FILTER_STARTSWITH,
+                        'trigger_on_at': true
                     });
                     this.auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
                 },

@@ -100,7 +100,7 @@
                     'target': textarea,
                     'preventDefault': _.noop,
                     'stopPropagation': _.noop,
-                    'keyCode': 13
+                    'keyCode': 13 // Enter
                 });
                 expect(textarea.value).toBe('hello s some2');
 
@@ -123,6 +123,18 @@
                 view.keyPressed(tab_event);
                 view.keyUp(tab_event);
                 expect(textarea.value).toBe('hello z3r0');
+
+                // Test that pressing @ brings up all options
+                const at_event = {
+                    'target': textarea,
+                    'preventDefault': _.noop,
+                    'stopPropagation': _.noop,
+                    'keyCode': 50
+                };
+                view.keyPressed(at_event);
+                view.keyUp(at_event);
+                textarea.value = 'hello z3r0 and @';
+
                 done();
             }).catch(_.partial(console.error, _));
         }));

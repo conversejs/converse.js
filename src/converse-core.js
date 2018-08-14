@@ -117,6 +117,7 @@
         UP_ARROW: 38,
         DOWN_ARROW: 40,
         FORWARD_SLASH: 47,
+        AT: 50,
         META: 91,
         META_RIGHT: 93
     };

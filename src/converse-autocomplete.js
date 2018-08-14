@@ -74,6 +74,7 @@
                     _.assignIn(this, {
                         'match_current_word': false, // Match only the current word, otherwise all input is matched
                         'match_on_tab': false, // Whether matching should only start when tab's pressed
+                        'trigger_on_at': false, // Whether @ should trigger autocomplete
                         'min_chars': 2,
                         'max_items': 10,
                         'auto_evaluate': true,
@@ -294,6 +295,8 @@
                     if (this.match_on_tab && ev.keyCode === _converse.keycodes.TAB) {
                         ev.preventDefault();
                         this.auto_completing = true;
+                    } else if (this.trigger_on_at && ev.keyCode === _converse.keycodes.AT) {
+                        this.auto_completing = true;
                     }
                 }
 
@@ -309,10 +312,14 @@
                     let value = this.input.value;
                     if (this.match_current_word) {
                         value = u.getCurrentWord(this.input);
-                    }
+                    } 
 
                     const list = typeof this._list === "function" ? this._list() : this._list;
-                    if (value.length >= this.min_chars && list.length > 0) {
+                    if (list.length > 0 && (
+                                (value.length >= this.min_chars) ||
+                                (this.trigger_on_at && ev.keyCode === value.startsWith('@'))
+                            )) {
+
                         this.index = -1;
                         // Populate list with options that match
                         this.ul.innerHTML = "";

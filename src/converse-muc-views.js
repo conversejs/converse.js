@@ -534,6 +534,7 @@
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .upload-file': 'toggleFileUpload',
                     'keydown .chat-textarea': 'keyPressed',
+                    'keyup .chat-textarea': 'keyUp',
                     'input .chat-textarea': 'inputChanged'
                 },
 
@@ -624,8 +625,14 @@
                 },
 
                 keyPressed (ev) {
-                    this.auto_complete.keyPressed(ev);
+                    if (!this.auto_complete.keyPressed(ev)) {
+                        return;
+                    }
                     return _converse.ChatBoxView.prototype.keyPressed.apply(this, arguments);
+                },
+
+                keyUp (ev) {
+                    this.auto_complete.evaluate(ev);
                 },
 
                 showRoomDetailsModal (ev) {

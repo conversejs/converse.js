@@ -909,6 +909,7 @@
                 keyPressed (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
+                    console.log('keypressed in chatview');
                     if (ev.ctrlKey) {
                         // When ctrl is pressed, no chars are entered into the textarea.
                         return;

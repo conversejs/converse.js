@@ -58,7 +58,7 @@
 
             class AutoComplete {
                 
-                constructor (el, o) {
+                constructor (el, config={}) {
                     this.is_opened = false;
 
                     if (u.hasClass('.suggestion-box', el)) {
@@ -73,8 +73,6 @@
                     this.ul = this.container.querySelector('.suggestion-box__results');
                     this.status = this.container.querySelector('.suggestion-box__additions');
 
-                    o = o || {};
-
                     _.assignIn(this, {
                         'match_current_word': false, // Match only the current word, otherwise all input is matched
                         'match_on_tab': false, // Whether matching should only start when tab's pressed
@@ -84,50 +82,31 @@
                         'auto_first': false,
                         'data': _.identity,
                         'filter': _converse.FILTER_CONTAINS,
-                        'sort': o.sort === false ? false : SORT_BYLENGTH,
+                        'sort': config.sort === false ? false : SORT_BYLENGTH,
                         'item': ITEM,
                         'replace': REPLACE
-                    }, o);
+                    }, config);
 
                     this.index = -1;
 
-                    const input = {
-                        "blur": this.close.bind(this, {'reason': "blur" }),
-                        "keydown": () => this.onKeyDown()
-                    }
-                    if (this.auto_evaluate) {
-                        input["input"] = this.evaluate.bind(this);
-                    }
-
-                    this.bindEvents(input)
+                    this.bindEvents()
 
                     if (this.input.hasAttribute("list")) {
                         this.list = "#" + this.input.getAttribute("list");
                         this.input.removeAttribute("list");
                     } else {
-                        this.list = this.input.getAttribute("data-list") || o.list || [];
+                        this.list = this.input.getAttribute("data-list") || config.list || [];
                     }
                 }
 
-                onKeyDown (evt) {
-                    const c = evt.keyCode;
-                    // If the dropdown `ul` is in view, then act on keydown for the following keys:
-                    // Enter / Esc / Up / Down
-                    if (this.opened) {
-                        if (c === _converse.keycodes.ENTER && this.selected) {
-                            evt.preventDefault();
-                            this.select();
-                        } else if (c === _converse.keycodes.ESCAPE) {
-                            this.close({ reason: "esc" });
-                        } else if (c === _converse.keycodes.UP_ARROW || c === _converse.keycodes.DOWN_ARROW) {
-                            evt.preventDefault();
-                            this[c === _converse.keycodes.UP_ARROW ? "previous" : "next"]();
-                        }
-                    }
-                }
-
-                bindEvents (input) {
+                bindEvents () {
                     // Bind events
+                    const input = {
+                        "blur": this.close.bind(this, {'reason': "blur"}),
+                    }
+                    if (this.auto_evaluate) {
+                        input["input"] = this.evaluate.bind(this);
+                    }
                     this._events = {
                         'input': input,
                         'form': {
@@ -239,26 +218,21 @@
                     this.goto(this.selected && pos !== -1 ? pos : count - 1);
                 }
 
-                // Should not be used, highlights specific item without any checks!
                 goto (i) {
-                    var lis = this.ul.children;
-
+                    // Should not be used directly, highlights specific item without any checks!
+                    const list = this.ul.children;
                     if (this.selected) {
-                        lis[this.index].setAttribute("aria-selected", "false");
+                        list[this.index].setAttribute("aria-selected", "false");
                     }
-
                     this.index = i;
 
-                    if (i > -1 && lis.length > 0) {
-                        lis[i].setAttribute("aria-selected", "true");
-                        this.status.textContent = lis[i].textContent;
-
+                    if (i > -1 && list.length > 0) {
+                        list[i].setAttribute("aria-selected", "true");
+                        list[i].focus();
+                        this.status.textContent = list[i].textContent;
                         // scroll to highlighted element in case parent's height is fixed
-                        this.ul.scrollTop = lis[i].offsetTop - this.ul.clientHeight + lis[i].clientHeight;
-
-                        helpers.fire(this.input, "suggestion-box-highlight", {
-                            text: this.suggestions[this.index]
-                        });
+                        this.ul.scrollTop = list[i].offsetTop - this.ul.clientHeight + list[i].clientHeight;
+                        this.trigger("suggestion-box-highlight", {'text': this.suggestions[this.index]});
                     }
                 }
 
@@ -286,6 +260,22 @@
                 }
 
                 keyPressed (ev) {
+                    if (this.opened) {
+                        if (ev.keyCode === _converse.keycodes.ENTER && this.selected) {
+                            ev.preventDefault();
+                            ev.stopPropagation();
+                            return false;
+                        } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
+                            this.close({'reason': 'esc'});
+                            return false;
+                        } else if (ev.keyCode === _converse.keycodes.UP_ARROW || ev.keyCode === _converse.keycodes.DOWN_ARROW) {
+                            ev.preventDefault();
+                            ev.stopPropagation();
+                            this[ev.keyCode === _converse.keycodes.UP_ARROW ? "previous" : "next"]();
+                            return false;
+                        }
+                    }
+
                     if (_.includes([
                                 _converse.keycodes.SHIFT,
                                 _converse.keycodes.META,
@@ -299,12 +289,17 @@
                         ev.preventDefault();
                         this.auto_completing = true;
                     }
-                    if (this.auto_completing) {
-                        this.evaluate();
-                    }
                 }
 
                 evaluate (ev) {
+                    const arrow_pressed = (
+                        ev.keyCode === _converse.keycodes.UP_ARROW ||
+                        ev.keyCode === _converse.keycodes.DOWN_ARROW
+                    );
+                    if (!this.auto_completing || (this.selected && arrow_pressed)) {
+                        return;
+                    }
+
                     let value = this.input.value;
                     if (this.match_current_word) {
                         value = u.getCurrentWord(this.input);

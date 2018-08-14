@@ -612,6 +612,7 @@
 
                 initAutoComplete () {
                     this.auto_complete = new _converse.AutoComplete(this.el, {
+                        'auto_first': true,
                         'auto_evaluate': false,
                         'min_chars': 1,
                         'match_current_word': true,

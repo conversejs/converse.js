@@ -326,7 +326,6 @@
                         }
                         this.suggestions = this.suggestions.slice(0, this.max_items);
                         this.suggestions.forEach((text) => this.ul.appendChild(this.item(text, value)));
-                        this.next();
 
                         if (this.ul.children.length === 0) {
                             this.close({'reason': 'nomatches'});

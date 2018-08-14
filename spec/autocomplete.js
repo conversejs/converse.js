@@ -44,6 +44,7 @@
                 const tab_event = {
                     'target': textarea,
                     'preventDefault': _.noop,
+                    'stopPropagation': _.noop,
                     'keyCode': 9
                 }
                 view.keyPressed(tab_event);
@@ -102,6 +103,26 @@
                     'keyCode': 13
                 });
                 expect(textarea.value).toBe('hello s some2');
+
+                // Test that pressing tab twice selects
+                presence = $pres({
+                        'to': 'dummy@localhost/resource',
+                        'from': 'lounge@localhost/z3r0'
+                    })
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': 'z3r0@localhost/resource',
+                        'role': 'participant'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                textarea.value = "hello z";
+                view.keyPressed(tab_event);
+                view.keyUp(tab_event);
+
+                view.keyPressed(tab_event);
+                view.keyUp(tab_event);
+                expect(textarea.value).toBe('hello z3r0');
                 done();
             }).catch(_.partial(console.error, _));
         }));

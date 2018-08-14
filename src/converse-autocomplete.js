@@ -116,7 +116,6 @@
                                     while (li && !(/li/i).test(li.nodeName)) {
                                         li = li.parentNode;
                                     }
-
                                     if (li && evt.button === 0) {  // Only select on left click
                                         evt.preventDefault();
                                         this.select(li, evt.target);
@@ -267,19 +266,19 @@
 
                 keyPressed (ev) {
                     if (this.opened) {
-                        if (ev.keyCode === _converse.keycodes.ENTER && this.selected) {
+                        if (_.includes([_converse.keycodes.ENTER, _converse.keycodes.TAB], ev.keyCode) && this.selected) {
                             ev.preventDefault();
                             ev.stopPropagation();
                             this.select();
-                            return false;
+                            return true;
                         } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
                             this.close({'reason': 'esc'});
-                            return false;
-                        } else if (ev.keyCode === _converse.keycodes.UP_ARROW || ev.keyCode === _converse.keycodes.DOWN_ARROW) {
+                            return true;
+                        } else if (_.includes([_converse.keycodes.UP_ARROW, _converse.keycodes.DOWN_ARROW], ev.keyCode)) {
                             ev.preventDefault();
                             ev.stopPropagation();
                             this[ev.keyCode === _converse.keycodes.UP_ARROW ? "previous" : "next"]();
-                            return false;
+                            return true;
                         }
                     }
 
@@ -327,6 +326,7 @@
                         }
                         this.suggestions = this.suggestions.slice(0, this.max_items);
                         this.suggestions.forEach((text) => this.ul.appendChild(this.item(text, value)));
+                        this.next();
 
                         if (this.ul.children.length === 0) {
                             this.close({'reason': 'nomatches'});

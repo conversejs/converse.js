@@ -225,7 +225,7 @@
                         });
                     };
                     xhr.open('PUT', this.get('put'), true);
-                    xhr.setRequestHeader("Content-type", 'application/octet-stream');
+                    xhr.setRequestHeader("Content-type", this.get('file').type);
                     xhr.send(this.get('file'));
                 }
             });

@@ -15,6 +15,50 @@
 
     return describe("A groupchat textarea", function () {
 
+        it("shows all autocompletion options when the user presses @",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+            test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom')
+            .then(() => {
+                const view = _converse.chatboxviews.get('lounge@localhost');
+
+                ['dick', 'harry'].forEach((nick) => {
+                    _converse.connection._dataRecv(test_utils.createRequest(
+                        $pres({
+                            'to': 'tom@localhost/resource',
+                            'from': `lounge@localhost/${nick}`
+                        })
+                        .c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': `${nick}@localhost/resource`,
+                            'role': 'participant'
+                        })));
+                });
+
+                // Test that pressing @ brings up all options
+                const textarea = view.el.querySelector('textarea.chat-textarea');
+                const at_event = {
+                    'target': textarea,
+                    'preventDefault': _.noop,
+                    'stopPropagation': _.noop,
+                    'keyCode': 50
+                };
+                view.keyPressed(at_event);
+                textarea.value = '@';
+                view.keyUp(at_event);
+
+                expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(3);
+                expect(view.el.querySelector('.suggestion-box__results li[aria-selected="true"]').textContent).toBe('tom');
+                expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('tom');
+                expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('dick');
+                expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('harry');
+                done();
+            }).catch(_.partial(console.error, _));
+        }));
+
         it("autocompletes when the user presses tab",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
@@ -102,7 +146,7 @@
                     'stopPropagation': _.noop,
                     'keyCode': 13 // Enter
                 });
-                expect(textarea.value).toBe('hello s some2');
+                expect(textarea.value).toBe('hello s some2 ');
 
                 // Test that pressing tab twice selects
                 presence = $pres({
@@ -122,18 +166,7 @@
 
                 view.keyPressed(tab_event);
                 view.keyUp(tab_event);
-                expect(textarea.value).toBe('hello z3r0');
-
-                // Test that pressing @ brings up all options
-                const at_event = {
-                    'target': textarea,
-                    'preventDefault': _.noop,
-                    'stopPropagation': _.noop,
-                    'keyCode': 50
-                };
-                view.keyPressed(at_event);
-                view.keyUp(at_event);
-                textarea.value = 'hello z3r0 and @';
+                expect(textarea.value).toBe('hello z3r0 ');
 
                 done();
             }).catch(_.partial(console.error, _));

@@ -193,8 +193,7 @@
                     if (this.auto_first && this.index === -1) {
                         this.goto(0);
                     }
-
-                    helpers.fire(this.input, "suggestion-box-open");
+                    this.trigger("suggestion-box-open");
                 }
 
                 destroy () {
@@ -250,18 +249,11 @@
                     }
 
                     if (selected) {
-                        const suggestion = this.suggestions[this.index],
-                            allowed = helpers.fire(this.input, "suggestion-box-select", {
-                                'text': suggestion,
-                                'origin': origin || selected
-                            });
-
-                        if (allowed) {
-                            this.insertValue(suggestion);
-                            this.close({'reason': 'select'});
-                            this.auto_completing = false;
-                            this.trigger("suggestion-box-selectcomplete", {'text': suggestion});
-                        }
+                        const suggestion = this.suggestions[this.index];
+                        this.insertValue(suggestion);
+                        this.close({'reason': 'select'});
+                        this.auto_completing = false;
+                        this.trigger("suggestion-box-selectcomplete", {'text': suggestion});
                     }
                 }
 
@@ -309,17 +301,20 @@
                         return;
                     }
 
-                    let value = this.input.value;
-                    if (this.match_current_word) {
-                        value = u.getCurrentWord(this.input);
-                    } 
-
                     const list = typeof this._list === "function" ? this._list() : this._list;
-                    if (list.length > 0 && (
-                                (value.length >= this.min_chars) ||
-                                (this.trigger_on_at && ev.keyCode === value.startsWith('@'))
-                            )) {
+                    if (list.length === 0) {
+                        return;
+                    }
 
+                    let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
+                        
+                    let ignore_min_chars = false;
+                    if (this.trigger_on_at && value.startsWith('@')) {
+                        ignore_min_chars = true;
+                        value = value.slice('1');
+                    }
+                    
+                    if ((value.length >= this.min_chars) || ignore_min_chars) {
                         this.index = -1;
                         // Populate list with options that match
                         this.ul.innerHTML = "";
@@ -400,19 +395,6 @@
                             event.split(/\s+/).forEach(event => element.removeEventListener(event, callback));
                         }
                     }
-                },
-
-                fire (target, type, properties) {
-                    const evt = document.createEvent("HTMLEvents");
-                    evt.initEvent(type, true, true );
-
-                    for (var j in properties) {
-                        if (!Object.prototype.hasOwnProperty.call(properties, j)) {
-                            continue;
-                        }
-                        evt[j] = properties[j];
-                    }
-                    return target.dispatchEvent(evt);
                 },
 
                 regExpEscape (s) {

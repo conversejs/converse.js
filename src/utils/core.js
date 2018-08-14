@@ -825,7 +825,8 @@
         const cursor = input.selectionEnd || undefined,
               current_word = _.last(input.value.slice(0, cursor).split(' ')),
               value = input.value;
-        input.value = value.slice(0, cursor - current_word.length) + new_value + value.slice(cursor);
+        input.value = value.slice(0, cursor - current_word.length) + `${new_value} ` + value.slice(cursor);
+        input.selectionEnd = cursor - current_word.length + new_value.length + 1;
     };
 
     u.isVisible = function (el) {

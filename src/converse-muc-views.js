@@ -21,7 +21,6 @@
         "templates/chatroom_nickname_form.html",
         "templates/chatroom_password_form.html",
         "templates/chatroom_sidebar.html",
-        "templates/chatroom_toolbar.html",
         "templates/info.html",
         "templates/list_chatrooms_modal.html",
         "templates/occupant.html",
@@ -49,7 +48,6 @@
     tpl_chatroom_nickname_form,
     tpl_chatroom_password_form,
     tpl_chatroom_sidebar,
-    tpl_chatroom_toolbar,
     tpl_info,
     tpl_list_chatrooms_modal,
     tpl_occupant,
@@ -625,7 +623,7 @@
                 },
 
                 keyPressed (ev) {
-                    if (!this.auto_complete.keyPressed(ev)) {
+                    if (this.auto_complete.keyPressed(ev)) {
                         return;
                     }
                     return _converse.ChatBoxView.prototype.keyPressed.apply(this, arguments);
@@ -727,8 +725,8 @@
                     return _.extend(
                         _converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments),
                         {
-                          label_hide_occupants: __('Hide the list of participants'),
-                          show_occupants_toggle: this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
+                          'label_hide_occupants': __('Hide the list of participants'),
+                          'show_occupants_toggle': this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
                         }
                     );
                 },

@@ -8690,11 +8690,14 @@ body.reset {
   #conversejs.converse-embedded .chatroom .sendXMPPMessage .send-button,
   #conversejs .chatroom .sendXMPPMessage .send-button {
     background-color: #E77051; }
-  #conversejs.converse-embedded .chatroom .room-invite .invited-contact,
-  #conversejs .chatroom .room-invite .invited-contact {
-    margin: -1px 0 0 -1px;
-    width: 100%;
-    border: 1px solid #999; }
+  #conversejs.converse-embedded .chatroom .room-invite,
+  #conversejs .chatroom .room-invite {
+    padding-bottom: 1em; }
+    #conversejs.converse-embedded .chatroom .room-invite .invited-contact,
+    #conversejs .chatroom .room-invite .invited-contact {
+      margin: -1px 0 0 -1px;
+      width: 100%;
+      border: 1px solid #999; }
 
 /* ******************* Overlay  styles *************************** */
 #conversejs.converse-overlayed .chatbox.chatroom {

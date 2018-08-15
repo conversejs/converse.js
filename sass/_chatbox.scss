@@ -246,6 +246,7 @@
             }
 
             .chat-textarea {
+                color: $chat-textarea-color;
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
                 @include border-bottom-radius($chatbox-border-radius);

@@ -7481,6 +7481,7 @@ body.reset {
     #conversejs .chatbox .sendXMPPMessage .spoiler-hint {
       width: 100%; }
     #conversejs .chatbox .sendXMPPMessage .chat-textarea {
+      color: #666;
       border-top-left-radius: 0;
       border-top-right-radius: 0;
       border-bottom-right-radius: 4px;

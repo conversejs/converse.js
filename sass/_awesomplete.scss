@@ -113,22 +113,15 @@
         }
     }
     
-    .suggestion-box > ul > li:hover,
-    div.awesomplete > ul > li:hover {
-        z-index: 2;
-        background: $red;
-        color: $inverse-link-color;
-    }
-    
     .suggestion-box > ul > li[aria-selected="true"],
     div.awesomplete > ul > li[aria-selected="true"] {
-        background: $darkest-red;
-        color: white;
+        background: $dark-red;
+        color: $inverse-link-color;
     }
     
     .suggestion-box li:hover mark,
     div.awesomplete li:hover mark {
-        background: $dark-red;
+        background: $lightest-red;
         color: $inverse-link-color;
     }
     

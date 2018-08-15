@@ -9142,18 +9142,13 @@ body.reset {
     transform: scale(0);
     display: block;
     transition-timing-function: ease; } }
-#conversejs .suggestion-box > ul > li:hover,
-#conversejs div.awesomplete > ul > li:hover {
-  z-index: 2;
-  background: #E77051;
-  color: white; }
 #conversejs .suggestion-box > ul > li[aria-selected="true"],
 #conversejs div.awesomplete > ul > li[aria-selected="true"] {
-  background: #A53214;
+  background: #D24E2B;
   color: white; }
 #conversejs .suggestion-box li:hover mark,
 #conversejs div.awesomplete li:hover mark {
-  background: #D24E2B;
+  background: #FFB9A7;
   color: white; }
 #conversejs .suggestion-box li[aria-selected="true"] mark,
 #conversejs div.awesomplete li[aria-selected="true"] mark {

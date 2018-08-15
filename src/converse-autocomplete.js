@@ -55,7 +55,7 @@
 
 
             class AutoComplete {
-                
+
                 constructor (el, config={}) {
                     this.is_opened = false;
 
@@ -100,29 +100,20 @@
                 bindEvents () {
                     // Bind events
                     const input = {
-                        "blur": this.close.bind(this, {'reason': "blur"}),
+                        "blur": () => this.close({'reason': 'blur'})
                     }
                     if (this.auto_evaluate) {
-                        input["input"] = this.evaluate.bind(this);
+                        input["input"] = () => this.evaluate();
                     }
+
                     this._events = {
                         'input': input,
                         'form': {
-                            "submit": this.close.bind(this, { reason: "submit" })
+                            "submit": () => this.close({'reason': 'submit'})
                         },
                         'ul': {
-                            "mousedown": (evt) => {
-                                let li = evt.target;
-                                if (li !== this) {
-                                    while (li && !(/li/i).test(li.nodeName)) {
-                                        li = li.parentNode;
-                                    }
-                                    if (li && evt.button === 0) {  // Only select on left click
-                                        evt.preventDefault();
-                                        this.select(li, evt.target);
-                                    }
-                                }
-                            }
+                            "mousedown": (ev) => this.onMouseDown(ev),
+                            "mouseover": (ev) => this.onMouseOver(ev)
                         }
                     };
                     helpers.bind(this.input, this._events.input);
@@ -173,7 +164,6 @@
                     this.ul.setAttribute("hidden", "");
                     this.is_opened = false;
                     this.index = -1;
-
                     this.trigger("suggestion-box-close", o || {});
                 }
 
@@ -257,6 +247,24 @@
                     }
                 }
 
+                onMouseOver (ev) {
+                    const li = u.ancestor(ev.target, 'li');
+                    if (li) {
+                        this.goto(Array.prototype.slice.call(this.ul.children).indexOf(li))
+                    }
+                }
+
+                onMouseDown (ev) {
+                    if (ev.button !== 0) {
+                        return; // Only select on left click
+                    }
+                    const li = u.ancestor(ev.target, 'li');
+                    if (li) {
+                        ev.preventDefault();
+                        this.select(li, ev.target);
+                    }
+                }
+
                 keyPressed (ev) {
                     if (this.opened) {
                         if (_.includes([_converse.keycodes.ENTER, _converse.keycodes.TAB], ev.keyCode) && this.selected) {
@@ -307,13 +315,13 @@
                     }
 
                     let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
-                        
+
                     let ignore_min_chars = false;
                     if (this.trigger_on_at && value.startsWith('@')) {
                         ignore_min_chars = true;
                         value = value.slice('1');
                     }
-                    
+
                     if ((value.length >= this.min_chars) || ignore_min_chars) {
                         this.index = -1;
                         // Populate list with options that match

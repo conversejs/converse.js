@@ -9149,15 +9149,15 @@ body.reset {
   color: white; }
 #conversejs .suggestion-box > ul > li[aria-selected="true"],
 #conversejs div.awesomplete > ul > li[aria-selected="true"] {
-  background: #3d6d8f;
+  background: #A53214;
   color: white; }
 #conversejs .suggestion-box li:hover mark,
 #conversejs div.awesomplete li:hover mark {
-  background: #A53214;
+  background: #D24E2B;
   color: white; }
 #conversejs .suggestion-box li[aria-selected="true"] mark,
 #conversejs div.awesomplete li[aria-selected="true"] mark {
-  background: #3d6b00;
+  background: #E77051;
   color: inherit; }
 
 #conversejs.converse-fullscreen .suggestion-box__results--above {

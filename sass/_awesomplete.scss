@@ -122,19 +122,19 @@
     
     .suggestion-box > ul > li[aria-selected="true"],
     div.awesomplete > ul > li[aria-selected="true"] {
-        background: hsl(205, 40%, 40%);
+        background: $darkest-red;
         color: white;
     }
     
     .suggestion-box li:hover mark,
     div.awesomplete li:hover mark {
-        background: $darkest-red;
+        background: $dark-red;
         color: $inverse-link-color;
     }
     
     .suggestion-box li[aria-selected="true"] mark,
     div.awesomplete li[aria-selected="true"] mark {
-        background: hsl(86, 100%, 21%);
+        background: $red;
         color: inherit;
     }
 }

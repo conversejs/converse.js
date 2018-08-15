@@ -269,478 +269,6 @@
         }));
 
 
-        describe("when received from someone else", function () {
-
-            it("will open a chatbox and be displayed inside it",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
-
-                test_utils.createContacts(_converse, 'current');
-                test_utils.openControlBox();
-                test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300)
-                .then(function () {
-                    spyOn(_converse, 'emit');
-                    const message = 'This is a received message';
-                    const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-
-                    // We don't already have an open chatbox for this user
-                    expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
-
-                    _converse.chatboxes.onMessage(
-                        $msg({
-                            'from': sender_jid,
-                            'to': _converse.connection.jid,
-                            'type': 'chat',
-                            'id': (new Date()).getTime()
-                        }).c('body').t(message).up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
-                    );
-
-                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-
-                    // Check that the chatbox and its view now exist
-                    const chatbox = _converse.chatboxes.get(sender_jid);
-                    const chatboxview = _converse.chatboxviews.get(sender_jid);
-                    expect(chatbox).toBeDefined();
-                    expect(chatboxview).toBeDefined();
-                    // Check that the message was received and check the message parameters
-                    expect(chatbox.messages.length).toEqual(1);
-                    const msg_obj = chatbox.messages.models[0];
-                    expect(msg_obj.get('message')).toEqual(message);
-                    expect(msg_obj.get('fullname')).toEqual(mock.cur_names[0]);
-                    expect(msg_obj.get('sender')).toEqual('them');
-                    expect(msg_obj.get('is_delayed')).toEqual(false);
-                    // Now check that the message appears inside the chatbox in the DOM
-                    const chat_content = chatboxview.el.querySelector('.chat-content');
-                    expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
-                    expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                    return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
-                    .then(function () {
-                        expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Max Frankfurter');
-                        done();
-                    });
-                });
-            }));
-
-            it("can be replaced with a correction",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                    function (done, _converse) {
-
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
-                test_utils.openControlBox();
-                const message = 'This is a received message';
-                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                test_utils.openChatBoxFor(_converse, sender_jid)
-                .then(() => {
-                    const msg_id = u.getUniqueId();
-                    _converse.chatboxes.onMessage($msg({
-                            'from': sender_jid,
-                            'to': _converse.connection.jid,
-                            'type': 'chat',
-                            'id': msg_id,
-                        }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
-
-                    var chatboxview = _converse.chatboxviews.get(sender_jid);
-                    expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
-                    expect(chatboxview.el.querySelector('.chat-msg__text').textContent)
-                        .toBe('But soft, what light through yonder airlock breaks?');
-
-                    _converse.chatboxes.onMessage($msg({
-                            'from': sender_jid,
-                            'to': _converse.connection.jid,
-                            'type': 'chat',
-                            'id': u.getUniqueId(),
-                        }).c('body').t('But soft, what light through yonder chimney breaks?').up()
-                        .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
-
-                    test_utils.waitUntil(() => chatboxview.el.querySelector('.chat-msg__text').textContent ===
-                        'But soft, what light through yonder chimney breaks?').then(() => {
-
-                        expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
-                        expect(chatboxview.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
-
-                        _converse.chatboxes.onMessage($msg({
-                                'from': sender_jid,
-                                'to': _converse.connection.jid,
-                                'type': 'chat',
-                                'id': u.getUniqueId(),
-                            }).c('body').t('But soft, what light through yonder window breaks?').up()
-                            .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
-
-                        return test_utils.waitUntil(() => chatboxview.el.querySelector('.chat-msg__text').textContent ===
-                            'But soft, what light through yonder window breaks?');
-                    }).then(() => {
-                        expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
-                        expect(chatboxview.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
-                        chatboxview.el.querySelector('.chat-msg__content .fa-edit').click();
-                        const modal = chatboxview.model.messages.at(0).message_versions_modal;
-                        return test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
-                    }).then(() => {
-                        const modal = chatboxview.model.messages.at(0).message_versions_modal;
-                        const older_msgs = modal.el.querySelectorAll('.older-msg');
-                        expect(older_msgs.length).toBe(2);
-                        expect(older_msgs[0].textContent).toBe('But soft, what light through yonder airlock breaks?');
-                        expect(older_msgs[1].textContent).toBe('But soft, what light through yonder chimney breaks?');
-                        done();
-                    });
-                });
-            }));
-
-            describe("when a chatbox is opened for someone who is not in the roster", function () {
-
-                it("the VCard for that user is fetched and the chatbox updated with the results",
-                    mock.initConverseWithPromises(
-                        null, ['rosterGroupsFetched'], {},
-                        function (done, _converse) {
-
-                    _converse.allow_non_roster_messaging = true;
-                    spyOn(_converse, 'emit').and.callThrough();
-
-                    var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var vcard_fetched = false;
-                    spyOn(_converse.api.vcard, "get").and.callFake(function () {
-                        vcard_fetched = true;
-                        return Promise.resolve({
-                            'fullname': mock.cur_names[0],
-                            'vcard_updated': moment().format(),
-                            'jid': sender_jid
-                        });
-                    });
-                    var message = 'This is a received message from someone not on the roster';
-                    var msg = $msg({
-                            from: sender_jid,
-                            to: _converse.connection.jid,
-                            type: 'chat',
-                            id: (new Date()).getTime()
-                        }).c('body').t(message).up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-
-                    // We don't already have an open chatbox for this user
-                    expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
-
-                    _converse.chatboxes.onMessage(msg);
-                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-
-                    // Check that the chatbox and its view now exist
-                    var chatbox = _converse.chatboxes.get(sender_jid);
-                    var chatboxview = _converse.chatboxviews.get(sender_jid);
-                    expect(chatbox).toBeDefined();
-                    expect(chatboxview).toBeDefined();
-
-                    var author_el = chatboxview.el.querySelector('.chat-msg__author');
-                    expect(chatbox.get('fullname') === sender_jid);
-                    expect( _.includes(author_el.textContent.trim(), 'max.frankfurter@localhost')).toBeTruthy();
-
-                    test_utils.waitUntil(function () { return vcard_fetched; }, 100)
-                    .then(function () {
-                        expect(_converse.api.vcard.get).toHaveBeenCalled();
-                        return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
-                    }).then(function () {
-                        var author_el = chatboxview.el.querySelector('.chat-msg__author');
-                        expect( _.includes(author_el.textContent.trim(), 'Max Frankfurter')).toBeTruthy();
-                        done();
-                    });
-                }));
-            });
-
-            describe("who is not on the roster", function () {
-
-                it("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true",
-                    mock.initConverseWithPromises(
-                        null, ['rosterGroupsFetched'], {},
-                        function (done, _converse) {
-
-                    _converse.allow_non_roster_messaging = false;
-
-                    spyOn(_converse, 'emit');
-                    var message = 'This is a received message from someone not on the roster';
-                    var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var msg = $msg({
-                            from: sender_jid,
-                            to: _converse.connection.jid,
-                            type: 'chat',
-                            id: (new Date()).getTime()
-                        }).c('body').t(message).up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-
-                    // We don't already have an open chatbox for this user
-                    expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
-
-                    var chatbox = _converse.chatboxes.get(sender_jid);
-                    expect(chatbox).not.toBeDefined();
-
-                    // onMessage is a handler for received XMPP messages
-                    _converse.chatboxes.onMessage(msg);
-                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-
-                    // onMessage is a handler for received XMPP messages
-                    _converse.allow_non_roster_messaging =true;
-                    _converse.chatboxes.onMessage(msg);
-                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-
-                    // Check that the chatbox and its view now exist
-                    chatbox = _converse.chatboxes.get(sender_jid);
-                    var chatboxview = _converse.chatboxviews.get(sender_jid);
-                    expect(chatbox).toBeDefined();
-                    expect(chatboxview).toBeDefined();
-                    // Check that the message was received and check the message parameters
-                    expect(chatbox.messages.length).toEqual(1);
-                    var msg_obj = chatbox.messages.models[0];
-                    expect(msg_obj.get('message')).toEqual(message);
-                    expect(msg_obj.get('fullname')).toEqual(undefined);
-                    expect(msg_obj.get('sender')).toEqual('them');
-                    expect(msg_obj.get('is_delayed')).toEqual(false);
-                    // Now check that the message appears inside the chatbox in the DOM
-                    var chat_content = chatboxview.el.querySelector('.chat-content');
-                    expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
-                    expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                    expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('max.frankfurter@localhost');
-                    done();
-                }));
-            });
-
-            describe("and for which then an error message is received from the server", function () {
-
-                it("will have the error message displayed after itself",
-                    mock.initConverseWithPromises(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        function (done, _converse) {
-
-                    test_utils.createContacts(_converse, 'current');
-                    _converse.emit('rosterContactsFetched');
-                    test_utils.openControlBox();
-
-                    // TODO: what could still be done for error
-                    // messages... if the <error> element has type
-                    // "cancel", then we know the messages wasn't sent,
-                    // and can give the user a nicer indication of
-                    // that.
-
-                    /* <message from="scotty@enterprise.com/_converse.js-84843526"
-                     *          to="kirk@enterprise.com.com"
-                     *          type="chat"
-                     *          id="82bc02ce-9651-4336-baf0-fa04762ed8d2"
-                     *          xmlns="jabber:client">
-                     *      <body>yo</body>
-                     *      <active xmlns="http://jabber.org/protocol/chatstates"/>
-                     *  </message>
-                     */
-                    var sender_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var fullname = _converse.xmppstatus.get('fullname');
-                    fullname = _.isEmpty(fullname)? _converse.bare_jid: fullname;
-                    _converse.api.chats.open(sender_jid)
-                    .then(() => {
-                        var msg_text = 'This message will not be sent, due to an error';
-                        var view = _converse.chatboxviews.get(sender_jid);
-                        var message = view.model.messages.create({
-                            'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
-                            'fullname': fullname,
-                            'sender': 'me',
-                            'time': moment().format(),
-                            'message': msg_text
-                        });
-                        view.model.sendMessage(message);
-                        var $chat_content = $(view.el).find('.chat-content');
-                        var msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
-                        expect(msg_txt).toEqual(msg_text);
-
-                        // We send another message, for which an error will
-                        // not be received, to test that errors appear
-                        // after the relevant message.
-                        msg_text = 'This message will be sent, and also receive an error';
-                        message = view.model.messages.create({
-                            'msgid': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
-                            'fullname': fullname,
-                            'sender': 'me',
-                            'time': moment().format(),
-                            'message': msg_text
-                        });
-                        view.model.sendMessage(message);
-                        msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
-                        expect(msg_txt).toEqual(msg_text);
-
-                        /* <message xmlns="jabber:client"
-                         *          to="scotty@enterprise.com/_converse.js-84843526"
-                         *          type="error"
-                         *          id="82bc02ce-9651-4336-baf0-fa04762ed8d2"
-                         *          from="kirk@enterprise.com.com">
-                         *     <error type="cancel">
-                         *         <remote-server-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
-                         *         <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Server-to-server connection failed: Connecting failed: connection timeout</text>
-                         *     </error>
-                         * </message>
-                         */
-                        var error_txt = 'Server-to-server connection failed: Connecting failed: connection timeout';
-                        var stanza = $msg({
-                                'to': _converse.connection.jid,
-                                'type':'error',
-                                'id':'82bc02ce-9651-4336-baf0-fa04762ed8d2',
-                                'from': sender_jid
-                            })
-                            .c('error', {'type': 'cancel'})
-                            .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
-                            .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
-                                .t('Server-to-server connection failed: Connecting failed: connection timeout');
-                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                        expect($chat_content.find('.chat-error').text()).toEqual(error_txt);
-
-                        stanza = $msg({
-                                'to': _converse.connection.jid,
-                                'type':'error',
-                                'id':'some-other-unused-id',
-                                'from': sender_jid
-                            })
-                            .c('error', {'type': 'cancel'})
-                            .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
-                            .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
-                                .t('Server-to-server connection failed: Connecting failed: connection timeout');
-                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                        expect($chat_content.find('.chat-error').length).toEqual(2);
-
-                        // If the last message is already an error message,
-                        // then we don't render it another time.
-                        stanza = $msg({
-                                'to': _converse.connection.jid,
-                                'type':'error',
-                                'id':'another-unused-id',
-                                'from': sender_jid
-                            })
-                            .c('error', {'type': 'cancel'})
-                            .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
-                            .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
-                                .t('Server-to-server connection failed: Connecting failed: connection timeout');
-                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                        expect($chat_content.find('.chat-error').length).toEqual(2);
-
-                        // A different error message will however render
-                        stanza = $msg({
-                                'to': _converse.connection.jid,
-                                'type':'error',
-                                'id':'another-id',
-                                'from': sender_jid
-                            })
-                            .c('error', {'type': 'cancel'})
-                            .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
-                            .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
-                                .t('Something else went wrong as well');
-                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                        expect($chat_content.find('.chat-error').length).toEqual(3);
-                        done();
-                    });
-                }));
-            });
-
-            it("will cause the chat area to be scrolled down only if it was at the bottom originally",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                    function (done, _converse) {
-
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
-                test_utils.openControlBox();
-
-                let chatboxview;
-                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                const message = 'This message is received while the chat area is scrolled up';
-                test_utils.openChatBoxFor(_converse, sender_jid)
-                .then(() => {
-                    chatboxview = _converse.chatboxviews.get(sender_jid);
-                    spyOn(chatboxview, 'onScrolledDown').and.callThrough();
-
-                    // Create enough messages so that there's a scrollbar.
-                    for (var i=0; i<20; i++) {
-                        _converse.chatboxes.onMessage($msg({
-                                from: sender_jid,
-                                to: _converse.connection.jid,
-                                type: 'chat',
-                                id: (new Date()).getTime()
-                            }).c('body').t('Message: '+i).up()
-                            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-                    }
-                    return test_utils.waitUntil(() => chatboxview.content.scrollTop, 1000)
-                .then(() => test_utils.waitUntil(() => !chatboxview.model.get('auto_scrolled'), 500))
-                }).then(() => {
-                    chatboxview.content.scrollTop = 0;
-                    return test_utils.waitUntil(() => chatboxview.model.get('scrolled'), 900);
-                }).then(() => {
-                    _converse.chatboxes.onMessage($msg({
-                            from: sender_jid,
-                            to: _converse.connection.jid,
-                            type: 'chat',
-                            id: (new Date()).getTime()
-                        }).c('body').t(message).up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-
-                    // Now check that the message appears inside the chatbox in the DOM
-                    const $chat_content = $(chatboxview.el).find('.chat-content');
-                    const  msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
-                    expect(msg_txt).toEqual(message);
-                    return test_utils.waitUntil(() => u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator')), 900);
-                }).then(() => {
-                    expect(chatboxview.model.get('scrolled')).toBe(true);
-                    expect(chatboxview.content.scrollTop).toBe(0);
-                    expect(u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator'))).toBeTruthy();
-                    // Scroll down again
-                    chatboxview.content.scrollTop = chatboxview.content.scrollHeight;
-                    return test_utils.waitUntil(() => !u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator')), 900);
-                }).then(done);
-            }));
-
-            it("is ignored if it's intended for a different resource and filter_by_resource is set to true",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
-
-                test_utils.createContacts(_converse, 'current');
-                test_utils.openControlBox();
-
-                test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('.roster-group').length;
-                    }, 300)
-                .then(function () {
-                    // Send a message from a different resource
-                    var message, sender_jid, msg;
-                    spyOn(_converse, 'log');
-                    spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
-                    _converse.filter_by_resource = true;
-                    sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    msg = $msg({
-                            from: sender_jid,
-                            to: _converse.bare_jid+"/some-other-resource",
-                            type: 'chat',
-                            id: (new Date()).getTime()
-                        }).c('body').t("This message will not be shown").up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    _converse.chatboxes.onMessage(msg);
-
-                    expect(_converse.log).toHaveBeenCalledWith(
-                            "onMessage: Ignoring incoming message intended for a different resource: dummy@localhost/some-other-resource",
-                            Strophe.LogLevel.INFO);
-                    expect(_converse.chatboxes.getChatBox).not.toHaveBeenCalled();
-                    _converse.filter_by_resource = false;
-
-                    message = "This message sent to a different resource will be shown";
-                    msg = $msg({
-                            from: sender_jid,
-                            to: _converse.bare_jid+"/some-other-resource",
-                            type: 'chat',
-                            id: '134234623462346'
-                        }).c('body').t(message).up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    _converse.chatboxes.onMessage(msg);
-
-                    expect(_converse.chatboxes.getChatBox).toHaveBeenCalled();
-                    var chatboxview = _converse.chatboxviews.get(sender_jid);
-                    var $chat_content = $(chatboxview.el).find('.chat-content:last');
-                    var msg_txt = $chat_content.find('.chat-msg').find('.chat-msg__text').text();
-                    expect(msg_txt).toEqual(message);
-                    done();
-                });
-            }));
-        });
 
         it("can be received out of order, and will still be displayed in the right order",
             mock.initConverseWithPromises(
@@ -1673,6 +1201,483 @@
                 done();
             });
         }));
+
+        describe("when received from someone else", function () {
+
+            it("will open a chatbox and be displayed inside it",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.createContacts(_converse, 'current');
+                test_utils.openControlBox();
+                test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300)
+                .then(function () {
+                    spyOn(_converse, 'emit');
+                    const message = 'This is a received message';
+                    const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+
+                    // We don't already have an open chatbox for this user
+                    expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
+
+                    _converse.chatboxes.onMessage(
+                        $msg({
+                            'from': sender_jid,
+                            'to': _converse.connection.jid,
+                            'type': 'chat',
+                            'id': (new Date()).getTime()
+                        }).c('body').t(message).up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
+                    );
+
+                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+
+                    // Check that the chatbox and its view now exist
+                    const chatbox = _converse.chatboxes.get(sender_jid);
+                    const chatboxview = _converse.chatboxviews.get(sender_jid);
+                    expect(chatbox).toBeDefined();
+                    expect(chatboxview).toBeDefined();
+                    // Check that the message was received and check the message parameters
+                    expect(chatbox.messages.length).toEqual(1);
+                    const msg_obj = chatbox.messages.models[0];
+                    expect(msg_obj.get('message')).toEqual(message);
+                    expect(msg_obj.get('fullname')).toEqual(mock.cur_names[0]);
+                    expect(msg_obj.get('sender')).toEqual('them');
+                    expect(msg_obj.get('is_delayed')).toEqual(false);
+                    // Now check that the message appears inside the chatbox in the DOM
+                    const chat_content = chatboxview.el.querySelector('.chat-content');
+                    expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
+                    expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+                    return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
+                    .then(function () {
+                        expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Max Frankfurter');
+                        done();
+                    });
+                });
+            }));
+
+            it("can be replaced with a correction",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.createContacts(_converse, 'current', 1);
+                _converse.emit('rosterContactsFetched');
+                test_utils.openControlBox();
+                const message = 'This is a received message';
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                test_utils.openChatBoxFor(_converse, sender_jid)
+                .then(() => {
+                    const msg_id = u.getUniqueId();
+                    _converse.chatboxes.onMessage($msg({
+                            'from': sender_jid,
+                            'to': _converse.connection.jid,
+                            'type': 'chat',
+                            'id': msg_id,
+                        }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
+
+                    var chatboxview = _converse.chatboxviews.get(sender_jid);
+                    expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
+                    expect(chatboxview.el.querySelector('.chat-msg__text').textContent)
+                        .toBe('But soft, what light through yonder airlock breaks?');
+
+                    _converse.chatboxes.onMessage($msg({
+                            'from': sender_jid,
+                            'to': _converse.connection.jid,
+                            'type': 'chat',
+                            'id': u.getUniqueId(),
+                        }).c('body').t('But soft, what light through yonder chimney breaks?').up()
+                        .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+
+                    test_utils.waitUntil(() => chatboxview.el.querySelector('.chat-msg__text').textContent ===
+                        'But soft, what light through yonder chimney breaks?').then(() => {
+
+                        expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
+                        expect(chatboxview.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
+
+                        _converse.chatboxes.onMessage($msg({
+                                'from': sender_jid,
+                                'to': _converse.connection.jid,
+                                'type': 'chat',
+                                'id': u.getUniqueId(),
+                            }).c('body').t('But soft, what light through yonder window breaks?').up()
+                            .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
+
+                        return test_utils.waitUntil(() => chatboxview.el.querySelector('.chat-msg__text').textContent ===
+                            'But soft, what light through yonder window breaks?');
+                    }).then(() => {
+                        expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
+                        expect(chatboxview.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
+                        chatboxview.el.querySelector('.chat-msg__content .fa-edit').click();
+                        const modal = chatboxview.model.messages.at(0).message_versions_modal;
+                        return test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                    }).then(() => {
+                        const modal = chatboxview.model.messages.at(0).message_versions_modal;
+                        const older_msgs = modal.el.querySelectorAll('.older-msg');
+                        expect(older_msgs.length).toBe(2);
+                        expect(older_msgs[0].textContent).toBe('But soft, what light through yonder airlock breaks?');
+                        expect(older_msgs[1].textContent).toBe('But soft, what light through yonder chimney breaks?');
+                        done();
+                    });
+                });
+            }));
+
+
+            describe("when a chatbox is opened for someone who is not in the roster", function () {
+
+                it("the VCard for that user is fetched and the chatbox updated with the results",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
+
+                    _converse.allow_non_roster_messaging = true;
+                    spyOn(_converse, 'emit').and.callThrough();
+
+                    var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var vcard_fetched = false;
+                    spyOn(_converse.api.vcard, "get").and.callFake(function () {
+                        vcard_fetched = true;
+                        return Promise.resolve({
+                            'fullname': mock.cur_names[0],
+                            'vcard_updated': moment().format(),
+                            'jid': sender_jid
+                        });
+                    });
+                    var message = 'This is a received message from someone not on the roster';
+                    var msg = $msg({
+                            from: sender_jid,
+                            to: _converse.connection.jid,
+                            type: 'chat',
+                            id: (new Date()).getTime()
+                        }).c('body').t(message).up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+
+                    // We don't already have an open chatbox for this user
+                    expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
+
+                    _converse.chatboxes.onMessage(msg);
+                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+
+                    // Check that the chatbox and its view now exist
+                    var chatbox = _converse.chatboxes.get(sender_jid);
+                    var chatboxview = _converse.chatboxviews.get(sender_jid);
+                    expect(chatbox).toBeDefined();
+                    expect(chatboxview).toBeDefined();
+
+                    var author_el = chatboxview.el.querySelector('.chat-msg__author');
+                    expect(chatbox.get('fullname') === sender_jid);
+                    expect( _.includes(author_el.textContent.trim(), 'max.frankfurter@localhost')).toBeTruthy();
+
+                    test_utils.waitUntil(function () { return vcard_fetched; }, 100)
+                    .then(function () {
+                        expect(_converse.api.vcard.get).toHaveBeenCalled();
+                        return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
+                    }).then(function () {
+                        var author_el = chatboxview.el.querySelector('.chat-msg__author');
+                        expect( _.includes(author_el.textContent.trim(), 'Max Frankfurter')).toBeTruthy();
+                        done();
+                    });
+                }));
+            });
+
+
+            describe("who is not on the roster", function () {
+
+                it("will open a chatbox and be displayed inside it if allow_non_roster_messaging is true",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
+
+                    _converse.allow_non_roster_messaging = false;
+
+                    spyOn(_converse, 'emit');
+                    var message = 'This is a received message from someone not on the roster';
+                    var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var msg = $msg({
+                            from: sender_jid,
+                            to: _converse.connection.jid,
+                            type: 'chat',
+                            id: (new Date()).getTime()
+                        }).c('body').t(message).up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+
+                    // We don't already have an open chatbox for this user
+                    expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
+
+                    var chatbox = _converse.chatboxes.get(sender_jid);
+                    expect(chatbox).not.toBeDefined();
+
+                    // onMessage is a handler for received XMPP messages
+                    _converse.chatboxes.onMessage(msg);
+                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+
+                    // onMessage is a handler for received XMPP messages
+                    _converse.allow_non_roster_messaging =true;
+                    _converse.chatboxes.onMessage(msg);
+                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+
+                    // Check that the chatbox and its view now exist
+                    chatbox = _converse.chatboxes.get(sender_jid);
+                    var chatboxview = _converse.chatboxviews.get(sender_jid);
+                    expect(chatbox).toBeDefined();
+                    expect(chatboxview).toBeDefined();
+                    // Check that the message was received and check the message parameters
+                    expect(chatbox.messages.length).toEqual(1);
+                    var msg_obj = chatbox.messages.models[0];
+                    expect(msg_obj.get('message')).toEqual(message);
+                    expect(msg_obj.get('fullname')).toEqual(undefined);
+                    expect(msg_obj.get('sender')).toEqual('them');
+                    expect(msg_obj.get('is_delayed')).toEqual(false);
+                    // Now check that the message appears inside the chatbox in the DOM
+                    var chat_content = chatboxview.el.querySelector('.chat-content');
+                    expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
+                    expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+                    expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('max.frankfurter@localhost');
+                    done();
+                }));
+            });
+
+
+            describe("and for which then an error message is received from the server", function () {
+
+                it("will have the error message displayed after itself",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        function (done, _converse) {
+
+                    test_utils.createContacts(_converse, 'current');
+                    _converse.emit('rosterContactsFetched');
+                    test_utils.openControlBox();
+
+                    // TODO: what could still be done for error
+                    // messages... if the <error> element has type
+                    // "cancel", then we know the messages wasn't sent,
+                    // and can give the user a nicer indication of
+                    // that.
+
+                    /* <message from="scotty@enterprise.com/_converse.js-84843526"
+                     *          to="kirk@enterprise.com.com"
+                     *          type="chat"
+                     *          id="82bc02ce-9651-4336-baf0-fa04762ed8d2"
+                     *          xmlns="jabber:client">
+                     *      <body>yo</body>
+                     *      <active xmlns="http://jabber.org/protocol/chatstates"/>
+                     *  </message>
+                     */
+                    var sender_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    var fullname = _converse.xmppstatus.get('fullname');
+                    fullname = _.isEmpty(fullname)? _converse.bare_jid: fullname;
+                    _converse.api.chats.open(sender_jid)
+                    .then(() => {
+                        var msg_text = 'This message will not be sent, due to an error';
+                        var view = _converse.chatboxviews.get(sender_jid);
+                        var message = view.model.messages.create({
+                            'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
+                            'fullname': fullname,
+                            'sender': 'me',
+                            'time': moment().format(),
+                            'message': msg_text
+                        });
+                        view.model.sendMessage(message);
+                        var $chat_content = $(view.el).find('.chat-content');
+                        var msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
+                        expect(msg_txt).toEqual(msg_text);
+
+                        // We send another message, for which an error will
+                        // not be received, to test that errors appear
+                        // after the relevant message.
+                        msg_text = 'This message will be sent, and also receive an error';
+                        message = view.model.messages.create({
+                            'msgid': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
+                            'fullname': fullname,
+                            'sender': 'me',
+                            'time': moment().format(),
+                            'message': msg_text
+                        });
+                        view.model.sendMessage(message);
+                        msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
+                        expect(msg_txt).toEqual(msg_text);
+
+                        /* <message xmlns="jabber:client"
+                         *          to="scotty@enterprise.com/_converse.js-84843526"
+                         *          type="error"
+                         *          id="82bc02ce-9651-4336-baf0-fa04762ed8d2"
+                         *          from="kirk@enterprise.com.com">
+                         *     <error type="cancel">
+                         *         <remote-server-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+                         *         <text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Server-to-server connection failed: Connecting failed: connection timeout</text>
+                         *     </error>
+                         * </message>
+                         */
+                        var error_txt = 'Server-to-server connection failed: Connecting failed: connection timeout';
+                        var stanza = $msg({
+                                'to': _converse.connection.jid,
+                                'type':'error',
+                                'id':'82bc02ce-9651-4336-baf0-fa04762ed8d2',
+                                'from': sender_jid
+                            })
+                            .c('error', {'type': 'cancel'})
+                            .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
+                            .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
+                                .t('Server-to-server connection failed: Connecting failed: connection timeout');
+                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        expect($chat_content.find('.chat-error').text()).toEqual(error_txt);
+
+                        stanza = $msg({
+                                'to': _converse.connection.jid,
+                                'type':'error',
+                                'id':'some-other-unused-id',
+                                'from': sender_jid
+                            })
+                            .c('error', {'type': 'cancel'})
+                            .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
+                            .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
+                                .t('Server-to-server connection failed: Connecting failed: connection timeout');
+                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        expect($chat_content.find('.chat-error').length).toEqual(2);
+
+                        // If the last message is already an error message,
+                        // then we don't render it another time.
+                        stanza = $msg({
+                                'to': _converse.connection.jid,
+                                'type':'error',
+                                'id':'another-unused-id',
+                                'from': sender_jid
+                            })
+                            .c('error', {'type': 'cancel'})
+                            .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
+                            .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
+                                .t('Server-to-server connection failed: Connecting failed: connection timeout');
+                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        expect($chat_content.find('.chat-error').length).toEqual(2);
+
+                        // A different error message will however render
+                        stanza = $msg({
+                                'to': _converse.connection.jid,
+                                'type':'error',
+                                'id':'another-id',
+                                'from': sender_jid
+                            })
+                            .c('error', {'type': 'cancel'})
+                            .c('remote-server-not-found', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" }).up()
+                            .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
+                                .t('Something else went wrong as well');
+                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        expect($chat_content.find('.chat-error').length).toEqual(3);
+                        done();
+                    });
+                }));
+            });
+
+
+            it("will cause the chat area to be scrolled down only if it was at the bottom originally",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.createContacts(_converse, 'current');
+                _converse.emit('rosterContactsFetched');
+                test_utils.openControlBox();
+
+                let chatboxview;
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const message = 'This message is received while the chat area is scrolled up';
+                test_utils.openChatBoxFor(_converse, sender_jid)
+                .then(() => {
+                    chatboxview = _converse.chatboxviews.get(sender_jid);
+                    spyOn(chatboxview, 'onScrolledDown').and.callThrough();
+
+                    // Create enough messages so that there's a scrollbar.
+                    for (var i=0; i<20; i++) {
+                        _converse.chatboxes.onMessage($msg({
+                                from: sender_jid,
+                                to: _converse.connection.jid,
+                                type: 'chat',
+                                id: (new Date()).getTime()
+                            }).c('body').t('Message: '+i).up()
+                            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+                    }
+                    return test_utils.waitUntil(() => chatboxview.content.scrollTop, 1000)
+                .then(() => test_utils.waitUntil(() => !chatboxview.model.get('auto_scrolled'), 500))
+                }).then(() => {
+                    chatboxview.content.scrollTop = 0;
+                    return test_utils.waitUntil(() => chatboxview.model.get('scrolled'), 900);
+                }).then(() => {
+                    _converse.chatboxes.onMessage($msg({
+                            from: sender_jid,
+                            to: _converse.connection.jid,
+                            type: 'chat',
+                            id: (new Date()).getTime()
+                        }).c('body').t(message).up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+
+                    // Now check that the message appears inside the chatbox in the DOM
+                    const $chat_content = $(chatboxview.el).find('.chat-content');
+                    const  msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
+                    expect(msg_txt).toEqual(message);
+                    return test_utils.waitUntil(() => u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator')), 900);
+                }).then(() => {
+                    expect(chatboxview.model.get('scrolled')).toBe(true);
+                    expect(chatboxview.content.scrollTop).toBe(0);
+                    expect(u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator'))).toBeTruthy();
+                    // Scroll down again
+                    chatboxview.content.scrollTop = chatboxview.content.scrollHeight;
+                    return test_utils.waitUntil(() => !u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator')), 900);
+                }).then(done);
+            }));
+
+            it("is ignored if it's intended for a different resource and filter_by_resource is set to true",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.createContacts(_converse, 'current');
+                test_utils.openControlBox();
+
+                test_utils.waitUntil(function () {
+                        return $(_converse.rosterview.el).find('.roster-group').length;
+                    }, 300)
+                .then(function () {
+                    // Send a message from a different resource
+                    var message, sender_jid, msg;
+                    spyOn(_converse, 'log');
+                    spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
+                    _converse.filter_by_resource = true;
+                    sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    msg = $msg({
+                            from: sender_jid,
+                            to: _converse.bare_jid+"/some-other-resource",
+                            type: 'chat',
+                            id: (new Date()).getTime()
+                        }).c('body').t("This message will not be shown").up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                    _converse.chatboxes.onMessage(msg);
+
+                    expect(_converse.log).toHaveBeenCalledWith(
+                            "onMessage: Ignoring incoming message intended for a different resource: dummy@localhost/some-other-resource",
+                            Strophe.LogLevel.INFO);
+                    expect(_converse.chatboxes.getChatBox).not.toHaveBeenCalled();
+                    _converse.filter_by_resource = false;
+
+                    message = "This message sent to a different resource will be shown";
+                    msg = $msg({
+                            from: sender_jid,
+                            to: _converse.bare_jid+"/some-other-resource",
+                            type: 'chat',
+                            id: '134234623462346'
+                        }).c('body').t(message).up()
+                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                    _converse.chatboxes.onMessage(msg);
+
+                    expect(_converse.chatboxes.getChatBox).toHaveBeenCalled();
+                    var chatboxview = _converse.chatboxviews.get(sender_jid);
+                    var $chat_content = $(chatboxview.el).find('.chat-content:last');
+                    var msg_txt = $chat_content.find('.chat-msg').find('.chat-msg__text').text();
+                    expect(msg_txt).toEqual(message);
+                    done();
+                });
+            }));
+        });
 
 
         describe("which contains an OOB URL", function () {

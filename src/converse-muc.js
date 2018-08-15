@@ -308,14 +308,75 @@
                     _converse.connection.sendPresence(presence);
                 },
 
+                getReferenceForMention (mention, index) {
+                    const longest_match = u.getLongestSubstring(mention, this.occupants.map(o => o.get('nick')));
+                    if (!longest_match) {
+                        return null;
+                    }
+                    if ((mention[longest_match.length] || '').match(/[A-Za-zäëïöüâêîôûáéíóúàèìòùÄËÏÖÜÂÊÎÔÛÁÉÍÓÚÀÈÌÒÙ]/i)) {
+                        // avoid false positives, i.e. mentions that have
+                        // further alphabetical characters than our longest
+                        // match.
+                        return null;
+                    }
+                    const occupant = this.occupants.findOccupant({'nick': longest_match});
+                    if (!occupant) {
+                        return null;
+                    }
+                    const obj = {
+                        'begin': index,
+                        'end': index + longest_match.length,
+                        'type': 'mention'
+                    };
+                    if (occupant.get('jid')) {
+                        obj.uri = `xmpp:${occupant.get('jid')}`
+                    }
+                    return obj;
+                },
+
+                extractReference (text, index) {
+                    for (let i=index; i<text.length; i++) {
+                        if (text[i] !== '@') {
+                            continue
+                        } else {
+                            const match = text.slice(i+1),
+                                  ref = this.getReferenceForMention(match, i)
+                            if (ref) {
+                                return [text.slice(0, i) + match, ref, i]
+                            }
+                        }
+                    }
+                    return;
+                },
+
+                parseForReferences (text) {
+                    const refs = [];
+                    let index = 0;
+                    while (index < (text || '').length) {
+                        const result = this.extractReference(text, index);
+                        if (result) {
+                            text = result[0]; // @ gets filtered out
+                            refs.push(result[1]);
+                            index = result[2];
+                        } else {
+                            break;
+                        }
+                    }
+                    return [text, refs];
+                },
+
                 getOutgoingMessageAttributes (text, spoiler_hint) {
                     const is_spoiler = this.get('composing_spoiler');
+                    var references;
+                    [text, references] = this.parseForReferences(text);
+
                     return {
-                        'nick': this.get('nick'),
                         'from': `${this.get('jid')}/${this.get('nick')}`,
                         'fullname': this.get('nick'),
                         'is_spoiler': is_spoiler,
                         'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
+                        'nick': this.get('nick'),
+                        'references': references,
                         'sender': 'me',
                         'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
                         'type': 'groupchat'

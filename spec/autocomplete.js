@@ -13,7 +13,7 @@
     const Strophe = converse.env.Strophe;
     const u = converse.env.utils;
 
-    return describe("A groupchat textarea", function () {
+    describe("The nickname autocomplete feature", function () {
 
         it("shows all autocompletion options when the user presses @",
             mock.initConverseWithPromises(
@@ -146,7 +146,7 @@
                     'stopPropagation': _.noop,
                     'keyCode': 13 // Enter
                 });
-                expect(textarea.value).toBe('hello s some2 ');
+                expect(textarea.value).toBe('hello s @some2 ');
 
                 // Test that pressing tab twice selects
                 presence = $pres({
@@ -166,7 +166,7 @@
 
                 view.keyPressed(tab_event);
                 view.keyUp(tab_event);
-                expect(textarea.value).toBe('hello z3r0 ');
+                expect(textarea.value).toBe('hello @z3r0 ');
 
                 done();
             }).catch(_.partial(console.error, _));

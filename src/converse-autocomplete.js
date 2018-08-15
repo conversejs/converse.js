@@ -237,7 +237,6 @@
                     } else {
                         selected = this.ul.children[this.index];
                     }
-
                     if (selected) {
                         const suggestion = this.suggestions[this.index];
                         this.insertValue(suggestion);

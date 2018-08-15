@@ -1202,6 +1202,60 @@
             });
         }));
 
+        describe("in which someone is mentioned", function () {
+
+            it("includes XEP-0372 references to that person",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
+
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom')
+                .then(() => {
+                    const view = _converse.chatboxviews.get('lounge@localhost');
+                    ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
+                        _converse.connection._dataRecv(test_utils.createRequest(
+                            $pres({
+                                'to': 'tom@localhost/resource',
+                                'from': `lounge@localhost/${nick}`
+                            })
+                            .c('x', {xmlns: Strophe.NS.MUC_USER})
+                            .c('item', {
+                                'affiliation': 'none',
+                                'jid': `${nick}@localhost/resource`,
+                                'role': 'participant'
+                            })));
+                    });
+
+                    let [text, references] = view.model.parseForReferences('hello z3r0')
+                    expect(references.length).toBe(0);
+                    expect(text).toBe('hello z3r0');
+
+                    [text, references] = view.model.parseForReferences('hello @z3r0')
+                    expect(references.length).toBe(1);
+                    expect(text).toBe('hello z3r0');
+                    expect(JSON.stringify(references))
+                        .toBe('[{"begin":6,"end":10,"type":"mention","uri":"xmpp:z3r0@localhost"}]');
+
+                    [text, references] = view.model.parseForReferences('hello @some1 @z3r0 @gibson @mr.robot, how are you?')
+                    expect(text).toBe('hello @some1 z3r0 gibson mr.robot, how are you?');
+                    expect(JSON.stringify(references))
+                        .toBe('[{"begin":13,"end":17,"type":"mention","uri":"xmpp:z3r0@localhost"},'+
+                               '{"begin":18,"end":24,"type":"mention","uri":"xmpp:gibson@localhost"},'+
+                               '{"begin":25,"end":33,"type":"mention","uri":"xmpp:mr.robot@localhost"}]');
+
+                    [text, references] = view.model.parseForReferences('yo @gib')
+                    expect(text).toBe('yo @gib');
+                    expect(references.length).toBe(0);
+
+                    [text, references] = view.model.parseForReferences('yo @gibsonian')
+                    expect(text).toBe('yo @gibsonian');
+                    expect(references.length).toBe(0);
+                    done();
+                }).catch(_.partial(console.error, _));
+            }));
+        });
+
+
         describe("when received from someone else", function () {
 
             it("will open a chatbox and be displayed inside it",

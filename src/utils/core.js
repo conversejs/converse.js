@@ -98,6 +98,21 @@
 
     var u = {};
 
+    u.getLongestSubstring = function (string, candidates) {
+        function reducer (accumulator, current_value) {
+            if (string.startsWith(current_value)) {
+                if (current_value.length > accumulator.length) {
+                    return current_value;
+                } else {
+                    return accumulator;
+                }
+            } else {
+                return accumulator;
+            }
+        }
+        return candidates.reduce(reducer, '');
+    }
+
     u.getNextElement = function (el, selector='*') {
         let next_el = el.nextElementSibling;
         while (!_.isNull(next_el) && !sizzle.matchesSelector(next_el, selector)) {

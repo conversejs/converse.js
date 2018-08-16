@@ -309,7 +309,10 @@
                 },
 
                 getReferenceForMention (mention, index) {
-                    const longest_match = u.getLongestSubstring(mention, this.occupants.map(o => o.get('nick')));
+                    const longest_match = u.getLongestSubstring(
+                        mention,
+                        this.occupants.map(o => o.getDisplayName())
+                    );
                     if (!longest_match) {
                         return null;
                     }
@@ -319,7 +322,8 @@
                         // match.
                         return null;
                     }
-                    const occupant = this.occupants.findOccupant({'nick': longest_match});
+                    const occupant = this.occupants.findOccupant({'nick': longest_match}) ||
+                            this.occupants.findOccupant({'jid': longest_match});
                     if (!occupant) {
                         return null;
                     }
@@ -341,7 +345,7 @@
                             continue
                         } else {
                             const match = text.slice(i+1),
-                                  ref = this.getReferenceForMention(match, i)
+                                  ref = this.getReferenceForMention(match, i);
                             if (ref) {
                                 return [text.slice(0, i) + match, ref, i]
                             }

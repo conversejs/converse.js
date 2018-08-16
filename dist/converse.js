@@ -76825,8 +76825,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'match_current_word': true,
             'match_on_tab': true,
             'list': () => this.model.occupants.map(o => ({
-              'label': o.get('nick'),
-              'value': `@${o.get('nick')}`
+              'label': o.getDisplayName(),
+              'value': `@${o.getDisplayName()}`
             })),
             'filter': _converse.FILTER_STARTSWITH,
             'trigger_on_at': true
@@ -78617,7 +78617,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         },
 
         getReferenceForMention(mention, index) {
-          const longest_match = u.getLongestSubstring(mention, this.occupants.map(o => o.get('nick')));
+          const longest_match = u.getLongestSubstring(mention, this.occupants.map(o => o.getDisplayName()));
 
           if (!longest_match) {
             return null;
@@ -78632,6 +78632,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           const occupant = this.occupants.findOccupant({
             'nick': longest_match
+          }) || this.occupants.findOccupant({
+            'jid': longest_match
           });
 
           if (!occupant) {

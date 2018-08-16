@@ -8540,9 +8540,6 @@ body.reset {
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chat-info.badge,
         #conversejs .chatroom .box-flyout .chatroom-body .chat-info.badge {
           color: white; }
-      #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .mentioned,
-      #conversejs .chatroom .box-flyout .chatroom-body .mentioned {
-        font-weight: bold; }
       #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .disconnect-container,
       #conversejs .chatroom .box-flyout .chatroom-body .disconnect-container {
         margin: 1em;
@@ -8799,6 +8796,10 @@ body.reset {
   border: 1.2em solid #E7A151;
   border-top: 0.8em solid #E7A151; }
 
+#conversejs .message .mention {
+  font-weight: bold; }
+#conversejs .message .mention--self {
+  font-weight: normal; }
 #conversejs .message.date-separator {
   height: 2em;
   margin: 0;

@@ -299,6 +299,7 @@
                         older_versions.push(message.get('message'));
                         message.save({
                             'message': _converse.chatboxes.getMessageBody(stanza),
+                            'references': this.getReferencesFromStanza(stanza),
                             'older_versions': older_versions,
                             'edited': true
                         });
@@ -459,6 +460,17 @@
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 },
 
+                getReferencesFromStanza (stanza) {
+                    return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza).map(ref => {
+                        return  {
+                            'begin': ref.getAttribute('begin'),
+                            'end': ref.getAttribute('end'),
+                            'type': ref.getAttribute('type'),
+                            'uri': ref.getAttribute('uri')
+                        };
+                    });
+                },
+
                 getMessageAttributesFromStanza (stanza, original_stanza) {
                     /* Parses a passed in message stanza and returns an object
                      * of attributes.
@@ -488,6 +500,7 @@
                         'is_delayed': !_.isNil(delay),
                         'is_spoiler': !_.isNil(spoiler),
                         'message': _converse.chatboxes.getMessageBody(stanza) || undefined,
+                        'references': this.getReferencesFromStanza(stanza),
                         'msgid': stanza.getAttribute('id'),
                         'time': delay ? delay.getAttribute('stamp') : moment().format(),
                         'type': stanza.getAttribute('type')

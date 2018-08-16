@@ -349,7 +349,7 @@
                     return;
                 },
 
-                parseForReferences (text) {
+                parseTextForReferences (text) {
                     const refs = [];
                     let index = 0;
                     while (index < (text || '').length) {
@@ -368,7 +368,7 @@
                 getOutgoingMessageAttributes (text, spoiler_hint) {
                     const is_spoiler = this.get('composing_spoiler');
                     var references;
-                    [text, references] = this.parseForReferences(text);
+                    [text, references] = this.parseTextForReferences(text);
 
                     return {
                         'from': `${this.get('jid')}/${this.get('nick')}`,

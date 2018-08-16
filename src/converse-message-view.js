@@ -167,6 +167,7 @@
                         text = xss.filterXSS(text, {'whiteList': {}});
                         msg_content.innerHTML = _.flow(
                             _.partial(u.geoUriToHttp, _, _converse.geouri_replacement),
+                            _.partial(u.addMentions, _, this.model.get('references'), this.model.collection.chatbox),
                             u.addHyperlinks,
                             u.renderNewLines,
                             _.partial(u.addEmoji, _converse, emojione, _)

@@ -229,6 +229,25 @@
         return encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
     };
 
+    u.addMentions = function (text, references, chatbox) {
+        if (chatbox.get('message_type') !== 'groupchat') {
+            return text;
+        }
+        const nick = chatbox.get('nick');
+        references
+            .sort((a, b) => b.begin - a.begin)
+            .forEach(ref => {
+                const mention = text.slice(ref.begin, ref.end)
+                chatbox;
+                if (mention === nick) {
+                    text = text.slice(0, ref.begin) + `<span class="mention mention--self badge badge-info">${mention}</span>` + text.slice(ref.end);
+                } else {
+                    text = text.slice(0, ref.begin) + `<span class="mention">${mention}</span>` + text.slice(ref.end);
+                }
+            });
+        return text;
+    };
+
     u.addHyperlinks = function (text) {
         return URI.withinString(text, function (url) {
             var uri = new URI(url);

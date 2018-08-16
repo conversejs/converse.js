@@ -1,6 +1,12 @@
 #conversejs {
     .message {
 
+        .mention {
+            font-weight: bold;
+        }
+        .mention--self {
+            font-weight: normal;
+        }
         &.date-separator {
             height: 2em;
             margin: 0;

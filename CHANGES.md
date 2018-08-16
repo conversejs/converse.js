@@ -21,8 +21,9 @@
 - Add a checkbox to indicate whether a trusted device is being used or not.
   If the device is not trusted, sessionStorage is used and all user data is deleted from the browser cache upon logout.
   If the device is trusted, localStorage is used and user data is cached indefinitely.
-- Initial support for XEP-0357 Push Notifications, specifically registering an "App Server".
+- Initial support for [XEP-0357 Push Notifications](https://xmpp.org/extensions/xep-0357.html), specifically registering an "App Server".
 - Add support for logging in via OAuth (see the [oauth_providers](https://conversejs.org/docs/html/configurations.html#oauth-providers) setting)
+- Add support for [XEP-0372 References](https://xmpp.org/extensions/xep-0372.html), specifically section "3.2 Mentions".
 
 ### Bugfixes
 

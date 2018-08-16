@@ -2089,6 +2089,52 @@
             }).catch(_.partial(console.error, _));
         }));
 
+        describe("when received", function () {
+
+            it("highlights all users mentioned via XEP-0372 references", 
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
+
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom')
+                .then(() => {
+                    const view = _converse.chatboxviews.get('lounge@localhost');
+                    ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
+                        _converse.connection._dataRecv(test_utils.createRequest(
+                            $pres({
+                                'to': 'tom@localhost/resource',
+                                'from': `lounge@localhost/${nick}`
+                            })
+                            .c('x', {xmlns: Strophe.NS.MUC_USER})
+                            .c('item', {
+                                'affiliation': 'none',
+                                'jid': `${nick}@localhost/resource`,
+                                'role': 'participant'
+                            }))
+                        );
+                    });
+
+                    const msg = $msg({
+                            from: 'lounge@localhost/gibson',
+                            id: (new Date()).getTime(),
+                            to: 'dummy@localhost',
+                            type: 'groupchat'
+                        }).c('body').t('hello z3r0 tom mr.robot, how are you?').up()
+                            .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'6', 'end':'10', 'type':'mention', 'uri':'xmpp:z3r0@localhost'}).up()
+                            .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'11', 'end':'14', 'type':'mention', 'uri':'xmpp:dummy@localhost'}).up()
+                            .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@localhost'}).nodeTree;
+                    view.model.onMessage(msg);
+
+                    expect(view.el.querySelectorAll('.chat-msg__text').length).toBe(1);
+                    expect(view.el.querySelector('.chat-msg__text').outerHTML).toBe(
+                        '<div class="chat-msg__text">hello <span class="mention">z3r0</span> '+
+                        '<span class="mention mention--self badge badge-info">tom</span> '+
+                        '<span class="mention">mr.robot</span>, how are you?</div>');
+                    done();
+                }).catch(_.partial(console.error, _));
+            }));
+        });
+
         describe("in which someone is mentioned", function () {
 
             it("gets parsed for mentions which get turned into references", 
@@ -2113,33 +2159,33 @@
                             })));
                     });
 
-                    // Run a few unit tests for the parseForReferences method
-                    let [text, references] = view.model.parseForReferences('hello z3r0')
+                    // Run a few unit tests for the parseTextForReferences method
+                    let [text, references] = view.model.parseTextForReferences('hello z3r0')
                     expect(references.length).toBe(0);
                     expect(text).toBe('hello z3r0');
 
-                    [text, references] = view.model.parseForReferences('hello @z3r0')
+                    [text, references] = view.model.parseTextForReferences('hello @z3r0')
                     expect(references.length).toBe(1);
                     expect(text).toBe('hello z3r0');
                     expect(JSON.stringify(references))
                         .toBe('[{"begin":6,"end":10,"type":"mention","uri":"xmpp:z3r0@localhost"}]');
 
-                    [text, references] = view.model.parseForReferences('hello @some1 @z3r0 @gibson @mr.robot, how are you?')
+                    [text, references] = view.model.parseTextForReferences('hello @some1 @z3r0 @gibson @mr.robot, how are you?')
                     expect(text).toBe('hello @some1 z3r0 gibson mr.robot, how are you?');
                     expect(JSON.stringify(references))
                         .toBe('[{"begin":13,"end":17,"type":"mention","uri":"xmpp:z3r0@localhost"},'+
                                '{"begin":18,"end":24,"type":"mention","uri":"xmpp:gibson@localhost"},'+
                                '{"begin":25,"end":33,"type":"mention","uri":"xmpp:mr.robot@localhost"}]');
 
-                    [text, references] = view.model.parseForReferences('yo @gib')
+                    [text, references] = view.model.parseTextForReferences('yo @gib')
                     expect(text).toBe('yo @gib');
                     expect(references.length).toBe(0);
 
-                    [text, references] = view.model.parseForReferences('yo @gibsonian')
+                    [text, references] = view.model.parseTextForReferences('yo @gibsonian')
                     expect(text).toBe('yo @gibsonian');
                     expect(references.length).toBe(0);
 
-                    [text, references] = view.model.parseForReferences('@gibson')
+                    [text, references] = view.model.parseTextForReferences('@gibson')
                     expect(text).toBe('gibson');
                     expect(references.length).toBe(1);
                     expect(JSON.stringify(references))
@@ -2190,9 +2236,9 @@
                                 `xmlns='jabber:client'>`+
                                     `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
                                     `<active xmlns='http://jabber.org/protocol/chatstates'/>`+
-                                    `<reference xmlns='urn:xmpp:reference:0' begin='6' end='10' type='mention' uri='xmpp:z3r0@localhost'/>`+
-                                    `<reference xmlns='urn:xmpp:reference:0' begin='11' end='17' type='mention' uri='xmpp:gibson@localhost'/>`+
                                     `<reference xmlns='urn:xmpp:reference:0' begin='18' end='26' type='mention' uri='xmpp:mr.robot@localhost'/>`+
+                                    `<reference xmlns='urn:xmpp:reference:0' begin='11' end='17' type='mention' uri='xmpp:gibson@localhost'/>`+
+                                    `<reference xmlns='urn:xmpp:reference:0' begin='6' end='10' type='mention' uri='xmpp:z3r0@localhost'/>`+
                               `</message>`);
                     done();
                 }).catch(_.partial(console.error, _));

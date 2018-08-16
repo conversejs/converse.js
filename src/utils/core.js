@@ -229,7 +229,20 @@
         return encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
     };
 
-    u.addMentions = function (text, references, chatbox) {
+    u.prefixMentions = function (message) {
+        /* Given a message object, return its text with @ chars
+         * inserted before the mentioned nicknames.
+         */
+        let text = message.get('message');
+        (message.get('references') || [])
+            .sort((a, b) => b.begin - a.begin)
+            .forEach(ref => {
+                text = `${text.slice(0, ref.begin)}@${text.slice(ref.begin)}`
+            });
+        return text;
+    };
+
+    u.addMentionsMarkup = function (text, references, chatbox) {
         if (chatbox.get('message_type') !== 'groupchat') {
             return text;
         }

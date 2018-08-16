@@ -2091,7 +2091,7 @@
 
         describe("when received", function () {
 
-            it("highlights all users mentioned via XEP-0372 references", 
+            it("highlights all users mentioned via XEP-0372 references",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                         function (done, _converse) {
@@ -2137,7 +2137,7 @@
 
         describe("in which someone is mentioned", function () {
 
-            it("gets parsed for mentions which get turned into references", 
+            it("gets parsed for mentions which get turned into references",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                         function (done, _converse) {
@@ -2190,10 +2190,83 @@
                     expect(references.length).toBe(1);
                     expect(JSON.stringify(references))
                         .toBe('[{"begin":0,"end":6,"value":"gibson","type":"mention","uri":"xmpp:gibson@localhost"}]');
-
                     done();
                     return;
                 });
+            }));
+
+            it("can get corrected and given new references",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                        function (done, _converse) {
+
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom')
+                .then(() => {
+                    const view = _converse.chatboxviews.get('lounge@localhost');
+                    ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
+                        _converse.connection._dataRecv(test_utils.createRequest(
+                            $pres({
+                                'to': 'tom@localhost/resource',
+                                'from': `lounge@localhost/${nick}`
+                            })
+                            .c('x', {xmlns: Strophe.NS.MUC_USER})
+                            .c('item', {
+                                'affiliation': 'none',
+                                'jid': `${nick}@localhost/resource`,
+                                'role': 'participant'
+                            })));
+                    });
+
+                    const textarea = view.el.querySelector('textarea.chat-textarea');
+                    textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?'
+                    const enter_event = {
+                        'target': textarea,
+                        'preventDefault': _.noop,
+                        'stopPropagation': _.noop,
+                        'keyCode': 13 // Enter
+                    }
+
+                    spyOn(_converse.connection, 'send');
+                    view.keyPressed(enter_event);
+                    const msg = _converse.connection.send.calls.all()[0].args[0];
+                    expect(msg.toLocaleString())
+                        .toBe(`<message from='dummy@localhost/resource' `+
+                                `to='lounge@localhost' type='groupchat' id='${msg.nodeTree.getAttribute('id')}' `+
+                                `xmlns='jabber:client'>`+
+                                    `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
+                                    `<active xmlns='http://jabber.org/protocol/chatstates'/>`+
+                                    `<reference xmlns='urn:xmpp:reference:0' begin='18' end='26' type='mention' uri='xmpp:mr.robot@localhost'/>`+
+                                    `<reference xmlns='urn:xmpp:reference:0' begin='11' end='17' type='mention' uri='xmpp:gibson@localhost'/>`+
+                                    `<reference xmlns='urn:xmpp:reference:0' begin='6' end='10' type='mention' uri='xmpp:z3r0@localhost'/>`+
+                              `</message>`);
+
+                    const first_msg = view.model.messages.findWhere({'message': 'hello z3r0 gibson mr.robot, how are you?'});
+                    const action = view.el.querySelector('.chat-msg .chat-msg__action');
+                    action.style.opacity = 1;
+                    action.click();
+
+                    expect(textarea.value).toBe('hello @z3r0 @gibson @mr.robot, how are you?');
+                    expect(view.model.messages.at(0).get('correcting')).toBe(true);
+                    expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+                    expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(true);
+
+                    textarea.value = 'hello @z3r0 @gibson @sw0rdf1sh, how are you?';
+                    view.keyPressed(enter_event);
+
+                    const correction = _converse.connection.send.calls.all()[1].args[0];
+                    expect(correction.toLocaleString())
+                        .toBe(`<message from='dummy@localhost/resource' `+
+                                `to='lounge@localhost' type='groupchat' id='${correction.nodeTree.getAttribute('id')}' `+
+                                `xmlns='jabber:client'>`+
+                                    `<body>hello z3r0 gibson sw0rdf1sh, how are you?</body>`+
+                                    `<active xmlns='http://jabber.org/protocol/chatstates'/>`+
+                                    `<reference xmlns='urn:xmpp:reference:0' begin='18' end='27' type='mention' uri='xmpp:sw0rdf1sh@localhost'/>`+
+                                    `<reference xmlns='urn:xmpp:reference:0' begin='11' end='17' type='mention' uri='xmpp:gibson@localhost'/>`+
+                                    `<reference xmlns='urn:xmpp:reference:0' begin='6' end='10' type='mention' uri='xmpp:z3r0@localhost'/>`+
+                                    `<replace xmlns='urn:xmpp:message-correct:0' id='${msg.nodeTree.getAttribute('id')}'/>`+
+                              `</message>`);
+                    done();
+                }).catch(_.partial(console.error, _));
             }));
 
             it("includes XEP-0372 references to that person",

@@ -518,6 +518,7 @@
                 is_chatroom: true,
                 events: {
                     'change input.fileupload': 'onFileSelection',
+                    'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
                     'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',

@@ -400,10 +400,11 @@
                         const older_versions = message.get('older_versions') || [];
                         older_versions.push(message.get('message'));
                         message.save({
+                            'correcting': false,
+                            'edited': true,
                             'message': attrs.message,
                             'older_versions': older_versions,
-                            'edited': true,
-                            'correcting': false
+                            'references': attrs.references
                         });
                         return this.sendMessageStanza(message);
                     }

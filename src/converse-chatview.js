@@ -970,7 +970,7 @@
                             currently_correcting.save('correcting', false);
                         }
                         message.save('correcting', true);
-                        this.insertIntoTextArea(message.get('message'), true, true);
+                        this.insertIntoTextArea(u.prefixMentions(message), true, true);
                     } else {
                         message.save('correcting', false);
                         this.insertIntoTextArea('', true, false);

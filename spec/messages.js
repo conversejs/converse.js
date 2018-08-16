@@ -2145,7 +2145,7 @@
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom')
                 .then(() => {
                     const view = _converse.chatboxviews.get('lounge@localhost');
-                    ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
+                    ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh', 'Link Mauve'].forEach((nick) => {
                         _converse.connection._dataRecv(test_utils.createRequest(
                             $pres({
                                 'to': 'tom@localhost/resource',
@@ -2154,7 +2154,7 @@
                             .c('x', {xmlns: Strophe.NS.MUC_USER})
                             .c('item', {
                                 'affiliation': 'none',
-                                'jid': `${nick}@localhost/resource`,
+                                'jid': `${nick.replace(/\s/g, '-')}@localhost/resource`,
                                 'role': 'participant'
                             })));
                     });
@@ -2190,6 +2190,13 @@
                     expect(references.length).toBe(1);
                     expect(JSON.stringify(references))
                         .toBe('[{"begin":0,"end":6,"value":"gibson","type":"mention","uri":"xmpp:gibson@localhost"}]');
+
+                    [text, references] = view.model.parseTextForReferences('hi @Link Mauve how are you?')
+                    expect(text).toBe('hi Link Mauve how are you?');
+                    expect(references.length).toBe(1);
+                    expect(JSON.stringify(references))
+                        .toBe('[{"begin":3,"end":13,"value":"Link Mauve","type":"mention","uri":"xmpp:Link-Mauve@localhost"}]');
+
                     done();
                     return;
                 });

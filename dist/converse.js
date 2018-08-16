@@ -67591,122 +67591,120 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       const _converse = this._converse;
 
       _converse.FILTER_CONTAINS = function (text, input) {
-        return RegExp($.regExpEscape(input.trim()), "i").test(text);
+        return RegExp(helpers.regExpEscape(input.trim()), "i").test(text);
       };
 
       _converse.FILTER_STARTSWITH = function (text, input) {
-        return RegExp("^" + $.regExpEscape(input.trim()), "i").test(text);
+        return RegExp("^" + helpers.regExpEscape(input.trim()), "i").test(text);
       };
 
-      const _ac = function _ac(el, o) {
-        const me = this;
-        this.is_opened = false;
-
-        if (u.hasClass('.suggestion-box', el)) {
-          this.container = el;
-        } else {
-          this.container = el.querySelector('.suggestion-box');
+      const SORT_BYLENGTH = function SORT_BYLENGTH(a, b) {
+        if (a.length !== b.length) {
+          return a.length - b.length;
         }
 
-        this.input = $(this.container.querySelector('.suggestion-box__input'));
-        this.input.setAttribute("autocomplete", "off");
-        this.input.setAttribute("aria-autocomplete", "list");
-        this.ul = $(this.container.querySelector('.suggestion-box__results'));
-        this.status = $(this.container.querySelector('.suggestion-box__additions'));
-        o = o || {};
-        configure(this, {
-          'match_current_word': false,
-          // Match only the current word, otherwise all input is matched
-          'match_on_tab': false,
-          // Whether matching should only start when tab's pressed
-          'min_chars': 2,
-          'max_items': 10,
-          'auto_evaluate': true,
-          'auto_first': false,
-          'data': _ac.DATA,
-          'filter': _ac.FILTER_CONTAINS,
-          'sort': o.sort === false ? false : _ac.SORT_BYLENGTH,
-          'item': _ac.ITEM,
-          'replace': _ac.REPLACE
-        }, o);
-        this.index = -1;
-        const input = {
-          "blur": this.close.bind(this, {
-            reason: "blur"
-          }),
-          "keydown": function keydown(evt) {
-            const c = evt.keyCode; // If the dropdown `ul` is in view, then act on keydown for the following keys:
-            // Enter / Esc / Up / Down
+        return a < b ? -1 : 1;
+      };
 
-            if (me.opened) {
-              if (c === _converse.keycodes.ENTER && me.selected) {
-                evt.preventDefault();
-                me.select();
-              } else if (c === _converse.keycodes.ESCAPE) {
-                me.close({
-                  reason: "esc"
-                });
-              } else if (c === _converse.keycodes.UP_ARROW || c === _converse.keycodes.DOWN_ARROW) {
-                evt.preventDefault();
-                me[c === _converse.keycodes.UP_ARROW ? "previous" : "next"]();
-              }
-            }
+      const ITEM = (text, input) => {
+        input = input.trim();
+        const element = document.createElement("li");
+        element.setAttribute("aria-selected", "false");
+        const regex = new RegExp("(" + input + ")", "ig");
+        const parts = input ? text.split(regex) : [text];
+        parts.forEach(txt => {
+          if (input && txt.match(regex)) {
+            const match = document.createElement("mark");
+            match.textContent = txt;
+            element.appendChild(match);
+          } else {
+            element.appendChild(document.createTextNode(txt));
           }
-        };
+        });
+        return element;
+      };
 
-        if (this.auto_evaluate) {
-          input["input"] = this.evaluate.bind(this);
-        } // Bind events
+      class AutoComplete {
+        constructor(el, config = {}) {
+          this.is_opened = false;
 
+          if (u.hasClass('.suggestion-box', el)) {
+            this.container = el;
+          } else {
+            this.container = el.querySelector('.suggestion-box');
+          }
 
-        this._events = {
-          'input': input,
-          'form': {
-            "submit": this.close.bind(this, {
-              reason: "submit"
+          this.input = this.container.querySelector('.suggestion-box__input');
+          this.input.setAttribute("autocomplete", "off");
+          this.input.setAttribute("aria-autocomplete", "list");
+          this.ul = this.container.querySelector('.suggestion-box__results');
+          this.status = this.container.querySelector('.suggestion-box__additions');
+
+          _.assignIn(this, {
+            'match_current_word': false,
+            // Match only the current word, otherwise all input is matched
+            'match_on_tab': false,
+            // Whether matching should only start when tab's pressed
+            'trigger_on_at': false,
+            // Whether @ should trigger autocomplete
+            'min_chars': 2,
+            'max_items': 10,
+            'auto_evaluate': true,
+            'auto_first': false,
+            'data': _.identity,
+            'filter': _converse.FILTER_CONTAINS,
+            'sort': config.sort === false ? false : SORT_BYLENGTH,
+            'item': ITEM
+          }, config);
+
+          this.index = -1;
+          this.bindEvents();
+
+          if (this.input.hasAttribute("list")) {
+            this.list = "#" + this.input.getAttribute("list");
+            this.input.removeAttribute("list");
+          } else {
+            this.list = this.input.getAttribute("data-list") || config.list || [];
+          }
+        }
+
+        bindEvents() {
+          // Bind events
+          const input = {
+            "blur": () => this.close({
+              'reason': 'blur'
             })
-          },
-          'ul': {
-            "mousedown": function mousedown(evt) {
-              let li = evt.target;
+          };
 
-              if (li !== this) {
-                while (li && !/li/i.test(li.nodeName)) {
-                  li = li.parentNode;
-                }
-
-                if (li && evt.button === 0) {
-                  // Only select on left click
-                  evt.preventDefault();
-                  me.select(li, evt.target);
-                }
-              }
-            }
+          if (this.auto_evaluate) {
+            input["input"] = () => this.evaluate();
           }
-        };
-        $.bind(this.input, this._events.input);
-        $.bind(this.input.form, this._events.form);
-        $.bind(this.ul, this._events.ul);
 
-        if (this.input.hasAttribute("list")) {
-          this.list = "#" + this.input.getAttribute("list");
-          this.input.removeAttribute("list");
-        } else {
-          this.list = this.input.getAttribute("data-list") || o.list || [];
+          this._events = {
+            'input': input,
+            'form': {
+              "submit": () => this.close({
+                'reason': 'submit'
+              })
+            },
+            'ul': {
+              "mousedown": ev => this.onMouseDown(ev),
+              "mouseover": ev => this.onMouseOver(ev)
+            }
+          };
+          helpers.bind(this.input, this._events.input);
+          helpers.bind(this.input.form, this._events.form);
+          helpers.bind(this.ul, this._events.ul);
         }
 
-        _ac.all.push(this);
-      };
-
-      _ac.prototype = {
         set list(list) {
-          if (Array.isArray(list)) {
+          if (Array.isArray(list) || typeof list === "function") {
             this._list = list;
           } else if (typeof list === "string" && _.includes(list, ",")) {
             this._list = list.split(/\s*,\s*/);
           } else {
             // Element or CSS selector
-            list = $(list);
+            list = helpers.getElement(list);
 
             if (list && list.children) {
               const items = [];
@@ -67731,15 +67729,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (document.activeElement === this.input) {
             this.evaluate();
           }
-        },
+        }
 
         get selected() {
           return this.index > -1;
-        },
+        }
 
         get opened() {
           return this.is_opened;
-        },
+        }
 
         close(o) {
           if (!this.opened) {
@@ -67749,8 +67747,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.ul.setAttribute("hidden", "");
           this.is_opened = false;
           this.index = -1;
-          $.fire(this.input, "suggestion-box-close", o || {});
-        },
+          this.trigger("suggestion-box-close", o || {});
+        }
+
+        insertValue(suggestion) {
+          let value;
+
+          if (this.match_current_word) {
+            u.replaceCurrentWord(this.input, suggestion.value);
+          } else {
+            this.input.value = suggestion.value;
+          }
+        }
 
         open() {
           this.ul.removeAttribute("hidden");
@@ -67760,59 +67768,54 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.goto(0);
           }
 
-          $.fire(this.input, "suggestion-box-open");
-        },
+          this.trigger("suggestion-box-open");
+        }
 
         destroy() {
           //remove events from the input and its form
-          $.unbind(this.input, this._events.input);
-          $.unbind(this.input.form, this._events.form); //move the input out of the suggestion-box container and remove the container and its children
+          helpers.unbind(this.input, this._events.input);
+          helpers.unbind(this.input.form, this._events.form); //move the input out of the suggestion-box container and remove the container and its children
 
           const parentNode = this.container.parentNode;
           parentNode.insertBefore(this.input, this.container);
           parentNode.removeChild(this.container); //remove autocomplete and aria-autocomplete attributes
 
           this.input.removeAttribute("autocomplete");
-          this.input.removeAttribute("aria-autocomplete"); //remove this awesomeplete instance from the global array of instances
-
-          var indexOfAutoComplete = _ac.all.indexOf(this);
-
-          if (indexOfAutoComplete !== -1) {
-            _ac.all.splice(indexOfAutoComplete, 1);
-          }
-        },
+          this.input.removeAttribute("aria-autocomplete");
+        }
 
         next() {
-          var count = this.ul.children.length;
+          const count = this.ul.children.length;
           this.goto(this.index < count - 1 ? this.index + 1 : count ? 0 : -1);
-        },
+        }
 
         previous() {
-          var count = this.ul.children.length;
-          var pos = this.index - 1;
+          const count = this.ul.children.length,
+                pos = this.index - 1;
           this.goto(this.selected && pos !== -1 ? pos : count - 1);
-        },
+        }
 
-        // Should not be used, highlights specific item without any checks!
         goto(i) {
-          var lis = this.ul.children;
+          // Should not be used directly, highlights specific item without any checks!
+          const list = this.ul.children;
 
           if (this.selected) {
-            lis[this.index].setAttribute("aria-selected", "false");
+            list[this.index].setAttribute("aria-selected", "false");
           }
 
           this.index = i;
 
-          if (i > -1 && lis.length > 0) {
-            lis[i].setAttribute("aria-selected", "true");
-            this.status.textContent = lis[i].textContent; // scroll to highlighted element in case parent's height is fixed
+          if (i > -1 && list.length > 0) {
+            list[i].setAttribute("aria-selected", "true");
+            list[i].focus();
+            this.status.textContent = list[i].textContent; // scroll to highlighted element in case parent's height is fixed
 
-            this.ul.scrollTop = lis[i].offsetTop - this.ul.clientHeight + lis[i].clientHeight;
-            $.fire(this.input, "suggestion-box-highlight", {
-              text: this.suggestions[this.index]
+            this.ul.scrollTop = list[i].offsetTop - this.ul.clientHeight + list[i].clientHeight;
+            this.trigger("suggestion-box-highlight", {
+              'text': this.suggestions[this.index]
             });
           }
-        },
+        }
 
         select(selected, origin) {
           if (selected) {
@@ -67822,26 +67825,59 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           if (selected) {
-            const suggestion = this.suggestions[this.index],
-                  allowed = $.fire(this.input, "suggestion-box-select", {
-              'text': suggestion,
-              'origin': origin || selected
+            const suggestion = this.suggestions[this.index];
+            this.insertValue(suggestion);
+            this.close({
+              'reason': 'select'
             });
-
-            if (allowed) {
-              this.replace(suggestion);
-              this.close({
-                'reason': 'select'
-              });
-              this.auto_completing = false;
-              this.trigger("suggestion-box-selectcomplete", {
-                'text': suggestion
-              });
-            }
+            this.auto_completing = false;
+            this.trigger("suggestion-box-selectcomplete", {
+              'text': suggestion
+            });
           }
-        },
+        }
+
+        onMouseOver(ev) {
+          const li = u.ancestor(ev.target, 'li');
+
+          if (li) {
+            this.goto(Array.prototype.slice.call(this.ul.children).indexOf(li));
+          }
+        }
+
+        onMouseDown(ev) {
+          if (ev.button !== 0) {
+            return; // Only select on left click
+          }
+
+          const li = u.ancestor(ev.target, 'li');
+
+          if (li) {
+            ev.preventDefault();
+            this.select(li, ev.target);
+          }
+        }
 
         keyPressed(ev) {
+          if (this.opened) {
+            if (_.includes([_converse.keycodes.ENTER, _converse.keycodes.TAB], ev.keyCode) && this.selected) {
+              ev.preventDefault();
+              ev.stopPropagation();
+              this.select();
+              return true;
+            } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
+              this.close({
+                'reason': 'esc'
+              });
+              return true;
+            } else if (_.includes([_converse.keycodes.UP_ARROW, _converse.keycodes.DOWN_ARROW], ev.keyCode)) {
+              ev.preventDefault();
+              ev.stopPropagation();
+              this[ev.keyCode === _converse.keycodes.UP_ARROW ? "previous" : "next"]();
+              return true;
+            }
+          }
+
           if (_.includes([_converse.keycodes.SHIFT, _converse.keycodes.META, _converse.keycodes.META_RIGHT, _converse.keycodes.ESCAPE, _converse.keycodes.ALT], ev.keyCode)) {
             return;
           }
@@ -67849,25 +67885,37 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (this.match_on_tab && ev.keyCode === _converse.keycodes.TAB) {
             ev.preventDefault();
             this.auto_completing = true;
+          } else if (this.trigger_on_at && ev.keyCode === _converse.keycodes.AT) {
+            this.auto_completing = true;
           }
-
-          if (this.auto_completing) {
-            this.evaluate();
-          }
-        },
+        }
 
         evaluate(ev) {
-          let value = this.input.value;
+          const arrow_pressed = ev.keyCode === _converse.keycodes.UP_ARROW || ev.keyCode === _converse.keycodes.DOWN_ARROW;
 
-          if (this.match_current_word) {
-            value = u.getCurrentWord(this.input);
+          if (!this.auto_completing || this.selected && arrow_pressed) {
+            return;
           }
 
-          if (value.length >= this.min_chars && this._list.length > 0) {
+          const list = typeof this._list === "function" ? this._list() : this._list;
+
+          if (list.length === 0) {
+            return;
+          }
+
+          let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
+          let ignore_min_chars = false;
+
+          if (this.trigger_on_at && value.startsWith('@')) {
+            ignore_min_chars = true;
+            value = value.slice('1');
+          }
+
+          if (value.length >= this.min_chars || ignore_min_chars) {
             this.index = -1; // Populate list with options that match
 
             this.ul.innerHTML = "";
-            this.suggestions = this._list.map(item => new Suggestion(this.data(item, value))).filter(item => this.filter(item, value));
+            this.suggestions = list.map(item => new Suggestion(this.data(item, value))).filter(item => this.filter(item, value));
 
             if (this.sort !== false) {
               this.suggestions = this.suggestions.sort(this.sort);
@@ -67891,48 +67939,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         }
 
-      }; // Make it an event emitter
-
-      _.extend(_ac.prototype, Backbone.Events); // Static methods/properties
+      } // Make it an event emitter
 
 
-      _ac.all = [];
-
-      _ac.SORT_BYLENGTH = function (a, b) {
-        if (a.length !== b.length) {
-          return a.length - b.length;
-        }
-
-        return a < b ? -1 : 1;
-      };
-
-      _ac.ITEM = function (text, input) {
-        input = input.trim();
-        var element = document.createElement("li");
-        element.setAttribute("aria-selected", "false");
-        var regex = new RegExp("(" + input + ")", "ig");
-        var parts = input ? text.split(regex) : [text];
-        parts.forEach(function (txt) {
-          if (input && txt.match(regex)) {
-            var match = document.createElement("mark");
-            match.textContent = txt;
-            element.appendChild(match);
-          } else {
-            element.appendChild(document.createTextNode(txt));
-          }
-        });
-        return element;
-      };
-
-      _ac.REPLACE = function (text) {
-        this.input.value = text.value;
-      };
-
-      _ac.DATA = function (item
-      /*, input*/
-      ) {
-        return item;
-      }; // Private functions
+      _.extend(AutoComplete.prototype, Backbone.Events); // Private functions
 
 
       function Suggestion(data) {
@@ -67955,93 +67965,47 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       Suggestion.prototype.toString = Suggestion.prototype.valueOf = function () {
         return "" + this.label;
-      };
-
-      function configure(instance, properties, o) {
-        for (var i in properties) {
-          if (!Object.prototype.hasOwnProperty.call(properties, i)) {
-            continue;
-          }
-
-          const initial = properties[i],
-                attr_value = instance.input.getAttribute("data-" + i.toLowerCase());
-
-          if (typeof initial === "number") {
-            instance[i] = parseInt(attr_value, 10);
-          } else if (initial === false) {
-            // Boolean options must be false by default anyway
-            instance[i] = attr_value !== null;
-          } else if (initial instanceof Function) {
-            instance[i] = null;
-          } else {
-            instance[i] = attr_value;
-          }
-
-          if (!instance[i] && instance[i] !== 0) {
-            instance[i] = i in o ? o[i] : initial;
-          }
-        }
-      } // Helpers
+      }; // Helpers
 
 
       var slice = Array.prototype.slice;
+      const helpers = {
+        getElement(expr, el) {
+          return typeof expr === "string" ? (el || document).querySelector(expr) : expr || null;
+        },
 
-      function $(expr, con) {
-        return typeof expr === "string" ? (con || document).querySelector(expr) : expr || null;
-      }
+        bind(element, o) {
+          if (element) {
+            for (var event in o) {
+              if (!Object.prototype.hasOwnProperty.call(o, event)) {
+                continue;
+              }
 
-      function $$(expr, con) {
-        return slice.call((con || document).querySelectorAll(expr));
-      }
-
-      $.bind = function (element, o) {
-        if (element) {
-          for (var event in o) {
-            if (!Object.prototype.hasOwnProperty.call(o, event)) {
-              continue;
+              const callback = o[event];
+              event.split(/\s+/).forEach(event => element.addEventListener(event, callback));
             }
-
-            const callback = o[event];
-            event.split(/\s+/).forEach(event => element.addEventListener(event, callback));
           }
-        }
-      };
+        },
 
-      $.unbind = function (element, o) {
-        if (element) {
-          for (var event in o) {
-            if (!Object.prototype.hasOwnProperty.call(o, event)) {
-              continue;
+        unbind(element, o) {
+          if (element) {
+            for (var event in o) {
+              if (!Object.prototype.hasOwnProperty.call(o, event)) {
+                continue;
+              }
+
+              const callback = o[event];
+              event.split(/\s+/).forEach(event => element.removeEventListener(event, callback));
             }
-
-            const callback = o[event];
-            event.split(/\s+/).forEach(event => element.removeEventListener(event, callback));
           }
-        }
-      };
+        },
 
-      $.fire = function (target, type, properties) {
-        var evt = document.createEvent("HTMLEvents");
-        evt.initEvent(type, true, true);
-
-        for (var j in properties) {
-          if (!Object.prototype.hasOwnProperty.call(properties, j)) {
-            continue;
-          }
-
-          evt[j] = properties[j];
+        regExpEscape(s) {
+          return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
         }
 
-        return target.dispatchEvent(evt);
       };
-
-      $.regExpEscape = function (s) {
-        return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
-      };
-
-      _ac.$ = $;
-      _ac.$$ = $$;
-      _converse.AutoComplete = _ac;
+      _converse.AutoComplete = AutoComplete;
     }
 
   });
@@ -68810,6 +68774,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         _ = _converse$env._;
   const u = converse.env.utils;
   Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
+  Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
   converse.plugins.add('converse-chatboxes', {
     dependencies: ["converse-roster", "converse-vcard"],
     overrides: {
@@ -69036,7 +69001,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           };
 
           xhr.open('PUT', this.get('put'), true);
-          xhr.setRequestHeader("Content-type", 'application/octet-stream');
+          xhr.setRequestHeader("Content-type", this.get('file').type);
           xhr.send(this.get('file'));
         }
 
@@ -69108,6 +69073,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             older_versions.push(message.get('message'));
             message.save({
               'message': _converse.chatboxes.getMessageBody(stanza),
+              'references': this.getReferencesFromStanza(stanza),
               'older_versions': older_versions,
               'edited': true
             });
@@ -69144,6 +69110,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               }).up();
             }
           }
+
+          (message.get('references') || []).forEach(reference => {
+            const attrs = {
+              'xmlns': Strophe.NS.REFERENCE,
+              'begin': reference.begin,
+              'end': reference.end,
+              'type': reference.type
+            };
+
+            if (reference.uri) {
+              attrs.uri = reference.uri;
+            }
+
+            stanza.c('reference', attrs).up();
+          });
 
           if (message.get('file')) {
             stanza.c('x', {
@@ -69208,10 +69189,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             const older_versions = message.get('older_versions') || [];
             older_versions.push(message.get('message'));
             message.save({
+              'correcting': false,
+              'edited': true,
               'message': attrs.message,
               'older_versions': older_versions,
-              'edited': true,
-              'correcting': false
+              'references': attrs.references
             });
             return this.sendMessageStanza(message);
           }
@@ -69274,6 +69256,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         },
 
+        getReferencesFromStanza(stanza) {
+          const text = _.propertyOf(stanza.querySelector('body'))('textContent');
+
+          return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza).map(ref => {
+            const begin = ref.getAttribute('begin'),
+                  end = ref.getAttribute('end');
+            return {
+              'begin': begin,
+              'end': end,
+              'type': ref.getAttribute('type'),
+              'value': text.slice(begin, end),
+              'uri': ref.getAttribute('uri')
+            };
+          });
+        },
+
         getMessageAttributesFromStanza(stanza, original_stanza) {
           /* Parses a passed in message stanza and returns an object
            * of attributes.
@@ -69299,6 +69297,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'is_delayed': !_.isNil(delay),
             'is_spoiler': !_.isNil(spoiler),
             'message': _converse.chatboxes.getMessageBody(stanza) || undefined,
+            'references': this.getReferencesFromStanza(stanza),
             'msgid': stanza.getAttribute('id'),
             'time': delay ? delay.getAttribute('stamp') : moment().format(),
             'type': stanza.getAttribute('type')
@@ -69363,15 +69362,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return this.get('hidden') || this.get('minimized') || this.isScrolledUp() || _converse.windowState === 'hidden';
         },
 
-        incrementUnreadMsgCounter(stanza) {
+        incrementUnreadMsgCounter(message) {
           /* Given a newly received message, update the unread counter if
            * necessary.
            */
-          if (_.isNull(stanza.querySelector('body'))) {
-            return; // The message has no text
+          if (!message) {
+            return;
           }
 
-          if (utils.isNewMessage(stanza) && this.isHidden()) {
+          if (_.isNil(message.get('message'))) {
+            return;
+          }
+
+          if (utils.isNewMessage(message) && this.isHidden()) {
             this.save({
               'num_unread': this.get('num_unread') + 1
             });
@@ -69535,8 +69538,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             if (!message) {
               // Only create the message when we're sure it's not a duplicate
-              chatbox.incrementUnreadMsgCounter(original_stanza);
-              chatbox.createMessage(stanza, original_stanza);
+              chatbox.incrementUnreadMsgCounter(chatbox.createMessage(stanza, original_stanza));
             }
           }
 
@@ -70252,13 +70254,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (this.model.get('composing_spoiler')) {
             placeholder = __('Hidden message');
           } else {
-            placeholder = __('Personal message');
+            placeholder = __('Message');
           }
 
           const form_container = this.el.querySelector('.message-form-container');
           form_container.innerHTML = tpl_chatbox_message_form(_.extend(this.model.toJSON(), {
             'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
-            'label_personal_message': placeholder,
+            'label_message': placeholder,
             'label_send': __('Send'),
             'label_spoiler_hint': __('Optional hint'),
             'message_value': _.get(this.el.querySelector('.chat-textarea'), 'value'),
@@ -70843,7 +70845,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }
 
             message.save('correcting', true);
-            this.insertIntoTextArea(message.get('message'), true, true);
+            this.insertIntoTextArea(u.prefixMentions(message), true, true);
           } else {
             message.save('correcting', false);
             this.insertIntoTextArea('', true, false);
@@ -71984,6 +71986,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     UP_ARROW: 38,
     DOWN_ARROW: 40,
     FORWARD_SLASH: 47,
+    AT: 50,
     META: 91,
     META_RIGHT: 93
   }; // Module-level constants
@@ -75370,7 +75373,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             text = xss.filterXSS(text, {
               'whiteList': {}
             });
-            msg_content.innerHTML = _.flow(_.partial(u.geoUriToHttp, _, _converse.geouri_replacement), u.addHyperlinks, u.renderNewLines, _.partial(u.addEmoji, _converse, emojione, _))(text);
+            msg_content.innerHTML = _.flow(_.partial(u.geoUriToHttp, _, _converse.geouri_replacement), _.partial(u.addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox), u.addHyperlinks, u.renderNewLines, _.partial(u.addEmoji, _converse, emojione, _))(text);
           }
 
           u.renderImageURLs(_converse, msg_content).then(() => {
@@ -75464,7 +75467,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           let extra_classes = this.model.get('is_delayed') && 'delayed' || '';
 
           if (this.model.get('type') === 'groupchat' && this.model.get('sender') === 'them') {
-            if (this.model.collection.chatbox.isUserMentioned(this.model.get('message'))) {
+            if (this.model.collection.chatbox.isUserMentioned(this.model)) {
               // Add special class to mark groupchat messages
               // in which we are mentioned.
               extra_classes += ' mentioned';
@@ -76243,11 +76246,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/chatroom_toolbar.html */ "./src/templates/chatroom_toolbar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "./node_modules/awesomplete-avoid-xss/awesomplete.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "./node_modules/awesomplete-avoid-xss/awesomplete.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, muc_utils, xss, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_details_modal, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
+})(void 0, function (converse, muc_utils, xss, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_details_modal, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -76416,7 +76419,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           307: __('You have been kicked from this groupchat'),
           321: __("You have been removed from this groupchat because of an affiliation change"),
           322: __("You have been removed from this groupchat because the groupchat has changed to members-only and you're not a member"),
-          332: __("You have been removed from this groupchat because the MUC (Multi-user chat) service is being shut down")
+          332: __("You have been removed from this groupchat because the service hosting it is being shut down")
         },
         action_info_messages: {
           /* XXX: Note the triple underscore function and not double
@@ -76718,6 +76721,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         is_chatroom: true,
         events: {
           'change input.fileupload': 'onFileSelection',
+          'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
           'click .chatbox-navback': 'showControlBox',
           'click .close-chatbox-button': 'close',
           'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
@@ -76732,6 +76736,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'click .toggle-smiley': 'toggleEmojiMenu',
           'click .upload-file': 'toggleFileUpload',
           'keydown .chat-textarea': 'keyPressed',
+          'keyup .chat-textarea': 'keyUp',
           'input .chat-textarea': 'inputChanged'
         },
 
@@ -76814,22 +76819,31 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         initAutoComplete() {
           this.auto_complete = new _converse.AutoComplete(this.el, {
+            'auto_first': true,
             'auto_evaluate': false,
             'min_chars': 1,
             'match_current_word': true,
             'match_on_tab': true,
-            'list': this.model.occupants.map(o => ({
-              'label': o.getDisplayName(),
-              'value': o.get('jid')
+            'list': () => this.model.occupants.map(o => ({
+              'label': o.get('nick'),
+              'value': `@${o.get('nick')}`
             })),
-            'filter': _converse.FILTER_STARTSWITH
+            'filter': _converse.FILTER_STARTSWITH,
+            'trigger_on_at': true
           });
           this.auto_complete.on('suggestion-box-selectcomplete', () => this.auto_completing = false);
         },
 
         keyPressed(ev) {
-          this.auto_complete.keyPressed(ev);
+          if (this.auto_complete.keyPressed(ev)) {
+            return;
+          }
+
           return _converse.ChatBoxView.prototype.keyPressed.apply(this, arguments);
+        },
+
+        keyUp(ev) {
+          this.auto_complete.evaluate(ev);
         },
 
         showRoomDetailsModal(ev) {
@@ -76934,8 +76948,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         getToolbarOptions() {
           return _.extend(_converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments), {
-            label_hide_occupants: __('Hide the list of participants'),
-            show_occupants_toggle: this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
+            'label_hide_occupants': __('Hide the list of participants'),
+            'show_occupants_toggle': this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
           });
         },
 
@@ -78267,6 +78281,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 "use strict";
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 // Converse.js
 // http://conversejs.org
 //
@@ -78594,14 +78616,96 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           _converse.connection.sendPresence(presence);
         },
 
+        getReferenceForMention(mention, index) {
+          const longest_match = u.getLongestSubstring(mention, this.occupants.map(o => o.get('nick')));
+
+          if (!longest_match) {
+            return null;
+          }
+
+          if ((mention[longest_match.length] || '').match(/[A-Za-zäëïöüâêîôûáéíóúàèìòùÄËÏÖÜÂÊÎÔÛÁÉÍÓÚÀÈÌÒÙ]/i)) {
+            // avoid false positives, i.e. mentions that have
+            // further alphabetical characters than our longest
+            // match.
+            return null;
+          }
+
+          const occupant = this.occupants.findOccupant({
+            'nick': longest_match
+          });
+
+          if (!occupant) {
+            return null;
+          }
+
+          const obj = {
+            'begin': index,
+            'end': index + longest_match.length,
+            'value': longest_match,
+            'type': 'mention'
+          };
+
+          if (occupant.get('jid')) {
+            obj.uri = `xmpp:${occupant.get('jid')}`;
+          }
+
+          return obj;
+        },
+
+        extractReference(text, index) {
+          for (let i = index; i < text.length; i++) {
+            if (text[i] !== '@') {
+              continue;
+            } else {
+              const match = text.slice(i + 1),
+                    ref = this.getReferenceForMention(match, i);
+
+              if (ref) {
+                return [text.slice(0, i) + match, ref, i];
+              }
+            }
+          }
+
+          return;
+        },
+
+        parseTextForReferences(text) {
+          const refs = [];
+          let index = 0;
+
+          while (index < (text || '').length) {
+            const result = this.extractReference(text, index);
+
+            if (result) {
+              text = result[0]; // @ gets filtered out
+
+              refs.push(result[1]);
+              index = result[2];
+            } else {
+              break;
+            }
+          }
+
+          return [text, refs];
+        },
+
         getOutgoingMessageAttributes(text, spoiler_hint) {
           const is_spoiler = this.get('composing_spoiler');
+          var references;
+
+          var _this$parseTextForRef = this.parseTextForReferences(text);
+
+          var _this$parseTextForRef2 = _slicedToArray(_this$parseTextForRef, 2);
+
+          text = _this$parseTextForRef2[0];
+          references = _this$parseTextForRef2[1];
           return {
-            'nick': this.get('nick'),
             'from': `${this.get('jid')}/${this.get('nick')}`,
             'fullname': this.get('nick'),
             'is_spoiler': is_spoiler,
             'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
+            'nick': this.get('nick'),
+            'references': references,
             'sender': 'me',
             'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
             'type': 'groupchat'
@@ -79227,8 +79331,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               return;
             }
 
-            this.incrementUnreadMsgCounter(original_stanza);
-            this.createMessage(stanza, original_stanza);
+            this.incrementUnreadMsgCounter(this.createMessage(stanza, original_stanza));
           }
 
           if (sender !== this.get('nick')) {
@@ -79316,28 +79419,39 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * Parameters:
            *  (String): The text message
            */
-          return new RegExp(`\\b${this.get('nick')}\\b`).test(message);
+          const nick = this.get('nick');
+
+          if (message.get('references').length) {
+            const mentions = message.get('references').filter(ref => ref.type === 'mention').map(ref => ref.value);
+            return _.includes(mentions, nick);
+          } else {
+            return new RegExp(`\\b${nick}\\b`).test(message.get('message'));
+          }
         },
 
-        incrementUnreadMsgCounter(stanza) {
+        incrementUnreadMsgCounter(message) {
           /* Given a newly received message, update the unread counter if
            * necessary.
            *
            * Parameters:
            *  (XMLElement): The <messsage> stanza
            */
-          const body = stanza.querySelector('body');
-
-          if (_.isNull(body)) {
-            return; // The message has no text
+          if (!message) {
+            return;
           }
 
-          if (u.isNewMessage(stanza) && this.isHidden()) {
+          const body = message.get('message');
+
+          if (_.isNil(body)) {
+            return;
+          }
+
+          if (u.isNewMessage(message) && this.isHidden()) {
             const settings = {
               'num_unread_general': this.get('num_unread_general') + 1
             };
 
-            if (this.isUserMentioned(body.textContent)) {
+            if (this.isUserMentioned(message)) {
               settings.num_unread = this.get('num_unread') + 1;
 
               _converse.incrementMsgCounter();
@@ -85022,10 +85136,10 @@ __p += '\n                ';
 __p += ' spoiler ';
  } ;
 __p += '"\n            placeholder="' +
-__e(o.label_personal_message) +
+__e(o.label_message) +
 '">' +
 ((__t = ( o.message_value )) == null ? '' : __t) +
-'</textarea>\n        <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>\n\n\n\n        ';
+'</textarea>\n        <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>\n\n        ';
  if (o.show_send_button) { ;
 __p += '\n            <button type="submit" class="pure-button send-button">' +
 __e( o.label_send ) +
@@ -85592,41 +85706,6 @@ var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/chatroom_sidebar.html -->\n<!-- <div class="occupants"> -->\n<div class="occupants-header">\n    <i class="hide-occupants fa fa-times"></i>\n    <p class="occupants-heading">' +
 __e(o.label_occupants) +
 '</p>\n</div>\n<ul class="occupant-list"></ul>\n<div class="chatroom-features"></div>\n<!-- </div> -->\n';
-return __p
-};
-
-/***/ }),
-
-/***/ "./src/templates/chatroom_toolbar.html":
-/*!*********************************************!*\
-  !*** ./src/templates/chatroom_toolbar.html ***!
-  \*********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
-module.exports = function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/chatroom_toolbar.html -->\n';
- if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="toggle-smiley fa fa-smile-o" title="' +
-__e(o.label_insert_smiley) +
-'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a> \n    <div class="emoji-picker dropdown-menu toolbar-menu"></div>\n</li>\n';
- } ;
-__p += '\n';
- if (o.show_call_button)  { ;
-__p += '\n<li class="toggle-call fa fa-phone" title="' +
-__e(o.label_start_call) +
-'"></li>\n';
- } ;
-__p += '\n';
- if (o.show_occupants_toggle)  { ;
-__p += '\n<li class="toggle-occupants fa fa-angle-double-right" title="' +
-__e(o.label_hide_occupants) +
-'"></li>\n';
- } ;
-__p += '\n';
 return __p
 };
 
@@ -87573,6 +87652,12 @@ __e(o.label_start_call) +
 '"></li>\n';
  } ;
 __p += '\n';
+ if (o.show_occupants_toggle)  { ;
+__p += '\n<li class="toggle-occupants fa fa-angle-double-right" title="' +
+__e(o.label_hide_occupants) +
+'"></li>\n';
+ } ;
+__p += '\n';
 return __p
 };
 
@@ -87854,6 +87939,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
   var u = {};
 
+  u.getLongestSubstring = function (string, candidates) {
+    function reducer(accumulator, current_value) {
+      if (string.startsWith(current_value)) {
+        if (current_value.length > accumulator.length) {
+          return current_value;
+        } else {
+          return accumulator;
+        }
+      } else {
+        return accumulator;
+      }
+    }
+
+    return candidates.reduce(reducer, '');
+  };
+
   u.getNextElement = function (el, selector = '*') {
     let next_el = el.nextElementSibling;
 
@@ -87972,6 +88073,36 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
   u.escapeURL = function (url) {
     return encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+  };
+
+  u.prefixMentions = function (message) {
+    /* Given a message object, return its text with @ chars
+     * inserted before the mentioned nicknames.
+     */
+    let text = message.get('message');
+    (message.get('references') || []).sort((a, b) => b.begin - a.begin).forEach(ref => {
+      text = `${text.slice(0, ref.begin)}@${text.slice(ref.begin)}`;
+    });
+    return text;
+  };
+
+  u.addMentionsMarkup = function (text, references, chatbox) {
+    if (chatbox.get('message_type') !== 'groupchat') {
+      return text;
+    }
+
+    const nick = chatbox.get('nick');
+    references.sort((a, b) => b.begin - a.begin).forEach(ref => {
+      const mention = text.slice(ref.begin, ref.end);
+      chatbox;
+
+      if (mention === nick) {
+        text = text.slice(0, ref.begin) + `<span class="mention mention--self badge badge-info">${mention}</span>` + text.slice(ref.end);
+      } else {
+        text = text.slice(0, ref.begin) + `<span class="mention">${mention}</span>` + text.slice(ref.end);
+      }
+    });
+    return text;
   };
 
   u.addHyperlinks = function (text) {
@@ -88574,6 +88705,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   u.getCurrentWord = function (input) {
     const cursor = input.selectionEnd || undefined;
     return _.last(input.value.slice(0, cursor).split(' '));
+  };
+
+  u.replaceCurrentWord = function (input, new_value) {
+    const cursor = input.selectionEnd || undefined,
+          current_word = _.last(input.value.slice(0, cursor).split(' ')),
+          value = input.value;
+
+    input.value = value.slice(0, cursor - current_word.length) + `${new_value} ` + value.slice(cursor);
+    input.selectionEnd = cursor - current_word.length + new_value.length + 1;
   };
 
   u.isVisible = function (el) {

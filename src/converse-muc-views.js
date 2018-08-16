@@ -215,7 +215,7 @@
                     307: __('You have been kicked from this groupchat'),
                     321: __("You have been removed from this groupchat because of an affiliation change"),
                     322: __("You have been removed from this groupchat because the groupchat has changed to members-only and you're not a member"),
-                    332: __("You have been removed from this groupchat because the MUC (Multi-user chat) service is being shut down")
+                    332: __("You have been removed from this groupchat because the service hosting it is being shut down")
                 },
 
                 action_info_messages: {

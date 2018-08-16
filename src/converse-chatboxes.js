@@ -20,6 +20,7 @@
     const u = converse.env.utils;
 
     Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
+    Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
 
 
     converse.plugins.add('converse-chatboxes', {
@@ -323,11 +324,23 @@
 
                     if (message.get('is_spoiler')) {
                         if (message.get('spoiler_hint')) {
-                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }, message.get('spoiler_hint')).up();
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER}, message.get('spoiler_hint')).up();
                         } else {
-                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER }).up();
+                            stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER}).up();
                         }
                     }
+                    (message.get('references') || []).forEach(reference => {
+                        const attrs = {
+                            'xmlns': Strophe.NS.REFERENCE,
+                            'begin': reference.begin,
+                            'end': reference.end,
+                            'type': reference.type,
+                        }
+                        if (reference.uri) {
+                            attrs.uri = reference.uri;
+                        }
+                        stanza.c('reference', attrs).up();
+                    });
                     if (message.get('file')) {
                         stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('message')).up();
                     }

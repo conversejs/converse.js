@@ -326,6 +326,7 @@
                     const obj = {
                         'begin': index,
                         'end': index + longest_match.length,
+                        'value': longest_match,
                         'type': 'mention'
                     };
                     if (occupant.get('jid')) {
@@ -921,8 +922,7 @@
                         if (sender === '') {
                             return;
                         }
-                        this.incrementUnreadMsgCounter(original_stanza);
-                        this.createMessage(stanza, original_stanza);
+                        this.incrementUnreadMsgCounter(this.createMessage(stanza, original_stanza));
                     }
                     if (sender !== this.get('nick')) {
                         // We only emit an event if it's not our own message
@@ -1001,23 +1001,28 @@
                      * Parameters:
                      *  (String): The text message
                      */
-                    return (new RegExp(`\\b${this.get('nick')}\\b`)).test(message);
+                    const nick = this.get('nick');
+                    if (message.get('references').length) {
+                        const mentions = message.get('references').filter(ref => (ref.type === 'mention')).map(ref => ref.value);
+                        return _.includes(mentions, nick);
+                    } else {
+                        return (new RegExp(`\\b${nick}\\b`)).test(message.get('message'));
+                    }
                 },
 
-                incrementUnreadMsgCounter (stanza) {
+                incrementUnreadMsgCounter (message) {
                     /* Given a newly received message, update the unread counter if
                      * necessary.
                      *
                      * Parameters:
                      *  (XMLElement): The <messsage> stanza
                      */
-                    const body = stanza.querySelector('body');
-                    if (_.isNull(body)) {
-                        return; // The message has no text
-                    }
-                    if (u.isNewMessage(stanza) && this.isHidden()) {
+                    if (!message) { return; }
+                    const body = message.get('message');
+                    if (_.isNil(body)) { return; }
+                    if (u.isNewMessage(message) && this.isHidden()) {
                         const settings = {'num_unread_general': this.get('num_unread_general') + 1};
-                        if (this.isUserMentioned(body.textContent)) {
+                        if (this.isUserMentioned(message)) {
                             settings.num_unread = this.get('num_unread') + 1;
                             _converse.incrementMsgCounter();
                         }

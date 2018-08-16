@@ -461,11 +461,15 @@
                 },
 
                 getReferencesFromStanza (stanza) {
+                    const text = _.propertyOf(stanza.querySelector('body'))('textContent');
                     return sizzle(`reference[xmlns="${Strophe.NS.REFERENCE}"]`, stanza).map(ref => {
+                        const begin = ref.getAttribute('begin'),
+                              end = ref.getAttribute('end');
                         return  {
-                            'begin': ref.getAttribute('begin'),
-                            'end': ref.getAttribute('end'),
+                            'begin': begin,
+                            'end': end,
                             'type': ref.getAttribute('type'),
+                            'value': text.slice(begin, end),
                             'uri': ref.getAttribute('uri')
                         };
                     });
@@ -493,6 +497,8 @@
                                 stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
                                 stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
                                 stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
+
+
 
                     const attrs = {
                         'chat_state': chat_state,
@@ -561,14 +567,13 @@
                         _converse.windowState === 'hidden';
                 },
 
-                incrementUnreadMsgCounter (stanza) {
+                incrementUnreadMsgCounter (message) {
                     /* Given a newly received message, update the unread counter if
                      * necessary.
                      */
-                    if (_.isNull(stanza.querySelector('body'))) {
-                        return; // The message has no text
-                    }
-                    if (utils.isNewMessage(stanza) && this.isHidden()) {
+                    if (!message) { return; }
+                    if (_.isNil(message.get('message'))) { return; }
+                    if (utils.isNewMessage(message) && this.isHidden()) {
                         this.save({'num_unread': this.get('num_unread') + 1});
                         _converse.incrementMsgCounter();
                     }
@@ -719,10 +724,8 @@
                     if (chatbox && !chatbox.handleMessageCorrection(stanza)) {
                         const msgid = stanza.getAttribute('id'),
                               message = msgid && chatbox.messages.findWhere({msgid});
-                        if (!message) {
-                            // Only create the message when we're sure it's not a duplicate
-                            chatbox.incrementUnreadMsgCounter(original_stanza);
-                            chatbox.createMessage(stanza, original_stanza);
+                        if (!message) { // Only create the message when we're sure it's not a duplicate
+                            chatbox.incrementUnreadMsgCounter(chatbox.createMessage(stanza, original_stanza));
                         }
                     }
                     _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});

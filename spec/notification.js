@@ -2,8 +2,9 @@
     define(["jquery", "jasmine", "mock", "test-utils"], factory);
 } (this, function ($, jasmine, mock, test_utils) {
     "use strict";
-    var _ = converse.env._;
-    var $msg = converse.env.$msg;
+    const Strophe = converse.env.Strophe,
+          _ = converse.env._,
+          $msg = converse.env.$msg;
 
     describe("Notifications", function () {
         // Implement the protocol defined in https://xmpp.org/extensions/xep-0313.html#config
@@ -74,7 +75,7 @@
                                 delete window.Notification;
                             }
                             done();
-                        });
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }));
 
                     it("is shown for headline messages",

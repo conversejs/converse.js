@@ -2168,14 +2168,14 @@
                     expect(references.length).toBe(1);
                     expect(text).toBe('hello z3r0');
                     expect(JSON.stringify(references))
-                        .toBe('[{"begin":6,"end":10,"type":"mention","uri":"xmpp:z3r0@localhost"}]');
+                        .toBe('[{"begin":6,"end":10,"value":"z3r0","type":"mention","uri":"xmpp:z3r0@localhost"}]');
 
                     [text, references] = view.model.parseTextForReferences('hello @some1 @z3r0 @gibson @mr.robot, how are you?')
                     expect(text).toBe('hello @some1 z3r0 gibson mr.robot, how are you?');
                     expect(JSON.stringify(references))
-                        .toBe('[{"begin":13,"end":17,"type":"mention","uri":"xmpp:z3r0@localhost"},'+
-                               '{"begin":18,"end":24,"type":"mention","uri":"xmpp:gibson@localhost"},'+
-                               '{"begin":25,"end":33,"type":"mention","uri":"xmpp:mr.robot@localhost"}]');
+                        .toBe('[{"begin":13,"end":17,"value":"z3r0","type":"mention","uri":"xmpp:z3r0@localhost"},'+
+                               '{"begin":18,"end":24,"value":"gibson","type":"mention","uri":"xmpp:gibson@localhost"},'+
+                               '{"begin":25,"end":33,"value":"mr.robot","type":"mention","uri":"xmpp:mr.robot@localhost"}]');
 
                     [text, references] = view.model.parseTextForReferences('yo @gib')
                     expect(text).toBe('yo @gib');
@@ -2189,7 +2189,7 @@
                     expect(text).toBe('gibson');
                     expect(references.length).toBe(1);
                     expect(JSON.stringify(references))
-                        .toBe('[{"begin":0,"end":6,"type":"mention","uri":"xmpp:gibson@localhost"}]');
+                        .toBe('[{"begin":0,"end":6,"value":"gibson","type":"mention","uri":"xmpp:gibson@localhost"}]');
 
                     done();
                     return;

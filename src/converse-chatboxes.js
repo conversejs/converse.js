@@ -667,8 +667,7 @@
                      * Parameters:
                      *    (XMLElement) stanza - The incoming message stanza
                      */
-                    let from_jid = stanza.getAttribute('from'),
-                        to_jid = stanza.getAttribute('to');
+                    let to_jid = stanza.getAttribute('to');
                     const to_resource = Strophe.getResourceFromJid(to_jid);
 
                     if (_converse.filter_by_resource && (to_resource && to_resource !== _converse.resource)) {
@@ -682,12 +681,13 @@
                         // messages, but Prosody sends headline messages with the
                         // wrong type ('chat'), so we need to filter them out here.
                         _converse.log(
-                            `onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ${from_jid}`,
+                            `onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ${stanza.getAttribute('from')}`,
                             Strophe.LogLevel.INFO
                         );
                         return true;
                     }
 
+                    let from_jid = stanza.getAttribute('from');
                     const forwarded = stanza.querySelector('forwarded'),
                           original_stanza = stanza;
 
@@ -713,6 +713,12 @@
                     let contact_jid;
                     if (is_me) {
                         // I am the sender, so this must be a forwarded message...
+                        if (_.isNull(to_jid)) {
+                            return _converse.log(
+                                `Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`,
+                                Strophe.LogLevel.ERROR
+                            );
+                        }
                         contact_jid = Strophe.getBareJidFromJid(to_jid);
                     } else {
                         contact_jid = from_bare_jid;

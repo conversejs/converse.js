@@ -69476,8 +69476,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * Parameters:
            *    (XMLElement) stanza - The incoming message stanza
            */
-          let from_jid = stanza.getAttribute('from'),
-              to_jid = stanza.getAttribute('to');
+          let to_jid = stanza.getAttribute('to');
           const to_resource = Strophe.getResourceFromJid(to_jid);
 
           if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
@@ -69488,11 +69487,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // XXX: Ideally we wouldn't have to check for headline
             // messages, but Prosody sends headline messages with the
             // wrong type ('chat'), so we need to filter them out here.
-            _converse.log(`onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ${from_jid}`, Strophe.LogLevel.INFO);
+            _converse.log(`onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ${stanza.getAttribute('from')}`, Strophe.LogLevel.INFO);
 
             return true;
           }
 
+          let from_jid = stanza.getAttribute('from');
           const forwarded = stanza.querySelector('forwarded'),
                 original_stanza = stanza;
 
@@ -69519,6 +69519,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           if (is_me) {
             // I am the sender, so this must be a forwarded message...
+            if (_.isNull(to_jid)) {
+              return _converse.log(`Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`, Strophe.LogLevel.ERROR);
+            }
+
             contact_jid = Strophe.getBareJidFromJid(to_jid);
           } else {
             contact_jid = from_bare_jid;
@@ -73139,7 +73143,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     } else {
       i18n.fetchTranslations(_converse.locale, _converse.locales, u.interpolate(_converse.locales_url, {
         'locale': _converse.locale
-      })).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL)).then(finishInitialization).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+      })).catch(e => _converse.log(e.message, Strophe.LogLevel.FATAL)).then(finishInitialization).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
     }
 
     return init_promise;
@@ -84619,8 +84623,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         };
 
-        xhr.onerror = function () {
-          reject(xhr.statusText);
+        xhr.onerror = e => {
+          const err_message = e ? ` Error: ${e.message}` : '';
+          reject(new Error(`Could not fetch translations. Status: ${xhr.statusText}. ${err_message}`));
         };
 
         xhr.send();

@@ -56,6 +56,7 @@ $border-color: #CCC !default;
 $icon-color: $blue !default;
 $save-button-color: $green !default;
 
+$chat-textarea-color: #666 !default;
 $chat-textarea-height: 60px !default;
 
 $send-button-height: 27px !default;
@@ -140,7 +141,7 @@ $legend-font-size: 16px !default;
 $line-height-small:  14px !default;
 $line-height:  16px !default;
 $line-height-large:  20px !default;
-$line-height-huge:  24px !default;
+$line-height-huge:  27px !default;
 
 $occupants-padding: 1em;
 
@@ -148,7 +149,7 @@ $fullpage-chat-head-height: 62px !default;
 $fullpage-chat-height: 100vh;
 $fullpage-chat-width: 100%;
 $fullpage-emoji-picker-height: 150px !default;
-$fullpage-max-chat-textarea-height: 400px !default;
+$fullpage-max-chat-textarea-height: 15em!default;
 
 $overlayed-chat-head-height: 55px !default;
 $overlayed-chat-height: 450px !default;

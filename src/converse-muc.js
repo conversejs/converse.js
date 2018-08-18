@@ -25,7 +25,7 @@
         'none':         2,
     };
 
-    const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, _, moment } = converse.env;
+    const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, f, moment, _ } = converse.env;
 
     // Add Strophe Namespaces
     Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -171,7 +171,7 @@
                           'affiliation': null,
                           'connection_status': converse.ROOMSTATUS.DISCONNECTED,
                           'name': '',
-                          'nick': _converse.xmppstatus.get('nickname'),
+                          'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
                           'description': '',
                           'features_fetched': false,
                           'roomconfig': {},
@@ -308,14 +308,80 @@
                     _converse.connection.sendPresence(presence);
                 },
 
+                getReferenceForMention (mention, index) {
+                    const longest_match = u.getLongestSubstring(
+                        mention,
+                        this.occupants.map(o => o.getDisplayName())
+                    );
+                    if (!longest_match) {
+                        return null;
+                    }
+                    if ((mention[longest_match.length] || '').match(/[A-Za-zäëïöüâêîôûáéíóúàèìòùÄËÏÖÜÂÊÎÔÛÁÉÍÓÚÀÈÌÒÙ]/i)) {
+                        // avoid false positives, i.e. mentions that have
+                        // further alphabetical characters than our longest
+                        // match.
+                        return null;
+                    }
+                    const occupant = this.occupants.findOccupant({'nick': longest_match}) ||
+                            this.occupants.findOccupant({'jid': longest_match});
+                    if (!occupant) {
+                        return null;
+                    }
+                    const obj = {
+                        'begin': index,
+                        'end': index + longest_match.length,
+                        'value': longest_match,
+                        'type': 'mention'
+                    };
+                    if (occupant.get('jid')) {
+                        obj.uri = `xmpp:${occupant.get('jid')}`
+                    }
+                    return obj;
+                },
+
+                extractReference (text, index) {
+                    for (let i=index; i<text.length; i++) {
+                        if (text[i] !== '@') {
+                            continue
+                        } else {
+                            const match = text.slice(i+1),
+                                  ref = this.getReferenceForMention(match, i);
+                            if (ref) {
+                                return [text.slice(0, i) + match, ref, i]
+                            }
+                        }
+                    }
+                    return;
+                },
+
+                parseTextForReferences (text) {
+                    const refs = [];
+                    let index = 0;
+                    while (index < (text || '').length) {
+                        const result = this.extractReference(text, index);
+                        if (result) {
+                            text = result[0]; // @ gets filtered out
+                            refs.push(result[1]);
+                            index = result[2];
+                        } else {
+                            break;
+                        }
+                    }
+                    return [text, refs];
+                },
+
                 getOutgoingMessageAttributes (text, spoiler_hint) {
                     const is_spoiler = this.get('composing_spoiler');
+                    var references;
+                    [text, references] = this.parseTextForReferences(text);
+
                     return {
-                        'nick': this.get('nick'),
                         'from': `${this.get('jid')}/${this.get('nick')}`,
                         'fullname': this.get('nick'),
                         'is_spoiler': is_spoiler,
                         'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
+                        'nick': this.get('nick'),
+                        'references': references,
                         'sender': 'me',
                         'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
                         'type': 'groupchat'
@@ -471,13 +537,11 @@
                      *  A promise which resolves once the list has been
                      *  retrieved.
                      */
-                    return new Promise((resolve, reject) => {
-                        affiliation = affiliation || 'member';
-                        const iq = $iq({to: this.get('jid'), type: "get"})
-                            .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
-                                .c("item", {'affiliation': affiliation});
-                        _converse.connection.sendIQ(iq, resolve, reject);
-                    });
+                    affiliation = affiliation || 'member';
+                    const iq = $iq({to: this.get('jid'), type: "get"})
+                        .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                            .c("item", {'affiliation': affiliation});
+                    return _converse.api.sendIQ(iq);
                 },
 
                 setAffiliation (affiliation, members) {
@@ -678,16 +742,14 @@
                     if (_.isString(affiliations)) {
                         affiliations = [affiliations];
                     }
-                    return new Promise((resolve, reject) => {
-                        const promises = _.map(
-                            affiliations,
-                            _.partial(this.requestMemberList.bind(this))
-                        );
-                        Promise.all(promises).then(
-                            _.flow(u.marshallAffiliationIQs, resolve),
-                            _.flow(u.marshallAffiliationIQs, resolve)
-                        );
-                    });
+                    const promises = _.map(
+                        affiliations,
+                        _.partial(this.requestMemberList.bind(this))
+                    );
+                    return Promise.all(promises).then(
+                        (iq) => u.marshallAffiliationIQs(iq),
+                        (iq) => u.marshallAffiliationIQs(iq)
+                    );
                 },
 
                 updateMemberLists (members, affiliations, deltaFunc) {
@@ -864,8 +926,7 @@
                         if (sender === '') {
                             return;
                         }
-                        this.incrementUnreadMsgCounter(original_stanza);
-                        this.createMessage(stanza, original_stanza);
+                        this.incrementUnreadMsgCounter(this.createMessage(stanza, original_stanza));
                     }
                     if (sender !== this.get('nick')) {
                         // We only emit an event if it's not our own message
@@ -944,23 +1005,28 @@
                      * Parameters:
                      *  (String): The text message
                      */
-                    return (new RegExp(`\\b${this.get('nick')}\\b`)).test(message);
+                    const nick = this.get('nick');
+                    if (message.get('references').length) {
+                        const mentions = message.get('references').filter(ref => (ref.type === 'mention')).map(ref => ref.value);
+                        return _.includes(mentions, nick);
+                    } else {
+                        return (new RegExp(`\\b${nick}\\b`)).test(message.get('message'));
+                    }
                 },
 
-                incrementUnreadMsgCounter (stanza) {
+                incrementUnreadMsgCounter (message) {
                     /* Given a newly received message, update the unread counter if
                      * necessary.
                      *
                      * Parameters:
                      *  (XMLElement): The <messsage> stanza
                      */
-                    const body = stanza.querySelector('body');
-                    if (_.isNull(body)) {
-                        return; // The message has no text
-                    }
-                    if (u.isNewMessage(stanza) && this.isHidden()) {
+                    if (!message) { return; }
+                    const body = message.get('message');
+                    if (_.isNil(body)) { return; }
+                    if (u.isNewMessage(message) && this.isHidden()) {
                         const settings = {'num_unread_general': this.get('num_unread_general') + 1};
-                        if (this.isUserMentioned(body.textContent)) {
+                        if (this.isUserMentioned(message)) {
                             settings.num_unread = this.get('num_unread') + 1;
                             _converse.incrementMsgCounter();
                         }
@@ -1032,26 +1098,29 @@
                 },
 
                 fetchMembers () {
-                    const old_jids = _.uniq(_.concat(
-                        _.map(this.where({'affiliation': 'admin'}), (item) => item.get('jid')),
-                        _.map(this.where({'affiliation': 'member'}), (item) => item.get('jid')),
-                        _.map(this.where({'affiliation': 'owner'}), (item) => item.get('jid'))
-                    ));
-
                     this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin'])
-                    .then((jids) => {
-                        _.each(_.difference(old_jids, jids), (removed_jid) => {
-                            // Remove absent occupants who've been removed from
-                            // the members lists.
-                            if (removed_jid === _converse.bare_jid) { return; }
-                            const occupant = this.findOccupant({'jid': removed_jid});
-                            if (!occupant) { return; }
+                    .then((new_members) => {
+                        const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m)),
+                              new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m)),
+                              removed_members = this.filter(m => {
+                                  return f.includes(m.get('affiliation'), ['admin', 'member', 'owner']) &&
+                                      !f.includes(m.get('nick'), new_nicks) &&
+                                        !f.includes(m.get('jid'), new_jids);
+                              });
+
+                        _.each(removed_members, (occupant) => {
+                            if (occupant.get('jid') === _converse.bare_jid) { return; }
                             if (occupant.get('show') === 'offline') {
                                 occupant.destroy();
                             }
                         });
-                        _.each(jids, (attrs) => {
-                            const occupant = this.findOccupant({'jid': attrs.jid});
+                        _.each(new_members, (attrs) => {
+                            let occupant;
+                            if (attrs.jid) {
+                                occupant = this.findOccupant({'jid': attrs.jid});
+                            } else {
+                                occupant = this.findOccupant({'nick': attrs.nick});
+                            }
                             if (occupant) {
                                 occupant.save(attrs);
                             } else {

@@ -67,6 +67,7 @@
 
     // Core plugins are whitelisted automatically
     _converse.core_plugins = [
+        'converse-autocomplete',
         'converse-bookmarks',
         'converse-caps',
         'converse-chatboxes',
@@ -106,6 +107,22 @@
 
     // Make converse pluggable
     pluggable.enable(_converse, '_converse', 'pluggable');
+
+    _converse.keycodes = {
+        TAB: 9,
+        ENTER: 13,
+        SHIFT: 16,
+        CTRL: 17,
+        ALT: 18,
+        ESCAPE: 27,
+        UP_ARROW: 38,
+        DOWN_ARROW: 40,
+        FORWARD_SLASH: 47,
+        AT: 50,
+        META: 91,
+        META_RIGHT: 93
+    };
+
 
     // Module-level constants
     _converse.STATUS_WEIGHTS = {
@@ -813,7 +830,7 @@
             defaults () {
                 return {
                     "jid": _converse.bare_jid,
-                    "status":  _converse.default_state,
+                    "status":  _converse.default_state
                 }
             },
 
@@ -1173,7 +1190,7 @@
                 _converse.locale,
                 _converse.locales,
                 u.interpolate(_converse.locales_url, {'locale': _converse.locale}))
-            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+            .catch(e => _converse.log(e.message, Strophe.LogLevel.FATAL))
             .then(finishInitialization)
             .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }

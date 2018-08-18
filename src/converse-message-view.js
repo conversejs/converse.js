@@ -168,6 +168,7 @@
                         text = xss.filterXSS(text, {'whiteList': {}});
                         msg_content.innerHTML = _.flow(
                             _.partial(u.geoUriToHttp, _, _converse.geouri_replacement),
+                            _.partial(u.addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox),
                             u.addHyperlinks,
                             u.renderNewLines,
                             _.partial(u.addEmoji, _converse, emojione, _)
@@ -260,7 +261,7 @@
                 getExtraMessageClasses () {
                     let extra_classes = this.model.get('is_delayed') && 'delayed' || '';
                     if (this.model.get('type') === 'groupchat' && this.model.get('sender') === 'them') {
-                        if (this.model.collection.chatbox.isUserMentioned(this.model.get('message'))) {
+                        if (this.model.collection.chatbox.isUserMentioned(this.model)) {
                             // Add special class to mark groupchat messages
                             // in which we are mentioned.
                             extra_classes += ' mentioned';

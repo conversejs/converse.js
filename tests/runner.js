@@ -202,6 +202,7 @@ var specs = [
     "spec/user-details-modal",
     "spec/messages",
     "spec/chatroom",
+    "spec/autocomplete",
     "spec/minchats",
     "spec/notification",
     "spec/login",

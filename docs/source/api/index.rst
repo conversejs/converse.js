@@ -1,0 +1,12 @@
+.. raw:: html
+
+    <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/theming.rst">Edit me on GitHub</a></div>
+
+=========================
+The new API documentation
+=========================
+
+This document is a stub. It shouldn't show at all, instead it's a hack in order
+to link to the JSDoc output.
+
+See https://stackoverflow.com/questions/27979803/external-relative-link-in-sphinx-toctree-directive

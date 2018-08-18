@@ -734,7 +734,7 @@
                         }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                             .c('publish', {'node': Strophe.NS.OMEMO_DEVICELIST})
                                 .c('item')
-                                    .c('list', {'xmlns': Strophe.NS.OMEMO}).up()
+                                    .c('list', {'xmlns': Strophe.NS.OMEMO})
 
                         _.each(this.devices.where({'active': true}), (device) => {
                             stanza.c('device', {'id': device.get('id')}).up();

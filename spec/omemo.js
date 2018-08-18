@@ -360,9 +360,10 @@
                         '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                             '<publish node="eu.siacs.conversations.axolotl.devicelist">'+
                                 '<item>'+
-                                    '<list xmlns="eu.siacs.conversations.axolotl"/>'+
-                                    '<device id="123456789"/>'+
-                                    '<device id="444"/>'+
+                                    '<list xmlns="eu.siacs.conversations.axolotl">'+
+                                        '<device id="123456789"/>'+
+                                        '<device id="444"/>'+
+                                    '</list>'+
                                 '</item>'+
                             '</publish>'+
                         '</pubsub>'+
@@ -669,9 +670,10 @@
                         '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                             '<publish node="eu.siacs.conversations.axolotl.devicelist">'+
                                 '<item>'+
-                                    '<list xmlns="eu.siacs.conversations.axolotl"/>'+
-                                    '<device id="482886413b977930064a5888b92134fe"/>'+
-                                    '<device id="123456789"/>'+
+                                    '<list xmlns="eu.siacs.conversations.axolotl">'+
+                                        '<device id="482886413b977930064a5888b92134fe"/>'+
+                                        '<device id="123456789"/>'+
+                                    '</list>'+
                                 '</item>'+
                             '</publish>'+
                     '</pubsub>'+

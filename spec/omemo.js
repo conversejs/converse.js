@@ -48,20 +48,21 @@
                 return _.filter(
                     _converse.connection.IQ_stanzas,
                     (iq) => {
-                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
                         if (node) { iq_stanza = iq.nodeTree;}
                         return node;
                     }).length;
             }).then(() => {
                 const stanza = $iq({
-                    'from': contact_jid,
+                    'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result',
-                }).c('query', {
-                    'xmlns': 'http://jabber.org/protocol/disco#items',
-                    'node': 'eu.siacs.conversations.axolotl.devicelist'
-                }).c('device', {'id': '482886413b977930064a5888b92134fe'}).up()
+                }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                    .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                        .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                            .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                                .c('device', {'id': '482886413b977930064a5888b92134fe'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 _converse.emit('OMEMOInitialized');
@@ -72,7 +73,7 @@
                     return _.filter(
                         _converse.connection.IQ_stanzas,
                         (iq) => {
-                            const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                            const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
                             if (node) { iq_stanza = iq.nodeTree; }
                             return node;
                         }).length;
@@ -81,12 +82,13 @@
                 const stanza = $iq({
                     'from': contact_jid,
                     'id': iq_stanza.getAttribute('id'),
-                    'to': _converse.bare_jid,
+                    'to': _converse.connection.jid,
                     'type': 'result',
-                }).c('query', {
-                    'xmlns': 'http://jabber.org/protocol/disco#items',
-                    'node': 'eu.siacs.conversations.axolotl.devicelist'
-                }).c('device', {'id': '555'}).up()
+                }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                    .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                        .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                            .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                                .c('device', {'id': '555'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 const devicelist = _converse.devicelists.create({'jid': contact_jid});
@@ -211,7 +213,7 @@
                 expect(view.el.querySelectorAll('.chat-msg__body')[1].textContent.trim())
                     .toBe('This is an encrypted message from the contact');
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
 
         it("will add processing hints to sent out encrypted <message> stanzas",
@@ -235,26 +237,27 @@
                 return _.filter(
                     _converse.connection.IQ_stanzas,
                     (iq) => {
-                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
                         if (node) { iq_stanza = iq.nodeTree;}
                         return node;
                     }).length;
             }).then(function () {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq type="get" from="dummy@localhost" to="dummy@localhost" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
-                        '<query xmlns="http://jabber.org/protocol/disco#items" '+
-                               'node="eu.siacs.conversations.axolotl.devicelist"/>'+
+                        '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
+                            '<items node="eu.siacs.conversations.axolotl.devicelist"/>'+
+                        '</pubsub>'+
                     '</iq>');
-
                 const stanza = $iq({
-                    'from': contact_jid,
+                    'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result',
-                }).c('query', {
-                    'xmlns': 'http://jabber.org/protocol/disco#items',
-                    'node': 'eu.siacs.conversations.axolotl.devicelist'
-                }).c('device', {'id': '555'}).up()
+                }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                    .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                        .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                            .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                                .c('device', {'id': '555'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 expect(_converse.devicelists.length).toBe(1);
@@ -379,7 +382,7 @@
                 expect(devices.get('555').get('active')).toBe(false);
                 expect(devices.get('777').get('active')).toBe(false);
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
 
         it("updates device bundles based on PEP messages",
@@ -395,15 +398,16 @@
                 return _.filter(
                     _converse.connection.IQ_stanzas,
                     (iq) => {
-                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
                         if (node) { iq_stanza = iq.nodeTree;}
                         return node;
                     }).length;
             }).then(function () {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq type="get" from="dummy@localhost" to="dummy@localhost" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
-                        '<query xmlns="http://jabber.org/protocol/disco#items" '+
-                               'node="eu.siacs.conversations.axolotl.devicelist"/>'+
+                        '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
+                            '<items node="eu.siacs.conversations.axolotl.devicelist"/>'+
+                        '</pubsub>'+
                     '</iq>');
 
                 const stanza = $iq({
@@ -411,10 +415,11 @@
                     'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result',
-                }).c('query', {
-                    'xmlns': 'http://jabber.org/protocol/disco#items',
-                    'node': 'eu.siacs.conversations.axolotl.devicelist'
-                }).c('device', {'id': '555'}).up()
+                }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                    .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                        .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                            .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                                .c('device', {'id': '555'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 expect(_converse.devicelists.length).toBe(1);
@@ -523,7 +528,7 @@
                 expect(device.get('bundle').prekeys[1].id).toBe(3002);
                 expect(device.get('bundle').prekeys[2].id).toBe(3003);
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
 
         it("publishes a bundle with which an encrypted session can be created",
@@ -542,7 +547,7 @@
                 return _.filter(
                     _converse.connection.IQ_stanzas,
                     (iq) => {
-                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
                         if (node) { iq_stanza = iq.nodeTree;}
                         return node;
                     }).length;
@@ -552,12 +557,12 @@
                     'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result',
-                }).c('query', {
-                    'xmlns': 'http://jabber.org/protocol/disco#items',
-                    'node': 'eu.siacs.conversations.axolotl.devicelist'
-                }).c('device', {'id': '482886413b977930064a5888b92134fe'}).up()
+                }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                    .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                        .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                            .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                                .c('device', {'id': '482886413b977930064a5888b92134fe'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
                 expect(_converse.devicelists.length).toBe(1);
 
                 return test_utils.openChatBoxFor(_converse, contact_jid);
@@ -624,19 +629,20 @@
             _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
-            test_utils.waitUntil(function () {
+            test_utils.waitUntil(() => {
                 return _.filter(
                     _converse.connection.IQ_stanzas,
                     (iq) => {
-                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
                         if (node) { iq_stanza = iq.nodeTree;}
                         return node;
                     }).length;
-            }).then(function () {
+            }).then(() => {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq type="get" from="dummy@localhost" to="dummy@localhost" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
-                        '<query xmlns="http://jabber.org/protocol/disco#items" '+
-                               'node="eu.siacs.conversations.axolotl.devicelist"/>'+
+                        '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
+                            '<items node="eu.siacs.conversations.axolotl.devicelist"/>'+
+                        '</pubsub>'+
                     '</iq>');
 
                 const stanza = $iq({
@@ -644,10 +650,11 @@
                     'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result',
-                }).c('query', {
-                    'xmlns': 'http://jabber.org/protocol/disco#items',
-                    'node': 'eu.siacs.conversations.axolotl.devicelist'
-                }).c('device', {'id': '482886413b977930064a5888b92134fe'}).up()
+                }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                    .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                        .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                            .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                                .c('device', {'id': '482886413b977930064a5888b92134fe'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 expect(_converse.devicelists.length).toBe(1);
@@ -664,7 +671,7 @@
                         return node;
                     }).length;
                 });
-            }).then(function () {
+            }).then(() => {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq from="dummy@localhost" type="set" xmlns="jabber:client" id="'+iq_stanza.getAttribute('id')+'">'+
                         '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
@@ -693,7 +700,7 @@
                         return node;
                     }).length;
                 });
-            }).then(function () {
+            }).then(() => {
                 expect(iq_stanza.getAttributeNames().sort().join()).toBe(["from", "type", "xmlns", "id"].sort().join());
                 expect(iq_stanza.querySelector('prekeys').childNodes.length).toBe(100);
 
@@ -715,28 +722,31 @@
                     return _.filter(
                         _converse.connection.IQ_stanzas,
                         (iq) => {
-                            const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                            const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
                             if (node) { iq_stanza = iq.nodeTree; }
                             return node;
                         }).length;});
-            }).then(function () {
+            }).then(() => {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq type="get" from="dummy@localhost" to="'+contact_jid+'" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
-                        '<query xmlns="http://jabber.org/protocol/disco#items" '+
-                               'node="eu.siacs.conversations.axolotl.devicelist"/>'+
+                        '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
+                            '<items node="eu.siacs.conversations.axolotl.devicelist"/>'+
+                        '</pubsub>'+
                     '</iq>');
+
                 const stanza = $iq({
                     'from': contact_jid,
                     'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result',
-                }).c('query', {
-                    'xmlns': 'http://jabber.org/protocol/disco#items',
-                    'node': 'eu.siacs.conversations.axolotl.devicelist'
-                }).c('device', {'id': '368866411b877c30064a5f62b917cffe'}).up()
-                  .c('device', {'id': '3300659945416e274474e469a1f0154c'}).up()
-                  .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
-                  .c('device', {'id': 'ae890ac52d0df67ed7cfdf51b644e901'});
+                }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                    .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                        .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                            .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                                .c('device', {'id': '368866411b877c30064a5f62b917cffe'}).up()
+                                .c('device', {'id': '3300659945416e274474e469a1f0154c'}).up()
+                                .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
+                                .c('device', {'id': 'ae890ac52d0df67ed7cfdf51b644e901'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 expect(_converse.devicelists.length).toBe(2);
@@ -747,7 +757,7 @@
                 expect(devicelist.devices.at(2).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
                 expect(devicelist.devices.at(3).get('id')).toBe('ae890ac52d0df67ed7cfdf51b644e901');
                 return test_utils.waitUntil(() => _converse.chatboxviews.get(contact_jid).el.querySelector('.chat-toolbar'));
-            }).then(function () {
+            }).then(() => {
                 const view = _converse.chatboxviews.get(contact_jid);
                 const toolbar = view.el.querySelector('.chat-toolbar');
                 expect(view.model.get('omemo_active')).toBe(undefined);
@@ -763,7 +773,7 @@
                 expect(view.model.get('omemo_active')).toBe(true);
 
                 return test_utils.waitUntil(() => u.hasClass('fa-lock', toolbar.querySelector('.toggle-omemo')));
-            }).then(function () {
+            }).then(() => {
                 const view = _converse.chatboxviews.get(contact_jid);
                 const toolbar = view.el.querySelector('.chat-toolbar');
                 const toggle = toolbar.querySelector('.toggle-omemo');
@@ -777,7 +787,6 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-
                 done();
             }).catch(_.partial(console.error, _));
         }));
@@ -806,7 +815,7 @@
                         return _.filter(
                             _converse.connection.IQ_stanzas,
                             (iq) => {
-                                const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] query[node="eu.siacs.conversations.axolotl.devicelist"]');
+                                const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
                                 if (node) { iq_stanza = iq.nodeTree; }
                                 return node;
                             }).length;});
@@ -815,18 +824,19 @@
                 iq_stanza;
                 expect(iq_stanza.outerHTML).toBe(
                     `<iq type="get" from="dummy@localhost" to="max.frankfurter@localhost" xmlns="jabber:client" id="${iq_stanza.getAttribute('id')}">`+
-                        `<query xmlns="http://jabber.org/protocol/disco#items" node="eu.siacs.conversations.axolotl.devicelist"/>`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub>`+
                     `</iq>`);
-                
+
                 const stanza = $iq({
                     'from': contact_jid,
                     'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result',
-                }).c('query', {
-                    'xmlns': 'http://jabber.org/protocol/disco#items',
-                    'node': 'eu.siacs.conversations.axolotl.devicelist'
-                }).c('device', {'id': '555'}).up()
+                }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                    .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                        .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                            .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                                .c('device', {'id': '555'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 return test_utils.waitUntil(() => u.isVisible(modal.el), 1000).then(function () {
@@ -892,7 +902,7 @@
                 untrusted_radio = document.querySelector('input[type="radio"][name="555"][value="-1"]');
                 expect(untrusted_radio.hasAttribute('checked')).toBe(true);
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
     });
 

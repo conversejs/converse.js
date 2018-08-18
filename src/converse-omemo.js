@@ -703,15 +703,13 @@
                             'type': 'get',
                             'from': _converse.bare_jid,
                             'to': this.get('jid')
-                        }).c('query', {
-                            'xmlns': Strophe.NS.DISCO_ITEMS,
-                            'node': Strophe.NS.OMEMO_DEVICELIST
-                        });
+                        }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                            .c('items', {'node': Strophe.NS.OMEMO_DEVICELIST});
                         _converse.connection.sendIQ(
                             stanza,
                             (iq) => {
                                 _.forEach(
-                                    iq.querySelectorAll('device'),
+                                    sizzle(`list[xmlns="${Strophe.NS.OMEMO}"] device`, iq),
                                     (dev) => this.devices.create({'id': dev.getAttribute('id'), 'jid': this.get('jid')})
                                 );
                                 resolve();
@@ -891,7 +889,7 @@
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             }
 
-            _converse.api.listen.on('afterTearDown', () => _converse.devices.reset());
+            _converse.api.listen.on('afterTearDown', () => _converse.devicelists.reset());
             _converse.api.listen.on('connected', registerPEPPushHandler);
             _converse.api.listen.on('renderToolbar', (view) => view.renderOMEMOToolbarButton());
             _converse.api.listen.on('statusInitialized', initOMEMO);

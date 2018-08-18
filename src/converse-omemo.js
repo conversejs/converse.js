@@ -475,16 +475,15 @@
                             'identity_keypair': identity_keypair,
                             'prekeys': {}
                         };
-                        const signed_prekey_id = '0';
-                        libsignal.KeyHelper.generateSignedPreKey(identity_keypair, signed_prekey_id)
-                            .then((signed_prekey) => {
-                                data['signed_prekey'] = signed_prekey;
-                                const key_promises = _.map(_.range(0, _converse.NUM_PREKEYS), (id) => libsignal.KeyHelper.generatePreKey(id));
-                                Promise.all(key_promises).then((keys) => {
-                                    data['prekeys'] = keys;
-                                    resolve(data)
-                                });
-                            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                        libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0)
+                        .then((signed_prekey) => {
+                            data['signed_prekey'] = signed_prekey;
+                            const key_promises = _.map(_.range(0, _converse.NUM_PREKEYS), (id) => libsignal.KeyHelper.generatePreKey(id));
+                            Promise.all(key_promises).then((keys) => {
+                                data['prekeys'] = keys;
+                                resolve(data)
+                            });
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                     });
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             }

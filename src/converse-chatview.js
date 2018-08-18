@@ -208,8 +208,8 @@
                 render () {
                     this.el.innerHTML = tpl_chatbox_head(
                         _.extend(
-                            this.model.toJSON(),
                             this.model.vcard.toJSON(),
+                            this.model.toJSON(),
                             { '_converse': _converse,
                               'info_close': __('Close this chat box')
                             }

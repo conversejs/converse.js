@@ -926,7 +926,9 @@
                         if (sender === '') {
                             return;
                         }
-                        this.incrementUnreadMsgCounter(this.createMessage(stanza, original_stanza));
+                        this.createMessage(stanza, original_stanza)
+                            .then(msg => this.incrementUnreadMsgCounter(msg))
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
                     if (sender !== this.get('nick')) {
                         // We only emit an event if it's not our own message

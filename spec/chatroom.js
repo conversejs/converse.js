@@ -612,10 +612,14 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'dummy').then(function () {
-                    var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                    var chat_content = view.el.querySelector('.chat-content');
-                    var $chat_content = $(chat_content);
+                let view, chat_content, $chat_content;
+                const ONE_DAY_LATER = 86400000;
+                const baseTime = new Date();
+                test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'dummy')
+                .then(() => {
+                    view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    chat_content = view.el.querySelector('.chat-content');
+                    $chat_content = $(chat_content);
                     var indicator = chat_content.querySelector('.date-separator');
                     expect(indicator).not.toBe(null);
                     expect(indicator.getAttribute('class')).toEqual('message date-separator');
@@ -625,11 +629,8 @@
                     expect(chat_content.querySelector('div.chat-info').textContent).toBe(
                         "dummy has entered the groupchat"
                     );
-
-                    var baseTime = new Date();
                     jasmine.clock().install();
                     jasmine.clock().mockDate(baseTime);
-                    var ONE_DAY_LATER = 86400000;
                     jasmine.clock().tick(ONE_DAY_LATER);
 
                     /* <presence to="dummy@localhost/_converse.js-29092160"
@@ -694,7 +695,7 @@
 
                     jasmine.clock().tick(ONE_DAY_LATER);
 
-                    var stanza = Strophe.xmlHtmlNode(
+                    const stanza = Strophe.xmlHtmlNode(
                         '<message xmlns="jabber:client"' +
                         '   to="dummy@localhost/_converse.js-290929789"' +
                         '   type="groupchat"' +
@@ -703,8 +704,15 @@
                         '       <delay xmlns="urn:xmpp:delay" stamp="'+moment().format()+'" from="some1@localhost"/>'+
                         '</message>').firstChild;
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                    presence = $pres({
+                    jasmine.clock().uninstall();
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
+                    jasmine.clock().install();
+                    jasmine.clock().mockDate(baseTime);
+                    jasmine.clock().tick(ONE_DAY_LATER);
+                    jasmine.clock().tick(ONE_DAY_LATER);
+                    jasmine.clock().tick(ONE_DAY_LATER);
+                    const presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
                             from: 'coven@chat.shakespeare.lit/newguy'
                         }).c('x', {xmlns: Strophe.NS.MUC_USER})
@@ -715,7 +723,7 @@
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    let time = chat_content.querySelectorAll('time.separator-text');
+                    const time = chat_content.querySelectorAll('time.separator-text');
                     expect(time.length).toEqual(4);
 
                     var $indicator = $chat_content.find('.date-separator:eq(3)');
@@ -727,7 +735,7 @@
 
                     jasmine.clock().tick(ONE_DAY_LATER);
 
-                    stanza = Strophe.xmlHtmlNode(
+                    const stanza = Strophe.xmlHtmlNode(
                         '<message xmlns="jabber:client"' +
                         '   to="dummy@localhost/_converse.js-290929789"' +
                         '   type="groupchat"' +
@@ -736,11 +744,18 @@
                         '       <delay xmlns="urn:xmpp:delay" stamp="'+moment().format()+'" from="some1@localhost"/>'+
                         '</message>').firstChild;
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
+                    jasmine.clock().uninstall();
+                    return test_utils.waitUntil(() => view.model.messages.length > 1);
+                }).then(() => {
+                    jasmine.clock().install();
+                    jasmine.clock().mockDate(baseTime);
                     jasmine.clock().tick(ONE_DAY_LATER);
-
+                    jasmine.clock().tick(ONE_DAY_LATER);
+                    jasmine.clock().tick(ONE_DAY_LATER);
+                    jasmine.clock().tick(ONE_DAY_LATER);
+                    jasmine.clock().tick(ONE_DAY_LATER);
                     // Test a user leaving a groupchat
-                    presence = $pres({
+                    const presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
                             type: 'unavailable',
                             from: 'coven@chat.shakespeare.lit/newguy'
@@ -754,10 +769,10 @@
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    time = chat_content.querySelectorAll('time.separator-text');
+                    const time = chat_content.querySelectorAll('time.separator-text');
                     expect(time.length).toEqual(6);
 
-                    $indicator = $chat_content.find('.date-separator:eq(5)');
+                    const $indicator = $chat_content.find('.date-separator:eq(5)');
                     expect($indicator.attr('class')).toEqual('message date-separator');
                     expect($indicator.data('isodate')).toEqual(moment().startOf('day').format());
 
@@ -766,11 +781,9 @@
                     expect($chat_content.find('div.chat-info:last').html()).toBe(
                         'newguy has left the groupchat. '+
                         '"Disconnected: Replaced by new connection"');
-
                     jasmine.clock().uninstall();
                     done();
-                    return;
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("shows its description in the chat heading",
@@ -827,16 +840,16 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                let view;
                 test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
-                .then(function () {
-                    return test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'))
-                }).then(function () {
+                .then(() => test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname')))
+                .then(() => {
                     test_utils.createContacts(_converse, 'current');
                     return test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                }).then(function () {
-                    var view = _converse.chatboxviews.get('lounge@localhost');
+                }).then(() => {
+                    view = _converse.chatboxviews.get('lounge@localhost');
                     if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
-                    var message = '/me is tired';
+                    const message = '/me is tired';
                     var nick = mock.chatroom_names[0],
                         msg = $msg({
                             'from': 'lounge@localhost/'+nick,
@@ -845,17 +858,21 @@
                             'type': 'groupchat'
                         }).c('body').t(message).tree();
                     view.model.onMessage(msg);
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
                     expect(_.includes($(view.el).find('.chat-msg__author').text(), '**Dyon van de Wege')).toBeTruthy();
                     expect($(view.el).find('.chat-msg__text').text()).toBe(' is tired');
 
-                    message = '/me is as well';
-                    msg = $msg({
+                    const message = '/me is as well';
+                    const msg = $msg({
                         from: 'lounge@localhost/Max Mustermann',
                         id: (new Date()).getTime(),
                         to: 'dummy@localhost',
                         type: 'groupchat'
                     }).c('body').t(message).tree();
                     view.model.onMessage(msg);
+                    return test_utils.waitUntil(() => view.model.messages.length > 1);
+                }).then(() => {
                     expect(_.includes($(view.el).find('.chat-msg__author:last').text(), '**Max Mustermann')).toBeTruthy();
                     expect($(view.el).find('.chat-msg__text:last').text()).toBe(' is as well');
                     done();
@@ -1495,20 +1512,18 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                let view;
+                const text = 'This is a received message';
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
                     spyOn(_converse, 'emit');
-                    var view = _converse.chatboxviews.get('lounge@localhost');
-
-
+                    view = _converse.chatboxviews.get('lounge@localhost');
                     if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
                     var nick = mock.chatroom_names[0];
-
                     view.model.occupants.create({
                         'nick': nick,
                         'muc_jid': `${view.model.get('jid')}/${nick}`
                     });
 
-                    var text = 'This is a received message';
                     var message = $msg({
                         from: 'lounge@localhost/'+nick,
                         id: '1',
@@ -1516,6 +1531,8 @@
                         type: 'groupchat'
                     }).c('body').t(text);
                     view.model.onMessage(message.nodeTree);
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
                     var $chat_content = $(view.el).find('.chat-content');
                     expect($chat_content.find('.chat-msg').length).toBe(1);
                     expect($chat_content.find('.chat-msg__text').text()).toBe(text);
@@ -1568,9 +1585,10 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                let view;
                 var message = 'This message is received while the chat area is scrolled up';
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                    var view = _converse.chatboxviews.get('lounge@localhost');
+                    view = _converse.chatboxviews.get('lounge@localhost');
                     spyOn(view, 'scrollDown').and.callThrough();
                     /* Create enough messages so that there's a
                     * scrollbar.
@@ -1584,8 +1602,10 @@
                                 id: (new Date()).getTime(),
                             }).c('body').t('Message: '+i).tree());
                     }
+                    return test_utils.waitUntil(() => view.model.messages.length === 20);
+                }).then(() => {
                     // Give enough time for `markScrolled` to have been called
-                    setTimeout(function () {
+                    setTimeout(() => {
                         view.content.scrollTop = 0;
                         view.model.onMessage(
                             $msg({
@@ -1595,12 +1615,15 @@
                                 id: (new Date()).getTime(),
                             }).c('body').t(message).tree());
 
-                        // Now check that the message appears inside the chatbox in the DOM
-                        var $chat_content = $(view.el).find('.chat-content');
-                        var msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
-                        expect(msg_txt).toEqual(message);
-                        expect(view.content.scrollTop).toBe(0);
-                        done();
+                        test_utils.waitUntil(() => view.model.messages.length === 21)
+                        .then(() => {
+                            // Now check that the message appears inside the chatbox in the DOM
+                            var $chat_content = $(view.el).find('.chat-content');
+                            var msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
+                            expect(msg_txt).toEqual(message);
+                            expect(view.content.scrollTop).toBe(0);
+                            done();
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
                     }, 500);
                 });
             }));
@@ -3435,19 +3458,19 @@
                 var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
                 expect(roomspanel.el.querySelectorAll('.available-room').length).toBe(0);
 
-                var room_jid = 'kitchen@conference.shakespeare.lit';
-                test_utils.openAndEnterChatRoom(
-                        _converse, 'kitchen', 'conference.shakespeare.lit', 'fires').then(function () {
-
+                let view, nick;
+                const room_jid = 'kitchen@conference.shakespeare.lit';
+                const message = 'fires: Your attention is required';
+                test_utils.openAndEnterChatRoom(_converse, 'kitchen', 'conference.shakespeare.lit', 'fires')
+                .then(() => {
                     expect(roomspanel.el.querySelectorAll('.available-room').length).toBe(1);
                     expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(0);
 
-                    var view = _converse.chatboxviews.get(room_jid);
+                    view = _converse.chatboxviews.get(room_jid);
                     view.model.set({'minimized': true});
 
                     var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var message = 'fires: Your attention is required';
-                    var nick = mock.chatroom_names[0];
+                    nick = mock.chatroom_names[0];
 
                     view.model.onMessage($msg({
                             from: room_jid+'/'+nick,
@@ -3455,7 +3478,8 @@
                             to: 'dummy@localhost',
                             type: 'groupchat'
                         }).c('body').t(message).tree());
-
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
                     expect(roomspanel.el.querySelectorAll('.available-room').length).toBe(1);
                     expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(1);
                     expect(roomspanel.el.querySelector('.msgs-indicator').textContent).toBe('1');
@@ -3466,17 +3490,16 @@
                         'to': 'dummy@localhost',
                         'type': 'groupchat'
                     }).c('body').t(message).tree());
-
+                    return test_utils.waitUntil(() => view.model.messages.length > 1);
+                }).then(() => {
                     expect(roomspanel.el.querySelectorAll('.available-room').length).toBe(1);
                     expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(1);
                     expect(roomspanel.el.querySelector('.msgs-indicator').textContent).toBe('2');
-
                     view.model.set({'minimized': false});
-
                     expect(roomspanel.el.querySelectorAll('.available-room').length).toBe(1);
                     expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(0);
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             describe("A Chat Status Notification", function () {
@@ -3488,11 +3511,11 @@
                             null, ['rosterGroupsFetched'], {},
                             function (done, _converse) {
 
-                        test_utils.openAndEnterChatRoom(
-                                _converse, 'coven', 'chat.shakespeare.lit', 'some1').then(function () {
-
-                            var room_jid = 'coven@chat.shakespeare.lit';
-                            var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                        let view;
+                        const room_jid = 'coven@chat.shakespeare.lit';
+                        test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'some1')
+                        .then(() => {
+                            view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                             var $chat_content = $(view.el).find('.chat-content');
 
                             expect($chat_content.find('div.chat-info:first').html()).toBe("some1 has entered the groupchat");
@@ -3534,9 +3557,9 @@
                                     to: 'dummy@localhost',
                                     type: 'groupchat'
                                 }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-
                             view.model.onMessage(msg);
-
+                            return test_utils.waitUntil(() => view.model.messages.length);
+                        }).then(() => {
                             // Check that the notification appears inside the chatbox in the DOM
                             var events = view.el.querySelectorAll('.chat-event');
                             expect(events.length).toBe(3);
@@ -3548,91 +3571,63 @@
                             expect(notifications.length).toBe(1);
                             expect(notifications[0].textContent).toEqual('newguy is typing');
 
-                            const timeout_functions = [];
-                            spyOn(window, 'setTimeout').and.callFake(function (func, delay) {
-                                timeout_functions.push(func);
-                            });
-
                             // Check that it doesn't appear twice
-                            msg = $msg({
+                            const msg = $msg({
                                     from: room_jid+'/newguy',
                                     id: (new Date()).getTime(),
                                     to: 'dummy@localhost',
                                     type: 'groupchat'
                                 }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                             view.model.onMessage(msg);
-
-                            events = view.el.querySelectorAll('.chat-event');
+                            return test_utils.waitUntil(() => view.model.messages.length > 1);
+                        }).then(() => {
+                            const events = view.el.querySelectorAll('.chat-event');
                             expect(events.length).toBe(3);
                             expect(events[0].textContent).toEqual('some1 has entered the groupchat');
                             expect(events[1].textContent).toEqual('newguy has entered the groupchat');
                             expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
-                            notifications = view.el.querySelectorAll('.chat-state-notification');
+                            const notifications = view.el.querySelectorAll('.chat-state-notification');
                             expect(notifications.length).toBe(1);
                             expect(notifications[0].textContent).toEqual('newguy is typing');
-
-                            expect(timeout_functions.length).toBe(1);
-
                             // <composing> state for a different occupant
-                            msg = $msg({
+                            const msg = $msg({
                                     from: room_jid+'/nomorenicks',
                                     id: (new Date()).getTime(),
                                     to: 'dummy@localhost',
                                     type: 'groupchat'
                                 }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                             view.model.onMessage(msg);
-                            events = view.el.querySelectorAll('.chat-event');
+                            return test_utils.waitUntil(() => view.model.messages.length > 2);
+                        }).then(() => {
+                            const events = view.el.querySelectorAll('.chat-event');
                             expect(events.length).toBe(3);
                             expect(events[0].textContent).toEqual('some1 has entered the groupchat');
                             expect(events[1].textContent).toEqual('newguy has entered the groupchat');
                             expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
-                            notifications = view.el.querySelectorAll('.chat-state-notification');
+                            const notifications = view.el.querySelectorAll('.chat-state-notification');
                             expect(notifications.length).toBe(2);
                             expect(notifications[0].textContent).toEqual('newguy is typing');
                             expect(notifications[1].textContent).toEqual('nomorenicks is typing');
-                            expect(timeout_functions.length).toBe(2);
 
                             // Check that new messages appear under the chat state
                             // notifications
-                            msg = $msg({
+                            const msg = $msg({
                                 from: 'lounge@localhost/some1',
                                 id: (new Date()).getTime(),
                                 to: 'dummy@localhost',
                                 type: 'groupchat'
                             }).c('body').t('hello world').tree();
                             view.model.onMessage(msg);
-
-                            var messages = view.el.querySelectorAll('.message');
+                            return test_utils.waitUntil(() => view.model.messages.length);
+                        }).then(() => {
+                            const messages = view.el.querySelectorAll('.message');
                             expect(messages.length).toBe(7);
                             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
                             expect(view.el.querySelector('.chat-msg .chat-msg__text').textContent).toBe('hello world');
-
-                            // Test that the composing notifications get removed
-                            // via timeout.
-                            timeout_functions[0]();
-                            events = view.el.querySelectorAll('.chat-event');
-                            expect(events.length).toBe(3);
-                            expect(events[0].textContent).toEqual('some1 has entered the groupchat');
-                            expect(events[1].textContent).toEqual('newguy has entered the groupchat');
-                            expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
-
-                            notifications = view.el.querySelectorAll('.chat-state-notification');
-                            expect(notifications.length).toBe(1);
-                            expect(notifications[0].textContent).toEqual('nomorenicks is typing');
-
-                            timeout_functions[1]();
-                            events = view.el.querySelectorAll('.chat-event');
-                            expect(events.length).toBe(3);
-                            expect(events[0].textContent).toEqual('some1 has entered the groupchat');
-                            expect(events[1].textContent).toEqual('newguy has entered the groupchat');
-                            expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
-
-                            notifications = view.el.querySelectorAll('.chat-state-notification');
-                            expect(notifications.length).toBe(0);
                             done();
-                        });
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
                     }));
                 });
 
@@ -3642,10 +3637,11 @@
                                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                                 function (done, _converse) {
 
+                        let view, msg
+                        const room_jid = 'coven@chat.shakespeare.lit';
                         test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1')
                         .then(() => {
-                            var room_jid = 'coven@chat.shakespeare.lit';
-                            var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                            view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                             var $chat_content = $(view.el).find('.chat-content');
 
                             /* <presence to="dummy@localhost/_converse.js-29092160"
@@ -3700,13 +3696,15 @@
                             // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
 
                             // <composing> state
-                            var msg = $msg({
+                            const msg = $msg({
                                     from: room_jid+'/newguy',
                                     id: (new Date()).getTime(),
                                     to: 'dummy@localhost',
                                     type: 'groupchat'
                                 }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                             view.model.onMessage(msg);
+                            return test_utils.waitUntil(() => view.model.messages.length);
+                        }).then(() => {
 
                             // Check that the notification appears inside the chatbox in the DOM
                             var events = view.el.querySelectorAll('.chat-event');
@@ -3720,63 +3718,69 @@
                             expect(notifications[0].textContent).toEqual('newguy is typing');
 
                             // Check that it doesn't appear twice
-                            msg = $msg({
+                            const msg = $msg({
                                     from: room_jid+'/newguy',
                                     id: (new Date()).getTime(),
                                     to: 'dummy@localhost',
                                     type: 'groupchat'
                                 }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                             view.model.onMessage(msg);
+                            return test_utils.waitUntil(() => view.model.messages.length > 1);
+                        }).then(() => {
 
-                            events = view.el.querySelectorAll('.chat-event');
+                            const events = view.el.querySelectorAll('.chat-event');
                             expect(events.length).toBe(3);
                             expect(events[0].textContent).toEqual('some1 has entered the groupchat');
                             expect(events[1].textContent).toEqual('newguy has entered the groupchat');
                             expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
-                            notifications = view.el.querySelectorAll('.chat-state-notification');
+                            const notifications = view.el.querySelectorAll('.chat-state-notification');
                             expect(notifications.length).toBe(1);
                             expect(notifications[0].textContent).toEqual('newguy is typing');
 
                             // <composing> state for a different occupant
-                            msg = $msg({
+                            const msg = $msg({
                                     from: room_jid+'/nomorenicks',
                                     id: (new Date()).getTime(),
                                     to: 'dummy@localhost',
                                     type: 'groupchat'
                                 }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                             view.model.onMessage(msg);
-                            events = view.el.querySelectorAll('.chat-event');
+                            return test_utils.waitUntil(() => view.model.messages.length > 2);
+                        }).then(() => {
+                            const events = view.el.querySelectorAll('.chat-event');
                             expect(events.length).toBe(3);
                             expect(events[0].textContent).toEqual('some1 has entered the groupchat');
                             expect(events[1].textContent).toEqual('newguy has entered the groupchat');
                             expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
-                            notifications = view.el.querySelectorAll('.chat-state-notification');
+                            const notifications = view.el.querySelectorAll('.chat-state-notification');
                             expect(notifications.length).toBe(2);
                             expect(notifications[0].textContent).toEqual('newguy is typing');
                             expect(notifications[1].textContent).toEqual('nomorenicks is typing');
 
                             // <paused> state from occupant who typed first
-                            msg = $msg({
+                            const msg = $msg({
                                     from: room_jid+'/newguy',
                                     id: (new Date()).getTime(),
                                     to: 'dummy@localhost',
                                     type: 'groupchat'
                                 }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                             view.model.onMessage(msg);
-                            events = view.el.querySelectorAll('.chat-event');
+                            return test_utils.waitUntil(() => view.model.messages.length > 3);
+                        }).then(() => {
+                            const events = view.el.querySelectorAll('.chat-event');
                             expect(events.length).toBe(3);
                             expect(events[0].textContent).toEqual('some1 has entered the groupchat');
                             expect(events[1].textContent).toEqual('newguy has entered the groupchat');
                             expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
-                            notifications = view.el.querySelectorAll('.chat-state-notification');
+                            const notifications = view.el.querySelectorAll('.chat-state-notification');
                             expect(notifications.length).toBe(2);
                             expect(notifications[0].textContent).toEqual('nomorenicks is typing');
                             expect(notifications[1].textContent).toEqual('newguy has stopped typing');
                             done();
-                        });
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
                     }));
                 });
             });

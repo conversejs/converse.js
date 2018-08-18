@@ -128,6 +128,7 @@
             //
             // New functions which don't exist yet can also be added.
             ChatBox: {
+
                 getMessageAttributesFromStanza (message, original_stanza) {
                     return new Promise((resolve, reject) => {
                         this.__super__.getMessageAttributesFromStanza.apply(this, arguments)

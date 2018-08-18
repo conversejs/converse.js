@@ -497,8 +497,6 @@
                                 stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
                                 stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
-
-
                     const attrs = {
                         'chat_state': chat_state,
                         'is_archived': !_.isNil(archive),
@@ -552,7 +550,7 @@
                             } else {
                                 resolve(this.messages.create(attrs));
                             }
-                        });
+                        }).catch(e => reject(e))
                     });
                 },
 
@@ -729,8 +727,11 @@
                     if (chatbox && !chatbox.handleMessageCorrection(stanza)) {
                         const msgid = stanza.getAttribute('id'),
                               message = msgid && chatbox.messages.findWhere({msgid});
-                        if (!message) { // Only create the message when we're sure it's not a duplicate
-                            chatbox.incrementUnreadMsgCounter(chatbox.createMessage(stanza, original_stanza));
+                        if (!message) {
+                            // Only create the message when we're sure it's not a duplicate
+                            chatbox.createMessage(stanza, original_stanza)
+                                .then(msg => chatbox.incrementUnreadMsgCounter(msg))
+                                .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                         }
                     }
                     _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});

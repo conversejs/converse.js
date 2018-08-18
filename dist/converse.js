@@ -63132,7 +63132,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               } else {
                 resolve(this.messages.create(attrs));
               }
-            });
+            }).catch(e => reject(e));
           });
         },
 
@@ -63323,7 +63323,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             if (!message) {
               // Only create the message when we're sure it's not a duplicate
-              chatbox.incrementUnreadMsgCounter(chatbox.createMessage(stanza, original_stanza));
+              chatbox.createMessage(stanza, original_stanza).then(msg => chatbox.incrementUnreadMsgCounter(msg)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }
           }
 
@@ -73120,7 +73120,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
               return;
             }
 
-            this.incrementUnreadMsgCounter(this.createMessage(stanza, original_stanza));
+            this.createMessage(stanza, original_stanza).then(msg => this.incrementUnreadMsgCounter(msg)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
           }
 
           if (sender !== this.get('nick')) {

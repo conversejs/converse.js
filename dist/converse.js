@@ -63111,29 +63111,39 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
           }
 
-          return Promise.resolve(attrs);
+          return attrs;
         },
 
         createMessage(message, original_stanza) {
           /* Create a Backbone.Message object inside this chat box
            * based on the identified message stanza.
            */
-          return new Promise((resolve, reject) => {
-            this.getMessageAttributesFromStanza(message, original_stanza).then(attrs => {
-              const is_csn = u.isOnlyChatStateNotification(attrs);
+          const that = this;
 
-              if (is_csn && (attrs.is_delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick'))) {
-                // XXX: MUC leakage
-                // No need showing delayed or our own CSN messages
-                resolve();
-              } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
-                // TODO: handle <subject> messages (currently being done by ChatRoom)
-                resolve();
-              } else {
-                resolve(this.messages.create(attrs));
-              }
-            }).catch(e => reject(e));
-          });
+          function _create(attrs) {
+            const is_csn = u.isOnlyChatStateNotification(attrs);
+
+            if (is_csn && (attrs.is_delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == that.get('nick'))) {
+              // XXX: MUC leakage
+              // No need showing delayed or our own CSN messages
+              return;
+            } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
+              // TODO: handle <subject> messages (currently being done by ChatRoom)
+              return;
+            } else {
+              return that.messages.create(attrs);
+            }
+          }
+
+          const result = this.getMessageAttributesFromStanza(message, original_stanza);
+
+          if (result instanceof Promise) {
+            return new Promise((resolve, reject) => result.then(attrs => resolve(_create(attrs))).catch(reject));
+          } else {
+            const message = _create(result);
+
+            return Promise.resolve(message);
+          }
         },
 
         isHidden() {
@@ -68657,17 +68667,23 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // New functions which don't exist yet can also be added.
       ChatBox: {
         getMessageAttributesFromStanza(message, original_stanza) {
-          return new Promise((resolve, reject) => {
-            this.__super__.getMessageAttributesFromStanza.apply(this, arguments).then(attrs => {
-              const archive_id = getMessageArchiveID(original_stanza);
+          function _process(attrs) {
+            const archive_id = getMessageArchiveID(original_stanza);
 
-              if (archive_id) {
-                attrs.archive_id = archive_id;
-              }
+            if (archive_id) {
+              attrs.archive_id = archive_id;
+            }
 
-              resolve(attrs);
-            }).catch(reject);
-          });
+            return attrs;
+          }
+
+          const result = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+
+          if (result instanceof Promise) {
+            return new Promise((resolve, reject) => result.then(attrs => resolve(_process(attrs))).catch(reject));
+          } else {
+            return _process(result);
+          }
         }
 
       },
@@ -74164,38 +74180,38 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
         },
 
-        getEncryptionAttributesfromStanza(stanza, original_stanza) {
-          const _converse = this.__super__._converse;
-          const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
+        getEncryptionAttributesfromStanza(stanza, original_stanza, attrs) {
+          const _converse = this.__super__._converse,
+                encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
           return new Promise((resolve, reject) => {
-            this.__super__.getMessageAttributesFromStanza.apply(this, arguments).then(attrs => {
-              const _converse = this.__super__._converse,
-                    header = encrypted.querySelector('header'),
-                    key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
+            const _converse = this.__super__._converse,
+                  header = encrypted.querySelector('header'),
+                  key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
 
-              if (key) {
-                attrs['encrypted'] = {
-                  'device_id': header.getAttribute('sid'),
-                  'iv': header.querySelector('iv').textContent,
-                  'key': key.textContent,
-                  'payload': _.get(encrypted.querySelector('payload'), 'textContent', null),
-                  'prekey': key.getAttribute('prekey')
-                };
-                this.decrypt(attrs).then(plaintext => resolve(_.extend(attrs, {
-                  'plaintext': plaintext
-                }))).catch(reject);
-              }
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            if (key) {
+              attrs['encrypted'] = {
+                'device_id': header.getAttribute('sid'),
+                'iv': header.querySelector('iv').textContent,
+                'key': key.textContent,
+                'payload': _.get(encrypted.querySelector('payload'), 'textContent', null),
+                'prekey': key.getAttribute('prekey')
+              };
+              this.decrypt(attrs).then(plaintext => resolve(_.extend(attrs, {
+                'plaintext': plaintext
+              }))).catch(reject);
+            }
           });
         },
 
         getMessageAttributesFromStanza(stanza, original_stanza) {
           const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
 
+          const attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+
           if (!encrypted) {
-            return this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+            return attrs;
           } else {
-            return this.getEncryptionAttributesfromStanza(stanza, original_stanza);
+            return this.getEncryptionAttributesfromStanza(stanza, original_stanza, attrs);
           }
         },
 
@@ -74442,8 +74458,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'identity_keypair': identity_keypair,
               'prekeys': {}
             };
-            const signed_prekey_id = '0';
-            libsignal.KeyHelper.generateSignedPreKey(identity_keypair, signed_prekey_id).then(signed_prekey => {
+            libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0).then(signed_prekey => {
               data['signed_prekey'] = signed_prekey;
 
               const key_promises = _.map(_.range(0, _converse.NUM_PREKEYS), id => libsignal.KeyHelper.generatePreKey(id));
@@ -74690,13 +74705,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'type': 'get',
               'from': _converse.bare_jid,
               'to': this.get('jid')
-            }).c('query', {
-              'xmlns': Strophe.NS.DISCO_ITEMS,
+            }).c('pubsub', {
+              'xmlns': Strophe.NS.PUBSUB
+            }).c('items', {
               'node': Strophe.NS.OMEMO_DEVICELIST
             });
 
             _converse.connection.sendIQ(stanza, iq => {
-              _.forEach(iq.querySelectorAll('device'), dev => this.devices.create({
+              _.forEach(sizzle(`list[xmlns="${Strophe.NS.OMEMO}"] device`, iq), dev => this.devices.create({
                 'id': dev.getAttribute('id'),
                 'jid': this.get('jid')
               }));
@@ -74725,7 +74741,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'node': Strophe.NS.OMEMO_DEVICELIST
             }).c('item').c('list', {
               'xmlns': Strophe.NS.OMEMO
-            }).up();
+            });
 
             _.each(this.devices.where({
               'active': true
@@ -74905,7 +74921,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         fetchOwnDevices().then(() => restoreOMEMOSession()).then(() => updateOwnDeviceList()).then(() => _converse.omemo.publishBundle()).then(() => _converse.emit('OMEMOInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
       }
 
-      _converse.api.listen.on('afterTearDown', () => _converse.devices.reset());
+      _converse.api.listen.on('afterTearDown', () => _converse.devicelists.reset());
 
       _converse.api.listen.on('connected', registerPEPPushHandler);
 

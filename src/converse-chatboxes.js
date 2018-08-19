@@ -529,29 +529,35 @@
                     if (spoiler) {
                         attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
                     }
-                    return Promise.resolve(attrs);
+                    return attrs;
                 },
 
                 createMessage (message, original_stanza) {
                     /* Create a Backbone.Message object inside this chat box
                      * based on the identified message stanza.
                      */
-                    return new Promise((resolve, reject) => {
-                        this.getMessageAttributesFromStanza(message, original_stanza)
-                        .then((attrs) => {
-                            const is_csn = u.isOnlyChatStateNotification(attrs);
-                            if (is_csn && (attrs.is_delayed || (attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick')))) {
-                                // XXX: MUC leakage
-                                // No need showing delayed or our own CSN messages
-                                resolve();
-                            } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
-                                // TODO: handle <subject> messages (currently being done by ChatRoom)
-                                resolve();
-                            } else {
-                                resolve(this.messages.create(attrs));
-                            }
-                        }).catch(e => reject(e))
-                    });
+                    const that = this;
+                    function _create (attrs) {
+                        const is_csn = u.isOnlyChatStateNotification(attrs);
+                        if (is_csn && (attrs.is_delayed ||
+                                (attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == that.get('nick')))) {
+                            // XXX: MUC leakage
+                            // No need showing delayed or our own CSN messages
+                            return;
+                        } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
+                            // TODO: handle <subject> messages (currently being done by ChatRoom)
+                            return;
+                        } else {
+                            return that.messages.create(attrs);
+                        }
+                    }
+                    const result = this.getMessageAttributesFromStanza(message, original_stanza)
+                    if (result instanceof Promise) {
+                        return new Promise((resolve, reject) => result.then(attrs => resolve(_create(attrs))).catch(reject));
+                    } else {
+                        const message = _create(result)
+                        return Promise.resolve(message);
+                    }
                 },
 
                 isHidden () {

@@ -203,39 +203,37 @@
                     });
                 },
 
-                getEncryptionAttributesfromStanza (stanza, original_stanza) {
-                    const { _converse } = this.__super__;
-                    const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
+                getEncryptionAttributesfromStanza (stanza, original_stanza, attrs) {
+                    const { _converse } = this.__super__,
+                          encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
 
                     return new Promise((resolve, reject) => {
-                        this.__super__.getMessageAttributesFromStanza.apply(this, arguments)
-                        .then((attrs) => {
-                            const { _converse } = this.__super__,
-                                  header = encrypted.querySelector('header'),
-                                  key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
+                        const { _converse } = this.__super__,
+                                header = encrypted.querySelector('header'),
+                                key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
 
-                            if (key) {
-                                attrs['encrypted'] = {
-                                    'device_id': header.getAttribute('sid'),
-                                    'iv': header.querySelector('iv').textContent,
-                                    'key': key.textContent,
-                                    'payload': _.get(encrypted.querySelector('payload'), 'textContent', null),
-                                    'prekey': key.getAttribute('prekey')
-                                }
-                                this.decrypt(attrs)
-                                    .then((plaintext) => resolve(_.extend(attrs, {'plaintext': plaintext})))
-                                    .catch(reject);
+                        if (key) {
+                            attrs['encrypted'] = {
+                                'device_id': header.getAttribute('sid'),
+                                'iv': header.querySelector('iv').textContent,
+                                'key': key.textContent,
+                                'payload': _.get(encrypted.querySelector('payload'), 'textContent', null),
+                                'prekey': key.getAttribute('prekey')
                             }
-                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                            this.decrypt(attrs)
+                                .then((plaintext) => resolve(_.extend(attrs, {'plaintext': plaintext})))
+                                .catch(reject);
+                        }
                     });
                 },
 
                 getMessageAttributesFromStanza (stanza, original_stanza) {
                     const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
+                    const attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
                     if (!encrypted) {
-                        return this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+                        return attrs;
                     } else {
-                        return this.getEncryptionAttributesfromStanza(stanza, original_stanza);
+                        return this.getEncryptionAttributesfromStanza(stanza, original_stanza, attrs);
                     }
                 },
 

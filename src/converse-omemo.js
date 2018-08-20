@@ -653,7 +653,7 @@
                      * this device, if the information is not at hand already.
                      */
                     if (this.get('bundle')) {
-                        return Promise.resolve(this.get('bundle').toJSON(), this);
+                        return Promise.resolve(this.get('bundle'), this);
                     } else {
                         return this.fetchBundleFromServer();
                     }

@@ -499,8 +499,6 @@
                                 stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
                                 stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
-
-
                     const attrs = {
                         'chat_state': chat_state,
                         'is_archived': !_.isNil(archive),

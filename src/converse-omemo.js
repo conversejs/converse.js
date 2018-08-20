@@ -70,6 +70,41 @@
 
         overrides: {
 
+            ProfileModal: {
+                events: {
+                    'change input.select-all': 'selectAll',
+                    'submit .fingerprint-removal': 'removeSelectedFingerprints'
+                },
+
+                initialize () {
+                    const { _converse } = this.__super__,
+                          device_id = _converse.omemo_store.get('device_id');
+
+                    this.devicelist = _converse.devicelists.get(_converse.bare_jid);
+                    this.current_device = this.devicelist.devices.get(device_id);
+                    this.other_devices = this.devicelist.devices.filter(d => (d.get('id') !== device_id));
+
+                    this.devicelist.devices.on('change:bundle', this.render, this);
+                    return this.__super__.initialize.apply(this, arguments);
+                },
+
+                selectAll (ev) {
+                    let sibling = ev.target.parentElement.nextElementSibling;
+                    while (sibling) {
+                        sibling.firstElementChild.checked = ev.target.checked;
+                        sibling = sibling.nextElementSibling;
+                    }
+                },
+
+                removeSelectedFingerprints (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    const checkboxes = ev.target.querySelectorAll('.fingerprint-removal-item input[type="checkbox"]:checked'),
+                          device_ids = _.map(checkboxes, 'value');
+                    this.devicelist.removeOwnDevices(device_ids);
+                },
+            },
+
             UserDetailsModal: {
                 events: {
                     'click .fingerprint-trust .btn input': 'toggleDeviceTrust'
@@ -415,7 +450,7 @@
                 });
             }
 
-            _converse.getFingerprintsForContact = function (jid) {
+            _converse.generateFingerprints= function (jid) {
                 return _converse.getDevicesForContact(jid)
                     .then(devices => Promise.all(devices.map(d => generateFingerprint(d))))
             }
@@ -734,6 +769,10 @@
                         });
                         _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
                     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                },
+
+                removeOwnDevices (device_ids) {
+                    // TODO
                 }
             });
 
@@ -893,7 +932,11 @@
 
             _converse.api.listen.on('userDetailsModalInitialized', (contact) => {
                 const jid = contact.get('jid');
-                _converse.getFingerprintsForContact(jid).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                _converse.generateFingerprints(jid).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            });
+
+            _converse.api.listen.on('profileModalInitialized', (contact) => {
+                _converse.generateFingerprints(_converse.bare_jid).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             });
         }
     });

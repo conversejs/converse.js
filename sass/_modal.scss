@@ -1,0 +1,44 @@
+#conversejs {
+    #converse-modals {
+        .set-xmpp-status {
+            margin: 1em;
+            .custom-control-label {
+                margin-top: 0.25em;
+            }
+        }
+
+        #omemo-tabpanel {
+            margin-top: 1em;
+        }
+
+        .btn {
+            font-weight: normal;
+        }
+
+        #user-profile-modal {
+            label {
+                font-weight: bold;
+            }
+            .list-group-item {
+                display: flex;
+                justify-content: left;
+                font-size: 95%;
+
+                input[type="checkbox"] {
+                    margin-right: 1em;
+                }
+            }
+        }
+
+        .fingerprints {
+            width: 100%;
+            margin-bottom: 1em;
+        }
+        
+        .fingerprint-trust {
+            display: flex;
+            justify-content: space-between;
+            font-size: 95%;
+        }
+    }
+}

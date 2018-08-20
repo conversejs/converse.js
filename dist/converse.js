@@ -36,17 +36,32 @@
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
 /******/ 	};
 /******/
 /******/ 	// define __esModule on exports
 /******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
 /******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -2560,13 +2575,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
             if (_.isFunction(this.beforeRender)) {
                 this.beforeRender();
             }
-            let new_vnode;
-            if (!_.isNil(this.toHTML)) {
-                new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
-            } else {
-                new_vnode = tovnode.toVNode(this.toDOM());
-            }
-
+            const new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
             new_vnode.data.hook = _.extend({
                create: this.updateEventListeners.bind(this),
                update: this.updateEventListeners.bind(this)
@@ -27145,13 +27154,12 @@ var map = {
 
 function webpackContext(req) {
 	var id = webpackContextResolve(req);
-	var module = __webpack_require__(id);
-	return module;
+	return __webpack_require__(id);
 }
 function webpackContextResolve(req) {
 	var id = map[req];
 	if(!(id + 1)) { // check for number or string
-		var e = new Error('Cannot find module "' + req + '".');
+		var e = new Error("Cannot find module '" + req + "'");
 		e.code = 'MODULE_NOT_FOUND';
 		throw e;
 	}
@@ -74045,6 +74053,43 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
     dependencies: ["converse-chatview"],
     overrides: {
+      ProfileModal: {
+        events: {
+          'change input.select-all': 'selectAll',
+          'submit .fingerprint-removal': 'removeSelectedFingerprints'
+        },
+
+        initialize() {
+          const _converse = this.__super__._converse,
+                device_id = _converse.omemo_store.get('device_id');
+
+          this.devicelist = _converse.devicelists.get(_converse.bare_jid);
+          this.current_device = this.devicelist.devices.get(device_id);
+          this.other_devices = this.devicelist.devices.filter(d => d.get('id') !== device_id);
+          this.devicelist.devices.on('change:bundle', this.render, this);
+          return this.__super__.initialize.apply(this, arguments);
+        },
+
+        selectAll(ev) {
+          let sibling = ev.target.parentElement.nextElementSibling;
+
+          while (sibling) {
+            sibling.firstElementChild.checked = ev.target.checked;
+            sibling = sibling.nextElementSibling;
+          }
+        },
+
+        removeSelectedFingerprints(ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          const checkboxes = ev.target.querySelectorAll('.fingerprint-removal-item input[type="checkbox"]:checked'),
+                device_ids = _.map(checkboxes, 'value');
+
+          this.devicelist.removeOwnDevices(device_ids);
+        }
+
+      },
       UserDetailsModal: {
         events: {
           'click .fingerprint-trust .btn input': 'toggleDeviceTrust'
@@ -74376,7 +74421,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       function generateFingerprint(device) {
         return new Promise((resolve, reject) => {
           device.getBundle().then(bundle => {
-            // TODO: only generate fingerprints when necessary
+            if (_.isNil(bundle)) {
+              resolve();
+            } // TODO: only generate fingerprints when necessary
+
+
             crypto.subtle.digest('SHA-1', u.base64ToArrayBuffer(bundle['identity_key'])).then(fp => {
               bundle['fingerprint'] = u.arrayBufferToHex(fp);
               device.save('bundle', bundle);
@@ -74388,10 +74437,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         });
       }
 
-      _converse.getFingerprintsForContact = function (jid) {
-        return new Promise((resolve, reject) => {
-          _converse.getDevicesForContact(jid).then(devices => Promise.all(devices.map(d => generateFingerprint(d))).then(resolve).catch(reject));
-        });
+      _converse.generateFingerprints = function (jid) {
+        return _converse.getDevicesForContact(jid).then(devices => Promise.all(devices.map(d => generateFingerprint(d))));
       };
 
       _converse.getDevicesForContact = function (jid) {
@@ -74628,24 +74675,23 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         fetchBundleFromServer() {
-          return new Promise((resolve, reject) => {
-            const stanza = $iq({
-              'type': 'get',
-              'from': _converse.bare_jid,
-              'to': this.get('jid')
-            }).c('pubsub', {
-              'xmlns': Strophe.NS.PUBSUB
-            }).c('items', {
-              'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}`
-            });
-
-            _converse.connection.sendIQ(stanza, iq => {
-              const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, iq).pop(),
-                    bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop(),
-                    bundle = parseBundle(bundle_el);
-              this.save('bundle', bundle);
-              resolve(bundle);
-            }, reject, _converse.IQ_TIMEOUT);
+          const stanza = $iq({
+            'type': 'get',
+            'from': _converse.bare_jid,
+            'to': this.get('jid')
+          }).c('pubsub', {
+            'xmlns': Strophe.NS.PUBSUB
+          }).c('items', {
+            'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}`
+          });
+          return _converse.api.sendIQ(stanza).then(iq => {
+            const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, iq).pop(),
+                  bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop(),
+                  bundle = parseBundle(bundle_el);
+            this.save('bundle', bundle);
+            return bundle;
+          }).catch(iq => {
+            _converse.log(iq.outerHTML, Strophe.LogLevel.ERROR);
           });
         },
 
@@ -74654,7 +74700,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * this device, if the information is not at hand already.
            */
           if (this.get('bundle')) {
-            return Promise.resolve(this.get('bundle').toJSON(), this);
+            return Promise.resolve(this.get('bundle'), this);
           } else {
             return this.fetchBundleFromServer();
           }
@@ -74745,6 +74791,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        },
+
+        removeOwnDevices(device_ids) {// TODO
         }
 
       });
@@ -74926,7 +74975,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse.api.listen.on('userDetailsModalInitialized', contact => {
         const jid = contact.get('jid');
 
-        _converse.getFingerprintsForContact(jid).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        _converse.generateFingerprints(jid).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+      });
+
+      _converse.api.listen.on('profileModalInitialized', contact => {
+        _converse.generateFingerprints(_converse.bare_jid).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
       });
     }
 
@@ -75117,29 +75170,38 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         events: {
           'click .change-avatar': "openFileSelection",
           'change input[type="file"': "updateFilePreview",
-          'submit form': 'onFormSubmitted'
+          'submit .profile-form': 'onFormSubmitted'
         },
 
         initialize() {
           _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
 
           this.model.on('change', this.render, this);
+
+          _converse.emit('profileModalInitialized', this.model);
         },
 
         toHTML() {
           return tpl_profile_modal(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+            '_': _,
+            '__': __,
+            '_converse': _converse,
+            'alt_avatar': __('Your avatar image'),
             'heading_profile': __('Your Profile'),
             'label_close': __('Close'),
             'label_email': __('Email'),
             'label_fullname': __('Full Name'),
-            'label_nickname': __('Nickname'),
             'label_jid': __('XMPP Address (JID)'),
+            'label_nickname': __('Nickname'),
             'label_role': __('Role'),
             'label_role_help': __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.'),
-            'label_save': __('Save'),
             'label_url': __('URL'),
-            'alt_avatar': __('Your avatar image')
+            'view': this
           }));
+        },
+
+        afterRender() {
+          this.tabs = _.map(this.el.querySelectorAll('.nav-item'), tab => new bootstrap.Tab(tab));
         },
 
         openFileSelection(ev) {
@@ -81345,51 +81407,93 @@ __p += '<!-- src/templates/profile_modal.html -->\n<div class="modal fade" id="u
 __e(o.heading_profile) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
-'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <form class="converse-form">\n                <div class="modal-body">\n                    <div class="row">\n                        <div class="col-auto">\n                            <a class="change-avatar" href="#">\n                                ';
+'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <ul class="nav nav-pills justify-content-center">\n                    <li role="presentation" class="nav-item">\n                        <a class="nav-link active" id="profile-tab" href="#profile-tabpanel" aria-controls="profile-tabpanel" role="tab" data-toggle="tab">Profile</a>\n                    </li>\n                    <li role="presentation" class="nav-item">\n                        <a class="nav-link" id="omemo-tab" href="#omemo-tabpanel" aria-controls="omemo-tabpanel" role="tab" data-toggle="tab">OMEMO</a>\n                    </li>\n                </ul>\n                <div class="tab-content">\n                    <div class="tab-pane fade show active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">\n                        <form class="converse-form converse-form--modal profile-form" action="#">\n                            <div class="row">\n                                <div class="col-auto">\n                                    <a class="change-avatar" href="#">\n                                        ';
  if (o.image) { ;
-__p += '\n                                    <img alt="' +
+__p += '\n                                            <img alt="' +
 __e(o.alt_avatar) +
 '" class="img-thumbnail avatar align-self-center" height="100px" width="100px" src="data:' +
 __e(o.image_type) +
 ';base64,' +
 __e(o.image) +
-'"/>\n                                ';
+'"/>\n                                        ';
  } ;
-__p += '\n                                ';
+__p += '\n                                        ';
  if (!o.image) { ;
-__p += '\n                                    <canvas class="avatar" height="100px" width="100px"/>\n                                ';
+__p += '\n                                            <canvas class="avatar" height="100px" width="100px"/>\n                                        ';
  } ;
-__p += '\n                            </a>\n                            <input class="hidden" name="image" type="file">\n                        </div>\n                        <div class="col">\n                            <div class="form-group">\n                                <label class="col-form-label">' +
+__p += '\n                                    </a>\n                                    <input class="hidden" name="image" type="file">\n                                </div>\n                                <div class="col">\n                                    <div class="form-group">\n                                        <label class="col-form-label">' +
 __e(o.label_jid) +
-':</label>\n                                <div>' +
+':</label>\n                                        <div>' +
 __e(o.jid) +
-'</div>\n                            </div>\n                        </div>\n                    </div>\n                    <div class="form-group">\n                        <label for="vcard-fullname" class="col-form-label">' +
+'</div>\n                                    </div>\n                                </div>\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-fullname" class="col-form-label">' +
 __e(o.label_fullname) +
-':</label>\n                        <input id="vcard-fullname" type="text" class="form-control" name="fn" value="' +
+':</label>\n                                <input id="vcard-fullname" type="text" class="form-control" name="fn" value="' +
 __e(o.fullname) +
-'">\n                    </div>\n                    <div class="form-group">\n                        <label for="vcard-nickname" class="col-form-label">' +
+'">\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-nickname" class="col-form-label">' +
 __e(o.label_nickname) +
-':</label>\n                        <input id="vcard-nickname" type="text" class="form-control" name="nickname" value="' +
+':</label>\n                                <input id="vcard-nickname" type="text" class="form-control" name="nickname" value="' +
 __e(o.nickname) +
-'">\n                    </div>\n                    <div class="form-group">\n                        <label for="vcard-url" class="col-form-label">' +
+'">\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-url" class="col-form-label">' +
 __e(o.label_url) +
-':</label>\n                        <input id="vcard-url" type="url" class="form-control" name="url" value="' +
+':</label>\n                                <input id="vcard-url" type="url" class="form-control" name="url" value="' +
 __e(o.url) +
-'">\n                    </div>\n                    <div class="form-group">\n                        <label for="vcard-email" class="col-form-label">' +
+'">\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-email" class="col-form-label">' +
 __e(o.label_email) +
-':</label>\n                        <input id="vcard-email" type="email" class="form-control" name="email" value="' +
+':</label>\n                                <input id="vcard-email" type="email" class="form-control" name="email" value="' +
 __e(o.email) +
-'">\n                    </div>\n                    <div class="form-group">\n                        <label for="vcard-role" class="col-form-label">' +
+'">\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-role" class="col-form-label">' +
 __e(o.label_role) +
-':</label>\n                        <input id="vcard-role" type="text" class="form-control" name="role" value="' +
+':</label>\n                                <input id="vcard-role" type="text" class="form-control" name="role" value="' +
 __e(o.role) +
-'" aria-describedby="vcard-role-help">\n                        <small id="vcard-role-help" class="form-text text-muted">' +
+'" aria-describedby="vcard-role-help">\n                                <small id="vcard-role-help" class="form-text text-muted">' +
 __e(o.label_role_help) +
-'</small>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="save-form btn btn-primary">' +
-__e(o.label_save) +
-'</button>\n                    <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
-__e(o.label_close) +
-'</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
+'</small>\n                            </div>\n                            <hr/>\n                            <div class="form-group">\n                                <button type="submit" class="save-form btn btn-primary">' +
+__e(o.__('Save and close')) +
+'</button>\n                            </div>\n                        </form>\n                    </div>\n                    ';
+ if (o._converse.pluggable.plugins['converse-omemo'].enabled()) { ;
+__p += '\n                        <div class="tab-pane fade" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">\n                            <form class="converse-form fingerprint-removal">\n                                <ul class="list-group fingerprints">\n                                    <li class="list-group-item active">' +
+__e(o.__("This device's OMEMO fingerprint")) +
+'</li>\n                                    <li class="fingerprint-removal-item list-group-item">\n                                        ';
+ if (o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint) { ;
+__p += '\n                                            <input type="checkbox" value="' +
+__e(o.view.current_device.get('id')) +
+'"\n                                                   aria-label="' +
+__e(o.__('Checkbox for removing the following fingerprint')) +
+'">\n                                            <span class="fingerprint">' +
+__e(o.view.current_device.get('bundle').fingerprint) +
+'</span>\n                                        ';
+ } else {;
+__p += '\n                                            <span class="spinner fa fa-spinner centered"/>\n                                        ';
+ } ;
+__p += '\n                                    </li>\n                                </ul>\n                                ';
+ if (o.view.other_devices) { ;
+__p += '\n                                    <ul class="list-group fingerprints">\n                                        <li class="list-group-item active">\n                                            <input type="checkbox" class="select-all" title="' +
+__e(o.__('Select all')) +
+'"\n                                                   aria-label="' +
+__e(o.__('Checkbox to select fingerprints of all other OMEMO devices')) +
+'">\n                                            ' +
+__e(o.__('Other OMEMO-enabled devices')) +
+'\n                                        </li>\n                                        ';
+ o._.forEach(o.view.other_devices, function (device) { ;
+__p += '\n                                            ';
+ if (device.get('bundle') && device.get('bundle').fingerprint) { ;
+__p += '\n                                            <li class="fingerprint-removal-item list-group-item">\n                                                <input type="checkbox" value="' +
+__e(device.get('id')) +
+'"\n                                                       aria-label="' +
+__e(o.__('Checkbox for selecting the following fingerprint')) +
+'">\n                                                <span class="fingerprint">' +
+__e(device.get('bundle').fingerprint) +
+'</span>\n                                            </li>\n                                            ';
+ } ;
+__p += '\n                                        ';
+ }); ;
+__p += '\n                                    </ul>\n                                ';
+ } ;
+__p += '\n                                <div class="form-group">\n                                    <button type="submit" class="save-form btn btn-primary">' +
+__e(o.__('Remove checked devices and close')) +
+'</button>\n                                </div>\n                            </form>\n                        </div>\n                    ';
+ } ;
+__p += '\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -82407,9 +82511,7 @@ __p += '\n                            ';
  o.view.devicelist.devices.each(function (device) { ;
 __p += '\n                                ';
  if (device.get('bundle') && device.get('bundle').fingerprint) { ;
-__p += '\n                                <li class="list-group-item">\n                                    <form class="fingerprint-trust">\n                                    <span class="fingerprint">' +
-__e(device.get('bundle').fingerprint) +
-'</span>\n                                    <div class="btn-group btn-group-toggle">\n                                        <label class="btn btn--small ';
+__p += '\n                                <li class="list-group-item">\n                                    <form class="fingerprint-trust">\n                                    <div class="btn-group btn-group-toggle">\n                                        <label class="btn btn--small ';
  if (device.get('trusted') !== -1) { ;
 __p += ' btn-primary active ';
  } else { ;
@@ -82437,7 +82539,9 @@ __p += ' checked="checked" ';
  } ;
 __p += '>' +
 __e(o.__('Untrusted')) +
-'\n                                        </label>\n                                    </div>\n                                    </form>\n                                </li>\n                                ';
+'\n                                        </label>\n                                    </div>\n                                    <span class="fingerprint">' +
+__e(device.get('bundle').fingerprint) +
+'</span>\n                                    </form>\n                                </li>\n                                ';
  } ;
 __p += '\n                            ';
  }); ;

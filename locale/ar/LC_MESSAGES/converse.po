@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-07-22 11:17+0200\n"
-"PO-Revision-Date: 2018-08-02 05:34+0000\n"
+"PO-Revision-Date: 2018-08-21 09:34+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 3.1.1\n"
+"X-Generator: Weblate 3.2-dev\n"
 
 #: dist/converse-no-dependencies.js:40690
 #: dist/converse-no-dependencies.js:40775
@@ -127,7 +127,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:41996
 msgid "Sorry, an error occurred:"
-msgstr ""
+msgstr "عذراً، حدث خطأ:"
 
 #: dist/converse-no-dependencies.js:42538
 msgid "Close this chat box"
@@ -135,7 +135,7 @@ msgstr "إغلق نافذة المحادثة هذه"
 
 #: dist/converse-no-dependencies.js:42566
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "الصورة الشخصية للمستخدم"
 
 #: dist/converse-no-dependencies.js:42569
 #: dist/converse-no-dependencies.js:52477
@@ -148,12 +148,12 @@ msgstr "إغلاق"
 #: dist/converse-no-dependencies.js:42570
 #: dist/converse-no-dependencies.js:52478
 msgid "Email"
-msgstr ""
+msgstr "البريد الإلكتروني"
 
 #: dist/converse-no-dependencies.js:42571
 #: dist/converse-no-dependencies.js:52479
 msgid "Full Name"
-msgstr ""
+msgstr "الإسم الكامل"
 
 #: dist/converse-no-dependencies.js:42572
 msgid "Jabber ID"
@@ -171,17 +171,17 @@ msgstr "إزالة مِن المراسِلين"
 
 #: dist/converse-no-dependencies.js:42575
 msgid "Refresh"
-msgstr ""
+msgstr "تحديث"
 
 #: dist/converse-no-dependencies.js:42576
 #: dist/converse-no-dependencies.js:52482
 msgid "Role"
-msgstr ""
+msgstr "الدور"
 
 #: dist/converse-no-dependencies.js:42577
 #: dist/converse-no-dependencies.js:52485
 msgid "URL"
-msgstr ""
+msgstr "عنوان الرابط"
 
 #: dist/converse-no-dependencies.js:42616
 #: dist/converse-no-dependencies.js:55404
@@ -191,7 +191,7 @@ msgstr "هل أنت متأكد أنك تريد حذف هذا المراسل ؟"
 #: dist/converse-no-dependencies.js:42625
 #: dist/converse-no-dependencies.js:52513
 msgid "Error"
-msgstr ""
+msgstr "خطأ"
 
 #: dist/converse-no-dependencies.js:42625
 #: dist/converse-no-dependencies.js:55412
@@ -368,7 +368,7 @@ msgstr "فريق المحادثة هذا ليس مجهولًا"
 
 #: dist/converse-no-dependencies.js:48598
 msgid "This groupchat now shows unavailable members"
-msgstr ""
+msgstr "فريق المحادثة هذا يعرض الآن الأعضاء المشغولين"
 
 #: dist/converse-no-dependencies.js:48599
 msgid "This groupchat does not show unavailable members"
@@ -383,9 +383,8 @@ msgid "groupchat logging is now enabled"
 msgstr "الإلتحاق بفريق المحادثة مسموح الآن للجميع"
 
 #: dist/converse-no-dependencies.js:48602
-#, fuzzy
 msgid "groupchat logging is now disabled"
-msgstr "مُنِع الآن الإلتحاق بغرفة المحادثة"
+msgstr "تم تعطيل امكانية الإلتحاق بفريق المحادثة"
 
 #: dist/converse-no-dependencies.js:48603
 msgid "This groupchat is now no longer anonymous"
@@ -621,24 +620,20 @@ msgid "%1$s is now a moderator"
 msgstr "أصبح %1$s مُشرفًا"
 
 #: dist/converse-no-dependencies.js:49056
-#, fuzzy
 msgid "Close and leave this groupchat"
-msgstr "إغلاق هذه الغرفة و الخروج منها"
+msgstr "إغلاق فريق المحادثة هذا و مغادرته"
 
 #: dist/converse-no-dependencies.js:49057
-#, fuzzy
 msgid "Configure this groupchat"
-msgstr "إعداد غرفة المحادثة"
+msgstr "إعداد فريق المحادثة"
 
 #: dist/converse-no-dependencies.js:49058
-#, fuzzy
 msgid "Show more details about this groupchat"
-msgstr "عرض المزيد مِن التفاصيل عن هذه الغرفة"
+msgstr "عرض المزيد مِن التفاصيل عن فريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:49098
-#, fuzzy
 msgid "Hide the list of participants"
-msgstr "إخفاء قائمة المشاركين في غرفة المحادثة"
+msgstr "إخفاء قائمة المشاركين"
 
 #: dist/converse-no-dependencies.js:49214
 #, javascript-format
@@ -658,18 +653,16 @@ msgid "Change user's affiliation to admin"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:49282
-#, fuzzy
 msgid "Ban user from groupchat"
-msgstr "طرد المستخدِم من غرفة المحادثة"
+msgstr "طرد المستخدِم من فريق المحادثة"
 
 #: dist/converse-no-dependencies.js:49282
 msgid "Change user role to participant"
 msgstr "تغيير دور المستخدِم إلى مُشترِك"
 
 #: dist/converse-no-dependencies.js:49282
-#, fuzzy
 msgid "Kick user from groupchat"
-msgstr "طرد المستخدِم مؤقتًا مِن غرفة المحادثة"
+msgstr "طرد المستخدِم مؤقتًا مِن فريق المحادثة"
 
 #: dist/converse-no-dependencies.js:49282
 msgid "Write in 3rd person"
@@ -692,18 +685,16 @@ msgid "Grant moderator role to user"
 msgstr "ترقية المستخدِم إلى رتبة مشرف"
 
 #: dist/converse-no-dependencies.js:49282
-#, fuzzy
 msgid "Grant ownership of this groupchat"
-msgstr "منح صفة ملكية غرفة المحادثة للمستخدِم"
+msgstr "منح صفة ملكية فريق المحادثة للمستخدِم"
 
 #: dist/converse-no-dependencies.js:49282
 msgid "Revoke user's membership"
 msgstr "إسقاط صفة العضوية مِن المستخدِم"
 
 #: dist/converse-no-dependencies.js:49282
-#, fuzzy
 msgid "Set groupchat subject"
-msgstr "تحديد موضوع غرفة المحادثة"
+msgstr "تحديد موضوع فريق المحادثة"
 
 #: dist/converse-no-dependencies.js:49282
 msgid "Set groupchat subject (alias for /subject)"
@@ -726,14 +717,12 @@ msgid "Please choose your nickname"
 msgstr "يرجى اختيار إسمك المُستعار"
 
 #: dist/converse-no-dependencies.js:49640
-#, fuzzy
 msgid "Enter groupchat"
-msgstr "الدخول إلى غرفة المحادثة"
+msgstr "الإلتحاق بفريق المحادثة"
 
 #: dist/converse-no-dependencies.js:49661
-#, fuzzy
 msgid "This groupchat requires a password"
-msgstr "هذه الغرفة مؤمَّنة بكلمة سرية"
+msgstr "فريق المحادثة مؤمَّن بكلمة سرية"
 
 #: dist/converse-no-dependencies.js:49662
 msgid "Password: "

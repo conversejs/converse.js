@@ -401,6 +401,8 @@
             function generateFingerprint (device) {
                 return new Promise((resolve, reject) => {
                     device.getBundle().then((bundle) => {
+                        if (_.isNil(bundle)) { resolve(); }
+
                         // TODO: only generate fingerprints when necessary
                         crypto.subtle.digest('SHA-1', u.base64ToArrayBuffer(bundle['identity_key']))
                             .then((fp) => {
@@ -414,10 +416,8 @@
             }
 
             _converse.getFingerprintsForContact = function (jid) {
-                return new Promise((resolve, reject) => {
-                    _converse.getDevicesForContact(jid)
-                        .then((devices) => Promise.all(devices.map(d => generateFingerprint(d))).then(resolve).catch(reject));
-                });
+                return _converse.getDevicesForContact(jid)
+                    .then(devices => Promise.all(devices.map(d => generateFingerprint(d))))
             }
 
             _converse.getDevicesForContact = function (jid) {
@@ -629,26 +629,23 @@
                 },
 
                 fetchBundleFromServer () {
-                    return new Promise((resolve, reject) => {
-                        const stanza = $iq({
-                            'type': 'get',
-                            'from': _converse.bare_jid,
-                            'to': this.get('jid')
-                        }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                            .c('items', {'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}`});
-                        _converse.connection.sendIQ(
-                            stanza,
-                            (iq) => {
-                                const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, iq).pop(),
-                                      bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop(),
-                                      bundle = parseBundle(bundle_el);
-                                this.save('bundle', bundle);
-                                resolve(bundle);
-                            },
-                            reject,
-                            _converse.IQ_TIMEOUT
-                        );
-                    });
+                    const stanza = $iq({
+                        'type': 'get',
+                        'from': _converse.bare_jid,
+                        'to': this.get('jid')
+                    }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                        .c('items', {'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}`});
+
+                    return _converse.api.sendIQ(stanza)
+                        .then(iq => {
+                            const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, iq).pop(),
+                                    bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop(),
+                                    bundle = parseBundle(bundle_el);
+                            this.save('bundle', bundle);
+                            return bundle;
+                        }).catch(iq => {
+                            _converse.log(iq.outerHTML, Strophe.LogLevel.ERROR);
+                        });
                 },
 
                 getBundle () {

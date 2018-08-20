@@ -247,7 +247,7 @@
                 },
 
                 getDisplayName () {
-                    return this.vcard.get('fullname') || this.get('jid');
+                    return this.get('nickname') || this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('jid');
                 },
 
                 getFullname () {

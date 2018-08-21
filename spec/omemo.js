@@ -91,7 +91,7 @@
                                 .c('device', {'id': '555'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                const devicelist = _converse.devicelists.create({'jid': contact_jid});
+                const devicelist = _converse.devicelists.get({'jid': contact_jid});
                 expect(devicelist.devices.length).toBe(1);
 
                 view = _converse.chatboxviews.get(contact_jid);

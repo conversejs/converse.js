@@ -6,6 +6,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="{{{o.label_close}}}"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
+                {[ if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ]}
                 <ul class="nav nav-pills justify-content-center">
                     <li role="presentation" class="nav-item">
                         <a class="nav-link active" id="profile-tab" href="#profile-tabpanel" aria-controls="profile-tabpanel" role="tab" data-toggle="tab">Profile</a>
@@ -14,6 +15,7 @@
                         <a class="nav-link" id="omemo-tab" href="#omemo-tabpanel" aria-controls="omemo-tabpanel" role="tab" data-toggle="tab">OMEMO</a>
                     </li>
                 </ul>
+                {[ } ]}
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
                         <form class="converse-form converse-form--modal profile-form" action="#">
@@ -63,7 +65,7 @@
                             </div>
                         </form>
                     </div>
-                    {[ if (o._converse.pluggable.plugins['converse-omemo'].enabled()) { ]}
+                    {[ if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ]}
                         <div class="tab-pane fade" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
                             <form class="converse-form fingerprint-removal">
                                 <ul class="list-group fingerprints">

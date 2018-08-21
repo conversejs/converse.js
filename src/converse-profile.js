@@ -52,8 +52,8 @@
                 },
 
                 initialize () {
-                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                     this.model.on('change', this.render, this);
+                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                     _converse.emit('profileModalInitialized', this.model);
                 },
 

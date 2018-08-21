@@ -28,7 +28,7 @@
                 <p><label>{{{o.__('Role')}}}:</label>&nbsp;{{{o.role}}}</p>
                 {[ } ]}
 
-                {[ if (o._converse.pluggable.plugins['converse-omemo'].enabled()) { ]}
+                {[ if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ]}
                     <hr>
                     <ul class="list-group fingerprints">
                         <li class="list-group-item active">{{{o.__('OMEMO Fingerprints')}}}</li>

@@ -13,7 +13,7 @@
     ], factory);
 }(this, function (converse, tpl_toolbar_omemo) {
 
-    const { Backbone, Promise, Strophe, moment, sizzle, $iq, $msg, _, b64_sha1 } = converse.env;
+    const { Backbone, Promise, Strophe, moment, sizzle, $iq, $msg, _, f, b64_sha1 } = converse.env;
     const u = converse.env.utils;
 
     Strophe.addNamespace('OMEMO', "eu.siacs.conversations.axolotl");
@@ -63,7 +63,7 @@
     converse.plugins.add('converse-omemo', {
 
         enabled (_converse) {
-            return !_.isNil(window.libsignal);
+            return !_.isNil(window.libsignal) && !f.includes('converse-omemo', _converse.blacklisted_plugins);
         },
 
         dependencies: ["converse-chatview"],
@@ -90,6 +90,9 @@
                           device_id = _converse.omemo_store.get('device_id').toString();
                     this.current_device = this.devicelist.devices.get(device_id);
                     this.other_devices = this.devicelist.devices.filter(d => (d.get('id') !== device_id));
+                    if (this.__super__.beforeRender) {
+                        return this.__super__.beforeRender.apply(this, arguments);
+                    }
                 },
 
                 selectAll (ev) {

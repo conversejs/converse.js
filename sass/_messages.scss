@@ -150,6 +150,7 @@
                 padding: 0;
                 color: $message-text-color;
                 width: 100%;
+                white-space: pre-wrap;
                 a {
                     word-wrap: break-word;
                     word-break: break-all;

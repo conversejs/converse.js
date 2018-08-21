@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-07-22 11:17+0200\n"
-"PO-Revision-Date: 2018-09-06 09:13+0200\n"
+"PO-Revision-Date: 2018-09-06 15:40+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.0-dev\n"
+"X-Generator: Weblate 3.2-dev\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -1496,7 +1496,7 @@ msgstr "Kies 'n ander verskaffer"
 
 #: dist/converse-no-dependencies.js:58860
 msgid "Hold tight, we're fetching the registration form…"
-msgstr "Wag 'n bietjie, ons gaan haal die registrasievorm"
+msgstr "Wag 'n bietjie, ons gaan haal die registrasievorm…"
 
 #: dist/converse-no-dependencies.js:59977
 #: dist/converse-no-dependencies.js:60006

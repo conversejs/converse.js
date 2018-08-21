@@ -65,6 +65,13 @@
                 }
             });
 
+            _converse.api.listen.on('afterTearDown', () => {
+                const container = _converse.chatboxviews.el.querySelector("#converse-modals");
+                if (container) {
+                    container.innerHTML = '';
+                }
+            });
+
 
             /************************ BEGIN API ************************/
             // We extend the default converse.js API to add methods specific to MUC chat rooms.

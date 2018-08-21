@@ -62819,7 +62819,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
 
           this.messages = new _converse.Messages();
-          this.messages.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
+          this.messages.browserStorage = new Backbone.BrowserStorage[_converse.storage](`converse.messages${this.get('jid')}${_converse.bare_jid}`);
           this.messages.chatbox = this;
           this.messages.on('change:upload', message => {
             if (message.get('upload') === _converse.SUCCESS) {
@@ -63220,7 +63220,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         onConnected() {
-          this.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
+          this.browserStorage = new Backbone.BrowserStorage.session(`converse.chatboxes-${_converse.bare_jid}`);
           this.registerMessageHandler();
           this.fetch({
             'add': true,
@@ -69984,8 +69984,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }
 
       });
+
+      _converse.api.listen.on('afterTearDown', () => {
+        const container = _converse.chatboxviews.el.querySelector("#converse-modals");
+
+        if (container) {
+          container.innerHTML = '';
+        }
+      });
       /************************ BEGIN API ************************/
       // We extend the default converse.js API to add methods specific to MUC chat rooms.
+
 
       let alert;
 
@@ -74004,6 +74013,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         $iq = _converse$env.$iq,
         $msg = _converse$env.$msg,
         _ = _converse$env._,
+        f = _converse$env.f,
         b64_sha1 = _converse$env.b64_sha1;
   const u = converse.env.utils;
   Strophe.addNamespace('OMEMO', "eu.siacs.conversations.axolotl");
@@ -74048,7 +74058,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
   converse.plugins.add('converse-omemo', {
     enabled(_converse) {
-      return !_.isNil(window.libsignal);
+      return !_.isNil(window.libsignal) && !f.includes('converse-omemo', _converse.blacklisted_plugins);
     },
 
     dependencies: ["converse-chatview"],
@@ -74060,21 +74070,31 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         initialize() {
-          const _converse = this.__super__._converse,
-                device_id = _converse.omemo_store.get('device_id');
-
+          const _converse = this.__super__._converse;
+          this.debouncedRender = _.debounce(this.render, 50);
           this.devicelist = _converse.devicelists.get(_converse.bare_jid);
-          this.current_device = this.devicelist.devices.get(device_id);
-          this.other_devices = this.devicelist.devices.filter(d => d.get('id') !== device_id);
-          this.devicelist.devices.on('change:bundle', this.render, this);
+          this.devicelist.devices.on('change:bundle', this.debouncedRender, this);
+          this.devicelist.devices.on('reset', this.debouncedRender, this);
           return this.__super__.initialize.apply(this, arguments);
         },
 
+        beforeRender() {
+          const _converse = this.__super__._converse,
+                device_id = _converse.omemo_store.get('device_id').toString();
+
+          this.current_device = this.devicelist.devices.get(device_id);
+          this.other_devices = this.devicelist.devices.filter(d => d.get('id') !== device_id);
+
+          if (this.__super__.beforeRender) {
+            return this.__super__.beforeRender.apply(this, arguments);
+          }
+        },
+
         selectAll(ev) {
-          let sibling = ev.target.parentElement.nextElementSibling;
+          let sibling = u.ancestor(ev.target, 'li');
 
           while (sibling) {
-            sibling.firstElementChild.checked = ev.target.checked;
+            sibling.querySelector('input[type="checkbox"]').checked = ev.target.checked;
             sibling = sibling.nextElementSibling;
           }
         },
@@ -74082,11 +74102,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         removeSelectedFingerprints(ev) {
           ev.preventDefault();
           ev.stopPropagation();
+          ev.target.querySelector('.select-all').checked = false;
 
           const checkboxes = ev.target.querySelectorAll('.fingerprint-removal-item input[type="checkbox"]:checked'),
                 device_ids = _.map(checkboxes, 'value');
 
-          this.devicelist.removeOwnDevices(device_ids);
+          this.devicelist.removeOwnDevices(device_ids).then(this.modal.hide).catch(err => {
+            const _converse = this.__super__._converse,
+                  __ = _converse.__;
+
+            _converse.log(err, Strophe.LogLevel.ERROR);
+
+            _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [__('Sorry, an error occurred while trying to remove the devices.')]);
+          });
         }
 
       },
@@ -74638,21 +74666,26 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return Promise.resolve();
         },
 
+        createNewDeviceBundle() {
+          return generateBundle().then(data => {
+            // TODO: should storeSession be used here?
+            _converse.omemo_store.save(data);
+          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        },
+
         fetchSession() {
           if (_.isUndefined(this._setup_promise)) {
             this._setup_promise = new Promise((resolve, reject) => {
               this.fetch({
                 'success': () => {
                   if (!_converse.omemo_store.get('device_id')) {
-                    generateBundle().then(data => {
-                      // TODO: should storeSession be used here?
-                      _converse.omemo_store.save(data);
-
-                      resolve();
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                    this.createNewDeviceBundle().then(resolve).catch(resolve);
                   } else {
                     resolve();
                   }
+                },
+                'error': () => {
+                  this.createNewDeviceBundle().then(resolve).catch(resolve);
                 }
               });
             });
@@ -74715,7 +74748,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         initialize() {
           this.devices = new _converse.Devices();
-          this.devices.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`));
+          const id = `converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`;
+          this.devices.id = id;
+          this.devices.browserStorage = new Backbone.BrowserStorage.session(id);
           this.fetchDevices();
         },
 
@@ -74729,6 +74764,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                   } else {
                     resolve();
                   }
+                },
+                'error': () => {
+                  this.fetchDevicesFromServer().then(resolve).catch(reject);
                 }
               });
             });
@@ -74760,40 +74798,52 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
         },
 
-        addDeviceToList(device_id) {
+        publishDevices() {
+          const stanza = $iq({
+            'from': _converse.bare_jid,
+            'type': 'set'
+          }).c('pubsub', {
+            'xmlns': Strophe.NS.PUBSUB
+          }).c('publish', {
+            'node': Strophe.NS.OMEMO_DEVICELIST
+          }).c('item').c('list', {
+            'xmlns': Strophe.NS.OMEMO
+          });
+
+          _.each(this.devices.where({
+            'active': true
+          }), device => {
+            stanza.c('device', {
+              'id': device.get('id')
+            }).up();
+          });
+
+          return _converse.api.sendIQ(stanza);
+        },
+
+        addOwnDevice(device_id) {
           /* Add this device to our list of devices stored on the
            * server.
            * https://xmpp.org/extensions/xep-0384.html#usecases-announcing
            */
+          if (this.get('jid') !== _converse.bare_jid) {
+            throw new Error("Cannot add device to someone else's device list");
+          }
+
           this.devices.create({
-            'id': device_id,
+            'id': device_id.toString(),
             'jid': this.get('jid')
           });
-          return new Promise((resolve, reject) => {
-            const stanza = $iq({
-              'from': _converse.bare_jid,
-              'type': 'set'
-            }).c('pubsub', {
-              'xmlns': Strophe.NS.PUBSUB
-            }).c('publish', {
-              'node': Strophe.NS.OMEMO_DEVICELIST
-            }).c('item').c('list', {
-              'xmlns': Strophe.NS.OMEMO
-            });
-
-            _.each(this.devices.where({
-              'active': true
-            }), device => {
-              stanza.c('device', {
-                'id': device.get('id')
-              }).up();
-            });
-
-            _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
-          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+          return this.publishDevices();
         },
 
-        removeOwnDevices(device_ids) {// TODO
+        removeOwnDevices(device_ids) {
+          if (this.get('jid') !== _converse.bare_jid) {
+            throw new Error("Cannot remove devices from someone else's device list");
+          }
+
+          this.devices.reset(this.devices.filter(d => !_.includes(device_ids, d.get('id').toString())));
+          return this.publishDevices();
         }
 
       });
@@ -74832,23 +74882,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       function fetchDeviceLists() {
         return new Promise((resolve, reject) => _converse.devicelists.fetch({
-          'success': resolve
+          'success': resolve,
+          'error': resolve
         }));
       }
 
       function fetchOwnDevices() {
-        return new Promise((resolve, reject) => {
-          fetchDeviceLists().then(() => {
-            let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
+        return fetchDeviceLists().then(() => {
+          let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
 
-            if (_.isNil(own_devicelist)) {
-              own_devicelist = _converse.devicelists.create({
-                'jid': _converse.bare_jid
-              });
-            }
+          if (_.isNil(own_devicelist)) {
+            own_devicelist = _converse.devicelists.create({
+              'jid': _converse.bare_jid
+            });
+          }
 
-            own_devicelist.fetchDevices().then(resolve).catch(reject);
-          });
+          return own_devicelist.fetchDevices();
         });
       }
 
@@ -74857,18 +74906,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
          * Also, deduplicate devices if necessary.
          */
         const devicelist = _converse.devicelists.get(_converse.bare_jid),
-              device_id = _converse.omemo_store.get('device_id'),
+              device_id = _converse.omemo_store.get('device_id').toString(),
               own_device = devicelist.devices.findWhere({
           'id': device_id
         });
 
         if (!own_device) {
-          return devicelist.addDeviceToList(device_id);
+          return devicelist.addOwnDevice(device_id);
         } else if (!own_device.get('active')) {
           own_device.set('active', true, {
             'silent': true
           });
-          return devicelist.addDeviceToList(device_id);
+          return devicelist.addOwnDevice(device_id);
         } else {
           return Promise.resolve();
         }
@@ -74950,7 +74999,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       function restoreOMEMOSession() {
         if (_.isUndefined(_converse.omemo_store)) {
           _converse.omemo_store = new _converse.OMEMOStore();
-          _converse.omemo_store.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.omemosession-${_converse.bare_jid}`));
+          const id = b64_sha1(`converse.omemosession-${_converse.bare_jid}`);
+          _converse.omemo_store.id = id;
+          _converse.omemo_store.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
         }
 
         return _converse.omemo_store.fetchSession();
@@ -74958,7 +75009,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       function initOMEMO() {
         _converse.devicelists = new _converse.DeviceLists();
-        _converse.devicelists.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.devicelists-${_converse.bare_jid}`));
+        const id = `converse.devicelists-${_converse.bare_jid}`;
+        _converse.devicelists.id = id;
+        _converse.devicelists.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
         fetchOwnDevices().then(() => restoreOMEMOSession()).then(() => updateOwnDeviceList()).then(() => _converse.omemo.publishBundle()).then(() => _converse.emit('OMEMOInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
       }
 
@@ -75174,9 +75227,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         initialize() {
-          _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-
           this.model.on('change', this.render, this);
+
+          _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
 
           _converse.emit('profileModalInitialized', this.model);
         },
@@ -81407,7 +81460,11 @@ __p += '<!-- src/templates/profile_modal.html -->\n<div class="modal fade" id="u
 __e(o.heading_profile) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
-'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <ul class="nav nav-pills justify-content-center">\n                    <li role="presentation" class="nav-item">\n                        <a class="nav-link active" id="profile-tab" href="#profile-tabpanel" aria-controls="profile-tabpanel" role="tab" data-toggle="tab">Profile</a>\n                    </li>\n                    <li role="presentation" class="nav-item">\n                        <a class="nav-link" id="omemo-tab" href="#omemo-tabpanel" aria-controls="omemo-tabpanel" role="tab" data-toggle="tab">OMEMO</a>\n                    </li>\n                </ul>\n                <div class="tab-content">\n                    <div class="tab-pane fade show active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">\n                        <form class="converse-form converse-form--modal profile-form" action="#">\n                            <div class="row">\n                                <div class="col-auto">\n                                    <a class="change-avatar" href="#">\n                                        ';
+'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                ';
+ if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ;
+__p += '\n                <ul class="nav nav-pills justify-content-center">\n                    <li role="presentation" class="nav-item">\n                        <a class="nav-link active" id="profile-tab" href="#profile-tabpanel" aria-controls="profile-tabpanel" role="tab" data-toggle="tab">Profile</a>\n                    </li>\n                    <li role="presentation" class="nav-item">\n                        <a class="nav-link" id="omemo-tab" href="#omemo-tabpanel" aria-controls="omemo-tabpanel" role="tab" data-toggle="tab">OMEMO</a>\n                    </li>\n                </ul>\n                ';
+ } ;
+__p += '\n                <div class="tab-content">\n                    <div class="tab-pane fade show active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">\n                        <form class="converse-form converse-form--modal profile-form" action="#">\n                            <div class="row">\n                                <div class="col-auto">\n                                    <a class="change-avatar" href="#">\n                                        ';
  if (o.image) { ;
 __p += '\n                                            <img alt="' +
 __e(o.alt_avatar) +
@@ -81450,48 +81507,52 @@ __e(o.label_role_help) +
 '</small>\n                            </div>\n                            <hr/>\n                            <div class="form-group">\n                                <button type="submit" class="save-form btn btn-primary">' +
 __e(o.__('Save and close')) +
 '</button>\n                            </div>\n                        </form>\n                    </div>\n                    ';
- if (o._converse.pluggable.plugins['converse-omemo'].enabled()) { ;
+ if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ;
 __p += '\n                        <div class="tab-pane fade" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">\n                            <form class="converse-form fingerprint-removal">\n                                <ul class="list-group fingerprints">\n                                    <li class="list-group-item active">' +
 __e(o.__("This device's OMEMO fingerprint")) +
-'</li>\n                                    <li class="fingerprint-removal-item list-group-item">\n                                        ';
+'</li>\n                                    <li class="list-group-item">\n                                        ';
  if (o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint) { ;
-__p += '\n                                            <input type="checkbox" value="' +
-__e(o.view.current_device.get('id')) +
-'"\n                                                   aria-label="' +
-__e(o.__('Checkbox for removing the following fingerprint')) +
-'">\n                                            <span class="fingerprint">' +
+__p += '\n                                            <span class="fingerprint">' +
 __e(o.view.current_device.get('bundle').fingerprint) +
 '</span>\n                                        ';
  } else {;
 __p += '\n                                            <span class="spinner fa fa-spinner centered"/>\n                                        ';
  } ;
 __p += '\n                                    </li>\n                                </ul>\n                                ';
- if (o.view.other_devices) { ;
-__p += '\n                                    <ul class="list-group fingerprints">\n                                        <li class="list-group-item active">\n                                            <input type="checkbox" class="select-all" title="' +
+ if (o.view.other_devices.length) { ;
+__p += '\n                                    <ul class="list-group fingerprints">\n                                        <li class="list-group-item nopadding active">\n                                            <label>\n                                            <input type="checkbox" class="select-all" title="' +
 __e(o.__('Select all')) +
 '"\n                                                   aria-label="' +
 __e(o.__('Checkbox to select fingerprints of all other OMEMO devices')) +
 '">\n                                            ' +
 __e(o.__('Other OMEMO-enabled devices')) +
-'\n                                        </li>\n                                        ';
+'\n                                            </label>\n                                        </li>\n                                        ';
  o._.forEach(o.view.other_devices, function (device) { ;
 __p += '\n                                            ';
  if (device.get('bundle') && device.get('bundle').fingerprint) { ;
-__p += '\n                                            <li class="fingerprint-removal-item list-group-item">\n                                                <input type="checkbox" value="' +
+__p += '\n                                            <li class="fingerprint-removal-item list-group-item nopadding">\n                                                <label>\n                                                <input type="checkbox" value="' +
 __e(device.get('id')) +
 '"\n                                                       aria-label="' +
 __e(o.__('Checkbox for selecting the following fingerprint')) +
 '">\n                                                <span class="fingerprint">' +
 __e(device.get('bundle').fingerprint) +
-'</span>\n                                            </li>\n                                            ';
+'</span>\n                                                </label>\n                                            </li>\n                                            ';
+ } else {;
+__p += '\n                                            <li class="fingerprint-removal-item list-group-item nopadding">\n                                                <label>\n                                                <input type="checkbox" value="' +
+__e(device.get('id')) +
+'"\n                                                       aria-label="' +
+__e(o.__('Checkbox for selecting the following fingerprint')) +
+'">\n                                                <span>' +
+__e(o.__('Device without a fingerprint')) +
+'</span>\n                                                </label>\n                                            </li>\n                                            ';
  } ;
 __p += '\n                                        ';
  }); ;
-__p += '\n                                    </ul>\n                                ';
- } ;
-__p += '\n                                <div class="form-group">\n                                    <button type="submit" class="save-form btn btn-primary">' +
+__p += '\n                                    </ul>\n                                    <div class="form-group">\n                                        <button type="submit" class="save-form btn btn-primary">' +
 __e(o.__('Remove checked devices and close')) +
-'</button>\n                                </div>\n                            </form>\n                        </div>\n                    ';
+'</button>\n                                    </div>\n                                ';
+ } ;
+__p += '\n                            </form>\n                        </div>\n                    ';
  } ;
 __p += '\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
@@ -82498,7 +82559,7 @@ __e(o.role) +
 '</p>\n                ';
  } ;
 __p += '\n\n                ';
- if (o._converse.pluggable.plugins['converse-omemo'].enabled()) { ;
+ if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ;
 __p += '\n                    <hr>\n                    <ul class="list-group fingerprints">\n                        <li class="list-group-item active">' +
 __e(o.__('OMEMO Fingerprints')) +
 '</li>\n                        ';

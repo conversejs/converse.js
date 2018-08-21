@@ -77,21 +77,25 @@
                 },
 
                 initialize () {
-                    const { _converse } = this.__super__,
-                          device_id = _converse.omemo_store.get('device_id');
-
+                    const { _converse } = this.__super__;
+                    this.debouncedRender = _.debounce(this.render, 50);
                     this.devicelist = _converse.devicelists.get(_converse.bare_jid);
-                    this.current_device = this.devicelist.devices.get(device_id);
-                    this.other_devices = this.devicelist.devices.filter(d => (d.get('id') !== device_id));
-
-                    this.devicelist.devices.on('change:bundle', this.render, this);
+                    this.devicelist.devices.on('change:bundle', this.debouncedRender, this);
+                    this.devicelist.devices.on('reset', this.debouncedRender, this);
                     return this.__super__.initialize.apply(this, arguments);
                 },
 
+                beforeRender () {
+                    const { _converse } = this.__super__,
+                          device_id = _converse.omemo_store.get('device_id').toString();
+                    this.current_device = this.devicelist.devices.get(device_id);
+                    this.other_devices = this.devicelist.devices.filter(d => (d.get('id') !== device_id));
+                },
+
                 selectAll (ev) {
-                    let sibling = ev.target.parentElement.nextElementSibling;
+                    let sibling = u.ancestor(ev.target, 'li');
                     while (sibling) {
-                        sibling.firstElementChild.checked = ev.target.checked;
+                        sibling.querySelector('input[type="checkbox"]').checked = ev.target.checked;
                         sibling = sibling.nextElementSibling;
                     }
                 },
@@ -99,9 +103,20 @@
                 removeSelectedFingerprints (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
+                    ev.target.querySelector('.select-all').checked = false
                     const checkboxes = ev.target.querySelectorAll('.fingerprint-removal-item input[type="checkbox"]:checked'),
                           device_ids = _.map(checkboxes, 'value');
-                    this.devicelist.removeOwnDevices(device_ids);
+                    this.devicelist.removeOwnDevices(device_ids)
+                        .then(this.modal.hide)
+                        .catch(err => {
+                            const { _converse } = this.__super__,
+                                  { __ } = _converse;
+                            _converse.log(err, Strophe.LogLevel.ERROR);
+                            _converse.api.alert.show(
+                                Strophe.LogLevel.ERROR,
+                                __('Error'), [__('Sorry, an error occurred while trying to remove the devices.')]
+                            )
+                        });
                 },
             },
 
@@ -628,21 +643,27 @@
                     return Promise.resolve();
                 },
 
+
+                createNewDeviceBundle () {
+                    return generateBundle().then((data) => {
+                        // TODO: should storeSession be used here?
+                        _converse.omemo_store.save(data);
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                },
+
                 fetchSession () {
                     if (_.isUndefined(this._setup_promise)) {
                         this._setup_promise = new Promise((resolve, reject) => {
                             this.fetch({
                                 'success': () => {
                                     if (!_converse.omemo_store.get('device_id')) {
-                                        generateBundle()
-                                            .then((data) => {
-                                                // TODO: should storeSession be used here?
-                                                _converse.omemo_store.save(data);
-                                                resolve();
-                                            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                                        this.createNewDeviceBundle().then(resolve).catch(resolve);
                                     } else {
                                         resolve();
                                     }
+                                },
+                                'error': () => {
+                                    this.createNewDeviceBundle().then(resolve).catch(resolve);
                                 }
                             });
                         });
@@ -704,9 +725,9 @@
 
                 initialize () {
                     this.devices = new _converse.Devices();
-                    this.devices.browserStorage = new Backbone.BrowserStorage.session(
-                        b64_sha1(`converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`)
-                    );
+                    const id = `converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`;
+                    this.devices.id = id;
+                    this.devices.browserStorage = new Backbone.BrowserStorage.session(id);
                     this.fetchDevices();
                 },
 
@@ -720,6 +741,9 @@
                                     } else {
                                         resolve();
                                     }
+                                },
+                                'error': () => {
+                                    this.fetchDevicesFromServer().then(resolve).catch(reject);
                                 }
                             });
                         });
@@ -749,30 +773,39 @@
                     });
                 },
 
-                addDeviceToList (device_id) {
+                publishDevices () {
+                    const stanza = $iq({
+                        'from': _converse.bare_jid,
+                        'type': 'set'
+                    }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                        .c('publish', {'node': Strophe.NS.OMEMO_DEVICELIST})
+                            .c('item')
+                                .c('list', {'xmlns': Strophe.NS.OMEMO})
+
+                    _.each(this.devices.where({'active': true}), (device) => {
+                        stanza.c('device', {'id': device.get('id')}).up();
+                    });
+                    return _converse.api.sendIQ(stanza);
+                },
+
+                addOwnDevice (device_id) {
                     /* Add this device to our list of devices stored on the
                      * server.
                      * https://xmpp.org/extensions/xep-0384.html#usecases-announcing
                      */
-                    this.devices.create({'id': device_id, 'jid': this.get('jid')});
-                    return new Promise((resolve, reject) => {
-                        const stanza = $iq({
-                            'from': _converse.bare_jid,
-                            'type': 'set'
-                        }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                            .c('publish', {'node': Strophe.NS.OMEMO_DEVICELIST})
-                                .c('item')
-                                    .c('list', {'xmlns': Strophe.NS.OMEMO})
-
-                        _.each(this.devices.where({'active': true}), (device) => {
-                            stanza.c('device', {'id': device.get('id')}).up();
-                        });
-                        _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                    if (this.get('jid') !== _converse.bare_jid) {
+                        throw new Error("Cannot add device to someone else's device list");
+                    }
+                    this.devices.create({'id': device_id.toString(), 'jid': this.get('jid')});
+                    return this.publishDevices();
                 },
 
                 removeOwnDevices (device_ids) {
-                    // TODO
+                    if (this.get('jid') !== _converse.bare_jid) {
+                        throw new Error("Cannot remove devices from someone else's device list");
+                    }
+                    this.devices.reset(this.devices.filter(d => (!_.includes(device_ids, d.get('id').toString()))));
+                    return this.publishDevices();
                 }
             });
 
@@ -814,18 +847,19 @@
             }
 
             function fetchDeviceLists () {
-                return new Promise((resolve, reject) => _converse.devicelists.fetch({'success': resolve}));
+                return new Promise((resolve, reject) => _converse.devicelists.fetch({
+                    'success': resolve,
+                    'error': resolve
+                }));
             }
 
             function fetchOwnDevices () {
-                return new Promise((resolve, reject) => {
-                    fetchDeviceLists().then(() => {
-                        let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
-                        if (_.isNil(own_devicelist)) {
-                            own_devicelist = _converse.devicelists.create({'jid': _converse.bare_jid});
-                        }
-                        own_devicelist.fetchDevices().then(resolve).catch(reject);
-                    });
+                return fetchDeviceLists().then(() => {
+                    let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
+                    if (_.isNil(own_devicelist)) {
+                        own_devicelist = _converse.devicelists.create({'jid': _converse.bare_jid});
+                    }
+                    return own_devicelist.fetchDevices();
                 });
             }
 
@@ -834,14 +868,14 @@
                  * Also, deduplicate devices if necessary.
                  */
                 const devicelist = _converse.devicelists.get(_converse.bare_jid),
-                      device_id = _converse.omemo_store.get('device_id'),
+                      device_id = _converse.omemo_store.get('device_id').toString(),
                       own_device = devicelist.devices.findWhere({'id': device_id});
 
                 if (!own_device) {
-                    return devicelist.addDeviceToList(device_id);
+                    return devicelist.addOwnDevice(device_id);
                 } else if (!own_device.get('active')) {
                     own_device.set('active', true, {'silent': true});
-                    return devicelist.addDeviceToList(device_id);
+                    return devicelist.addOwnDevice(device_id);
                 } else {
                     return Promise.resolve();
                 }
@@ -903,18 +937,19 @@
             function restoreOMEMOSession () {
                 if (_.isUndefined(_converse.omemo_store))  {
                     _converse.omemo_store = new _converse.OMEMOStore();
-                    _converse.omemo_store.browserStorage =  new Backbone.BrowserStorage[_converse.storage](
-                        b64_sha1(`converse.omemosession-${_converse.bare_jid}`)
-                    );
+                    const id = b64_sha1(`converse.omemosession-${_converse.bare_jid}`);
+                    _converse.omemo_store.id = id;
+                    _converse.omemo_store.browserStorage =  new Backbone.BrowserStorage[_converse.storage](id);
                 }
                 return _converse.omemo_store.fetchSession();
             }
 
             function initOMEMO() {
                 _converse.devicelists = new _converse.DeviceLists();
-                _converse.devicelists.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                    b64_sha1(`converse.devicelists-${_converse.bare_jid}`)
-                );
+                const id = `converse.devicelists-${_converse.bare_jid}`;
+                _converse.devicelists.id = id;
+                _converse.devicelists.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+
                 fetchOwnDevices()
                     .then(() => restoreOMEMOSession())
                     .then(() => updateOwnDeviceList())

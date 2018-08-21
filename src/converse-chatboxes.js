@@ -259,7 +259,7 @@
                     });
                     this.messages = new _converse.Messages();
                     this.messages.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                        b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
+                        `converse.messages${this.get('jid')}${_converse.bare_jid}`);
                     this.messages.chatbox = this;
 
                     this.messages.on('change:upload', (message) => {
@@ -626,7 +626,7 @@
 
                 onConnected () {
                     this.browserStorage = new Backbone.BrowserStorage.session(
-                        b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
+                        `converse.chatboxes-${_converse.bare_jid}`);
                     this.registerMessageHandler();
                     this.fetch({
                         'add': true,

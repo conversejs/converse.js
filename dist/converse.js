@@ -74752,7 +74752,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         initialize() {
           this.devices = new _converse.Devices();
           const id = `converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`;
-          this.devices.id = id;
           this.devices.browserStorage = new Backbone.BrowserStorage.session(id);
           this.fetchDevices();
         },
@@ -74767,9 +74766,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                   } else {
                     resolve();
                   }
-                },
-                'error': () => {
-                  this.fetchDevicesFromServer().then(ids => this.publishCurrentDevice(ids)).then(resolve).catch(resolve);
                 }
               });
             });
@@ -74785,21 +74781,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           return restoreOMEMOSession().then(() => {
-            const device_id = _converse.omemo_store.get('device_id');
+            const device_id = _converse.omemo_store.get('device_id'),
+                  own_device = this.devices.findWhere({
+              'id': device_id
+            });
 
-            if (!_.includes(device_ids, device_id)) {
-              return this.publishDevices();
-            } else {
-              const own_device = this.devices.findWhere({
-                'id': device_id
+            if (!_.includes(device_ids, device_id) || !own_device.get('active')) {
+              own_device.save('active', true, {
+                'silent': true
               });
-
-              if (!own_device.get('active')) {
-                own_device.set('active', true, {
-                  'silent': true
-                });
-                return this.publishDevices();
-              }
+              return this.publishDevices();
             }
           });
         },
@@ -74854,7 +74845,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             throw new Error("Cannot remove devices from someone else's device list");
           }
 
-          this.devices.reset(this.devices.filter(d => !_.includes(device_ids, d.get('id').toString())));
+          _.forEach(device_ids, device_id => this.devices.get(device_id).destroy());
+
           return this.publishDevices();
         }
 
@@ -74892,8 +74884,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       function fetchDeviceLists() {
         return new Promise((resolve, reject) => _converse.devicelists.fetch({
-          'success': resolve,
-          'error': resolve
+          'success': resolve
         }));
       }
 
@@ -74950,7 +74941,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               devices = devicelist.devices,
               removed_ids = _.difference(devices.pluck('id'), device_ids);
 
-        _.forEach(removed_ids, removed_id => devices.get(removed_id).set('active', false));
+        _.forEach(removed_ids, removed_id => devices.get(removed_id).save('active', false));
 
         _.forEach(device_ids, device_id => {
           const dev = devices.get(device_id);
@@ -75004,7 +74995,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       function initOMEMO() {
         _converse.devicelists = new _converse.DeviceLists();
         const id = `converse.devicelists-${_converse.bare_jid}`;
-        _converse.devicelists.id = id;
         _converse.devicelists.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
         fetchOwnDevices().then(() => restoreOMEMOSession()).then(() => _converse.omemo.publishBundle()).then(() => _converse.emit('OMEMOInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
       }

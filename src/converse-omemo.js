@@ -458,23 +458,18 @@
             _converse.NUM_PREKEYS = 100; // Set here so that tests can override
 
             function generateFingerprint (device) {
-                return new Promise((resolve, reject) => {
-                    device.getBundle().then((bundle) => {
-                        if (_.isNil(bundle)) { resolve(); }
-
-                        // TODO: only generate fingerprints when necessary
-                        crypto.subtle.digest('SHA-1', u.base64ToArrayBuffer(bundle['identity_key']))
-                            .then((fp) => {
-                                bundle['fingerprint'] = u.arrayBufferToHex(fp);
-                                device.save('bundle', bundle);
-                                device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
-                                resolve();
-                            }).catch(reject);
-                    });
+                let bundle;
+                return device.getBundle().then(b => {
+                    bundle = b;
+                    return crypto.subtle.digest('SHA-1', u.base64ToArrayBuffer(bundle['identity_key']));
+                }).then(fp => {
+                    bundle['fingerprint'] = u.arrayBufferToHex(fp);
+                    device.save('bundle', bundle);
+                    device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
                 });
             }
 
-            _converse.generateFingerprints= function (jid) {
+            _converse.generateFingerprints = function (jid) {
                 return _converse.getDevicesForContact(jid)
                     .then(devices => Promise.all(devices.map(d => generateFingerprint(d))))
             }
@@ -822,29 +817,27 @@
                     const store = _converse.omemo_store,
                           signed_prekey = store.get('signed_prekey');
 
-                    return new Promise((resolve, reject) => {
-                        const stanza = $iq({
-                            'from': _converse.bare_jid,
-                            'type': 'set'
-                        }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                            .c('publish', {'node': `${Strophe.NS.OMEMO_BUNDLES}:${store.get('device_id')}`})
-                                .c('item')
-                                    .c('bundle', {'xmlns': Strophe.NS.OMEMO})
-                                        .c('signedPreKeyPublic', {'signedPreKeyId': signed_prekey.keyId})
-                                            .t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up()
-                                        .c('signedPreKeySignature')
-                                            .t(u.arrayBufferToBase64(signed_prekey.signature)).up()
-                                        .c('identityKey')
-                                            .t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up()
-                                        .c('prekeys');
-                        _.forEach(
-                            store.get('prekeys').slice(0, _converse.NUM_PREKEYS),
-                            (prekey) => {
-                                stanza.c('preKeyPublic', {'preKeyId': prekey.keyId})
-                                    .t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();
-                            });
-                        _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
-                    });
+                    const stanza = $iq({
+                        'from': _converse.bare_jid,
+                        'type': 'set'
+                    }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                        .c('publish', {'node': `${Strophe.NS.OMEMO_BUNDLES}:${store.get('device_id')}`})
+                            .c('item')
+                                .c('bundle', {'xmlns': Strophe.NS.OMEMO})
+                                    .c('signedPreKeyPublic', {'signedPreKeyId': signed_prekey.keyId})
+                                        .t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up()
+                                    .c('signedPreKeySignature')
+                                        .t(u.arrayBufferToBase64(signed_prekey.signature)).up()
+                                    .c('identityKey')
+                                        .t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up()
+                                    .c('prekeys');
+                    _.forEach(
+                        store.get('prekeys').slice(0, _converse.NUM_PREKEYS),
+                        (prekey) => {
+                            stanza.c('preKeyPublic', {'preKeyId': prekey.keyId})
+                                .t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();
+                        });
+                    return _converse.api.sendIQ(stanza);
                 }
             }
 

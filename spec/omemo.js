@@ -65,10 +65,41 @@
                                 .c('device', {'id': '482886413b977930064a5888b92134fe'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                _converse.emit('OMEMOInitialized');
-                // Check that device list for contact is fetched when chat is opened.
-                return test_utils.openChatBoxFor(_converse, contact_jid);
+                // Check that own device was published
+                return test_utils.waitUntil(() => {
+                    return _.filter(
+                        _converse.connection.IQ_stanzas,
+                        (iq) => {
+                            const node = iq.nodeTree.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]');
+                            if (node) { iq_stanza = iq.nodeTree;}
+                            return node;
+                        }).length;
+                });
             }).then(() => {
+                const stanza = $iq({
+                    'from': _converse.bare_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                return test_utils.waitUntil(() => {
+                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
+                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]');
+                        if (node) { iq_stanza = iq.nodeTree; }
+                        return node;
+                    }).length;
+                });
+            }).then(() => {
+                const stanza = $iq({
+                    'from': _converse.bare_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                return _converse.api.waitUntil('OMEMOInitialized');
+            }).then(() => test_utils.openChatBoxFor(_converse, contact_jid))
+              .then(() => {
                 return test_utils.waitUntil(() => {
                     return _.filter(
                         _converse.connection.IQ_stanzas,
@@ -90,7 +121,8 @@
                             .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                                 .c('device', {'id': '555'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
+                return test_utils.waitUntil(() => _converse.omemo_store);
+            }).then(() => {
                 const devicelist = _converse.devicelists.get({'jid': contact_jid});
                 expect(devicelist.devices.length).toBe(1);
 
@@ -233,7 +265,8 @@
             test_utils.createContacts(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
-            test_utils.waitUntil(function () {
+            // Wait until own devices are fetched
+            test_utils.waitUntil(() => {
                 return _.filter(
                     _converse.connection.IQ_stanzas,
                     (iq) => {
@@ -241,7 +274,7 @@
                         if (node) { iq_stanza = iq.nodeTree;}
                         return node;
                     }).length;
-            }).then(function () {
+            }).then(() => {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq type="get" from="dummy@localhost" to="dummy@localhost" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
                         '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
@@ -259,16 +292,48 @@
                             .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                                 .c('device', {'id': '555'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
+                return test_utils.waitUntil(() => _converse.omemo_store);
+            }).then(() => {
                 expect(_converse.devicelists.length).toBe(1);
                 const devicelist = _converse.devicelists.get(_converse.bare_jid);
-                expect(devicelist.devices.length).toBe(1);
+                expect(devicelist.devices.length).toBe(2);
                 expect(devicelist.devices.at(0).get('id')).toBe('555');
-                return test_utils.waitUntil(() => _converse.devicelists);
-            }).then(function () {
-                // We simply emit, to avoid doing all the setup work
-                _converse.emit('OMEMOInitialized');
+                expect(devicelist.devices.at(1).get('id')).toBe('123456789');
 
+                // Check that own device was published
+                return test_utils.waitUntil(() => {
+                    return _.filter(
+                        _converse.connection.IQ_stanzas,
+                        (iq) => {
+                            const node = iq.nodeTree.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]');
+                            if (node) { iq_stanza = iq.nodeTree;}
+                            return node;
+                        }).length;
+                });
+            }).then(() => {
+                const stanza = $iq({
+                    'from': _converse.bare_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                return test_utils.waitUntil(() => {
+                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
+                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]');
+                        if (node) { iq_stanza = iq.nodeTree; }
+                        return node;
+                    }).length;
+                });
+            }).then(() => {
+                const stanza = $iq({
+                    'from': _converse.bare_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                return _converse.api.waitUntil('OMEMOInitialized');
+            }).then(() => {
                 let stanza = $msg({
                     'from': contact_jid,
                     'to': _converse.bare_jid,
@@ -319,6 +384,7 @@
                     .c('items', {'node': 'eu.siacs.conversations.axolotl.devicelist'})
                         .c('item')
                             .c('list', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                                .c('device', {'id': '123456789'})
                                 .c('device', {'id': '555'})
                                 .c('device', {'id': '777'})
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
@@ -346,7 +412,8 @@
                                 .c('device', {'id': '444'})
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                return test_utils.waitUntil(function () {
+                // Check that own device was published
+                return test_utils.waitUntil(() => {
                     return _.filter(
                         _converse.connection.IQ_stanzas,
                         (iq) => {
@@ -355,7 +422,7 @@
                             return node;
                         }).length;
                 });
-            }).then(function () {
+            }).then(() => {
                 // Check that our own device is added again, but that removed
                 // devices are not added.
                 expect(iq_stanza.outerHTML).toBe(
@@ -394,7 +461,7 @@
             test_utils.createContacts(_converse, 'current');
             const contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
 
-            test_utils.waitUntil(function () {
+            test_utils.waitUntil(() => {
                 return _.filter(
                     _converse.connection.IQ_stanzas,
                     (iq) => {
@@ -402,7 +469,7 @@
                         if (node) { iq_stanza = iq.nodeTree;}
                         return node;
                     }).length;
-            }).then(function () {
+            }).then(() => {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq type="get" from="dummy@localhost" to="dummy@localhost" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
                         '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
@@ -421,18 +488,49 @@
                             .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                                 .c('device', {'id': '555'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                expect(_converse.devicelists.length).toBe(1);
-                return test_utils.waitUntil(() => _converse.devicelists);
+                return test_utils.waitUntil(() => _converse.omemo_store);
             }).then(function () {
                 // We simply emit, to avoid doing all the setup work
                 expect(_converse.devicelists.length).toBe(1);
-                let devicelist = _converse.devicelists.get(_converse.bare_jid);
+                const devicelist = _converse.devicelists.get(_converse.bare_jid);
                 expect(devicelist.devices.length).toBe(2);
                 expect(devicelist.devices.at(0).get('id')).toBe('555');
                 expect(devicelist.devices.at(1).get('id')).toBe('123456789');
-                _converse.emit('OMEMOInitialized');
+                // Check that own device was published
+                return test_utils.waitUntil(() => {
+                    return _.filter(
+                        _converse.connection.IQ_stanzas,
+                        (iq) => {
+                            const node = iq.nodeTree.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]');
+                            if (node) { iq_stanza = iq.nodeTree;}
+                            return node;
+                        }).length;
+                });
+            }).then(() => {
+                const stanza = $iq({
+                    'from': _converse.bare_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
+                // Check that own bundle gets published
+                return test_utils.waitUntil(() => {
+                    return _.filter(_converse.connection.IQ_stanzas, (iq) => {
+                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]');
+                        if (node) { iq_stanza = iq.nodeTree; }
+                        return node;
+                    }).length;
+                });
+            }).then(() => {
+                const stanza = $iq({
+                    'from': _converse.bare_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.bare_jid,
+                    'type': 'result'});
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                return _converse.api.waitUntil('OMEMOInitialized');
+            }).then(() => {
                 let stanza = $msg({
                     'from': contact_jid,
                     'to': _converse.bare_jid,
@@ -452,7 +550,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 expect(_converse.devicelists.length).toBe(2);
-                devicelist = _converse.devicelists.get(contact_jid);
+                let devicelist = _converse.devicelists.get(contact_jid);
                 expect(devicelist.devices.length).toBe(1);
                 let device = devicelist.devices.at(0);
                 expect(device.get('bundle').identity_key).toBe('3333');
@@ -543,7 +641,7 @@
             _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
-            test_utils.waitUntil(function () {
+            test_utils.waitUntil(() => {
                 return _.filter(
                     _converse.connection.IQ_stanzas,
                     (iq) => {
@@ -551,7 +649,7 @@
                         if (node) { iq_stanza = iq.nodeTree;}
                         return node;
                     }).length;
-            }).then(function () {
+            }).then(() => {
                 const stanza = $iq({
                     'from': contact_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -589,14 +687,14 @@
                         return node;
                     }).length;
                 });
-            }).then(function () {
+            }).then(() => {
                 expect(iq_stanza.outerHTML).toBe(
                     `<iq from="dummy@localhost" type="set" xmlns="jabber:client" id="${iq_stanza.getAttribute('id')}">`+
                         `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                             `<publish node="eu.siacs.conversations.axolotl.bundles:123456789">`+
                                 `<item>`+
                                     `<bundle xmlns="eu.siacs.conversations.axolotl">`+
-                                        `<signedPreKeyPublic signedPreKeyId="0">${btoa('1234')}</signedPreKeyPublic>`+
+                                        `<signedPreKeyPublic signedPreKeyId="1">${btoa('1234')}</signedPreKeyPublic>`+
                                             `<signedPreKeySignature>${btoa('11112222333344445555')}</signedPreKeySignature>`+
                                             `<identityKey>${btoa('1234')}</identityKey>`+
                                         `<prekeys>`+
@@ -646,7 +744,7 @@
                     '</iq>');
 
                 const stanza = $iq({
-                    'from': contact_jid,
+                    'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result',
@@ -656,20 +754,22 @@
                             .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
                                 .c('device', {'id': '482886413b977930064a5888b92134fe'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
+                return test_utils.waitUntil(() => _converse.omemo_store);
+            }).then(() => {
                 expect(_converse.devicelists.length).toBe(1);
                 const devicelist = _converse.devicelists.get(_converse.bare_jid);
-                expect(devicelist.devices.length).toBe(1);
+                expect(devicelist.devices.length).toBe(2);
                 expect(devicelist.devices.at(0).get('id')).toBe('482886413b977930064a5888b92134fe');
-
-                return test_utils.openChatBoxFor(_converse, contact_jid);
-            }).then(() => {
+                expect(devicelist.devices.at(1).get('id')).toBe('123456789');
+                // Check that own device was published
                 return test_utils.waitUntil(() => {
-                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
-                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.devicelist"]');
-                        if (node) { iq_stanza = iq.nodeTree; }
-                        return node;
-                    }).length;
+                    return _.filter(
+                        _converse.connection.IQ_stanzas,
+                        (iq) => {
+                            const node = iq.nodeTree.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]');
+                            if (node) { iq_stanza = iq.nodeTree;}
+                            return node;
+                        }).length;
                 });
             }).then(() => {
                 expect(iq_stanza.outerHTML).toBe(
@@ -693,8 +793,9 @@
                     'type': 'result'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
+                // Check that own bundle gets published
                 return test_utils.waitUntil(() => {
-                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
+                    return _.filter(_converse.connection.IQ_stanzas, (iq) => {
                         const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]');
                         if (node) { iq_stanza = iq.nodeTree; }
                         return node;
@@ -707,7 +808,7 @@
                 const signed_prekeys = iq_stanza.querySelectorAll('signedPreKeyPublic');
                 expect(signed_prekeys.length).toBe(1);
                 const signed_prekey = signed_prekeys[0];
-                expect(signed_prekey.getAttribute('signedPreKeyId')).toBe('0')
+                expect(signed_prekey.getAttribute('signedPreKeyId')).toBe('1')
                 expect(iq_stanza.querySelectorAll('signedPreKeySignature').length).toBe(1);
                 expect(iq_stanza.querySelectorAll('identityKey').length).toBe(1);
 
@@ -717,7 +818,10 @@
                     'to': _converse.bare_jid,
                     'type': 'result'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
+                return _converse.api.waitUntil('OMEMOInitialized', 1000);
+            }).then(() => {
+                return test_utils.openChatBoxFor(_converse, contact_jid);
+            }).then(() => {
                 return test_utils.waitUntil(() => {
                     return _.filter(
                         _converse.connection.IQ_stanzas,
@@ -748,7 +852,9 @@
                                 .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
                                 .c('device', {'id': 'ae890ac52d0df67ed7cfdf51b644e901'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
+                const devicelist = _converse.devicelists.get(contact_jid);
+                return test_utils.waitUntil(() => devicelist.devices.length);
+            }).then(() => {
                 expect(_converse.devicelists.length).toBe(2);
                 const devicelist = _converse.devicelists.get(contact_jid);
                 expect(devicelist.devices.length).toBe(4);

@@ -621,10 +621,10 @@
                             expect(view.model.get('chat_state')).toBe('inactive');
                             spyOn(_converse.connection, 'send');
                             view.model.maximize();
-                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'active', 700);
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'active', 1000);
                         }).then(() => {
                             expect(_converse.connection.send).toHaveBeenCalled();
-                            var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
+                            const calls = _.filter(_converse.connection.send.calls.all(), function (call) {
                                 return call.args[0] instanceof Strophe.Builder;
                             });
                             expect(calls.length).toBe(1);
@@ -635,7 +635,7 @@
                             expect($stanza.children().get(1).tagName).toBe('no-store');
                             expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
                             done();
-                        });
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
                     }));
                 });
 

@@ -100,7 +100,7 @@
 
     utils.openChatBoxFor = function (_converse, jid) {
         _converse.roster.get(jid).trigger("open");
-        return utils.waitUntil(() => _converse.chatboxviews.get(jid));
+        return utils.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
     };
 
     utils.openChatRoomViaModal = function (_converse, jid, nick='') {

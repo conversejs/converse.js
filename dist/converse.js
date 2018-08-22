@@ -63067,9 +63067,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *      that contains the message stanza, if it was
            *      contained, otherwise it's the message stanza itself.
            */
-          const _converse = this.__super__._converse,
-                __ = _converse.__,
-                archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
+          const archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
                 spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
                 delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
                 chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
@@ -63775,9 +63773,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       emojione.ascii = true;
 
       function onWindowStateChanged(data) {
-        _converse.chatboxviews.each(function (chatboxview) {
-          chatboxview.onWindowStateChanged(data.state);
-        });
+        if (_converse.chatboxviews) {
+          _converse.chatboxviews.each(chatboxview => {
+            chatboxview.onWindowStateChanged(data.state);
+          });
+        }
       }
 
       _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
@@ -66011,11 +66011,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.connection.reset();
 
-      _converse.off();
-
       _converse.stopListening();
 
       _converse.tearDown();
+
+      _converse.off();
     }
 
     if ('onpagehide' in window) {
@@ -69986,6 +69986,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
 
       _converse.api.listen.on('afterTearDown', () => {
+        if (!_converse.chatboxviews) {
+          return;
+        }
+
         const container = _converse.chatboxviews.el.querySelector("#converse-modals");
 
         if (container) {
@@ -74075,6 +74079,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.devicelist = _converse.devicelists.get(_converse.bare_jid);
           this.devicelist.devices.on('change:bundle', this.debouncedRender, this);
           this.devicelist.devices.on('reset', this.debouncedRender, this);
+          this.devicelist.devices.on('remove', this.debouncedRender, this);
           return this.__super__.initialize.apply(this, arguments);
         },
 
@@ -74131,6 +74136,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
           this.devicelist.devices.on('change:bundle', this.render, this);
           this.devicelist.devices.on('change:trusted', this.render, this);
+          this.devicelist.devices.on('remove', this.render, this);
+          this.devicelist.devices.on('reset', this.render, this);
           return this.__super__.initialize.apply(this, arguments);
         },
 
@@ -74162,21 +74169,30 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
                 sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
                 prekey = device.getRandomPreKey();
-          return sessionBuilder.processPreKey({
-            'registrationId': _converse.omemo_store.get('registration_id'),
-            'identityKey': _converse.omemo_store.get('identity_keypair'),
-            'signedPreKey': {
-              'keyId': bundle.signed_prekey.id,
-              // <Number>
-              'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
-              'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
-            },
-            'preKey': {
-              'keyId': prekey.id,
-              // <Number>
-              'publicKey': u.base64ToArrayBuffer(prekey.key)
-            }
-          });
+
+          try {
+            return sessionBuilder.processPreKey({
+              'registrationId': parseInt(_converse.omemo_store.get('device_id'), 10),
+              'identityKey': _converse.omemo_store.get('identity_key'),
+              'signedPreKey': {
+                'keyId': bundle.signed_prekey.id,
+                // <Number>
+                'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
+                'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
+              },
+              'preKey': {
+                'keyId': prekey.id,
+                // <Number>
+                'publicKey': u.base64ToArrayBuffer(prekey.key)
+              }
+            });
+          } catch (e) {
+            _converse.log(`Error: could not build session for device ${device.get('id')}`, Strophe.LogLevel.ERROR);
+
+            _converse.log(e.message, Strophe.LogLevel.ERROR);
+
+            return Promise.resolve();
+          }
         },
 
         getKeyAndTag(string) {
@@ -74447,21 +74463,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse.NUM_PREKEYS = 100; // Set here so that tests can override
 
       function generateFingerprint(device) {
-        return new Promise((resolve, reject) => {
-          device.getBundle().then(bundle => {
-            if (_.isNil(bundle)) {
-              resolve();
-            } // TODO: only generate fingerprints when necessary
-
-
-            crypto.subtle.digest('SHA-1', u.base64ToArrayBuffer(bundle['identity_key'])).then(fp => {
-              bundle['fingerprint'] = u.arrayBufferToHex(fp);
-              device.save('bundle', bundle);
-              device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
-
-              resolve();
-            }).catch(reject);
-          });
+        let bundle;
+        return device.getBundle().then(b => {
+          bundle = b;
+          return crypto.subtle.digest('SHA-1', u.base64ToArrayBuffer(bundle['identity_key']));
+        }).then(fp => {
+          bundle['fingerprint'] = u.arrayBufferToHex(fp);
+          device.save('bundle', bundle);
+          device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
         });
       }
 
@@ -74470,19 +74479,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       };
 
       _converse.getDevicesForContact = function (jid) {
-        return new Promise((resolve, reject) => {
-          _converse.api.waitUntil('OMEMOInitialized').then(() => {
-            let devicelist = _converse.devicelists.get(jid);
-
-            if (_.isNil(devicelist)) {
-              devicelist = _converse.devicelists.create({
-                'jid': jid
-              });
-            }
-
-            devicelist.fetchDevices().then(() => resolve(devicelist.devices));
-          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-        });
+        let devicelist;
+        return _converse.api.waitUntil('OMEMOInitialized').then(() => {
+          devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({
+            'jid': jid
+          });
+          return devicelist.fetchDevices();
+        }).then(() => devicelist.devices);
       };
 
       _converse.contactHasOMEMOSupport = function (jid) {
@@ -74508,35 +74511,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         }
 
-        return device_id;
-      }
-
-      function generateBundle() {
-        /* The first thing that needs to happen if a client wants to
-         * start using OMEMO is they need to generate an IdentityKey
-         * and a Device ID. The IdentityKey is a Curve25519 [6]
-         * public/private Key pair. The Device ID is a randomly
-         * generated integer between 1 and 2^31 - 1.
-         */
-        return new Promise((resolve, reject) => {
-          libsignal.KeyHelper.generateIdentityKeyPair().then(identity_keypair => {
-            const data = {
-              'device_id': generateDeviceID(),
-              'identity_keypair': identity_keypair,
-              'prekeys': {}
-            };
-            libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0).then(signed_prekey => {
-              data['signed_prekey'] = signed_prekey;
-
-              const key_promises = _.map(_.range(0, _converse.NUM_PREKEYS), id => libsignal.KeyHelper.generatePreKey(id));
-
-              Promise.all(key_promises).then(keys => {
-                data['prekeys'] = keys;
-                resolve(data);
-              });
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-          });
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        return device_id.toString();
       }
 
       _converse.OMEMOStore = Backbone.Model.extend({
@@ -74666,11 +74641,39 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return Promise.resolve();
         },
 
-        createNewDeviceBundle() {
-          return generateBundle().then(data => {
-            // TODO: should storeSession be used here?
-            _converse.omemo_store.save(data);
-          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        generateBundle() {
+          /* The first thing that needs to happen if a client wants to
+           * start using OMEMO is they need to generate an IdentityKey
+           * and a Device ID. The IdentityKey is a Curve25519 [6]
+           * public/private Key pair. The Device ID is a randomly
+           * generated integer between 1 and 2^31 - 1.
+           */
+          const data = {
+            'device_id': generateDeviceID()
+          };
+          return libsignal.KeyHelper.generateIdentityKeyPair().then(identity_keypair => {
+            data['identity_keypair'] = identity_keypair;
+            data['identity_key'] = identity_keypair.pubKey;
+            return libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 1);
+          }).then(signed_prekey => {
+            _converse.omemo_store.storeSignedPreKey(signed_prekey.keyId, signed_prekey.keyPair);
+
+            data['signed_prekey'] = signed_prekey;
+            return Promise.all(_.map(_.range(0, _converse.NUM_PREKEYS), id => libsignal.KeyHelper.generatePreKey(id)));
+          }).then(keys => {
+            _.forEach(keys, k => _converse.omemo_store.storePreKey(k.keyId, k.keyPair));
+
+            data['prekeys'] = keys;
+            this.save(data); // Save the bundle to the device
+
+            const devicelist = _converse.devicelists.get(_converse.bare_jid),
+                  device = devicelist.devices.create({
+              'id': data.device_id,
+              'jid': _converse.bare_jid
+            });
+
+            device.save('bundle', data);
+          });
         },
 
         fetchSession() {
@@ -74679,13 +74682,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               this.fetch({
                 'success': () => {
                   if (!_converse.omemo_store.get('device_id')) {
-                    this.createNewDeviceBundle().then(resolve).catch(resolve);
+                    this.generateBundle().then(resolve).catch(resolve);
                   } else {
                     resolve();
                   }
                 },
                 'error': () => {
-                  this.createNewDeviceBundle().then(resolve).catch(resolve);
+                  this.generateBundle().then(resolve).catch(resolve);
                 }
               });
             });
@@ -74760,13 +74763,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               this.devices.fetch({
                 'success': collection => {
                   if (collection.length === 0) {
-                    this.fetchDevicesFromServer().then(resolve).catch(reject);
+                    this.fetchDevicesFromServer().then(ids => this.publishCurrentDevice(ids)).then(resolve).catch(resolve);
                   } else {
                     resolve();
                   }
                 },
                 'error': () => {
-                  this.fetchDevicesFromServer().then(resolve).catch(reject);
+                  this.fetchDevicesFromServer().then(ids => this.publishCurrentDevice(ids)).then(resolve).catch(resolve);
                 }
               });
             });
@@ -74775,26 +74778,51 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return this._devices_promise;
         },
 
+        publishCurrentDevice(device_ids) {
+          if (this.get('jid') !== _converse.bare_jid) {
+            // We only publish for ourselves.
+            return Promise.resolve();
+          }
+
+          return restoreOMEMOSession().then(() => {
+            const device_id = _converse.omemo_store.get('device_id');
+
+            if (!_.includes(device_ids, device_id)) {
+              return this.publishDevices();
+            } else {
+              const own_device = this.devices.findWhere({
+                'id': device_id
+              });
+
+              if (!own_device.get('active')) {
+                own_device.set('active', true, {
+                  'silent': true
+                });
+                return this.publishDevices();
+              }
+            }
+          });
+        },
+
         fetchDevicesFromServer() {
-          return new Promise((resolve, reject) => {
-            const stanza = $iq({
-              'type': 'get',
-              'from': _converse.bare_jid,
-              'to': this.get('jid')
-            }).c('pubsub', {
-              'xmlns': Strophe.NS.PUBSUB
-            }).c('items', {
-              'node': Strophe.NS.OMEMO_DEVICELIST
-            });
+          const stanza = $iq({
+            'type': 'get',
+            'from': _converse.bare_jid,
+            'to': this.get('jid')
+          }).c('pubsub', {
+            'xmlns': Strophe.NS.PUBSUB
+          }).c('items', {
+            'node': Strophe.NS.OMEMO_DEVICELIST
+          });
+          return _converse.api.sendIQ(stanza).then(iq => {
+            const device_ids = _.map(sizzle(`list[xmlns="${Strophe.NS.OMEMO}"] device`, iq), dev => dev.getAttribute('id'));
 
-            _converse.connection.sendIQ(stanza, iq => {
-              _.forEach(sizzle(`list[xmlns="${Strophe.NS.OMEMO}"] device`, iq), dev => this.devices.create({
-                'id': dev.getAttribute('id'),
-                'jid': this.get('jid')
-              }));
+            _.forEach(device_ids, id => this.devices.create({
+              'id': id,
+              'jid': this.get('jid')
+            }));
 
-              resolve();
-            }, reject, _converse.IQ_TIMEOUT);
+            return device_ids;
           });
         },
 
@@ -74821,22 +74849,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return _converse.api.sendIQ(stanza);
         },
 
-        addOwnDevice(device_id) {
-          /* Add this device to our list of devices stored on the
-           * server.
-           * https://xmpp.org/extensions/xep-0384.html#usecases-announcing
-           */
-          if (this.get('jid') !== _converse.bare_jid) {
-            throw new Error("Cannot add device to someone else's device list");
-          }
-
-          this.devices.create({
-            'id': device_id.toString(),
-            'jid': this.get('jid')
-          });
-          return this.publishDevices();
-        },
-
         removeOwnDevices(device_ids) {
           if (this.get('jid') !== _converse.bare_jid) {
             throw new Error("Cannot remove devices from someone else's device list");
@@ -74854,28 +74866,26 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         publishBundle() {
           const store = _converse.omemo_store,
                 signed_prekey = store.get('signed_prekey');
-          return new Promise((resolve, reject) => {
-            const stanza = $iq({
-              'from': _converse.bare_jid,
-              'type': 'set'
-            }).c('pubsub', {
-              'xmlns': Strophe.NS.PUBSUB
-            }).c('publish', {
-              'node': `${Strophe.NS.OMEMO_BUNDLES}:${store.get('device_id')}`
-            }).c('item').c('bundle', {
-              'xmlns': Strophe.NS.OMEMO
-            }).c('signedPreKeyPublic', {
-              'signedPreKeyId': signed_prekey.keyId
-            }).t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up().c('signedPreKeySignature').t(u.arrayBufferToBase64(signed_prekey.signature)).up().c('identityKey').t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up().c('prekeys');
+          const stanza = $iq({
+            'from': _converse.bare_jid,
+            'type': 'set'
+          }).c('pubsub', {
+            'xmlns': Strophe.NS.PUBSUB
+          }).c('publish', {
+            'node': `${Strophe.NS.OMEMO_BUNDLES}:${store.get('device_id')}`
+          }).c('item').c('bundle', {
+            'xmlns': Strophe.NS.OMEMO
+          }).c('signedPreKeyPublic', {
+            'signedPreKeyId': signed_prekey.keyId
+          }).t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up().c('signedPreKeySignature').t(u.arrayBufferToBase64(signed_prekey.signature)).up().c('identityKey').t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up().c('prekeys');
 
-            _.forEach(store.get('prekeys').slice(0, _converse.NUM_PREKEYS), prekey => {
-              stanza.c('preKeyPublic', {
-                'preKeyId': prekey.keyId
-              }).t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();
-            });
-
-            _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+          _.forEach(store.get('prekeys').slice(0, _converse.NUM_PREKEYS), prekey => {
+            stanza.c('preKeyPublic', {
+              'preKeyId': prekey.keyId
+            }).t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();
           });
+
+          return _converse.api.sendIQ(stanza);
         }
 
       };
@@ -74899,28 +74909,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           return own_devicelist.fetchDevices();
         });
-      }
-
-      function updateOwnDeviceList() {
-        /* If our own device is not on the list, add it.
-         * Also, deduplicate devices if necessary.
-         */
-        const devicelist = _converse.devicelists.get(_converse.bare_jid),
-              device_id = _converse.omemo_store.get('device_id').toString(),
-              own_device = devicelist.devices.findWhere({
-          'id': device_id
-        });
-
-        if (!own_device) {
-          return devicelist.addOwnDevice(device_id);
-        } else if (!own_device.get('active')) {
-          own_device.set('active', true, {
-            'silent': true
-          });
-          return devicelist.addOwnDevice(device_id);
-        } else {
-          return Promise.resolve();
-        }
       }
 
       function updateBundleFromStanza(stanza) {
@@ -74977,19 +74965,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'jid': jid
             });
           }
-        }); // Make sure our own device is on the list (i.e. if it was
-        // removed, add it again.
+        });
 
-
-        updateOwnDeviceList();
+        if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
+          // Make sure our own device is on the list (i.e. if it was
+          // removed, add it again.
+          _converse.devicelists.get(_converse.bare_jid).publishCurrentDevice(device_ids);
+        }
       }
 
       function registerPEPPushHandler() {
         // Add a handler for devices pushed from other connected clients
         _converse.connection.addHandler(message => {
-          if (message.querySelector('event[xmlns="' + Strophe.NS.PUBSUB + '#event"]')) {
-            updateDevicesFromStanza(message);
-            updateBundleFromStanza(message);
+          try {
+            if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
+              updateDevicesFromStanza(message);
+              updateBundleFromStanza(message);
+            }
+          } catch (e) {
+            _converse.log(e.message, Strophe.LogLevel.ERROR);
           }
 
           return true;
@@ -75012,10 +75006,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         const id = `converse.devicelists-${_converse.bare_jid}`;
         _converse.devicelists.id = id;
         _converse.devicelists.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
-        fetchOwnDevices().then(() => restoreOMEMOSession()).then(() => updateOwnDeviceList()).then(() => _converse.omemo.publishBundle()).then(() => _converse.emit('OMEMOInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        fetchOwnDevices().then(() => restoreOMEMOSession()).then(() => _converse.omemo.publishBundle()).then(() => _converse.emit('OMEMOInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
       }
 
-      _converse.api.listen.on('afterTearDown', () => _converse.devicelists.reset());
+      _converse.api.listen.on('afterTearDown', () => {
+        _converse.devicelists.reset();
+
+        delete _converse.omemo_store;
+      });
 
       _converse.api.listen.on('connected', registerPEPPushHandler);
 
@@ -75023,7 +75021,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.api.listen.on('statusInitialized', initOMEMO);
 
-      _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.OMEMO_DEVICELIST + "notify"));
+      _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`));
 
       _converse.api.listen.on('userDetailsModalInitialized', contact => {
         const jid = contact.get('jid');

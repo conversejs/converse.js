@@ -88,7 +88,7 @@
 
                 beforeRender () {
                     const { _converse } = this.__super__,
-                          device_id = _converse.omemo_store.get('device_id').toString();
+                          device_id = _converse.omemo_store.get('device_id');
                     this.current_device = this.devicelist.devices.get(device_id);
                     this.other_devices = this.devicelist.devices.filter(d => (d.get('id') !== device_id));
                     if (this.__super__.beforeRender) {
@@ -640,6 +640,7 @@
                         }).then(keys => {
                             _.forEach(keys, k => _converse.omemo_store.storePreKey(k.keyId, k.keyPair));
                             data['prekeys'] = keys;
+
                             this.save(data)
                             // Save the bundle to the device
                             const devicelist = _converse.devicelists.get(_converse.bare_jid),
@@ -913,18 +914,19 @@
 
             function restoreOMEMOSession () {
                 if (_.isUndefined(_converse.omemo_store))  {
-                    _converse.omemo_store = new _converse.OMEMOStore();
-                    const id = b64_sha1(`converse.omemosession-${_converse.bare_jid}`);
-                    _converse.omemo_store.id = id;
-                    _converse.omemo_store.browserStorage =  new Backbone.BrowserStorage[_converse.storage](id);
+                    const storage = _converse.session.get('storage'),
+                          id = `converse.omemosession-${_converse.bare_jid}`;
+                    _converse.omemo_store = new _converse.OMEMOStore({'id': id});
+                    _converse.omemo_store.browserStorage = new Backbone.BrowserStorage[storage](id);
                 }
                 return _converse.omemo_store.fetchSession();
             }
 
             function initOMEMO() {
                 _converse.devicelists = new _converse.DeviceLists();
-                const id = `converse.devicelists-${_converse.bare_jid}`;
-                _converse.devicelists.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+                const storage = _converse.session.get('storage'),
+                      id = `converse.devicelists-${_converse.bare_jid}`;
+                _converse.devicelists.browserStorage = new Backbone.BrowserStorage[storage](id);
 
                 fetchOwnDevices()
                     .then(() => restoreOMEMOSession())

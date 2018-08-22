@@ -36,32 +36,17 @@
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
 /******/ 		}
 /******/ 	};
 /******/
 /******/ 	// define __esModule on exports
 /******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
 /******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -2575,7 +2560,13 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
             if (_.isFunction(this.beforeRender)) {
                 this.beforeRender();
             }
-            const new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
+            let new_vnode;
+            if (!_.isNil(this.toHTML)) {
+                new_vnode = tovnode.toVNode(parseHTMLToDOM(this.toHTML()));
+            } else {
+                new_vnode = tovnode.toVNode(this.toDOM());
+            }
+
             new_vnode.data.hook = _.extend({
                create: this.updateEventListeners.bind(this),
                update: this.updateEventListeners.bind(this)
@@ -27154,12 +27145,13 @@ var map = {
 
 function webpackContext(req) {
 	var id = webpackContextResolve(req);
-	return __webpack_require__(id);
+	var module = __webpack_require__(id);
+	return module;
 }
 function webpackContextResolve(req) {
 	var id = map[req];
 	if(!(id + 1)) { // check for number or string
-		var e = new Error("Cannot find module '" + req + "'");
+		var e = new Error('Cannot find module "' + req + '".');
 		e.code = 'MODULE_NOT_FOUND';
 		throw e;
 	}
@@ -74085,7 +74077,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         beforeRender() {
           const _converse = this.__super__._converse,
-                device_id = _converse.omemo_store.get('device_id').toString();
+                device_id = _converse.omemo_store.get('device_id');
 
           this.current_device = this.devicelist.devices.get(device_id);
           this.other_devices = this.devicelist.devices.filter(d => d.get('id') !== device_id);
@@ -74983,10 +74975,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       function restoreOMEMOSession() {
         if (_.isUndefined(_converse.omemo_store)) {
-          _converse.omemo_store = new _converse.OMEMOStore();
-          const id = b64_sha1(`converse.omemosession-${_converse.bare_jid}`);
-          _converse.omemo_store.id = id;
-          _converse.omemo_store.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+          const storage = _converse.session.get('storage'),
+                id = `converse.omemosession-${_converse.bare_jid}`;
+
+          _converse.omemo_store = new _converse.OMEMOStore({
+            'id': id
+          });
+          _converse.omemo_store.browserStorage = new Backbone.BrowserStorage[storage](id);
         }
 
         return _converse.omemo_store.fetchSession();
@@ -74994,8 +74989,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       function initOMEMO() {
         _converse.devicelists = new _converse.DeviceLists();
-        const id = `converse.devicelists-${_converse.bare_jid}`;
-        _converse.devicelists.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+
+        const storage = _converse.session.get('storage'),
+              id = `converse.devicelists-${_converse.bare_jid}`;
+
+        _converse.devicelists.browserStorage = new Backbone.BrowserStorage[storage](id);
         fetchOwnDevices().then(() => restoreOMEMOSession()).then(() => _converse.omemo.publishBundle()).then(() => _converse.emit('OMEMOInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
       }
 

@@ -486,9 +486,7 @@
                      *      that contains the message stanza, if it was
                      *      contained, otherwise it's the message stanza itself.
                      */
-                    const { _converse } = this.__super__,
-                          { __ } = _converse,
-                          archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
+                    const archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
                           spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
                           delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
                           chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||

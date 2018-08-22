@@ -74173,7 +74173,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           try {
             return sessionBuilder.processPreKey({
               'registrationId': parseInt(_converse.omemo_store.get('device_id'), 10),
-              'identityKey': _converse.omemo_store.get('identity_key'),
+              'identityKey': u.base64ToArrayBuffer(_converse.omemo_store.get('identity_key')),
               'signedPreKey': {
                 'keyId': bundle.signed_prekey.id,
                 // <Number>
@@ -74653,7 +74653,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           };
           return libsignal.KeyHelper.generateIdentityKeyPair().then(identity_keypair => {
             data['identity_keypair'] = identity_keypair;
-            data['identity_key'] = identity_keypair.pubKey;
+            data['identity_key'] = u.arrayBufferToBase64(identity_keypair.pubKey);
             return libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 1);
           }).then(signed_prekey => {
             _converse.omemo_store.storeSignedPreKey(signed_prekey.keyId, signed_prekey.keyPair);

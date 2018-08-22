@@ -177,7 +177,7 @@
                     try {
                         return sessionBuilder.processPreKey({
                             'registrationId': parseInt(_converse.omemo_store.get('device_id'), 10),
-                            'identityKey': _converse.omemo_store.get('identity_key'),
+                            'identityKey': u.base64ToArrayBuffer(_converse.omemo_store.get('identity_key')),
                             'signedPreKey': {
                                 'keyId': bundle.signed_prekey.id, // <Number>
                                 'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
@@ -631,7 +631,7 @@
                     return libsignal.KeyHelper.generateIdentityKeyPair()
                         .then(identity_keypair => {
                             data['identity_keypair'] = identity_keypair;
-                            data['identity_key'] = identity_keypair.pubKey;
+                            data['identity_key'] = u.arrayBufferToBase64(identity_keypair.pubKey);
                             return libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 1);
                         }).then(signed_prekey => {
                             _converse.omemo_store.storeSignedPreKey(signed_prekey.keyId, signed_prekey.keyPair);

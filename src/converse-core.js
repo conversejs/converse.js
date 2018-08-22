@@ -343,9 +343,9 @@
             delete _converse.controlboxtoggle;
             delete _converse.chatboxviews;
             _converse.connection.reset();
-            _converse.off();
             _converse.stopListening();
             _converse.tearDown();
+            _converse.off();
         }
 
         if ('onpagehide' in window) {

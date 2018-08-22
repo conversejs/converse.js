@@ -110,9 +110,11 @@
             emojione.ascii = true;
 
             function onWindowStateChanged (data) {
-                _converse.chatboxviews.each(function (chatboxview) {
-                    chatboxview.onWindowStateChanged(data.state);
-                });
+                if (_converse.chatboxviews) {
+                    _converse.chatboxviews.each(chatboxview => {
+                        chatboxview.onWindowStateChanged(data.state);
+                    });
+                }
             }
             _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
 

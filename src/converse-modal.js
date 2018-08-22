@@ -66,6 +66,9 @@
             });
 
             _converse.api.listen.on('afterTearDown', () => {
+                if (!_converse.chatboxviews) {
+                    return;
+                }
                 const container = _converse.chatboxviews.el.querySelector("#converse-modals");
                 if (container) {
                     container.innerHTML = '';

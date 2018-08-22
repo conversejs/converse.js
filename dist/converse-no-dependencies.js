@@ -2424,7 +2424,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.22 | © dnp_theme | MIT-License
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.23 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (true) {
     // AMD support:
@@ -2507,7 +2507,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     clickEvent    = 'click',
     hoverEvent    = 'hover',
     keydownEvent  = 'keydown',
-    keyupEvent    = 'keyup', 
+    keyupEvent    = 'keyup',
     resizeEvent   = 'resize',
     scrollEvent   = 'scroll',
     // originalEvents
@@ -2527,18 +2527,20 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     hasAttribute           = 'hasAttribute',
     createElement          = 'createElement',
     appendChild            = 'appendChild',
-    innerHTML              = 'innerHTML',  
+    innerHTML              = 'innerHTML',
     getElementsByTagName   = 'getElementsByTagName',
     preventDefault         = 'preventDefault',
     getBoundingClientRect  = 'getBoundingClientRect',
     querySelectorAll       = 'querySelectorAll',
     getElementsByCLASSNAME = 'getElementsByClassName',
+    getComputedStyle       = 'getComputedStyle',  
   
     indexOf      = 'indexOf',
     parentNode   = 'parentNode',
     length       = 'length',
     toLowerCase  = 'toLowerCase',
     Transition   = 'Transition',
+    Duration     = 'Duration',
     Webkit       = 'Webkit',
     style        = 'style',
     push         = 'push',
@@ -2558,15 +2560,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // tooltip / popover
     mouseHover = ('onmouseleave' in DOC) ? [ 'mouseenter', 'mouseleave'] : [ 'mouseover', 'mouseout' ],
     tipPositions = /\b(top|bottom|left|right)+/,
-    
+  
     // modal
     modalOverlay = 0,
     fixedTop = 'fixed-top',
     fixedBottom = 'fixed-bottom',
-    
+  
     // transitionEnd since 2.0.4
     supportTransitions = Webkit+Transition in HTML[style] || Transition[toLowerCase]() in HTML[style],
     transitionEndEvent = Webkit+Transition in HTML[style] ? Webkit[toLowerCase]()+Transition+'End' : Transition[toLowerCase]()+'end',
+    transitionDuration = Webkit+Duration in HTML[style] ? Webkit[toLowerCase]()+Transition+Duration : Transition[toLowerCase]()+Duration,
   
     // set new focus element since 2.0.3
     setFocus = function(element){
@@ -2620,9 +2623,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         off(element, event, handlerWrapper);
       });
     },
+    getTransitionDurationFromElement = function(element) {
+      var duration = globalObject[getComputedStyle](element)[transitionDuration];
+      duration = parseFloat(duration);
+      duration = typeof duration === 'number' && !isNaN(duration) ? duration * 1000 : 0;
+      return duration + 50; // we take a short offset to make sure we fire on the next frame after animation
+    },
     emulateTransitionEnd = function(element,handler){ // emulateTransitionEnd since 2.0.4
-      if (supportTransitions) { one(element, transitionEndEvent, function(e){ handler(e); }); }
-      else { handler(); }
+      var called = 0, duration = getTransitionDurationFromElement(element);
+      supportTransitions && one(element, transitionEndEvent, function(e){ handler(e); called = 1; });
+      setTimeout(function() { !called && handler(); }, duration);
     },
     bootstrapCustomEvent = function (eventName, componentName, related) {
       var OriginalCustomEvent = new CustomEvent( eventName + '.bs.' + componentName);
@@ -2645,8 +2655,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
           scroll = parent === DOC[body] ? getScroll() : { x: parent[offsetLeft] + parent[scrollLeft], y: parent[offsetTop] + parent[scrollTop] },
           linkDimensions = { w: rect[right] - rect[left], h: rect[bottom] - rect[top] },
           isPopover = hasClass(element,'popover'),
-          topPosition, leftPosition, 
-          
+          topPosition, leftPosition,
+  
           arrow = queryElement('.arrow',element),
           arrowTop, arrowLeft, arrowWidth, arrowHeight,
   
@@ -2665,7 +2675,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       position = position === bottom && bottomExceed ? top : position;
       position = position === left && leftExceed ? right : position;
       position = position === right && rightExceed ? left : position;
-      
+  
       // update tooltip/popover class
       element.className[indexOf](position) === -1 && (element.className = element.className.replace(tipPositions,position));
   
@@ -2718,7 +2728,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       arrowLeft && (arrow[style][left] = arrowLeft + 'px');
     };
   
-  BSN.version = '2.0.22';
+  BSN.version = '2.0.23';
   
   /* Native Javascript for Bootstrap 4 | Alert
   -------------------------------------------*/
@@ -2888,7 +2898,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // DATA API
     var intervalAttribute = element[getAttribute](dataInterval),
         intervalOption = options[interval],
-        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute) || 5000,  // bootstrap carousel default interval
+        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute),  
         pauseData = element[getAttribute](dataPause) === hoverEvent || false,
         keyboardData = element[getAttribute](dataKeyboard) === 'true' || false,
       
@@ -2903,8 +2913,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     this[pause] = (options[pause] === hoverEvent || pauseData) ? hoverEvent : false; // false / hover
   
     this[interval] = typeof intervalOption === 'number' ? intervalOption
-                   : intervalData === 0 ? 0
-                   : intervalData;
+                   : intervalOption === false || intervalData === 0 || intervalData === false ? 0
+                   : 5000; // bootstrap carousel default interval
   
     // bind, event targets
     var self = this, index = element.index = 0, timer = element.timer = 0, 
@@ -3023,10 +3033,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         addClass(slides[next],carouselItem +'-'+ slideDirection);
         addClass(slides[activeItem],carouselItem +'-'+ slideDirection);
   
-        one(slides[activeItem], transitionEndEvent, function(e) {
-          var timeout = e[target] !== slides[activeItem] ? e.elapsedTime*1000 : 0;
+        one(slides[next], transitionEndEvent, function(e) {
+          var timeout = e[target] !== slides[next] ? e.elapsedTime*1000+100 : 20;
           
-          setTimeout(function(){
+          isSliding && setTimeout(function(){
             isSliding = false;
   
             addClass(slides[next],active);
@@ -3041,7 +3051,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
             if ( !DOC.hidden && self[interval] && !hasClass(element,paused) ) {
               self.cycle();
             }
-          },timeout+100);
+          }, timeout);
         });
   
       } else {
@@ -3106,23 +3116,24 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
     // event targets and constants
     var accordion = null, collapse = null, self = this, 
-      isAnimating = false, // when true it will prevent click handlers
       accordionData = element[getAttribute]('data-parent'),
+      activeCollapse, activeElement,
   
       // component strings
       component = 'collapse',
       collapsed = 'collapsed',
+      isAnimating = 'isAnimating',
   
       // private methods
       openAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, showEvent, component);
-        isAnimating = true;
+        collapseElement[isAnimating] = true;
         addClass(collapseElement,collapsing);
         removeClass(collapseElement,component);
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px';
         
         emulateTransitionEnd(collapseElement, function() {
-          isAnimating = false;
+          collapseElement[isAnimating] = false;
           collapseElement[setAttribute](ariaExpanded,'true');
           toggle[setAttribute](ariaExpanded,'true');
           removeClass(collapseElement,collapsing);
@@ -3134,7 +3145,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       },
       closeAction = function(collapseElement,toggle) {
         bootstrapCustomEvent.call(collapseElement, hideEvent, component);
-        isAnimating = true;
+        collapseElement[isAnimating] = true;
         collapseElement[style][height] = collapseElement[scrollHeight] + 'px'; // set height first
         removeClass(collapseElement,component);
         removeClass(collapseElement,showClass);
@@ -3143,7 +3154,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         collapseElement[style][height] = '0px';
         
         emulateTransitionEnd(collapseElement, function() {
-          isAnimating = false;
+          collapseElement[isAnimating] = false;
           collapseElement[setAttribute](ariaExpanded,'false');
           toggle[setAttribute](ariaExpanded,'false');
           removeClass(collapseElement,collapsing);
@@ -3162,29 +3173,29 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // public methods
     this.toggle = function(e) {
       e[preventDefault]();
-      if (isAnimating) return;
       if (!hasClass(collapse,showClass)) { self.show(); } 
       else { self.hide(); }
     };
     this.hide = function() {
+      if ( collapse[isAnimating] ) return;    
       closeAction(collapse,element);
       addClass(element,collapsed);
     };
     this.show = function() {
       if ( accordion ) {
-        var activeCollapse = queryElement('.'+component+'.'+showClass,accordion),
-            toggle = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
-                   || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) ),
-            correspondingCollapse = toggle && (toggle[getAttribute](dataTarget) || toggle.href);
-        if ( activeCollapse && toggle && activeCollapse !== collapse ) {
-          closeAction(activeCollapse,toggle); 
-          if ( correspondingCollapse.split('#')[1] !== collapse.id ) { addClass(toggle,collapsed); } 
-          else { removeClass(toggle,collapsed); }
-        }
+        activeCollapse = queryElement('.'+component+'.'+showClass,accordion);
+        activeElement = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
+                      || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) );
       }
   
-      openAction(collapse,element);
-      removeClass(element,collapsed);
+      if ( !collapse[isAnimating] || activeCollapse && !activeCollapse[isAnimating] ) {
+        if ( activeElement && activeCollapse !== collapse ) {
+          closeAction(activeCollapse,activeElement); 
+          addClass(activeElement,collapsed);
+        }
+        openAction(collapse,element);
+        removeClass(element,collapsed);
+      }
     };
   
     // init
@@ -3192,6 +3203,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       on(element, clickEvent, self.toggle);
     }
     collapse = getTarget();
+    collapse[isAnimating] = false;  // when true it will prevent click handlers  
     accordion = queryElement(options.parent) || accordionData && getClosest(element, accordionData);
     element[stringCollapse] = self;
   };
@@ -3349,6 +3361,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     var btnCheck = element[getAttribute](dataTarget)||element[getAttribute]('href'),
       checkModal = queryElement( btnCheck ),
       modal = hasClass(element,'modal') ? element : checkModal,
+      overlayDelay,
   
       // strings
       component = 'modal',
@@ -3382,13 +3395,13 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         return globalObject[innerWidth] || (htmlRect[right] - Math.abs(htmlRect[left]));
       },
       setScrollbar = function () {
-        var bodyStyle = globalObject.getComputedStyle(DOC[body]),
+        var bodyStyle = globalObject[getComputedStyle](DOC[body]),
             bodyPad = parseInt((bodyStyle[paddingRight]), 10), itemPad;
         if (bodyIsOverflowing) {
           DOC[body][style][paddingRight] = (bodyPad + scrollbarWidth) + 'px';
           if (fixedItems[length]){
             for (var i = 0; i < fixedItems[length]; i++) {
-              itemPad = globalObject.getComputedStyle(fixedItems[i])[paddingRight];
+              itemPad = globalObject[getComputedStyle](fixedItems[i])[paddingRight];
               fixedItems[i][style][paddingRight] = ( parseInt(itemPad) + scrollbarWidth) + 'px';
             }
           }
@@ -3530,6 +3543,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
       if ( overlay && modalOverlay && !hasClass(overlay,showClass)) {
         overlay[offsetWidth]; // force reflow to enable trasition
+        overlayDelay = getTransitionDurationFromElement(overlay);              
         addClass(overlay, showClass);
       }
   
@@ -3549,18 +3563,19 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         keydownHandlerToggle();
   
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerShow) : triggerShow();
-      }, supportTransitions ? 150 : 0);
+      }, supportTransitions && overlay ? overlayDelay : 0);
     };
     this.hide = function() {
       bootstrapCustomEvent.call(modal, hideEvent, component);
       overlay = queryElement('.'+modalBackdropString);
+      overlayDelay = overlay && getTransitionDurationFromElement(overlay);    
   
       removeClass(modal,showClass);
       modal[setAttribute](ariaHidden, true);
   
-      (function(){
+      setTimeout(function(){
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerHide) : triggerHide();
-      }());
+      }, supportTransitions && overlay ? overlayDelay : 0);
     };
     this.setContent = function( content ) {
       queryElement('.'+component+'-content',modal)[innerHTML] = content;
@@ -3916,7 +3931,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
               tabsContentContainer[style][height] = nextHeight + 'px'; // height animation
               tabsContentContainer[offsetWidth];
               emulateTransitionEnd(tabsContentContainer, triggerEnd);
-            },1);
+            },50);
           }
         } else {
           tabs[isAnimating] = false; 
@@ -3943,7 +3958,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
           tabsContentContainer[style][height] = containerHeight + 'px'; // height animation
           tabsContentContainer[offsetHeight];
           activeContent[style][float] = '';
-          nextContent[style][float] = '';   
+          nextContent[style][float] = '';
         }
   
         if ( hasClass(nextContent, 'fade') ) {
@@ -31791,7 +31806,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 return;
             }
             if (_.isBoolean(plugin.enabled) && plugin.enabled || _.isFunction(plugin.enabled) && plugin.enabled(this.plugged) || _.isNil(plugin.enabled)) {
-
                 _.extend(plugin, this.properties);
                 if (plugin.dependencies) {
                     this.loadPluginDependencies(plugin);
@@ -40618,6 +40632,526 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
 /***/ }),
 
+/***/ "./src/converse-autocomplete.js":
+/*!**************************************!*\
+  !*** ./src/converse-autocomplete.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
+
+function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return right[Symbol.hasInstance](left); } else { return left instanceof right; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+// Converse.js
+// http://conversejs.org
+//
+// Copyright (c) 2013-2018, the Converse.js developers
+// Licensed under the Mozilla Public License (MPLv2)
+// This plugin started as a fork of Lea Verou's Awesomplete
+// https://leaverou.github.io/awesomplete/
+(function (root, factory) {
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+})(void 0, function (converse) {
+  var _converse$env = converse.env,
+      _ = _converse$env._,
+      Backbone = _converse$env.Backbone,
+      u = converse.env.utils;
+  converse.plugins.add("converse-autocomplete", {
+    initialize: function initialize() {
+      var _converse = this._converse;
+
+      _converse.FILTER_CONTAINS = function (text, input) {
+        return RegExp(helpers.regExpEscape(input.trim()), "i").test(text);
+      };
+
+      _converse.FILTER_STARTSWITH = function (text, input) {
+        return RegExp("^" + helpers.regExpEscape(input.trim()), "i").test(text);
+      };
+
+      var SORT_BYLENGTH = function SORT_BYLENGTH(a, b) {
+        if (a.length !== b.length) {
+          return a.length - b.length;
+        }
+
+        return a < b ? -1 : 1;
+      };
+
+      var ITEM = function ITEM(text, input) {
+        input = input.trim();
+        var element = document.createElement("li");
+        element.setAttribute("aria-selected", "false");
+        var regex = new RegExp("(" + input + ")", "ig");
+        var parts = input ? text.split(regex) : [text];
+        parts.forEach(function (txt) {
+          if (input && txt.match(regex)) {
+            var match = document.createElement("mark");
+            match.textContent = txt;
+            element.appendChild(match);
+          } else {
+            element.appendChild(document.createTextNode(txt));
+          }
+        });
+        return element;
+      };
+
+      var AutoComplete =
+      /*#__PURE__*/
+      function () {
+        function AutoComplete(el) {
+          var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+          _classCallCheck(this, AutoComplete);
+
+          this.is_opened = false;
+
+          if (u.hasClass('.suggestion-box', el)) {
+            this.container = el;
+          } else {
+            this.container = el.querySelector('.suggestion-box');
+          }
+
+          this.input = this.container.querySelector('.suggestion-box__input');
+          this.input.setAttribute("autocomplete", "off");
+          this.input.setAttribute("aria-autocomplete", "list");
+          this.ul = this.container.querySelector('.suggestion-box__results');
+          this.status = this.container.querySelector('.suggestion-box__additions');
+
+          _.assignIn(this, {
+            'match_current_word': false,
+            // Match only the current word, otherwise all input is matched
+            'match_on_tab': false,
+            // Whether matching should only start when tab's pressed
+            'trigger_on_at': false,
+            // Whether @ should trigger autocomplete
+            'min_chars': 2,
+            'max_items': 10,
+            'auto_evaluate': true,
+            'auto_first': false,
+            'data': _.identity,
+            'filter': _converse.FILTER_CONTAINS,
+            'sort': config.sort === false ? false : SORT_BYLENGTH,
+            'item': ITEM
+          }, config);
+
+          this.index = -1;
+          this.bindEvents();
+
+          if (this.input.hasAttribute("list")) {
+            this.list = "#" + this.input.getAttribute("list");
+            this.input.removeAttribute("list");
+          } else {
+            this.list = this.input.getAttribute("data-list") || config.list || [];
+          }
+        }
+
+        _createClass(AutoComplete, [{
+          key: "bindEvents",
+          value: function bindEvents() {
+            var _this = this;
+
+            // Bind events
+            var input = {
+              "blur": function blur() {
+                return _this.close({
+                  'reason': 'blur'
+                });
+              }
+            };
+
+            if (this.auto_evaluate) {
+              input["input"] = function () {
+                return _this.evaluate();
+              };
+            }
+
+            this._events = {
+              'input': input,
+              'form': {
+                "submit": function submit() {
+                  return _this.close({
+                    'reason': 'submit'
+                  });
+                }
+              },
+              'ul': {
+                "mousedown": function mousedown(ev) {
+                  return _this.onMouseDown(ev);
+                },
+                "mouseover": function mouseover(ev) {
+                  return _this.onMouseOver(ev);
+                }
+              }
+            };
+            helpers.bind(this.input, this._events.input);
+            helpers.bind(this.input.form, this._events.form);
+            helpers.bind(this.ul, this._events.ul);
+          }
+        }, {
+          key: "close",
+          value: function close(o) {
+            if (!this.opened) {
+              return;
+            }
+
+            this.ul.setAttribute("hidden", "");
+            this.is_opened = false;
+            this.index = -1;
+            this.trigger("suggestion-box-close", o || {});
+          }
+        }, {
+          key: "insertValue",
+          value: function insertValue(suggestion) {
+            var value;
+
+            if (this.match_current_word) {
+              u.replaceCurrentWord(this.input, suggestion.value);
+            } else {
+              this.input.value = suggestion.value;
+            }
+          }
+        }, {
+          key: "open",
+          value: function open() {
+            this.ul.removeAttribute("hidden");
+            this.is_opened = true;
+
+            if (this.auto_first && this.index === -1) {
+              this.goto(0);
+            }
+
+            this.trigger("suggestion-box-open");
+          }
+        }, {
+          key: "destroy",
+          value: function destroy() {
+            //remove events from the input and its form
+            helpers.unbind(this.input, this._events.input);
+            helpers.unbind(this.input.form, this._events.form); //move the input out of the suggestion-box container and remove the container and its children
+
+            var parentNode = this.container.parentNode;
+            parentNode.insertBefore(this.input, this.container);
+            parentNode.removeChild(this.container); //remove autocomplete and aria-autocomplete attributes
+
+            this.input.removeAttribute("autocomplete");
+            this.input.removeAttribute("aria-autocomplete");
+          }
+        }, {
+          key: "next",
+          value: function next() {
+            var count = this.ul.children.length;
+            this.goto(this.index < count - 1 ? this.index + 1 : count ? 0 : -1);
+          }
+        }, {
+          key: "previous",
+          value: function previous() {
+            var count = this.ul.children.length,
+                pos = this.index - 1;
+            this.goto(this.selected && pos !== -1 ? pos : count - 1);
+          }
+        }, {
+          key: "goto",
+          value: function goto(i) {
+            // Should not be used directly, highlights specific item without any checks!
+            var list = this.ul.children;
+
+            if (this.selected) {
+              list[this.index].setAttribute("aria-selected", "false");
+            }
+
+            this.index = i;
+
+            if (i > -1 && list.length > 0) {
+              list[i].setAttribute("aria-selected", "true");
+              list[i].focus();
+              this.status.textContent = list[i].textContent; // scroll to highlighted element in case parent's height is fixed
+
+              this.ul.scrollTop = list[i].offsetTop - this.ul.clientHeight + list[i].clientHeight;
+              this.trigger("suggestion-box-highlight", {
+                'text': this.suggestions[this.index]
+              });
+            }
+          }
+        }, {
+          key: "select",
+          value: function select(selected, origin) {
+            if (selected) {
+              this.index = u.siblingIndex(selected);
+            } else {
+              selected = this.ul.children[this.index];
+            }
+
+            if (selected) {
+              var suggestion = this.suggestions[this.index];
+              this.insertValue(suggestion);
+              this.close({
+                'reason': 'select'
+              });
+              this.auto_completing = false;
+              this.trigger("suggestion-box-selectcomplete", {
+                'text': suggestion
+              });
+            }
+          }
+        }, {
+          key: "onMouseOver",
+          value: function onMouseOver(ev) {
+            var li = u.ancestor(ev.target, 'li');
+
+            if (li) {
+              this.goto(Array.prototype.slice.call(this.ul.children).indexOf(li));
+            }
+          }
+        }, {
+          key: "onMouseDown",
+          value: function onMouseDown(ev) {
+            if (ev.button !== 0) {
+              return; // Only select on left click
+            }
+
+            var li = u.ancestor(ev.target, 'li');
+
+            if (li) {
+              ev.preventDefault();
+              this.select(li, ev.target);
+            }
+          }
+        }, {
+          key: "keyPressed",
+          value: function keyPressed(ev) {
+            if (this.opened) {
+              if (_.includes([_converse.keycodes.ENTER, _converse.keycodes.TAB], ev.keyCode) && this.selected) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                this.select();
+                return true;
+              } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
+                this.close({
+                  'reason': 'esc'
+                });
+                return true;
+              } else if (_.includes([_converse.keycodes.UP_ARROW, _converse.keycodes.DOWN_ARROW], ev.keyCode)) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                this[ev.keyCode === _converse.keycodes.UP_ARROW ? "previous" : "next"]();
+                return true;
+              }
+            }
+
+            if (_.includes([_converse.keycodes.SHIFT, _converse.keycodes.META, _converse.keycodes.META_RIGHT, _converse.keycodes.ESCAPE, _converse.keycodes.ALT], ev.keyCode)) {
+              return;
+            }
+
+            if (this.match_on_tab && ev.keyCode === _converse.keycodes.TAB) {
+              ev.preventDefault();
+              this.auto_completing = true;
+            } else if (this.trigger_on_at && ev.keyCode === _converse.keycodes.AT) {
+              this.auto_completing = true;
+            }
+          }
+        }, {
+          key: "evaluate",
+          value: function evaluate(ev) {
+            var _this2 = this;
+
+            var arrow_pressed = ev.keyCode === _converse.keycodes.UP_ARROW || ev.keyCode === _converse.keycodes.DOWN_ARROW;
+
+            if (!this.auto_completing || this.selected && arrow_pressed) {
+              return;
+            }
+
+            var list = typeof this._list === "function" ? this._list() : this._list;
+
+            if (list.length === 0) {
+              return;
+            }
+
+            var value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
+            var ignore_min_chars = false;
+
+            if (this.trigger_on_at && value.startsWith('@')) {
+              ignore_min_chars = true;
+              value = value.slice('1');
+            }
+
+            if (value.length >= this.min_chars || ignore_min_chars) {
+              this.index = -1; // Populate list with options that match
+
+              this.ul.innerHTML = "";
+              this.suggestions = list.map(function (item) {
+                return new Suggestion(_this2.data(item, value));
+              }).filter(function (item) {
+                return _this2.filter(item, value);
+              });
+
+              if (this.sort !== false) {
+                this.suggestions = this.suggestions.sort(this.sort);
+              }
+
+              this.suggestions = this.suggestions.slice(0, this.max_items);
+              this.suggestions.forEach(function (text) {
+                return _this2.ul.appendChild(_this2.item(text, value));
+              });
+
+              if (this.ul.children.length === 0) {
+                this.close({
+                  'reason': 'nomatches'
+                });
+              } else {
+                this.open();
+              }
+            } else {
+              this.close({
+                'reason': 'nomatches'
+              });
+              this.auto_completing = false;
+            }
+          }
+        }, {
+          key: "list",
+          set: function set(list) {
+            if (Array.isArray(list) || typeof list === "function") {
+              this._list = list;
+            } else if (typeof list === "string" && _.includes(list, ",")) {
+              this._list = list.split(/\s*,\s*/);
+            } else {
+              // Element or CSS selector
+              list = helpers.getElement(list);
+
+              if (list && list.children) {
+                var items = [];
+                slice.apply(list.children).forEach(function (el) {
+                  if (!el.disabled) {
+                    var text = el.textContent.trim(),
+                        value = el.value || text,
+                        label = el.label || text;
+
+                    if (value !== "") {
+                      items.push({
+                        label: label,
+                        value: value
+                      });
+                    }
+                  }
+                });
+                this._list = items;
+              }
+            }
+
+            if (document.activeElement === this.input) {
+              this.evaluate();
+            }
+          }
+        }, {
+          key: "selected",
+          get: function get() {
+            return this.index > -1;
+          }
+        }, {
+          key: "opened",
+          get: function get() {
+            return this.is_opened;
+          }
+        }]);
+
+        return AutoComplete;
+      }(); // Make it an event emitter
+
+
+      _.extend(AutoComplete.prototype, Backbone.Events); // Private functions
+
+
+      function Suggestion(data) {
+        var o = Array.isArray(data) ? {
+          label: data[0],
+          value: data[1]
+        } : _typeof(data) === "object" && "label" in data && "value" in data ? data : {
+          label: data,
+          value: data
+        };
+        this.label = o.label || o.value;
+        this.value = o.value;
+      }
+
+      Object.defineProperty(Suggestion.prototype = Object.create(String.prototype), "length", {
+        get: function get() {
+          return this.label.length;
+        }
+      });
+
+      Suggestion.prototype.toString = Suggestion.prototype.valueOf = function () {
+        return "" + this.label;
+      }; // Helpers
+
+
+      var slice = Array.prototype.slice;
+      var helpers = {
+        getElement: function getElement(expr, el) {
+          return typeof expr === "string" ? (el || document).querySelector(expr) : expr || null;
+        },
+        bind: function bind(element, o) {
+          if (element) {
+            var _loop = function _loop() {
+              if (!Object.prototype.hasOwnProperty.call(o, event)) {
+                return "continue";
+              }
+
+              var callback = o[event];
+              event.split(/\s+/).forEach(function (event) {
+                return element.addEventListener(event, callback);
+              });
+            };
+
+            for (var event in o) {
+              var _ret = _loop();
+
+              if (_ret === "continue") continue;
+            }
+          }
+        },
+        unbind: function unbind(element, o) {
+          if (element) {
+            var _loop2 = function _loop2() {
+              if (!Object.prototype.hasOwnProperty.call(o, event)) {
+                return "continue";
+              }
+
+              var callback = o[event];
+              event.split(/\s+/).forEach(function (event) {
+                return element.removeEventListener(event, callback);
+              });
+            };
+
+            for (var event in o) {
+              var _ret2 = _loop2();
+
+              if (_ret2 === "continue") continue;
+            }
+          }
+        },
+        regExpEscape: function regExpEscape(s) {
+          return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
+        }
+      };
+      _converse.AutoComplete = AutoComplete;
+    }
+  });
+});
+
+/***/ }),
+
 /***/ "./src/converse-bookmarks.js":
 /*!***********************************!*\
   !*** ./src/converse-bookmarks.js ***!
@@ -41358,6 +41892,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _ = _converse$env._;
   var u = converse.env.utils;
   Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
+  Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
   converse.plugins.add('converse-chatboxes', {
     dependencies: ["converse-roster", "converse-vcard"],
     overrides: {
@@ -41397,9 +41932,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return _converse.log("Invalid JID \"".concat(jid, "\" provided in URL fragment"), Strophe.LogLevel.WARN);
         }
 
-        Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(function () {
-          _converse.api.chats.open(jid);
-        });
+        _converse.api.chats.open(jid);
       }
 
       _converse.router.route('converse/chat?jid=:jid', openChat);
@@ -41583,7 +42116,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           };
 
           xhr.open('PUT', this.get('put'), true);
-          xhr.setRequestHeader("Content-type", 'application/octet-stream');
+          xhr.setRequestHeader("Content-type", this.get('file').type);
           xhr.send(this.get('file'));
         }
       });
@@ -41652,6 +42185,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             older_versions.push(message.get('message'));
             message.save({
               'message': _converse.chatboxes.getMessageBody(stanza),
+              'references': this.getReferencesFromStanza(stanza),
               'older_versions': older_versions,
               'edited': true
             });
@@ -41687,6 +42221,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               }).up();
             }
           }
+
+          (message.get('references') || []).forEach(function (reference) {
+            var attrs = {
+              'xmlns': Strophe.NS.REFERENCE,
+              'begin': reference.begin,
+              'end': reference.end,
+              'type': reference.type
+            };
+
+            if (reference.uri) {
+              attrs.uri = reference.uri;
+            }
+
+            stanza.c('reference', attrs).up();
+          });
 
           if (message.get('file')) {
             stanza.c('x', {
@@ -41748,10 +42297,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             var older_versions = message.get('older_versions') || [];
             older_versions.push(message.get('message'));
             message.save({
+              'correcting': false,
+              'edited': true,
               'message': attrs.message,
               'older_versions': older_versions,
-              'edited': true,
-              'correcting': false
+              'references': attrs.references
             });
             return this.sendMessageStanza(message);
           }
@@ -41814,6 +42364,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             });
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         },
+        getReferencesFromStanza: function getReferencesFromStanza(stanza) {
+          var text = _.propertyOf(stanza.querySelector('body'))('textContent');
+
+          return sizzle("reference[xmlns=\"".concat(Strophe.NS.REFERENCE, "\"]"), stanza).map(function (ref) {
+            var begin = ref.getAttribute('begin'),
+                end = ref.getAttribute('end');
+            return {
+              'begin': begin,
+              'end': end,
+              'type': ref.getAttribute('type'),
+              'value': text.slice(begin, end),
+              'uri': ref.getAttribute('uri')
+            };
+          });
+        },
         getMessageAttributesFromStanza: function getMessageAttributesFromStanza(stanza, original_stanza) {
           /* Parses a passed in message stanza and returns an object
            * of attributes.
@@ -41826,9 +42391,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *      that contains the message stanza, if it was
            *      contained, otherwise it's the message stanza itself.
            */
-          var _converse = this.__super__._converse,
-              __ = _converse.__,
-              archive = sizzle("result[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), original_stanza).pop(),
+          var archive = sizzle("result[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), original_stanza).pop(),
               spoiler = sizzle("spoiler[xmlns=\"".concat(Strophe.NS.SPOILER, "\"]"), original_stanza).pop(),
               delay = sizzle("delay[xmlns=\"".concat(Strophe.NS.DELAY, "\"]"), original_stanza).pop(),
               chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
@@ -41839,6 +42402,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'is_delayed': !_.isNil(delay),
             'is_spoiler': !_.isNil(spoiler),
             'message': _converse.chatboxes.getMessageBody(stanza) || undefined,
+            'references': this.getReferencesFromStanza(stanza),
             'msgid': stanza.getAttribute('id'),
             'time': delay ? delay.getAttribute('stamp') : moment().format(),
             'type': stanza.getAttribute('type')
@@ -41848,7 +42412,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             attrs.from = stanza.getAttribute('from');
             attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
 
-            if (attrs.from === this.get('nick')) {
+            if (Strophe.getResourceFromJid(attrs.from) === this.get('nick')) {
               attrs.sender = 'me';
             } else {
               attrs.sender = 'them';
@@ -41900,15 +42464,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            */
           return this.get('hidden') || this.get('minimized') || this.isScrolledUp() || _converse.windowState === 'hidden';
         },
-        incrementUnreadMsgCounter: function incrementUnreadMsgCounter(stanza) {
+        incrementUnreadMsgCounter: function incrementUnreadMsgCounter(message) {
           /* Given a newly received message, update the unread counter if
            * necessary.
            */
-          if (_.isNull(stanza.querySelector('body'))) {
-            return; // The message has no text
+          if (!message) {
+            return;
           }
 
-          if (utils.isNewMessage(stanza) && this.isHidden()) {
+          if (_.isNil(message.get('message'))) {
+            return;
+          }
+
+          if (utils.isNewMessage(message) && this.isHidden()) {
             this.save({
               'num_unread': this.get('num_unread') + 1
             });
@@ -42005,8 +42573,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * Parameters:
            *    (XMLElement) stanza - The incoming message stanza
            */
-          var from_jid = stanza.getAttribute('from'),
-              to_jid = stanza.getAttribute('to');
+          var to_jid = stanza.getAttribute('to');
           var to_resource = Strophe.getResourceFromJid(to_jid);
 
           if (_converse.filter_by_resource && to_resource && to_resource !== _converse.resource) {
@@ -42017,11 +42584,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // XXX: Ideally we wouldn't have to check for headline
             // messages, but Prosody sends headline messages with the
             // wrong type ('chat'), so we need to filter them out here.
-            _converse.log("onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ".concat(from_jid), Strophe.LogLevel.INFO);
+            _converse.log("onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ".concat(stanza.getAttribute('from')), Strophe.LogLevel.INFO);
 
             return true;
           }
 
+          var from_jid = stanza.getAttribute('from');
           var forwarded = stanza.querySelector('forwarded'),
               original_stanza = stanza;
 
@@ -42048,6 +42616,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           if (is_me) {
             // I am the sender, so this must be a forwarded message...
+            if (_.isNull(to_jid)) {
+              return _converse.log("Don't know how to handle message stanza without 'to' attribute. ".concat(stanza.outerHTML), Strophe.LogLevel.ERROR);
+            }
+
             contact_jid = Strophe.getBareJidFromJid(to_jid);
           } else {
             contact_jid = from_bare_jid;
@@ -42067,8 +42639,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             if (!message) {
               // Only create the message when we're sure it's not a duplicate
-              chatbox.incrementUnreadMsgCounter(original_stanza);
-              chatbox.createMessage(stanza, original_stanza);
+              chatbox.incrementUnreadMsgCounter(chatbox.createMessage(stanza, original_stanza));
             }
           }
 
@@ -42268,6 +42839,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
       _.extend(_converse.api, {
+        /**
+         * The "chats" grouping (used for one-on-one chats)
+         *
+         * @namespace
+         */
         'chats': {
           'create': function create(jids, attrs) {
             if (_.isUndefined(jids)) {
@@ -42297,22 +42873,81 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               return _converse.chatboxes.getChatBox(jid, attrs, true).trigger('show');
             });
           },
+
+          /**
+           * Opens a new one-on-one chat.
+           *
+           * @function
+           *
+           * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+           * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
+           *
+           * @example
+           * // To open a single chat, provide the JID of the contact you're chatting with in that chat:
+           * converse.plugins.add('myplugin', {
+           *     initialize: function() {
+           *         var _converse = this._converse;
+           *         // Note, buddy@example.org must be in your contacts roster!
+           *         _converse.api.chats.open('buddy@example.com').then((chat) => {
+           *             // Now you can do something with the chat model
+           *         });
+           *     }
+           * });
+           *
+           * @example
+           * // To open an array of chats, provide an array of JIDs:
+           * converse.plugins.add('myplugin', {
+           *     initialize: function () {
+           *         var _converse = this._converse;
+           *         // Note, these users must first be in your contacts roster!
+           *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then((chats) => {
+           *             // Now you can do something with the chat models
+           *         });
+           *     }
+           * });
+           *
+           */
           'open': function open(jids, attrs) {
-            if (_.isUndefined(jids)) {
-              _converse.log("chats.open: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+            return new Promise(function (resolve, reject) {
+              Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(function () {
+                if (_.isUndefined(jids)) {
+                  var err_msg = "chats.open: You need to provide at least one JID";
 
-              return null;
-            } else if (_.isString(jids)) {
-              var chatbox = _converse.api.chats.create(jids, attrs);
+                  _converse.log(err_msg, Strophe.LogLevel.ERROR);
 
-              chatbox.trigger('show');
-              return chatbox;
-            }
-
-            return _.map(jids, function (jid) {
-              return _converse.api.chats.create(jid, attrs).trigger('show');
+                  reject(new Error(err_msg));
+                } else if (_.isString(jids)) {
+                  resolve(_converse.api.chats.create(jids, attrs).trigger('show'));
+                } else {
+                  resolve(_.map(jids, function (jid) {
+                    return _converse.api.chats.create(jid, attrs).trigger('show');
+                  }));
+                }
+              }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             });
           },
+
+          /**
+           * Returns a chat model. The chat should already be open.
+           *
+           * @function
+           *
+           * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+           * @returns {Backbone.Model}
+           *
+           * @example
+           * // To return a single chat, provide the JID of the contact you're chatting with in that chat:
+           * const model = _converse.api.chats.get('buddy@example.com');
+           *
+           * @example
+           * // To return an array of chats, provide an array of JIDs:
+           * const models = _converse.api.chats.get(['buddy1@example.com', 'buddy2@example.com']);
+           *
+           * @example
+           * // To return all open chats, call the method without any parameters::
+           * const models = _converse.api.chats.get();
+           *
+           */
           'get': function get(jids) {
             if (_.isUndefined(jids)) {
               var result = [];
@@ -42377,12 +43012,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       sizzle = _converse$env.sizzle,
       moment = _converse$env.moment;
   var u = converse.env.utils;
-  var KEY = {
-    ENTER: 13,
-    UP_ARROW: 38,
-    DOWN_ARROW: 40,
-    FORWARD_SLASH: 47
-  };
   converse.plugins.add('converse-chatview', {
     /* Plugin dependencies are other plugins which might be
      * overridden or relied upon, and therefore need to be loaded before
@@ -42533,7 +43162,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.vcard.on('change', this.render, this);
         },
         render: function render() {
-          this.el.innerHTML = tpl_chatbox_head(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+          this.el.innerHTML = tpl_chatbox_head(_.extend(this.model.vcard.toJSON(), this.model.toJSON(), {
             '_converse': _converse,
             'info_close': __('Close this chat box')
           }));
@@ -42703,13 +43332,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (this.model.get('composing_spoiler')) {
             placeholder = __('Hidden message');
           } else {
-            placeholder = __('Personal message');
+            placeholder = __('Message');
           }
 
           var form_container = this.el.querySelector('.message-form-container');
           form_container.innerHTML = tpl_chatbox_message_form(_.extend(this.model.toJSON(), {
             'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
-            'label_personal_message': placeholder,
+            'label_message': placeholder,
             'label_send': __('Send'),
             'label_spoiler_hint': __('Optional hint'),
             'message_value': _.get(this.el.querySelector('.chat-textarea'), 'value'),
@@ -43114,7 +43743,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.showMessage(message);
 
           if (message.get('correcting')) {
-            this.insertIntoTextArea(message.get('message'), true);
+            this.insertIntoTextArea(message.get('message'), true, true);
           }
 
           _converse.emit('messageAdded', {
@@ -43185,6 +43814,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           ev.preventDefault();
           var textarea = this.el.querySelector('.chat-textarea'),
               message = textarea.value;
+
+          if (!message.replace(/\s/g, '').length) {
+            return;
+          }
+
           var spoiler_hint;
 
           if (this.model.get('composing_spoiler')) {
@@ -43194,34 +43828,46 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           textarea.value = '';
+          u.removeClass('correcting', textarea);
           textarea.focus(); // Trigger input event, so that the textarea resizes
 
           var event = document.createEvent('Event');
           event.initEvent('input', true, true);
           textarea.dispatchEvent(event);
+          this.onMessageSubmitted(message, spoiler_hint);
 
-          if (message !== '') {
-            this.onMessageSubmitted(message, spoiler_hint);
-
-            _converse.emit('messageSend', message);
-          }
+          _converse.emit('messageSend', message);
 
           this.setChatState(_converse.ACTIVE);
         },
         keyPressed: function keyPressed(ev) {
           /* Event handler for when a key is pressed in a chat box textarea.
            */
-          if (ev.shiftKey) {
+          if (ev.ctrlKey) {
+            // When ctrl is pressed, no chars are entered into the textarea.
             return;
           }
 
-          if (ev.keyCode === KEY.ENTER) {
-            this.onFormSubmitted(ev);
-          } else if (ev.keyCode === KEY.UP_ARROW && !ev.target.selectionEnd) {
-            this.editEarlierMessage();
-          } else if (ev.keyCode === KEY.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
-            this.editLaterMessage();
-          } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
+          if (!ev.shiftKey && !ev.altKey) {
+            if (ev.keyCode === _converse.keycodes.FORWARD_SLASH) {
+              // Forward slash is used to run commands. Nothing to do here.
+              return;
+            } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
+              return this.onEscapePressed(ev);
+            } else if (ev.keyCode === _converse.keycodes.ENTER) {
+              return this.onFormSubmitted(ev);
+            } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
+              return this.editEarlierMessage();
+            } else if (ev.keyCode === _converse.keycodes.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
+              return this.editLaterMessage();
+            }
+          }
+
+          if (_.includes([_converse.keycodes.SHIFT, _converse.keycodes.META, _converse.keycodes.META_RIGHT, _converse.keycodes.ESCAPE, _converse.keycodes.ALT], ev.keyCode)) {
+            return;
+          }
+
+          if (this.model.get('chat_state') !== _converse.COMPOSING) {
             // Set chat state to composing if keyCode is not a forward-slash
             // (which would imply an internal command and not a message).
             this.setChatState(_converse.COMPOSING);
@@ -43232,7 +43878,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'sender': 'me'
           }));
         },
+        onEscapePressed: function onEscapePressed(ev) {
+          ev.preventDefault();
+          var idx = this.model.messages.findLastIndex('correcting'),
+              message = idx >= 0 ? this.model.messages.at(idx) : null;
+
+          if (message) {
+            message.save('correcting', false);
+          }
+
+          this.insertIntoTextArea('', true, false);
+        },
         onMessageEditButtonClicked: function onMessageEditButtonClicked(ev) {
+          ev.preventDefault();
           var idx = this.model.messages.findLastIndex('correcting'),
               currently_correcting = idx >= 0 ? this.model.messages.at(idx) : null,
               message_el = u.ancestor(ev.target, '.chat-msg'),
@@ -43246,10 +43904,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }
 
             message.save('correcting', true);
-            this.insertIntoTextArea(message.get('message'), true);
+            this.insertIntoTextArea(u.prefixMentions(message), true, true);
           } else {
             message.save('correcting', false);
-            this.insertIntoTextArea('', true);
+            this.insertIntoTextArea('', true, false);
           }
         },
         editLaterMessage: function editLaterMessage() {
@@ -43271,10 +43929,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           if (message) {
-            this.insertIntoTextArea(message.get('message'), true);
+            this.insertIntoTextArea(message.get('message'), true, true);
             message.save('correcting', true);
           } else {
-            this.insertIntoTextArea('', true);
+            this.insertIntoTextArea('', true, false);
           }
         },
         editEarlierMessage: function editEarlierMessage() {
@@ -43300,7 +43958,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
 
           if (message) {
-            this.insertIntoTextArea(message.get('message'), true);
+            this.insertIntoTextArea(message.get('message'), true, true);
             message.save('correcting', true);
           }
         },
@@ -43327,9 +43985,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
         insertIntoTextArea: function insertIntoTextArea(value) {
           var replace = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+          var correcting = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
           var textarea = this.el.querySelector('.chat-textarea');
 
+          if (correcting) {
+            u.addClass('correcting', textarea);
+          } else {
+            u.removeClass('correcting', textarea);
+          }
+
           if (replace) {
+            textarea.value = '';
             textarea.value = value;
           } else {
             var existing = textarea.value;
@@ -43338,10 +44004,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               existing = existing + ' ';
             }
 
+            textarea.value = '';
             textarea.value = existing + value + ' ';
           }
 
-          textarea.focus();
+          u.putCurserAtEnd(textarea);
         },
         createEmojiPicker: function createEmojiPicker() {
           if (_.isUndefined(_converse.emojipicker)) {
@@ -44307,9 +44974,27 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   _.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
 
 
-  _converse.core_plugins = ['converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-oauth', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Make converse pluggable
+  _converse.core_plugins = ['converse-autocomplete', 'converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-oauth', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Setting wait to 59 instead of 60 to avoid timing conflicts with the
+  // webserver, which is often also set to 60 and might therefore sometimes
+  // return a 504 error page instead of passing through to the BOSH proxy.
 
-  pluggable.enable(_converse, '_converse', 'pluggable'); // Module-level constants
+  var BOSH_WAIT = 59; // Make converse pluggable
+
+  pluggable.enable(_converse, '_converse', 'pluggable');
+  _converse.keycodes = {
+    TAB: 9,
+    ENTER: 13,
+    SHIFT: 16,
+    CTRL: 17,
+    ALT: 18,
+    ESCAPE: 27,
+    UP_ARROW: 38,
+    DOWN_ARROW: 40,
+    FORWARD_SLASH: 47,
+    AT: 50,
+    META: 91,
+    META_RIGHT: 93
+  }; // Module-level constants
 
   _converse.STATUS_WEIGHTS = {
     'offline': 6,
@@ -45320,7 +46005,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           this.connection.reset();
         }
 
-        this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged);
+        this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged, BOSH_WAIT);
       } else if (this.authentication === _converse.LOGIN) {
         var password = _.isNil(credentials) ? _converse.connection.pass || this.password : credentials.password;
 
@@ -45348,7 +46033,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           this.connection.reset();
         }
 
-        this.connection.connect(this.jid, password, this.onConnectStatusChanged);
+        this.connection.connect(this.jid, password, this.onConnectStatusChanged, BOSH_WAIT);
       }
     };
 
@@ -45467,7 +46152,9 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
     } else {
       i18n.fetchTranslations(_converse.locale, _converse.locales, u.interpolate(_converse.locales_url, {
         'locale': _converse.locale
-      })).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL)).then(finishInitialization).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+      })).catch(function (e) {
+        return _converse.log(e.message, Strophe.LogLevel.FATAL);
+      }).then(finishInitialization).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
     }
 
     return init_promise;
@@ -45985,6 +46672,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'to': from
           });
         }
+
+        iqresult.c('query', attrs);
 
         _.each(plugin._identities, function (identity) {
           var attrs = {
@@ -46704,8 +47393,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         throw new Error("converse-embedded: auto_join_rooms must be an Array");
       }
 
-      if (_converse.auto_join_rooms.length !== 1 && _converse.auto_join_private_chats.length !== 1) {
-        throw new Error("converse-embedded: It doesn't make " + "sense to have the auto_join_rooms setting to zero or " + "more then one, since only one chat room can be open " + "at any time.");
+      if (_converse.auto_join_rooms.length > 1 && _converse.auto_join_private_chats.length > 1) {
+        throw new Error("converse-embedded: It doesn't make " + "sense to have the auto_join_rooms setting more then one, " + "since only one chat room can be open at any time.");
       }
     }
   });
@@ -47335,7 +48024,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
       });
 
-      _converse.onMAMError = function (iq) {
+      _converse.onMAMError = function (model, iq) {
         if (iq.querySelectorAll('feature-not-implemented').length) {
           _converse.log("Message Archive Management (XEP-0313) not supported by this server", Strophe.LogLevel.WARN);
         } else {
@@ -47620,7 +48309,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             text = xss.filterXSS(text, {
               'whiteList': {}
             });
-            msg_content.innerHTML = _.flow(_.partial(u.geoUriToHttp, _, _converse.geouri_replacement), u.addHyperlinks, u.renderNewLines, _.partial(u.addEmoji, _converse, emojione, _))(text);
+            msg_content.innerHTML = _.flow(_.partial(u.geoUriToHttp, _, _converse.geouri_replacement), _.partial(u.addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox), u.addHyperlinks, u.renderNewLines, _.partial(u.addEmoji, _converse, emojione, _))(text);
           }
 
           u.renderImageURLs(_converse, msg_content).then(function () {
@@ -47707,7 +48396,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           var extra_classes = this.model.get('is_delayed') && 'delayed' || '';
 
           if (this.model.get('type') === 'groupchat' && this.model.get('sender') === 'them') {
-            if (this.model.collection.chatbox.isUserMentioned(this.model.get('message'))) {
+            if (this.model.collection.chatbox.isUserMentioned(this.model)) {
               // Add special class to mark groupchat messages
               // in which we are mentioned.
               extra_classes += ' mentioned';
@@ -48438,14 +49127,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/chatroom_toolbar.html */ "./src/templates/chatroom_toolbar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "awesomplete"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "awesomplete"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, muc_utils, xss, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_details_modal, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_chatroom_toolbar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
+})(void 0, function (converse, muc_utils, xss, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_details_modal, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -48489,7 +49178,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
      * If the setting "strict_plugin_dependencies" is set to true,
      * an error will be raised if the plugin is not found.
      */
-    dependencies: ["converse-modal", "converse-controlbox", "converse-chatview"],
+    dependencies: ["converse-autocomplete", "converse-modal", "converse-controlbox", "converse-chatview"],
     overrides: {
       ControlBoxView: {
         renderRoomsPanel: function renderRoomsPanel() {
@@ -48549,11 +49238,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
       _converse.api.settings.update({
-        auto_list_rooms: false,
-        hide_muc_server: false,
+        'auto_list_rooms': false,
+        'hide_muc_server': false,
         // TODO: no longer implemented...
-        muc_disable_moderator_commands: false,
-        visible_toolbar_buttons: {
+        'muc_disable_moderator_commands': false,
+        'visible_toolbar_buttons': {
           'toggle_occupants': true
         }
       });
@@ -48610,7 +49299,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           307: __('You have been kicked from this groupchat'),
           321: __("You have been removed from this groupchat because of an affiliation change"),
           322: __("You have been removed from this groupchat because the groupchat has changed to members-only and you're not a member"),
-          332: __("You have been removed from this groupchat because the MUC (Multi-user chat) service is being shut down")
+          332: __("You have been removed from this groupchat because the service hosting it is being shut down")
         },
         action_info_messages: {
           /* XXX: Note the triple underscore function and not double
@@ -48781,7 +49470,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // For translators: %1$s is a variable and will be
             // replaced with the XMPP server name
             available_chatrooms.innerHTML = tpl_rooms_results({
-              'feedback_text': __('groupchats found:')
+              'feedback_text': __('Groupchats found:')
             });
             var fragment = document.createDocumentFragment();
 
@@ -48861,6 +49550,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           ev.preventDefault();
           var data = this.parseRoomDataFromEvent(ev.target);
 
+          if (data.nick === "") {
+            // Make sure defaults apply if no nick is provided.
+            data.nick = undefined;
+          }
+
           _converse.api.rooms.open(data.jid, data);
 
           this.modal.hide();
@@ -48896,6 +49590,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         is_chatroom: true,
         events: {
           'change input.fileupload': 'onFileSelection',
+          'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
           'click .chatbox-navback': 'showControlBox',
           'click .close-chatbox-button': 'close',
           'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
@@ -48910,6 +49605,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'click .toggle-smiley': 'toggleEmojiMenu',
           'click .upload-file': 'toggleFileUpload',
           'keydown .chat-textarea': 'keyPressed',
+          'keyup .chat-textarea': 'keyUp',
           'input .chat-textarea': 'inputChanged'
         },
         initialize: function initialize() {
@@ -48928,17 +49624,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.on('show', this.show, this);
           this.model.occupants.on('add', this.showJoinNotification, this);
           this.model.occupants.on('remove', this.showLeaveNotification, this);
-          this.model.occupants.on('change:show', function (occupant) {
-            if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
-              return;
-            }
-
-            if (occupant.get('show') === 'offline') {
-              _this3.showLeaveNotification(occupant);
-            } else if (occupant.get('show') === 'online') {
-              _this3.showJoinNotification(occupant);
-            }
-          });
+          this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
           this.createEmojiPicker();
           this.createOccupantsView();
           this.render().insertIntoDOM();
@@ -48948,8 +49634,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             var handler = function handler() {
               if (!u.isPersistableModel(_this3.model)) {
                 // Happens during tests, nothing to do if this
-                // is a hanging chatbox (i.e. not in the
-                // collection anymore).
+                // is a hanging chatbox (i.e. not in the collection anymore).
                 return;
               }
 
@@ -48970,6 +49655,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.el.innerHTML = tpl_chatroom();
           this.renderHeading();
           this.renderChatArea();
+          this.renderMessageForm();
+          this.initAutoComplete();
 
           if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
             this.showSpinner();
@@ -48987,19 +49674,48 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (_.isNull(this.el.querySelector('.chat-area'))) {
             var container_el = this.el.querySelector('.chatroom-body');
             container_el.insertAdjacentHTML('beforeend', tpl_chatarea({
-              'label_message': __('Message'),
-              'label_send': __('Send'),
-              'show_send_button': _converse.show_send_button,
-              'show_toolbar': _converse.show_toolbar,
-              'unread_msgs': __('You have unread messages')
+              'show_send_button': _converse.show_send_button
             }));
             container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
-            this.renderToolbar(tpl_chatroom_toolbar);
             this.content = this.el.querySelector('.chat-content');
             this.toggleOccupants(null, true);
           }
 
           return this;
+        },
+        initAutoComplete: function initAutoComplete() {
+          var _this4 = this;
+
+          this.auto_complete = new _converse.AutoComplete(this.el, {
+            'auto_first': true,
+            'auto_evaluate': false,
+            'min_chars': 1,
+            'match_current_word': true,
+            'match_on_tab': true,
+            'list': function list() {
+              return _this4.model.occupants.map(function (o) {
+                return {
+                  'label': o.getDisplayName(),
+                  'value': "@".concat(o.getDisplayName())
+                };
+              });
+            },
+            'filter': _converse.FILTER_STARTSWITH,
+            'trigger_on_at': true
+          });
+          this.auto_complete.on('suggestion-box-selectcomplete', function () {
+            return _this4.auto_completing = false;
+          });
+        },
+        keyPressed: function keyPressed(ev) {
+          if (this.auto_complete.keyPressed(ev)) {
+            return;
+          }
+
+          return _converse.ChatBoxView.prototype.keyPressed.apply(this, arguments);
+        },
+        keyUp: function keyUp(ev) {
+          this.auto_complete.evaluate(ev);
         },
         showRoomDetailsModal: function showRoomDetailsModal(ev) {
           ev.preventDefault();
@@ -49095,8 +49811,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
         getToolbarOptions: function getToolbarOptions() {
           return _.extend(_converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments), {
-            label_hide_occupants: __('Hide the list of participants'),
-            show_occupants_toggle: this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
+            'label_hide_occupants': __('Hide the list of participants'),
+            'show_occupants_toggle': this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
           });
         },
         close: function close(ev) {
@@ -49205,13 +49921,37 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           return _converse.connection.sendIQ(iq, onSuccess, onError);
         },
+        verifyRoles: function verifyRoles(roles) {
+          var me = this.model.occupants.findWhere({
+            'jid': _converse.bare_jid
+          });
+
+          if (!_.includes(roles, me.get('role'))) {
+            this.showErrorMessage(__("Forbidden: you do not have the necessary role in order to do that."));
+            return false;
+          }
+
+          return true;
+        },
+        verifyAffiliations: function verifyAffiliations(affiliations) {
+          var me = this.model.occupants.findWhere({
+            'jid': _converse.bare_jid
+          });
+
+          if (!_.includes(affiliations, me.get('affiliation'))) {
+            this.showErrorMessage(__("Forbidden: you do not have the necessary affiliation in order to do that."));
+            return false;
+          }
+
+          return true;
+        },
         validateRoleChangeCommand: function validateRoleChangeCommand(command, args) {
           /* Check that a command to change a groupchat user's role or
            * affiliation has anough arguments.
            */
           // TODO check if first argument is valid
           if (args.length < 1 || args.length > 2) {
-            this.showErrorMessage(__('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command), true);
+            this.showErrorMessage(__('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command));
             return false;
           }
 
@@ -49220,14 +49960,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         onCommandError: function onCommandError(err) {
           _converse.log(err, Strophe.LogLevel.FATAL);
 
-          this.showErrorMessage(__("Sorry, an error happened while running the command. Check your browser's developer console for details."), true);
+          this.showErrorMessage(__("Sorry, an error happened while running the command. Check your browser's developer console for details."));
         },
         parseMessageForCommands: function parseMessageForCommands(text) {
-          var _this4 = this;
+          var _this5 = this;
 
-          var _super_ = _converse.ChatBoxView.prototype;
-
-          if (_super_.parseMessageForCommands.apply(this, arguments)) {
+          if (_converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments)) {
             return true;
           }
 
@@ -49241,7 +49979,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           switch (command) {
             case 'admin':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -49249,14 +49987,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 'jid': args[0],
                 'reason': args[1]
               }]).then(function () {
-                return _this4.model.occupants.fetchMembers();
+                return _this5.model.occupants.fetchMembers();
               }, function (err) {
-                return _this4.onCommandError(err);
+                return _this5.onCommandError(err);
               });
               break;
 
             case 'ban':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyAffiliations(['owner', 'admin']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -49264,14 +50002,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 'jid': args[0],
                 'reason': args[1]
               }]).then(function () {
-                return _this4.model.occupants.fetchMembers();
+                return _this5.model.occupants.fetchMembers();
               }, function (err) {
-                return _this4.onCommandError(err);
+                return _this5.onCommandError(err);
               });
               break;
 
             case 'deop':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -49283,7 +50021,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'kick':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -49291,7 +50029,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'mute':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -49299,21 +50037,36 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'member':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              {
+                if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                  break;
+                }
+
+                var occupant = this.model.occupants.findWhere({
+                  'nick': args[0]
+                });
+
+                if (!occupant) {
+                  this.showErrorMessage(__("Error: Can't find a groupchat participant with the nickname \"".concat(args[0], "\"")));
+                  break;
+                }
+
+                this.model.setAffiliation('member', [{
+                  'jid': occupant.get('jid'),
+                  'reason': args[1]
+                }]).then(function () {
+                  return _this5.model.occupants.fetchMembers();
+                }, function (err) {
+                  return _this5.onCommandError(err);
+                });
                 break;
               }
 
-              this.model.setAffiliation('member', [{
-                'jid': args[0],
-                'reason': args[1]
-              }]).then(function () {
-                return _this4.model.occupants.fetchMembers();
-              }, function (err) {
-                return _this4.onCommandError(err);
-              });
-              break;
-
             case 'nick':
+              if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
+                break;
+              }
+
               _converse.connection.send($pres({
                 from: _converse.connection.jid,
                 to: this.model.getRoomJIDAndNick(match[2]),
@@ -49323,7 +50076,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'owner':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -49331,14 +50084,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 'jid': args[0],
                 'reason': args[1]
               }]).then(function () {
-                return _this4.model.occupants.fetchMembers();
+                return _this5.model.occupants.fetchMembers();
               }, function (err) {
-                return _this4.onCommandError(err);
+                return _this5.onCommandError(err);
               });
               break;
 
             case 'op':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -49346,7 +50099,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'revoke':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -49354,9 +50107,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 'jid': args[0],
                 'reason': args[1]
               }]).then(function () {
-                return _this4.model.occupants.fetchMembers();
+                return _this5.model.occupants.fetchMembers();
               }, function (err) {
-                return _this4.onCommandError(err);
+                return _this5.onCommandError(err);
               });
               break;
 
@@ -49373,7 +50126,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'voice':
-              if (!this.validateRoleChangeCommand(command, args)) {
+              if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
                 break;
               }
 
@@ -49441,7 +50194,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return this;
         },
         renderConfigurationForm: function renderConfigurationForm(stanza) {
-          var _this5 = this;
+          var _this6 = this;
 
           /* Renders a form given an IQ stanza containing the current
            * groupchat configuration.
@@ -49486,14 +50239,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           last_fieldset_el.querySelector('input[type=button]').addEventListener('click', function (ev) {
             ev.preventDefault();
 
-            _this5.closeForm();
+            _this6.closeForm();
           });
           form_el.addEventListener('submit', function (ev) {
             ev.preventDefault();
 
-            _this5.model.saveConfiguration(ev.target).then(_this5.model.getRoomFeatures.bind(_this5.model));
+            _this6.model.saveConfiguration(ev.target).then(_this6.model.getRoomFeatures.bind(_this6.model));
 
-            _this5.closeForm();
+            _this6.closeForm();
           }, false);
         },
         closeForm: function closeForm() {
@@ -49771,7 +50524,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return notification;
         },
         showNotificationsforUser: function showNotificationsforUser(notification) {
-          var _this6 = this;
+          var _this7 = this;
 
           /* Given the notification object generated by
            * parseXUserElement, display any relevant messages and
@@ -49795,7 +50548,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           _.each(notification.messages, function (message) {
-            _this6.content.insertAdjacentHTML('beforeend', tpl_info({
+            _this7.content.insertAdjacentHTML('beforeend', tpl_info({
               'data': '',
               'isodate': moment().format(),
               'extra_classes': 'chat-event',
@@ -49809,6 +50562,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           if (_.get(notification.messages, 'length')) {
             this.scrollDown();
+          }
+        },
+        showJoinOrLeaveNotification: function showJoinOrLeaveNotification(occupant) {
+          if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+            return;
+          }
+
+          if (occupant.get('show') === 'offline') {
+            this.showLeaveNotification(occupant);
+          } else if (occupant.get('show') === 'online') {
+            this.showJoinNotification(occupant);
           }
         },
         showJoinNotification: function showJoinNotification(occupant) {
@@ -49857,10 +50621,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         showLeaveNotification: function showLeaveNotification(occupant) {
           var nick = occupant.get('nick'),
               stat = occupant.get('status'),
-              last_el = this.content.lastElementChild,
-              last_msg_date = last_el.getAttribute('data-isodate');
+              last_el = this.content.lastElementChild;
 
-          if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && moment(last_msg_date).isSame(new Date(), "day") && _.get(last_el, 'dataset', {}).join === "\"".concat(nick, "\"")) {
+          if (last_el && _.includes(_.get(last_el, 'classList', []), 'chat-info') && moment(last_el.getAttribute('data-isodate')).isSame(new Date(), "day") && _.get(last_el, 'dataset', {}).join === "\"".concat(nick, "\"")) {
             var message;
 
             if (_.isNil(stat)) {
@@ -49891,7 +50654,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'data': "data-leave=\"".concat(nick, "\"")
             };
 
-            if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leavejoin === "\"".concat(nick, "\"")) {
+            if (last_el && _.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leavejoin === "\"".concat(nick, "\"")) {
               last_el.outerHTML = tpl_info(data);
             } else {
               var el = u.stringToElement(tpl_info(data));
@@ -50351,6 +51114,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return right[Symbol.hasInstance](left); } else { return left instanceof right; } }
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 // Converse.js
 // http://conversejs.org
 //
@@ -50380,8 +51151,9 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       $pres = _converse$env.$pres,
       b64_sha1 = _converse$env.b64_sha1,
       sizzle = _converse$env.sizzle,
-      _ = _converse$env._,
-      moment = _converse$env.moment; // Add Strophe Namespaces
+      f = _converse$env.f,
+      moment = _converse$env.moment,
+      _ = _converse$env._; // Add Strophe Namespaces
 
   Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
   Strophe.addNamespace('MUC_OWNER', Strophe.NS.MUC + "#owner");
@@ -50515,7 +51287,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
             'affiliation': null,
             'connection_status': converse.ROOMSTATUS.DISCONNECTED,
             'name': '',
-            'nick': _converse.xmppstatus.get('nickname'),
+            'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
             'description': '',
             'features_fetched': false,
             'roomconfig': {},
@@ -50673,14 +51445,97 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
           _converse.connection.sendPresence(presence);
         },
+        getReferenceForMention: function getReferenceForMention(mention, index) {
+          var longest_match = u.getLongestSubstring(mention, this.occupants.map(function (o) {
+            return o.getDisplayName();
+          }));
+
+          if (!longest_match) {
+            return null;
+          }
+
+          if ((mention[longest_match.length] || '').match(/[A-Za-zäëïöüâêîôûáéíóúàèìòùÄËÏÖÜÂÊÎÔÛÁÉÍÓÚÀÈÌÒÙ]/i)) {
+            // avoid false positives, i.e. mentions that have
+            // further alphabetical characters than our longest
+            // match.
+            return null;
+          }
+
+          var occupant = this.occupants.findOccupant({
+            'nick': longest_match
+          }) || this.occupants.findOccupant({
+            'jid': longest_match
+          });
+
+          if (!occupant) {
+            return null;
+          }
+
+          var obj = {
+            'begin': index,
+            'end': index + longest_match.length,
+            'value': longest_match,
+            'type': 'mention'
+          };
+
+          if (occupant.get('jid')) {
+            obj.uri = "xmpp:".concat(occupant.get('jid'));
+          }
+
+          return obj;
+        },
+        extractReference: function extractReference(text, index) {
+          for (var i = index; i < text.length; i++) {
+            if (text[i] !== '@') {
+              continue;
+            } else {
+              var match = text.slice(i + 1),
+                  ref = this.getReferenceForMention(match, i);
+
+              if (ref) {
+                return [text.slice(0, i) + match, ref, i];
+              }
+            }
+          }
+
+          return;
+        },
+        parseTextForReferences: function parseTextForReferences(text) {
+          var refs = [];
+          var index = 0;
+
+          while (index < (text || '').length) {
+            var result = this.extractReference(text, index);
+
+            if (result) {
+              text = result[0]; // @ gets filtered out
+
+              refs.push(result[1]);
+              index = result[2];
+            } else {
+              break;
+            }
+          }
+
+          return [text, refs];
+        },
         getOutgoingMessageAttributes: function getOutgoingMessageAttributes(text, spoiler_hint) {
           var is_spoiler = this.get('composing_spoiler');
+          var references;
+
+          var _this$parseTextForRef = this.parseTextForReferences(text);
+
+          var _this$parseTextForRef2 = _slicedToArray(_this$parseTextForRef, 2);
+
+          text = _this$parseTextForRef2[0];
+          references = _this$parseTextForRef2[1];
           return {
-            'nick': this.get('nick'),
             'from': "".concat(this.get('jid'), "/").concat(this.get('nick')),
             'fullname': this.get('nick'),
             'is_spoiler': is_spoiler,
             'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
+            'nick': this.get('nick'),
+            'references': references,
             'sender': 'me',
             'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
             'type': 'groupchat'
@@ -50850,8 +51705,6 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           this.save(features);
         },
         requestMemberList: function requestMemberList(affiliation) {
-          var _this3 = this;
-
           /* Send an IQ stanza to the server, asking it for the
            * member-list of this groupchat.
            *
@@ -50865,19 +51718,16 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
            *  A promise which resolves once the list has been
            *  retrieved.
            */
-          return new Promise(function (resolve, reject) {
-            affiliation = affiliation || 'member';
-            var iq = $iq({
-              to: _this3.get('jid'),
-              type: "get"
-            }).c("query", {
-              xmlns: Strophe.NS.MUC_ADMIN
-            }).c("item", {
-              'affiliation': affiliation
-            });
-
-            _converse.connection.sendIQ(iq, resolve, reject);
+          affiliation = affiliation || 'member';
+          var iq = $iq({
+            to: this.get('jid'),
+            type: "get"
+          }).c("query", {
+            xmlns: Strophe.NS.MUC_ADMIN
+          }).c("item", {
+            'affiliation': affiliation
           });
+          return _converse.api.sendIQ(iq);
         },
         setAffiliation: function setAffiliation(affiliation, members) {
           /* Send IQ stanzas to the server to set an affiliation for
@@ -50913,7 +51763,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           return Promise.all(promises);
         },
         saveConfiguration: function saveConfiguration(form) {
-          var _this4 = this;
+          var _this3 = this;
 
           /* Submit the groupchat configuration form by sending an IQ
            * stanza to the server.
@@ -50930,11 +51780,11 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
             var inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
                 configArray = _.map(inputs, u.webForm2xForm);
 
-            _this4.sendConfiguration(configArray, resolve, reject);
+            _this3.sendConfiguration(configArray, resolve, reject);
           });
         },
         autoConfigureChatRoom: function autoConfigureChatRoom() {
-          var _this5 = this;
+          var _this4 = this;
 
           /* Automatically configure groupchat based on this model's
            * 'roomconfig' data.
@@ -50943,10 +51793,10 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
            * been received.
            */
           return new Promise(function (resolve, reject) {
-            _this5.fetchRoomConfiguration().then(function (stanza) {
+            _this4.fetchRoomConfiguration().then(function (stanza) {
               var configArray = [],
                   fields = stanza.querySelectorAll('field'),
-                  config = _this5.get('roomconfig');
+                  config = _this4.get('roomconfig');
 
               var count = fields.length;
 
@@ -50976,14 +51826,14 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
                 configArray.push(field);
 
                 if (! --count) {
-                  _this5.sendConfiguration(configArray, resolve, reject);
+                  _this4.sendConfiguration(configArray, resolve, reject);
                 }
               });
             });
           });
         },
         fetchRoomConfiguration: function fetchRoomConfiguration() {
-          var _this6 = this;
+          var _this5 = this;
 
           /* Send an IQ stanza to fetch the groupchat configuration data.
            * Returns a promise which resolves once the response IQ
@@ -50991,7 +51841,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
            */
           return new Promise(function (resolve, reject) {
             _converse.connection.sendIQ($iq({
-              'to': _this6.get('jid'),
+              'to': _this5.get('jid'),
               'type': "get"
             }).c("query", {
               xmlns: Strophe.NS.MUC_OWNER
@@ -51058,7 +51908,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           }
         },
         sendAffiliationIQ: function sendAffiliationIQ(affiliation, member) {
-          var _this7 = this;
+          var _this6 = this;
 
           /* Send an IQ stanza specifying an affiliation change.
            *
@@ -51070,7 +51920,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
            */
           return new Promise(function (resolve, reject) {
             var iq = $iq({
-              to: _this7.get('jid'),
+              to: _this6.get('jid'),
               type: "set"
             }).c("query", {
               xmlns: Strophe.NS.MUC_ADMIN
@@ -51102,8 +51952,6 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
         },
         getJidsWithAffiliations: function getJidsWithAffiliations(affiliations) {
-          var _this8 = this;
-
           /* Returns a map of JIDs that have the affiliations
            * as provided.
            */
@@ -51111,14 +51959,16 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
             affiliations = [affiliations];
           }
 
-          return new Promise(function (resolve, reject) {
-            var promises = _.map(affiliations, _.partial(_this8.requestMemberList.bind(_this8)));
+          var promises = _.map(affiliations, _.partial(this.requestMemberList.bind(this)));
 
-            Promise.all(promises).then(_.flow(u.marshallAffiliationIQs, resolve), _.flow(u.marshallAffiliationIQs, resolve));
+          return Promise.all(promises).then(function (iq) {
+            return u.marshallAffiliationIQs(iq);
+          }, function (iq) {
+            return u.marshallAffiliationIQs(iq);
           });
         },
         updateMemberLists: function updateMemberLists(members, affiliations, deltaFunc) {
-          var _this9 = this;
+          var _this7 = this;
 
           /* Fetch the lists of users with the given affiliations.
            * Then compute the delta between those users and
@@ -51138,9 +51988,9 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
            *  to update the list.
            */
           this.getJidsWithAffiliations(affiliations).then(function (old_members) {
-            return _this9.setAffiliations(deltaFunc(members, old_members));
+            return _this7.setAffiliations(deltaFunc(members, old_members));
           }).then(function () {
-            return _this9.occupants.fetchMembers();
+            return _this7.occupants.fetchMembers();
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
         },
         checkForReservedNick: function checkForReservedNick(callback, errback) {
@@ -51314,8 +52164,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
               return;
             }
 
-            this.incrementUnreadMsgCounter(original_stanza);
-            this.createMessage(stanza, original_stanza);
+            this.incrementUnreadMsgCounter(this.createMessage(stanza, original_stanza));
           }
 
           if (sender !== this.get('nick')) {
@@ -51400,27 +52249,42 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
            * Parameters:
            *  (String): The text message
            */
-          return new RegExp("\\b".concat(this.get('nick'), "\\b")).test(message);
+          var nick = this.get('nick');
+
+          if (message.get('references').length) {
+            var mentions = message.get('references').filter(function (ref) {
+              return ref.type === 'mention';
+            }).map(function (ref) {
+              return ref.value;
+            });
+            return _.includes(mentions, nick);
+          } else {
+            return new RegExp("\\b".concat(nick, "\\b")).test(message.get('message'));
+          }
         },
-        incrementUnreadMsgCounter: function incrementUnreadMsgCounter(stanza) {
+        incrementUnreadMsgCounter: function incrementUnreadMsgCounter(message) {
           /* Given a newly received message, update the unread counter if
            * necessary.
            *
            * Parameters:
            *  (XMLElement): The <messsage> stanza
            */
-          var body = stanza.querySelector('body');
-
-          if (_.isNull(body)) {
-            return; // The message has no text
+          if (!message) {
+            return;
           }
 
-          if (u.isNewMessage(stanza) && this.isHidden()) {
+          var body = message.get('message');
+
+          if (_.isNil(body)) {
+            return;
+          }
+
+          if (u.isNewMessage(message) && this.isHidden()) {
             var settings = {
               'num_unread_general': this.get('num_unread_general') + 1
             };
 
-            if (this.isUserMentioned(body.textContent)) {
+            if (this.isUserMentioned(message)) {
               settings.num_unread = this.get('num_unread') + 1;
 
               _converse.incrementMsgCounter();
@@ -51488,35 +52352,25 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           }
         },
         fetchMembers: function fetchMembers() {
-          var _this10 = this;
+          var _this8 = this;
 
-          var old_jids = _.uniq(_.concat(_.map(this.where({
-            'affiliation': 'admin'
-          }), function (item) {
-            return item.get('jid');
-          }), _.map(this.where({
-            'affiliation': 'member'
-          }), function (item) {
-            return item.get('jid');
-          }), _.map(this.where({
-            'affiliation': 'owner'
-          }), function (item) {
-            return item.get('jid');
-          })));
+          this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']).then(function (new_members) {
+            var new_jids = new_members.map(function (m) {
+              return m.jid;
+            }).filter(function (m) {
+              return !_.isUndefined(m);
+            }),
+                new_nicks = new_members.map(function (m) {
+              return !m.jid && m.nick || undefined;
+            }).filter(function (m) {
+              return !_.isUndefined(m);
+            }),
+                removed_members = _this8.filter(function (m) {
+              return f.includes(m.get('affiliation'), ['admin', 'member', 'owner']) && !f.includes(m.get('nick'), new_nicks) && !f.includes(m.get('jid'), new_jids);
+            });
 
-          this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']).then(function (jids) {
-            _.each(_.difference(old_jids, jids), function (removed_jid) {
-              // Remove absent occupants who've been removed from
-              // the members lists.
-              if (removed_jid === _converse.bare_jid) {
-                return;
-              }
-
-              var occupant = _this10.findOccupant({
-                'jid': removed_jid
-              });
-
-              if (!occupant) {
+            _.each(removed_members, function (occupant) {
+              if (occupant.get('jid') === _converse.bare_jid) {
                 return;
               }
 
@@ -51525,15 +52379,23 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
               }
             });
 
-            _.each(jids, function (attrs) {
-              var occupant = _this10.findOccupant({
-                'jid': attrs.jid
-              });
+            _.each(new_members, function (attrs) {
+              var occupant;
+
+              if (attrs.jid) {
+                occupant = _this8.findOccupant({
+                  'jid': attrs.jid
+                });
+              } else {
+                occupant = _this8.findOccupant({
+                  'nick': attrs.nick
+                });
+              }
 
               if (occupant) {
                 occupant.save(attrs);
               } else {
-                _this10.create(attrs);
+                _this8.create(attrs);
               }
             });
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
@@ -51757,14 +52619,22 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
             return _.map(jids, _.partial(createChatRoom, _, attrs));
           },
           'open': function open(jids, attrs) {
-            if (_.isUndefined(jids)) {
-              throw new TypeError('rooms.open: You need to provide at least one JID');
-            } else if (_.isString(jids)) {
-              return _converse.api.rooms.create(jids, attrs).trigger('show');
-            }
+            return new Promise(function (resolve, reject) {
+              _converse.api.waitUntil('chatBoxesFetched').then(function () {
+                if (_.isUndefined(jids)) {
+                  var err_msg = 'rooms.open: You need to provide at least one JID';
 
-            return _.map(jids, function (jid) {
-              return _converse.api.rooms.create(jid, attrs).trigger('show');
+                  _converse.log(err_msg, Strophe.LogLevel.ERROR);
+
+                  reject(new TypeError(err_msg));
+                } else if (_.isString(jids)) {
+                  resolve(_converse.api.rooms.create(jids, attrs).trigger('show'));
+                } else {
+                  resolve(_.map(jids, function (jid) {
+                    return _converse.api.rooms.create(jid, attrs).trigger('show');
+                  }));
+                }
+              });
             });
           },
           'get': function get(jids, attrs, create) {
@@ -52781,7 +53651,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }
 
             _converse.api.sendIQ(stanza).then(function () {
-              return _converse.session.set('push_enabled', true);
+              return _converse.session.save('push_enabled', true);
             }).catch(function (e) {
               _converse.log("Could not enable push app server for ".concat(push_app_server.jid), Strophe.LogLevel.ERROR);
 
@@ -54134,7 +55004,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
           }
         },
         getDisplayName: function getDisplayName() {
-          return this.vcard.get('fullname') || this.get('jid');
+          return this.get('nickname') || this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('jid');
         },
         getFullname: function getFullname() {
           return this.vcard.get('fullname');
@@ -56288,7 +57158,7 @@ if (true) {
    * --------------------
    * Any of the following components may be removed if they're not needed.
    */
-  __webpack_require__(/*! converse-bookmarks */ "./src/converse-bookmarks.js"), // XEP-0048 Bookmarks
+  __webpack_require__(/*! converse-autocomplete */ "./src/converse-autocomplete.js"), __webpack_require__(/*! converse-bookmarks */ "./src/converse-bookmarks.js"), // XEP-0048 Bookmarks
   __webpack_require__(/*! converse-caps */ "./src/converse-caps.js"), // XEP-0115 Entity Capabilities
   __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js"), // Renders standalone chat boxes for single user chat
   __webpack_require__(/*! converse-controlbox */ "./src/converse-controlbox.js"), // The control box
@@ -56449,15 +57319,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         xhr.onload = function () {
           if (xhr.status >= 200 && xhr.status < 400) {
-            jed_instance = new Jed(window.JSON.parse(xhr.responseText));
-            resolve();
+            try {
+              var data = window.JSON.parse(xhr.responseText);
+              jed_instance = new Jed(data);
+              resolve();
+            } catch (e) {
+              xhr.onerror(e);
+            }
           } else {
             xhr.onerror();
           }
         };
 
-        xhr.onerror = function () {
-          reject(xhr.statusText);
+        xhr.onerror = function (e) {
+          var err_message = e ? " Error: ".concat(e.message) : '';
+          reject(new Error("Could not fetch translations. Status: ".concat(xhr.statusText, ". ").concat(err_message)));
         };
 
         xhr.send();
@@ -56852,31 +57728,13 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/chatarea.html -->\n<div class="chat-area col">\n    <div class="chat-content ';
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;
-__p += '"></div>\n    <div class="new-msgs-indicator hidden">▼ ' +
-__e( o.unread_msgs ) +
-' ▼</div>\n    <form class="sendXMPPMessage">\n        ';
- if (o.show_toolbar) { ;
-__p += '\n            <ul class="chat-toolbar no-text-select"></ul>\n        ';
- } ;
-__p += '\n        <textarea type="text" class="chat-textarea ';
- if (o.show_send_button) { ;
-__p += 'chat-textarea-send-button';
- } ;
-__p += '"\n                  placeholder="' +
-__e(o.label_message) +
-'"></textarea>\n    ';
- if (o.show_send_button) { ;
-__p += '\n        <button type="submit" class="pure-button send-button">' +
-__e( o.label_send ) +
-'</button>\n    ';
- } ;
-__p += '\n    </form>\n</div>\n';
+__p += '"></div>\n    <div class="message-form-container"/>\n</div>\n';
 return __p
 };
 
@@ -56923,7 +57781,7 @@ __e(o.url) +
 '" target="_blank" rel="noopener" class="user">\n                ';
  } ;
 __p += '\n                        ' +
-__e( o.fullname || o.jid ) +
+__e( o.nickname || o.fullname || o.jid ) +
 '\n                ';
  if (o.url) { ;
 __p += '\n                    </a>\n                ';
@@ -56965,25 +57823,25 @@ __p += '\n    <input type="text" placeholder="' +
  if (!o.composing_spoiler) { ;
 __p += ' hidden ';
  } ;
-__p += ' spoiler-hint"/>\n    <textarea\n        type="text"\n        class="chat-textarea\n            ';
+__p += ' spoiler-hint"/>\n\n    <div class="suggestion-box">\n        <ul class="suggestion-box__results suggestion-box__results--above" hidden></ul>\n        <textarea\n            type="text"\n            class="chat-textarea suggestion-box__input\n                ';
  if (o.show_send_button) { ;
 __p += ' chat-textarea-send-button ';
  } ;
-__p += '\n            ';
+__p += '\n                ';
  if (o.composing_spoiler) { ;
 __p += ' spoiler ';
  } ;
-__p += '"\n        placeholder="' +
-__e(o.label_personal_message) +
+__p += '"\n            placeholder="' +
+__e(o.label_message) +
 '">' +
 ((__t = ( o.message_value )) == null ? '' : __t) +
-'</textarea>\n    ';
+'</textarea>\n        <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>\n\n        ';
  if (o.show_send_button) { ;
-__p += '\n        <button type="submit" class="pure-button send-button">' +
+__p += '\n            <button type="submit" class="pure-button send-button">' +
 __e( o.label_send ) +
-'</button>\n    ';
+'</button>\n        ';
  } ;
-__p += '\n</form>\n</div>\n';
+__p += '\n    </div>\n</form>\n</div>\n';
 return __p
 };
 
@@ -57544,41 +58402,6 @@ var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/chatroom_sidebar.html -->\n<!-- <div class="occupants"> -->\n<div class="occupants-header">\n    <i class="hide-occupants fa fa-times"></i>\n    <p class="occupants-heading">' +
 __e(o.label_occupants) +
 '</p>\n</div>\n<ul class="occupant-list"></ul>\n<div class="chatroom-features"></div>\n<!-- </div> -->\n';
-return __p
-};
-
-/***/ }),
-
-/***/ "./src/templates/chatroom_toolbar.html":
-/*!*********************************************!*\
-  !*** ./src/templates/chatroom_toolbar.html ***!
-  \*********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
-module.exports = function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
-function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/chatroom_toolbar.html -->\n';
- if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="toggle-smiley fa fa-smile-o" title="' +
-__e(o.label_insert_smiley) +
-'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a> \n    <div class="emoji-picker dropdown-menu toolbar-menu"></div>\n</li>\n';
- } ;
-__p += '\n';
- if (o.show_call_button)  { ;
-__p += '\n<li class="toggle-call fa fa-phone" title="' +
-__e(o.label_start_call) +
-'"></li>\n';
- } ;
-__p += '\n';
- if (o.show_occupants_toggle)  { ;
-__p += '\n<li class="toggle-occupants fa fa-angle-double-right" title="' +
-__e(o.label_hide_occupants) +
-'"></li>\n';
- } ;
-__p += '\n';
 return __p
 };
 
@@ -59525,6 +60348,12 @@ __e(o.label_start_call) +
 '"></li>\n';
  } ;
 __p += '\n';
+ if (o.show_occupants_toggle)  { ;
+__p += '\n<li class="toggle-occupants fa fa-angle-double-right" title="' +
+__e(o.label_hide_occupants) +
+'"></li>\n';
+ } ;
+__p += '\n';
 return __p
 };
 
@@ -59810,6 +60639,22 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
   var u = {};
 
+  u.getLongestSubstring = function (string, candidates) {
+    function reducer(accumulator, current_value) {
+      if (string.startsWith(current_value)) {
+        if (current_value.length > accumulator.length) {
+          return current_value;
+        } else {
+          return accumulator;
+        }
+      } else {
+        return accumulator;
+      }
+    }
+
+    return candidates.reduce(reducer, '');
+  };
+
   u.getNextElement = function (el) {
     var selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
     var next_el = el.nextElementSibling;
@@ -59936,6 +60781,40 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
   u.escapeURL = function (url) {
     return encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+  };
+
+  u.prefixMentions = function (message) {
+    /* Given a message object, return its text with @ chars
+     * inserted before the mentioned nicknames.
+     */
+    var text = message.get('message');
+    (message.get('references') || []).sort(function (a, b) {
+      return b.begin - a.begin;
+    }).forEach(function (ref) {
+      text = "".concat(text.slice(0, ref.begin), "@").concat(text.slice(ref.begin));
+    });
+    return text;
+  };
+
+  u.addMentionsMarkup = function (text, references, chatbox) {
+    if (chatbox.get('message_type') !== 'groupchat') {
+      return text;
+    }
+
+    var nick = chatbox.get('nick');
+    references.sort(function (a, b) {
+      return b.begin - a.begin;
+    }).forEach(function (ref) {
+      var mention = text.slice(ref.begin, ref.end);
+      chatbox;
+
+      if (mention === nick) {
+        text = text.slice(0, ref.begin) + "<span class=\"mention mention--self badge badge-info\">".concat(mention, "</span>") + text.slice(ref.end);
+      } else {
+        text = text.slice(0, ref.begin) + "<span class=\"mention\">".concat(mention, "</span>") + text.slice(ref.end);
+      }
+    });
+    return text;
   };
 
   u.addHyperlinks = function (text) {
@@ -60549,6 +61428,29 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
     }
   };
 
+  u.siblingIndex = function (el) {
+    /* eslint-disable no-cond-assign */
+    for (var i = 0; el = el.previousElementSibling; i++) {
+      ;
+    }
+
+    return i;
+  };
+
+  u.getCurrentWord = function (input) {
+    var cursor = input.selectionEnd || undefined;
+    return _.last(input.value.slice(0, cursor).split(' '));
+  };
+
+  u.replaceCurrentWord = function (input, new_value) {
+    var cursor = input.selectionEnd || undefined,
+        current_word = _.last(input.value.slice(0, cursor).split(' ')),
+        value = input.value;
+
+    input.value = value.slice(0, cursor - current_word.length) + "".concat(new_value, " ") + value.slice(cursor);
+    input.selectionEnd = cursor - current_word.length + new_value.length + 1;
+  };
+
   u.isVisible = function (el) {
     if (u.hasClass('hidden', el)) {
       return false;
@@ -60591,6 +61493,22 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
     }
 
     return result;
+  };
+
+  u.putCurserAtEnd = function (textarea) {
+    if (textarea !== document.activeElement) {
+      textarea.focus();
+    } // Double the length because Opera is inconsistent about whether a carriage return is one character or two.
+
+
+    var len = textarea.value.length * 2; // Timeout seems to be required for Blink
+
+    setTimeout(function () {
+      return textarea.setSelectionRange(len, len);
+    }, 1); // Scroll to the bottom, in case we're in a tall textarea
+    // (Necessary for Firefox and Chrome)
+
+    this.scrollTop = 999999;
   };
 
   u.getUniqueId = function () {

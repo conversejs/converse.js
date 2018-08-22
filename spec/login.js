@@ -29,15 +29,15 @@
                 spyOn(cbview.loginpanel, 'connect');
                 cbview.delegateEvents();
 
-                expect(_converse.storage).toBe('session');
+                expect(_converse.session.get('storage')).toBe('local');
                 cbview.el.querySelector('input[type="submit"]').click();
-                expect(_converse.storage).toBe('local');
+                expect(_converse.session.get('storage')).toBe('local');
                 expect(cbview.loginpanel.connect).toHaveBeenCalled();
 
 
                 checkbox.click();
                 cbview.el.querySelector('input[type="submit"]').click();
-                expect(_converse.storage).toBe('session');
+                expect(_converse.session.get('storage')).toBe('session');
                 done();
             });
         }));
@@ -51,7 +51,7 @@
                 function (done, _converse) {
 
             test_utils.waitUntil(() => _converse.chatboxviews.get('controlbox'))
-            .then(function () {
+            .then(() => {
                 var cbview = _converse.chatboxviews.get('controlbox');
                 test_utils.openControlBox();
                 const checkboxes = cbview.el.querySelectorAll('input[type="checkbox"]');
@@ -67,14 +67,14 @@
 
                 spyOn(cbview.loginpanel, 'connect');
 
-                expect(_converse.storage).toBe('session');
+                expect(_converse.session.get('storage')).toBe('session');
                 cbview.el.querySelector('input[type="submit"]').click();
-                expect(_converse.storage).toBe('session');
+                expect(_converse.session.get('storage')).toBe('session');
                 expect(cbview.loginpanel.connect).toHaveBeenCalled();
 
                 checkbox.click();
                 cbview.el.querySelector('input[type="submit"]').click();
-                expect(_converse.storage).toBe('local');
+                expect(_converse.session.get('storage')).toBe('local');
                 done();
             });
         }));

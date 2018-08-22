@@ -102,7 +102,7 @@
                     this.roomspanel = new _converse.RoomsPanel({
                         'model': new (_converse.RoomsPanelModel.extend({
                             'id': b64_sha1(`converse.roomspanel${_converse.bare_jid}`), // Required by sessionStorage
-                            'browserStorage': new Backbone.BrowserStorage[_converse.storage](
+                            'browserStorage': new Backbone.BrowserStorage[_converse.session.get('storage')](
                                 b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
                         }))()
                     });

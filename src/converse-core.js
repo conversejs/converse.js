@@ -222,7 +222,6 @@
         rid: undefined,
         root: window.document,
         sid: undefined,
-        storage: 'session',
         strict_plugin_dependencies: false,
         trusted: true,
         view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
@@ -650,28 +649,30 @@
             if (reconnecting) {
                 _converse.onStatusInitialized(reconnecting);
             } else {
-                this.xmppstatus = new this.XMPPStatus();
-                const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
-                this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
-                this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+                const id = `converse.xmppstatus-${_converse.bare_jid}`;
+                this.xmppstatus = new this.XMPPStatus({'id': id});
+                this.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
                 this.xmppstatus.fetch({
-                    success: _.partial(_converse.onStatusInitialized, reconnecting),
-                    error: _.partial(_converse.onStatusInitialized, reconnecting)
+                    'success': _.partial(_converse.onStatusInitialized, reconnecting),
+                    'error': _.partial(_converse.onStatusInitialized, reconnecting)
                 });
             }
         }
 
         this.initSession = function () {
-            _converse.session = new Backbone.Model();
             const id = b64_sha1('converse.bosh-session');
-            _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
+            _converse.session = new Backbone.Model({
+                'id': id,
+                'trusted': _converse.trusted && true || false,
+                'storage': _converse.trusted ? 'local' : 'session'
+            });
             _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
             _converse.session.fetch();
             _converse.emit('sessionInitialized');
         };
 
         this.clearSession = function () {
-            if (!_converse.trusted) {
+            if (!_converse.session.get('trusted')) {
                 window.localStorage.clear();
                 window.sessionStorage.clear();
             } else if (!_.isUndefined(this.session) && this.session.browserStorage) {
@@ -791,11 +792,12 @@
             }
         };
 
-        this.setUserJid = function () {
+        this.setUserJID = function () {
             _converse.jid = _converse.connection.jid;
             _converse.bare_jid = Strophe.getBareJidFromJid(_converse.connection.jid);
             _converse.resource = Strophe.getResourceFromJid(_converse.connection.jid);
             _converse.domain = Strophe.getDomainFromJid(_converse.connection.jid);
+            _converse.emit('setUserJID');
         };
 
         this.onConnected = function (reconnecting) {
@@ -803,8 +805,7 @@
              * by logging in or by attaching to an existing BOSH session.
              */
             _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
-            _converse.setUserJid();
-            _converse.initSession();
+            _converse.setUserJID();
             _converse.enableCarbons();
             _converse.initStatus(reconnecting)
         };
@@ -1169,6 +1170,7 @@
 
         function finishInitialization () {
             _converse.initPlugins();
+            _converse.initSession();
             _converse.initConnection();
             _converse.setUpXMLLogging();
             _converse.logIn();

@@ -125,9 +125,6 @@
                     'scroll_position': 0
                 },
                 initialize () {
-                    const id = `converse.emoji-${_converse.bare_jid}`;
-                    this.id = id;
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
                 }
             });
 
@@ -1059,7 +1056,10 @@
 
                 createEmojiPicker () {
                     if (_.isUndefined(_converse.emojipicker)) {
-                        _converse.emojipicker = new _converse.EmojiPicker();
+                        const storage = _converse.session.get('storage'),
+                              id = `converse.emoji-${_converse.bare_jid}`;
+                        _converse.emojipicker = new _converse.EmojiPicker({'id': id});
+                        _converse.emojipicker.browserStorage = new Backbone.BrowserStorage[storage](id);
                         _converse.emojipicker.fetch();
                     }
                     this.emoji_picker_view = new _converse.EmojiPickerView({

@@ -258,8 +258,9 @@
                         this.addRelatedContact(_converse.roster.findWhere({'jid': this.get('jid')}));
                     });
                     this.messages = new _converse.Messages();
-                    this.messages.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                        `converse.messages${this.get('jid')}${_converse.bare_jid}`);
+                    const storage = _converse.session.get('storage');
+                    this.messages.browserStorage = new Backbone.BrowserStorage[storage](
+                        b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
                     this.messages.chatbox = this;
 
                     this.messages.on('change:upload', (message) => {

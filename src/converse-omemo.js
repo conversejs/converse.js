@@ -784,7 +784,6 @@
                         .c('publish', {'node': Strophe.NS.OMEMO_DEVICELIST})
                             .c('item')
                                 .c('list', {'xmlns': Strophe.NS.OMEMO})
-
                     _.each(this.devices.where({'active': true}), (device) => {
                         stanza.c('device', {'id': device.get('id')}).up();
                     });
@@ -929,9 +928,13 @@
             function registerPEPPushHandler () {
                 // Add a handler for devices pushed from other connected clients
                 _converse.connection.addHandler((message) => {
-                    if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
-                        updateDevicesFromStanza(message);
-                        updateBundleFromStanza(message);
+                    try {
+                        if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
+                            updateDevicesFromStanza(message);
+                            updateBundleFromStanza(message);
+                        }
+                    } catch (e) {
+                        _converse.log(e.message, Strophe.LogLevel.ERROR);
                     }
                     return true;
                 }, null, 'message', 'headline');

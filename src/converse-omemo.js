@@ -171,19 +171,25 @@
                             sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
                             prekey = device.getRandomPreKey();
 
-                    return sessionBuilder.processPreKey({
-                        'registrationId': _converse.omemo_store.get('registration_id'),
-                        'identityKey': _converse.omemo_store.get('identity_keypair'),
-                        'signedPreKey': {
-                            'keyId': bundle.signed_prekey.id, // <Number>
-                            'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
-                            'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
-                        },
-                        'preKey': {
-                            'keyId': prekey.id, // <Number>
-                            'publicKey': u.base64ToArrayBuffer(prekey.key),
-                        }
-                    })
+                    try {
+                        return sessionBuilder.processPreKey({
+                            'registrationId': parseInt(_converse.omemo_store.get('device_id'), 10),
+                            'identityKey': _converse.omemo_store.get('identity_keypair').pubKey,
+                            'signedPreKey': {
+                                'keyId': bundle.signed_prekey.id, // <Number>
+                                'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
+                                'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
+                            },
+                            'preKey': {
+                                'keyId': prekey.id, // <Number>
+                                'publicKey': u.base64ToArrayBuffer(prekey.key),
+                            }
+                        });
+                    } catch (e) {
+                        _converse.log(`Error: could not build session for device ${device.get('id')}`, Strophe.LogLevel.ERROR);
+                        _converse.log(e.message, Strophe.LogLevel.ERROR);
+                        return Promise.resolve();
+                    }
                 },
 
                 getKeyAndTag (string) {
@@ -291,7 +297,7 @@
                 },
 
                 buildSessions (devices) {
-                    return Promise.all(devices.map((device) => this.buildSession(device)));
+                    return Promise.all(devices.map(device => this.buildSession(device)));
                 },
 
                 encryptMessage (plaintext) {
@@ -403,8 +409,8 @@
                     if (this.get('omemo_active')) {
                         const message = this.messages.create(attrs);
                         this.getBundlesAndBuildSessions()
-                            .then((devices) => this.createOMEMOMessageStanza(message, devices))
-                            .then((stanza) => this.sendMessageStanza(stanza))
+                            .then(devices => this.createOMEMOMessageStanza(message, devices))
+                            .then(stanza => this.sendMessageStanza(stanza))
                             .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                     } else {
                         return this.__super__.sendMessage.apply(this, arguments);
@@ -508,7 +514,7 @@
                         throw new Error("Unable to generate a unique device ID");
                     }
                 }
-                return device_id;
+                return device_id.toString();
             }
 
 
@@ -526,11 +532,13 @@
                             'identity_keypair': identity_keypair,
                             'prekeys': {}
                         };
-                        libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0)
+                        libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 1)
                         .then((signed_prekey) => {
+                            _converse.omemo_store.storeSignedPreKey(signed_prekey.keyId, signed_prekey.keyPair);
                             data['signed_prekey'] = signed_prekey;
-                            const key_promises = _.map(_.range(0, _converse.NUM_PREKEYS), (id) => libsignal.KeyHelper.generatePreKey(id));
-                            Promise.all(key_promises).then((keys) => {
+                            const key_promises = _.map(_.range(0, _converse.NUM_PREKEYS), id => libsignal.KeyHelper.generatePreKey(id));
+                            Promise.all(key_promises).then(keys => {
+                                _.forEach(keys, k => _converse.omemo_store.storePreKey(k.keyId, k.keyPair));
                                 data['prekeys'] = keys;
                                 resolve(data)
                             });
@@ -646,27 +654,19 @@
                     return Promise.resolve();
                 },
 
-
-                createNewDeviceBundle () {
-                    return generateBundle().then((data) => {
-                        // TODO: should storeSession be used here?
-                        _converse.omemo_store.save(data);
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-                },
-
                 fetchSession () {
                     if (_.isUndefined(this._setup_promise)) {
                         this._setup_promise = new Promise((resolve, reject) => {
                             this.fetch({
                                 'success': () => {
                                     if (!_converse.omemo_store.get('device_id')) {
-                                        this.createNewDeviceBundle().then(resolve).catch(resolve);
+                                        generateBundle().then(data => resolve(this.save(data))).catch(resolve);
                                     } else {
                                         resolve();
                                     }
                                 },
                                 'error': () => {
-                                    this.createNewDeviceBundle().then(resolve).catch(resolve);
+                                    generateBundle().then(data => resolve(this.save(data))).catch(resolve);
                                 }
                             });
                         });

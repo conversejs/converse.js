@@ -68287,9 +68287,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
           this.on('remove', this.markRoomAsUnbookmarked, this);
           this.on('remove', this.sendBookmarkStanza, this);
-          const cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
+
+          const storage = _converse.session.get('storage'),
+                cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
+
           this.fetched_flag = b64_sha1(cache_key + 'fetched');
-          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cache_key));
+          this.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(cache_key));
         },
 
         openBookmarkedRoom(bookmark) {
@@ -68497,10 +68500,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
-          const cachekey = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
-          this.list_model = new _converse.BookmarksList();
-          this.list_model.id = cachekey;
-          this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cachekey));
+          const storage = _converse.session.get('storage'),
+                id = b64_sha1(`converse.room-bookmarks${_converse.bare_jid}-list-model`);
+
+          this.list_model = new _converse.BookmarksList({
+            'id': id
+          });
+          this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
           this.list_model.fetch();
           this.render();
           this.sortAndPositionAllItems();
@@ -69033,7 +69039,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
 
           this.messages = new _converse.Messages();
-          this.messages.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
+
+          const storage = _converse.session.get('storage');
+
+          this.messages.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
           this.messages.chatbox = this;
           this.messages.on('change:upload', message => {
             if (message.get('upload') === _converse.SUCCESS) {
@@ -69996,11 +70005,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'scroll_position': 0
         },
 
-        initialize() {
-          const id = `converse.emoji-${_converse.bare_jid}`;
-          this.id = id;
-          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
-        }
+        initialize() {}
 
       });
       _converse.EmojiPickerView = Backbone.VDOMView.extend({
@@ -70957,7 +70962,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         createEmojiPicker() {
           if (_.isUndefined(_converse.emojipicker)) {
-            _converse.emojipicker = new _converse.EmojiPicker();
+            const storage = _converse.session.get('storage'),
+                  id = `converse.emoji-${_converse.bare_jid}`;
+
+            _converse.emojipicker = new _converse.EmojiPicker({
+              'id': id
+            });
+            _converse.emojipicker.browserStorage = new Backbone.BrowserStorage[storage](id);
 
             _converse.emojipicker.fetch();
           }
@@ -71725,8 +71736,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           const form_data = new FormData(ev.target);
-          _converse.trusted = form_data.get('trusted');
-          _converse.storage = form_data.get('trusted') ? 'local' : 'session';
+
+          _converse.session.save({
+            'trusted': form_data.get('trusted') && true || false,
+            'storage': form_data.get('trusted') ? 'local' : 'session'
+          });
+
           let jid = form_data.get('jid');
 
           if (_converse.locked_domain) {
@@ -71853,7 +71868,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
 
       _converse.on('clearSession', () => {
-        if (_converse.trusted) {
+        if (_converse.session.get('trusted')) {
           const chatboxes = _.get(_converse, 'chatboxes', null);
 
           if (!_.isNil(chatboxes)) {
@@ -72087,7 +72102,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     rid: undefined,
     root: window.document,
     sid: undefined,
-    storage: 'session',
     strict_plugin_dependencies: false,
     trusted: true,
     view_mode: 'overlayed',
@@ -72567,23 +72581,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       if (reconnecting) {
         _converse.onStatusInitialized(reconnecting);
       } else {
-        this.xmppstatus = new this.XMPPStatus();
-        const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
-        this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
-
-        this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+        const id = `converse.xmppstatus-${_converse.bare_jid}`;
+        this.xmppstatus = new this.XMPPStatus({
+          'id': id
+        });
+        this.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
         this.xmppstatus.fetch({
-          success: _.partial(_converse.onStatusInitialized, reconnecting),
-          error: _.partial(_converse.onStatusInitialized, reconnecting)
+          'success': _.partial(_converse.onStatusInitialized, reconnecting),
+          'error': _.partial(_converse.onStatusInitialized, reconnecting)
         });
       }
     };
 
     this.initSession = function () {
-      _converse.session = new Backbone.Model();
       const id = b64_sha1('converse.bosh-session');
-      _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
-
+      _converse.session = new Backbone.Model({
+        'id': id,
+        'trusted': _converse.trusted && true || false,
+        'storage': _converse.trusted ? 'local' : 'session'
+      });
       _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
 
       _converse.session.fetch();
@@ -72592,7 +72608,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     };
 
     this.clearSession = function () {
-      if (!_converse.trusted) {
+      if (!_converse.session.get('trusted')) {
         window.localStorage.clear();
         window.sessionStorage.clear();
       } else if (!_.isUndefined(this.session) && this.session.browserStorage) {
@@ -72731,11 +72747,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
     };
 
-    this.setUserJid = function () {
+    this.setUserJID = function () {
       _converse.jid = _converse.connection.jid;
       _converse.bare_jid = Strophe.getBareJidFromJid(_converse.connection.jid);
       _converse.resource = Strophe.getResourceFromJid(_converse.connection.jid);
       _converse.domain = Strophe.getDomainFromJid(_converse.connection.jid);
+
+      _converse.emit('setUserJID');
     };
 
     this.onConnected = function (reconnecting) {
@@ -72745,9 +72763,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
 
 
-      _converse.setUserJid();
-
-      _converse.initSession();
+      _converse.setUserJID();
 
       _converse.enableCarbons();
 
@@ -73119,6 +73135,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
     function finishInitialization() {
       _converse.initPlugins();
+
+      _converse.initSession();
 
       _converse.initConnection();
 
@@ -73640,7 +73658,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
       }
 
-      _converse.api.listen.on('sessionInitialized', initStreamFeatures);
+      _converse.api.listen.on('setUserJID', initStreamFeatures);
 
       _converse.api.listen.on('reconnected', initializeDisco);
 
@@ -75958,13 +75976,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         initToggle() {
-          this.toggleview = new _converse.MinimizedChatsToggleView({
-            model: new _converse.MinimizedChatsToggle()
-          });
-          const id = b64_sha1(`converse.minchatstoggle${_converse.bare_jid}`);
-          this.toggleview.model.id = id; // Appears to be necessary for backbone.browserStorage
+          const storage = _converse.session.get('storage'),
+                id = b64_sha1(`converse.minchatstoggle${_converse.bare_jid}`);
 
-          this.toggleview.model.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+          this.toggleview = new _converse.MinimizedChatsToggleView({
+            'model': new _converse.MinimizedChatsToggle({
+              'id': id
+            })
+          });
+          this.toggleview.model.browserStorage = new Backbone.BrowserStorage[storage](id);
           this.toggleview.model.fetch();
         },
 
@@ -76305,7 +76325,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'model': new (_converse.RoomsPanelModel.extend({
               'id': b64_sha1(`converse.roomspanel${_converse.bare_jid}`),
               // Required by sessionStorage
-              'browserStorage': new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
+              'browserStorage': new Backbone.BrowserStorage[_converse.session.get('storage')](b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
             }))()
           });
           this.roomspanel.model.fetch();
@@ -81693,8 +81713,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         initialize() {
-          this.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.open-rooms-{_converse.bare_jid}`));
-
           _converse.chatboxes.on('add', this.onChatBoxAdded, this);
 
           _converse.chatboxes.on('change:hidden', this.onChatBoxChanged, this);
@@ -81820,10 +81838,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
           this.model.on('add', this.showOrHide, this);
           this.model.on('remove', this.showOrHide, this);
-          const cachekey = `converse.roomslist${_converse.bare_jid}`;
-          this.list_model = new _converse.RoomsList();
-          this.list_model.id = cachekey;
-          this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(cachekey));
+
+          const storage = _converse.session.get('storage'),
+                id = b64_sha1(`converse.roomslist${_converse.bare_jid}`);
+
+          this.list_model = new _converse.RoomsList({
+            'id': id
+          });
+          this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
           this.list_model.fetch();
           this.render();
           this.sortAndPositionAllItems();
@@ -81928,8 +81950,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
 
       const initRoomsListView = function initRoomsListView() {
+        const storage = _converse.session.get('storage'),
+              id = b64_sha1(`converse.open-rooms-{_converse.bare_jid}`),
+              model = new _converse.OpenRooms();
+
+        model.browserStorage = new Backbone.BrowserStorage[storage](id);
         _converse.rooms_list_view = new _converse.RoomsListView({
-          'model': new _converse.OpenRooms()
+          'model': model
         });
       };
 
@@ -82026,19 +82053,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.initRoster = function () {
         /* Initialize the Bakcbone collections that represent the contats
-        * roster and the roster groups.
-        */
+         * roster and the roster groups.
+         */
+        const storage = _converse.session.get('storage');
+
         _converse.roster = new _converse.RosterContacts();
-        _converse.roster.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.contacts-${_converse.bare_jid}`));
+        _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.contacts-${_converse.bare_jid}`));
         _converse.roster.data = new Backbone.Model();
         const id = b64_sha1(`converse-roster-model-${_converse.bare_jid}`);
         _converse.roster.data.id = id;
-        _converse.roster.data.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+        _converse.roster.data.browserStorage = new Backbone.BrowserStorage[storage](id);
 
         _converse.roster.data.fetch();
 
         _converse.rostergroups = new _converse.RosterGroups();
-        _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
+        _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
 
         _converse.emit('rosterInitialized');
       };
@@ -84376,12 +84405,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.initVCardCollection = function () {
         _converse.vcards = new _converse.VCards();
-        _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.storage](b64_sha1(`converse.vcards`));
+        const id = b64_sha1(`converse.vcards`);
+        _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.session.get('storage')](id);
 
         _converse.vcards.fetch();
       };
 
-      _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
+      _converse.api.listen.on('setUserJID', _converse.initVCardCollection);
 
       _converse.on('addClientFeatures', () => {
         _converse.api.disco.own.features.add(Strophe.NS.VCARD);
@@ -86408,7 +86438,7 @@ __e(o.__('password')) +
 '">\n                </div>\n                ';
  } ;
 __p += '\n                <div class="form-group form-check">\n                    <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ';
- if (o._converse.trusted) { ;
+ if (o._converse.session.get('trusted')) { ;
 __p += ' checked="checked" ';
  } ;
 __p += '>\n                    <label for="converse-login-trusted" class="form-check-label">' +

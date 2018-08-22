@@ -423,12 +423,12 @@
                 },
 
                 initToggle () {
+                    const storage = _converse.session.get('storage'),
+                          id = b64_sha1(`converse.minchatstoggle${_converse.bare_jid}`);
                     this.toggleview = new _converse.MinimizedChatsToggleView({
-                        model: new _converse.MinimizedChatsToggle()
+                        'model': new _converse.MinimizedChatsToggle({'id': id})
                     });
-                    const id = b64_sha1(`converse.minchatstoggle${_converse.bare_jid}`);
-                    this.toggleview.model.id = id; // Appears to be necessary for backbone.browserStorage
-                    this.toggleview.model.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+                    this.toggleview.model.browserStorage = new Backbone.BrowserStorage[storage](id);
                     this.toggleview.model.fetch();
                 },
 

@@ -69284,9 +69284,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            *      that contains the message stanza, if it was
            *      contained, otherwise it's the message stanza itself.
            */
-          const _converse = this.__super__._converse,
-                __ = _converse.__,
-                archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
+          const archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
                 spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
                 delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
                 chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
@@ -70082,7 +70080,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         render() {
-          this.el.innerHTML = tpl_chatbox_head(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+          this.el.innerHTML = tpl_chatbox_head(_.extend(this.model.vcard.toJSON(), this.model.toJSON(), {
             '_converse': _converse,
             'info_close': __('Close this chat box')
           }));
@@ -82229,7 +82227,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         getDisplayName() {
-          return this.vcard.get('fullname') || this.get('jid');
+          return this.get('nickname') || this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('jid');
         },
 
         getFullname() {
@@ -85092,7 +85090,7 @@ __e(o.url) +
 '" target="_blank" rel="noopener" class="user">\n                ';
  } ;
 __p += '\n                        ' +
-__e( o.fullname || o.jid ) +
+__e( o.nickname || o.fullname || o.jid ) +
 '\n                ';
  if (o.url) { ;
 __p += '\n                    </a>\n                ';

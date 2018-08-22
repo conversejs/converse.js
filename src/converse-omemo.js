@@ -821,7 +821,7 @@
 
                 publishBundle () {
                     const store = _converse.omemo_store,
-                        signed_prekey = store.get('signed_prekey');
+                          signed_prekey = store.get('signed_prekey');
 
                     return new Promise((resolve, reject) => {
                         const stanza = $iq({
@@ -929,7 +929,7 @@
             function registerPEPPushHandler () {
                 // Add a handler for devices pushed from other connected clients
                 _converse.connection.addHandler((message) => {
-                    if (message.querySelector('event[xmlns="'+Strophe.NS.PUBSUB+'#event"]')) {
+                    if (sizzle(`event[xmlns="${Strophe.NS.PUBSUB}#event"]`, message).length) {
                         updateDevicesFromStanza(message);
                         updateBundleFromStanza(message);
                     }
@@ -966,7 +966,7 @@
             _converse.api.listen.on('renderToolbar', (view) => view.renderOMEMOToolbarButton());
             _converse.api.listen.on('statusInitialized', initOMEMO);
             _converse.api.listen.on('addClientFeatures',
-                () => _converse.api.disco.own.features.add(Strophe.NS.OMEMO_DEVICELIST+"notify"));
+                () => _converse.api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`));
 
             _converse.api.listen.on('userDetailsModalInitialized', (contact) => {
                 const jid = contact.get('jid');

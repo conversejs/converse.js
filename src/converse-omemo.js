@@ -169,25 +169,19 @@
                             sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
                             prekey = device.getRandomPreKey();
 
-                    try {
-                        return sessionBuilder.processPreKey({
-                            'registrationId': parseInt(_converse.omemo_store.get('device_id'), 10),
-                            'identityKey': u.base64ToArrayBuffer(_converse.omemo_store.get('identity_key')),
-                            'signedPreKey': {
-                                'keyId': bundle.signed_prekey.id, // <Number>
-                                'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
-                                'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
-                            },
-                            'preKey': {
-                                'keyId': prekey.id, // <Number>
-                                'publicKey': u.base64ToArrayBuffer(prekey.key),
-                            }
-                        });
-                    } catch (e) {
-                        _converse.log(`Error: could not build session for device ${device.get('id')}`, Strophe.LogLevel.ERROR);
-                        _converse.log(e.message, Strophe.LogLevel.ERROR);
-                        return Promise.resolve();
-                    }
+                    return sessionBuilder.processPreKey({
+                        'registrationId': parseInt(_converse.omemo_store.get('device_id'), 10),
+                        'identityKey': u.base64ToArrayBuffer(_converse.omemo_store.get('identity_key')),
+                        'signedPreKey': {
+                            'keyId': bundle.signed_prekey.id, // <Number>
+                            'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
+                            'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
+                        },
+                        'preKey': {
+                            'keyId': prekey.id, // <Number>
+                            'publicKey': u.base64ToArrayBuffer(prekey.key),
+                        }
+                    });
                 },
 
                 getKeyAndTag (string) {

@@ -914,7 +914,7 @@
 
             function restoreOMEMOSession () {
                 if (_.isUndefined(_converse.omemo_store))  {
-                    const storage = _converse.session.get('storage'),
+                    const storage = _converse.config.get('storage'),
                           id = `converse.omemosession-${_converse.bare_jid}`;
                     _converse.omemo_store = new _converse.OMEMOStore({'id': id});
                     _converse.omemo_store.browserStorage = new Backbone.BrowserStorage[storage](id);
@@ -924,7 +924,7 @@
 
             function initOMEMO() {
                 _converse.devicelists = new _converse.DeviceLists();
-                const storage = _converse.session.get('storage'),
+                const storage = _converse.config.get('storage'),
                       id = `converse.devicelists-${_converse.bare_jid}`;
                 _converse.devicelists.browserStorage = new Backbone.BrowserStorage[storage](id);
 

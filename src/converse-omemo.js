@@ -151,20 +151,15 @@
 
                 getBundlesAndBuildSessions () {
                     const { _converse } = this.__super__;
-                    return new Promise((resolve, reject) => {
-                        _converse.getDevicesForContact(this.get('jid'))
-                            .then((their_devices) => {
-                                const device_id = _converse.omemo_store.get('device_id'),
-                                      devicelist = _converse.devicelists.get(_converse.bare_jid),
-                                      own_devices = devicelist.devices.filter(device => device.get('id') !== device_id),
-                                      devices = _.concat(own_devices, their_devices.models);
-
-                                Promise.all(devices.map(device => device.getBundle()))
-                                    .then(() => this.buildSessions(devices))
-                                    .then(() => resolve(devices))
-                                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-                            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-                        });
+                    let devices;
+                    return _converse.getDevicesForContact(this.get('jid'))
+                        .then((their_devices) => {
+                            const device_id = _converse.omemo_store.get('device_id'),
+                                devicelist = _converse.devicelists.get(_converse.bare_jid),
+                                own_devices = devicelist.devices.filter(device => device.get('id') !== device_id);
+                            devices = _.concat(own_devices, their_devices.models);
+                            return Promise.all(devices.map(device => device.getBundle()));
+                        }).then(() => this.buildSessions(devices))
                 },
 
                 buildSession (device) {

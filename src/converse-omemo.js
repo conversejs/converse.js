@@ -291,7 +291,7 @@
                 },
 
                 buildSessions (devices) {
-                    return Promise.all(devices.map(device => this.buildSession(device)));
+                    return Promise.all(devices.map(device => this.buildSession(device))).then(() => devices);
                 },
 
                 encryptMessage (plaintext) {
@@ -330,14 +330,10 @@
 
                 encryptKey (plaintext, device) {
                     const { _converse } = this.__super__,
-                          address = new libsignal.SignalProtocolAddress(this.get('jid'), device.get('id')),
+                          address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
                           session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
 
-                    return new Promise((resolve, reject) => {
-                        session_cipher.encrypt(plaintext)
-                            .then(payload => resolve({'payload': payload, 'device': device}))
-                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-                        });
+                    return session_cipher.encrypt(plaintext).then(payload => ({'payload': payload, 'device': device}));
                 },
 
                 addKeysToMessageStanza (stanza, dicts, iv) {
@@ -380,7 +376,7 @@
                             .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                                 .c('header', {'sid':  _converse.omemo_store.get('device_id')});
 
-                    return this.encryptMessage(message).then((obj) => {
+                    return this.encryptMessage(message).then(obj => {
                         // The 16 bytes key and the GCM authentication tag (The tag
                         // SHOULD have at least 128 bit) are concatenated and for each
                         // intended recipient device, i.e. both own devices as well as
@@ -394,7 +390,6 @@
                         return Promise.all(promises)
                             .then((dicts) => this.addKeysToMessageStanza(stanza, dicts, obj.iv))
                             .then((stanza) => stanza.c('payload').t(obj.payload))
-                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                     });
                 },
 
@@ -406,12 +401,12 @@
                         this.getBundlesAndBuildSessions()
                             .then(devices => this.createOMEMOMessageStanza(message, devices))
                             .then(stanza => this.sendMessageStanza(stanza))
-                            .catch((e) => {
+                            .catch(e => {
                                 this.messages.create({
                                     'message': __("Sorry, could not send the message due to an error.") + ` ${e.message}`,
                                     'type': 'error',
                                 });
-                                converse.log(e, Strophe.LogLevel.ERROR);
+                                _converse.log(e, Strophe.LogLevel.ERROR);
                             });
                         
                     } else {
@@ -527,7 +522,7 @@
                 },
 
                 getLocalRegistrationId () {
-                    return Promise.resolve(this.get('device_id'));
+                    return Promise.resolve(parseInt(this.get('device_id'), 10));
                 },
 
                 isTrustedIdentity (identifier, identity_key, direction) {
@@ -863,10 +858,8 @@
                                     .c('prekeys');
                     _.forEach(
                         store.get('prekeys').slice(0, _converse.NUM_PREKEYS),
-                        (prekey) => {
-                            stanza.c('preKeyPublic', {'preKeyId': prekey.keyId})
-                                .t(prekey.keyPair.pubKey).up();
-                        });
+                        (prekey) => stanza.c('preKeyPublic', {'preKeyId': prekey.keyId}).t(prekey.keyPair.pubKey).up()
+                    );
                     return _converse.api.sendIQ(stanza);
                 }
             }

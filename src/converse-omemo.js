@@ -83,6 +83,7 @@
                     this.devicelist.devices.on('change:bundle', this.debouncedRender, this);
                     this.devicelist.devices.on('reset', this.debouncedRender, this);
                     this.devicelist.devices.on('remove', this.debouncedRender, this);
+                    this.devicelist.devices.on('add', this.debouncedRender, this);
                     return this.__super__.initialize.apply(this, arguments);
                 },
 
@@ -136,6 +137,7 @@
                     this.devicelist.devices.on('change:bundle', this.render, this);
                     this.devicelist.devices.on('change:trusted', this.render, this);
                     this.devicelist.devices.on('remove', this.render, this);
+                    this.devicelist.devices.on('add', this.render, this);
                     this.devicelist.devices.on('reset', this.render, this);
                     return this.__super__.initialize.apply(this, arguments);
                 },

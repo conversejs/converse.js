@@ -121,8 +121,6 @@
                     'current_category': 'people',
                     'current_skintone': '',
                     'scroll_position': 0
-                },
-                initialize () {
                 }
             });
 
@@ -1056,7 +1054,7 @@
 
                 createEmojiPicker () {
                     if (_.isUndefined(_converse.emojipicker)) {
-                        const storage = _converse.session.get('storage'),
+                        const storage = _converse.config.get('storage'),
                               id = `converse.emoji-${_converse.bare_jid}`;
                         _converse.emojipicker = new _converse.EmojiPicker({'id': id});
                         _converse.emojipicker.browserStorage = new Backbone.BrowserStorage[storage](id);

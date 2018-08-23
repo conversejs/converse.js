@@ -29,15 +29,15 @@
                 spyOn(cbview.loginpanel, 'connect');
                 cbview.delegateEvents();
 
-                expect(_converse.session.get('storage')).toBe('local');
+                expect(_converse.config.get('storage')).toBe('local');
                 cbview.el.querySelector('input[type="submit"]').click();
-                expect(_converse.session.get('storage')).toBe('local');
+                expect(_converse.config.get('storage')).toBe('local');
                 expect(cbview.loginpanel.connect).toHaveBeenCalled();
 
 
                 checkbox.click();
                 cbview.el.querySelector('input[type="submit"]').click();
-                expect(_converse.session.get('storage')).toBe('session');
+                expect(_converse.config.get('storage')).toBe('session');
                 done();
             });
         }));
@@ -67,14 +67,14 @@
 
                 spyOn(cbview.loginpanel, 'connect');
 
-                expect(_converse.session.get('storage')).toBe('session');
+                expect(_converse.config.get('storage')).toBe('session');
                 cbview.el.querySelector('input[type="submit"]').click();
-                expect(_converse.session.get('storage')).toBe('session');
+                expect(_converse.config.get('storage')).toBe('session');
                 expect(cbview.loginpanel.connect).toHaveBeenCalled();
 
                 checkbox.click();
                 cbview.el.querySelector('input[type="submit"]').click();
-                expect(_converse.session.get('storage')).toBe('local');
+                expect(_converse.config.get('storage')).toBe('local');
                 done();
             });
         }));

@@ -341,9 +341,11 @@
             delete _converse.controlboxtoggle;
             delete _converse.chatboxviews;
             _converse.connection.reset();
-            _converse.off();
             _converse.stopListening();
             _converse.tearDown();
+            delete _converse.config;
+            _converse.initClientConfig();
+            _converse.off();
         }
 
         if ('onpagehide' in window) {
@@ -658,20 +660,33 @@
             }
         }
 
-        this.initSession = function () {
-            const id = b64_sha1('converse.bosh-session');
-            _converse.session = new Backbone.Model({
+        this.initClientConfig = function () {
+            /* The client config refers to configuration of the client which is
+             * independent of any particular user.
+             * What this means is that config values need to persist across
+             * user sessions.
+             */
+            const id = b64_sha1('converse.client-config');
+            _converse.config = new Backbone.Model({
                 'id': id,
                 'trusted': _converse.trusted && true || false,
                 'storage': _converse.trusted ? 'local' : 'session'
             });
+            _converse.config.browserStorage = new Backbone.BrowserStorage.session(id);
+            _converse.config.fetch();
+            _converse.emit('clientConfigInitialized');
+        };
+
+        this.initSession = function () {
+            const id = b64_sha1('converse.bosh-session');
+            _converse.session = new Backbone.Model({'id': id});
             _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
             _converse.session.fetch();
             _converse.emit('sessionInitialized');
         };
 
         this.clearSession = function () {
-            if (!_converse.session.get('trusted')) {
+            if (!_converse.config.get('trusted')) {
                 window.localStorage.clear();
                 window.sessionStorage.clear();
             } else if (!_.isUndefined(this.session) && this.session.browserStorage) {
@@ -805,6 +820,7 @@
              */
             _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
             _converse.setUserJID();
+            _converse.initSession();
             _converse.enableCarbons();
             _converse.initStatus(reconnecting)
         };
@@ -1169,7 +1185,7 @@
 
         function finishInitialization () {
             _converse.initPlugins();
-            _converse.initSession();
+            _converse.initClientConfig();
             _converse.initConnection();
             _converse.setUpXMLLogging();
             _converse.logIn();

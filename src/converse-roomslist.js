@@ -168,7 +168,7 @@
                     this.model.on('add', this.showOrHide, this);
                     this.model.on('remove', this.showOrHide, this);
 
-                    const storage = _converse.session.get('storage'),
+                    const storage = _converse.config.get('storage'),
                           id = b64_sha1(`converse.roomslist${_converse.bare_jid}`);
 
                     this.list_model = new _converse.RoomsList({'id': id});
@@ -262,7 +262,7 @@
             });
 
             const initRoomsListView = function () {
-                const storage = _converse.session.get('storage'),
+                const storage = _converse.config.get('storage'),
                       id = b64_sha1(`converse.open-rooms-{_converse.bare_jid}`),
                       model = new _converse.OpenRooms();
 

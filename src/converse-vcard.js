@@ -132,10 +132,10 @@
             _converse.initVCardCollection = function () {
                 _converse.vcards = new _converse.VCards();
                 const id = b64_sha1(`converse.vcards`);
-                _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.session.get('storage')](id);
+                _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.config.get('storage')](id);
                 _converse.vcards.fetch();
             }
-            _converse.api.listen.on('setUserJID', _converse.initVCardCollection);
+            _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
 
 
             _converse.on('addClientFeatures', () => {

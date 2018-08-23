@@ -351,8 +351,6 @@
                 let devices = _converse.devicelists.get(contact_jid).devices;
                 expect(devices.length).toBe(2);
                 expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('1234,4223');
-                expect(devices.get('1234').get('active')).toBe(true);
-                expect(devices.get('4223').get('active')).toBe(true);
 
                 stanza = $msg({
                     'from': contact_jid,
@@ -368,11 +366,8 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 expect(_converse.devicelists.length).toBe(2);
-                expect(devices.length).toBe(3);
-                expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('1234,4223,4224');
-                expect(devices.get('1234').get('active')).toBe(false);
-                expect(devices.get('4223').get('active')).toBe(true);
-                expect(devices.get('4224').get('active')).toBe(true);
+                expect(devices.length).toBe(2);
+                expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('4223,4224');
 
                 // Check that own devicelist gets updated
                 stanza = $msg({
@@ -393,9 +388,6 @@
                 devices = _converse.devicelists.get(_converse.bare_jid).devices;
                 expect(devices.length).toBe(3);
                 expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('123456789,555,777');
-                expect(devices.get('123456789').get('active')).toBe(true);
-                expect(devices.get('555').get('active')).toBe(true);
-                expect(devices.get('777').get('active')).toBe(true);
 
                 _converse.connection.IQ_stanzas = [];
 
@@ -441,13 +433,9 @@
                 expect(_converse.devicelists.length).toBe(2);
                 const devices = _converse.devicelists.get(_converse.bare_jid).devices;
                 // The device id for this device (123456789) was also generated and added to the list,
-                // which is why we have 4 devices now.
-                expect(devices.length).toBe(4);
-                expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('123456789,444,555,777');
-                expect(devices.get('123456789').get('active')).toBe(true);
-                expect(devices.get('444').get('active')).toBe(true);
-                expect(devices.get('555').get('active')).toBe(false);
-                expect(devices.get('777').get('active')).toBe(false);
+                // which is why we have 2 devices now.
+                expect(devices.length).toBe(2);
+                expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('123456789,444');
                 done();
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
@@ -994,6 +982,9 @@
 
                 expect(modal.el.querySelectorAll('input[type="radio"]').length).toBe(2);
 
+                const devicelist = _converse.devicelists.get(contact_jid);
+                expect(devicelist.devices.get('555').get('trusted')).toBe(0);
+
                 let trusted_radio = modal.el.querySelector('input[type="radio"][name="555"][value="1"]');
                 expect(trusted_radio.checked).toBe(true);
 
@@ -1004,9 +995,13 @@
                 untrusted_radio.click();
                 trusted_radio = document.querySelector('input[type="radio"][name="555"][value="1"]');
                 expect(trusted_radio.hasAttribute('checked')).toBe(false);
+                expect(devicelist.devices.get('555').get('trusted')).toBe(-1);
 
                 untrusted_radio = document.querySelector('input[type="radio"][name="555"][value="-1"]');
                 expect(untrusted_radio.hasAttribute('checked')).toBe(true);
+
+                trusted_radio.click();
+                expect(devicelist.devices.get('555').get('trusted')).toBe(1);
                 done();
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));

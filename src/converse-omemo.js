@@ -672,7 +672,6 @@
 
             _converse.Device = Backbone.Model.extend({
                 defaults: {
-                    'active': true,
                     'trusted': UNDECIDED
                 },
 
@@ -758,8 +757,7 @@
                             const device_id = _converse.omemo_store.get('device_id'),
                                   own_device = this.devices.findWhere({'id': device_id});
 
-                            if (!_.includes(device_ids, device_id) || !own_device.get('active')) {
-                                own_device.save('active', true, {'silent': true});
+                            if (!_.includes(device_ids, device_id)) {
                                 return this.publishDevices();
                             }
                         });
@@ -788,9 +786,7 @@
                         .c('publish', {'node': Strophe.NS.OMEMO_DEVICELIST})
                             .c('item')
                                 .c('list', {'xmlns': Strophe.NS.OMEMO})
-                    _.each(this.devices.where({'active': true}), (device) => {
-                        stanza.c('device', {'id': device.get('id')}).up();
-                    });
+                    this.devices.each(device => stanza.c('device', {'id': device.get('id')}).up());
                     return _converse.api.sendIQ(stanza);
                 },
 
@@ -881,12 +877,16 @@
                       devices = devicelist.devices,
                       removed_ids = _.difference(devices.pluck('id'), device_ids);
 
-                _.forEach(removed_ids, (removed_id) => devices.get(removed_id).save('active', false));
+                _.forEach(removed_ids, (id) => {
+                    if (jid === _converse.bare_jid && id === _converse.omemo_store.get('device_id')) {
+                        // We don't remove the current device
+                        return
+                    }
+                    devices.get(id).destroy();
+                });
+
                 _.forEach(device_ids, (device_id) => {
-                    const dev = devices.get(device_id);
-                    if (dev) {
-                        dev.save({'active': true});
-                    } else {
+                    if (!devices.get(device_id)) {
                         devices.create({'id': device_id, 'jid': jid})
                     }
                 });

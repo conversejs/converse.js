@@ -167,13 +167,13 @@
                 buildSession (device) {
                     const { _converse } = this.__super__;
                     const bundle = device.get('bundle'),
-                            address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
-                            sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
-                            prekey = device.getRandomPreKey();
+                          address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
+                          sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
+                          prekey = device.getRandomPreKey();
 
                     return sessionBuilder.processPreKey({
-                        'registrationId': parseInt(_converse.omemo_store.get('device_id'), 10),
-                        'identityKey': u.base64ToArrayBuffer(_converse.omemo_store.get('identity_key')),
+                        'registrationId': parseInt(device.get('id'), 10),
+                        'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
                         'signedPreKey': {
                             'keyId': bundle.signed_prekey.id, // <Number>
                             'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),

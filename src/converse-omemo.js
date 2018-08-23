@@ -519,7 +519,11 @@
                 },
 
                 getIdentityKeyPair () {
-                    return Promise.resolve(this.get('identity_keypair'));
+                    const keypair = this.get('identity_keypair');
+                    return Promise.resolve({
+                        'privKey': u.base64ToArrayBuffer(keypair.privKey),
+                        'pubKey': u.base64ToArrayBuffer(keypair.pubKey)
+                    });
                 },
 
                 getLocalRegistrationId () {
@@ -537,14 +541,14 @@
                     if (trusted === undefined) {
                         return Promise.resolve(true);
                     }
-                    return Promise.resolve(u.arrayBufferToString(identity_key) === u.arrayBufferToString(trusted));
+                    return Promise.resolve(u.arrayBufferToBase64(identity_key) === trusted);
                 },
 
                 loadIdentityKey (identifier) {
                     if (_.isNil(identifier)) {
                         throw new Error("Can't load identity_key for invalid identifier");
                     }
-                    return Promise.resolve(this.get('identity_key'+identifier));
+                    return Promise.resolve(u.base64ToArrayBuffer(this.get('identity_key'+identifier)));
                 },
 
                 saveIdentity (identifier, identity_key) {
@@ -553,8 +557,11 @@
                     }
                     const address = new libsignal.SignalProtocolAddress.fromString(identifier),
                           existing = this.get('identity_key'+address.getName());
-                    this.save('identity_key'+address.getName(), identity_key)
-                    if (existing && u.arrayBufferToString(identity_key) !== u.arrayBufferToString(existing)) {
+
+                    const b64_idkey = u.arrayBufferToBase64(identity_key);
+                    this.save('identity_key'+address.getName(), b64_idkey)
+
+                    if (existing && b64_idkey !== existing) {
                         return Promise.resolve(true);
                     } else {
                         return Promise.resolve(false);
@@ -564,13 +571,20 @@
                 loadPreKey (keyId) {
                     let res = this.get('25519KeypreKey'+keyId);
                     if (_.isUndefined(res)) {
-                        res = {'pubKey': res.pubKey, 'privKey': res.privKey};
+                        res = {
+                            'pubKey': u.base64ToArrayBuffer(res.pubKey),
+                            'privKey': u.base64ToArrayBuffer(res.privKey)
+                        };
                     }
                     return Promise.resolve(res);
                 },
 
                 storePreKey (keyId, keyPair) {
-                    return Promise.resolve(this.save('25519KeypreKey'+keyId, keyPair));
+                    this.save('25519KeypreKey'+keyId, {
+                        'privkey': u.arrayBufferToBase64(keyPair.privKey),
+                        'pubkey': u.arrayBufferToBase64(keyPair.pubKey),
+                    });
+                    return Promise.resolve();
                 },
 
                 removePreKey (keyId) {
@@ -580,13 +594,20 @@
                 loadSignedPreKey (keyId) {
                     let res = this.get('25519KeysignedKey'+keyId);
                     if (res !== undefined) {
-                        res = {'pubKey': res.pubKey, 'privKey': res.privKey};
+                        res = {
+                            'pubKey': u.base64ToArrayBuffer(res.pubKey),
+                            'privKey': u.base64ToArrayBuffer(res.privKey)
+                        };
                     }
                     return Promise.resolve(res);
                 },
 
                 storeSignedPreKey (keyId, keyPair) {
-                    return Promise.resolve(this.save('25519KeysignedKey'+keyId, keyPair));
+                    this.save('25519KeysignedKey'+keyId, {
+                        'privKey': u.arrayBufferToBase64(keyPair.privKey),
+                        'pubKey': u.arrayBufferToBase64(keyPair.pubKey)
+                    });
+                    return Promise.resolve();
                 },
 
                 removeSignedPreKey (keyId) {
@@ -629,17 +650,36 @@
                     };
                     return libsignal.KeyHelper.generateIdentityKeyPair()
                         .then(identity_keypair => {
-                            data['identity_keypair'] = identity_keypair;
-                            data['identity_key'] = u.arrayBufferToBase64(identity_keypair.pubKey);
+                            const identity_key = u.arrayBufferToBase64(identity_keypair.pubKey);
+                            data['identity_keypair'] = {
+                                'privKey': u.arrayBufferToBase64(identity_keypair.privKey),
+                                'pubKey': identity_key
+                            };
+                            data['identity_key'] = identity_key;
                             return libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 1);
                         }).then(signed_prekey => {
                             _converse.omemo_store.storeSignedPreKey(signed_prekey.keyId, signed_prekey.keyPair);
-                            data['signed_prekey'] = signed_prekey;
+                            data['signed_prekey'] = {
+                                'keyId': signed_prekey.keyId,
+                                'keyPair': {
+                                    'privKey': u.arrayBufferToBase64(signed_prekey.keyPair.privKey),
+                                    'pubKey': u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)
+                                },
+                                'signature': u.arrayBufferToBase64(signed_prekey.signature)
+                            }
                             return Promise.all(_.map(_.range(0, _converse.NUM_PREKEYS), id => libsignal.KeyHelper.generatePreKey(id)));
                         }).then(keys => {
                             _.forEach(keys, k => _converse.omemo_store.storePreKey(k.keyId, k.keyPair));
-                            data['prekeys'] = keys;
-
+                            const marshalled_keys = _.map(keys, k => {
+                                return {
+                                    'keyId': k.keyId,
+                                    'keyPair': {
+                                        'pubKey': u.arrayBufferToBase64(k.keyPair.pubKey),
+                                        'privKey': u.arrayBufferToBase64(k.keyPair.privKey)
+                                    }
+                                }
+                            });
+                            data['prekeys'] = marshalled_keys;
                             this.save(data)
                             // Save the bundle to the device
                             const devicelist = _converse.devicelists.get(_converse.bare_jid),
@@ -817,17 +857,15 @@
                             .c('item')
                                 .c('bundle', {'xmlns': Strophe.NS.OMEMO})
                                     .c('signedPreKeyPublic', {'signedPreKeyId': signed_prekey.keyId})
-                                        .t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up()
-                                    .c('signedPreKeySignature')
-                                        .t(u.arrayBufferToBase64(signed_prekey.signature)).up()
-                                    .c('identityKey')
-                                        .t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up()
+                                        .t(signed_prekey.keyPair.pubKey).up()
+                                    .c('signedPreKeySignature').t(signed_prekey.signature).up()
+                                    .c('identityKey').t(store.get('identity_keypair').pubKey).up()
                                     .c('prekeys');
                     _.forEach(
                         store.get('prekeys').slice(0, _converse.NUM_PREKEYS),
                         (prekey) => {
                             stanza.c('preKeyPublic', {'preKeyId': prekey.keyId})
-                                .t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();
+                                .t(prekey.keyPair.pubKey).up();
                         });
                     return _converse.api.sendIQ(stanza);
                 }

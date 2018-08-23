@@ -397,13 +397,21 @@
                 },
 
                 sendMessage (attrs) {
-                    const { _converse } = this.__super__;
+                    const { _converse } = this.__super__,
+                          { __ } = _converse;
                     if (this.get('omemo_active')) {
                         const message = this.messages.create(attrs);
                         this.getBundlesAndBuildSessions()
                             .then(devices => this.createOMEMOMessageStanza(message, devices))
                             .then(stanza => this.sendMessageStanza(stanza))
-                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                            .catch((e) => {
+                                this.messages.create({
+                                    'message': __("Sorry, could not send the message due to an error.") + ` ${e.message}`,
+                                    'type': 'error',
+                                });
+                                converse.log(e, Strophe.LogLevel.ERROR);
+                            });
+                        
                     } else {
                         return this.__super__.sendMessage.apply(this, arguments);
                     }

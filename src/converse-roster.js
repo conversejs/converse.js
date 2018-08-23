@@ -51,7 +51,7 @@
                 /* Initialize the Bakcbone collections that represent the contats
                  * roster and the roster groups.
                  */
-                const storage = _converse.session.get('storage');
+                const storage = _converse.config.get('storage');
                 _converse.roster = new _converse.RosterContacts();
                 _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](
                     b64_sha1(`converse.contacts-${_converse.bare_jid}`));

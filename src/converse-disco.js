@@ -267,7 +267,7 @@
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }
 
-            _converse.api.listen.on('setUserJID', initStreamFeatures);
+            _converse.api.listen.on('sessionInitialized', initStreamFeatures);
             _converse.api.listen.on('reconnected', initializeDisco);
             _converse.api.listen.on('connected', initializeDisco);
 

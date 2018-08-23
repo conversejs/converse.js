@@ -250,7 +250,7 @@
                     this.on('remove', this.markRoomAsUnbookmarked, this);
                     this.on('remove', this.sendBookmarkStanza, this);
 
-                    const storage = _converse.session.get('storage'),
+                    const storage = _converse.config.get('storage'),
                           cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
                     this.fetched_flag = b64_sha1(cache_key+'fetched');
                     this.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(cache_key));
@@ -444,7 +444,7 @@
                     _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
                     _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
-                    const storage = _converse.session.get('storage'),
+                    const storage = _converse.config.get('storage'),
                           id = b64_sha1(`converse.room-bookmarks${_converse.bare_jid}-list-model`);
                     this.list_model = new _converse.BookmarksList({'id': id});
                     this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);

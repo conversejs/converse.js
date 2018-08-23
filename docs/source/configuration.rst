@@ -33,7 +33,7 @@ authentication
 * Default:  ``login``
 * Allowed values: `login`_, `external`, `anonymous`_, `prebind`_
 
-This option states the way converse.js will authenticate.
+This option states the way Converse will authenticate.
 
 login
 ~~~~~
@@ -91,13 +91,13 @@ They are :ref:`keepalive` and `prebind_url`_.
 ``keepalive`` can be used keep the session alive without having to pass in
 new RID and SID tokens to ``converse.initialize`` every time you reload the page.
 This removes the need to set up a new BOSH session every time a page loads.
-You do however still need to supply the user's JID so that converse.js can be
+You do however still need to supply the user's JID so that Converse can be
 sure that the session it's resuming is for the right user.
 
-`prebind_url`_ lets you specify a URL which converse.js will call whenever a
+`prebind_url`_ lets you specify a URL which Converse will call whenever a
 new BOSH session needs to be set up.
 
-Here's an example of converse.js being initialized with these three options:
+Here's an example of Converse being initialized with these three options:
 
 .. code-block:: javascript
 
@@ -264,7 +264,7 @@ auto_login
 
 * Default:  ``false``
 
-This option can be used to let converse.js automatically log the user in as
+This option can be used to let Converse automatically log the user in as
 soon as the page loads.
 
 It should be used either with ``authentication`` set to ``anonymous`` or to ``login``.
@@ -274,7 +274,7 @@ valid ``jid`` and ``password`` values, either manually by passing them in, or
 by the `credentials_url`_ setting. Setting a ``credentials_url`` is preferable
 to manually passing in ``jid`` and ``password`` values, because it allows
 better reconnection with ``auto_reconnect``. When the connection drops,
-converse.js will automatically fetch new login credentials from the
+Converse will automatically fetch new login credentials from the
 ``credentials_url`` and reconnect.
 
 If ``authentication`` is set to ``anonymous``, then you will also need to provide the
@@ -283,7 +283,7 @@ server's domain via the `jid`_ setting.
 This is a useful setting if you'd like to create a custom login form in your
 website. You'll need to write some JavaScript to accept that custom form's
 login credentials, then you can pass those credentials (``jid`` and
-``password``) to ``converse.initialize`` to start converse.js and log the user
+``password``) to ``converse.initialize`` to start Converse and log the user
 into their XMPP account.
 
 auto_away
@@ -317,15 +317,15 @@ Automatically reconnect to the XMPP server if the connection drops
 unexpectedly.
 
 This option works best when you have `authentication` set to `prebind` and have
-also specified a `prebind_url` URL, from where converse.js can fetch the BOSH
-tokens. In this case, converse.js will automaticallly reconnect when the
+also specified a `prebind_url` URL, from where Converse can fetch the BOSH
+tokens. In this case, Converse will automaticallly reconnect when the
 connection drops but also reestablish earlier lost connections (due to
 network outages, closing your laptop etc.).
 
 When `authentication` is set to `login`, then this option will only work when
 the page hasn't been reloaded yet, because then the user's password has been
 wiped from memory. This configuration can however still be useful when using
-converse.js in desktop apps, for example those based on `CEF <https://bitbucket.org/chromiumembedded/cef>`_
+Converse in desktop apps, for example those based on `CEF <https://bitbucket.org/chromiumembedded/cef>`_
 or `electron <http://electron.atom.io/>`_.
 
 auto_subscribe
@@ -529,11 +529,11 @@ credentials_url
 
 This setting should be used in conjunction with ``authentication`` set to ``login`` and :ref:`keepalive` set to ``true``.
 
-It allows you to specify a URL which converse.js will call when it needs to get
-the username and password (or authentication token) which converse.js will use
+It allows you to specify a URL which Converse will call when it needs to get
+the username and password (or authentication token) which Converse will use
 to automatically log the user in.
 
-If ``auto_reconnect`` is also set to true, then converse.js will automatically
+If ``auto_reconnect`` is also set to true, then Converse will automatically
 fetch new credentials from the ``credentials_url`` whenever the connection or
 session drops, and then attempt to reconnect and establish a new session.
 
@@ -552,7 +552,7 @@ csi_waiting_time
 
 This option adds support for `XEP-0352 Client State Indication <http://xmpp.org/extensions/xep-0352.html>_`
 
-If converse.js is idle for the configured amount of seconds, a chat state
+If Converse is idle for the configured amount of seconds, a chat state
 indication of ``inactive`` will be sent out to the XMPP server (if the server
 supports CSI).
 
@@ -597,7 +597,7 @@ default_state
 * Default: ``'online'``
 
 The default chat status that the user wil have. If you for example set this to
-``'chat'``, then converse.js will send out a presence stanza with ``"show"``
+``'chat'``, then Converse will send out a presence stanza with ``"show"``
 set to ``'chat'`` as soon as you've been logged in.
 
 domain_placeholder
@@ -634,7 +634,7 @@ filter_by_resource
 
 * Default:  ``false``
 
-Before version 1.0.3 converse.js would ignore received messages if they were
+Before version 1.0.3 Converse would ignore received messages if they were
 intended for a different resource then the current user had. It was decided to
 drop this restriction but leave it configurable.
 
@@ -649,7 +649,7 @@ bare JID (their Jabber ID independent of any chat clients aka resources).
 This means that sent messages are visible from all the user's chat clients,
 and not just the one from which it was actually sent.
 
-This is especially important for web chat, such as converse.js, where each
+This is especially important for web chat, such as Converse, where each
 browser tab functions as a separate chat client, with its own resource.
 
 This feature uses Stanza forwarding, see also `XEP 0297: Stanza Forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
@@ -874,7 +874,7 @@ Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.htm
 In order to keep all IM clients for a user engaged in a conversation,
 outbound messages are carbon-copied to all interested resources.
 
-This is especially important in webchat, like converse.js, where each browser
+This is especially important in webchat, like Converse, where each browser
 tab serves as a separate IM client.
 
 Both message_carbons and `forward_messages`_ try to solve the same problem
@@ -897,7 +897,7 @@ muc_domain
 
 * Default:  ``undefined``
 
-The MUC (multi-user chat) domain that should be used. By default converse.js
+The MUC (multi-user chat) domain that should be used. By default Converse
 will attempt to get the MUC domain from the XMPP host of the currently logged in
 user.
 
@@ -1060,9 +1060,9 @@ See also: :ref:`session-support`
 
 This setting should be used in conjunction with ``authentication`` set to `prebind` and :ref:`keepalive` set to ``true``.
 
-It allows you to specify a URL which converse.js will call when it needs to get
+It allows you to specify a URL which Converse will call when it needs to get
 the RID and SID (Request ID and Session ID) tokens of a BOSH connection, which
-converse.js will then attach to.
+Converse will then attach to.
 
 The server behind ``prebind_url`` should return a JSON encoded object with the
 three tokens::
@@ -1139,7 +1139,7 @@ root
 
 * Default: ``window.document``
 
-When using converse.js inside a web component's shadow DOM, you will need to set this settings'
+When using Converse inside a web component's shadow DOM, you will need to set this settings'
 value to the shadow-root of the shadow DOM.
 
 For example:
@@ -1169,11 +1169,11 @@ roster_groups
 
 * Default:  ``false``
 
-If set to ``true``, converse.js will show any roster groups you might have
+If set to ``true``, Converse will show any roster groups you might have
 configured.
 
 .. note::
-    It's currently not possible to use converse.js to assign contacts to groups.
+    It's currently not possible to use Converse to assign contacts to groups.
     Converse can only show users and groups that were previously configured
     elsewhere.
 
@@ -1256,50 +1256,6 @@ themselves).
 In order to support all browsers we need both an MP3 and an Ogg file. Make sure
 to name your files ``msg_received.ogg`` and ``msg_received.mp3``.
 
-storage
--------
-
-* Default: ``session``
-
-Valid options: ``session``, ``local``.
-
-This option determines the type of `browser storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
-(``localStorage`` or ``sessionStorage``) used by converse.js to cache user data.
-
-Originally converse.js used only `localStorage`, however `sessionStorage` is from a
-privacy perspective a better choice.
-
-The main difference between the two is that `sessionStorage` only persists while
-the current tab or window containing a converse.js instance is open. As soon as
-it's closed, the data is cleared (as long as there aren't any other tabs with
-the same domain open).
-
-Data in `localStorage` on the other hand is kept indefinitely.
-
-The data that is cached includes your sent and received messages, which chats you had
-open, what features the XMPP server supports and what your online status was.
-
-See also `trusted`_.
-
-.. note::
-    When the user checks the checkbox labeled "This is a trusted device", then
-    the storage setting will automatically be set to localStorage.
-
-
-.. note::
-    Between versions 0.8.0 and 1.0.7, setting the value of this option to "local"
-    is not recommended. The statuses (online, away, busy etc.) of your roster
-    contacts are cached in the browser storage. If you use local storage, these
-    values are stored for multiple sessions, and they will likely become out of
-    sync with your contacts' actual statuses. The session storage doesn't have
-    this problem, because roster contact statuses will not become out of sync in
-    a single session, only across more than one session.
-
-    Since version 1.0.7, the "storage" option doesn't apply anymore to how roster
-    contacts and their statuses are stored (they're now always stored in session
-    storage), to address the above issue.
-
-
 
 sticky_controlbox
 -----------------
@@ -1311,7 +1267,7 @@ contacts and rooms tabs) will not be closeable. It won't have a close button at
 all.
 
 The idea behind this setting is to provide a better experience on mobile
-devices when the intent is to use converse.js as a web app. In this case
+devices when the intent is to use Converse as a web app. In this case
 it doesn't make sense to close the control box, as there's often then nothing
 "behind" it that's relevant to the user.
 
@@ -1350,28 +1306,44 @@ synchronize_availability
 Valid options: ``true``, ``false``, ``a resource name``.
 
 This option lets you synchronize your chat status (`online`, `busy`, `away`) with other chat clients. In other words,
-if you change your status to `busy` in a different chat client, your status will change to `busy` in converse.js as well.
+if you change your status to `busy` in a different chat client, your status will change to `busy` in Converse as well.
 
-If set to ``true``, converse.js will synchronize with all other clients you are logged in with.
+If set to ``true``, Converse will synchronize with all other clients you are logged in with.
 
 If set to ``false``, this feature is disabled.
 
-If set to ``a resource name``, converse.js will synchronize only with a client that has that particular resource assigned to it.
+If set to ``a resource name``, Converse will synchronize only with a client that has that particular resource assigned to it.
 
 trusted
 -------
 
 * Default: ``true``
 
-This setting determines whether the default value of the "This is a trusted device" checkbox in the login form.
+This setting determines whether the default value of the "This is a trusted device"
+checkbox in the login form.
 
-When the current device is not trusted, then localStorage and sessionStorage
-will be cleared when the user logs out, thereby removing all cached data.
+When the current device is not trusted, then the cache will be cleared when
+the user logs out.
 
-Clearing the cache in this way makes Converse much slower when the user logs
+Additionally, it determines the type of `browser storage <https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Storage>`_
+(``localStorage`` or ``sessionStorage``) used by Converse to cache user data.
+
+If ``trusted`` is set to ``false``, then ``sessionStorage`` is used instead of
+``localStorage``.
+
+The main difference between the two is that ``sessionStorage`` only persists while
+the current tab or window containing a Converse instance is open. As soon as
+it's closed, the data is cleared (as long as there aren't any other tabs with
+the same domain open).
+
+Data in ``localStorage`` on the other hand is kept indefinitely.
+
+The data that is cached includes your sent and received messages, which chats you had
+open, what features the XMPP server supports and what your online status was.
+
+Clearing the cache makes Converse much slower when the user logs
 in again, because all data needs to be fetch anew.
 
-See also `storage`_.
 
 time_format
 -----------
@@ -1432,7 +1404,7 @@ websocket_url
 
 This option is used to specify a
 `websocket <https://developer.mozilla.org/en/docs/WebSockets>`_ URI to which
-converse.js can connect to.
+Converse can connect to.
 
 Websockets provide a more modern and effective two-way communication protocol
 between the browser and a server, effectively emulating TCP at the application
@@ -1458,7 +1430,7 @@ view_mode
 * Default: ``overlayed``
 * Allowed values: ``overlayed``, ``fullscreen``, ``mobile``, ``embedded``
 
-The ``view_mode`` setting configures converse.js's mode and resulting behavior.
+The ``view_mode`` setting configures Converse's mode and resulting behavior.
 
 Before the introduction of this setting (in version 3.3.0), there were there
 different builds, each for the different modes.
@@ -1600,7 +1572,7 @@ The query string will be included in the request with ``q`` as its key.
 The data returned must be a JSON encoded list of user JIDs.
 
 .. note::
-    converse.js will construct the XHR get URL by simply appending
+    Converse will construct the XHR get URL by simply appending
     ``q=<query string entered>`` to the URL given by ``xhr_user_search_url``.
     It is therefore important that the necessary question mark (``?``) preceding the
     URL's query component or necessary delimiters (``&``) are included. See valid

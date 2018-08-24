@@ -286,6 +286,7 @@
                           header = encrypted.querySelector('header'),
                           key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
                     if (key) {
+                        attrs['is_encrypted'] = true;
                         attrs['encrypted'] = {
                             'device_id': header.getAttribute('sid'),
                             'iv': header.querySelector('iv').textContent,
@@ -418,6 +419,7 @@
                           { __ } = _converse;
 
                     if (this.get('omemo_active') && attrs.message) {
+                        attrs['is_encrypted'] = true;
                         const message = this.messages.create(attrs);
                         this.getBundlesAndBuildSessions()
                             .then(devices => this.createOMEMOMessageStanza(message, devices))

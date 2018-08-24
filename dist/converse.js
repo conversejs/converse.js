@@ -64414,7 +64414,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 date = moment(el.getAttribute('data-isodate')),
                 next_el = el.nextElementSibling;
 
-          if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) && previous_el.getAttribute('data-from') === from && date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes'))) {
+          if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) && previous_el.getAttribute('data-from') === from && date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) && el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')) {
             u.addClass('chat-msg--followup', el);
           }
 
@@ -64422,7 +64422,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return;
           }
 
-          if (!u.hasClass('chat-msg--action', 'el') && next_el.getAttribute('data-from') === from && moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes'))) {
+          if (!u.hasClass('chat-msg--action', 'el') && next_el.getAttribute('data-from') === from && moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) && el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {
             u.addClass('chat-msg--followup', next_el);
           } else {
             u.removeClass('chat-msg--followup', next_el);
@@ -74333,6 +74333,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
 
           if (key) {
+            attrs['is_encrypted'] = true;
             attrs['encrypted'] = {
               'device_id': header.getAttribute('sid'),
               'iv': header.querySelector('iv').textContent,
@@ -74471,6 +74472,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 __ = _converse.__;
 
           if (this.get('omemo_active') && attrs.message) {
+            attrs['is_encrypted'] = true;
             const message = this.messages.create(attrs);
             this.getBundlesAndBuildSessions().then(devices => this.createOMEMOMessageStanza(message, devices)).then(stanza => this.sendMessageStanza(stanza)).catch(e => {
               this.messages.create({
@@ -81277,12 +81279,14 @@ __p += ' chat-msg--action ';
  } ;
 __p += ' ' +
 __e(o.extra_classes) +
-'" data-isodate="' +
+'"\n        data-isodate="' +
 __e(o.time) +
 '" data-msgid="' +
 __e(o.msgid) +
 '" data-from="' +
 __e(o.from) +
+'" data-encrypted="' +
+__e(o.is_encrypted) +
 '">\n    ';
  if (o.type !== 'headline' && !o.is_me_message) { ;
 __p += '\n    <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>\n    ';
@@ -81318,6 +81322,10 @@ __e(o.isodate) +
 '" class="chat-msg__time">' +
 __e(o.pretty_time) +
 '</time>';
+ } ;
+__p += '\n            ';
+ if (o.is_encrypted) { ;
+__p += '<span class="fa fa-lock"></span>';
  } ;
 __p += '\n        </span>\n        ';
  if (!o.is_me_message) { ;

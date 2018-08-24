@@ -1,4 +1,5 @@
-<div class="message chat-msg {{{o.type}}} {[ if (o.is_me_message) { ]} chat-msg--action {[ } ]} {{{o.extra_classes}}}" data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}" data-from="{{{o.from}}}">
+<div class="message chat-msg {{{o.type}}} {[ if (o.is_me_message) { ]} chat-msg--action {[ } ]} {{{o.extra_classes}}}"
+        data-isodate="{{{o.time}}}" data-msgid="{{{o.msgid}}}" data-from="{{{o.from}}}" data-encrypted="{{{o.is_encrypted}}}">
     {[ if (o.type !== 'headline' && !o.is_me_message) { ]}
     <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>
     {[ } ]}
@@ -9,6 +10,7 @@
                 {[o.roles.forEach(function (role) { ]} <span class="badge badge-secondary">{{{role}}}</span> {[ }); ]}
             </span>
             {[ if (!o.is_me_message) { ]}<time timestamp="{{{o.isodate}}}" class="chat-msg__time">{{{o.pretty_time}}}</time>{[ } ]}
+            {[ if (o.is_encrypted) { ]}<span class="fa fa-lock"></span>{[ } ]}
         </span>
         {[ if (!o.is_me_message) { ]}<div class="chat-msg__body">{[ } ]}
             {[ if (o.edited) { ]} <i title="{{{o.__('This message has been edited')}}}" class="fa fa-edit chat-msg__edit-modal"></i> {[ } ]}

@@ -737,14 +737,16 @@
 
                     if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) &&
                             previous_el.getAttribute('data-from') === from &&
-                            date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes'))) {
+                            date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) &&
+                            el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')) {
                         u.addClass('chat-msg--followup', el);
                     }
                     if (!next_el) { return; }
 
                     if (!u.hasClass('chat-msg--action', 'el') &&
                             next_el.getAttribute('data-from') === from &&
-                            moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes'))) {
+                            moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) &&
+                            el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {
                         u.addClass('chat-msg--followup', next_el);
                     } else {
                         u.removeClass('chat-msg--followup', next_el);

@@ -22,7 +22,7 @@
                 'registrationId': '1337' 
             });
             this.decryptWhisperMessage = (key_and_tag) => {
-                return Promise.resolve(u.stringToArrayBuffer(atob(key_and_tag)));
+                return Promise.resolve(u.stringToArrayBuffer(key_and_tag));
             }
         },
         'SessionBuilder': function (storage, remote_address) {

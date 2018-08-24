@@ -63144,8 +63144,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           const result = this.getMessageAttributesFromStanza(message, original_stanza);
 
-          if (result instanceof Promise) {
-            return new Promise((resolve, reject) => result.then(attrs => resolve(_create(attrs))).catch(reject));
+          if (typeof result.then === "function") {
+            return new Promise((resolve, reject) => result.then(attrs => resolve(_create(attrs))));
           } else {
             const message = _create(result);
 
@@ -69805,13 +69805,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'id': id
             })
           });
-
-          try {
-            this.toggleview.model.browserStorage = new Backbone.BrowserStorage[storage](id);
-          } catch (e) {
-            debugger;
-          }
-
+          this.toggleview.model.browserStorage = new Backbone.BrowserStorage[storage](id);
           this.toggleview.model.fetch();
         },
 
@@ -74126,6 +74120,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.devicelist.devices.on('change:bundle', this.debouncedRender, this);
           this.devicelist.devices.on('reset', this.debouncedRender, this);
           this.devicelist.devices.on('remove', this.debouncedRender, this);
+          this.devicelist.devices.on('add', this.debouncedRender, this);
           return this.__super__.initialize.apply(this, arguments);
         },
 
@@ -74183,6 +74178,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.devicelist.devices.on('change:bundle', this.render, this);
           this.devicelist.devices.on('change:trusted', this.render, this);
           this.devicelist.devices.on('remove', this.render, this);
+          this.devicelist.devices.on('add', this.render, this);
           this.devicelist.devices.on('reset', this.render, this);
           return this.__super__.initialize.apply(this, arguments);
         },
@@ -74197,29 +74193,26 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       ChatBox: {
         getBundlesAndBuildSessions() {
           const _converse = this.__super__._converse;
-          return new Promise((resolve, reject) => {
-            _converse.getDevicesForContact(this.get('jid')).then(their_devices => {
-              const device_id = _converse.omemo_store.get('device_id'),
-                    devicelist = _converse.devicelists.get(_converse.bare_jid),
-                    own_devices = devicelist.devices.filter(device => device.get('id') !== device_id),
-                    devices = _.concat(own_devices, their_devices.models);
+          let devices;
+          return _converse.getDevicesForContact(this.get('jid')).then(their_devices => {
+            const device_id = _converse.omemo_store.get('device_id'),
+                  devicelist = _converse.devicelists.get(_converse.bare_jid),
+                  own_devices = devicelist.devices.filter(device => device.get('id') !== device_id);
 
-              Promise.all(devices.map(device => device.getBundle())).then(() => this.buildSessions(devices)).then(() => resolve(devices)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-          });
+            devices = _.concat(own_devices, their_devices.models);
+            return Promise.all(devices.map(device => device.getBundle()));
+          }).then(() => this.buildSessions(devices));
         },
 
         buildSession(device) {
-          const _converse = this.__super__._converse;
-          const bundle = device.get('bundle'),
+          const _converse = this.__super__._converse,
                 address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
                 sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
                 prekey = device.getRandomPreKey();
-
-          try {
+          return device.getBundle().then(bundle => {
             return sessionBuilder.processPreKey({
-              'registrationId': parseInt(_converse.omemo_store.get('device_id'), 10),
-              'identityKey': u.base64ToArrayBuffer(_converse.omemo_store.get('identity_key')),
+              'registrationId': parseInt(device.get('id'), 10),
+              'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
               'signedPreKey': {
                 'keyId': bundle.signed_prekey.id,
                 // <Number>
@@ -74232,13 +74225,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 'publicKey': u.base64ToArrayBuffer(prekey.key)
               }
             });
-          } catch (e) {
-            _converse.log(`Error: could not build session for device ${device.get('id')}`, Strophe.LogLevel.ERROR);
+          });
+        },
 
-            _converse.log(e.message, Strophe.LogLevel.ERROR);
-
-            return Promise.resolve();
-          }
+        getSession(device) {
+          const _converse = this.__super__._converse,
+                address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
+          return _converse.omemo_store.loadSession(address.toString()).then(session => {
+            if (session) {
+              return Promise.resolve();
+            } else {
+              return this.buildSession(device);
+            }
+          });
         },
 
         getKeyAndTag(string) {
@@ -74266,68 +74265,85 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'tagLength': TAG_LENGTH
             };
             return window.crypto.subtle.decrypt(algo, key_obj, u.base64ToArrayBuffer(obj.payload));
-          }).then(out => new TextDecoder().decode(out)).catch(e => _converse.log(e.toString(), Strophe.LogLevel.ERROR));
+          }).then(out => new TextDecoder().decode(out));
         },
 
-        decryptFromKeyAndTag(key_and_tag, obj) {
-          const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
-          return this.decryptMessage(_.extend(obj, {
-            'key': aes_data.key,
-            'tag': aes_data.tag
-          }));
-        },
-
-        handlePreKeyMessage(attrs) {
-          // TODO
-          const _converse = this.__super__._converse; // If this is the case, a new session is built from this received element. The client
-          // SHOULD then republish their bundle information, replacing the used PreKey, such
-          // that it won't be used again by a different client. If the client already has a session
-          // with the sender's device, it MUST replace this session with the newly built session.
-          // The client MUST delete the private key belonging to the PreKey after use.
-
-          const address = new libsignal.SignalProtocolAddress(attrs.from, attrs.encrypted.device_id),
-                session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
-                libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
-          return session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => this.decryptFromKeyAndTag(key_and_tag, attrs.encrypted)).then(f => {// TODO handle new key...
-            // _converse.omemo.publishBundle()
+        reportDecryptionError(e) {
+          const _converse = this.__super__._converse,
+                __ = _converse.__;
+          this.messages.create({
+            'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + `${e.name} ${e.message}`,
+            'type': 'error'
           });
+
+          _converse.log(e, Strophe.LogLevel.ERROR);
         },
 
         decrypt(attrs) {
-          if (attrs.prekey === 'true') {
-            return this.handlePreKeyMessage(attrs);
-          }
-
           const _converse = this.__super__._converse,
-                address = new libsignal.SignalProtocolAddress(attrs.from, attrs.encrypted.device_id),
+                devicelist = _converse.devicelists.get(attrs.from),
+                device = devicelist.devices.get(attrs.encrypted.device_id),
+                address = new libsignal.SignalProtocolAddress(attrs.from, parseInt(attrs.encrypted.device_id, 10)),
                 session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
                 libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
-          return new Promise((resolve, reject) => {
-            session_cipher.decryptWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => this.decryptFromKeyAndTag(key_and_tag, attrs.encrypted)).then(resolve).catch(reject);
-          });
+
+          if (attrs.encrypted.prekey === 'true') {
+            // If this is the case, a new session is built from this received element. The client
+            // SHOULD then republish their bundle information, replacing the used PreKey, such
+            // that it won't be used again by a different client. If the client already has a session
+            // with the sender's device, it MUST replace this session with the newly built session.
+            // The client MUST delete the private key belonging to the PreKey after use.
+            return session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => {
+              const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
+              return this.decryptMessage(_.extend(attrs.encrypted, {
+                'key': aes_data.key,
+                'tag': aes_data.tag
+              }));
+            }).then(plaintext => {
+              // TODO remove newly used key before republishing
+              _converse.omemo.publishBundle();
+
+              return _.extend(attrs, {
+                'plaintext': plaintext
+              });
+            }).catch(e => {
+              this.reportDecryptionError(e);
+              return attrs;
+            });
+          } else {
+            return session_cipher.decryptWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => {
+              const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
+              return this.decryptMessage(_.extend(attrs.encrypted, {
+                'key': aes_data.key,
+                'tag': aes_data.tag
+              }));
+            }).then(plaintext => _.extend(attrs, {
+              'plaintext': plaintext
+            })).catch(e => {
+              this.reportDecryptionError(e);
+              return attrs;
+            });
+          }
         },
 
         getEncryptionAttributesfromStanza(stanza, original_stanza, attrs) {
           const _converse = this.__super__._converse,
-                encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
-          return new Promise((resolve, reject) => {
-            const _converse = this.__super__._converse,
-                  header = encrypted.querySelector('header'),
-                  key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
+                encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
+                header = encrypted.querySelector('header'),
+                key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
 
-            if (key) {
-              attrs['encrypted'] = {
-                'device_id': header.getAttribute('sid'),
-                'iv': header.querySelector('iv').textContent,
-                'key': key.textContent,
-                'payload': _.get(encrypted.querySelector('payload'), 'textContent', null),
-                'prekey': key.getAttribute('prekey')
-              };
-              this.decrypt(attrs).then(plaintext => resolve(_.extend(attrs, {
-                'plaintext': plaintext
-              }))).catch(reject);
-            }
-          });
+          if (key) {
+            attrs['encrypted'] = {
+              'device_id': header.getAttribute('sid'),
+              'iv': header.querySelector('iv').textContent,
+              'key': key.textContent,
+              'payload': _.get(encrypted.querySelector('payload'), 'textContent', null),
+              'prekey': key.getAttribute('prekey')
+            };
+            return this.decrypt(attrs);
+          } else {
+            return Promise.resolve(attrs);
+          }
         },
 
         getMessageAttributesFromStanza(stanza, original_stanza) {
@@ -74343,7 +74359,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         buildSessions(devices) {
-          return Promise.all(devices.map(device => this.buildSession(device)));
+          return Promise.all(devices.map(device => this.getSession(device))).then(() => devices);
         },
 
         encryptMessage(plaintext) {
@@ -74364,12 +74380,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }).then(ciphertext => {
             return window.crypto.subtle.exportKey("jwk", key).then(key_obj => {
               const tag = u.arrayBufferToBase64(ciphertext.slice(ciphertext.byteLength - (TAG_LENGTH + 7 >> 3)));
-              console.log('XXXX: Base64 TAG is ' + tag);
-              console.log('YYY: KEY is ' + key_obj.k);
               return Promise.resolve({
                 'key': key_obj.k,
                 'tag': tag,
-                'key_and_tag': btoa(key_obj.k + tag),
+                'key_and_tag': key_obj.k + tag,
                 'payload': u.arrayBufferToBase64(ciphertext),
                 'iv': u.arrayBufferToBase64(iv)
               });
@@ -74379,14 +74393,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         encryptKey(plaintext, device) {
           const _converse = this.__super__._converse,
-                address = new libsignal.SignalProtocolAddress(this.get('jid'), device.get('id')),
+                address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
                 session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
-          return new Promise((resolve, reject) => {
-            session_cipher.encrypt(plaintext).then(payload => resolve({
-              'payload': payload,
-              'device': device
-            })).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-          });
+          return session_cipher.encrypt(plaintext).then(payload => ({
+            'payload': payload,
+            'device': device
+          }));
         },
 
         addKeysToMessageStanza(stanza, dicts, iv) {
@@ -74422,6 +74434,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           const body = __("This is an OMEMO encrypted message which your client doesn’t seem to support. " + "Find more information on https://conversations.im/omemo");
 
+          if (!message.get('message')) {
+            throw new Error("No message body to encrypt!");
+          }
+
           const stanza = $msg({
             'from': _converse.connection.jid,
             'to': this.get('jid'),
@@ -74438,7 +74454,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }).c('header', {
             'sid': _converse.omemo_store.get('device_id')
           });
-          return this.encryptMessage(message).then(obj => {
+          return this.encryptMessage(message.get('message')).then(obj => {
             // The 16 bytes key and the GCM authentication tag (The tag
             // SHOULD have at least 128 bit) are concatenated and for each
             // intended recipient device, i.e. both own devices as well as
@@ -74446,16 +74462,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // concatenation is encrypted using the corresponding
             // long-standing SignalProtocol session.
             const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => this.encryptKey(obj.key_and_tag, device));
-            return Promise.all(promises).then(dicts => this.addKeysToMessageStanza(stanza, dicts, obj.iv)).then(stanza => stanza.c('payload').t(obj.payload)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            return Promise.all(promises).then(dicts => this.addKeysToMessageStanza(stanza, dicts, obj.iv)).then(stanza => stanza.c('payload').t(obj.payload));
           });
         },
 
         sendMessage(attrs) {
-          const _converse = this.__super__._converse;
+          const _converse = this.__super__._converse,
+                __ = _converse.__;
 
-          if (this.get('omemo_active')) {
+          if (this.get('omemo_active') && attrs.message) {
             const message = this.messages.create(attrs);
-            this.getBundlesAndBuildSessions().then(devices => this.createOMEMOMessageStanza(message, devices)).then(stanza => this.sendMessageStanza(stanza)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            this.getBundlesAndBuildSessions().then(devices => this.createOMEMOMessageStanza(message, devices)).then(stanza => this.sendMessageStanza(stanza)).catch(e => {
+              this.messages.create({
+                'message': __("Sorry, could not send the message due to an error.") + ` ${e.message}`,
+                'type': 'error'
+              });
+
+              _converse.log(e, Strophe.LogLevel.ERROR);
+            });
           } else {
             return this.__super__.sendMessage.apply(this, arguments);
           }
@@ -74567,11 +74591,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         getIdentityKeyPair() {
-          return Promise.resolve(this.get('identity_keypair'));
+          const keypair = this.get('identity_keypair');
+          return Promise.resolve({
+            'privKey': u.base64ToArrayBuffer(keypair.privKey),
+            'pubKey': u.base64ToArrayBuffer(keypair.pubKey)
+          });
         },
 
         getLocalRegistrationId() {
-          return Promise.resolve(this.get('device_id'));
+          return Promise.resolve(parseInt(this.get('device_id'), 10));
         },
 
         isTrustedIdentity(identifier, identity_key, direction) {
@@ -74589,7 +74617,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return Promise.resolve(true);
           }
 
-          return Promise.resolve(u.arrayBufferToString(identity_key) === u.arrayBufferToString(trusted));
+          return Promise.resolve(u.arrayBufferToBase64(identity_key) === trusted);
         },
 
         loadIdentityKey(identifier) {
@@ -74597,7 +74625,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             throw new Error("Can't load identity_key for invalid identifier");
           }
 
-          return Promise.resolve(this.get('identity_key' + identifier));
+          return Promise.resolve(u.base64ToArrayBuffer(this.get('identity_key' + identifier)));
         },
 
         saveIdentity(identifier, identity_key) {
@@ -74607,9 +74635,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           const address = new libsignal.SignalProtocolAddress.fromString(identifier),
                 existing = this.get('identity_key' + address.getName());
-          this.save('identity_key' + address.getName(), identity_key);
+          const b64_idkey = u.arrayBufferToBase64(identity_key);
+          this.save('identity_key' + address.getName(), b64_idkey);
 
-          if (existing && u.arrayBufferToString(identity_key) !== u.arrayBufferToString(existing)) {
+          if (existing && b64_idkey !== existing) {
             return Promise.resolve(true);
           } else {
             return Promise.resolve(false);
@@ -74619,10 +74648,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         loadPreKey(keyId) {
           let res = this.get('25519KeypreKey' + keyId);
 
-          if (_.isUndefined(res)) {
+          if (res) {
             res = {
-              'pubKey': res.pubKey,
-              'privKey': res.privKey
+              'privKey': u.base64ToArrayBuffer(res.privKey),
+              'pubKey': u.base64ToArrayBuffer(res.pubKey)
             };
           }
 
@@ -74630,7 +74659,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         storePreKey(keyId, keyPair) {
-          return Promise.resolve(this.save('25519KeypreKey' + keyId, keyPair));
+          this.save('25519KeypreKey' + keyId, {
+            'privKey': u.arrayBufferToBase64(keyPair.privKey),
+            'pubKey': u.arrayBufferToBase64(keyPair.pubKey)
+          });
+          return Promise.resolve();
         },
 
         removePreKey(keyId) {
@@ -74640,10 +74673,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         loadSignedPreKey(keyId) {
           let res = this.get('25519KeysignedKey' + keyId);
 
-          if (res !== undefined) {
+          if (res) {
             res = {
-              'pubKey': res.pubKey,
-              'privKey': res.privKey
+              'privKey': u.base64ToArrayBuffer(res.privKey),
+              'pubKey': u.base64ToArrayBuffer(res.pubKey)
             };
           }
 
@@ -74651,7 +74684,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         storeSignedPreKey(keyId, keyPair) {
-          return Promise.resolve(this.save('25519KeysignedKey' + keyId, keyPair));
+          this.save('25519KeysignedKey' + keyId, {
+            'privKey': u.arrayBufferToBase64(keyPair.privKey),
+            'pubKey': u.arrayBufferToBase64(keyPair.pubKey)
+          });
+          return Promise.resolve();
         },
 
         removeSignedPreKey(keyId) {
@@ -74698,18 +74735,39 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'device_id': generateDeviceID()
           };
           return libsignal.KeyHelper.generateIdentityKeyPair().then(identity_keypair => {
-            data['identity_keypair'] = identity_keypair;
-            data['identity_key'] = u.arrayBufferToBase64(identity_keypair.pubKey);
+            const identity_key = u.arrayBufferToBase64(identity_keypair.pubKey);
+            data['identity_keypair'] = {
+              'privKey': u.arrayBufferToBase64(identity_keypair.privKey),
+              'pubKey': identity_key
+            };
+            data['identity_key'] = identity_key;
             return libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 1);
           }).then(signed_prekey => {
             _converse.omemo_store.storeSignedPreKey(signed_prekey.keyId, signed_prekey.keyPair);
 
-            data['signed_prekey'] = signed_prekey;
+            data['signed_prekey'] = {
+              'keyId': signed_prekey.keyId,
+              'keyPair': {
+                'privKey': u.arrayBufferToBase64(signed_prekey.keyPair.privKey),
+                'pubKey': u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)
+              },
+              'signature': u.arrayBufferToBase64(signed_prekey.signature)
+            };
             return Promise.all(_.map(_.range(0, _converse.NUM_PREKEYS), id => libsignal.KeyHelper.generatePreKey(id)));
           }).then(keys => {
             _.forEach(keys, k => _converse.omemo_store.storePreKey(k.keyId, k.keyPair));
 
-            data['prekeys'] = keys;
+            const marshalled_keys = _.map(keys, k => {
+              return {
+                'keyId': k.keyId,
+                'keyPair': {
+                  'pubKey': u.arrayBufferToBase64(k.keyPair.pubKey),
+                  'privKey': u.arrayBufferToBase64(k.keyPair.privKey)
+                }
+              };
+            });
+
+            data['prekeys'] = marshalled_keys;
             this.save(data); // Save the bundle to the device
 
             const devicelist = _converse.devicelists.get(_converse.bare_jid),
@@ -74746,7 +74804,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
       _converse.Device = Backbone.Model.extend({
         defaults: {
-          'active': true,
           'trusted': UNDECIDED
         },
 
@@ -74832,10 +74889,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'id': device_id
             });
 
-            if (!_.includes(device_ids, device_id) || !own_device.get('active')) {
-              own_device.save('active', true, {
-                'silent': true
-              });
+            if (!_.includes(device_ids, device_id)) {
               return this.publishDevices();
             }
           });
@@ -74874,15 +74928,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }).c('item').c('list', {
             'xmlns': Strophe.NS.OMEMO
           });
-
-          _.each(this.devices.where({
-            'active': true
-          }), device => {
-            stanza.c('device', {
-              'id': device.get('id')
-            }).up();
-          });
-
+          this.devices.each(device => stanza.c('device', {
+            'id': device.get('id')
+          }).up());
           return _converse.api.sendIQ(stanza);
         },
 
@@ -74915,13 +74963,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'xmlns': Strophe.NS.OMEMO
           }).c('signedPreKeyPublic', {
             'signedPreKeyId': signed_prekey.keyId
-          }).t(u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)).up().c('signedPreKeySignature').t(u.arrayBufferToBase64(signed_prekey.signature)).up().c('identityKey').t(u.arrayBufferToBase64(store.get('identity_keypair').pubKey)).up().c('prekeys');
+          }).t(signed_prekey.keyPair.pubKey).up().c('signedPreKeySignature').t(signed_prekey.signature).up().c('identityKey').t(store.get('identity_keypair').pubKey).up().c('prekeys');
 
-          _.forEach(store.get('prekeys').slice(0, _converse.NUM_PREKEYS), prekey => {
-            stanza.c('preKeyPublic', {
-              'preKeyId': prekey.keyId
-            }).t(u.arrayBufferToBase64(prekey.keyPair.pubKey)).up();
-          });
+          _.forEach(store.get('prekeys').slice(0, _converse.NUM_PREKEYS), prekey => stanza.c('preKeyPublic', {
+            'preKeyId': prekey.keyId
+          }).t(prekey.keyPair.pubKey).up());
 
           return _converse.api.sendIQ(stanza);
         }
@@ -74987,16 +75033,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               devices = devicelist.devices,
               removed_ids = _.difference(devices.pluck('id'), device_ids);
 
-        _.forEach(removed_ids, removed_id => devices.get(removed_id).save('active', false));
+        _.forEach(removed_ids, id => {
+          if (jid === _converse.bare_jid && id === _converse.omemo_store.get('device_id')) {
+            // We don't remove the current device
+            return;
+          }
+
+          devices.get(id).destroy();
+        });
 
         _.forEach(device_ids, device_id => {
-          const dev = devices.get(device_id);
-
-          if (dev) {
-            dev.save({
-              'active': true
-            });
-          } else {
+          if (!devices.get(device_id)) {
             devices.create({
               'id': device_id,
               'jid': jid

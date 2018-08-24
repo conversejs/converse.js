@@ -941,11 +941,11 @@
                         let view;
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openControlBox();
-                        test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500)
+                        test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 1000)
                         .then(() => test_utils.openChatBoxFor(_converse, contact_jid))
                         .then(() => {
                             view = _converse.chatboxviews.get(contact_jid);
-                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'active', 500);
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'active', 1000);
                         }).then(() => {
                             console.log('chat_state set to active');
                             expect(view.model.get('chat_state')).toBe('active');
@@ -959,10 +959,9 @@
                             view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('composing');
                             spyOn(_converse.connection, 'send');
-                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'paused', 500);
-                        }).then(() => {
-                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'inactive', 500);
-                        }).then(() => {
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'paused', 1000);
+                        }).then(() => test_utils.waitUntil(() => view.model.get('chat_state') === 'inactive', 1000))
+                          .then(() => {
                             console.log('chat_state set to inactive');
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var calls = _.filter(_converse.connection.send.calls.all(), function (call) {

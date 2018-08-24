@@ -3483,14 +3483,15 @@
                             null, ['rosterGroupsFetched'], {},
                             function (done, _converse) {
 
+                        let view;
+                        const room_jid = 'coven@chat.shakespeare.lit';
                         test_utils.openAndEnterChatRoom(
                                 _converse, 'coven', 'chat.shakespeare.lit', 'some1').then(function () {
 
-                            var room_jid = 'coven@chat.shakespeare.lit';
-                            var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                            var $chat_content = $(view.el).find('.chat-content');
+                            view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                            const chat_content = view.el.querySelector('.chat-content');
 
-                            expect($chat_content.find('div.chat-info:first').html()).toBe("some1 has entered the groupchat");
+                            expect($(chat_content).find('div.chat-info:first').html()).toBe("some1 has entered the groupchat");
 
                             let presence = $pres({
                                     to: 'dummy@localhost/_converse.js-29092160',
@@ -3503,8 +3504,8 @@
                                     'role': 'participant'
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
-                            expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(2);
-                            expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the groupchat");
+                            expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
+                            expect($(chat_content).find('div.chat-info:last').html()).toBe("newguy has entered the groupchat");
 
                             presence = $pres({
                                     to: 'dummy@localhost/_converse.js-29092160',
@@ -3517,8 +3518,8 @@
                                     'role': 'participant'
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
-                            expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(3);
-                            expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered the groupchat");
+                            expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
+                            expect($(chat_content).find('div.chat-info:last').html()).toBe("nomorenicks has entered the groupchat");
 
                             // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
 
@@ -3531,7 +3532,8 @@
                                 }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
 
                             view.model.onMessage(msg);
-
+                            return test_utils.waitUntil(() => view.el.querySelectorAll('.chat-state-notification').length);
+                        }).then(() => {
                             // Check that the notification appears inside the chatbox in the DOM
                             var events = view.el.querySelectorAll('.chat-event');
                             expect(events.length).toBe(3);
@@ -3549,7 +3551,7 @@
                             });
 
                             // Check that it doesn't appear twice
-                            msg = $msg({
+                            let msg = $msg({
                                     from: room_jid+'/newguy',
                                     id: (new Date()).getTime(),
                                     to: 'dummy@localhost',

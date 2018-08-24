@@ -228,16 +228,11 @@
                         }).then(out => (new TextDecoder()).decode(out));
                 },
 
-                decryptFromKeyAndTag (key_and_tag, obj) {
-                    const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
-                    return this.decryptMessage(_.extend(obj, {'key': aes_data.key, 'tag': aes_data.tag}));
-                },
-
                 reportDecryptionError (e) {
                     const { _converse } = this.__super__,
                           { __ } = _converse;
                     this.messages.create({
-                        'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.message}`,
+                        'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + `${e.name} ${e.message}`,
                         'type': 'error',
                     });
                     _converse.log(e, Strophe.LogLevel.ERROR);
@@ -260,34 +255,28 @@
                         // that it won't be used again by a different client. If the client already has a session
                         // with the sender's device, it MUST replace this session with the newly built session.
                         // The client MUST delete the private key belonging to the PreKey after use.
-                        //
-                        // TODO: republish bundle information with old prekey removed and with new prekey
-                        // TODO: The client MUST delete the private key belonging to the PreKey after use.
                         return session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary')
                             .then(key_and_tag => {
-                                debugger;
-                                return this.decryptFromKeyAndTag(key_and_tag, attrs.encrypted)
-                            })
-                            .then((f) => {
-                                debugger;
-                                // TODO remove newly used key before
-                                // republishing
+                                const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
+                                return this.decryptMessage(_.extend(attrs.encrypted, {'key': aes_data.key, 'tag': aes_data.tag}));
+                            }).then(plaintext => {
+                                // TODO remove newly used key before republishing
                                 _converse.omemo.publishBundle()
-                            })
-                            .catch((e) => {
-                                debugger;
+                                return _.extend(attrs, {'plaintext': plaintext});
+                            }).catch((e) => {
                                 this.reportDecryptionError(e);
-                                return Promise.resolve(attrs);
+                                return attrs;
                             });
                     } else {
                         return session_cipher.decryptWhisperMessage(libsignal_payload.body, 'binary')
-                            .then(key_and_tag => this.decryptFromKeyAndTag(key_and_tag, attrs.encrypted))
-                            .then(plaintext => _.extend(attrs, {'plaintext': plaintext}))
-                            .catch((e) => {
-                                debugger;
-                                this.reportDecryptionError(e);
-                                return Promise.resolve(attrs);
-                            });
+                            .then(key_and_tag => {
+                                const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
+                                return this.decryptMessage(_.extend(attrs.encrypted, {'key': aes_data.key, 'tag': aes_data.tag}));
+                            }).then(plaintext => _.extend(attrs, {'plaintext': plaintext}))
+                              .catch((e) => {
+                                  this.reportDecryptionError(e);
+                                  return attrs;
+                              });
                     }
                 },
 
@@ -341,16 +330,14 @@
                             'tagLength': TAG_LENGTH
                         }
                         return window.crypto.subtle.encrypt(algo, key, new TextEncoder().encode(plaintext));
-                    }).then((ciphertext) => {
+                    }).then(ciphertext => {
                         return window.crypto.subtle.exportKey("jwk", key)
-                            .then((key_obj) => {
+                            .then(key_obj => {
                                 const tag = u.arrayBufferToBase64(ciphertext.slice(ciphertext.byteLength - ((TAG_LENGTH + 7) >> 3)));
-                                console.log('XXXX: Base64 TAG is '+tag);
-                                console.log('YYY: KEY is '+key_obj.k);
                                 return Promise.resolve({
                                     'key': key_obj.k,
                                     'tag': tag,
-                                    'key_and_tag': btoa(key_obj.k + tag),
+                                    'key_and_tag': key_obj.k + tag,
                                     'payload': u.arrayBufferToBase64(ciphertext),
                                     'iv': u.arrayBufferToBase64(iv)
                                 });
@@ -391,6 +378,9 @@
                     const body = __("This is an OMEMO encrypted message which your client doesn’t seem to support. "+
                                     "Find more information on https://conversations.im/omemo");
 
+                    if (!message.get('message')) {
+                        throw new Error("No message body to encrypt!");
+                    }
                     const stanza = $msg({
                             'from': _converse.connection.jid,
                             'to': this.get('jid'),
@@ -406,7 +396,7 @@
                             .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                                 .c('header', {'sid':  _converse.omemo_store.get('device_id')});
 
-                    return this.encryptMessage(message).then(obj => {
+                    return this.encryptMessage(message.get('message')).then(obj => {
                         // The 16 bytes key and the GCM authentication tag (The tag
                         // SHOULD have at least 128 bit) are concatenated and for each
                         // intended recipient device, i.e. both own devices as well as
@@ -426,7 +416,8 @@
                 sendMessage (attrs) {
                     const { _converse } = this.__super__,
                           { __ } = _converse;
-                    if (this.get('omemo_active')) {
+
+                    if (this.get('omemo_active') && attrs.message) {
                         const message = this.messages.create(attrs);
                         this.getBundlesAndBuildSessions()
                             .then(devices => this.createOMEMOMessageStanza(message, devices))

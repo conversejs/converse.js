@@ -551,8 +551,8 @@
                         }
                     }
                     const result = this.getMessageAttributesFromStanza(message, original_stanza)
-                    if (result instanceof Promise) {
-                        return new Promise((resolve, reject) => result.then(attrs => resolve(_create(attrs))).catch(reject));
+                    if (typeof result.then === "function") {
+                        return new Promise((resolve, reject) => result.then(attrs => resolve(_create(attrs))));
                     } else {
                         const message = _create(result)
                         return Promise.resolve(message);

@@ -261,7 +261,7 @@
                                 return this.decryptMessage(_.extend(attrs.encrypted, {'key': aes_data.key, 'tag': aes_data.tag}));
                             }).then(plaintext => {
                                 // TODO remove newly used key before republishing
-                                _converse.omemo.publishBundle()
+                                _converse.omemo_store.publishBundle()
                                 return _.extend(attrs, {'plaintext': plaintext});
                             }).catch((e) => {
                                 this.reportDecryptionError(e);
@@ -656,6 +656,27 @@
                     return Promise.resolve();
                 },
 
+                publishBundle () {
+                    const signed_prekey = this.get('signed_prekey');
+                    const stanza = $iq({
+                        'from': _converse.bare_jid,
+                        'type': 'set'
+                    }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                        .c('publish', {'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('device_id')}`})
+                            .c('item')
+                                .c('bundle', {'xmlns': Strophe.NS.OMEMO})
+                                    .c('signedPreKeyPublic', {'signedPreKeyId': signed_prekey.keyId})
+                                        .t(signed_prekey.keyPair.pubKey).up()
+                                    .c('signedPreKeySignature').t(signed_prekey.signature).up()
+                                    .c('identityKey').t(this.get('identity_keypair').pubKey).up()
+                                    .c('prekeys');
+                    _.forEach(
+                        this.get('prekeys').slice(0, _converse.NUM_PREKEYS),
+                        (prekey) => stanza.c('preKeyPublic', {'preKeyId': prekey.keyId}).t(prekey.keyPair.pubKey).up()
+                    );
+                    return _converse.api.sendIQ(stanza);
+                },
+
                 generateBundle () {
                     /* The first thing that needs to happen if a client wants to
                      * start using OMEMO is they need to generate an IdentityKey
@@ -863,28 +884,6 @@
 
             _converse.omemo = {
 
-                publishBundle () {
-                    const store = _converse.omemo_store,
-                          signed_prekey = store.get('signed_prekey');
-
-                    const stanza = $iq({
-                        'from': _converse.bare_jid,
-                        'type': 'set'
-                    }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
-                        .c('publish', {'node': `${Strophe.NS.OMEMO_BUNDLES}:${store.get('device_id')}`})
-                            .c('item')
-                                .c('bundle', {'xmlns': Strophe.NS.OMEMO})
-                                    .c('signedPreKeyPublic', {'signedPreKeyId': signed_prekey.keyId})
-                                        .t(signed_prekey.keyPair.pubKey).up()
-                                    .c('signedPreKeySignature').t(signed_prekey.signature).up()
-                                    .c('identityKey').t(store.get('identity_keypair').pubKey).up()
-                                    .c('prekeys');
-                    _.forEach(
-                        store.get('prekeys').slice(0, _converse.NUM_PREKEYS),
-                        (prekey) => stanza.c('preKeyPublic', {'preKeyId': prekey.keyId}).t(prekey.keyPair.pubKey).up()
-                    );
-                    return _converse.api.sendIQ(stanza);
-                }
             }
 
             function fetchDeviceLists () {
@@ -983,7 +982,7 @@
 
                 fetchOwnDevices()
                     .then(() => restoreOMEMOSession())
-                    .then(() => _converse.omemo.publishBundle())
+                    .then(() => _converse.omemo_store.publishBundle())
                     .then(() => _converse.emit('OMEMOInitialized'))
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             }

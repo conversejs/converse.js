@@ -258,26 +258,21 @@
 
                 getEncryptionAttributesfromStanza (stanza, original_stanza, attrs) {
                     const { _converse } = this.__super__,
-                          encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
-
-                    return new Promise((resolve, reject) => {
-                        const { _converse } = this.__super__,
-                                header = encrypted.querySelector('header'),
-                                key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
-
-                        if (key) {
-                            attrs['encrypted'] = {
-                                'device_id': header.getAttribute('sid'),
-                                'iv': header.querySelector('iv').textContent,
-                                'key': key.textContent,
-                                'payload': _.get(encrypted.querySelector('payload'), 'textContent', null),
-                                'prekey': key.getAttribute('prekey')
-                            }
-                            this.decrypt(attrs)
-                                .then((plaintext) => resolve(_.extend(attrs, {'plaintext': plaintext})))
-                                .catch(reject);
+                          encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
+                          header = encrypted.querySelector('header'),
+                          key = sizzle(`key[rid="${_converse.omemo_store.get('device_id')}"]`, encrypted).pop();
+                    if (key) {
+                        attrs['encrypted'] = {
+                            'device_id': header.getAttribute('sid'),
+                            'iv': header.querySelector('iv').textContent,
+                            'key': key.textContent,
+                            'payload': _.get(encrypted.querySelector('payload'), 'textContent', null),
+                            'prekey': key.getAttribute('prekey')
                         }
-                    });
+                        return this.decrypt(attrs);
+                    } else {
+                        return Promise.resolve(attrs);
+                    }
                 },
 
                 getMessageAttributesFromStanza (stanza, original_stanza) {

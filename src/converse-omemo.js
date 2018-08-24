@@ -165,23 +165,38 @@
                 },
 
                 buildSession (device) {
-                    const { _converse } = this.__super__;
-                    const bundle = device.get('bundle'),
+                    const { _converse } = this.__super__,
                           address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
                           sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
                           prekey = device.getRandomPreKey();
 
-                    return sessionBuilder.processPreKey({
-                        'registrationId': parseInt(device.get('id'), 10),
-                        'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
-                        'signedPreKey': {
-                            'keyId': bundle.signed_prekey.id, // <Number>
-                            'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
-                            'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
-                        },
-                        'preKey': {
-                            'keyId': prekey.id, // <Number>
-                            'publicKey': u.base64ToArrayBuffer(prekey.key),
+                    return device.getBundle()
+                        .then(bundle => {
+                            return sessionBuilder.processPreKey({
+                                'registrationId': parseInt(device.get('id'), 10),
+                                'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
+                                'signedPreKey': {
+                                    'keyId': bundle.signed_prekey.id, // <Number>
+                                    'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
+                                    'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
+                                },
+                                'preKey': {
+                                    'keyId': prekey.id, // <Number>
+                                    'publicKey': u.base64ToArrayBuffer(prekey.key),
+                                }
+                            });
+                        });
+                },
+
+                getSession (device) {
+                    const { _converse } = this.__super__,
+                          address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
+
+                    return _converse.omemo_store.loadSession(address.toString()).then(session => {
+                        if (session) {
+                            return Promise.resolve();
+                        } else {
+                            return this.buildSession(device);
                         }
                     });
                 },
@@ -210,8 +225,7 @@
                                 'tagLength': TAG_LENGTH 
                             }
                             return window.crypto.subtle.decrypt(algo, key_obj, u.base64ToArrayBuffer(obj.payload));
-                        }).then(out => (new TextDecoder()).decode(out))
-                          .catch(e => _converse.log(e.toString(), Strophe.LogLevel.ERROR));
+                        }).then(out => (new TextDecoder()).decode(out));
                 },
 
                 decryptFromKeyAndTag (key_and_tag, obj) {
@@ -219,41 +233,62 @@
                     return this.decryptMessage(_.extend(obj, {'key': aes_data.key, 'tag': aes_data.tag}));
                 },
 
-                handlePreKeyMessage (attrs) {
-                    // TODO
-                    const { _converse } = this.__super__;
-                    // If this is the case, a new session is built from this received element. The client
-                    // SHOULD then republish their bundle information, replacing the used PreKey, such
-                    // that it won't be used again by a different client. If the client already has a session
-                    // with the sender's device, it MUST replace this session with the newly built session.
-                    // The client MUST delete the private key belonging to the PreKey after use.
-                    const address  = new libsignal.SignalProtocolAddress(attrs.from, attrs.encrypted.device_id),
-                            session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
-                            libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
-
-                    return session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary')
-                        .then(key_and_tag => this.decryptFromKeyAndTag(key_and_tag, attrs.encrypted))
-                        .then((f) => {
-                            // TODO handle new key...
-                            // _converse.omemo.publishBundle()
-                        });
+                reportDecryptionError (e) {
+                    const { _converse } = this.__super__,
+                          { __ } = _converse;
+                    this.messages.create({
+                        'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.message}`,
+                        'type': 'error',
+                    });
+                    _converse.log(e, Strophe.LogLevel.ERROR);
                 },
 
                 decrypt (attrs) {
-                    if (attrs.prekey === 'true') {
-                        return this.handlePreKeyMessage(attrs)
-                    }
                     const { _converse } = this.__super__,
-                          address  = new libsignal.SignalProtocolAddress(attrs.from, attrs.encrypted.device_id),
+                          devicelist = _converse.devicelists.get(attrs.from),
+                          device = devicelist.devices.get(attrs.encrypted.device_id),
+                          address  = new libsignal.SignalProtocolAddress(
+                              attrs.from,
+                              parseInt(attrs.encrypted.device_id, 10)
+                          ),
                           session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
                           libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
 
-                    return new Promise((resolve, reject) => {
-                        session_cipher.decryptWhisperMessage(libsignal_payload.body, 'binary')
-                        .then((key_and_tag) => this.decryptFromKeyAndTag(key_and_tag, attrs.encrypted))
-                        .then(resolve)
-                        .catch(reject);
-                    });
+                    if (attrs.encrypted.prekey === 'true') {
+                        // If this is the case, a new session is built from this received element. The client
+                        // SHOULD then republish their bundle information, replacing the used PreKey, such
+                        // that it won't be used again by a different client. If the client already has a session
+                        // with the sender's device, it MUST replace this session with the newly built session.
+                        // The client MUST delete the private key belonging to the PreKey after use.
+                        //
+                        // TODO: republish bundle information with old prekey removed and with new prekey
+                        // TODO: The client MUST delete the private key belonging to the PreKey after use.
+                        return session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary')
+                            .then(key_and_tag => {
+                                debugger;
+                                return this.decryptFromKeyAndTag(key_and_tag, attrs.encrypted)
+                            })
+                            .then((f) => {
+                                debugger;
+                                // TODO remove newly used key before
+                                // republishing
+                                _converse.omemo.publishBundle()
+                            })
+                            .catch((e) => {
+                                debugger;
+                                this.reportDecryptionError(e);
+                                return Promise.resolve(attrs);
+                            });
+                    } else {
+                        return session_cipher.decryptWhisperMessage(libsignal_payload.body, 'binary')
+                            .then(key_and_tag => this.decryptFromKeyAndTag(key_and_tag, attrs.encrypted))
+                            .then(plaintext => _.extend(attrs, {'plaintext': plaintext}))
+                            .catch((e) => {
+                                debugger;
+                                this.reportDecryptionError(e);
+                                return Promise.resolve(attrs);
+                            });
+                    }
                 },
 
                 getEncryptionAttributesfromStanza (stanza, original_stanza, attrs) {
@@ -286,7 +321,7 @@
                 },
 
                 buildSessions (devices) {
-                    return Promise.all(devices.map(device => this.buildSession(device))).then(() => devices);
+                    return Promise.all(devices.map(device => this.getSession(device))).then(() => devices);
                 },
 
                 encryptMessage (plaintext) {
@@ -560,10 +595,10 @@
 
                 loadPreKey (keyId) {
                     let res = this.get('25519KeypreKey'+keyId);
-                    if (_.isUndefined(res)) {
+                    if (res) {
                         res = {
-                            'pubKey': u.base64ToArrayBuffer(res.pubKey),
-                            'privKey': u.base64ToArrayBuffer(res.privKey)
+                            'privKey': u.base64ToArrayBuffer(res.privKey),
+                            'pubKey': u.base64ToArrayBuffer(res.pubKey)
                         };
                     }
                     return Promise.resolve(res);
@@ -571,8 +606,8 @@
 
                 storePreKey (keyId, keyPair) {
                     this.save('25519KeypreKey'+keyId, {
-                        'privkey': u.arrayBufferToBase64(keyPair.privKey),
-                        'pubkey': u.arrayBufferToBase64(keyPair.pubKey),
+                        'privKey': u.arrayBufferToBase64(keyPair.privKey),
+                        'pubKey': u.arrayBufferToBase64(keyPair.pubKey)
                     });
                     return Promise.resolve();
                 },
@@ -583,10 +618,10 @@
 
                 loadSignedPreKey (keyId) {
                     let res = this.get('25519KeysignedKey'+keyId);
-                    if (res !== undefined) {
+                    if (res) {
                         res = {
-                            'pubKey': u.base64ToArrayBuffer(res.pubKey),
-                            'privKey': u.base64ToArrayBuffer(res.privKey)
+                            'privKey': u.base64ToArrayBuffer(res.privKey),
+                            'pubKey': u.base64ToArrayBuffer(res.pubKey)
                         };
                     }
                     return Promise.resolve(res);

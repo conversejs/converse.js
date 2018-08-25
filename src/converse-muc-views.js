@@ -1,7 +1,7 @@
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
@@ -21,7 +21,6 @@
         "templates/chatroom_nickname_form.html",
         "templates/chatroom_password_form.html",
         "templates/chatroom_sidebar.html",
-        "templates/chatroom_toolbar.html",
         "templates/info.html",
         "templates/list_chatrooms_modal.html",
         "templates/occupant.html",
@@ -49,7 +48,6 @@
     tpl_chatroom_nickname_form,
     tpl_chatroom_password_form,
     tpl_chatroom_sidebar,
-    tpl_chatroom_toolbar,
     tpl_info,
     tpl_list_chatrooms_modal,
     tpl_occupant,
@@ -93,7 +91,7 @@
          * If the setting "strict_plugin_dependencies" is set to true,
          * an error will be raised if the plugin is not found.
          */
-        dependencies: ["converse-modal", "converse-controlbox", "converse-chatview"],
+        dependencies: ["converse-autocomplete", "converse-modal", "converse-controlbox", "converse-chatview"],
 
         overrides: {
 
@@ -104,7 +102,7 @@
                     this.roomspanel = new _converse.RoomsPanel({
                         'model': new (_converse.RoomsPanelModel.extend({
                             'id': b64_sha1(`converse.roomspanel${_converse.bare_jid}`), // Required by sessionStorage
-                            'browserStorage': new Backbone.BrowserStorage[_converse.storage](
+                            'browserStorage': new Backbone.BrowserStorage[_converse.config.get('storage')](
                                 b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
                         }))()
                     });
@@ -154,10 +152,10 @@
             // Refer to docs/source/configuration.rst for explanations of these
             // configuration settings.
             _converse.api.settings.update({
-                auto_list_rooms: false,
-                hide_muc_server: false, // TODO: no longer implemented...
-                muc_disable_moderator_commands: false,
-                visible_toolbar_buttons: {
+                'auto_list_rooms': false,
+                'hide_muc_server': false, // TODO: no longer implemented...
+                'muc_disable_moderator_commands': false,
+                'visible_toolbar_buttons': {
                     'toggle_occupants': true
                 }
             });
@@ -215,7 +213,7 @@
                     307: __('You have been kicked from this groupchat'),
                     321: __("You have been removed from this groupchat because of an affiliation change"),
                     322: __("You have been removed from this groupchat because the groupchat has changed to members-only and you're not a member"),
-                    332: __("You have been removed from this groupchat because the MUC (Multi-user chat) service is being shut down")
+                    332: __("You have been removed from this groupchat because the service hosting it is being shut down")
                 },
 
                 action_info_messages: {
@@ -477,6 +475,10 @@
                 openChatRoom (ev) {
                     ev.preventDefault();
                     const data = this.parseRoomDataFromEvent(ev.target);
+                    if (data.nick === "") {
+                        // Make sure defaults apply if no nick is provided.
+                        data.nick = undefined;
+                    }
                     _converse.api.rooms.open(data.jid, data);
                     this.modal.hide();
                     ev.target.reset();
@@ -516,6 +518,7 @@
                 is_chatroom: true,
                 events: {
                     'change input.fileupload': 'onFileSelection',
+                    'click .chat-msg__action-edit': 'onMessageEditButtonClicked',
                     'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
@@ -530,6 +533,7 @@
                     'click .toggle-smiley': 'toggleEmojiMenu',
                     'click .upload-file': 'toggleFileUpload',
                     'keydown .chat-textarea': 'keyPressed',
+                    'keyup .chat-textarea': 'keyUp',
                     'input .chat-textarea': 'inputChanged'
                 },
 
@@ -579,6 +583,8 @@
                     this.el.innerHTML = tpl_chatroom();
                     this.renderHeading();
                     this.renderChatArea();
+                    this.renderMessageForm();
+                    this.initAutoComplete();
                     if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                         this.showSpinner();
                     }
@@ -596,18 +602,38 @@
                     if (_.isNull(this.el.querySelector('.chat-area'))) {
                         const container_el = this.el.querySelector('.chatroom-body');
                         container_el.insertAdjacentHTML('beforeend', tpl_chatarea({
-                            'label_message': __('Message'),
-                            'label_send': __('Send'),
-                            'show_send_button': _converse.show_send_button,
-                            'show_toolbar': _converse.show_toolbar,
-                            'unread_msgs': __('You have unread messages')
+                            'show_send_button': _converse.show_send_button
                         }));
                         container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
-                        this.renderToolbar(tpl_chatroom_toolbar);
                         this.content = this.el.querySelector('.chat-content');
                         this.toggleOccupants(null, true);
                     }
                     return this;
+                },
+
+                initAutoComplete () {
+                    this.auto_complete = new _converse.AutoComplete(this.el, {
+                        'auto_first': true,
+                        'auto_evaluate': false,
+                        'min_chars': 1,
+                        'match_current_word': true,
+                        'match_on_tab': true,
+                        'list': () => this.model.occupants.map(o => ({'label': o.getDisplayName(), 'value': `@${o.getDisplayName()}`})),
+                        'filter': _converse.FILTER_STARTSWITH,
+                        'trigger_on_at': true
+                    });
+                    this.auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
+                },
+
+                keyPressed (ev) {
+                    if (this.auto_complete.keyPressed(ev)) {
+                        return;
+                    }
+                    return _converse.ChatBoxView.prototype.keyPressed.apply(this, arguments);
+                },
+
+                keyUp (ev) {
+                    this.auto_complete.evaluate(ev);
                 },
 
                 showRoomDetailsModal (ev) {
@@ -702,8 +728,8 @@
                     return _.extend(
                         _converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments),
                         {
-                          label_hide_occupants: __('Hide the list of participants'),
-                          show_occupants_toggle: this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
+                          'label_hide_occupants': __('Hide the list of participants'),
+                          'show_occupants_toggle': this.is_chatroom && _converse.visible_toolbar_buttons.toggle_occupants
                         }
                     );
                 },
@@ -789,11 +815,29 @@
                     }
                 },
 
-                modifyRole(groupchat, nick, role, reason, onSuccess, onError) {
+                modifyRole (groupchat, nick, role, reason, onSuccess, onError) {
                     const item = $build("item", {nick, role});
                     const iq = $iq({to: groupchat, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
                     if (reason !== null) { iq.c("reason", reason); }
                     return _converse.connection.sendIQ(iq, onSuccess, onError);
+                },
+
+                verifyRoles (roles) {
+                    const me = this.model.occupants.findWhere({'jid': _converse.bare_jid});
+                    if (!_.includes(roles, me.get('role'))) {
+                        this.showErrorMessage(__(`Forbidden: you do not have the necessary role in order to do that.`))
+                        return false;
+                    }
+                    return true;
+                },
+
+                verifyAffiliations (affiliations) {
+                    const me = this.model.occupants.findWhere({'jid': _converse.bare_jid});
+                    if (!_.includes(affiliations, me.get('affiliation'))) {
+                        this.showErrorMessage(__(`Forbidden: you do not have the necessary affiliation in order to do that.`))
+                        return false;
+                    }
+                    return true;
                 },
 
                 validateRoleChangeCommand (command, args) {
@@ -803,9 +847,7 @@
                     // TODO check if first argument is valid
                     if (args.length < 1 || args.length > 2) {
                         this.showErrorMessage(
-                            __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.',
-                                command),
-                            true
+                            __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command)
                         );
                         return false;
                     }
@@ -814,15 +856,11 @@
 
                 onCommandError (err) {
                     _converse.log(err, Strophe.LogLevel.FATAL);
-                    this.showErrorMessage(
-                        __("Sorry, an error happened while running the command. Check your browser's developer console for details."),
-                        true
-                    );
+                    this.showErrorMessage(__("Sorry, an error happened while running the command. Check your browser's developer console for details."));
                 },
 
                 parseMessageForCommands (text) {
-                    const _super_ = _converse.ChatBoxView.prototype;
-                    if (_super_.parseMessageForCommands.apply(this, arguments)) {
+                    if (_converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments)) {
                         return true;
                     }
                     if (_converse.muc_disable_moderator_commands) {
@@ -833,7 +871,9 @@
                         command = match[1].toLowerCase();
                     switch (command) {
                         case 'admin':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.model.setAffiliation('admin',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -843,7 +883,9 @@
                                     );
                             break;
                         case 'ban':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyAffiliations(['owner', 'admin']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.model.setAffiliation('outcast',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -853,7 +895,9 @@
                                     );
                             break;
                         case 'deop':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'participant', args[1],
                                     undefined, this.onCommandError.bind(this));
@@ -879,28 +923,42 @@
                             ]);
                             break;
                         case 'kick':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'none', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'mute':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'visitor', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
-                        case 'member':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                        case 'member': {
+                            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
+                            const occupant = this.model.occupants.findWhere({'nick': args[0]});
+                            if (!occupant) {
+                                this.showErrorMessage(__(`Error: Can't find a groupchat participant with the nickname "${args[0]}"`));
+                                break;
+                            }
                             this.model.setAffiliation('member',
-                                    [{ 'jid': args[0],
+                                    [{ 'jid': occupant.get('jid'),
                                        'reason': args[1]
                                     }]).then(
                                         () => this.model.occupants.fetchMembers(),
                                         (err) => this.onCommandError(err)
                                     );
                             break;
-                        case 'nick':
+                        } case 'nick':
+                            if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
+                                break;
+                            }
                             _converse.connection.send($pres({
                                 from: _converse.connection.jid,
                                 to: this.model.getRoomJIDAndNick(match[2]),
@@ -908,7 +966,9 @@
                             }).tree());
                             break;
                         case 'owner':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.model.setAffiliation('owner',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -918,13 +978,17 @@
                                     );
                             break;
                         case 'op':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'moderator', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
                         case 'revoke':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.model.setAffiliation('none',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -944,7 +1008,9 @@
                             );
                             break;
                         case 'voice':
-                            if (!this.validateRoleChangeCommand(command, args)) { break; }
+                            if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+                                break;
+                            }
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'participant', args[1],
                                     undefined, this.onCommandError.bind(this));

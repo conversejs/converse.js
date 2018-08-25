@@ -320,7 +320,7 @@
                 message_archiving_timeout: 8000, // Time (in milliseconds) to wait before aborting MAM request
             });
 
-            _converse.onMAMError = function (iq) {
+            _converse.onMAMError = function (model, iq) {
                 if (iq.querySelectorAll('feature-not-implemented').length) {
                     _converse.log(
                         "Message Archive Management (XEP-0313) not supported by this server",

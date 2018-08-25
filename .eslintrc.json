@@ -19,7 +19,7 @@
     "rules": {
         "lodash/prefer-lodash-method": [2, {
             "ignoreMethods": [
-                "find", "endsWith", "startsWith", "filter", "reduce",
+                "find", "endsWith", "startsWith", "filter", "reduce", "isArray", "create",
                 "map", "replace", "toLower", "split", "trim", "forEach", "toUpperCase", "includes"
             ]
         }],
@@ -215,10 +215,7 @@
         "one-var": "off",
         "one-var-declaration-per-line": "off",
         "operator-assignment": "off",
-        "operator-linebreak": [
-            "error",
-            "after"
-        ],
+        "operator-linebreak": "off",
         "padded-blocks": "off",
         "prefer-arrow-callback": "off",
         "prefer-const": "error",

@@ -159,9 +159,10 @@
                         xhr.onerror();
                     }
                 };
-                xhr.onerror = function () {
-                    reject(xhr.statusText);
-                };
+                xhr.onerror = (e) => {
+                    const err_message = e ? ` Error: ${e.message}` : '';
+                    reject(new Error(`Could not fetch translations. Status: ${xhr.statusText}. ${err_message}`));
+                }
                 xhr.send();
             });
         }

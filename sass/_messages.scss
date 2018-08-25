@@ -1,6 +1,12 @@
 #conversejs {
     .message {
 
+        .mention {
+            font-weight: bold;
+        }
+        .mention--self {
+            font-weight: normal;
+        }
         &.date-separator {
             height: 2em;
             margin: 0;
@@ -80,7 +86,7 @@
             }
             &.correcting {
                 &.groupchat  {
-                    background-color: lighten($chatroom-head-color, 35%);
+                    background-color: lighten($chatroom-head-color, 30%);
                 }
                 &:not(.groupchat) {
                     background-color: lighten($chat-head-color, 50%);
@@ -144,6 +150,7 @@
                 padding: 0;
                 color: $message-text-color;
                 width: 100%;
+                white-space: pre-wrap;
                 a {
                     word-wrap: break-word;
                     word-break: break-all;

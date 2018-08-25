@@ -55,8 +55,6 @@
                 },
 
                 initialize () {
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                        b64_sha1(`converse.open-rooms-{_converse.bare_jid}`));
                     _converse.chatboxes.on('add', this.onChatBoxAdded, this);
                     _converse.chatboxes.on('change:hidden', this.onChatBoxChanged, this);
                     _converse.chatboxes.on('change:bookmarked', this.onChatBoxChanged, this);
@@ -170,12 +168,11 @@
                     this.model.on('add', this.showOrHide, this);
                     this.model.on('remove', this.showOrHide, this);
 
-                    const cachekey = `converse.roomslist${_converse.bare_jid}`;
-                    this.list_model = new _converse.RoomsList();
-                    this.list_model.id = cachekey;
-                    this.list_model.browserStorage = new Backbone.BrowserStorage[_converse.storage](
-                        b64_sha1(cachekey)
-                    );
+                    const storage = _converse.config.get('storage'),
+                          id = b64_sha1(`converse.roomslist${_converse.bare_jid}`);
+
+                    this.list_model = new _converse.RoomsList({'id': id});
+                    this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
                     this.list_model.fetch();
                     this.render();
                     this.sortAndPositionAllItems();
@@ -265,9 +262,12 @@
             });
 
             const initRoomsListView = function () {
-                _converse.rooms_list_view = new _converse.RoomsListView(
-                    {'model': new _converse.OpenRooms()  }
-                );
+                const storage = _converse.config.get('storage'),
+                      id = b64_sha1(`converse.open-rooms-{_converse.bare_jid}`),
+                      model = new _converse.OpenRooms();
+
+                model.browserStorage = new Backbone.BrowserStorage[storage](id);
+                _converse.rooms_list_view = new _converse.RoomsListView({'model': model});
             };
 
             if (_converse.allow_bookmarks) {

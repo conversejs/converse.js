@@ -235,11 +235,18 @@
                 width: 100%;
             }
 
+            .suggestion-box__results {
+                &:after {
+                    display: none;
+                }
+            }
+
             .spoiler-hint {
                 width: 100%;
             }
 
             .chat-textarea {
+                color: $chat-textarea-color;
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
                 @include border-bottom-radius($chatbox-border-radius);
@@ -248,8 +255,12 @@
                 border: none;
                 min-height: $chat-textarea-height;
                 margin-bottom: -4px; // Not clear why this is necessar :(
+                resize: none;
                 &.spoiler {
                     height: 42px;
+                }
+                &.correcting {
+                    background-color: lighten($chat-head-color, 50%);
                 }
             }
 
@@ -269,7 +280,7 @@
                 margin: 0;
                 padding: 0.25em;
                 display: block;
-                border-top: 8px solid $chat-head-color;
+                border-top: 4px solid $chat-head-color;
                 background-color: white;
                 color: $chat-head-color;
                 .fa, .fa:hover {
@@ -434,6 +445,12 @@
 }
 
 /* ******************* Overlay and embedded styles *************************** */
+
+#conversejs.converse-embedded {
+    .chat-textarea {
+        max-height: $fullpage-max-chat-textarea-height;
+    }
+}
 
 #conversejs.converse-embedded,
 #conversejs.converse-overlayed {

@@ -67,6 +67,7 @@
 
     // Core plugins are whitelisted automatically
     _converse.core_plugins = [
+        'converse-autocomplete',
         'converse-bookmarks',
         'converse-caps',
         'converse-chatboxes',
@@ -105,6 +106,22 @@
 
     // Make converse pluggable
     pluggable.enable(_converse, '_converse', 'pluggable');
+
+    _converse.keycodes = {
+        TAB: 9,
+        ENTER: 13,
+        SHIFT: 16,
+        CTRL: 17,
+        ALT: 18,
+        ESCAPE: 27,
+        UP_ARROW: 38,
+        DOWN_ARROW: 40,
+        FORWARD_SLASH: 47,
+        AT: 50,
+        META: 91,
+        META_RIGHT: 93
+    };
+
 
     // Module-level constants
     _converse.STATUS_WEIGHTS = {
@@ -204,7 +221,6 @@
         rid: undefined,
         root: window.document,
         sid: undefined,
-        storage: 'session',
         strict_plugin_dependencies: false,
         trusted: true,
         view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
@@ -325,9 +341,11 @@
             delete _converse.controlboxtoggle;
             delete _converse.chatboxviews;
             _converse.connection.reset();
-            _converse.off();
             _converse.stopListening();
             _converse.tearDown();
+            delete _converse.config;
+            _converse.initClientConfig();
+            _converse.off();
         }
 
         if ('onpagehide' in window) {
@@ -632,28 +650,43 @@
             if (reconnecting) {
                 _converse.onStatusInitialized(reconnecting);
             } else {
-                this.xmppstatus = new this.XMPPStatus();
-                const id = b64_sha1(`converse.xmppstatus-${_converse.bare_jid}`);
-                this.xmppstatus.id = id; // Appears to be necessary for backbone.browserStorage
-                this.xmppstatus.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+                const id = `converse.xmppstatus-${_converse.bare_jid}`;
+                this.xmppstatus = new this.XMPPStatus({'id': id});
+                this.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
                 this.xmppstatus.fetch({
-                    success: _.partial(_converse.onStatusInitialized, reconnecting),
-                    error: _.partial(_converse.onStatusInitialized, reconnecting)
+                    'success': _.partial(_converse.onStatusInitialized, reconnecting),
+                    'error': _.partial(_converse.onStatusInitialized, reconnecting)
                 });
             }
         }
 
+        this.initClientConfig = function () {
+            /* The client config refers to configuration of the client which is
+             * independent of any particular user.
+             * What this means is that config values need to persist across
+             * user sessions.
+             */
+            const id = b64_sha1('converse.client-config');
+            _converse.config = new Backbone.Model({
+                'id': id,
+                'trusted': _converse.trusted && true || false,
+                'storage': _converse.trusted ? 'local' : 'session'
+            });
+            _converse.config.browserStorage = new Backbone.BrowserStorage.session(id);
+            _converse.config.fetch();
+            _converse.emit('clientConfigInitialized');
+        };
+
         this.initSession = function () {
-            _converse.session = new Backbone.Model();
             const id = b64_sha1('converse.bosh-session');
-            _converse.session.id = id; // Appears to be necessary for backbone.browserStorage
+            _converse.session = new Backbone.Model({'id': id});
             _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
             _converse.session.fetch();
             _converse.emit('sessionInitialized');
         };
 
         this.clearSession = function () {
-            if (!_converse.trusted) {
+            if (!_converse.config.get('trusted')) {
                 window.localStorage.clear();
                 window.sessionStorage.clear();
             } else if (!_.isUndefined(this.session) && this.session.browserStorage) {
@@ -773,11 +806,12 @@
             }
         };
 
-        this.setUserJid = function () {
+        this.setUserJID = function () {
             _converse.jid = _converse.connection.jid;
             _converse.bare_jid = Strophe.getBareJidFromJid(_converse.connection.jid);
             _converse.resource = Strophe.getResourceFromJid(_converse.connection.jid);
             _converse.domain = Strophe.getDomainFromJid(_converse.connection.jid);
+            _converse.emit('setUserJID');
         };
 
         this.onConnected = function (reconnecting) {
@@ -785,7 +819,7 @@
              * by logging in or by attaching to an existing BOSH session.
              */
             _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
-            _converse.setUserJid();
+            _converse.setUserJID();
             _converse.initSession();
             _converse.enableCarbons();
             _converse.initStatus(reconnecting)
@@ -812,7 +846,7 @@
             defaults () {
                 return {
                     "jid": _converse.bare_jid,
-                    "status":  _converse.default_state,
+                    "status":  _converse.default_state
                 }
             },
 
@@ -1151,6 +1185,7 @@
 
         function finishInitialization () {
             _converse.initPlugins();
+            _converse.initClientConfig();
             _converse.initConnection();
             _converse.setUpXMLLogging();
             _converse.logIn();
@@ -1172,7 +1207,7 @@
                 _converse.locale,
                 _converse.locales,
                 u.interpolate(_converse.locales_url, {'locale': _converse.locale}))
-            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+            .catch(e => _converse.log(e.message, Strophe.LogLevel.FATAL))
             .then(finishInitialization)
             .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }

@@ -50,12 +50,6 @@
     "use strict";
     const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, moment } = converse.env;
     const u = converse.env.utils;
-    const KEY = {
-        ENTER: 13,
-        UP_ARROW: 38,
-        DOWN_ARROW: 40,
-        FORWARD_SLASH: 47
-    };
 
     converse.plugins.add('converse-chatview', {
         /* Plugin dependencies are other plugins which might be
@@ -127,11 +121,6 @@
                     'current_category': 'people',
                     'current_skintone': '',
                     'scroll_position': 0
-                },
-                initialize () {
-                    const id = `converse.emoji-${_converse.bare_jid}`;
-                    this.id = id;
-                    this.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
                 }
             });
 
@@ -214,8 +203,8 @@
                 render () {
                     this.el.innerHTML = tpl_chatbox_head(
                         _.extend(
-                            this.model.toJSON(),
                             this.model.vcard.toJSON(),
+                            this.model.toJSON(),
                             { '_converse': _converse,
                               'info_close': __('Close this chat box')
                             }
@@ -398,13 +387,13 @@
                     if (this.model.get('composing_spoiler')) {
                         placeholder = __('Hidden message');
                     } else {
-                        placeholder = __('Personal message');
+                        placeholder = __('Message');
                     }
                     const form_container = this.el.querySelector('.message-form-container');
                     form_container.innerHTML = tpl_chatbox_message_form(
                         _.extend(this.model.toJSON(), {
                             'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
-                            'label_personal_message': placeholder,
+                            'label_message': placeholder,
                             'label_send': __('Send'),
                             'label_spoiler_hint': __('Optional hint'),
                             'message_value': _.get(this.el.querySelector('.chat-textarea'), 'value'),
@@ -803,7 +792,7 @@
                      */
                     this.showMessage(message);
                     if (message.get('correcting')) {
-                        this.insertIntoTextArea(message.get('message'), true);
+                        this.insertIntoTextArea(message.get('message'), true, true);
                     }
                     _converse.emit('messageAdded', {
                         'message': message,
@@ -900,6 +889,7 @@
                         hint_el.value = '';
                     }
                     textarea.value = '';
+                    u.removeClass('correcting', textarea);
                     textarea.focus();
                     // Trigger input event, so that the textarea resizes
                     const event = document.createEvent('Event');
@@ -914,15 +904,34 @@
                 keyPressed (ev) {
                     /* Event handler for when a key is pressed in a chat box textarea.
                      */
-                    if (ev.shiftKey) { return; }
-
-                    if (ev.keyCode === KEY.ENTER) {
-                        this.onFormSubmitted(ev);
-                    } else if (ev.keyCode === KEY.UP_ARROW && !ev.target.selectionEnd) {
-                        this.editEarlierMessage();
-                    } else if (ev.keyCode === KEY.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
-                        this.editLaterMessage();
-                    } else if (ev.keyCode !== KEY.FORWARD_SLASH && this.model.get('chat_state') !== _converse.COMPOSING) {
+                    if (ev.ctrlKey) {
+                        // When ctrl is pressed, no chars are entered into the textarea.
+                        return;
+                    }
+                    if (!ev.shiftKey && !ev.altKey) {
+                        if (ev.keyCode === _converse.keycodes.FORWARD_SLASH) {
+                            // Forward slash is used to run commands. Nothing to do here.
+                            return;
+                        } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
+                            return this.onEscapePressed(ev);
+                        } else if (ev.keyCode === _converse.keycodes.ENTER) {
+                            return this.onFormSubmitted(ev);
+                        } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
+                            return this.editEarlierMessage();
+                        } else if (ev.keyCode === _converse.keycodes.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
+                            return this.editLaterMessage();
+                        }
+                    } 
+                    if (_.includes([
+                                _converse.keycodes.SHIFT,
+                                _converse.keycodes.META,
+                                _converse.keycodes.META_RIGHT,
+                                _converse.keycodes.ESCAPE,
+                                _converse.keycodes.ALT]
+                            , ev.keyCode)) {
+                        return;
+                    }
+                    if (this.model.get('chat_state') !== _converse.COMPOSING) {
                         // Set chat state to composing if keyCode is not a forward-slash
                         // (which would imply an internal command and not a message).
                         this.setChatState(_converse.COMPOSING);
@@ -933,7 +942,19 @@
                     return f(this.model.messages.filter({'sender': 'me'}));
                 },
 
+                onEscapePressed (ev) {
+                    ev.preventDefault();
+                    const idx = this.model.messages.findLastIndex('correcting'),
+                          message = idx >=0 ? this.model.messages.at(idx) : null;
+
+                    if (message) {
+                        message.save('correcting', false);
+                    }
+                    this.insertIntoTextArea('', true, false);
+                },
+
                 onMessageEditButtonClicked (ev) {
+                    ev.preventDefault();
                     const idx = this.model.messages.findLastIndex('correcting'),
                           currently_correcting = idx >=0 ? this.model.messages.at(idx) : null,
                           message_el = u.ancestor(ev.target, '.chat-msg'),
@@ -944,10 +965,10 @@
                             currently_correcting.save('correcting', false);
                         }
                         message.save('correcting', true);
-                        this.insertIntoTextArea(message.get('message'), true);
+                        this.insertIntoTextArea(u.prefixMentions(message), true, true);
                     } else {
                         message.save('correcting', false);
-                        this.insertIntoTextArea('', true);
+                        this.insertIntoTextArea('', true, false);
                     }
                 },
 
@@ -966,10 +987,10 @@
                         }
                     }
                     if (message) {
-                        this.insertIntoTextArea(message.get('message'), true);
+                        this.insertIntoTextArea(message.get('message'), true, true);
                         message.save('correcting', true);
                     } else {
-                        this.insertIntoTextArea('', true);
+                        this.insertIntoTextArea('', true, false);
                     }
                 },
 
@@ -989,7 +1010,7 @@
                     }
                     message = message || this.getOwnMessages().findLast((msg) => msg.get('message'));
                     if (message) {
-                        this.insertIntoTextArea(message.get('message'), true);
+                        this.insertIntoTextArea(message.get('message'), true, true);
                         message.save('correcting', true);
                     }
                 },
@@ -1010,23 +1031,33 @@
                     return this;
                 },
 
-                insertIntoTextArea (value, replace=false) {
+                insertIntoTextArea (value, replace=false, correcting=false) {
                     const textarea = this.el.querySelector('.chat-textarea');
+                    if (correcting) {
+                        u.addClass('correcting', textarea);
+                    } else {
+                        u.removeClass('correcting', textarea);
+                    }
                     if (replace) {
+                        textarea.value = '';
                         textarea.value = value;
                     } else {
                         let existing = textarea.value;
                         if (existing && (existing[existing.length-1] !== ' ')) {
                             existing = existing + ' ';
                         }
+                        textarea.value = '';
                         textarea.value = existing+value+' ';
                     }
-                    textarea.focus()
+                    u.putCurserAtEnd(textarea);
                 },
 
                 createEmojiPicker () {
                     if (_.isUndefined(_converse.emojipicker)) {
-                        _converse.emojipicker = new _converse.EmojiPicker();
+                        const storage = _converse.config.get('storage'),
+                              id = `converse.emoji-${_converse.bare_jid}`;
+                        _converse.emojipicker = new _converse.EmojiPicker({'id': id});
+                        _converse.emojipicker.browserStorage = new Backbone.BrowserStorage[storage](id);
                         _converse.emojipicker.fetch();
                     }
                     this.emoji_picker_view = new _converse.EmojiPickerView({

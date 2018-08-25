@@ -1,14 +1,4 @@
 <div class="chat-area col">
     <div class="chat-content {[ if (o.show_send_button) { ]}chat-content-sendbutton{[ } ]}"></div>
-    <div class="new-msgs-indicator hidden">▼ {{{ o.unread_msgs }}} ▼</div>
-    <form class="sendXMPPMessage">
-        {[ if (o.show_toolbar) { ]}
-            <ul class="chat-toolbar no-text-select"></ul>
-        {[ } ]}
-        <textarea type="text" class="chat-textarea {[ if (o.show_send_button) { ]}chat-textarea-send-button{[ } ]}"
-                  placeholder="{{{o.label_message}}}"></textarea>
-    {[ if (o.show_send_button) { ]}
-        <button type="submit" class="pure-button send-button">{{{ o.label_send }}}</button>
-    {[ } ]}
-    </form>
+    <div class="message-form-container"/>
 </div>

@@ -49,20 +49,21 @@
 
             _converse.initRoster = function () {
                 /* Initialize the Bakcbone collections that represent the contats
-                * roster and the roster groups.
-                */
+                 * roster and the roster groups.
+                 */
+                const storage = _converse.config.get('storage');
                 _converse.roster = new _converse.RosterContacts();
-                _converse.roster.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](
                     b64_sha1(`converse.contacts-${_converse.bare_jid}`));
 
                 _converse.roster.data = new Backbone.Model();
                 const id = b64_sha1(`converse-roster-model-${_converse.bare_jid}`);
                 _converse.roster.data.id = id;
-                _converse.roster.data.browserStorage = new Backbone.BrowserStorage[_converse.storage](id);
+                _converse.roster.data.browserStorage = new Backbone.BrowserStorage[storage](id);
                 _converse.roster.data.fetch();
 
                 _converse.rostergroups = new _converse.RosterGroups();
-                _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[_converse.storage](
+                _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](
                     b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
                 _converse.emit('rosterInitialized');
             };
@@ -247,7 +248,7 @@
                 },
 
                 getDisplayName () {
-                    return this.vcard.get('fullname') || this.get('jid');
+                    return this.get('nickname') || this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('jid');
                 },
 
                 getFullname () {

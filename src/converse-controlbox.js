@@ -466,8 +466,10 @@
                     if (!this.validate()) { return; }
 
                     const form_data = new FormData(ev.target);
-                    _converse.trusted = form_data.get('trusted');
-                    _converse.storage = form_data.get('trusted') ? 'local' : 'session';
+                    _converse.config.save({
+                        'trusted': form_data.get('trusted') && true || false,
+                        'storage': form_data.get('trusted') ? 'local' : 'session'
+                    });
 
                     let jid = form_data.get('jid');
                     if (_converse.locked_domain) {
@@ -583,7 +585,7 @@
             });
 
             _converse.on('clearSession', () => {
-                if (_converse.trusted) {
+                if (_converse.config.get('trusted')) {
                     const chatboxes = _.get(_converse, 'chatboxes', null);
                     if (!_.isNil(chatboxes)) {
                         const controlbox = chatboxes.get('controlbox');

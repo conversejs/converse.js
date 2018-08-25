@@ -682,7 +682,7 @@
                             `<publish node="eu.siacs.conversations.axolotl.bundles:123456789">`+
                                 `<item>`+
                                     `<bundle xmlns="eu.siacs.conversations.axolotl">`+
-                                        `<signedPreKeyPublic signedPreKeyId="1">${btoa('1234')}</signedPreKeyPublic>`+
+                                        `<signedPreKeyPublic signedPreKeyId="0">${btoa('1234')}</signedPreKeyPublic>`+
                                             `<signedPreKeySignature>${btoa('11112222333344445555')}</signedPreKeySignature>`+
                                             `<identityKey>${btoa('1234')}</identityKey>`+
                                         `<prekeys>`+
@@ -796,7 +796,7 @@
                 const signed_prekeys = iq_stanza.querySelectorAll('signedPreKeyPublic');
                 expect(signed_prekeys.length).toBe(1);
                 const signed_prekey = signed_prekeys[0];
-                expect(signed_prekey.getAttribute('signedPreKeyId')).toBe('1')
+                expect(signed_prekey.getAttribute('signedPreKeyId')).toBe('0')
                 expect(iq_stanza.querySelectorAll('signedPreKeySignature').length).toBe(1);
                 expect(iq_stanza.querySelectorAll('identityKey').length).toBe(1);
 

@@ -260,7 +260,10 @@
                                 const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
                                 return this.decryptMessage(_.extend(attrs.encrypted, {'key': aes_data.key, 'tag': aes_data.tag}));
                             }).then(plaintext => {
-                                // TODO remove newly used key before republishing
+                                // TODO the prekey should now have been removed.
+                                // Double-check that this is the case and then
+                                // generate a new key to replace it, before
+                                // republishing.
                                 _converse.omemo_store.publishBundle()
                                 return _.extend(attrs, {'plaintext': plaintext});
                             }).catch((e) => {
@@ -586,50 +589,75 @@
                     }
                 },
 
-                loadPreKey (keyId) {
-                    let res = this.get('25519KeypreKey'+keyId);
-                    if (res) {
-                        res = {
-                            'privKey': u.base64ToArrayBuffer(res.privKey),
-                            'pubKey': u.base64ToArrayBuffer(res.pubKey)
-                        };
-                    }
-                    return Promise.resolve(res);
+                getPreKeys () {
+                    return this.get('prekeys') || {};
                 },
 
-                storePreKey (keyId, keyPair) {
-                    this.save('25519KeypreKey'+keyId, {
-                        'privKey': u.arrayBufferToBase64(keyPair.privKey),
-                        'pubKey': u.arrayBufferToBase64(keyPair.pubKey)
-                    });
+                loadPreKey (key_id) {
+                    const res = this.getPreKeys()[key_id];
+                    if (res) {
+                        return Promise.resolve({
+                            'privKey': u.base64ToArrayBuffer(res.privKey),
+                            'pubKey': u.base64ToArrayBuffer(res.pubKey)
+                        });
+                    }
                     return Promise.resolve();
                 },
 
-                removePreKey (keyId) {
-                    return Promise.resolve(this.unset('25519KeypreKey'+keyId));
+                storePreKey (key_id, key_pair) {
+                    const prekey = {};
+                    prekey[key_id] = {
+                        'pubKey': u.arrayBufferToBase64(key_pair.pubKey),
+                        'privKey': u.arrayBufferToBase64(key_pair.privKey)
+                    }
+                    this.save('prekeys', _.extend(this.getPreKeys(), prekey));
+                    return Promise.resolve();
+                },
+
+                removePreKey (key_id) {
+                    this.save('prekeys', _.omit(this.getPreKeys(), key_id));
+                    return Promise.resolve();
                 },
 
                 loadSignedPreKey (keyId) {
-                    let res = this.get('25519KeysignedKey'+keyId);
+                    const res = this.get('signed_prekey');
                     if (res) {
-                        res = {
+                        return Promise.resolve({
                             'privKey': u.base64ToArrayBuffer(res.privKey),
                             'pubKey': u.base64ToArrayBuffer(res.pubKey)
-                        };
+                        });
                     }
-                    return Promise.resolve(res);
+                    return Promise.resolve();
                 },
 
-                storeSignedPreKey (keyId, keyPair) {
-                    this.save('25519KeysignedKey'+keyId, {
-                        'privKey': u.arrayBufferToBase64(keyPair.privKey),
-                        'pubKey': u.arrayBufferToBase64(keyPair.pubKey)
+                storeSignedPreKey (spk) {
+                    if (typeof spk !== "object") {
+                        // XXX: We've changed the signature of this method from the
+                        // example given in InMemorySignalProtocolStore.
+                        // Should be fine because the libsignal code doesn't
+                        // actually call this method.
+                        throw new Error("storeSignedPreKey: expected an object");
+                    }
+                    this.save('signed_prekey', {
+                        'id': spk.keyId,
+                        'privKey': u.arrayBufferToBase64(spk.keyPair.privKey),
+                        'pubKey': u.arrayBufferToBase64(spk.keyPair.pubKey),
+                        // XXX: The InMemorySignalProtocolStore does not pass
+                        // in or store the signature, but we need it when we
+                        // publish out bundle and this method isn't called from
+                        // within libsignal code, so we modify it to also store
+                        // the signature.
+                        'signature': u.arrayBufferToBase64(spk.signature)
                     });
                     return Promise.resolve();
                 },
 
-                removeSignedPreKey (keyId) {
-                    return Promise.resolve(this.unset('25519KeysignedKey'+keyId));
+                removeSignedPreKey (key_id) {
+                    if (this.get('signed_prekey')['id'] === key_id) {
+                        this.unset('signed_prekey');
+                        this.save();
+                    }
+                    return Promise.resolve();
                 },
 
                 loadSession (identifier) {
@@ -665,14 +693,14 @@
                         .c('publish', {'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('device_id')}`})
                             .c('item')
                                 .c('bundle', {'xmlns': Strophe.NS.OMEMO})
-                                    .c('signedPreKeyPublic', {'signedPreKeyId': signed_prekey.keyId})
-                                        .t(signed_prekey.keyPair.pubKey).up()
+                                    .c('signedPreKeyPublic', {'signedPreKeyId': signed_prekey.id})
+                                        .t(signed_prekey.pubKey).up()
                                     .c('signedPreKeySignature').t(signed_prekey.signature).up()
                                     .c('identityKey').t(this.get('identity_keypair').pubKey).up()
                                     .c('prekeys');
                     _.forEach(
-                        this.get('prekeys').slice(0, _converse.NUM_PREKEYS),
-                        (prekey) => stanza.c('preKeyPublic', {'preKeyId': prekey.keyId}).t(prekey.keyPair.pubKey).up()
+                        this.get('prekeys'),
+                        (prekey, id) => stanza.c('preKeyPublic', {'preKeyId': id}).t(prekey.pubKey).up()
                     );
                     return _converse.api.sendIQ(stanza);
                 },
@@ -684,46 +712,38 @@
                      * public/private Key pair. The Device ID is a randomly
                      * generated integer between 1 and 2^31 - 1.
                      */
-                    const data = {
-                        'device_id': generateDeviceID()
-                    };
+                    const bundle = {};
                     return libsignal.KeyHelper.generateIdentityKeyPair()
                         .then(identity_keypair => {
-                            const identity_key = u.arrayBufferToBase64(identity_keypair.pubKey);
-                            data['identity_keypair'] = {
-                                'privKey': u.arrayBufferToBase64(identity_keypair.privKey),
-                                'pubKey': identity_key
-                            };
-                            data['identity_key'] = identity_key;
-                            return libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 1);
-                        }).then(signed_prekey => {
-                            _converse.omemo_store.storeSignedPreKey(signed_prekey.keyId, signed_prekey.keyPair);
-                            data['signed_prekey'] = {
-                                'keyId': signed_prekey.keyId,
-                                'keyPair': {
-                                    'privKey': u.arrayBufferToBase64(signed_prekey.keyPair.privKey),
-                                    'pubKey': u.arrayBufferToBase64(signed_prekey.keyPair.pubKey)
+                            const identity_key = u.arrayBufferToBase64(identity_keypair.pubKey),
+                                  device_id = generateDeviceID();
+
+                            bundle['identity_key'] = identity_key;
+                            bundle['device_id'] = device_id;
+                            this.save({
+                                'device_id': device_id,
+                                'identity_keypair': {
+                                    'privKey': u.arrayBufferToBase64(identity_keypair.privKey),
+                                    'pubKey': identity_key
                                 },
+                                'identity_key': identity_key
+                            });
+                            return libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0);
+                        }).then(signed_prekey => {
+                            _converse.omemo_store.storeSignedPreKey(signed_prekey);
+                            bundle['signed_prekey'] = {
+                                'id': signed_prekey.keyId,
+                                'public_key': u.arrayBufferToBase64(signed_prekey.keyPair.privKey),
                                 'signature': u.arrayBufferToBase64(signed_prekey.signature)
                             }
                             return Promise.all(_.map(_.range(0, _converse.NUM_PREKEYS), id => libsignal.KeyHelper.generatePreKey(id)));
                         }).then(keys => {
                             _.forEach(keys, k => _converse.omemo_store.storePreKey(k.keyId, k.keyPair));
-                            const marshalled_keys = _.map(keys, k => {
-                                return {
-                                    'keyId': k.keyId,
-                                    'keyPair': {
-                                        'pubKey': u.arrayBufferToBase64(k.keyPair.pubKey),
-                                        'privKey': u.arrayBufferToBase64(k.keyPair.privKey)
-                                    }
-                                }
-                            });
-                            data['prekeys'] = marshalled_keys;
-                            this.save(data)
-                            // Save the bundle to the device
                             const devicelist = _converse.devicelists.get(_converse.bare_jid),
-                                  device = devicelist.devices.create({'id': data.device_id, 'jid': _converse.bare_jid});
-                            device.save('bundle', data);
+                                  device = devicelist.devices.create({'id': bundle.device_id, 'jid': _converse.bare_jid}),
+                                  marshalled_keys = _.map(keys, k => ({'id': k.keyId, 'key': u.arrayBufferToBase64(k.keyPair.pubKey)}));
+                            bundle['prekeys'] = marshalled_keys;
+                            device.save('bundle', bundle);
                         });
                 },
 

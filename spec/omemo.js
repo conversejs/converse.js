@@ -8,6 +8,36 @@
     var _ = converse.env._;
     var u = converse.env.utils;
 
+
+    function deviceListFetched (_converse, jid) {
+        return _.get(_.filter(
+            _converse.connection.IQ_stanzas,
+            iq => iq.nodeTree.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`)
+        ).pop(), 'nodeTree');
+    }
+
+    function ownDeviceHasBeenPublished (_converse) {
+        return _.get(_.filter(
+            _converse.connection.IQ_stanzas,
+            iq => iq.nodeTree.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]')
+        ).pop(), 'nodeTree');
+    }
+
+    function bundleHasBeenPublished (_converse) {
+        return _.get(_.filter(
+            _converse.connection.IQ_stanzas,
+            iq => iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]')
+        ).pop(), 'nodeTree');
+    }
+
+    function bundleFetched (_converse, jid, device_id) {
+        return _.get(_.filter(
+            _converse.connection.IQ_stanzas,
+            (iq) => iq.nodeTree.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.bundles:${device_id}"]`)
+        ).pop(), 'nodeTree');
+    }
+
+
     describe("The OMEMO module", function() {
 
         it("adds methods for encrypting and decrypting messages via AES GCM",
@@ -38,21 +68,13 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     function (done, _converse) {
 
-            let iq_stanza, view, sent_stanza;
+            let view, sent_stanza;
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
-            // First, fetch own device list
-            return test_utils.waitUntil(() => {
-                return _.filter(
-                    _converse.connection.IQ_stanzas,
-                    (iq) => {
-                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
-                        if (node) { iq_stanza = iq.nodeTree;}
-                        return node;
-                    }).length;
-            }).then(() => {
+            test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid))
+            .then(iq_stanza => {
                 const stanza = $iq({
                     'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -65,17 +87,8 @@
                                 .c('device', {'id': '482886413b977930064a5888b92134fe'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                // Check that own device was published
-                return test_utils.waitUntil(() => {
-                    return _.filter(
-                        _converse.connection.IQ_stanzas,
-                        (iq) => {
-                            const node = iq.nodeTree.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]');
-                            if (node) { iq_stanza = iq.nodeTree;}
-                            return node;
-                        }).length;
-                });
-            }).then(() => {
+                return test_utils.waitUntil(() => ownDeviceHasBeenPublished(_converse))
+            }).then(iq_stanza => {
                 const stanza = $iq({
                     'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -83,33 +96,20 @@
                     'type': 'result'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                return test_utils.waitUntil(() => {
-                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
-                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]');
-                        if (node) { iq_stanza = iq.nodeTree; }
-                        return node;
-                    }).length;
-                });
-            }).then(() => {
+                return test_utils.waitUntil(() => bundleHasBeenPublished(_converse))
+            }).then(iq_stanza => {
                 const stanza = $iq({
                     'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
-                    'type': 'result'});
+                    'type': 'result'
+                });
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
                 return _converse.api.waitUntil('OMEMOInitialized');
             }).then(() => test_utils.openChatBoxFor(_converse, contact_jid))
-              .then(() => {
-                return test_utils.waitUntil(() => {
-                    return _.filter(
-                        _converse.connection.IQ_stanzas,
-                        (iq) => {
-                            const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
-                            if (node) { iq_stanza = iq.nodeTree; }
-                            return node;
-                        }).length;
-                });
-            }).then(() => {
+              .then(() => test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid)))
+              .then(iq_stanza => {
                 const stanza = $iq({
                     'from': contact_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -136,18 +136,8 @@
                     preventDefault: _.noop,
                     keyCode: 13 // Enter
                 });
-                return test_utils.waitUntil(() => {
-                    return _.filter(
-                        _converse.connection.IQ_stanzas,
-                        (iq) => {
-                            const node = iq.nodeTree.querySelector(
-                                'iq[to="'+contact_jid+'"] items[node="eu.siacs.conversations.axolotl.bundles:555"]'
-                            );
-                            if (node) { iq_stanza = iq.nodeTree; }
-                            return node;
-                        }).length;
-                });
-            }).then(() => {
+                return test_utils.waitUntil(() => bundleFetched(_converse, contact_jid, '555'));
+            }).then((iq_stanza) => {
                 const stanza = $iq({
                     'from': contact_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -166,18 +156,9 @@
                                     .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
                                     .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                return test_utils.waitUntil(() => {
-                    return _.filter(
-                        _converse.connection.IQ_stanzas,
-                        (iq) => {
-                            const node = iq.nodeTree.querySelector(
-                                'iq[to="'+_converse.bare_jid+'"] items[node="eu.siacs.conversations.axolotl.bundles:482886413b977930064a5888b92134fe"]'
-                            );
-                            if (node) { iq_stanza = iq.nodeTree; }
-                            return node;
-                        }).length;
-                });
-            }).then(() => {
+
+                return test_utils.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
+            }).then((iq_stanza) => {
                 const stanza = $iq({
                     'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -261,26 +242,19 @@
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
-            let iq_stanza;
             test_utils.createContacts(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             // Wait until own devices are fetched
-            test_utils.waitUntil(() => {
-                return _.filter(
-                    _converse.connection.IQ_stanzas,
-                    (iq) => {
-                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
-                        if (node) { iq_stanza = iq.nodeTree;}
-                        return node;
-                    }).length;
-            }).then(() => {
+            test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid))
+            .then(iq_stanza => {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq type="get" from="dummy@localhost" to="dummy@localhost" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
                         '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                             '<items node="eu.siacs.conversations.axolotl.devicelist"/>'+
                         '</pubsub>'+
                     '</iq>');
+
                 const stanza = $iq({
                     'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -299,33 +273,16 @@
                 expect(devicelist.devices.length).toBe(2);
                 expect(devicelist.devices.at(0).get('id')).toBe('555');
                 expect(devicelist.devices.at(1).get('id')).toBe('123456789');
-
-                // Check that own device was published
-                return test_utils.waitUntil(() => {
-                    return _.filter(
-                        _converse.connection.IQ_stanzas,
-                        (iq) => {
-                            const node = iq.nodeTree.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]');
-                            if (node) { iq_stanza = iq.nodeTree;}
-                            return node;
-                        }).length;
-                });
-            }).then(() => {
+                return test_utils.waitUntil(() => ownDeviceHasBeenPublished(_converse));
+            }).then(iq_stanza => {
                 const stanza = $iq({
                     'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                return test_utils.waitUntil(() => {
-                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
-                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]');
-                        if (node) { iq_stanza = iq.nodeTree; }
-                        return node;
-                    }).length;
-                });
-            }).then(() => {
+                return test_utils.waitUntil(() => bundleHasBeenPublished(_converse));
+            }).then(iq_stanza => {
                 const stanza = $iq({
                     'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -404,17 +361,8 @@
                                 .c('device', {'id': '444'})
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                // Check that own device was published
-                return test_utils.waitUntil(() => {
-                    return _.filter(
-                        _converse.connection.IQ_stanzas,
-                        (iq) => {
-                            const node = iq.nodeTree.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]');
-                            if (node) { iq_stanza = iq.nodeTree;}
-                            return node;
-                        }).length;
-                });
-            }).then(() => {
+                return test_utils.waitUntil(() => ownDeviceHasBeenPublished(_converse));
+            }).then(iq_stanza => {
                 // Check that our own device is added again, but that removed
                 // devices are not added.
                 expect(iq_stanza.outerHTML).toBe(
@@ -445,19 +393,11 @@
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
-            let iq_stanza;
             test_utils.createContacts(_converse, 'current');
             const contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
 
-            test_utils.waitUntil(() => {
-                return _.filter(
-                    _converse.connection.IQ_stanzas,
-                    (iq) => {
-                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
-                        if (node) { iq_stanza = iq.nodeTree;}
-                        return node;
-                    }).length;
-            }).then(() => {
+            test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid))
+            .then(iq_stanza => {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq type="get" from="dummy@localhost" to="dummy@localhost" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
                         '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
@@ -477,40 +417,22 @@
                                 .c('device', {'id': '555'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 return test_utils.waitUntil(() => _converse.omemo_store);
-            }).then(function () {
-                // We simply emit, to avoid doing all the setup work
+            }).then(() => {
                 expect(_converse.devicelists.length).toBe(1);
                 const devicelist = _converse.devicelists.get(_converse.bare_jid);
                 expect(devicelist.devices.length).toBe(2);
                 expect(devicelist.devices.at(0).get('id')).toBe('555');
                 expect(devicelist.devices.at(1).get('id')).toBe('123456789');
-                // Check that own device was published
-                return test_utils.waitUntil(() => {
-                    return _.filter(
-                        _converse.connection.IQ_stanzas,
-                        (iq) => {
-                            const node = iq.nodeTree.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]');
-                            if (node) { iq_stanza = iq.nodeTree;}
-                            return node;
-                        }).length;
-                });
-            }).then(() => {
+                return test_utils.waitUntil(() => ownDeviceHasBeenPublished(_converse));
+            }).then(iq_stanza => {
                 const stanza = $iq({
                     'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
                     'to': _converse.bare_jid,
                     'type': 'result'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                // Check that own bundle gets published
-                return test_utils.waitUntil(() => {
-                    return _.filter(_converse.connection.IQ_stanzas, (iq) => {
-                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]');
-                        if (node) { iq_stanza = iq.nodeTree; }
-                        return node;
-                    }).length;
-                });
-            }).then(() => {
+                return test_utils.waitUntil(() => bundleHasBeenPublished(_converse));
+            }).then(iq_stanza => {
                 const stanza = $iq({
                     'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -624,20 +546,12 @@
 
             _converse.NUM_PREKEYS = 2; // Restrict to 2, otherwise the resulting stanza is too large to easily test
 
-            let iq_stanza;
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
-            test_utils.waitUntil(() => {
-                return _.filter(
-                    _converse.connection.IQ_stanzas,
-                    (iq) => {
-                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
-                        if (node) { iq_stanza = iq.nodeTree;}
-                        return node;
-                    }).length;
-            }).then(() => {
+            test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid))
+            .then(iq_stanza => {
                 const stanza = $iq({
                     'from': contact_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -650,17 +564,10 @@
                                 .c('device', {'id': '482886413b977930064a5888b92134fe'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 expect(_converse.devicelists.length).toBe(1);
-
                 return test_utils.openChatBoxFor(_converse, contact_jid);
-            }).then(() => {
-                return test_utils.waitUntil(() => {
-                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
-                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.devicelist"]');
-                        if (node) { iq_stanza = iq.nodeTree; }
-                        return node;
-                    }).length;
-                });
-            }).then(function () {
+
+            }).then(() => ownDeviceHasBeenPublished(_converse))
+              .then(iq_stanza => {
                 const stanza = $iq({
                     'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -668,14 +575,8 @@
                     'type': 'result'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                return test_utils.waitUntil(() => {
-                    return _.filter(_converse.connection.IQ_stanzas, function (iq) {
-                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]');
-                        if (node) { iq_stanza = iq.nodeTree; }
-                        return node;
-                    }).length;
-                });
-            }).then(() => {
+                return test_utils.waitUntil(() => bundleHasBeenPublished(_converse));
+            }).then(iq_stanza => {
                 expect(iq_stanza.outerHTML).toBe(
                     `<iq from="dummy@localhost" type="set" xmlns="jabber:client" id="${iq_stanza.getAttribute('id')}">`+
                         `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
@@ -705,25 +606,19 @@
             }).then(done).catch(_.partial(console.error, _));
         }));
 
+
         it("adds a toolbar button for starting an encrypted chat session",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 function (done, _converse) {
 
-            let iq_stanza, modal;
+            let modal;
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
-            test_utils.waitUntil(() => {
-                return _.filter(
-                    _converse.connection.IQ_stanzas,
-                    (iq) => {
-                        const node = iq.nodeTree.querySelector('iq[to="'+_converse.bare_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
-                        if (node) { iq_stanza = iq.nodeTree;}
-                        return node;
-                    }).length;
-            }).then(() => {
+            test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid))
+            .then(iq_stanza => {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq type="get" from="dummy@localhost" to="dummy@localhost" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
                         '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
@@ -750,16 +645,8 @@
                 expect(devicelist.devices.at(0).get('id')).toBe('482886413b977930064a5888b92134fe');
                 expect(devicelist.devices.at(1).get('id')).toBe('123456789');
                 // Check that own device was published
-                return test_utils.waitUntil(() => {
-                    return _.filter(
-                        _converse.connection.IQ_stanzas,
-                        (iq) => {
-                            const node = iq.nodeTree.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]');
-                            if (node) { iq_stanza = iq.nodeTree;}
-                            return node;
-                        }).length;
-                });
-            }).then(() => {
+                return test_utils.waitUntil(() => ownDeviceHasBeenPublished(_converse));
+            }).then(iq_stanza => {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq from="dummy@localhost" type="set" xmlns="jabber:client" id="'+iq_stanza.getAttribute('id')+'">'+
                         '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
@@ -781,15 +668,8 @@
                     'type': 'result'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                // Check that own bundle gets published
-                return test_utils.waitUntil(() => {
-                    return _.filter(_converse.connection.IQ_stanzas, (iq) => {
-                        const node = iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]');
-                        if (node) { iq_stanza = iq.nodeTree; }
-                        return node;
-                    }).length;
-                });
-            }).then(() => {
+                return test_utils.waitUntil(() => bundleHasBeenPublished(_converse));
+            }).then(iq_stanza => {
                 expect(iq_stanza.getAttributeNames().sort().join()).toBe(["from", "type", "xmlns", "id"].sort().join());
                 expect(iq_stanza.querySelector('prekeys').childNodes.length).toBe(100);
 
@@ -810,15 +690,8 @@
             }).then(() => {
                 return test_utils.openChatBoxFor(_converse, contact_jid);
             }).then(() => {
-                return test_utils.waitUntil(() => {
-                    return _.filter(
-                        _converse.connection.IQ_stanzas,
-                        (iq) => {
-                            const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
-                            if (node) { iq_stanza = iq.nodeTree; }
-                            return node;
-                        }).length;});
-            }).then(() => {
+                return test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
+            }).then(iq_stanza => {
                 expect(iq_stanza.outerHTML).toBe(
                     '<iq type="get" from="dummy@localhost" to="'+contact_jid+'" xmlns="jabber:client" id="'+iq_stanza.getAttribute("id")+'">'+
                         '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
@@ -885,12 +758,13 @@
             }).catch(_.partial(console.error, _));
         }));
 
+
         it("shows OMEMO device fingerprints in the user details modal",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 function (done, _converse) {
 
-            let iq_stanza, modal;
+            let modal;
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -904,18 +778,9 @@
                 show_modal_button.click();
                 modal = view.user_details_modal;
 
-                return test_utils.waitUntil(() => u.isVisible(modal.el), 1000).then(() => {
-                    return test_utils.waitUntil(() => {
-                        return _.filter(
-                            _converse.connection.IQ_stanzas,
-                            (iq) => {
-                                const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] items[node="eu.siacs.conversations.axolotl.devicelist"]');
-                                if (node) { iq_stanza = iq.nodeTree; }
-                                return node;
-                            }).length;});
-                });
-            }).then(() => {
-                iq_stanza;
+                return test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            }).then(() => test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid)))
+            .then(iq_stanza => {
                 expect(iq_stanza.outerHTML).toBe(
                     `<iq type="get" from="dummy@localhost" to="max.frankfurter@localhost" xmlns="jabber:client" id="${iq_stanza.getAttribute('id')}">`+
                         `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub>`+
@@ -933,17 +798,9 @@
                                 .c('device', {'id': '555'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                return test_utils.waitUntil(() => u.isVisible(modal.el), 1000).then(function () {
-                    return test_utils.waitUntil(() => {
-                        return _.filter(
-                            _converse.connection.IQ_stanzas,
-                            (iq) => {
-                                const node = iq.nodeTree.querySelector('iq[to="'+contact_jid+'"] items[node="eu.siacs.conversations.axolotl.bundles:555"]');
-                                if (node) { iq_stanza = iq.nodeTree; }
-                                return node;
-                            }).length;});
-                });
-            }).then(() => {
+                return test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            }).then(() => test_utils.waitUntil(() => bundleFetched(_converse, contact_jid, '555')))
+              .then(iq_stanza => {
                 expect(iq_stanza.outerHTML).toBe(
                     `<iq type="get" from="dummy@localhost" to="max.frankfurter@localhost" xmlns="jabber:client" id="${iq_stanza.getAttribute('id')}">`+
                         `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+

@@ -295,8 +295,16 @@
                     const replace = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
                     if (replace) {
                         const msgid = replace && replace.getAttribute('id') || stanza.getAttribute('id'),
-                            message = msgid && this.messages.findWhere({msgid}),
-                            older_versions = message.get('older_versions') || [];
+                            message = msgid && this.messages.findWhere({msgid});
+
+                        if (!message) {
+                            // XXX: Looks like we received a correction for a
+                            // non-existing message, probably due to MAM.
+                            // Not clear what can be done about this... we'll
+                            // just create it as a separate message for now.
+                            return false;
+                        }
+                        const older_versions = message.get('older_versions') || [];
                         older_versions.push(message.get('message'));
                         message.save({
                             'message': _converse.chatboxes.getMessageBody(stanza),

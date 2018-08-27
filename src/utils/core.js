@@ -558,12 +558,6 @@
             !attrs['message'];
     };
 
-    u.isOTRMessage = function (message) {
-        var body = message.querySelector('body'),
-            text = (!_.isNull(body) ? body.textContent: undefined);
-        return text && !!text.match(/^\?OTR/);
-    };
-
     u.isHeadlineMessage = function (_converse, message) {
         var from_jid = message.getAttribute('from');
         if (message.getAttribute('type') === 'headline') {

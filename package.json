@@ -71,7 +71,6 @@
     "minimist": "^1.2.0",
     "moment": "~> 2.19.3 ",
     "npm": "^5.7.1",
-    "otr": "0.2.16",
     "pluggable.js": "2.0.0",
     "po2json": "^0.4.4",
     "protobufjs": "5.0.1",

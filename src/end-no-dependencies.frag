@@ -48,6 +48,5 @@
     define('backbone.noconflict', [], function () { return Backbone; });
     define('backbone.browserStorage', ['backbone'], emptyFunction);
     define('backbone.overview', ['backbone'], emptyFunction);
-    define('otr', [], function () { return { 'DSA': DSA, 'OTR': OTR };});
     return require('converse');
 }));

@@ -157,8 +157,8 @@
                     return _converse.getDevicesForContact(this.get('jid'))
                         .then((their_devices) => {
                             const device_id = _converse.omemo_store.get('device_id'),
-                                devicelist = _converse.devicelists.get(_converse.bare_jid),
-                                own_devices = devicelist.devices.filter(device => device.get('id') !== device_id);
+                                  devicelist = _converse.devicelists.get(_converse.bare_jid),
+                                  own_devices = devicelist.devices.filter(device => device.get('id') !== device_id);
                             devices = _.concat(own_devices, their_devices.models);
                             return Promise.all(devices.map(device => device.getBundle()));
                         }).then(() => this.buildSessions(devices))
@@ -240,32 +240,30 @@
 
                 decrypt (attrs) {
                     const { _converse } = this.__super__,
-                          devicelist = _converse.devicelists.get(attrs.from),
-                          device = devicelist.devices.get(attrs.encrypted.device_id),
-                          address  = new libsignal.SignalProtocolAddress(
-                              attrs.from,
-                              parseInt(attrs.encrypted.device_id, 10)
-                          ),
+                          address  = new libsignal.SignalProtocolAddress(attrs.from, parseInt(attrs.encrypted.device_id, 10)),
                           session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
                           libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
 
+                    // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
                     if (attrs.encrypted.prekey === 'true') {
-                        // If this is the case, a new session is built from this received element. The client
-                        // SHOULD then republish their bundle information, replacing the used PreKey, such
-                        // that it won't be used again by a different client. If the client already has a session
-                        // with the sender's device, it MUST replace this session with the newly built session.
-                        // The client MUST delete the private key belonging to the PreKey after use.
+                        let plaintext;
                         return session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary')
                             .then(key_and_tag => {
-                                const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
-                                return this.decryptMessage(_.extend(attrs.encrypted, {'key': aes_data.key, 'tag': aes_data.tag}));
-                            }).then(plaintext => {
-                                // TODO the prekey should now have been removed.
-                                // Double-check that this is the case and then
-                                // generate a new key to replace it, before
-                                // republishing.
-                                _converse.omemo_store.publishBundle()
-                                return _.extend(attrs, {'plaintext': plaintext});
+                                if (attrs.encrypted.payload) {
+                                    const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
+                                    return this.decryptMessage(_.extend(attrs.encrypted, {'key': aes_data.key, 'tag': aes_data.tag}));
+                                }
+                                return Promise.resolve();
+                            }).then(pt => {
+                                plaintext = pt;
+                                return _converse.omemo_store.generateMissingPreKeys();
+                            }).then(() => _converse.omemo_store.publishBundle())
+                              .then(() => {
+                                if (plaintext) {
+                                    return _.extend(attrs, {'plaintext': plaintext});
+                                } else {
+                                    return _.extend(attrs, {'is_only_key': true});
+                                }
                             }).catch((e) => {
                                 this.reportDecryptionError(e);
                                 return attrs;
@@ -446,6 +444,13 @@
                     'click .toggle-omemo': 'toggleOMEMO'
                 },
 
+                showMessage (message) {
+                    // We don't show a message if it's only keying material
+                    if (!message.get('is_only_key')) {
+                        return this.__super__.showMessage.apply(this, arguments);
+                    }
+                },
+
                 renderOMEMOToolbarButton () {
                     const { _converse } = this.__super__,
                           { __ } = _converse;
@@ -495,6 +500,10 @@
             _converse.generateFingerprints = function (jid) {
                 return _converse.getDevicesForContact(jid)
                     .then(devices => Promise.all(devices.map(d => generateFingerprint(d))))
+            }
+
+            _converse.getDeviceForContact = function (jid, device_id) {
+                return _converse.getDevicesForContact(jid).then(devices => devices.get(device_id));
             }
 
             _converse.getDevicesForContact = function (jid) {
@@ -703,6 +712,26 @@
                         (prekey, id) => stanza.c('preKeyPublic', {'preKeyId': id}).t(prekey.pubKey).up()
                     );
                     return _converse.api.sendIQ(stanza);
+                },
+
+                generateMissingPreKeys () {
+                    const current_keys = this.getPreKeys(),
+                          missing_keys = _.difference(_.invokeMap(_.range(0, _converse.NUM_PREKEYS), Number.prototype.toString), _.keys(current_keys));
+
+                    if (missing_keys.length < 1) {
+                        _converse.log("No missing prekeys to generate for our own device", Strophe.LogLevel.WARN);
+                        return Promise.resolve();
+                    }
+                    return Promise.all(_.map(missing_keys, id => libsignal.KeyHelper.generatePreKey(parseInt(id, 10))))
+                        .then(keys => {
+                            _.forEach(keys, k => this.storePreKey(k.keyId, k.keyPair));
+                            const marshalled_keys = _.map(this.getPreKeys(), k => ({'id': k.keyId, 'key': u.arrayBufferToBase64(k.pubKey)})),
+                                  devicelist = _converse.devicelists.get(_converse.bare_jid),
+                                  device = devicelist.devices.get(this.get('device_id'));
+
+                            return device.getBundle()
+                                .then(bundle => device.save('bundle', _.extend(bundle, {'prekeys': marshalled_keys})));
+                        });
                 },
 
                 generateBundle () {

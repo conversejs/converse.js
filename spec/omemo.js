@@ -37,6 +37,40 @@
         ).pop(), 'nodeTree');
     }
 
+    function initializedOMEMO (_converse) {
+        return test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid))
+        .then(iq_stanza => {
+            const stanza = $iq({
+                'from': _converse.bare_jid,
+                'id': iq_stanza.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result',
+            }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                    .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                        .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                            .c('device', {'id': '482886413b977930064a5888b92134fe'});
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            return test_utils.waitUntil(() => ownDeviceHasBeenPublished(_converse))
+        }).then(iq_stanza => {
+            const stanza = $iq({
+                'from': _converse.bare_jid,
+                'id': iq_stanza.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result'});
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            return test_utils.waitUntil(() => bundleHasBeenPublished(_converse))
+        }).then(iq_stanza => {
+            const stanza = $iq({
+                'from': _converse.bare_jid,
+                'id': iq_stanza.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result'});
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            return _converse.api.waitUntil('OMEMOInitialized');
+        });
+    }
+
 
     describe("The OMEMO module", function() {
 
@@ -73,43 +107,10 @@
             _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
-            test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid))
+            return test_utils.waitUntil(() => initializedOMEMO(_converse))
+            .then(() => test_utils.openChatBoxFor(_converse, contact_jid))
+            .then(() => test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid)))
             .then(iq_stanza => {
-                const stanza = $iq({
-                    'from': _converse.bare_jid,
-                    'id': iq_stanza.getAttribute('id'),
-                    'to': _converse.bare_jid,
-                    'type': 'result',
-                }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
-                    .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
-                        .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
-                            .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
-                                .c('device', {'id': '482886413b977930064a5888b92134fe'});
-                _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                return test_utils.waitUntil(() => ownDeviceHasBeenPublished(_converse))
-            }).then(iq_stanza => {
-                const stanza = $iq({
-                    'from': _converse.bare_jid,
-                    'id': iq_stanza.getAttribute('id'),
-                    'to': _converse.bare_jid,
-                    'type': 'result'});
-                _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                return test_utils.waitUntil(() => bundleHasBeenPublished(_converse))
-            }).then(iq_stanza => {
-                const stanza = $iq({
-                    'from': _converse.bare_jid,
-                    'id': iq_stanza.getAttribute('id'),
-                    'to': _converse.bare_jid,
-                    'type': 'result'
-                });
-                _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                return _converse.api.waitUntil('OMEMOInitialized');
-            }).then(() => test_utils.openChatBoxFor(_converse, contact_jid))
-              .then(() => test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid)))
-              .then(iq_stanza => {
                 const stanza = $iq({
                     'from': contact_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -158,7 +159,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 return test_utils.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
-            }).then((iq_stanza) => {
+            }).then(iq_stanza => {
                 const stanza = $iq({
                     'from': _converse.bare_jid,
                     'id': iq_stanza.getAttribute('id'),
@@ -204,13 +205,13 @@
                 const key = btoa(JSON.stringify({
                     'type': 1,
                     'body': obj.key_and_tag,
-                    'registrationId': '1337' 
+                    'registrationId': '1337'
                 }));
                 const stanza = $msg({
                         'from': contact_jid,
                         'to': _converse.connection.jid,
                         'type': 'chat',
-                        'id': 'qwerty' 
+                        'id': 'qwerty'
                     }).c('body').t('This is a fallback message').up()
                         .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                             .c('header', {'sid':  '555'})
@@ -229,6 +230,103 @@
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
 
+
+        it("can receive a PreKeySignalMessage",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    function (done, _converse) {
+
+            _converse.NUM_PREKEYS = 5; // Restrict to 5, otherwise the resulting stanza is too large to easily test
+            let view, sent_stanza;
+            test_utils.createContacts(_converse, 'current', 1);
+            _converse.emit('rosterContactsFetched');
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+
+            return test_utils.waitUntil(() => initializedOMEMO(_converse))
+            .then(() => _converse.ChatBox.prototype.encryptMessage('This is an encrypted message from the contact'))
+            .then(obj => {
+                // XXX: Normally the key will be encrypted via libsignal.
+                // However, we're mocking libsignal in the tests, so we include
+                // it as plaintext in the message.
+                const key = btoa(JSON.stringify({
+                    'type': 1,
+                    'body': obj.key_and_tag,
+                    'registrationId': '1337'
+                }));
+                const stanza = $msg({
+                        'from': contact_jid,
+                        'to': _converse.connection.jid,
+                        'type': 'chat',
+                        'id': 'qwerty'
+                    }).c('body').t('This is a fallback message').up()
+                        .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
+                            .c('header', {'sid':  '555'})
+                                .c('key', {'prekey': 'true', 'rid':  _converse.omemo_store.get('device_id')}).t(key).up()
+                                .c('iv').t(obj.iv)
+                                .up().up()
+                            .c('payload').t(obj.payload);
+
+                const generateMissingPreKeys = _converse.omemo_store.generateMissingPreKeys;
+                spyOn(_converse.omemo_store, 'generateMissingPreKeys').and.callFake(() => {
+                    // Since it's difficult to override
+                    // decryptPreKeyWhisperMessage, where a prekey will be
+                    // removed from the store, we do it here, before the
+                    // missing prekeys are generated.
+                    _converse.omemo_store.removePreKey(1);
+                    return generateMissingPreKeys.apply(_converse.omemo_store, arguments);
+                });
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                return test_utils.waitUntil(() => _converse.chatboxviews.get(contact_jid))
+            }).then(iq_stanza => deviceListFetched(_converse, contact_jid))
+            .then(iq_stanza => {
+                const stanza = $iq({
+                    'from': contact_jid,
+                    'id': iq_stanza.getAttribute('id'),
+                    'to': _converse.connection.jid,
+                    'type': 'result',
+                }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                    .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                        .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                            .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                                .c('device', {'id': '555'});
+
+                // XXX: the bundle gets published twice, we want to make sure
+                // that we wait for the 2nd, so we clear all the already sent
+                // stanzas.
+                _converse.connection.IQ_stanzas = [];
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                return test_utils.waitUntil(() => _converse.omemo_store);
+            }).then(() => test_utils.waitUntil(() => bundleHasBeenPublished(_converse)))
+            .then(iq_stanza => {
+                expect(iq_stanza.outerHTML).toBe(
+                    `<iq from="dummy@localhost" type="set" xmlns="jabber:client" id="${iq_stanza.getAttribute('id')}">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                            `<publish node="eu.siacs.conversations.axolotl.bundles:123456789">`+
+                                `<item>`+
+                                    `<bundle xmlns="eu.siacs.conversations.axolotl">`+
+                                        `<signedPreKeyPublic signedPreKeyId="0">${btoa('1234')}</signedPreKeyPublic>`+
+                                            `<signedPreKeySignature>${btoa('11112222333344445555')}</signedPreKeySignature>`+
+                                            `<identityKey>${btoa('1234')}</identityKey>`+
+                                        `<prekeys>`+
+                                            `<preKeyPublic preKeyId="0">${btoa('1234')}</preKeyPublic>`+
+                                            `<preKeyPublic preKeyId="1">${btoa('1234')}</preKeyPublic>`+
+                                            `<preKeyPublic preKeyId="2">${btoa('1234')}</preKeyPublic>`+
+                                            `<preKeyPublic preKeyId="3">${btoa('1234')}</preKeyPublic>`+
+                                            `<preKeyPublic preKeyId="4">${btoa('1234')}</preKeyPublic>`+
+                                        `</prekeys>`+
+                                    `</bundle>`+
+                                `</item>`+
+                            `</publish>`+
+                        `</pubsub>`+
+                    `</iq>`)
+                const own_device = _converse.devicelists.get(_converse.bare_jid).devices.get(_converse.omemo_store.get('device_id'));
+                expect(own_device.get('bundle').prekeys.length).toBe(5);
+                expect(_converse.omemo_store.generateMissingPreKeys).toHaveBeenCalled();
+                done();
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+        }));
+
+
         it("will add processing hints to sent out encrypted <message> stanzas",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
@@ -236,6 +334,7 @@
             // TODO
             done();
         }));
+
 
         it("updates device lists based on PEP messages",
             mock.initConverseWithPromises(
@@ -387,6 +486,7 @@
                 done();
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
+
 
         it("updates device bundles based on PEP messages",
             mock.initConverseWithPromises(

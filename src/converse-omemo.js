@@ -410,8 +410,12 @@
                             .map(device => this.encryptKey(obj.key_and_tag, device));
 
                         return Promise.all(promises)
-                            .then((dicts) => this.addKeysToMessageStanza(stanza, dicts, obj.iv))
-                            .then((stanza) => stanza.c('payload').t(obj.payload))
+                            .then(dicts => this.addKeysToMessageStanza(stanza, dicts, obj.iv))
+                            .then(stanza => {
+                                stanza.c('payload').t(obj.payload).up().up();
+                                stanza.c('store', {'xmlns': Strophe.NS.HINTS});
+                                return stanza;
+                            });
                     });
                 },
 

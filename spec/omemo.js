@@ -194,6 +194,7 @@
                             `</header>`+
                             `<payload>${sent_stanza.nodeTree.querySelector('payload').textContent}</payload>`+
                         `</encrypted>`+
+                        `<store xmlns='urn:xmpp:hints'/>`+
                     `</message>`);
 
                 // Test reception of an encrypted message
@@ -324,15 +325,6 @@
                 expect(_converse.omemo_store.generateMissingPreKeys).toHaveBeenCalled();
                 done();
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
-        }));
-
-
-        it("will add processing hints to sent out encrypted <message> stanzas",
-            mock.initConverseWithPromises(
-                null, ['rosterGroupsFetched'], {},
-                function (done, _converse) {
-            // TODO
-            done();
         }));
 
 

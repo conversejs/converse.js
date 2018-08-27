@@ -62863,8 +62863,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             const msgid = replace && replace.getAttribute('id') || stanza.getAttribute('id'),
                   message = msgid && this.messages.findWhere({
               msgid
-            }),
-                  older_versions = message.get('older_versions') || [];
+            });
+
+            if (!message) {
+              // XXX: Looks like we received a correction for a
+              // non-existing message, probably due to MAM.
+              // Not clear what can be done about this... we'll
+              // just create it as a separate message for now.
+              return false;
+            }
+
+            const older_versions = message.get('older_versions') || [];
             older_versions.push(message.get('message'));
             message.save({
               'message': _converse.chatboxes.getMessageBody(stanza),
@@ -63918,7 +63927,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             '_converse': _converse,
             'allow_contact_removal': _converse.allow_contact_removal,
             'display_name': this.model.getDisplayName(),
-            'is_roster_contact': !_.isUndefined(this.model.contact)
+            'is_roster_contact': !_.isUndefined(this.model.contact),
+            'utils': u
           }));
         },
 
@@ -74090,7 +74100,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     });
 
     return {
-      'identity_key': bundle_el.querySelector('identityKey').textContent,
+      'identity_key': bundle_el.querySelector('identityKey').textContent.trim(),
       'signed_prekey': {
         'id': parseInt(signed_prekey_public_el.getAttribute('signedPreKeyId'), 10),
         'public_key': signed_prekey_public_el.textContent,
@@ -74281,34 +74291,35 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         decrypt(attrs) {
           const _converse = this.__super__._converse,
-                devicelist = _converse.devicelists.get(attrs.from),
-                device = devicelist.devices.get(attrs.encrypted.device_id),
                 address = new libsignal.SignalProtocolAddress(attrs.from, parseInt(attrs.encrypted.device_id, 10)),
                 session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
-                libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
+                libsignal_payload = JSON.parse(atob(attrs.encrypted.key)); // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
 
           if (attrs.encrypted.prekey === 'true') {
-            // If this is the case, a new session is built from this received element. The client
-            // SHOULD then republish their bundle information, replacing the used PreKey, such
-            // that it won't be used again by a different client. If the client already has a session
-            // with the sender's device, it MUST replace this session with the newly built session.
-            // The client MUST delete the private key belonging to the PreKey after use.
+            let plaintext;
             return session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => {
-              const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
-              return this.decryptMessage(_.extend(attrs.encrypted, {
-                'key': aes_data.key,
-                'tag': aes_data.tag
-              }));
-            }).then(plaintext => {
-              // TODO the prekey should now have been removed.
-              // Double-check that this is the case and then
-              // generate a new key to replace it, before
-              // republishing.
-              _converse.omemo_store.publishBundle();
+              if (attrs.encrypted.payload) {
+                const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
+                return this.decryptMessage(_.extend(attrs.encrypted, {
+                  'key': aes_data.key,
+                  'tag': aes_data.tag
+                }));
+              }
 
-              return _.extend(attrs, {
-                'plaintext': plaintext
-              });
+              return Promise.resolve();
+            }).then(pt => {
+              plaintext = pt;
+              return _converse.omemo_store.generateMissingPreKeys();
+            }).then(() => _converse.omemo_store.publishBundle()).then(() => {
+              if (plaintext) {
+                return _.extend(attrs, {
+                  'plaintext': plaintext
+                });
+              } else {
+                return _.extend(attrs, {
+                  'is_only_key': true
+                });
+              }
             }).catch(e => {
               this.reportDecryptionError(e);
               return attrs;
@@ -74466,7 +74477,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // concatenation is encrypted using the corresponding
             // long-standing SignalProtocol session.
             const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => this.encryptKey(obj.key_and_tag, device));
-            return Promise.all(promises).then(dicts => this.addKeysToMessageStanza(stanza, dicts, obj.iv)).then(stanza => stanza.c('payload').t(obj.payload));
+            return Promise.all(promises).then(dicts => this.addKeysToMessageStanza(stanza, dicts, obj.iv)).then(stanza => {
+              stanza.c('payload').t(obj.payload).up().up();
+              stanza.c('store', {
+                'xmlns': Strophe.NS.HINTS
+              });
+              return stanza;
+            });
           });
         },
 
@@ -74494,6 +74511,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       ChatBoxView: {
         events: {
           'click .toggle-omemo': 'toggleOMEMO'
+        },
+
+        showMessage(message) {
+          // We don't show a message if it's only keying material
+          if (!message.get('is_only_key')) {
+            return this.__super__.showMessage.apply(this, arguments);
+          }
         },
 
         renderOMEMOToolbarButton() {
@@ -74538,12 +74562,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse.NUM_PREKEYS = 100; // Set here so that tests can override
 
       function generateFingerprint(device) {
-        let bundle;
-        return device.getBundle().then(b => {
-          bundle = b;
-          return crypto.subtle.digest('SHA-1', u.base64ToArrayBuffer(bundle['identity_key']));
-        }).then(fp => {
-          bundle['fingerprint'] = u.arrayBufferToHex(fp);
+        if (_.get(device.get('bundle'), 'fingerprint')) {
+          return;
+        }
+
+        return device.getBundle().then(bundle => {
+          bundle['fingerprint'] = u.arrayBufferToHex(u.base64ToArrayBuffer(bundle['identity_key']));
           device.save('bundle', bundle);
           device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
         });
@@ -74551,6 +74575,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.generateFingerprints = function (jid) {
         return _converse.getDevicesForContact(jid).then(devices => Promise.all(devices.map(d => generateFingerprint(d))));
+      };
+
+      _converse.getDeviceForContact = function (jid, device_id) {
+        return _converse.getDevicesForContact(jid).then(devices => devices.get(device_id));
       };
 
       _converse.getDevicesForContact = function (jid) {
@@ -74776,6 +74804,32 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }).t(prekey.pubKey).up());
 
           return _converse.api.sendIQ(stanza);
+        },
+
+        generateMissingPreKeys() {
+          const current_keys = this.getPreKeys(),
+                missing_keys = _.difference(_.invokeMap(_.range(0, _converse.NUM_PREKEYS), Number.prototype.toString), _.keys(current_keys));
+
+          if (missing_keys.length < 1) {
+            _converse.log("No missing prekeys to generate for our own device", Strophe.LogLevel.WARN);
+
+            return Promise.resolve();
+          }
+
+          return Promise.all(_.map(missing_keys, id => libsignal.KeyHelper.generatePreKey(parseInt(id, 10)))).then(keys => {
+            _.forEach(keys, k => this.storePreKey(k.keyId, k.keyPair));
+
+            const marshalled_keys = _.map(this.getPreKeys(), k => ({
+              'id': k.keyId,
+              'key': u.arrayBufferToBase64(k.pubKey)
+            })),
+                  devicelist = _converse.devicelists.get(_converse.bare_jid),
+                  device = devicelist.devices.get(this.get('device_id'));
+
+            return device.getBundle().then(bundle => device.save('bundle', _.extend(bundle, {
+              'prekeys': marshalled_keys
+            })));
+          });
         },
 
         generateBundle() {
@@ -75359,6 +75413,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'label_role': __('Role'),
             'label_role_help': __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.'),
             'label_url': __('URL'),
+            'utils': u,
             'view': this
           }));
         },
@@ -81638,8 +81693,8 @@ __p += '\n                        <div class="tab-pane fade" id="omemo-tabpanel"
 __e(o.__("This device's OMEMO fingerprint")) +
 '</li>\n                                    <li class="list-group-item">\n                                        ';
  if (o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint) { ;
-__p += '\n                                            <span class="fingerprint">' +
-__e(o.view.current_device.get('bundle').fingerprint) +
+__p += '\n                                        <span class="fingerprint">' +
+__e(o.utils.formatFingerprint(o.view.current_device.get('bundle').fingerprint)) +
 '</span>\n                                        ';
  } else {;
 __p += '\n                                            <span class="spinner fa fa-spinner centered"/>\n                                        ';
@@ -81661,7 +81716,7 @@ __e(device.get('id')) +
 '"\n                                                       aria-label="' +
 __e(o.__('Checkbox for selecting the following fingerprint')) +
 '">\n                                                <span class="fingerprint">' +
-__e(device.get('bundle').fingerprint) +
+__e(o.utils.formatFingerprint(device.get('bundle').fingerprint)) +
 '</span>\n                                                </label>\n                                            </li>\n                                            ';
  } else {;
 __p += '\n                                            <li class="fingerprint-removal-item list-group-item nopadding">\n                                                <label>\n                                                <input type="checkbox" value="' +
@@ -82727,7 +82782,7 @@ __p += ' checked="checked" ';
 __p += '>' +
 __e(o.__('Untrusted')) +
 '\n                                        </label>\n                                    </div>\n                                    <span class="fingerprint">' +
-__e(device.get('bundle').fingerprint) +
+__e(o.utils.formatFingerprint(device.get('bundle').fingerprint)) +
 '</span>\n                                    </form>\n                                </li>\n                                ';
  } ;
 __p += '\n                            ';
@@ -83711,22 +83766,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return result;
   };
 
-  u.arrayBufferToHex = function (ab) {
-    const hexCodes = [];
-    const padding = '00000000';
-    const view = new window.DataView(ab);
+  u.formatFingerprint = function (fp) {
+    fp = fp.replace(/^05/, '');
+    const arr = [];
 
-    for (var i = 0; i < view.byteLength; i += 4) {
-      // Using getUint32 reduces the number of iterations needed (we process 4 bytes each time)
-      const value = view.getUint32(i); // toString(16) will give the hex representation of the number without padding
-
-      const stringValue = value.toString(16); // We use concatenation and slice for padding
-
-      const paddedValue = (padding + stringValue).slice(-padding.length);
-      hexCodes.push(paddedValue);
+    for (let i = 1; i < 8; i++) {
+      const idx = i * 8 + i - 1;
+      fp = fp.slice(0, idx) + ' ' + fp.slice(idx);
     }
 
-    return hexCodes.join("");
+    return fp;
+  };
+
+  u.arrayBufferToHex = function (ab) {
+    // https://stackoverflow.com/questions/40031688/javascript-arraybuffer-to-hex#40031979
+    return Array.prototype.map.call(new Uint8Array(ab), x => ('00' + x.toString(16)).slice(-2)).join('');
   };
 
   u.arrayBufferToString = function (ab) {

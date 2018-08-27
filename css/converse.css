@@ -8578,6 +8578,7 @@ body.reset {
 #conversejs #converse-modals #user-profile-modal .profile-form label {
   font-weight: bold; }
 #conversejs #converse-modals #user-profile-modal .fingerprint-removal label {
+  display: flex;
   padding: 0.75rem 1.25rem; }
 #conversejs #converse-modals #user-profile-modal .list-group-item {
   display: flex;
@@ -8592,6 +8593,8 @@ body.reset {
   display: flex;
   justify-content: space-between;
   font-size: 95%; }
+  #conversejs #converse-modals .fingerprint-trust .fingerprint {
+    margin-left: 1em; }
 
 #conversejs #converse-roster {
   text-align: left;

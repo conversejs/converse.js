@@ -577,8 +577,10 @@
                 // Add a handler for bookmarks pushed from other connected clients
                 // (from the same user obviously)
                 _converse.connection.addHandler((message) => {
-                    if (message.querySelector('event[xmlns="'+Strophe.NS.PUBSUB+'#event"]')) {
-                        _converse.bookmarks.createBookmarksFromStanza(message);
+                    if (sizzle('event[xmlns="'+Strophe.NS.PUBSUB+'#event"] items[node="storage:bookmarks"]', message).length) {
+                        _converse.api.waitUntil('bookmarksInitialized')
+                            .then(() => _converse.bookmarks.createBookmarksFromStanza(message))
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
                 }, null, 'message', 'headline', null, _converse.bare_jid);
             });

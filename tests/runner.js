@@ -179,6 +179,7 @@ require.config(config);
 var specs = [
     "jasmine",
     //"spec/transcripts",
+    //"spec/otr",
     "spec/spoilers",
     "spec/profiling",
     "spec/utils",
@@ -194,7 +195,7 @@ var specs = [
     "spec/push",
     "spec/xmppstatus",
     "spec/mam",
-    // "spec/otr",
+    "spec/omemo",
     "spec/controlbox",
     "spec/roster",
     "spec/chatbox",

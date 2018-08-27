@@ -265,7 +265,7 @@
 
                     this.messages.on('change:upload', (message) => {
                         if (message.get('upload') === _converse.SUCCESS) {
-                            this.sendMessageStanza(message);
+                            this.sendMessageStanza(this.createMessageStanza(message));
                         }
                     });
 
@@ -295,8 +295,16 @@
                     const replace = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
                     if (replace) {
                         const msgid = replace && replace.getAttribute('id') || stanza.getAttribute('id'),
-                            message = msgid && this.messages.findWhere({msgid}),
-                            older_versions = message.get('older_versions') || [];
+                            message = msgid && this.messages.findWhere({msgid});
+
+                        if (!message) {
+                            // XXX: Looks like we received a correction for a
+                            // non-existing message, probably due to MAM.
+                            // Not clear what can be done about this... we'll
+                            // just create it as a separate message for now.
+                            return false;
+                        }
+                        const older_versions = message.get('older_versions') || [];
                         older_versions.push(message.get('message'));
                         message.save({
                             'message': _converse.chatboxes.getMessageBody(stanza),
@@ -355,39 +363,37 @@
                     return stanza;
                 },
 
-                sendMessageStanza (message) {
-                    const messageStanza = this.createMessageStanza(message);
-                    _converse.connection.send(messageStanza);
+                sendMessageStanza (stanza) {
+                    _converse.connection.send(stanza);
                     if (_converse.forward_messages) {
                         // Forward the message, so that other connected resources are also aware of it.
                         _converse.connection.send(
                             $msg({
                                 'to': _converse.bare_jid,
                                 'type': this.get('message_type'),
-                                'id': message.get('msgid')
                             }).c('forwarded', {'xmlns': Strophe.NS.FORWARD})
                                 .c('delay', {
                                         'xmns': Strophe.NS.DELAY,
                                         'stamp': moment().format()
                                 }).up()
-                              .cnode(messageStanza.tree())
+                              .cnode(stanza.tree())
                         );
                     }
                 },
 
                 getOutgoingMessageAttributes (text, spoiler_hint) {
-                    const fullname = _converse.xmppstatus.get('fullname'),
-                        is_spoiler = this.get('composing_spoiler');
-
-                    return {
-                        'fullname': fullname,
+                    const is_spoiler = this.get('composing_spoiler');
+                    return _.extend(this.toJSON(), {
+                        'id': _converse.connection.getUniqueId(),
+                        'fullname': _converse.xmppstatus.get('fullname'),
                         'from': _converse.bare_jid,
                         'sender': 'me',
                         'time': moment().format(),
                         'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
                         'is_spoiler': is_spoiler,
-                        'spoiler_hint': is_spoiler ? spoiler_hint : undefined
-                    };
+                        'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
+                        'type': this.get('message_type')
+                    });
                 },
 
                 sendMessage (attrs) {
@@ -396,7 +402,7 @@
                      *  Parameters:
                      *    (Message) message - The chat message
                      */
-                    const message = this.messages.findWhere('correcting')
+                    let message = this.messages.findWhere('correcting')
                     if (message) {
                         const older_versions = message.get('older_versions') || [];
                         older_versions.push(message.get('message'));
@@ -407,9 +413,10 @@
                             'older_versions': older_versions,
                             'references': attrs.references
                         });
-                        return this.sendMessageStanza(message);
+                    } else {
+                        message = this.messages.create(attrs);
                     }
-                    return this.sendMessageStanza(this.messages.create(attrs));
+                    return this.sendMessageStanza(this.createMessageStanza(message));
                 },
 
                 sendChatState () {
@@ -453,8 +460,7 @@
                                         this.getOutgoingMessageAttributes(), {
                                         'file': file,
                                         'progress': 0,
-                                        'slot_request_url': slot_request_url,
-                                        'type': this.get('message_type'),
+                                        'slot_request_url': slot_request_url
                                     })
                                 );
                             }
@@ -512,11 +518,7 @@
                     if (attrs.type === 'groupchat') {
                         attrs.from = stanza.getAttribute('from');
                         attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
-                        if (Strophe.getResourceFromJid(attrs.from) === this.get('nick')) {
-                            attrs.sender = 'me';
-                        } else {
-                            attrs.sender = 'them';
-                        }
+                        attrs.sender = attrs.nick === this.get('nick') ? 'me': 'them';
                     } else {
                         attrs.from = Strophe.getBareJidFromJid(stanza.getAttribute('from'));
                         if (attrs.from === _converse.bare_jid) {
@@ -541,17 +543,27 @@
                     /* Create a Backbone.Message object inside this chat box
                      * based on the identified message stanza.
                      */
-                    const attrs = this.getMessageAttributesFromStanza(message, original_stanza);
-                    const is_csn = u.isOnlyChatStateNotification(attrs);
-                    if (is_csn && (attrs.is_delayed || (attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick')))) {
-                        // XXX: MUC leakage
-                        // No need showing delayed or our own CSN messages
-                        return;
-                    } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
-                        // TODO: handle <subject> messages (currently being done by ChatRoom)
-                        return;
+                    const that = this;
+                    function _create (attrs) {
+                        const is_csn = u.isOnlyChatStateNotification(attrs);
+                        if (is_csn && (attrs.is_delayed ||
+                                (attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == that.get('nick')))) {
+                            // XXX: MUC leakage
+                            // No need showing delayed or our own CSN messages
+                            return;
+                        } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
+                            // TODO: handle <subject> messages (currently being done by ChatRoom)
+                            return;
+                        } else {
+                            return that.messages.create(attrs);
+                        }
+                    }
+                    const result = this.getMessageAttributesFromStanza(message, original_stanza)
+                    if (typeof result.then === "function") {
+                        return new Promise((resolve, reject) => result.then(attrs => resolve(_create(attrs))));
                     } else {
-                        return this.messages.create(attrs);
+                        const message = _create(result)
+                        return Promise.resolve(message);
                     }
                 },
 
@@ -621,7 +633,7 @@
 
                 onConnected () {
                     this.browserStorage = new Backbone.BrowserStorage.session(
-                        b64_sha1(`converse.chatboxes-${_converse.bare_jid}`));
+                        `converse.chatboxes-${_converse.bare_jid}`);
                     this.registerMessageHandler();
                     this.fetch({
                         'add': true,
@@ -728,8 +740,11 @@
                     if (chatbox && !chatbox.handleMessageCorrection(stanza)) {
                         const msgid = stanza.getAttribute('id'),
                               message = msgid && chatbox.messages.findWhere({msgid});
-                        if (!message) { // Only create the message when we're sure it's not a duplicate
-                            chatbox.incrementUnreadMsgCounter(chatbox.createMessage(stanza, original_stanza));
+                        if (!message) {
+                            // Only create the message when we're sure it's not a duplicate
+                            chatbox.createMessage(stanza, original_stanza)
+                                .then(msg => chatbox.incrementUnreadMsgCounter(msg))
+                                .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                         }
                     }
                     _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});

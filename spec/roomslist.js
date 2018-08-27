@@ -229,14 +229,16 @@
                                          // have to mock stanza traffic.
                 }, function (done, _converse) {
 
+            let view, nick;
+            const room_jid = 'kitchen@conference.shakespeare.lit';
+
             test_utils.waitUntil(() => !_.isUndefined(_converse.rooms_list_view), 500)
             .then(() => test_utils.openAndEnterChatRoom(_converse, 'kitchen', 'conference.shakespeare.lit', 'romeo'))
             .then(() => {
-                const room_jid = 'kitchen@conference.shakespeare.lit';
-                const view = _converse.chatboxviews.get(room_jid);
+                view = _converse.chatboxviews.get(room_jid);
                 view.model.set({'minimized': true});
                 const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
-                const nick = mock.chatroom_names[0];
+                nick = mock.chatroom_names[0];
                 view.model.onMessage(
                     $msg({
                         from: room_jid+'/'+nick,
@@ -260,9 +262,11 @@
                         type: 'groupchat'
                     }).c('body').t('romeo: Your attention is required').tree()
                 );
-                var indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
+                return test_utils.waitUntil(() => _converse.rooms_list_view.el.querySelectorAll(".msgs-indicator"));
+            }).then(() => {
+                spyOn(view.model, 'incrementUnreadMsgCounter').and.callThrough();
+                const indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
                 expect(indicator_el.textContent).toBe('1');
-
                 view.model.onMessage(
                     $msg({
                         from: room_jid+'/'+nick,
@@ -271,14 +275,16 @@
                         type: 'groupchat'
                     }).c('body').t('romeo: and another thing...').tree()
                 );
-                indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
+                return test_utils.waitUntil(() => view.model.incrementUnreadMsgCounter.calls.count());
+            }).then(() => {
+                let indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
                 expect(indicator_el.textContent).toBe('2');
 
                 // When the chat gets maximized again, the unread indicators are removed
                 view.model.set({'minimized': false});
                 indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
                 expect(_.isNull(indicator_el));
-                room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
+                const room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
                 expect(_.includes(room_el.classList, 'unread-msgs')).toBeFalsy();
                 done();
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));

@@ -48,30 +48,39 @@
                 events: {
                     'click .change-avatar': "openFileSelection",
                     'change input[type="file"': "updateFilePreview",
-                    'submit form': 'onFormSubmitted'
+                    'submit .profile-form': 'onFormSubmitted'
                 },
 
                 initialize () {
-                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                     this.model.on('change', this.render, this);
+                    _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                    _converse.emit('profileModalInitialized', this.model);
                 },
 
                 toHTML () {
                     return tpl_profile_modal(_.extend(
                         this.model.toJSON(),
                         this.model.vcard.toJSON(), {
+                        '_': _,
+                        '__': __,
+                        '_converse': _converse,
+                        'alt_avatar': __('Your avatar image'),
                         'heading_profile': __('Your Profile'),
                         'label_close': __('Close'),
                         'label_email': __('Email'),
                         'label_fullname': __('Full Name'),
-                        'label_nickname': __('Nickname'),
                         'label_jid': __('XMPP Address (JID)'),
+                        'label_nickname': __('Nickname'),
                         'label_role': __('Role'),
                         'label_role_help': __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.'),
-                        'label_save': __('Save'),
                         'label_url': __('URL'),
-                        'alt_avatar': __('Your avatar image')
+                        'utils': u,
+                        'view': this
                     }));
+                },
+
+                afterRender () {
+                    this.tabs = _.map(this.el.querySelectorAll('.nav-item'), (tab) => new bootstrap.Tab(tab));
                 },
 
                 openFileSelection (ev) {

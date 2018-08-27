@@ -61,6 +61,10 @@ body.reset {
     direction: ltr;
     z-index: 1031; // One more than bootstrap navbar
 
+    .nopadding {
+        padding: 0 !important;
+    }
+
     &.converse-overlayed {
         > .row {
             flex-direction: row-reverse;

@@ -6,8 +6,68 @@
     var Strophe = converse.env.Strophe;
     var moment = converse.env.moment;
     var $iq = converse.env.$iq;
-    var mock = {};
+    var u = converse.env.utils;
 
+    window.libsignal = {
+        'SignalProtocolAddress': function (name, device_id) {
+            this.name = name;
+            this.deviceId = device_id;
+        },
+        'SessionCipher': function (storage, remote_address) {
+            this.remoteAddress = remote_address;
+            this.storage = storage;
+            this.encrypt = () => Promise.resolve({
+                'type': 1,
+                'body': 'c1ph3R73X7',
+                'registrationId': '1337' 
+            });
+            this.decryptPreKeyWhisperMessage = (key_and_tag) => {
+                // TODO: remove the prekey
+                return Promise.resolve(u.stringToArrayBuffer(key_and_tag));
+            };
+
+            this.decryptWhisperMessage = (key_and_tag) => {
+                return Promise.resolve(u.stringToArrayBuffer(key_and_tag));
+            }
+        },
+        'SessionBuilder': function (storage, remote_address) {
+            this.processPreKey = function () {
+                return Promise.resolve();
+            }
+        },
+        'KeyHelper': {
+            'generateIdentityKeyPair': function () {
+                return Promise.resolve({
+                    'pubKey': new TextEncoder('utf-8').encode('1234'),
+                    'privKey': new TextEncoder('utf-8').encode('4321')
+                });
+            },
+            'generateRegistrationId': function () {
+                return '123456789';
+            },
+            'generatePreKey': function (keyid) {
+                return Promise.resolve({
+                    'keyId': keyid,
+                    'keyPair': {
+                        'pubKey': new TextEncoder('utf-8').encode('1234'),
+                        'privKey': new TextEncoder('utf-8').encode('4321')
+                    }
+                });
+            },
+            'generateSignedPreKey': function (identity_keypair, keyid) {
+                return Promise.resolve({
+                    'signature': new TextEncoder('utf-8').encode('11112222333344445555'),
+                    'keyId': keyid,
+                    'keyPair': {
+                        'pubKey': new TextEncoder('utf-8').encode('1234'),
+                        'privKey': new TextEncoder('utf-8').encode('4321')
+                    }
+                });
+            }
+        }
+    };
+
+    var mock = {};
     mock.view_mode = 'overlayed';
 
     // Names from http://www.fakenamegenerator.com/

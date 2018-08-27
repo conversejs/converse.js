@@ -6,7 +6,7 @@
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
-/*global define, escape, window */
+/*global define, escape, window, Uint8Array */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define([
@@ -900,19 +900,60 @@
         return text.replace(_converse.geouri_regex, replacement);
     };
 
-    u.getSelectValues = function(select) {
-        var result = [];
-        var options = select && select.options;
-        var opt;
-
+    u.getSelectValues = function (select) {
+        const result = [];
+        const options = select && select.options;
         for (var i=0, iLen=options.length; i<iLen; i++) {
-            opt = options[i];
-
+            const opt = options[i];
             if (opt.selected) {
                 result.push(opt.value || opt.text);
             }
         }
         return result;
+    };
+
+    u.formatFingerprint = function (fp) {
+        fp = fp.replace(/^05/, '');
+        const arr = [];
+        for (let i=1; i<8; i++) {
+            const idx = i*8+i-1;
+            fp = fp.slice(0, idx) + ' ' + fp.slice(idx);
+        }
+        return fp;
+    };
+
+    u.arrayBufferToHex = function (ab) {
+        // https://stackoverflow.com/questions/40031688/javascript-arraybuffer-to-hex#40031979
+        return Array.prototype.map.call(new Uint8Array(ab), x => ('00' + x.toString(16)).slice(-2)).join('');
+    };
+
+    u.arrayBufferToString = function (ab) {
+        const enc = new TextDecoder("utf-8");
+        return enc.decode(ab);
+    };
+
+    u.arrayBufferToBase64 = function (ab) {
+        return btoa((new Uint8Array(ab)).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+    };
+
+    u.stringToArrayBuffer = function (string) {
+        const enc = new TextEncoder(); // always utf-8
+        return enc.encode(string);
+    };
+
+    u.base64ToArrayBuffer = function (b64) {
+        const binary_string =  window.atob(b64),
+              len = binary_string.length,
+              bytes = new Uint8Array(len);
+
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i)
+        }
+        return bytes.buffer
+    };
+
+    u.getRandomInt = function (max) {
+        return Math.floor(Math.random() * Math.floor(max));
     };
 
     u.putCurserAtEnd = function (textarea) {

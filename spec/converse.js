@@ -311,7 +311,7 @@
                     }).catch(_.partial(console.error, _));
             }));
 
-            it("has a method 'open' which opens and returns promise that resolves to a chat model", mock.initConverseWithPromises(
+            it("has a method 'open' which opens and returns a promise that resolves to a chat model", mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesInitialized'], {}, function (done, _converse) {
 
                 test_utils.openControlBox();

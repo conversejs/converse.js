@@ -110,9 +110,11 @@
             emojione.ascii = true;
 
             function onWindowStateChanged (data) {
-                _converse.chatboxviews.each(function (chatboxview) {
-                    chatboxview.onWindowStateChanged(data.state);
-                });
+                if (_converse.chatboxviews) {
+                    _converse.chatboxviews.each(chatboxview => {
+                        chatboxview.onWindowStateChanged(data.state);
+                    });
+                }
             }
             _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
 
@@ -228,32 +230,30 @@
 
                 events: {
                     'click button.remove-contact': 'removeContact',
-                    'click button.refresh-contact': 'refreshContact'
+                    'click button.refresh-contact': 'refreshContact',
+                    'click .fingerprint-trust .btn input': 'toggleDeviceTrust'
                 },
 
                 initialize () {
                     _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                     this.model.on('contactAdded', this.registerContactEventHandlers, this);
+                    this.model.on('change', this.render, this);
                     this.registerContactEventHandlers();
+                    _converse.emit('userDetailsModalInitialized', this.model);
                 },
 
                 toHTML () {
                     return tpl_user_details_modal(_.extend(
                         this.model.toJSON(),
                         this.model.vcard.toJSON(), {
+                        '_': _,
+                        '__': __,
+                        'view': this,
+                        '_converse': _converse,
                         'allow_contact_removal': _converse.allow_contact_removal,
-                        'alt_profile_image': __("The User's Profile Image"),
                         'display_name': this.model.getDisplayName(),
                         'is_roster_contact': !_.isUndefined(this.model.contact),
-                        'label_close': __('Close'),
-                        'label_email': __('Email'),
-                        'label_fullname': __('Full Name'),
-                        'label_jid': __('Jabber ID'),
-                        'label_nickname': __('Nickname'),
-                        'label_remove': __('Remove as contact'),
-                        'label_refresh': __('Refresh'),
-                        'label_role': __('Role'),
-                        'label_url': __('URL')
+                        'utils': u
                     }));
                 },
 
@@ -379,6 +379,7 @@
                     this.addSpoilerButton(options);
                     this.addFileUploadButton();
                     this.insertEmojiPicker();
+                    _converse.emit('renderToolbar', this);
                     return this;
                 },
 
@@ -737,14 +738,16 @@
 
                     if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) &&
                             previous_el.getAttribute('data-from') === from &&
-                            date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes'))) {
+                            date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) &&
+                            el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')) {
                         u.addClass('chat-msg--followup', el);
                     }
                     if (!next_el) { return; }
 
                     if (!u.hasClass('chat-msg--action', 'el') &&
                             next_el.getAttribute('data-from') === from &&
-                            moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes'))) {
+                            moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) &&
+                            el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {
                         u.addClass('chat-msg--followup', next_el);
                     } else {
                         u.removeClass('chat-msg--followup', next_el);

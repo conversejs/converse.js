@@ -274,32 +274,29 @@
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
-
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
 
-            test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group').length;
-                }, 300)
-            .then(function () {
-                var message, msg;
+            let message, msg, view;
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
+            .then(() => {
                 spyOn(_converse, 'log');
                 spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
                 _converse.filter_by_resource = true;
-                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                 /*  <message id='aeb213' to='juliet@capulet.lit/chamber'>
-                *    <forwarded xmlns='urn:xmpp:forward:0'>
-                *      <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>
-                *      <message xmlns='jabber:client'
-                *          to='juliet@capulet.lit/balcony'
-                *          from='romeo@montague.lit/orchard'
-                *          type='chat'>
-                *          <body>Call me but love, and I'll be new baptized; Henceforth I never will be Romeo.</body>
-                *      </message>
-                *    </forwarded>
-                *  </message>
-                */
+                 *    <forwarded xmlns='urn:xmpp:forward:0'>
+                 *      <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>
+                 *      <message xmlns='jabber:client'
+                 *          to='juliet@capulet.lit/balcony'
+                 *          from='romeo@montague.lit/orchard'
+                 *          type='chat'>
+                 *          <body>Call me but love, and I'll be new baptized; Henceforth I never will be Romeo.</body>
+                 *      </message>
+                 *    </forwarded>
+                 *  </message>
+                 */
                 msg = $msg({'id': 'aeb213', 'to': _converse.bare_jid})
                     .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
                         .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T13:08:25Z'}).up()
@@ -311,7 +308,9 @@
                         .c('body').t("message")
                         .tree();
                 _converse.chatboxes.onMessage(msg);
-
+                return test_utils.waitUntil(() => _converse.api.chats.get().length);
+            }).then(() => {
+                view = _converse.chatboxviews.get(sender_jid);
                 msg = $msg({'id': 'aeb214', 'to': _converse.bare_jid})
                     .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
                         .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2017-12-31T22:08:25Z'}).up()
@@ -323,6 +322,8 @@
                         .c('body').t("Older message")
                         .tree();
                 _converse.chatboxes.onMessage(msg);
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
 
                 msg = $msg({'id': 'aeb215', 'to': _converse.bare_jid})
                     .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
@@ -335,7 +336,8 @@
                         .c('body').t("Inbetween message").up()
                         .tree();
                 _converse.chatboxes.onMessage(msg);
-
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 msg = $msg({'id': 'aeb216', 'to': _converse.bare_jid})
                     .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
                         .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-01T13:18:23Z'}).up()
@@ -347,7 +349,8 @@
                         .c('body').t("another inbetween message")
                         .tree();
                 _converse.chatboxes.onMessage(msg);
-
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 msg = $msg({'id': 'aeb217', 'to': _converse.bare_jid})
                     .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
                         .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T12:18:23Z'}).up()
@@ -359,7 +362,8 @@
                         .c('body').t("An earlier message on the next day")
                         .tree();
                 _converse.chatboxes.onMessage(msg);
-
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 msg = $msg({'id': 'aeb218', 'to': _converse.bare_jid})
                     .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
                         .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2018-01-02T22:28:23Z'}).up()
@@ -371,7 +375,8 @@
                         .c('body').t("newer message from the next day")
                         .tree();
                 _converse.chatboxes.onMessage(msg);
-
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 // Insert <composing> message, to also check that
                 // text messages are inserted correctly with
                 // temporary chat events in the chat contents.
@@ -384,7 +389,8 @@
                     .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                     .tree();
                 _converse.chatboxes.onMessage(msg);
-
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 msg = $msg({
                         'id': 'aeb220',
                         'to': _converse.bare_jid,
@@ -395,10 +401,10 @@
                     .c('body').t("latest message")
                     .tree();
                 _converse.chatboxes.onMessage(msg);
-
-                var chatboxview = _converse.chatboxviews.get(sender_jid);
-                var $chat_content = $(chatboxview.el).find('.chat-content');
-                chatboxview.clearSpinner(); //cleanup
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
+                var $chat_content = $(view.el.querySelector('.chat-content'));
+                view.clearSpinner(); //cleanup
 
                 expect($chat_content[0].querySelectorAll('.date-separator').length).toEqual(4);
 
@@ -450,7 +456,7 @@
                 expect($day[0].nextElementSibling.querySelector('.chat-msg__text').textContent).toBe('latest message');
                 expect($el.hasClass('chat-msg--followup')).toBe(false);
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
 
         it("is ignored if it's a malformed headline message",
@@ -499,9 +505,10 @@
 
             // Send a message from a different resource
             spyOn(_converse, 'log');
-            var msgtext = 'This is a carbon message';
-            var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-            var msg = $msg({
+            let chat_content;
+            const msgtext = 'This is a carbon message';
+            const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const msg = $msg({
                     'from': sender_jid,
                     'id': (new Date()).getTime(),
                     'to': _converse.connection.jid,
@@ -516,28 +523,29 @@
                         'type': 'chat'
                 }).c('body').t(msgtext).tree();
             _converse.chatboxes.onMessage(msg);
-
-            // Check that the chatbox and its view now exist
-            var chatbox = _converse.chatboxes.get(sender_jid);
-            var chatboxview = _converse.chatboxviews.get(sender_jid);
-            expect(chatbox).toBeDefined();
-            expect(chatboxview).toBeDefined();
-            // Check that the message was received and check the message parameters
-            expect(chatbox.messages.length).toEqual(1);
-            var msg_obj = chatbox.messages.models[0];
-            expect(msg_obj.get('message')).toEqual(msgtext);
-            expect(msg_obj.get('fullname')).toEqual(mock.cur_names[1]);
-            expect(msg_obj.get('sender')).toEqual('them');
-            expect(msg_obj.get('is_delayed')).toEqual(false);
-            // Now check that the message appears inside the chatbox in the DOM
-            const chat_content = chatboxview.el.querySelector('.chat-content');
-            expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(msgtext);
-            expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-            return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')
-            .then(function () {
+            return test_utils.waitUntil(() => _converse.api.chats.get().length)
+            .then(() => {
+                // Check that the chatbox and its view now exist
+                var chatbox = _converse.chatboxes.get(sender_jid);
+                var chatboxview = _converse.chatboxviews.get(sender_jid);
+                expect(chatbox).toBeDefined();
+                expect(chatboxview).toBeDefined();
+                // Check that the message was received and check the message parameters
+                expect(chatbox.messages.length).toEqual(1);
+                var msg_obj = chatbox.messages.models[0];
+                expect(msg_obj.get('message')).toEqual(msgtext);
+                expect(msg_obj.get('fullname')).toEqual(mock.cur_names[1]);
+                expect(msg_obj.get('sender')).toEqual('them');
+                expect(msg_obj.get('is_delayed')).toEqual(false);
+                // Now check that the message appears inside the chatbox in the DOM
+                chat_content = chatboxview.el.querySelector('.chat-content');
+                expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(msgtext);
+                expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+                return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')
+            }).then(() => {
                 expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Candice van der Knijff');
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
 
         it("can be a carbon message that this user sent from a different client, as defined in XEP-0280",
@@ -545,14 +553,15 @@
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
+            let recipient_jid, msgtext;
             test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp']).then(function () {
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
 
                 // Send a message from a different resource
                 spyOn(_converse, 'log');
-                const msgtext = 'This is a sent carbon message';
-                const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                msgtext = 'This is a sent carbon message';
+                recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const msg = $msg({
                         'from': _converse.bare_jid,
                         'id': (new Date()).getTime(),
@@ -568,7 +577,8 @@
                             'type': 'chat'
                     }).c('body').t(msgtext).tree();
                 _converse.chatboxes.onMessage(msg);
-
+                return test_utils.waitUntil(() => _converse.api.chats.get().length);
+            }).then(() => {
                 // Check that the chatbox and its view now exist
                 const chatbox = _converse.chatboxes.get(recipient_jid);
                 const chatboxview = _converse.chatboxviews.get(recipient_jid);
@@ -647,13 +657,14 @@
             _converse.emit('rosterContactsFetched');
             const contact_name = mock.cur_names[0];
             const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
+            let chatview, trimmedview, $count, trimmed_chatboxes;
             test_utils.openControlBox();
             spyOn(_converse, 'emit').and.callThrough();
 
             test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
             .then(() => test_utils.openChatBoxFor(_converse, contact_jid))
             .then(() => {
-                var chatview = _converse.chatboxviews.get(contact_jid);
+                chatview = _converse.chatboxviews.get(contact_jid);
                 expect(u.isVisible(chatview.el)).toBeTruthy();
                 expect(chatview.model.get('minimized')).toBeFalsy();
                 chatview.el.querySelector('.toggle-chatbox-button').click();
@@ -668,10 +679,12 @@
                 }).c('body').t(message).up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 _converse.chatboxes.onMessage(msg);
+                return test_utils.waitUntil(() => chatview.model.messages.length);
+            }).then(() => {
                 expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                var trimmed_chatboxes = _converse.minimized_chats;
-                var trimmedview = trimmed_chatboxes.get(contact_jid);
-                var $count = $(trimmedview.el).find('.message-count');
+                trimmed_chatboxes = _converse.minimized_chats;
+                trimmedview = trimmed_chatboxes.get(contact_jid);
+                $count = $(trimmedview.el).find('.message-count');
                 expect(u.isVisible(chatview.el)).toBeFalsy();
                 expect(trimmedview.model.get('minimized')).toBeTruthy();
                 expect(u.isVisible($count[0])).toBeTruthy();
@@ -685,6 +698,8 @@
                     }).c('body').t('This message is also sent to a minimized chatbox').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
                 );
+                return test_utils.waitUntil(() => chatview.model.messages.length);
+            }).then(() => {
                 expect(u.isVisible(chatview.el)).toBeFalsy();
                 expect(trimmedview.model.get('minimized')).toBeTruthy();
                 $count = $(trimmedview.el).find('.message-count');
@@ -693,7 +708,7 @@
                 trimmedview.el.querySelector('.restore-chat').click();
                 expect(trimmed_chatboxes.keys().length).toBe(0);
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
 
         it("will indicate when it has a time difference of more than a day between it and its predecessor",
@@ -707,20 +722,19 @@
             spyOn(_converse, 'emit');
             const contact_name = mock.cur_names[1];
             const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
+            let view, chatbox, msg_obj, msg_txt, sender_txt, one_day_ago, message, chat_content, $chat_content, $time;
+
             test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
             .then(() => test_utils.openChatBoxFor(_converse, contact_jid))
             .then(() => {
                 test_utils.clearChatBoxMessages(_converse, contact_jid);
-                var one_day_ago = moment();
+                one_day_ago = moment();
                 one_day_ago.subtract('days', 1);
-                var message = 'This is a day old message';
-                var chatbox = _converse.chatboxes.get(contact_jid);
-                var chatboxview = _converse.chatboxviews.get(contact_jid);
-                var msg_obj;
-                var msg_txt;
-                var sender_txt;
+                chatbox = _converse.chatboxes.get(contact_jid);
+                view = _converse.chatboxviews.get(contact_jid);
 
-                var msg = $msg({
+                message = 'This is a day old message';
+                const msg = $msg({
                     from: contact_jid,
                     to: _converse.connection.jid,
                     type: 'chat',
@@ -729,6 +743,8 @@
                 .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: one_day_ago.format() })
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 _converse.chatboxes.onMessage(msg);
+                return test_utils.waitUntil(() => view.model.messages.length)
+            }).then(() => {
                 expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                 expect(chatbox.messages.length).toEqual(1);
                 msg_obj = chatbox.messages.models[0];
@@ -736,62 +752,62 @@
                 expect(msg_obj.get('fullname')).toEqual(contact_name);
                 expect(msg_obj.get('sender')).toEqual('them');
                 expect(msg_obj.get('is_delayed')).toEqual(true);
-
                 return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')
-                .then(function () {
-                    const chat_content = chatboxview.el.querySelector('.chat-content');
-                    expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
-                    expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                    expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Candice van der Knijff');
+            }).then(() => {
+                chat_content = view.el.querySelector('.chat-content');
+                expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
+                expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+                expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Candice van der Knijff');
 
-                    expect(chat_content.querySelectorAll('.date-separator').length).toEqual(1);
-                    const day = chat_content.querySelector('.date-separator');
-                    expect(day.getAttribute('class')).toEqual('message date-separator');
-                    expect(day.getAttribute('data-isodate')).toEqual(moment(one_day_ago.startOf('day')).format());
+                expect(chat_content.querySelectorAll('.date-separator').length).toEqual(1);
+                const day = chat_content.querySelector('.date-separator');
+                expect(day.getAttribute('class')).toEqual('message date-separator');
+                expect(day.getAttribute('data-isodate')).toEqual(moment(one_day_ago.startOf('day')).format());
 
-                    const $chat_content = $(chat_content);
-                    var $time = $chat_content.find('time.separator-text');
-                    expect($time.text()).toEqual(moment(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
+                $chat_content = $(chat_content);
+                $time = $chat_content.find('time.separator-text');
+                expect($time.text()).toEqual(moment(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
 
-                    message = 'This is a current message';
-                    msg = $msg({
-                        from: contact_jid,
-                        to: _converse.connection.jid,
-                        type: 'chat',
-                        id: new Date().getTime()
-                    }).c('body').t(message).up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    _converse.chatboxes.onMessage(msg);
-                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                    // Check that there is a <time> element, with the required
-                    // props.
-                    expect($chat_content[0].querySelectorAll('time.separator-text').length).toEqual(2); // There are now two time elements
+                message = 'This is a current message';
+                const msg = $msg({
+                    from: contact_jid,
+                    to: _converse.connection.jid,
+                    type: 'chat',
+                    id: new Date().getTime()
+                }).c('body').t(message).up()
+                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                _converse.chatboxes.onMessage(msg);
+                return test_utils.waitUntil(() => view.model.messages.length > 1);
+            }).then(() => {
+                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                // Check that there is a <time> element, with the required
+                // props.
+                expect($chat_content[0].querySelectorAll('time.separator-text').length).toEqual(2); // There are now two time elements
 
-                    var message_date = new Date();
-                    const $day = $chat_content.find('.date-separator:last');
-                    expect($day.length).toEqual(1);
-                    expect($day.attr('class')).toEqual('message date-separator');
-                    expect($day.data('isodate')).toEqual(moment(message_date).startOf('day').format());
+                var message_date = new Date();
+                const $day = $chat_content.find('.date-separator:last');
+                expect($day.length).toEqual(1);
+                expect($day.attr('class')).toEqual('message date-separator');
+                expect($day.data('isodate')).toEqual(moment(message_date).startOf('day').format());
 
-                    $time = $chat_content.find('time.separator-text:last');
-                    expect($time.text()).toEqual(moment(message_date).startOf('day').format("dddd MMM Do YYYY"));
+                $time = $chat_content.find('time.separator-text:last');
+                expect($time.text()).toEqual(moment(message_date).startOf('day').format("dddd MMM Do YYYY"));
 
-                    // Normal checks for the 2nd message
-                    expect(chatbox.messages.length).toEqual(2);
-                    msg_obj = chatbox.messages.models[1];
-                    expect(msg_obj.get('message')).toEqual(message);
-                    expect(msg_obj.get('fullname')).toEqual(contact_name);
-                    expect(msg_obj.get('sender')).toEqual('them');
-                    expect(msg_obj.get('is_delayed')).toEqual(false);
-                    msg_txt = $chat_content.find('.chat-msg').last().find('.chat-msg__text').text();
-                    expect(msg_txt).toEqual(message);
+                // Normal checks for the 2nd message
+                expect(chatbox.messages.length).toEqual(2);
+                msg_obj = chatbox.messages.models[1];
+                expect(msg_obj.get('message')).toEqual(message);
+                expect(msg_obj.get('fullname')).toEqual(contact_name);
+                expect(msg_obj.get('sender')).toEqual('them');
+                expect(msg_obj.get('is_delayed')).toEqual(false);
+                msg_txt = $chat_content.find('.chat-msg').last().find('.chat-msg__text').text();
+                expect(msg_txt).toEqual(message);
 
-                    expect(chat_content.querySelector('.chat-msg:last-child .chat-msg__text').textContent).toEqual(message);
-                    expect(chat_content.querySelector('.chat-msg:last-child .chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                    expect(chat_content.querySelector('.chat-msg:last-child .chat-msg__author').textContent.trim()).toBe('Candice van der Knijff');
-                    done();
-                });
-            });
+                expect(chat_content.querySelector('.chat-msg:last-child .chat-msg__text').textContent).toEqual(message);
+                expect(chat_content.querySelector('.chat-msg:last-child .chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+                expect(chat_content.querySelector('.chat-msg:last-child .chat-msg__author').textContent.trim()).toBe('Candice van der Knijff');
+                done();
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
 
         it("can be sent from a chatbox, and will appear inside it",
@@ -922,38 +938,45 @@
             test_utils.createContacts(_converse, 'current');
             _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-            test_utils.openChatBoxFor(_converse, contact_jid);
+            let view, stanza, chat_content;
+            test_utils.openChatBoxFor(_converse, contact_jid)
+            .then((v) => {
+                view = v;
+                stanza = Strophe.xmlHtmlNode(
+                    "<message from='"+contact_jid+"'"+
+                    "         type='chat'"+
+                    "         to='dummy@localhost/resource'>"+
+                    "    <body>Hey\nHave you heard the news?</body>"+
+                    "</message>").firstChild;
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
+                const view = _converse.chatboxviews.get(contact_jid);
+                chat_content = view.el.querySelector('.chat-content');
+                expect(chat_content.querySelector('.chat-msg__text').innerHTML).toBe('Hey<br>Have you heard the news?');
 
-            let stanza = Strophe.xmlHtmlNode(
-                "<message from='"+contact_jid+"'"+
-                "         type='chat'"+
-                "         to='dummy@localhost/resource'>"+
-                "    <body>Hey\nHave you heard the news?</body>"+
-                "</message>").firstChild;
-            _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-            const view = _converse.chatboxviews.get(contact_jid);
-            const chat_content = view.el.querySelector('.chat-content');
-            expect(chat_content.querySelector('.chat-msg__text').innerHTML).toBe('Hey<br>Have you heard the news?');
-
-            stanza = Strophe.xmlHtmlNode(
-                "<message from='"+contact_jid+"'"+
-                "         type='chat'"+
-                "         to='dummy@localhost/resource'>"+
-                "    <body>Hey\n\n\nHave you heard the news?</body>"+
-                "</message>").firstChild;
-            _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            expect(chat_content.querySelector('.message:last-child .chat-msg__text').innerHTML).toBe('Hey<br><br>Have you heard the news?');
-
-            stanza = Strophe.xmlHtmlNode(
-                "<message from='"+contact_jid+"'"+
-                "         type='chat'"+
-                "         to='dummy@localhost/resource'>"+
-                "    <body>Hey\nHave you heard\nthe news?</body>"+
-                "</message>").firstChild;
-            _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            expect(chat_content.querySelector('.message:last-child .chat-msg__text').innerHTML).toBe('Hey<br>Have you heard<br>the news?');
-            done();
+                stanza = Strophe.xmlHtmlNode(
+                    "<message from='"+contact_jid+"'"+
+                    "         type='chat'"+
+                    "         to='dummy@localhost/resource'>"+
+                    "    <body>Hey\n\n\nHave you heard the news?</body>"+
+                    "</message>").firstChild;
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
+                expect(chat_content.querySelector('.message:last-child .chat-msg__text').innerHTML).toBe('Hey<br><br>Have you heard the news?');
+                stanza = Strophe.xmlHtmlNode(
+                    "<message from='"+contact_jid+"'"+
+                    "         type='chat'"+
+                    "         to='dummy@localhost/resource'>"+
+                    "    <body>Hey\nHave you heard\nthe news?</body>"+
+                    "</message>").firstChild;
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
+                expect(chat_content.querySelector('.message:last-child .chat-msg__text').innerHTML).toBe('Hey<br>Have you heard<br>the news?');
+                done();
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
 
         it("will render images from their URLs",
@@ -1042,19 +1065,19 @@
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
 
-            test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300)
-            .then(function () {
-                const base_time = new Date();
-                const ONE_MINUTE_LATER = 60000;
+            let message, msg, view, sender_jid, chat_content;
+            const base_time = new Date();
+            const ONE_MINUTE_LATER = 60000;
 
+            test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300)
+            .then(() => {
                 jasmine.clock().install();
                 jasmine.clock().mockDate(base_time);
 
-                var message, msg;
                 spyOn(_converse, 'log');
                 spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
                 _converse.filter_by_resource = true;
-                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                 _converse.chatboxes.onMessage($msg({
                         'from': sender_jid,
@@ -1063,9 +1086,10 @@
                         'id': (new Date()).getTime()
                     }).c('body').t('A message').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-
+                return test_utils.waitUntil(() => _converse.api.chats.get().length);
+            }).then(() => {
                 jasmine.clock().tick(3*ONE_MINUTE_LATER);
-
+                view = _converse.chatboxviews.get(sender_jid);
                 _converse.chatboxes.onMessage($msg({
                         'from': sender_jid,
                         'to': _converse.connection.jid,
@@ -1073,9 +1097,9 @@
                         'id': (new Date()).getTime()
                     }).c('body').t("Another message 3 minutes later").up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 jasmine.clock().tick(11*ONE_MINUTE_LATER);
-
                 _converse.chatboxes.onMessage($msg({
                         'from': sender_jid,
                         'to': _converse.connection.jid,
@@ -1083,9 +1107,9 @@
                         'id': (new Date()).getTime()
                     }).c('body').t("Another message 14 minutes since we started").up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 jasmine.clock().tick(1000);
-
                 // Insert <composing> message, to also check that
                 // text messages are inserted correctly with
                 // temporary chat events in the chat contents.
@@ -1097,9 +1121,9 @@
                         'type': 'chat'})
                     .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                     .tree());
-
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 jasmine.clock().tick(1*ONE_MINUTE_LATER);
-
                 _converse.chatboxes.onMessage($msg({
                         'from': sender_jid,
                         'to': _converse.connection.jid,
@@ -1107,13 +1131,12 @@
                         'id': (new Date()).getTime()
                     }).c('body').t("Another message 1 minute and 1 second since the previous one").up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 jasmine.clock().tick(1*ONE_MINUTE_LATER);
-
-                var view = _converse.chatboxviews.get(sender_jid);
                 test_utils.sendMessage(view, "Another message within 10 minutes, but from a different person");
 
-                var chat_content = view.el.querySelector('.chat-content');
+                chat_content = view.el.querySelector('.chat-content');
                 expect(chat_content.querySelectorAll('.message').length).toBe(6);
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(5);
                 expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(2)'))).toBe(false);
@@ -1144,7 +1167,8 @@
                             'type': 'chat'})
                         .c('body').t("A delayed message, sent 5 minutes since we started")
                         .tree());
-
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 expect(chat_content.querySelectorAll('.message').length).toBe(7);
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(6);
                 expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(2)'))).toBe(false);
@@ -1172,7 +1196,9 @@
                             'from': _converse.bare_jid+"/some-other-resource",
                             'type': 'chat'})
                         .c('body').t("A carbon message 4 minutes later")
-                        .tree());
+                        .tree()); 
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 expect(chat_content.querySelectorAll('.message').length).toBe(8);
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(7);
                 expect(u.hasClass('chat-msg--followup', chat_content.querySelector('.message:nth-child(2)'))).toBe(false);
@@ -1198,7 +1224,7 @@
 
                 jasmine.clock().uninstall();
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
 
 
@@ -1209,17 +1235,16 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                let sender_jid, message, chat_content;
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
                 test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300)
-                .then(function () {
+                .then(() => {
                     spyOn(_converse, 'emit');
-                    const message = 'This is a received message';
-                    const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-
+                    message = 'This is a received message';
+                    sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     // We don't already have an open chatbox for this user
                     expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
-
                     _converse.chatboxes.onMessage(
                         $msg({
                             'from': sender_jid,
@@ -1229,9 +1254,9 @@
                         }).c('body').t(message).up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
                     );
-
+                    return test_utils.waitUntil(() => _converse.api.chats.get().length);
+                }).then(() => {
                     expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-
                     // Check that the chatbox and its view now exist
                     const chatbox = _converse.chatboxes.get(sender_jid);
                     const chatboxview = _converse.chatboxviews.get(sender_jid);
@@ -1245,15 +1270,14 @@
                     expect(msg_obj.get('sender')).toEqual('them');
                     expect(msg_obj.get('is_delayed')).toEqual(false);
                     // Now check that the message appears inside the chatbox in the DOM
-                    const chat_content = chatboxview.el.querySelector('.chat-content');
+                    chat_content = chatboxview.el.querySelector('.chat-content');
                     expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
                     expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                    return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
-                    .then(function () {
-                        expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Max Frankfurter');
-                        done();
-                    });
-                });
+                    return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0]);
+                }).then(() => {
+                    expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Max Frankfurter');
+                    done();
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("can be replaced with a correction",
@@ -1266,16 +1290,17 @@
                 test_utils.openControlBox();
                 const message = 'This is a received message';
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const msg_id = u.getUniqueId();
                 test_utils.openChatBoxFor(_converse, sender_jid)
-                .then(() => {
-                    const msg_id = u.getUniqueId();
+                .then((view) => {
                     _converse.chatboxes.onMessage($msg({
                             'from': sender_jid,
                             'to': _converse.connection.jid,
                             'type': 'chat',
                             'id': msg_id,
                         }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
-
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
                     var chatboxview = _converse.chatboxviews.get(sender_jid);
                     expect(chatboxview.el.querySelectorAll('.chat-msg').length).toBe(1);
                     expect(chatboxview.el.querySelector('.chat-msg__text').textContent)
@@ -1318,7 +1343,7 @@
                         expect(older_msgs[0].textContent).toBe('But soft, what light through yonder airlock breaks?');
                         expect(older_msgs[1].textContent).toBe('But soft, what light through yonder chimney breaks?');
                         done();
-                    });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
                 });
             }));
 
@@ -1343,6 +1368,7 @@
                             'jid': sender_jid
                         });
                     });
+                    let chatbox, chatboxview;
                     var message = 'This is a received message from someone not on the roster';
                     var msg = $msg({
                             from: sender_jid,
@@ -1356,27 +1382,28 @@
                     expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
 
                     _converse.chatboxes.onMessage(msg);
-                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                    return test_utils.waitUntil(() => _converse.api.chats.get().length)
+                    .then(() => {
+                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
 
-                    // Check that the chatbox and its view now exist
-                    var chatbox = _converse.chatboxes.get(sender_jid);
-                    var chatboxview = _converse.chatboxviews.get(sender_jid);
-                    expect(chatbox).toBeDefined();
-                    expect(chatboxview).toBeDefined();
+                        // Check that the chatbox and its view now exist
+                        chatbox = _converse.chatboxes.get(sender_jid);
+                        chatboxview = _converse.chatboxviews.get(sender_jid);
+                        expect(chatbox).toBeDefined();
+                        expect(chatboxview).toBeDefined();
 
-                    var author_el = chatboxview.el.querySelector('.chat-msg__author');
-                    expect(chatbox.get('fullname') === sender_jid);
-                    expect( _.includes(author_el.textContent.trim(), 'max.frankfurter@localhost')).toBeTruthy();
-
-                    test_utils.waitUntil(function () { return vcard_fetched; }, 100)
-                    .then(function () {
+                        const author_el = chatboxview.el.querySelector('.chat-msg__author');
+                        expect(chatbox.get('fullname') === sender_jid);
+                        expect( _.includes(author_el.textContent.trim(), 'Max Frankfurter')).toBeTruthy();
+                        return test_utils.waitUntil(function () { return vcard_fetched; }, 100);
+                    }).then(() => {
                         expect(_converse.api.vcard.get).toHaveBeenCalled();
                         return test_utils.waitUntil(() => chatbox.vcard.get('fullname') === mock.cur_names[0])
-                    }).then(function () {
+                    }).then(() => {
                         var author_el = chatboxview.el.querySelector('.chat-msg__author');
                         expect( _.includes(author_el.textContent.trim(), 'Max Frankfurter')).toBeTruthy();
                         done();
-                    });
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
                 }));
             });
 
@@ -1391,6 +1418,7 @@
                     _converse.allow_non_roster_messaging = false;
 
                     spyOn(_converse, 'emit');
+                    let chatboxview;
                     var message = 'This is a received message from someone not on the roster';
                     var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var msg = $msg({
@@ -1406,34 +1434,36 @@
 
                     var chatbox = _converse.chatboxes.get(sender_jid);
                     expect(chatbox).not.toBeDefined();
-
                     // onMessage is a handler for received XMPP messages
                     _converse.chatboxes.onMessage(msg);
-                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-
-                    // onMessage is a handler for received XMPP messages
-                    _converse.allow_non_roster_messaging =true;
-                    _converse.chatboxes.onMessage(msg);
-                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-
-                    // Check that the chatbox and its view now exist
-                    chatbox = _converse.chatboxes.get(sender_jid);
-                    var chatboxview = _converse.chatboxviews.get(sender_jid);
-                    expect(chatbox).toBeDefined();
-                    expect(chatboxview).toBeDefined();
-                    // Check that the message was received and check the message parameters
-                    expect(chatbox.messages.length).toEqual(1);
-                    var msg_obj = chatbox.messages.models[0];
-                    expect(msg_obj.get('message')).toEqual(message);
-                    expect(msg_obj.get('fullname')).toEqual(undefined);
-                    expect(msg_obj.get('sender')).toEqual('them');
-                    expect(msg_obj.get('is_delayed')).toEqual(false);
-                    // Now check that the message appears inside the chatbox in the DOM
-                    var chat_content = chatboxview.el.querySelector('.chat-content');
-                    expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
-                    expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
-                    expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('max.frankfurter@localhost');
-                    done();
+                    test_utils.waitUntil(() => _converse.api.chats.get().length)
+                    .then(() => {
+                        chatboxview = _converse.chatboxviews.get(sender_jid);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        // onMessage is a handler for received XMPP messages
+                        _converse.allow_non_roster_messaging =true;
+                        _converse.chatboxes.onMessage(msg);
+                        return test_utils.waitUntil(() => chatboxview.model.messages.length);
+                    }).then(() => {
+                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        // Check that the chatbox and its view now exist
+                        chatbox = _converse.chatboxes.get(sender_jid);
+                        expect(chatbox).toBeDefined();
+                        expect(chatboxview).toBeDefined();
+                        // Check that the message was received and check the message parameters
+                        expect(chatbox.messages.length).toEqual(1);
+                        var msg_obj = chatbox.messages.models[0];
+                        expect(msg_obj.get('message')).toEqual(message);
+                        expect(msg_obj.get('fullname')).toEqual(undefined);
+                        expect(msg_obj.get('sender')).toEqual('them');
+                        expect(msg_obj.get('is_delayed')).toEqual(false);
+                        // Now check that the message appears inside the chatbox in the DOM
+                        var chat_content = chatboxview.el.querySelector('.chat-content');
+                        expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(message);
+                        expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
+                        expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Max Frankfurter');
+                        done();
+                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
                 }));
             });
 
@@ -1464,13 +1494,15 @@
                      *      <active xmlns="http://jabber.org/protocol/chatstates"/>
                      *  </message>
                      */
+                    let $chat_content, view;
+                    const error_txt = 'Server-to-server connection failed: Connecting failed: connection timeout';
                     var sender_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var fullname = _converse.xmppstatus.get('fullname');
                     fullname = _.isEmpty(fullname)? _converse.bare_jid: fullname;
                     _converse.api.chats.open(sender_jid)
                     .then(() => {
                         var msg_text = 'This message will not be sent, due to an error';
-                        var view = _converse.chatboxviews.get(sender_jid);
+                        view = _converse.chatboxviews.get(sender_jid);
                         var message = view.model.messages.create({
                             'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
                             'fullname': fullname,
@@ -1479,7 +1511,7 @@
                             'message': msg_text
                         });
                         view.model.sendMessage(message);
-                        var $chat_content = $(view.el).find('.chat-content');
+                        $chat_content = $(view.el).find('.chat-content');
                         var msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
                         expect(msg_txt).toEqual(msg_text);
 
@@ -1509,8 +1541,7 @@
                          *     </error>
                          * </message>
                          */
-                        var error_txt = 'Server-to-server connection failed: Connecting failed: connection timeout';
-                        var stanza = $msg({
+                        const stanza = $msg({
                                 'to': _converse.connection.jid,
                                 'type':'error',
                                 'id':'82bc02ce-9651-4336-baf0-fa04762ed8d2',
@@ -1521,9 +1552,10 @@
                             .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                                 .t('Server-to-server connection failed: Connecting failed: connection timeout');
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        return test_utils.waitUntil(() => view.model.messages.length);
+                    }).then(() => {
                         expect($chat_content.find('.chat-error').text()).toEqual(error_txt);
-
-                        stanza = $msg({
+                        const stanza = $msg({
                                 'to': _converse.connection.jid,
                                 'type':'error',
                                 'id':'some-other-unused-id',
@@ -1534,11 +1566,13 @@
                             .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                                 .t('Server-to-server connection failed: Connecting failed: connection timeout');
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        return test_utils.waitUntil(() => view.model.messages.length > 1);
+                    }).then(() => {
                         expect($chat_content.find('.chat-error').length).toEqual(2);
 
                         // If the last message is already an error message,
                         // then we don't render it another time.
-                        stanza = $msg({
+                        const stanza = $msg({
                                 'to': _converse.connection.jid,
                                 'type':'error',
                                 'id':'another-unused-id',
@@ -1549,10 +1583,11 @@
                             .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                                 .t('Server-to-server connection failed: Connecting failed: connection timeout');
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        return test_utils.waitUntil(() => view.model.messages.length > 2);
+                    }).then(() => {
                         expect($chat_content.find('.chat-error').length).toEqual(2);
-
                         // A different error message will however render
-                        stanza = $msg({
+                        const stanza = $msg({
                                 'to': _converse.connection.jid,
                                 'type':'error',
                                 'id':'another-id',
@@ -1563,6 +1598,8 @@
                             .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                                 .t('Something else went wrong as well');
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        return test_utils.waitUntil(() => view.model.messages.length > 3);
+                    }).then(() => {
                         expect($chat_content.find('.chat-error').length).toEqual(3);
                         done();
                     });
@@ -1610,7 +1647,8 @@
                             id: (new Date()).getTime()
                         }).c('body').t(message).up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-
+                    return test_utils.waitUntil(() => chatboxview.model.messages.length > 20);
+                }).then(() => {
                     // Now check that the message appears inside the chatbox in the DOM
                     const $chat_content = $(chatboxview.el).find('.chat-content');
                     const  msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
@@ -1623,7 +1661,8 @@
                     // Scroll down again
                     chatboxview.content.scrollTop = chatboxview.content.scrollHeight;
                     return test_utils.waitUntil(() => !u.isVisible(chatboxview.el.querySelector('.new-msgs-indicator')), 900);
-                }).then(done);
+                }).then(done)
+                  .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("is ignored if it's intended for a different resource and filter_by_resource is set to true",
@@ -1634,12 +1673,10 @@
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
 
-                test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('.roster-group').length;
-                    }, 300)
-                .then(function () {
+                let message, sender_jid, msg, view;
+                test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
+                .then(() => {
                     // Send a message from a different resource
-                    var message, sender_jid, msg;
                     spyOn(_converse, 'log');
                     spyOn(_converse.chatboxes, 'getChatBox').and.callThrough();
                     _converse.filter_by_resource = true;
@@ -1652,7 +1689,8 @@
                         }).c('body').t("This message will not be shown").up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                     _converse.chatboxes.onMessage(msg);
-
+                    return test_utils.waitUntil(() => _converse.api.chats.get().length);
+                }).then(() => {
                     expect(_converse.log).toHaveBeenCalledWith(
                             "onMessage: Ignoring incoming message intended for a different resource: dummy@localhost/some-other-resource",
                             Strophe.LogLevel.INFO);
@@ -1668,14 +1706,16 @@
                         }).c('body').t(message).up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                     _converse.chatboxes.onMessage(msg);
+                    view = _converse.chatboxviews.get(sender_jid);
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
 
                     expect(_converse.chatboxes.getChatBox).toHaveBeenCalled();
-                    var chatboxview = _converse.chatboxviews.get(sender_jid);
-                    var $chat_content = $(chatboxview.el).find('.chat-content:last');
-                    var msg_txt = $chat_content.find('.chat-msg').find('.chat-msg__text').text();
+                    var chat_content = $(view.el).find('.chat-content:last')[0];
+                    var msg_txt = chat_content.querySelector('.chat-msg .chat-msg__text').textContent;
                     expect(msg_txt).toEqual(message);
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
         });
 
@@ -1690,7 +1730,7 @@
                 test_utils.createContacts(_converse, 'current', 1);
                 _converse.emit('rosterContactsFetched');
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                let view;
+                let view, msg, media;
                 test_utils.openChatBoxFor(_converse, contact_jid)
                 .then(() => {
                     view = _converse.chatboxviews.get(contact_jid);
@@ -1707,9 +1747,9 @@
 
                     return test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg audio').length, 1000);
                 }).then(() => {
-                    let msg = view.el.querySelector('.chat-msg .chat-msg__text');
+                    msg = view.el.querySelector('.chat-msg .chat-msg__text');
                     expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you heard this funny audio?</div>');
-                    let media = view.el.querySelector('.chat-msg .chat-msg__media');
+                    media = view.el.querySelector('.chat-msg .chat-msg__media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                         '<!-- src/templates/audio.html -->'+
                         '<audio controls=""><source src="http://localhost/audio.mp3" type="audio/mpeg"></audio>'+
@@ -1724,7 +1764,8 @@
                         "    <x xmlns='jabber:x:oob'><url>http://localhost/audio.mp3</url></x>"+
                         "</message>").firstChild;
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
                     msg = view.el.querySelector('.chat-msg:last-child .chat-msg__text');
                     expect(msg.innerHTML).toEqual('<!-- message gets added here via renderMessage -->'); // Emtpy
                     media = view.el.querySelector('.chat-msg:last-child .chat-msg__media');
@@ -1733,7 +1774,7 @@
                         '<audio controls=""><source src="http://localhost/audio.mp3" type="audio/mpeg"></audio>'+
                         '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file</a>');
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("will render video from oob mp4 URLs",
@@ -1744,9 +1785,10 @@
                 test_utils.createContacts(_converse, 'current');
                 _converse.emit('rosterContactsFetched');
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                let view, msg, media;
                 test_utils.openChatBoxFor(_converse, contact_jid)
                 .then(() => {
-                    const view = _converse.chatboxviews.get(contact_jid);
+                    view = _converse.chatboxviews.get(contact_jid);
                     spyOn(view.model, 'sendMessage').and.callThrough();
 
                     const stanza = Strophe.xmlHtmlNode(
@@ -1758,35 +1800,36 @@
                         "</message>").firstChild;
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                    test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg video').length, 2000).then(function () {
-                        let msg = view.el.querySelector('.chat-msg .chat-msg__text');
-                        expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you seen this funny video?</div>');
-                        let media = view.el.querySelector('.chat-msg .chat-msg__media');
-                        expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                            '<!-- src/templates/video.html -->'+
-                            '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
-                            '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
+                    return test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg video').length, 2000)
+                }).then(() => {
+                    msg = view.el.querySelector('.chat-msg .chat-msg__text');
+                    expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you seen this funny video?</div>');
+                    media = view.el.querySelector('.chat-msg .chat-msg__media');
+                    expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/video.html -->'+
+                        '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
+                        '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
 
-                        // If the <url> and <body> contents is the same, don't duplicate.
-                        const stanza = Strophe.xmlHtmlNode(
-                            "<message from='"+contact_jid+"'"+
-                            "         type='chat'"+
-                            "         to='dummy@localhost/resource'>"+
-                            "    <body>http://localhost/video.mp4</body>"+
-                            "    <x xmlns='jabber:x:oob'><url>http://localhost/video.mp4</url></x>"+
-                            "</message>").firstChild;
-                        _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                        msg = view.el.querySelector('.chat-msg:last-child .chat-msg__text');
-                        expect(msg.innerHTML).toEqual('<!-- message gets added here via renderMessage -->'); // Emtpy
-                        media = view.el.querySelector('.chat-msg:last-child .chat-msg__media');
-                        expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                            '<!-- src/templates/video.html -->'+
-                            '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
-                            '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
-                        done();
-                    });
-                });
+                    // If the <url> and <body> contents is the same, don't duplicate.
+                    const stanza = Strophe.xmlHtmlNode(
+                        "<message from='"+contact_jid+"'"+
+                        "         type='chat'"+
+                        "         to='dummy@localhost/resource'>"+
+                        "    <body>http://localhost/video.mp4</body>"+
+                        "    <x xmlns='jabber:x:oob'><url>http://localhost/video.mp4</url></x>"+
+                        "</message>").firstChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
+                    msg = view.el.querySelector('.chat-msg:last-child .chat-msg__text');
+                    expect(msg.innerHTML).toEqual('<!-- message gets added here via renderMessage -->'); // Emtpy
+                    media = view.el.querySelector('.chat-msg:last-child .chat-msg__media');
+                    expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                        '<!-- src/templates/video.html -->'+
+                        '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
+                        '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
+                    done();
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("will render download links for files from oob URLs",
@@ -1872,10 +1915,12 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     function (done, _converse) {
 
+            let view;
             test_utils.createContacts(_converse, 'current');
-            test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                const view = _converse.chatboxviews.get('lounge@localhost');
-                if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
+            test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy')
+            .then(() => {
+                view = _converse.chatboxviews.get('lounge@localhost');
+                if (!view.el.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
                 const message = 'dummy: Your attention is required';
                 const nick = mock.chatroom_names[0],
                     msg = $msg({
@@ -1885,6 +1930,8 @@
                         type: 'groupchat'
                     }).c('body').t(message).tree();
                 view.model.onMessage(msg);
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 expect($(view.el).find('.chat-msg').hasClass('mentioned')).toBeTruthy();
                 done();
             }).catch(_.partial(console.error, _));
@@ -1896,9 +1943,10 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+            let view;
             test_utils.createContacts(_converse, 'current');
             test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                const view = _converse.chatboxviews.get('lounge@localhost');
+                view = _converse.chatboxviews.get('lounge@localhost');
                 const msg = $msg({
                         from: 'lounge@localhost/dummy',
                         id: (new Date()).getTime(),
@@ -1906,9 +1954,11 @@
                         type: 'groupchat'
                     }).c('body').t('I wrote this message!').tree();
                 view.model.onMessage(msg);
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 expect(view.model.messages.last().get('sender')).toBe('me');
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));
 
         it("can be replaced with a correction",
@@ -1942,7 +1992,8 @@
                         'type': 'groupchat',
                         'id': msg_id,
                     }).c('body').t('But soft, what light through yonder airlock breaks?').tree());
-
+                return test_utils.waitUntil(() => view.model.messages.length);
+            }).then(() => {
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(view.el.querySelector('.chat-msg__text').textContent)
                     .toBe('But soft, what light through yonder airlock breaks?');
@@ -1954,7 +2005,6 @@
                         'id': u.getUniqueId(),
                     }).c('body').t('But soft, what light through yonder chimney breaks?').up()
                         .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
-
                 return test_utils.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
                     'But soft, what light through yonder chimney breaks?');
             }).then(() => {
@@ -1992,14 +2042,14 @@
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
-            let msg_id, view;
+            let msg_id, view, textarea;
             test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy')
             .then(() => {
                 const room_jid = 'lounge@localhost';
                 const room = _converse.api.rooms.get(room_jid);
                 view = _converse.chatboxviews.get(room_jid);
 
-                const textarea = view.el.querySelector('textarea.chat-textarea');
+                textarea = view.el.querySelector('textarea.chat-textarea');
                 expect(textarea.value).toBe('');
                 view.keyPressed({
                     target: textarea,
@@ -2064,6 +2114,8 @@
                     'to': 'dummy@localhost',
                     'type': 'groupchat'
                 }).c('body').t('Hello world').tree());
+                return test_utils.waitUntil(() => view.model.messages.length > 1);
+            }).then(() => {
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
 
                 // Test that pressing the down arrow cancels message correction
@@ -2096,9 +2148,10 @@
                     null, ['rosterGroupsFetched'], {},
                         function (done, _converse) {
 
+                let view;
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom')
                 .then(() => {
-                    const view = _converse.chatboxviews.get('lounge@localhost');
+                    view = _converse.chatboxviews.get('lounge@localhost');
                     ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                         _converse.connection._dataRecv(test_utils.createRequest(
                             $pres({
@@ -2113,7 +2166,6 @@
                             }))
                         );
                     });
-
                     const msg = $msg({
                             from: 'lounge@localhost/gibson',
                             id: (new Date()).getTime(),
@@ -2124,7 +2176,8 @@
                             .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'11', 'end':'14', 'type':'mention', 'uri':'xmpp:dummy@localhost'}).up()
                             .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@localhost'}).nodeTree;
                     view.model.onMessage(msg);
-
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
                     expect(view.el.querySelectorAll('.chat-msg__text').length).toBe(1);
                     expect(view.el.querySelector('.chat-msg__text').outerHTML).toBe(
                         '<div class="chat-msg__text">hello <span class="mention">z3r0</span> '+

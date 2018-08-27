@@ -252,7 +252,8 @@
                         '_converse': _converse,
                         'allow_contact_removal': _converse.allow_contact_removal,
                         'display_name': this.model.getDisplayName(),
-                        'is_roster_contact': !_.isUndefined(this.model.contact)
+                        'is_roster_contact': !_.isUndefined(this.model.contact),
+                        'utils': u
                     }));
                 },
 

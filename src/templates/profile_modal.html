@@ -72,7 +72,7 @@
                                     <li class="list-group-item active">{{{o.__("This device's OMEMO fingerprint")}}}</li>
                                     <li class="list-group-item">
                                         {[ if (o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint) { ]}
-                                            <span class="fingerprint">{{{o.view.current_device.get('bundle').fingerprint}}}</span>
+                                        <span class="fingerprint">{{{o.utils.formatFingerprint(o.view.current_device.get('bundle').fingerprint)}}}</span>
                                         {[ } else {]}
                                             <span class="spinner fa fa-spinner centered"/>
                                         {[ } ]}
@@ -93,7 +93,7 @@
                                                 <label>
                                                 <input type="checkbox" value="{{{device.get('id')}}}"
                                                        aria-label="{{{o.__('Checkbox for selecting the following fingerprint')}}}">
-                                                <span class="fingerprint">{{{device.get('bundle').fingerprint}}}</span>
+                                                <span class="fingerprint">{{{o.utils.formatFingerprint(device.get('bundle').fingerprint)}}}</span>
                                                 </label>
                                             </li>
                                             {[ } else {]}

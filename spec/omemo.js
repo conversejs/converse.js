@@ -912,7 +912,7 @@
                             .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
                                 .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t(btoa('1111')).up()
                                 .c('signedPreKeySignature').t(btoa('2222')).up()
-                                .c('identityKey').t(btoa('3333')).up()
+                                .c('identityKey').t('BQmHEOHjsYm3w5M8VqxAtqJmLCi7CaxxsdZz6G0YpuMI').up()
                                 .c('prekeys')
                                     .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1001')).up()
                                     .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
@@ -927,7 +927,9 @@
                 const modal = view.user_details_modal;
                 expect(modal.el.querySelectorAll('.fingerprints .fingerprint').length).toBe(1);
                 const el = modal.el.querySelector('.fingerprints .fingerprint');
-                expect(el.textContent).toBe('f56d6351aa71cff0debea014d13525e42036187a');
+                expect(el.textContent.trim()).toBe(
+                    u.formatFingerprint(u.arrayBufferToHex(u.base64ToArrayBuffer('BQmHEOHjsYm3w5M8VqxAtqJmLCi7CaxxsdZz6G0YpuMI')))
+                );
 
                 expect(modal.el.querySelectorAll('input[type="radio"]').length).toBe(2);
 

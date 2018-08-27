@@ -912,20 +912,19 @@
         return result;
     };
 
-    u.arrayBufferToHex = function (ab) {
-        const hexCodes = [];
-        const padding = '00000000';
-        const view = new window.DataView(ab);
-        for (var i = 0; i < view.byteLength; i += 4) {
-            // Using getUint32 reduces the number of iterations needed (we process 4 bytes each time)
-            const value = view.getUint32(i)
-            // toString(16) will give the hex representation of the number without padding
-            const stringValue = value.toString(16)
-            // We use concatenation and slice for padding
-            const paddedValue = (padding + stringValue).slice(-padding.length)
-            hexCodes.push(paddedValue);
+    u.formatFingerprint = function (fp) {
+        fp = fp.replace(/^05/, '');
+        const arr = [];
+        for (let i=1; i<8; i++) {
+            const idx = i*8+i-1;
+            fp = fp.slice(0, idx) + ' ' + fp.slice(idx);
         }
-        return hexCodes.join("");
+        return fp;
+    };
+
+    u.arrayBufferToHex = function (ab) {
+        // https://stackoverflow.com/questions/40031688/javascript-arraybuffer-to-hex#40031979
+        return Array.prototype.map.call(new Uint8Array(ab), x => ('00' + x.toString(16)).slice(-2)).join('');
     };
 
     u.arrayBufferToString = function (ab) {
@@ -934,8 +933,7 @@
     };
 
     u.arrayBufferToBase64 = function (ab) {
-        return btoa(new Uint8Array(ab)
-            .reduce((data, byte) => data + String.fromCharCode(byte), ''));
+        return btoa((new Uint8Array(ab)).reduce((data, byte) => data + String.fromCharCode(byte), ''));
     };
 
     u.stringToArrayBuffer = function (string) {

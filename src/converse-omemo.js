@@ -49,7 +49,7 @@
                 }
             });
         return {
-            'identity_key': bundle_el.querySelector('identityKey').textContent,
+            'identity_key': bundle_el.querySelector('identityKey').textContent.trim(),
             'signed_prekey': {
                 'id': parseInt(signed_prekey_public_el.getAttribute('signedPreKeyId'), 10),
                 'public_key': signed_prekey_public_el.textContent,
@@ -490,12 +490,11 @@
             _converse.NUM_PREKEYS = 100; // Set here so that tests can override
 
             function generateFingerprint (device) {
-                let bundle;
-                return device.getBundle().then(b => {
-                    bundle = b;
-                    return crypto.subtle.digest('SHA-1', u.base64ToArrayBuffer(bundle['identity_key']));
-                }).then(fp => {
-                    bundle['fingerprint'] = u.arrayBufferToHex(fp);
+                if (_.get(device.get('bundle'), 'fingerprint')) {
+                    return;
+                }
+                return device.getBundle().then(bundle => {
+                    bundle['fingerprint'] = u.arrayBufferToHex(u.base64ToArrayBuffer(bundle['identity_key']));
                     device.save('bundle', bundle);
                     device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
                 });

@@ -74,6 +74,7 @@
                         'label_role': __('Role'),
                         'label_role_help': __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.'),
                         'label_url': __('URL'),
+                        'utils': u,
                         'view': this
                     }));
                 },

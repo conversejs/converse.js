@@ -50,7 +50,7 @@
                                                 {[ if (device.get('trusted') === -1) { ]} checked="checked" {[ } ]}>{{{o.__('Untrusted')}}}
                                         </label>
                                     </div>
-                                    <span class="fingerprint">{{{device.get('bundle').fingerprint}}}</span>
+                                    <span class="fingerprint">{{{o.utils.formatFingerprint(device.get('bundle').fingerprint)}}}</span>
                                     </form>
                                 </li>
                                 {[ } ]}

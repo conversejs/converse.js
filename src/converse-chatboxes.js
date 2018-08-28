@@ -244,7 +244,7 @@
                         'bookmarked': false,
                         'chat_state': undefined,
                         'num_unread': 0,
-                        'type': 'chatbox',
+                        'type': _converse.PRIVATE_CHAT_TYPE,
                         'message_type': 'chat',
                         'url': '',
                         'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode)
@@ -807,7 +807,6 @@
                 },
 
                 initialize () {
-                    this.model.on("add", this.onChatBoxAdded, this);
                     this.model.on("destroy", this.removeChat, this);
                     this.el.classList.add(`converse-${_converse.view_mode}`);
                     this.render();
@@ -828,13 +827,6 @@
                      * the row managed by this overview.
                      */
                     this.row_el.insertAdjacentElement('afterBegin', el);
-                },
-
-                onChatBoxAdded (item) {
-                    // Views aren't created here, since the core code doesn't
-                    // contain any views. Instead, they're created in overrides in
-                    // plugins, such as in converse-chatview.js and converse-muc.js
-                    return this.get(item.get('id'));
                 },
 
                 removeChat (item) {
@@ -1031,7 +1023,7 @@
                             _converse.chatboxes.each(function (chatbox) {
                                 // FIXME: Leaky abstraction from MUC. We need to add a
                                 // base type for chat boxes, and check for that.
-                                if (chatbox.get('type') !== 'chatroom') {
+                                if (chatbox.get('type') !== _converse.CHATROOMS_TYPE) {
                                     result.push(chatbox);
                                 }
                             });

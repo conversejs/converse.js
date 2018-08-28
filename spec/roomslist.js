@@ -51,7 +51,7 @@
                     list = controlbox.el.querySelector('div.rooms-list-container');
                     expect(_.includes(list.classList, 'hidden')).toBeTruthy();
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }
         ));
     });
@@ -87,7 +87,7 @@
                 item = room_els[0];
                 expect(item.textContent.trim()).toBe('balcony@chat.shakespeare.lit');
                 done();
-            });
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }));
 
         it("has an info icon which opens a details modal when clicked", mock.initConverseWithPromises(

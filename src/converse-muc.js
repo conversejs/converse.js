@@ -35,7 +35,6 @@
     Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 
     converse.MUC_NICK_CHANGED_CODE = "303";
-    converse.CHATROOMS_TYPE = 'chatroom';
 
     converse.ROOM_FEATURES = [
         'passwordprotected', 'unsecured', 'hidden',
@@ -77,7 +76,9 @@
             // New functions which don't exist yet can also be added.
 
             tearDown () {
-                const groupchats = this.chatboxes.where({'type': converse.CHATROOMS_TYPE});
+                const { _converse } = this.__super__,
+                      groupchats = this.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
+
                 _.each(groupchats, function (groupchat) {
                     u.safeSave(groupchat, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
                 });
@@ -87,7 +88,7 @@
             ChatBoxes: {
                 model (attrs, options) {
                     const { _converse } = this.__super__;
-                    if (attrs.type == converse.CHATROOMS_TYPE) {
+                    if (attrs.type == _converse.CHATROOMS_TYPE) {
                         return new _converse.ChatRoom(attrs, options);
                     } else {
                         return this.__super__.model.apply(this, arguments);
@@ -143,7 +144,7 @@
                  * are correct, for example that the "type" is set to
                  * "chatroom".
                  */
-                settings.type = converse.CHATROOMS_TYPE;
+                settings.type = _converse.CHATROOMS_TYPE;
                 settings.id = jid;
                 settings.box_id = b64_sha1(jid)
                 const chatbox = _converse.chatboxes.getChatBox(jid, settings, true);
@@ -175,7 +176,7 @@
                           'description': '',
                           'features_fetched': false,
                           'roomconfig': {},
-                          'type': converse.CHATROOMS_TYPE,
+                          'type': _converse.CHATROOMS_TYPE,
                           'message_type': 'groupchat'
                         }
                     );
@@ -1213,7 +1214,7 @@
 
             const getChatRoom = function (jid, attrs, create) {
                 jid = jid.toLowerCase();
-                attrs.type = converse.CHATROOMS_TYPE;
+                attrs.type = _converse.CHATROOMS_TYPE;
                 attrs.id = jid;
                 attrs.box_id = b64_sha1(jid)
                 return _converse.chatboxes.getChatBox(jid, attrs, create);
@@ -1252,7 +1253,7 @@
                  * when fetched from session storage.
                  */
                 _converse.chatboxes.each(function (model) {
-                    if (model.get('type') === converse.CHATROOMS_TYPE) {
+                    if (model.get('type') === _converse.CHATROOMS_TYPE) {
                         model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                     }
                 });
@@ -1351,7 +1352,7 @@
                         if (_.isUndefined(jids)) {
                             const result = [];
                             _converse.chatboxes.each(function (chatbox) {
-                                if (chatbox.get('type') === converse.CHATROOMS_TYPE) {
+                                if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
                                     result.push(chatbox);
                                 }
                             });

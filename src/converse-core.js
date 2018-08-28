@@ -186,6 +186,14 @@
     _converse.PAUSED = 'paused';
     _converse.GONE = 'gone';
 
+
+    // Chat types
+    _converse.PRIVATE_CHAT_TYPE = 'chatbox';
+    _converse.CHATROOMS_TYPE = 'chatroom';
+    _converse.HEADLINES_TYPE = 'headline';
+    _converse.CONTROLBOX_TYPE = 'controlbox';
+
+
     // Default configuration values
     // ----------------------------
     _converse.default_settings = {

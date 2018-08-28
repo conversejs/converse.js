@@ -112,23 +112,6 @@
             },
 
             ChatBoxViews: {
-                onChatBoxAdded (item) {
-                    const { _converse } = this.__super__;
-                    if (item.get('box_id') === 'controlbox') {
-                        let view = this.get(item.get('id'));
-                        if (view) {
-                            view.model = item;
-                            view.initialize();
-                            return view;
-                        } else {
-                            view = new _converse.ControlBoxView({model: item});
-                            return this.add(item.get('id'), view);
-                        }
-                    } else {
-                        return this.__super__.onChatBoxAdded.apply(this, arguments);
-                    }
-                },
-
                 closeAllChatBoxes () {
                     const { _converse } = this.__super__;
                     this.each(function (view) {
@@ -170,7 +153,6 @@
             },
 
             ChatBoxView: {
-
                 insertIntoDOM () {
                     const view = this.__super__._converse.chatboxviews.get("controlbox");
                     if (view) {
@@ -200,13 +182,14 @@
 
             _converse.api.promises.add('controlboxInitialized');
 
-            _converse.addControlBox = () =>
-                _converse.chatboxes.add({
-                    id: 'controlbox',
-                    box_id: 'controlbox',
-                    type: 'controlbox',
-                    closed: !_converse.show_controlbox_by_default
+            _converse.addControlBox = () => {
+                return _converse.chatboxes.add({
+                    'id': 'controlbox',
+                    'box_id': 'controlbox',
+                    'type': _converse.CONTROLBOX_TYPE,
+                    'closed': !_converse.show_controlbox_by_default
                 })
+            }
 
 
             _converse.ControlBoxView = _converse.ChatBoxView.extend({
@@ -582,6 +565,21 @@
                         this.showControlBox();
                     }
                 }
+            });
+
+            _converse.on('chatBoxesInitialized', () => {
+                const that = _converse.chatboxviews;
+                _converse.chatboxes.on('add', item => {
+                    if (item.get('type') === _converse.CONTROLBOX_TYPE) {
+                        const view = that.get(item.get('id'));
+                        if (view) {
+                            view.model = item;
+                            view.initialize();
+                        } else {
+                            that.add(item.get('id'), new _converse.ControlBoxView({model: item}));
+                        }
+                    }
+                });
             });
 
             _converse.on('clearSession', () => {

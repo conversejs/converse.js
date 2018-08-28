@@ -64,27 +64,6 @@
          */
         dependencies: ["converse-chatboxes", "converse-disco", "converse-message-view", "converse-modal"],
 
-        overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // New functions which don't exist yet can also be added.
-            //
-            ChatBoxViews: {
-                onChatBoxAdded (item) {
-                    const { _converse } = this.__super__;
-                    let view = this.get(item.get('id'));
-                    if (!view) {
-                        view = new _converse.ChatBoxView({model: item});
-                        this.add(item.get('id'), view);
-                        return view;
-                    } else {
-                        return this.__super__.onChatBoxAdded.apply(this, arguments);
-                    }
-                }
-            }
-        },
 
         initialize () {
             /* The initialize function gets called as soon as the plugin is
@@ -1278,6 +1257,15 @@
                         this.model.clearUnreadMsgCounter();
                     }
                 }
+            });
+
+            _converse.on('chatBoxesInitialized', () => {
+                const that = _converse.chatboxviews;
+                _converse.chatboxes.on('add', item => {
+                    if (!that.get(item.get('id')) && item.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+                        that.add(item.get('id'), new _converse.ChatBoxView({model: item}));
+                    }
+                });
             });
 
             _converse.on('connected', () => {

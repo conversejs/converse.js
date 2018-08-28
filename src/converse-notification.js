@@ -85,9 +85,6 @@
             _converse.shouldNotifyOfMessage = function (message) {
                 /* Is this a message worthy of notification?
                  */
-                if (utils.isOTRMessage(message)) {
-                    return false;
-                }
                 const forwarded = message.querySelector('forwarded');
                 if (!_.isNull(forwarded)) {
                     return false;

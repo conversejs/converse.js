@@ -78,8 +78,9 @@
                 remove_contact_button.click();
                 return test_utils.waitUntil(() => u.isVisible(document.querySelector('.alert-danger')), 2000);
             }).then(function () {
-                expect(document.querySelector('.alert-danger .modal-title').textContent).toBe("Error");
-                expect(document.querySelector('.modal:not(#user-profile-modal) .modal-body p').textContent.trim())
+                const header = document.querySelector('.alert-danger .modal-title');
+                expect(header.textContent).toBe("Error");
+                expect(u.ancestor(header, '.modal-content').querySelector('.modal-body p').textContent.trim())
                     .toBe("Sorry, there was an error while trying to remove Max Frankfurter as a contact.");
                 document.querySelector('.alert-danger  button.close').click();
                 const show_modal_button = view.el.querySelector('.show-user-details-modal');

@@ -15,7 +15,6 @@
 }(this, function (converse, tpl_chatbox) {
     "use strict";
     const { _, utils } = converse.env;
-    const HEADLINES_TYPE = 'headline';
 
     converse.plugins.add('converse-headline', {
         /* Plugin dependencies are other plugins which might be
@@ -40,26 +39,12 @@
             ChatBoxes: {
                 model (attrs, options) {
                     const { _converse } = this.__super__;
-                    if (attrs.type == HEADLINES_TYPE) {
+                    if (attrs.type == _converse.HEADLINES_TYPE) {
                         return new _converse.HeadlinesBox(attrs, options);
                     } else {
                         return this.__super__.model.apply(this, arguments);
                     }
                 },
-            },
-
-            ChatBoxViews: {
-                onChatBoxAdded (item) {
-                    const { _converse } = this.__super__;
-                    let view = this.get(item.get('id'));
-                    if (!view && item.get('type') === 'headline') {
-                        view = new _converse.HeadlinesBoxView({model: item});
-                        this.add(item.get('id'), view);
-                        return view;
-                    } else {
-                        return this.__super__.onChatBoxAdded.apply(this, arguments);
-                    }
-                }
             }
         },
 
@@ -73,7 +58,7 @@
 
             _converse.HeadlinesBox = _converse.ChatBox.extend({
                 defaults: {
-                    'type': 'headline',
+                    'type': _converse.HEADLINES_TYPE,
                     'bookmarked': false,
                     'chat_state': undefined,
                     'num_unread': 0,
@@ -135,7 +120,7 @@
                     const chatbox = _converse.chatboxes.create({
                         'id': from_jid,
                         'jid': from_jid,
-                        'type': 'headline',
+                        'type': _converse.HEADLINES_TYPE,
                         'from': from_jid
                     });
                     chatbox.createMessage(message, message);
@@ -149,6 +134,16 @@
             }
             _converse.on('connected', registerHeadlineHandler);
             _converse.on('reconnected', registerHeadlineHandler);
+
+
+            _converse.on('chatBoxesInitialized', () => {
+                const that = _converse.chatboxviews;
+                _converse.chatboxes.on('add', item => {
+                    if (!that.get(item.get('id')) && item.get('type') === _converse.HEADLINES_TYPE) {
+                        that.add(item.get('id'), new _converse.HeadlinesBoxView({model: item}));
+                    }
+                });
+            });
         }
     });
 }));

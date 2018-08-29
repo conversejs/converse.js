@@ -8,6 +8,7 @@
 - #194 Include entity capabilities in outgoing presence stanzas
 - #337 API call to update a VCard
 - #421 XEP-0308: Last Message Correction
+- #497 XEP-0384: OMEMO encrypted messaging
 - #968 Use nickname from VCard when joining a room
 - #1091 There's now only one CSS file for all view modes.
 - #1094 Show room members who aren't currently online
@@ -60,8 +61,7 @@
   [statusMessageChanged](https://conversejs.org/docs/html/events.html#contactstatusmessagechanged)
   event and make the XMLHttpRequest yourself.
 - Removed  `xhr_user_search` in favor of only accepting `xhr_user_search_url` as configuration option.
-- `xhr_user_search_url` has to include the `?` character now in favor of more
-flexibility. See example in the documentation.
+- `xhr_user_search_url` has to include the `?` character now in favor of more flexibility. See example in the documentation.
 - The data returned from the `xhr_user_search_url` must now include the user's
   `jid` instead of just an `id`.
 - New configuration settings [nickname](https://conversejs.org/docs/html/configurations.html#nickname)
@@ -76,6 +76,9 @@ flexibility. See example in the documentation.
   roster-related data. Previously this code was in `converse-core.js`.
 - VCards are now stored separately from chats and roster contacts.
 
+## Other
+
+- Support for OTR (off-the-record) encryption has been dropped.
 
 ## 3.3.4 (2018-03-05)
 

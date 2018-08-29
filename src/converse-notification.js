@@ -1,7 +1,7 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2018, JC Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
@@ -10,9 +10,12 @@
     define(["converse-core"], factory);
 }(this, function (converse) {
     "use strict";
-    const { utils, Strophe, _ } = converse.env;
+    const { Strophe, _ } = converse.env,
+          u = converse.env.utils;
 
     converse.plugins.add('converse-notification', {
+
+        dependencies: ["converse-chatboxes"],
 
         initialize () {
             /* The initialize function gets called as soon as the plugin is
@@ -72,10 +75,11 @@
 
             _converse.isMessageToHiddenChat = function (message) {
                 if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
-                    const jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
-                    const model = _converse.chatboxes.get(jid);
-                    if (!_.isNil(model)) {
-                        return model.get('hidden') || _converse.windowState === 'hidden';
+                    const jid = Strophe.getBareJidFromJid(message.getAttribute('from')),
+                          view = _converse.chatboxviews.get(jid);
+
+                    if (!_.isNil(view)) {
+                        return view.model.get('hidden') || _converse.windowState === 'hidden' || !u.isVisible(view.el);
                     }
                     return true;
                 }
@@ -83,17 +87,12 @@
             }
 
             _converse.shouldNotifyOfMessage = function (message) {
-                /* Is this a message worthy of notification?
-                 */
-                if (utils.isOTRMessage(message)) {
-                    return false;
-                }
                 const forwarded = message.querySelector('forwarded');
                 if (!_.isNull(forwarded)) {
                     return false;
                 } else if (message.getAttribute('type') === 'groupchat') {
                     return _converse.shouldNotifyOfGroupMessage(message);
-                } else if (utils.isHeadlineMessage(_converse, message)) {
+                } else if (u.isHeadlineMessage(_converse, message)) {
                     // We want to show notifications for headline messages.
                     return _converse.isMessageToHiddenChat(message);
                 }

@@ -86,6 +86,7 @@
         'converse-muc',
         'converse-muc-views',
         'converse-notification',
+        'converse-omemo',
         'converse-oauth',
         'converse-ping',
         'converse-profile',
@@ -184,6 +185,14 @@
     _converse.COMPOSING = 'composing';
     _converse.PAUSED = 'paused';
     _converse.GONE = 'gone';
+
+
+    // Chat types
+    _converse.PRIVATE_CHAT_TYPE = 'chatbox';
+    _converse.CHATROOMS_TYPE = 'chatroom';
+    _converse.HEADLINES_TYPE = 'headline';
+    _converse.CONTROLBOX_TYPE = 'controlbox';
+
 
     // Default configuration values
     // ----------------------------

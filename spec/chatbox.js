@@ -27,10 +27,11 @@
                 _converse.emit('rosterContactsFetched');
                 test_utils.openControlBox();
 
+                let view;
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                test_utils.openChatBoxFor(_converse, contact_jid);
-                test_utils.waitUntil(() => _converse.chatboxes.length == 2).then(() => {
-                    var view = _converse.chatboxviews.get(contact_jid);
+                test_utils.openChatBoxFor(_converse, contact_jid)
+                .then(() => {
+                    view = _converse.chatboxviews.get(contact_jid);
                     test_utils.sendMessage(view, '/help');
 
                     const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info:not(.chat-date)'), 0);
@@ -39,13 +40,15 @@
                     expect(info_messages.pop().textContent).toBe('/me: Write in the third person');
                     expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
 
-                    var msg = $msg({
+                    const msg = $msg({
                             from: contact_jid,
                             to: _converse.connection.jid,
                             type: 'chat',
                             id: (new Date()).getTime()
                         }).c('body').t('hello world').tree();
                     _converse.chatboxes.onMessage(msg);
+                    return test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
+                }).then(() => {
                     expect(view.content.lastElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
                     done();
                 });
@@ -618,10 +621,10 @@
                             expect(view.model.get('chat_state')).toBe('inactive');
                             spyOn(_converse.connection, 'send');
                             view.model.maximize();
-                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'active', 700);
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'active', 1000);
                         }).then(() => {
                             expect(_converse.connection.send).toHaveBeenCalled();
-                            var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
+                            const calls = _.filter(_converse.connection.send.calls.all(), function (call) {
                                 return call.args[0] instanceof Strophe.Builder;
                             });
                             expect(calls.length).toBe(1);
@@ -632,7 +635,7 @@
                             expect($stanza.children().get(1).tagName).toBe('no-store');
                             expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
                             done();
-                        });
+                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
                     }));
                 });
 
@@ -741,7 +744,7 @@
                             spyOn(_converse, 'log');
                             recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
                             return test_utils.openChatBoxFor(_converse, recipient_jid);
-                        }).then(() => {
+                        }).then((view) => {
                             var msg = $msg({
                                     'from': _converse.bare_jid,
                                     'id': (new Date()).getTime(),
@@ -757,7 +760,8 @@
                                         'type': 'chat'
                                 }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                             _converse.chatboxes.onMessage(msg);
-
+                            return test_utils.waitUntil(() => view.model.messages.length);
+                        }).then(() => {
                             // Check that the chatbox and its view now exist
                             var chatbox = _converse.chatboxes.get(recipient_jid);
                             var chatboxview = _converse.chatboxviews.get(recipient_jid);
@@ -886,7 +890,7 @@
                             spyOn(_converse, 'log');
                             recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
                             return test_utils.openChatBoxFor(_converse, recipient_jid);
-                        }).then(() => {
+                        }).then((view) => {
                             var msg = $msg({
                                     'from': _converse.bare_jid,
                                     'id': (new Date()).getTime(),
@@ -902,7 +906,8 @@
                                         'type': 'chat'
                                 }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                             _converse.chatboxes.onMessage(msg);
-
+                            return test_utils.waitUntil(() => view.model.messages.length);
+                        }).then(() => {
                             // Check that the chatbox and its view now exist
                             var chatbox = _converse.chatboxes.get(recipient_jid);
                             var chatboxview = _converse.chatboxviews.get(recipient_jid);
@@ -936,11 +941,11 @@
                         let view;
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openControlBox();
-                        test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500)
+                        test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 1000)
                         .then(() => test_utils.openChatBoxFor(_converse, contact_jid))
                         .then(() => {
                             view = _converse.chatboxviews.get(contact_jid);
-                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'active', 500);
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'active', 1000);
                         }).then(() => {
                             console.log('chat_state set to active');
                             expect(view.model.get('chat_state')).toBe('active');
@@ -954,10 +959,9 @@
                             view = _converse.chatboxviews.get(contact_jid);
                             expect(view.model.get('chat_state')).toBe('composing');
                             spyOn(_converse.connection, 'send');
-                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'paused', 500);
-                        }).then(() => {
-                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'inactive', 500);
-                        }).then(() => {
+                            return test_utils.waitUntil(() => view.model.get('chat_state') === 'paused', 1000);
+                        }).then(() => test_utils.waitUntil(() => view.model.get('chat_state') === 'inactive', 1000))
+                          .then(() => {
                             console.log('chat_state set to inactive');
                             expect(_converse.connection.send).toHaveBeenCalled();
                             var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
@@ -1041,17 +1045,18 @@
                         _converse.emit('rosterContactsFetched');
                         test_utils.openControlBox();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        let view;
 
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse, 'emit');
                         test_utils.openChatBoxFor(_converse, sender_jid)
                         .then(() => {
-                            var view = _converse.chatboxviews.get(sender_jid);
+                            view = _converse.chatboxviews.get(sender_jid);
                             expect(view.el.querySelectorAll('.chat-event').length).toBe(0);
                             // Insert <composing> message, to also check that
                             // text messages are inserted correctly with
                             // temporary chat events in the chat contents.
-                            var msg = $msg({
+                            const msg = $msg({
                                     'to': _converse.bare_jid,
                                     'xmlns': 'jabber:client',
                                     'from': sender_jid,
@@ -1059,14 +1064,18 @@
                                 .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                                 .tree();
                             _converse.chatboxes.onMessage(msg);
+                            return test_utils.waitUntil(() => view.model.messages.length);
+                        }).then(() => {
                             expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(1);
-                            msg = $msg({
+                            const msg = $msg({
                                     from: sender_jid,
                                     to: _converse.connection.jid,
                                     type: 'chat',
                                     id: (new Date()).getTime()
                                 }).c('body').c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                             _converse.chatboxes.onMessage(msg);
+                            return test_utils.waitUntil(() => (view.model.messages.length > 1));
+                        }).then(() => {
                             expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                             expect($(view.el).find('.chat-state-notification').length).toBe(0);
                             done();
@@ -1178,12 +1187,15 @@
                       .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                 _converse.windowState = 'hidden';
                 _converse.chatboxes.onMessage(msg);
-                expect(_converse.incrementMsgCounter).toHaveBeenCalled();
-                expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
-                expect(_converse.msg_counter).toBe(1);
-                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                _converse.windowSate = previous_state;
-                done();
+                return test_utils.waitUntil(() => _converse.api.chats.get().length)
+                .then(() => {
+                    expect(_converse.incrementMsgCounter).toHaveBeenCalled();
+                    expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
+                    expect(_converse.msg_counter).toBe(1);
+                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                    _converse.windowSate = previous_state;
+                    done();
+                });
             }));
 
             it("is cleared when the window is focused",
@@ -1237,7 +1249,8 @@
                 // initial state
                 expect(_converse.msg_counter).toBe(0);
 
-                var message = 'This message will always increment the message counter from zero',
+                let view;
+                const message = 'This message will always increment the message counter from zero',
                     sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                     msgFactory = function () {
                         return $msg({
@@ -1254,24 +1267,29 @@
                 // leave converse-chat page
                 _converse.windowState = 'hidden';
                 _converse.chatboxes.onMessage(msgFactory());
-                expect(_converse.msg_counter).toBe(1);
+                return test_utils.waitUntil(() => _converse.api.chats.get().length)
+                .then(() => {
+                    expect(_converse.msg_counter).toBe(1);
 
-                // come back to converse-chat page
-                _converse.saveWindowState(null, 'focus');
-                var view = _converse.chatboxviews.get(sender_jid);
-                expect(u.isVisible(view.el)).toBeTruthy();
-                expect(_converse.msg_counter).toBe(0);
+                    // come back to converse-chat page
+                    _converse.saveWindowState(null, 'focus');
+                    view = _converse.chatboxviews.get(sender_jid);
+                    expect(u.isVisible(view.el)).toBeTruthy();
+                    expect(_converse.msg_counter).toBe(0);
 
-                // close chatbox and leave converse-chat page again
-                view.close();
-                _converse.windowState = 'hidden';
+                    // close chatbox and leave converse-chat page again
+                    view.close();
+                    _converse.windowState = 'hidden';
 
-                // check that msg_counter is incremented from zero again
-                _converse.chatboxes.onMessage(msgFactory());
-                view = _converse.chatboxviews.get(sender_jid);
-                expect(u.isVisible(view.el)).toBeTruthy();
-                expect(_converse.msg_counter).toBe(1);
-                done();
+                    // check that msg_counter is incremented from zero again
+                    _converse.chatboxes.onMessage(msgFactory());
+                    return test_utils.waitUntil(() => _converse.api.chats.get().length)
+                }).then(() => {
+                    view = _converse.chatboxviews.get(sender_jid);
+                    expect(u.isVisible(view.el)).toBeTruthy();
+                    expect(_converse.msg_counter).toBe(1);
+                    done();
+                });
             }));
         });
 
@@ -1288,13 +1306,17 @@
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                       msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
 
+                let view;
                 test_utils.openChatBoxFor(_converse, sender_jid)
-                .then((view) => {
+                .then((v) => {
+                    view = v;
                     view.model.save('scrolled', true);
                     _converse.chatboxes.onMessage(msg);
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
                     expect(view.model.get('num_unread')).toBe(1);
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("is not incremented when the message is received and ChatBoxView is scrolled down",
@@ -1323,15 +1345,18 @@
                 test_utils.createContacts(_converse, 'current');
                 _converse.emit('rosterContactsFetched');
 
-                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var msgFactory = function () {
+                let chatbox;
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const msgFactory = function () {
                     return test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                 };
                 test_utils.openChatBoxFor(_converse, sender_jid)
                 .then(() => {
-                    var chatbox = _converse.chatboxes.get(sender_jid);
+                    chatbox = _converse.chatboxes.get(sender_jid);
                     _converse.windowState = 'hidden';
                     _converse.chatboxes.onMessage(msgFactory());
+                    return test_utils.waitUntil(() => chatbox.messages.length);
+                }).then(() => {
                     expect(chatbox.get('num_unread')).toBe(1);
                     done();
                 });
@@ -1344,17 +1369,19 @@
 
                 test_utils.createContacts(_converse, 'current');
                 _converse.emit('rosterContactsFetched');
-
-                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var msgFactory = function () {
+                let chatbox;
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const msgFactory = function () {
                     return test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                 };
                 test_utils.openChatBoxFor(_converse, sender_jid)
                 .then(() => {
-                    var chatbox = _converse.chatboxes.get(sender_jid);
+                    chatbox = _converse.chatboxes.get(sender_jid);
                     chatbox.save('scrolled', true);
                     _converse.windowState = 'hidden';
                     _converse.chatboxes.onMessage(msgFactory());
+                    return test_utils.waitUntil(() => chatbox.messages.length);
+                }).then(() => {
                     expect(chatbox.get('num_unread')).toBe(1);
                     done();
                 });
@@ -1368,20 +1395,23 @@
                 test_utils.createContacts(_converse, 'current');
                 _converse.emit('rosterContactsFetched');
 
+                let chatbox;
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var msgFactory = function () {
+                const msgFactory = function () {
                     return test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                 };
                 test_utils.openChatBoxFor(_converse, sender_jid)
                 .then(() => {
-                    const chatbox = _converse.chatboxes.get(sender_jid);
+                    chatbox = _converse.chatboxes.get(sender_jid);
                     _converse.windowState = 'hidden';
                     _converse.chatboxes.onMessage(msgFactory());
+                    return test_utils.waitUntil(() => chatbox.messages.length);
+                }).then(() => {
                     expect(chatbox.get('num_unread')).toBe(1);
                     _converse.saveWindowState(null, 'focus');
                     expect(chatbox.get('num_unread')).toBe(0);
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("is not cleared when ChatBoxView was scrolled up and the windows become focused",
@@ -1391,21 +1421,24 @@
 
                 test_utils.createContacts(_converse, 'current');
                 _converse.emit('rosterContactsFetched');
-                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var msgFactory = function () {
+                let chatbox;
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const msgFactory = function () {
                     return test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                 };
                 test_utils.openChatBoxFor(_converse, sender_jid)
                 .then(() => {
-                    var chatbox = _converse.chatboxes.get(sender_jid);
+                    chatbox = _converse.chatboxes.get(sender_jid);
                     chatbox.save('scrolled', true);
                     _converse.windowState = 'hidden';
                     _converse.chatboxes.onMessage(msgFactory());
+                    return test_utils.waitUntil(() => chatbox.messages.length);
+                }).then(() => {
                     expect(chatbox.get('num_unread')).toBe(1);
                     _converse.saveWindowState(null, 'focus');
                     expect(chatbox.get('num_unread')).toBe(1);
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
         });
 
@@ -1419,28 +1452,29 @@
                 test_utils.createContacts(_converse, 'current');
                 _converse.emit('rosterContactsFetched');
 
+                let msg, chatbox, indicator_el, selector;
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500)
                 .then(() => test_utils.openChatBoxFor(_converse, sender_jid))
                 .then(() => {
-                    var chatbox = _converse.chatboxes.get(sender_jid);
+                    chatbox = _converse.chatboxes.get(sender_jid);
                     chatbox.save('scrolled', true);
-
-                    var msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
+                    msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                     _converse.chatboxes.onMessage(msg);
-
-                    var selector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
-                        indicator_el = sizzle(selector, _converse.rosterview.el).pop();
-
+                    return test_utils.waitUntil(() => chatbox.messages.length);
+                }).then(() => {
+                    selector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
+                    indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                     expect(indicator_el.textContent).toBe('1');
 
                     msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
                     _converse.chatboxes.onMessage(msg);
-
+                    return test_utils.waitUntil(() => chatbox.messages.length);
+                }).then(() => {
                     indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                     expect(indicator_el.textContent).toBe('2');
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("is updated when message is received and chatbox is minimized",
@@ -1452,28 +1486,30 @@
                 _converse.emit('rosterContactsFetched');
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
+                let chatbox, indicator_el, msg, selector;
                 test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500)
                 .then(() => test_utils.openChatBoxFor(_converse, sender_jid))
                 .then(() => {
-                    var chatbox = _converse.chatboxes.get(sender_jid);
+                    chatbox = _converse.chatboxes.get(sender_jid);
                     var chatboxview = _converse.chatboxviews.get(sender_jid);
                     chatboxview.minimize();
 
-                    var msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
+                    msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                     _converse.chatboxes.onMessage(msg);
-
-                    var selector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
-                        indicator_el = sizzle(selector, _converse.rosterview.el).pop();
-
+                    return test_utils.waitUntil(() => chatbox.messages.length);
+                }).then(() => {
+                    selector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
+                    indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                     expect(indicator_el.textContent).toBe('1');
 
                     msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
                     _converse.chatboxes.onMessage(msg);
-
+                    return test_utils.waitUntil(() => chatbox.messages.length);
+                }).then(() => {
                     indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                     expect(indicator_el.textContent).toBe('2');
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("is cleared when chatbox is maximzied after receiving messages in minimized mode",
@@ -1484,27 +1520,28 @@
                 test_utils.createContacts(_converse, 'current');
                 _converse.emit('rosterContactsFetched');
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-
+                let chatbox, view, select_msgs_indicator;
+                const msgFactory = function () {
+                    return test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
+                };
                 test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500)
                 .then(() => test_utils.openChatBoxFor(_converse, sender_jid))
                 .then(() => {
-                    var chatbox = _converse.chatboxes.get(sender_jid);
-                    var chatboxview = _converse.chatboxviews.get(sender_jid);
+                    chatbox = _converse.chatboxes.get(sender_jid);
+                    view = _converse.chatboxviews.get(sender_jid);
                     var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
-                    var selectMsgsIndicator = () => $(_converse.rosterview.el).find(msgsIndicatorSelector);
-                    var msgFactory = function () {
-                        return test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
-                    };
-                    chatboxview.minimize();
-
+                    select_msgs_indicator = () => $(_converse.rosterview.el).find(msgsIndicatorSelector);
+                    view.minimize();
                     _converse.chatboxes.onMessage(msgFactory());
-                    expect(selectMsgsIndicator().text()).toBe('1');
-
+                    return test_utils.waitUntil(() => chatbox.messages.length);
+                }).then(() => {
+                    expect(select_msgs_indicator().text()).toBe('1');
                     _converse.chatboxes.onMessage(msgFactory());
-                    expect(selectMsgsIndicator().text()).toBe('2');
-
-                    chatboxview.maximize();
-                    expect(selectMsgsIndicator().length).toBe(0);
+                    return test_utils.waitUntil(() => chatbox.messages.length);
+                }).then(() => {
+                    expect(select_msgs_indicator().text()).toBe('2');
+                    view.maximize();
+                    expect(select_msgs_indicator().length).toBe(0);
                     done();
                 });
             }));
@@ -1518,27 +1555,27 @@
                 _converse.emit('rosterContactsFetched');
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
+                let view, chatbox, select_msgs_indicator;
                 test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500)
                 .then(() => test_utils.openChatBoxFor(_converse, sender_jid))
                 .then(() => {
-                    var chatbox = _converse.chatboxes.get(sender_jid);
-                    var chatboxview = _converse.chatboxviews.get(sender_jid);
+                    chatbox = _converse.chatboxes.get(sender_jid);
+                    view = _converse.chatboxviews.get(sender_jid);
                     var msgFactory = function () {
                         return test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
                     };
-                    var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
-                        selectMsgsIndicator = () => $(_converse.rosterview.el).find(msgsIndicatorSelector);
-
+                    var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
+                    select_msgs_indicator = () => $(_converse.rosterview.el).find(msgsIndicatorSelector);
                     chatbox.save('scrolled', true);
-
                     _converse.chatboxes.onMessage(msgFactory());
-                    expect(selectMsgsIndicator().text()).toBe('1');
-
-                    chatboxview.viewUnreadMessages();
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
+                    expect(select_msgs_indicator().text()).toBe('1');
+                    view.viewUnreadMessages();
                     _converse.rosterview.render();
-                    expect(selectMsgsIndicator().length).toBe(0);
+                    expect(select_msgs_indicator().length).toBe(0);
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("is not cleared after user clicks on roster view when chatbox is already opened and scrolled up",
@@ -1550,24 +1587,25 @@
                 _converse.emit('rosterContactsFetched');
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
+                let select_msgs_indicator, view;
                 test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500)
                 .then(() => test_utils.openChatBoxFor(_converse, sender_jid))
                 .then(() => {
-                    var chatbox = _converse.chatboxes.get(sender_jid);
-                    var chatboxview = _converse.chatboxviews.get(sender_jid);
+                    const chatbox = _converse.chatboxes.get(sender_jid);
+                    view = _converse.chatboxviews.get(sender_jid);
                     var msgFactory = function () {
                         return test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
                     };
-                    var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator',
-                        selectMsgsIndicator = () => $(_converse.rosterview.el).find(msgsIndicatorSelector);
-
+                    var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
+                    select_msgs_indicator = () => $(_converse.rosterview.el).find(msgsIndicatorSelector);
                     chatbox.save('scrolled', true);
-
                     _converse.chatboxes.onMessage(msgFactory());
-                    expect(selectMsgsIndicator().text()).toBe('1');
-
-                    test_utils.openChatBoxFor(_converse, sender_jid);
-                    expect(selectMsgsIndicator().text()).toBe('1');
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
+                    expect(select_msgs_indicator().text()).toBe('1');
+                    return test_utils.openChatBoxFor(_converse, sender_jid);
+                }).then(() => {
+                    expect(select_msgs_indicator().text()).toBe('1');
                     done();
                 });
             }));
@@ -1584,20 +1622,21 @@
                 _converse.emit('rosterContactsFetched');
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
+                let selectUnreadMsgCount;
                 test_utils.openChatBoxFor(_converse, sender_jid)
                 .then(() => {
                     const msgFactory = function () {
                         return test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
                     };
-                    const selectUnreadMsgCount = function () {
+                    selectUnreadMsgCount = function () {
                         const minimizedChatBoxView = _converse.minimized_chats.get(sender_jid);
                         return minimizedChatBoxView.el.querySelector('.message-count');
                     };
-
                     const chatbox = _converse.chatboxes.get(sender_jid);
                     chatbox.save('scrolled', true);
                     _converse.chatboxes.onMessage(msgFactory());
-
+                    return test_utils.waitUntil(() => chatbox.messages.length);
+                }).then(() => {
                     const chatboxview = _converse.chatboxviews.get(sender_jid);
                     chatboxview.minimize();
 
@@ -1605,7 +1644,7 @@
                     expect(u.isVisible(unread_count)).toBeTruthy();
                     expect(unread_count.innerHTML).toBe('1');
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("is incremented when message is received and windows is not focused",
@@ -1617,27 +1656,27 @@
                 _converse.emit('rosterContactsFetched');
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
+                let selectUnreadMsgCount;
                 test_utils.openChatBoxFor(_converse, sender_jid)
                 .then(() => {
                     const msgFactory = function () {
                         return test_utils.createChatMessage(_converse, sender_jid,
                             'This message will be received as unread, but eventually will be read');
                     };
-                    const selectUnreadMsgCount = function () {
+                    selectUnreadMsgCount = function () {
                         const minimizedChatBoxView = _converse.minimized_chats.get(sender_jid);
                         return minimizedChatBoxView.el.querySelector('.message-count');
                     };
-
-                    const chatboxview = _converse.chatboxviews.get(sender_jid);
-                    chatboxview.minimize();
-
+                    const view = _converse.chatboxviews.get(sender_jid);
+                    view.minimize();
                     _converse.chatboxes.onMessage(msgFactory());
-
+                    return test_utils.waitUntil(() => view.model.messages.length);
+                }).then(() => {
                     const unread_count = selectUnreadMsgCount();
                     expect(u.isVisible(unread_count)).toBeTruthy();
                     expect(unread_count.innerHTML).toBe('1');
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("will render Openstreetmap-URL from geo-URI",

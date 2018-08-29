@@ -1,0 +1,56 @@
+#conversejs {
+    #converse-modals {
+        .set-xmpp-status {
+            margin: 1em;
+            .custom-control-label {
+                margin-top: 0.25em;
+            }
+        }
+
+        #omemo-tabpanel {
+            margin-top: 1em;
+        }
+
+        .btn {
+            font-weight: normal;
+        }
+
+        #user-profile-modal {
+            .profile-form {
+                label {
+                    font-weight: bold;
+                }
+            }
+            .fingerprint-removal {
+                label {
+                    display: flex;
+                    padding: 0.75rem 1.25rem;
+                }
+            }
+
+            .list-group-item {
+                display: flex;
+                justify-content: left;
+                font-size: 95%;
+
+                input[type="checkbox"] {
+                    margin-right: 1em;
+                }
+            }
+        }
+
+        .fingerprints {
+            width: 100%;
+            margin-bottom: 1em;
+        }
+        
+        .fingerprint-trust {
+            display: flex;
+            justify-content: space-between;
+            font-size: 95%;
+            .fingerprint {
+                margin-left: 1em;
+            }
+        }
+    }
+}

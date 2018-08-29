@@ -125,19 +125,6 @@
                         this.renderRoomsPanel();
                     }
                 },
-            },
-
-            ChatBoxViews: {
-                onChatBoxAdded (item) {
-                    const { _converse } = this.__super__;
-                    let view = this.get(item.get('id'));
-                    if (!view && item.get('type') === converse.CHATROOMS_TYPE) {
-                        view = new _converse.ChatRoomView({'model': item});
-                        return this.add(item.get('id'), view);
-                    } else {
-                        return this.__super__.onChatBoxAdded.apply(this, arguments);
-                    }
-                }
             }
         },
 
@@ -1957,6 +1944,16 @@
             }
 
             /************************ BEGIN Event Handlers ************************/
+
+            _converse.on('chatBoxesInitialized', () => {
+                const that = _converse.chatboxviews;
+                _converse.chatboxes.on('add', item => {
+                    if (!that.get(item.get('id')) && item.get('type') === _converse.CHATROOMS_TYPE) {
+                        return that.add(item.get('id'), new _converse.ChatRoomView({'model': item}));
+                    }
+                });
+            });
+
             _converse.on('controlboxInitialized', (view) => {
                 if (!_converse.allow_muc) {
                     return;
@@ -1970,7 +1967,7 @@
                  * all the open groupchats.
                  */
                 _converse.chatboxviews.each(function (view) {
-                    if (view.model.get('type') === converse.CHATROOMS_TYPE) {
+                    if (view.model.get('type') === _converse.CHATROOMS_TYPE) {
                         view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                         view.model.registerHandlers();
                         view.populateAndJoin();

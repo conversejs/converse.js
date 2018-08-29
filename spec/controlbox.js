@@ -1,11 +1,12 @@
 (function (root, factory) {
     define(["jquery", "jasmine", "mock", "test-utils"], factory);
 } (this, function ($, jasmine, mock, test_utils) {
-    var _ = converse.env._;
-    var $pres = converse.env.$pres;
-    var $msg = converse.env.$msg;
-    var $iq = converse.env.$iq;
-    var u = converse.env.utils;
+    const _ = converse.env._,
+          $pres = converse.env.$pres,
+          $msg = converse.env.$msg,
+          $iq = converse.env.$iq,
+          u = converse.env.utils,
+          Strophe = converse.env.Strophe;
 
 
     describe("The Controlbox", function () {
@@ -72,18 +73,18 @@
                 test_utils.createContacts(_converse, 'all').openControlBox();
                 _converse.emit('rosterContactsFetched');
 
+                let chatview;
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                 test_utils.openChatBoxFor(_converse, sender_jid);
                 return test_utils.waitUntil(() => _converse.chatboxes.length).then(() => {
-
-                    const chatview = _converse.chatboxviews.get(sender_jid);
+                    chatview = _converse.chatboxviews.get(sender_jid);
                     chatview.model.set({'minimized': true});
 
                     expect(_.isNull(_converse.chatboxviews.el.querySelector('.restore-chat .message-count'))).toBeTruthy();
                     expect(_.isNull(_converse.rosterview.el.querySelector('.msgs-indicator'))).toBeTruthy();
 
-                    var msg = $msg({
+                    const msg = $msg({
                             from: sender_jid,
                             to: _converse.connection.jid,
                             type: 'chat',
@@ -91,10 +92,13 @@
                         }).c('body').t('hello').up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                     _converse.chatboxes.onMessage(msg);
+                    return test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll(".msgs-indicator"));
+                }).then(() => {
+                    spyOn(chatview.model, 'incrementUnreadMsgCounter').and.callThrough();
                     expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('1');
                     expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('1');
 
-                    msg = $msg({
+                    const msg = $msg({
                             from: sender_jid,
                             to: _converse.connection.jid,
                             type: 'chat',
@@ -102,14 +106,15 @@
                         }).c('body').t('hello again').up()
                         .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                     _converse.chatboxes.onMessage(msg);
+                return test_utils.waitUntil(() => chatview.model.incrementUnreadMsgCounter.calls.count());
+            }).then(() => {
                     expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('2');
                     expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('2');
-
                     chatview.model.set({'minimized': false});
                     expect(_.isNull(_converse.chatboxviews.el.querySelector('.restore-chat .message-count'))).toBeTruthy();
                     expect(_.isNull(_converse.rosterview.el.querySelector('.msgs-indicator'))).toBeTruthy();
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
         });
 

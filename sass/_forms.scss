@@ -1,9 +1,10 @@
 #conversejs {
-    form {
-        .form-group {
-            margin-bottom: 2em;
-        }
+    .btn--small {
+        font-size: 80%;
+        font-weight: normal;
+    }
 
+    form {
         .form-check-label {
             margin-top: $form-check-input-margin-y;
         }
@@ -103,6 +104,11 @@
                 }
             }
         }
+
+        &.converse-form--modal {
+            padding-bottom: 0;
+        }
+
         &.converse-centered-form {
             text-align: center;
         }

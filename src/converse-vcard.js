@@ -5,10 +5,10 @@
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
-    define(["converse-core", "crypto", "templates/vcard.html"], factory);
-}(this, function (converse, CryptoJS, tpl_vcard) {
+    define(["converse-core", "templates/vcard.html"], factory);
+}(this, function (converse, tpl_vcard) {
     "use strict";
-    const { Backbone, Promise, Strophe, SHA1, _, $iq, $build, b64_sha1, moment, sizzle } = converse.env;
+    const { Backbone, Promise, Strophe, _, $iq, $build, b64_sha1, moment, sizzle } = converse.env;
     const u = converse.env.utils;
 
 
@@ -74,11 +74,14 @@
                     };
                 }
                 if (result.image) {
-                    const word_array_from_b64 = CryptoJS.enc.Base64.parse(result['image']);
-                    result['image_hash'] = CryptoJS.SHA1(word_array_from_b64).toString()
-                }
-                if (callback) {
-                    callback(result);
+                    const buffer = u.base64ToArrayBuffer(result['image']);
+                    crypto.subtle.digest('SHA-1', buffer)
+                    .then(ab => {
+                        result['image_hash'] = u.arrayBufferToHex(ab);
+                        if (callback) callback(result);
+                    });
+                } else {
+                    if (callback) callback(result);
                 }
             }
 

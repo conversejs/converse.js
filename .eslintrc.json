@@ -9,12 +9,13 @@
     "plugins": ["lodash"],
     "extends": ["eslint:recommended", "plugin:lodash/canonical"],
     "globals": {
+        "Uint8Array": true,
         "Promise": true,
         "converse": true,
-        "window": true,
-        "sinon": true,
         "define": true,
-        "require": true
+        "require": true,
+        "sinon": true,
+        "window": true
     },
     "rules": {
         "lodash/prefer-lodash-method": [2, {

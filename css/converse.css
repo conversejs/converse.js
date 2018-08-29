@@ -9246,7 +9246,8 @@ body.reset {
   #conversejs .message.chat-msg .chat-msg__text {
     padding: 0;
     color: #555;
-    width: 100%; }
+    width: 100%;
+    white-space: pre-wrap; }
     #conversejs .message.chat-msg .chat-msg__text a {
       word-wrap: break-word;
       word-break: break-all; }

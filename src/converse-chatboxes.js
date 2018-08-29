@@ -846,11 +846,6 @@
                 }
             });
 
-            // TODO: move to converse-chatboxviews.js and use there in the API
-            _converse.getViewForChatBox = function (chatbox) {
-                if (!chatbox) { return; }
-                return _converse.chatboxviews.get(chatbox.get('id'));
-            };
 
             function autoJoinChats () {
                 /* Automatically join private chats, based on the
@@ -903,10 +898,7 @@
                 _converse.emit('chatBoxesInitialized');
             });
 
-            _converse.api.listen.on('clearSession', () => {
-                _converse.chatboxviews.closeAllChatBoxes();
-            });
-
+            _converse.api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());
             _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
             /************************ END Event Handlers ************************/
 

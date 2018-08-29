@@ -90,12 +90,11 @@
 
             function onWindowStateChanged (data) {
                 if (_converse.chatboxviews) {
-                    _converse.chatboxviews.each(chatboxview => {
-                        chatboxview.onWindowStateChanged(data.state);
-                    });
+                    _converse.chatboxviews.each(view => view.onWindowStateChanged(data.state));
                 }
             }
             _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
+
 
             _converse.EmojiPicker = Backbone.Model.extend({
                 defaults: {
@@ -104,6 +103,7 @@
                     'scroll_position': 0
                 }
             });
+
 
             _converse.EmojiPickerView = Backbone.VDOMView.extend({
                 className: 'emoji-picker-container',

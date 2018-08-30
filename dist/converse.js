@@ -59675,9 +59675,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         createBookmark(options) {
-          _converse.bookmarks.create(options);
-
-          _converse.bookmarks.sendBookmarkStanza();
+          _converse.bookmarks.sendBookmarkStanza().then(() => _converse.bookmarks.create(options)).catch(() => this.onBookmarkError.apply(this, arguments));
         },
 
         sendBookmarkStanza() {
@@ -59712,20 +59710,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }).c('value').t('true').up().up().c('field', {
             'var': 'pubsub#access_model'
           }).c('value').t('whitelist');
-
-          _converse.connection.sendIQ(stanza, null, this.onBookmarkError.bind(this));
+          return _converse.api.sendIQ(stanza);
         },
 
         onBookmarkError(iq) {
           _converse.log("Error while trying to add bookmark", Strophe.LogLevel.ERROR);
 
-          _converse.log(iq); // We remove all locally cached bookmarks and fetch them
-          // again from the server.
+          _converse.log(iq);
 
-
-          this.reset();
-          this.fetchBookmarksFromServer(null);
-          window.alert(__("Sorry, something went wrong while trying to save your bookmark."));
+          _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [__("Sorry, something went wrong while trying to save your bookmark.")]);
         },
 
         fetchBookmarksFromServer(deferred) {
@@ -69095,9 +69088,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return;
           }
 
-          const nick = occupant.get('nick');
-          const stat = occupant.get('status');
-          const last_el = this.content.lastElementChild;
+          const nick = occupant.get('nick'),
+                stat = occupant.get('status');
+          let last_el = this.content.lastElementChild;
 
           if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leave === `"${nick}"`) {
             last_el.outerHTML = tpl_info({
@@ -69106,6 +69099,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'extra_classes': 'chat-event',
               'message': __('%1$s has left and re-entered the groupchat', nick)
             });
+            last_el = this.content.lastElementChild;
+            setTimeout(() => u.addClass('fade-out', last_el), 10000);
+            setTimeout(() => last_el.parentElement.removeChild(last_el), 11500);
           } else {
             let message;
 
@@ -69136,8 +69132,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         showLeaveNotification(occupant) {
           const nick = occupant.get('nick'),
-                stat = occupant.get('status'),
-                last_el = this.content.lastElementChild;
+                stat = occupant.get('status');
+          let last_el = this.content.lastElementChild;
 
           if (last_el && _.includes(_.get(last_el, 'classList', []), 'chat-info') && moment(last_el.getAttribute('data-isodate')).isSame(new Date(), "day") && _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
             let message;
@@ -69154,6 +69150,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'extra_classes': 'chat-event',
               'message': message
             });
+            last_el = this.content.lastElementChild;
+            setTimeout(() => u.addClass('fade-out', last_el), 10000);
+            setTimeout(() => last_el.parentElement.removeChild(last_el), 11500);
           } else {
             let message;
 
@@ -72689,7 +72688,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
       _converse.api.listen.on('afterTearDown', () => {
-        _converse.devicelists.reset();
+        if (_converse.devicelists) {
+          _converse.devicelists.reset();
+        }
 
         delete _converse.omemo_store;
       });
@@ -77628,17 +77629,17 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/chatroom_bookmark_form.html -->\n<div class="chatroom-form-container">\n    <form class="converse-form chatroom-form">\n        <fieldset class="form-group">\n            <legend>' +
+__p += '<!-- src/templates/chatroom_bookmark_form.html -->\n<div class="chatroom-form-container">\n    <form class="converse-form chatroom-form">\n        <legend>' +
 __e(o.heading) +
-'</legend>\n            <label>' +
+'</legend>\n        <fieldset class="form-group">\n            <label for="converse_muc_bookmark_name">' +
 __e(o.label_name) +
-'</label>\n            <input type="text" name="name" required="required"/>\n            <label>' +
-__e(o.label_autojoin) +
-'</label>\n            <input type="checkbox" name="autojoin"/>\n            <label>' +
+'</label>\n            <input class="form-control" type="text" name="name" required="required" id="converse_muc_bookmark_name"/>\n        </fieldset>\n        <fieldset class="form-group">\n            <label for="converse_muc_bookmark_nick">' +
 __e(o.label_nick) +
-'</label>\n            <input type="text" name="nick" value="' +
+'</label>\n            <input class="form-control" type="text" name="nick" value="' +
 __e(o.default_nick) +
-'"/>\n        </fieldset>\n        <fieldset class="form-group">\n            <input class="btn btn-primary" type="submit" value="' +
+'" id="converse_muc_bookmark_nick"/>\n        </fieldset>\n        <fieldset class="form-group form-check">\n            <input class="form-check-input" id="converse_muc_bookmark_autojoin" type="checkbox" name="autojoin"/>\n            <label class="form-check-label" for="converse_muc_bookmark_autojoin">' +
+__e(o.label_autojoin) +
+'</label>\n        </fieldset>\n        <fieldset class="form-group">\n            <input class="btn btn-primary" type="submit" value="' +
 __e(o.label_submit) +
 '"/>\n            <input class="btn btn-secondary button-cancel" type="button" value="' +
 __e(o.label_cancel) +

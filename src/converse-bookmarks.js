@@ -290,8 +290,9 @@
                 },
 
                 createBookmark (options) {
-                    _converse.bookmarks.create(options);
-                    _converse.bookmarks.sendBookmarkStanza();
+                    _converse.bookmarks.sendBookmarkStanza()
+                        .then(() => _converse.bookmarks.create(options))
+                        .catch(() => this.onBookmarkError.apply(this, arguments));
                 },
 
                 sendBookmarkStanza () {
@@ -319,17 +320,16 @@
                                 .c('value').t('true').up().up()
                             .c('field', {'var':'pubsub#access_model'})
                                 .c('value').t('whitelist');
-                    _converse.connection.sendIQ(stanza, null, this.onBookmarkError.bind(this));
+                    return _converse.api.sendIQ(stanza);
                 },
 
                 onBookmarkError (iq) {
                     _converse.log("Error while trying to add bookmark", Strophe.LogLevel.ERROR);
                     _converse.log(iq);
-                    // We remove all locally cached bookmarks and fetch them
-                    // again from the server.
-                    this.reset();
-                    this.fetchBookmarksFromServer(null);
-                    window.alert(__("Sorry, something went wrong while trying to save your bookmark."));
+                    _converse.api.alert.show(
+                        Strophe.LogLevel.ERROR,
+                        __('Error'), [__("Sorry, something went wrong while trying to save your bookmark.")]
+                    )
                 },
 
                 fetchBookmarksFromServer (deferred) {

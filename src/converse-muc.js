@@ -1102,7 +1102,7 @@
 
                 fetchMembers () {
                     this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin'])
-                    .then((new_members) => {
+                    .then(new_members => {
                         const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m)),
                               new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m)),
                               removed_members = this.filter(m => {

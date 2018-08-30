@@ -1040,7 +1040,9 @@
             }
 
             _converse.api.listen.on('afterTearDown', () => {
-                _converse.devicelists.reset();
+                if (_converse.devicelists) {
+                    _converse.devicelists.reset();
+                }
                 delete _converse.omemo_store;
             });
             _converse.api.listen.on('connected', registerPEPPushHandler);

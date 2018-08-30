@@ -320,6 +320,15 @@ body.reset {
         100% { opacity: 1 }
     }
 
+    @-webkit-keyframes fadeOut {
+		 0% { opacity: 1; visibility: visible; }
+		 100% { opacity: 0; visibility: hidden;  }
+	} 
+    @keyframes fadeOut {
+		 0% { opacity: 1; visibility: visible; }
+		 100% { opacity: 0; visibility: hidden;  }
+	} 
+
     .fade-in {
         @include fade-in;
     }
@@ -336,6 +345,14 @@ body.reset {
         opacity: 0 !important;
         display: none !important;
     }
+
+    .fade-out {
+		animation-duration: 1s;
+		animation-fill-mode: forwards;  
+		animation-name: fadeOut;
+		animation-timing-function: ease-in-out;
+    }
+
     .collapsed {
         height: 0 !important;
         overflow: hidden !important;

@@ -1441,12 +1441,13 @@
                     if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                         return;
                     }
-                    const nick = occupant.get('nick');
-                    const stat = occupant.get('status');
-                    const last_el = this.content.lastElementChild;
+                    const nick = occupant.get('nick'),
+                          stat = occupant.get('status');
+                    let last_el = this.content.lastElementChild;
 
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
                         _.get(last_el, 'dataset', {}).leave === `"${nick}"`) {
+
                         last_el.outerHTML =
                             tpl_info({
                                 'data': `data-leavejoin="${nick}"`,
@@ -1454,6 +1455,9 @@
                                 'extra_classes': 'chat-event',
                                 'message': __('%1$s has left and re-entered the groupchat', nick)
                             });
+                        last_el = this.content.lastElementChild;
+                        setTimeout(() => u.addClass('fade-out', last_el), 10000);
+                        setTimeout(() => last_el.parentElement.removeChild(last_el), 11500);
                     } else {
                         let  message;
                         if (_.isNil(stat)) {
@@ -1482,8 +1486,8 @@
 
                 showLeaveNotification (occupant) {
                     const nick = occupant.get('nick'),
-                          stat = occupant.get('status'),
-                          last_el = this.content.lastElementChild;
+                          stat = occupant.get('status');
+                    let last_el = this.content.lastElementChild;
 
                     if (last_el &&
                             _.includes(_.get(last_el, 'classList', []), 'chat-info') &&
@@ -1503,6 +1507,9 @@
                                 'extra_classes': 'chat-event',
                                 'message': message
                             });
+                        last_el = this.content.lastElementChild;
+                        setTimeout(() => u.addClass('fade-out', last_el), 10000);
+                        setTimeout(() => last_el.parentElement.removeChild(last_el), 11500);
                     } else {
                         let message;
                         if (_.isNil(stat)) {

@@ -613,9 +613,9 @@
                  */
                 const view = _converse.chatboxviews.get('controlbox');
                 view.model.set({'connected': false});
-                view.renderLoginPanel();
+                return view;
             };
-            _converse.on('disconnected', disconnect);
+            _converse.on('disconnected', () => disconnect().renderLoginPanel());
             _converse.on('will-reconnect', disconnect);
         }
     });

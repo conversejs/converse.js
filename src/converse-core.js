@@ -526,6 +526,7 @@
             delete _converse.connection.reconnecting;
             _converse.connection.reset();
             _converse.tearDown();
+            _converse.clearSession();
             _converse.emit('disconnected');
         };
 

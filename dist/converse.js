@@ -63220,10 +63220,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         view.model.set({
           'connected': false
         });
-        view.renderLoginPanel();
+        return view;
       };
 
-      _converse.on('disconnected', disconnect);
+      _converse.on('disconnected', () => disconnect().renderLoginPanel());
 
       _converse.on('will-reconnect', disconnect);
     }
@@ -63759,6 +63759,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse.connection.reset();
 
       _converse.tearDown();
+
+      _converse.clearSession();
 
       _converse.emit('disconnected');
     };

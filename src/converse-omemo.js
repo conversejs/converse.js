@@ -332,11 +332,9 @@
                 },
 
                 getSessionCipher (jid, id) {
-                    if (!this.session_cipher) {
-                        const { _converse } = this.__super__,
-                              address = new libsignal.SignalProtocolAddress(jid, id);
-                        this.session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
-                    }
+                    const { _converse } = this.__super__,
+                            address = new libsignal.SignalProtocolAddress(jid, id);
+                    this.session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
                     return this.session_cipher;
                 },
 

@@ -88,9 +88,9 @@
             .then((v) => {
                 view = v;
                 return view.model.encryptMessage(message);
-            }).then((payload) => {
+            }).then(payload => {
                 return view.model.decryptMessage(payload);
-            }).then((result) => {
+            }).then(result => {
                 expect(result).toBe(message);
                 done();
             });
@@ -199,10 +199,13 @@
 
                 // Test reception of an encrypted message
                 return view.model.encryptMessage('This is an encrypted message from the contact')
-            }).then((obj) => {
+            }).then(obj => {
                 // XXX: Normally the key will be encrypted via libsignal.
                 // However, we're mocking libsignal in the tests, so we include
                 // it as plaintext in the message.
+
+                // u.stringToArrayBuffer(atob(u.arrayBufferToBase64(obj.key_and_tag)));
+                // u.stringToArrayBuffer(u.arrayBufferToString(obj.key_and_tag));
                 const stanza = $msg({
                         'from': contact_jid,
                         'to': _converse.connection.jid,
@@ -211,7 +214,7 @@
                     }).c('body').t('This is a fallback message').up()
                         .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                             .c('header', {'sid':  '555'})
-                                .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(btoa(obj.key_and_tag)).up()
+                                .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
                                 .c('iv').t(obj.iv)
                                 .up().up()
                             .c('payload').t(obj.payload);
@@ -255,7 +258,7 @@
                                 .c('key', {
                                     'prekey': 'true',
                                     'rid':  _converse.omemo_store.get('device_id')
-                                }).t(btoa(obj.key_and_tag)).up()
+                                }).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
                                 .c('iv').t(obj.iv)
                                 .up().up()
                             .c('payload').t(obj.payload);

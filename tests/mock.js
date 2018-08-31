@@ -22,7 +22,6 @@
                 'registrationId': '1337' 
             });
             this.decryptPreKeyWhisperMessage = (key_and_tag) => {
-                // TODO: remove the prekey
                 return Promise.resolve(u.stringToArrayBuffer(key_and_tag));
             };
 

@@ -201,24 +201,9 @@
                     });
                 },
 
-                getKeyAndTag (string) {
-                    return {
-                        'key': string.slice(0, 22),
-                        'tag': string.slice(22)
-                    }
-                },
-
                 decryptMessage (obj) {
-                    const { _converse } = this.__super__,
-                          key_obj = {
-                              "alg": "A128GCM",
-                              "ext": true,
-                              "k": obj.key,
-                              "key_ops": ["encrypt","decrypt"],
-                              "kty": "oct"
-                          };
-                    return crypto.subtle.importKey('jwk', key_obj, KEY_ALGO, true, ['encrypt','decrypt'])
-                        .then((key_obj) => {
+                    return crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt','decrypt'])
+                        .then(key_obj => {
                             const algo = {
                                 'name': "AES-GCM",
                                 'iv': u.base64ToArrayBuffer(obj.iv),
@@ -240,8 +225,7 @@
 
                 decrypt (attrs) {
                     const { _converse } = this.__super__,
-                          address  = new libsignal.SignalProtocolAddress(attrs.from, parseInt(attrs.encrypted.device_id, 10)),
-                          session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
+                          session_cipher = this.getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
 
                     // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
                     if (attrs.encrypted.prekey === 'true') {
@@ -249,8 +233,9 @@
                         return session_cipher.decryptPreKeyWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary')
                             .then(key_and_tag => {
                                 if (attrs.encrypted.payload) {
-                                    const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
-                                    return this.decryptMessage(_.extend(attrs.encrypted, {'key': aes_data.key, 'tag': aes_data.tag}));
+                                    const key = key_and_tag.slice(0, 16),
+                                          tag = key_and_tag.slice(16);
+                                    return this.decryptMessage(_.extend(attrs.encrypted, {'key': key, 'tag': tag}));
                                 }
                                 return Promise.resolve();
                             }).then(pt => {
@@ -270,8 +255,9 @@
                     } else {
                         return session_cipher.decryptWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary')
                             .then(key_and_tag => {
-                                const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
-                                return this.decryptMessage(_.extend(attrs.encrypted, {'key': aes_data.key, 'tag': aes_data.tag}));
+                                const key = key_and_tag.slice(0, 16),
+                                      tag = key_and_tag.slice(16);
+                                return this.decryptMessage(_.extend(attrs.encrypted, {'key': key, 'tag': tag}));
                             }).then(plaintext => _.extend(attrs, {'plaintext': plaintext}))
                               .catch(e => {
                                   this.reportDecryptionError(e);
@@ -332,13 +318,12 @@
                         }
                         return window.crypto.subtle.encrypt(algo, key, new TextEncoder().encode(plaintext));
                     }).then(ciphertext => {
-                        return window.crypto.subtle.exportKey("jwk", key)
-                            .then(key_obj => {
-                                const tag = u.arrayBufferToBase64(ciphertext.slice(ciphertext.byteLength - ((TAG_LENGTH + 7) >> 3)));
+                        return window.crypto.subtle.exportKey("raw", key)
+                            .then(key => {
+                                const tag = ciphertext.slice(ciphertext.byteLength - ((TAG_LENGTH + 7) >> 3));
                                 return Promise.resolve({
-                                    'key': key_obj.k,
-                                    'tag': tag,
-                                    'key_and_tag': key_obj.k + tag,
+                                    'key': key,
+                                    'key_and_tag': u.appendArrayBuffer(key, tag),
                                     'payload': u.arrayBufferToBase64(ciphertext),
                                     'iv': u.arrayBufferToBase64(iv)
                                 });
@@ -346,12 +331,19 @@
                     });
                 },
 
-                encryptKey (plaintext, device) {
-                    const { _converse } = this.__super__,
-                          address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
-                          session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
+                getSessionCipher (jid, id) {
+                    if (!this.session_cipher) {
+                        const { _converse } = this.__super__,
+                              address = new libsignal.SignalProtocolAddress(jid, id);
+                        this.session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
+                    }
+                    return this.session_cipher;
+                },
 
-                    return session_cipher.encrypt(plaintext).then(payload => ({'payload': payload, 'device': device}));
+                encryptKey (plaintext, device) {
+                    return this.getSessionCipher(device.get('jid'), device.get('id'))
+                        .encrypt(plaintext)
+                        .then(payload => ({'payload': payload, 'device': device}));
                 },
 
                 addKeysToMessageStanza (stanza, dicts, iv) {

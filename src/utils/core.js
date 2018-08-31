@@ -916,23 +916,34 @@
         return fp;
     };
 
+    u.appendArrayBuffer = function (buffer1, buffer2) {
+        const tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
+        tmp.set(new Uint8Array(buffer1), 0);
+        tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
+        return tmp.buffer;
+    };
+
     u.arrayBufferToHex = function (ab) {
         // https://stackoverflow.com/questions/40031688/javascript-arraybuffer-to-hex#40031979
         return Array.prototype.map.call(new Uint8Array(ab), x => ('00' + x.toString(16)).slice(-2)).join('');
     };
 
     u.arrayBufferToString = function (ab) {
-        const enc = new TextDecoder("utf-8");
-        return enc.decode(ab);
+        return (new Uint8Array(ab)).reduce((data, byte) => data + String.fromCharCode(byte), '');
+    };
+
+    u.stringToArrayBuffer = function (string) {
+        const len = string.length,
+              bytes = new Uint8Array(len);
+
+        for (let i = 0; i < len; i++) {
+            bytes[i] = string.charCodeAt(i)
+        }
+        return bytes.buffer
     };
 
     u.arrayBufferToBase64 = function (ab) {
         return btoa((new Uint8Array(ab)).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-    };
-
-    u.stringToArrayBuffer = function (string) {
-        const enc = new TextEncoder(); // always utf-8
-        return enc.encode(string);
     };
 
     u.base64ToArrayBuffer = function (b64) {

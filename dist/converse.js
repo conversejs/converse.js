@@ -59675,11 +59675,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         createBookmark(options) {
-          _converse.bookmarks.sendBookmarkStanza().then(() => _converse.bookmarks.create(options)).catch(() => this.onBookmarkError.apply(this, arguments));
+          this.create(options);
+          this.sendBookmarkStanza().catch(iq => this.onBookmarkError(iq, options));
         },
 
         sendBookmarkStanza() {
-          let stanza = $iq({
+          const stanza = $iq({
             'type': 'set',
             'from': _converse.connection.jid
           }).c('pubsub', {
@@ -59691,8 +59692,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }).c('storage', {
             'xmlns': 'storage:bookmarks'
           });
-          this.each(function (model) {
-            stanza = stanza.c('conference', {
+          this.each(model => {
+            stanza.c('conference', {
               'name': model.get('name'),
               'autojoin': model.get('autojoin'),
               'jid': model.get('jid')
@@ -59713,12 +59714,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return _converse.api.sendIQ(stanza);
         },
 
-        onBookmarkError(iq) {
+        onBookmarkError(iq, options) {
           _converse.log("Error while trying to add bookmark", Strophe.LogLevel.ERROR);
 
           _converse.log(iq);
 
           _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [__("Sorry, something went wrong while trying to save your bookmark.")]);
+
+          this.findWhere({
+            'jid': options.jid
+          }).destroy();
         },
 
         fetchBookmarksFromServer(deferred) {

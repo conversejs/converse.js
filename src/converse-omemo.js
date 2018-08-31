@@ -4,7 +4,7 @@
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-/* global libsignal, ArrayBuffer, parseInt */
+/* global libsignal, ArrayBuffer, parseInt, crypto */
 
 (function (root, factory) {
     define([
@@ -201,6 +201,30 @@
                     });
                 },
 
+                async encryptMessage (plaintext) {
+                    // The client MUST use fresh, randomly generated key/IV pairs
+                    // with AES-128 in Galois/Counter Mode (GCM).
+                    const iv = crypto.getRandomValues(new window.Uint8Array(16));
+                    const key = await crypto.subtle.generateKey(KEY_ALGO, true, ["encrypt", "decrypt"]);
+                    const algo = {
+                        'name': 'AES-GCM',
+                        'iv': iv,
+                        'tagLength': TAG_LENGTH
+                    }
+                    const encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext));
+                    const length = encrypted.byteLength - ((128 + 7) >> 3),
+                          ciphertext = encrypted.slice(0, length),
+                          tag = encrypted.slice(length);
+
+                    const exported_key = await crypto.subtle.exportKey("raw", key)
+                    return Promise.resolve({
+                        'key': key,
+                        'key_and_tag': u.appendArrayBuffer(exported_key, tag),
+                        'payload': u.arrayBufferToBase64(ciphertext),
+                        'iv': u.arrayBufferToBase64(iv)
+                    });
+                },
+
                 decryptMessage (obj) {
                     return crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt','decrypt'])
                         .then(key_obj => {
@@ -209,15 +233,16 @@
                                 'iv': u.base64ToArrayBuffer(obj.iv),
                                 'tagLength': TAG_LENGTH
                             }
-                            return window.crypto.subtle.decrypt(algo, key_obj, u.base64ToArrayBuffer(obj.payload));
-                        }).then(out => (new TextDecoder()).decode(out));
+                            const cipher = u.appendArrayBuffer(u.base64ToArrayBuffer(obj.payload), obj.tag);
+                            return crypto.subtle.decrypt(algo, key_obj, cipher);
+                        }).then(out => u.arrayBufferToString(out));
                 },
 
                 reportDecryptionError (e) {
                     const { _converse } = this.__super__,
                           { __ } = _converse;
                     this.messages.create({
-                        'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + `${e.name} ${e.message}`,
+                        'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,
                         'type': 'error',
                     });
                     _converse.log(e, Strophe.LogLevel.ERROR);
@@ -298,37 +323,6 @@
 
                 buildSessions (devices) {
                     return Promise.all(devices.map(device => this.getSession(device))).then(() => devices);
-                },
-
-                encryptMessage (plaintext) {
-                    // The client MUST use fresh, randomly generated key/IV pairs
-                    // with AES-128 in Galois/Counter Mode (GCM).
-                    const iv = window.crypto.getRandomValues(new window.Uint8Array(16));
-                    let key;
-                    return window.crypto.subtle.generateKey(
-                        KEY_ALGO,
-                        true, // extractable
-                        ["encrypt", "decrypt"] // key usages
-                    ).then(result => {
-                        key = result;
-                        const algo = {
-                            'name': 'AES-GCM',
-                            'iv': iv,
-                            'tagLength': TAG_LENGTH
-                        }
-                        return window.crypto.subtle.encrypt(algo, key, new TextEncoder().encode(plaintext));
-                    }).then(ciphertext => {
-                        return window.crypto.subtle.exportKey("raw", key)
-                            .then(key => {
-                                const tag = ciphertext.slice(ciphertext.byteLength - ((TAG_LENGTH + 7) >> 3));
-                                return Promise.resolve({
-                                    'key': key,
-                                    'key_and_tag': u.appendArrayBuffer(key, tag),
-                                    'payload': u.arrayBufferToBase64(ciphertext),
-                                    'iv': u.arrayBufferToBase64(iv)
-                                });
-                            });
-                    });
                 },
 
                 getSessionCipher (jid, id) {

@@ -71797,7 +71797,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           if (attrs.encrypted.prekey === 'true') {
             let plaintext;
-            return session_cipher.decryptPreKeyWhisperMessage(atob(attrs.encrypted.key), 'binary').then(key_and_tag => {
+            return session_cipher.decryptPreKeyWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary').then(key_and_tag => {
               if (attrs.encrypted.payload) {
                 const key = key_and_tag.slice(0, 16),
                       tag = key_and_tag.slice(16);
@@ -71826,7 +71826,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               return attrs;
             });
           } else {
-            return session_cipher.decryptWhisperMessage(atob(attrs.encrypted.key), 'binary').then(key_and_tag => {
+            return session_cipher.decryptWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary').then(key_and_tag => {
               const key = key_and_tag.slice(0, 16),
                     tag = key_and_tag.slice(16);
               return this.decryptMessage(_.extend(attrs.encrypted, {
@@ -71984,7 +71984,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // devices associated with the contact, the result of this
             // concatenation is encrypted using the corresponding
             // long-standing SignalProtocol session.
-            const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => this.encryptKey(u.arrayBufferToString(obj.key_and_tag), device));
+            const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => this.encryptKey(obj.key_and_tag, device));
             return Promise.all(promises).then(dicts => this.addKeysToMessageStanza(stanza, dicts, obj.iv)).then(stanza => {
               stanza.c('payload').t(obj.payload).up().up();
               stanza.c('store', {

@@ -71600,7 +71600,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   const TAG_LENGTH = 128;
   const KEY_ALGO = {
     'name': "AES-GCM",
-    'length': 256
+    'length': 128
   };
 
   function parseBundle(bundle_el) {
@@ -71769,25 +71769,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
         },
 
-        getKeyAndTag(string) {
-          return {
-            'key': string.slice(0, 43),
-            // 256bit key
-            'tag': string.slice(43, string.length) // rest is tag
-
-          };
-        },
-
         decryptMessage(obj) {
-          const _converse = this.__super__._converse,
-                key_obj = {
-            "alg": "A256GCM",
-            "ext": true,
-            "k": obj.key,
-            "key_ops": ["encrypt", "decrypt"],
-            "kty": "oct"
-          };
-          return crypto.subtle.importKey('jwk', key_obj, KEY_ALGO, true, ['encrypt', 'decrypt']).then(key_obj => {
+          return crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt', 'decrypt']).then(key_obj => {
             const algo = {
               'name': "AES-GCM",
               'iv': u.base64ToArrayBuffer(obj.iv),
@@ -71810,17 +71793,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         decrypt(attrs) {
           const _converse = this.__super__._converse,
-                address = new libsignal.SignalProtocolAddress(attrs.from, parseInt(attrs.encrypted.device_id, 10)),
-                session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address); // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
+                session_cipher = this.getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10)); // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
 
           if (attrs.encrypted.prekey === 'true') {
             let plaintext;
             return session_cipher.decryptPreKeyWhisperMessage(atob(attrs.encrypted.key), 'binary').then(key_and_tag => {
               if (attrs.encrypted.payload) {
-                const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
+                const key = key_and_tag.slice(0, 16),
+                      tag = key_and_tag.slice(16);
                 return this.decryptMessage(_.extend(attrs.encrypted, {
-                  'key': aes_data.key,
-                  'tag': aes_data.tag
+                  'key': key,
+                  'tag': tag
                 }));
               }
 
@@ -71844,10 +71827,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             });
           } else {
             return session_cipher.decryptWhisperMessage(atob(attrs.encrypted.key), 'binary').then(key_and_tag => {
-              const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
+              const key = key_and_tag.slice(0, 16),
+                    tag = key_and_tag.slice(16);
               return this.decryptMessage(_.extend(attrs.encrypted, {
-                'key': aes_data.key,
-                'tag': aes_data.tag
+                'key': key,
+                'tag': tag
               }));
             }).then(plaintext => _.extend(attrs, {
               'plaintext': plaintext
@@ -71911,12 +71895,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             };
             return window.crypto.subtle.encrypt(algo, key, new TextEncoder().encode(plaintext));
           }).then(ciphertext => {
-            return window.crypto.subtle.exportKey("jwk", key).then(key_obj => {
-              const tag = u.arrayBufferToBase64(ciphertext.slice(ciphertext.byteLength - (TAG_LENGTH + 7 >> 3)));
+            return window.crypto.subtle.exportKey("raw", key).then(key => {
+              const tag = ciphertext.slice(ciphertext.byteLength - (TAG_LENGTH + 7 >> 3));
               return Promise.resolve({
-                'key': key_obj.k,
-                'tag': tag,
-                'key_and_tag': key_obj.k + tag,
+                'key': key,
+                'key_and_tag': u.appendArrayBuffer(key, tag),
                 'payload': u.arrayBufferToBase64(ciphertext),
                 'iv': u.arrayBufferToBase64(iv)
               });
@@ -71924,11 +71907,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
         },
 
+        getSessionCipher(jid, id) {
+          if (!this.session_cipher) {
+            const _converse = this.__super__._converse,
+                  address = new libsignal.SignalProtocolAddress(jid, id);
+            this.session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
+          }
+
+          return this.session_cipher;
+        },
+
         encryptKey(plaintext, device) {
-          const _converse = this.__super__._converse,
-                address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
-                session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
-          return session_cipher.encrypt(plaintext).then(payload => ({
+          return this.getSessionCipher(device.get('jid'), device.get('id')).encrypt(plaintext).then(payload => ({
             'payload': payload,
             'device': device
           }));
@@ -71994,7 +71984,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             // devices associated with the contact, the result of this
             // concatenation is encrypted using the corresponding
             // long-standing SignalProtocol session.
-            const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => this.encryptKey(obj.key_and_tag, device));
+            const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => this.encryptKey(u.arrayBufferToString(obj.key_and_tag), device));
             return Promise.all(promises).then(dicts => this.addKeysToMessageStanza(stanza, dicts, obj.iv)).then(stanza => {
               stanza.c('payload').t(obj.payload).up().up();
               stanza.c('store', {
@@ -81292,24 +81282,35 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return fp;
   };
 
+  u.appendArrayBuffer = function (buffer1, buffer2) {
+    const tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
+    tmp.set(new Uint8Array(buffer1), 0);
+    tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
+    return tmp.buffer;
+  };
+
   u.arrayBufferToHex = function (ab) {
     // https://stackoverflow.com/questions/40031688/javascript-arraybuffer-to-hex#40031979
     return Array.prototype.map.call(new Uint8Array(ab), x => ('00' + x.toString(16)).slice(-2)).join('');
   };
 
   u.arrayBufferToString = function (ab) {
-    const enc = new TextDecoder("utf-8");
-    return enc.decode(ab);
+    return new Uint8Array(ab).reduce((data, byte) => data + String.fromCharCode(byte), '');
+  };
+
+  u.stringToArrayBuffer = function (string) {
+    const len = string.length,
+          bytes = new Uint8Array(len);
+
+    for (let i = 0; i < len; i++) {
+      bytes[i] = string.charCodeAt(i);
+    }
+
+    return bytes.buffer;
   };
 
   u.arrayBufferToBase64 = function (ab) {
     return btoa(new Uint8Array(ab).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-  };
-
-  u.stringToArrayBuffer = function (string) {
-    const enc = new TextEncoder(); // always utf-8
-
-    return enc.encode(string);
   };
 
   u.base64ToArrayBuffer = function (b64) {

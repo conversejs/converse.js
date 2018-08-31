@@ -28,7 +28,7 @@
     const TAG_LENGTH = 128;
     const KEY_ALGO = {
         'name': "AES-GCM",
-        'length': 256
+        'length': 128
     };
 
 
@@ -203,15 +203,15 @@
 
                 getKeyAndTag (string) {
                     return {
-                        'key': string.slice(0, 43), // 256bit key
-                        'tag': string.slice(43, string.length) // rest is tag
+                        'key': string.slice(0, 22),
+                        'tag': string.slice(22)
                     }
                 },
 
                 decryptMessage (obj) {
                     const { _converse } = this.__super__,
                           key_obj = {
-                              "alg": "A256GCM",
+                              "alg": "A128GCM",
                               "ext": true,
                               "k": obj.key,
                               "key_ops": ["encrypt","decrypt"],
@@ -222,7 +222,7 @@
                             const algo = {
                                 'name': "AES-GCM",
                                 'iv': u.base64ToArrayBuffer(obj.iv),
-                                'tagLength': TAG_LENGTH 
+                                'tagLength': TAG_LENGTH
                             }
                             return window.crypto.subtle.decrypt(algo, key_obj, u.base64ToArrayBuffer(obj.payload));
                         }).then(out => (new TextDecoder()).decode(out));
@@ -435,7 +435,6 @@
                                 });
                                 _converse.log(e, Strophe.LogLevel.ERROR);
                             });
-                        
                     } else {
                         return this.__super__.sendMessage.apply(this, arguments);
                     }

@@ -69091,8 +69091,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           const nick = occupant.get('nick'),
-                stat = occupant.get('status');
-          let last_el = this.content.lastElementChild;
+                stat = occupant.get('status'),
+                last_el = this.content.lastElementChild;
 
           if (_.includes(_.get(last_el, 'classList', []), 'chat-info') && _.get(last_el, 'dataset', {}).leave === `"${nick}"`) {
             last_el.outerHTML = tpl_info({
@@ -69101,9 +69101,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'extra_classes': 'chat-event',
               'message': __('%1$s has left and re-entered the groupchat', nick)
             });
-            last_el = this.content.lastElementChild;
-            setTimeout(() => u.addClass('fade-out', last_el), 10000);
-            setTimeout(() => last_el.parentElement.removeChild(last_el), 11500);
+            const el = this.content.lastElementChild;
+            setTimeout(() => u.addClass('fade-out', el), 5000);
+            setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5250);
           } else {
             let message;
 
@@ -69134,8 +69134,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         showLeaveNotification(occupant) {
           const nick = occupant.get('nick'),
-                stat = occupant.get('status');
-          let last_el = this.content.lastElementChild;
+                stat = occupant.get('status'),
+                last_el = this.content.lastElementChild;
 
           if (last_el && _.includes(_.get(last_el, 'classList', []), 'chat-info') && moment(last_el.getAttribute('data-isodate')).isSame(new Date(), "day") && _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
             let message;
@@ -69152,9 +69152,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'extra_classes': 'chat-event',
               'message': message
             });
-            last_el = this.content.lastElementChild;
-            setTimeout(() => u.addClass('fade-out', last_el), 10000);
-            setTimeout(() => last_el.parentElement.removeChild(last_el), 11500);
+            const el = this.content.lastElementChild;
+            setTimeout(() => u.addClass('fade-out', el), 5000);
+            setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5250);
           } else {
             let message;
 

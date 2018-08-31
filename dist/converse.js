@@ -71815,7 +71815,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           if (attrs.encrypted.prekey === 'true') {
             let plaintext;
-            return session_cipher.decryptPreKeyWhisperMessage(atob(attrs.encrypted.key), 'binary').then(key_and_tag => {
+            return session_cipher.decryptPreKeyWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary').then(key_and_tag => {
               if (attrs.encrypted.payload) {
                 const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
                 return this.decryptMessage(_.extend(attrs.encrypted, {
@@ -71843,7 +71843,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               return attrs;
             });
           } else {
-            return session_cipher.decryptWhisperMessage(atob(attrs.encrypted.key), 'binary').then(key_and_tag => {
+            return session_cipher.decryptWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary').then(key_and_tag => {
               const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
               return this.decryptMessage(_.extend(attrs.encrypted, {
                 'key': aes_data.key,

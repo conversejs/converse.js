@@ -239,13 +239,15 @@
                 },
 
                 reportDecryptionError (e) {
-                    const { _converse } = this.__super__,
-                          { __ } = _converse;
-                    this.messages.create({
-                        'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,
-                        'type': 'error',
-                    });
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    const { _converse } = this.__super__;
+                    if (_converse.debug) {
+                        const { __ } = _converse;
+                        this.messages.create({
+                            'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,
+                            'type': 'error',
+                        });
+                    }
+                    _converse.log(`${e.name} ${e.message}`, Strophe.LogLevel.ERROR);
                 },
 
                 decrypt (attrs) {

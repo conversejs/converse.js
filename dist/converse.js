@@ -71805,14 +71805,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         reportDecryptionError(e) {
-          const _converse = this.__super__._converse,
-                __ = _converse.__;
-          this.messages.create({
-            'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,
-            'type': 'error'
-          });
+          const _converse = this.__super__._converse;
 
-          _converse.log(e, Strophe.LogLevel.ERROR);
+          if (_converse.debug) {
+            const __ = _converse.__;
+            this.messages.create({
+              'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,
+              'type': 'error'
+            });
+          }
+
+          _converse.log(`${e.name} ${e.message}`, Strophe.LogLevel.ERROR);
         },
 
         decrypt(attrs) {

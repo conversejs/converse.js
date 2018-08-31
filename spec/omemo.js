@@ -188,8 +188,8 @@
                         `<body>This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo</body>`+
                         `<encrypted xmlns='eu.siacs.conversations.axolotl'>`+
                             `<header sid='123456789'>`+
-                                `<key rid='482886413b977930064a5888b92134fe'>eyJ0eXBlIjoxLCJib2R5IjoiYzFwaDNSNzNYNyIsInJlZ2lzdHJhdGlvbklkIjoiMTMzNyJ9</key>`+
-                                `<key rid='555'>eyJ0eXBlIjoxLCJib2R5IjoiYzFwaDNSNzNYNyIsInJlZ2lzdHJhdGlvbklkIjoiMTMzNyJ9</key>`+
+                                `<key rid='482886413b977930064a5888b92134fe'>YzFwaDNSNzNYNw==</key>`+
+                                `<key rid='555'>YzFwaDNSNzNYNw==</key>`+
                                 `<iv>${sent_stanza.nodeTree.querySelector('iv').textContent}</iv>`+
                             `</header>`+
                             `<payload>${sent_stanza.nodeTree.querySelector('payload').textContent}</payload>`+
@@ -203,11 +203,6 @@
                 // XXX: Normally the key will be encrypted via libsignal.
                 // However, we're mocking libsignal in the tests, so we include
                 // it as plaintext in the message.
-                const key = btoa(JSON.stringify({
-                    'type': 1,
-                    'body': obj.key_and_tag,
-                    'registrationId': '1337'
-                }));
                 const stanza = $msg({
                         'from': contact_jid,
                         'to': _converse.connection.jid,
@@ -216,7 +211,7 @@
                     }).c('body').t('This is a fallback message').up()
                         .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                             .c('header', {'sid':  '555'})
-                                .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(key).up()
+                                .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(btoa(obj.key_and_tag)).up()
                                 .c('iv').t(obj.iv)
                                 .up().up()
                             .c('payload').t(obj.payload);
@@ -249,11 +244,6 @@
                 // XXX: Normally the key will be encrypted via libsignal.
                 // However, we're mocking libsignal in the tests, so we include
                 // it as plaintext in the message.
-                const key = btoa(JSON.stringify({
-                    'type': 1,
-                    'body': obj.key_and_tag,
-                    'registrationId': '1337'
-                }));
                 const stanza = $msg({
                         'from': contact_jid,
                         'to': _converse.connection.jid,
@@ -262,7 +252,10 @@
                     }).c('body').t('This is a fallback message').up()
                         .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                             .c('header', {'sid':  '555'})
-                                .c('key', {'prekey': 'true', 'rid':  _converse.omemo_store.get('device_id')}).t(key).up()
+                                .c('key', {
+                                    'prekey': 'true',
+                                    'rid':  _converse.omemo_store.get('device_id')
+                                }).t(btoa(obj.key_and_tag)).up()
                                 .c('iv').t(obj.iv)
                                 .up().up()
                             .c('payload').t(obj.payload);

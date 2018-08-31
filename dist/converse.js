@@ -71811,12 +71811,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         decrypt(attrs) {
           const _converse = this.__super__._converse,
                 address = new libsignal.SignalProtocolAddress(attrs.from, parseInt(attrs.encrypted.device_id, 10)),
-                session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
-                libsignal_payload = JSON.parse(atob(attrs.encrypted.key)); // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
+                session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address); // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
 
           if (attrs.encrypted.prekey === 'true') {
             let plaintext;
-            return session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => {
+            return session_cipher.decryptPreKeyWhisperMessage(atob(attrs.encrypted.key), 'binary').then(key_and_tag => {
               if (attrs.encrypted.payload) {
                 const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
                 return this.decryptMessage(_.extend(attrs.encrypted, {
@@ -71844,7 +71843,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               return attrs;
             });
           } else {
-            return session_cipher.decryptWhisperMessage(libsignal_payload.body, 'binary').then(key_and_tag => {
+            return session_cipher.decryptWhisperMessage(atob(attrs.encrypted.key), 'binary').then(key_and_tag => {
               const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
               return this.decryptMessage(_.extend(attrs.encrypted, {
                 'key': aes_data.key,
@@ -71943,7 +71942,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                     prekey = 3 == parseInt(payload.type, 10);
               stanza.c('key', {
                 'rid': device.get('id')
-              }).t(btoa(JSON.stringify(dicts[i].payload)));
+              }).t(btoa(payload.body));
 
               if (prekey) {
                 stanza.attrs({

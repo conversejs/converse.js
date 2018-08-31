@@ -241,13 +241,12 @@
                 decrypt (attrs) {
                     const { _converse } = this.__super__,
                           address  = new libsignal.SignalProtocolAddress(attrs.from, parseInt(attrs.encrypted.device_id, 10)),
-                          session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
-                          libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
+                          session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
 
                     // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
                     if (attrs.encrypted.prekey === 'true') {
                         let plaintext;
-                        return session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary')
+                        return session_cipher.decryptPreKeyWhisperMessage(atob(attrs.encrypted.key), 'binary')
                             .then(key_and_tag => {
                                 if (attrs.encrypted.payload) {
                                     const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
@@ -264,17 +263,17 @@
                                 } else {
                                     return _.extend(attrs, {'is_only_key': true});
                                 }
-                            }).catch((e) => {
+                            }).catch(e => {
                                 this.reportDecryptionError(e);
                                 return attrs;
                             });
                     } else {
-                        return session_cipher.decryptWhisperMessage(libsignal_payload.body, 'binary')
+                        return session_cipher.decryptWhisperMessage(atob(attrs.encrypted.key), 'binary')
                             .then(key_and_tag => {
                                 const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
                                 return this.decryptMessage(_.extend(attrs.encrypted, {'key': aes_data.key, 'tag': aes_data.tag}));
                             }).then(plaintext => _.extend(attrs, {'plaintext': plaintext}))
-                              .catch((e) => {
+                              .catch(e => {
                                   this.reportDecryptionError(e);
                                   return attrs;
                               });
@@ -324,7 +323,7 @@
                         KEY_ALGO,
                         true, // extractable
                         ["encrypt", "decrypt"] // key usages
-                    ).then((result) => {
+                    ).then(result => {
                         key = result;
                         const algo = {
                             'name': 'AES-GCM',
@@ -362,7 +361,7 @@
                                   device = dicts[i].device,
                                   prekey = 3 == parseInt(payload.type, 10);
 
-                            stanza.c('key', {'rid': device.get('id') }).t(btoa(JSON.stringify(dicts[i].payload)));
+                            stanza.c('key', {'rid': device.get('id') }).t(btoa(payload.body));
                             if (prekey) {
                                 stanza.attrs({'prekey': prekey});
                             }

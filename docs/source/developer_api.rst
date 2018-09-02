@@ -572,7 +572,7 @@ This grouping collects API functions related to the current logged in user.
 jid
 ~~~
 
-Return's the current user's full JID (Jabber ID).
+Returns the current user's full JID (Jabber ID).
 
 .. code-block:: javascript
 
@@ -907,7 +907,7 @@ To return an array of views, provide an array of JIDs:
 The **listen** grouping
 -----------------------
 
-Converse emits events to which you can subscribe from your own JavaScript.
+Converse emits events to which you can subscribe to.
 
 Concerning events, the following methods are available under the "listen"
 grouping:
@@ -1201,7 +1201,7 @@ For example:
 get(key)
 ~~~~~~~~
 
-Returns the value of a configuration settings. For example:
+Returns the value of the particular configuration setting. For example:
 
 .. code-block:: javascript
 

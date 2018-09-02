@@ -21,15 +21,15 @@ Inside a plugin, you can get access to the `_converse.api` object. Note the
 underscore in front of `_converse`, which indicates that this is a private,
 closured object.
 
-## API Groupings
+## API Namespaces
 
-The Converse API is often broken up into different logical "groupings" (for
+The Converse API is often broken up into different logical "namespaces" (for
 example `converse.plugins` or `converse.contacts`).
 
 There are some exceptions to this, like `converse.initialize`, which aren't
-groupings but single methods.
+namespaces but single methods.
 
-The groupings logically group methods, such as standardised accessors and
+The namespaces logically group methods, such as standardised accessors and
 mutators:
 
 * .get

@@ -58,6 +58,13 @@
         'imports': { '_': _ }
     };
 
+    /** 
+     * A private, closured object containing the private api (via
+     * `_converse.api`) as well as private methods and internal
+     * data-structures.
+     *
+     * @namespace _converse
+     */
     const _converse = {
         'templates': {},
         'promises': {}
@@ -1224,33 +1231,130 @@
         return init_promise;
     };
 
-    // API methods only available to plugins
+    /** 
+     * ### The private API
+     *
+     * The private API methods are only accessible via the closured `_converse`
+     * object, which is only available to plugins.
+     * 
+     * These methods are kept private (i.e. not global) because they may return
+     * sensitive data which should be kept off-limits to other 3rd-party scripts
+     * that might be running in the page.
+     *
+     * @namespace _converse.api
+     * @memberOf _converse
+     */
     _converse.api = {
+        /**
+         * This grouping collects API functions related to the XMPP connection.
+         *
+         * @namespace _converse.api.connection
+         * @memberOf _converse.api
+         */
         'connection': {
+            /**
+             * @method _converse.api.connection.connected
+             * @memberOf _converse.api.connection
+             * @returns {boolean} Whether there is an established connection or not.
+             */
             'connected' () {
                 return _converse.connection && _converse.connection.connected || false;
             },
+            /**
+             * Terminates the connection.
+             *
+             * @method _converse.api.connection.disconnect
+             * @memberOf _converse.api.connection
+             */
             'disconnect' () {
                 _converse.connection.disconnect();
             },
         },
+
+        /**
+         * Lets you emit (i.e. trigger) events, which can be listened to via
+         * `_converse.api.listen.on` or `_converse.api.listen.once`
+         * (see [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)).
+         *
+         * @method _converse.api.connection.emit
+         */
         'emit' () {
             _converse.emit.apply(_converse, arguments);
         },
+
+        /**
+         * This grouping collects API functions related to the current logged in user.
+         *
+         * @namespace _converse.api.user
+         * @memberOf _converse.api
+         */
         'user': {
+            /**
+             * @method _converse.api.user.jid
+             * @returns {string} The current user's full JID (Jabber ID)
+             * @example _converse.api.user.jid())
+             */
             'jid' () {
                 return _converse.connection.jid;
             },
+            /**
+             * Logs the user in.
+             *
+             * If called without any parameters, Converse will try
+             * to log the user in by calling the `prebind_url` or `credentials_url` depending
+             * on whether prebinding is used or not.
+             *
+             * @method _converse.api.user.login
+             * @param {object} [credentials] An object with the credentials.
+             * @example
+             * converse.plugins.add('myplugin', {
+             *     initialize: function () {
+             *
+             *         this._converse.api.user.login({
+             *             'jid': 'dummy@example.com',
+             *             'password': 'secret'
+             *         });
+             *
+             *     }
+             * });
+             */
             'login' (credentials) {
                 _converse.logIn(credentials);
             },
+            /**
+             * Logs the user out of the current XMPP session.
+             *
+             * @method _converse.api.user.logout
+             * @example _converse.api.user.logout();
+             */
             'logout' () {
                 _converse.logOut();
             },
+            /**
+             * Set and get the user's chat status, also called their *availability*.
+             *
+             * @namespace _converse.api.user.status
+             * @memberOf _converse.api.user
+             */
             'status': {
+                /** Return the current user's availability status.
+                 * 
+                 * @method _converse.api.user.status.get
+                 * @example _converse.api.user.status.get();
+                 */
                 'get' () {
                     return _converse.xmppstatus.get('status');
                 },
+                /** 
+                 * The user's status can be set to one of the following values:
+                 *
+                 * @method _converse.api.user.status.set
+                 * @param {string} value The user's chat status (e.g. 'away', 'dnd', 'offline', 'online', 'unavailable' or 'xa')
+                 * @param {string} [message] A custom status message
+                 *
+                 * @example this._converse.api.user.status.set('dnd');
+                 * @example this._converse.api.user.status.set('dnd', 'In a meeting');
+                 */
                 'set' (value, message) {
                     const data = {'status': value};
                     if (!_.includes(_.keys(_converse.STATUS_WEIGHTS), value)) {
@@ -1262,27 +1366,91 @@
                     _converse.xmppstatus.sendPresence(value);
                     _converse.xmppstatus.save(data);
                 },
+
+                /**
+                 * Set and retrieve the user's custom status message.
+                 *
+                 * @namespace _converse.api.user.status.message
+                 * @memberOf _converse.api.user.status
+                 */
                 'message': {
+                    /**
+                     * @method _converse.api.user.status.message.get
+                     * @returns {string} The status message
+                     * @example const message = _converse.api.user.status.message.get()
+                     */
                     'get' () {
                         return _converse.xmppstatus.get('status_message');
                     },
-                    'set' (stat) {
-                        _converse.xmppstatus.save({'status_message': stat});
+                    /**
+                     * @method _converse.api.user.status.message.set
+                     * @param {string} status The status message
+                     * @example _converse.api.user.status.message.set('In a meeting');
+                     */
+                    'set' (status) {
+                        _converse.xmppstatus.save({'status_message': status});
                     }
                 }
             },
         },
+
+        /**
+         * This grouping allows access to the configuration settings of Converse.
+         *
+         * @namespace _converse.api.settings
+         * @memberOf _converse.api
+         */
         'settings': {
+            /**
+             * Allows new configuration settings to be specified, or new default values for
+             * existing configuration settings to be specified.
+             *
+             * @method _converse.api.settings.update
+             * @param {object} settings The configuration settings
+             * @example 
+             * _converse.api.settings.update({
+             *    'enable_foo': true
+             * });
+             *
+             * // The user can then override the default value of the configuration setting when
+             * // calling `converse.initialize`.
+             * converse.initialize({
+             *     'enable_foo': false
+             * });
+             */
             'update' (settings) {
                 u.merge(_converse.default_settings, settings);
                 u.merge(_converse, settings);
                 u.applyUserSettings(_converse, settings, _converse.user_settings);
             },
+            /**
+             * @method _converse.api.settings.get
+             * @returns {*} Value of the particular configuration setting.
+             * @example _converse.api.settings.get("play_sounds");
+             */
             'get' (key) {
                 if (_.includes(_.keys(_converse.default_settings), key)) {
                     return _converse[key];
                 }
             },
+            /**
+             * Set one or many configuration settings.
+             *
+             * Note, this is not an alternative to calling `converse.initialize`, which still needs
+             * to be called. Generally, you'd use this method after Converse is already
+             * running and you want to change the configuration on-the-fly.
+             *
+             * @method _converse.api.settings.set
+             * @param {Object} [settings] An object containing configuration settings.
+             * @param {string} [key] Alternatively to passing in an object, you can pass in a key and a value.
+             * @param {string} [value]
+             * @example _converse.api.settings.set("play_sounds", true);
+             * @example
+             * _converse.api.settings.set({
+             *     "play_sounds", true,
+             *     "hide_offline_users" true
+             * });
+             */
             'set' (key, val) {
                 const o = {};
                 if (_.isObject(key)) {
@@ -1293,13 +1461,71 @@
                 }
             }
         },
+
+        /**
+         * Converse and its plugins emit various events which you can listen to via the
+         * [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)
+         * namespace.
+         * 
+         * Some of these events are also available as [ES2015 Promises](http://es6-features.org/#PromiseUsage)
+         * although not all of them could logically act as promises, since some events
+         * might be fired multpile times whereas promises are to be resolved (or
+         * rejected) only once.
+         * 
+         * Events which are also promises include:
+         * 
+         * * [cachedRoster](/docs/html/events.html#cachedroster)
+         * * [chatBoxesFetched](/docs/html/events.html#chatBoxesFetched)
+         * * [pluginsInitialized](/docs/html/events.html#pluginsInitialized)
+         * * [roster](/docs/html/events.html#roster)
+         * * [rosterContactsFetched](/docs/html/events.html#rosterContactsFetched)
+         * * [rosterGroupsFetched](/docs/html/events.html#rosterGroupsFetched)
+         * * [rosterInitialized](/docs/html/events.html#rosterInitialized)
+         * * [statusInitialized](/docs/html/events.html#statusInitialized)
+         * * [roomsPanelRendered](/docs/html/events.html#roomsPanelRendered)
+         * 
+         * The various plugins might also provide promises, and they do this by using the
+         * `promises.add` api method.
+         *
+         * @namespace _converse.api.promises
+         * @memberOf _converse.api
+         */
         'promises': {
+            /**
+             * By calling `promises.add`, a new [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+             * is made available for other code or plugins to depend on via the
+             * `_converse.api.waitUntil` method.
+             * 
+             * Generally, it's the responsibility of the plugin which adds the promise to
+             * also resolve it.
+             * 
+             * This is done by calling `_converse.api.emit`, which not only resolves the
+             * promise, but also emits an event with the same name (which can be listened to
+             * via `_converse.api.listen`).
+             * 
+             * @method _converse.api.promises.add
+             * @param {string|array} [name|names] The name or an array of names for the promise(s) to be added
+             * @example _converse.api.promises.add('foo-completed');
+             */
             'add' (promises) {
                 promises = _.isArray(promises) ? promises : [promises]
                 _.each(promises, addPromise);
             }
         },
+
+        /**
+         * This namespace lets you access the BOSH tokens
+         *
+         * @namespace _converse.api.tokens
+         * @memberOf _converse.api
+         */
         'tokens': {
+            /**
+             * @method _converse.api.tokens.get
+             * @param {string} [id] The type of token to return ('rid' or 'sid').
+             * @returns 'string' A token, either the RID or SID token depending on what's asked for.
+             * @example _converse.api.tokens.get('rid');
+             */
             'get' (id) {
                 if (!_converse.expose_rid_and_sid || _.isUndefined(_converse.connection)) {
                     return null;
@@ -1311,10 +1537,64 @@
                 }
             }
         },
+
+        /**
+         * Converse emits events to which you can subscribe to.
+         * 
+         * The `listen` namespace exposes methods for creating event listeners
+         * (aka handlers) for these events.
+         *
+         * @namespace _converse.api.listen
+         * @memberOf _converse
+         */
         'listen': {
+            /**
+             * Lets you listen to an event exactly once.
+
+             * @method _converse.api.listen.once
+             * @param {string} name The event's name
+             * @param {function} callback The callback method to be called when the event is emitted.
+             * @param {object} [context] The value of the `this` parameter for the callback.
+             * @example _converse.api.listen.once('message', function (messageXML) { ... });
+             */
             'once': _converse.once.bind(_converse),
+
+            /**
+             * Lets you subscribe to an event.
+             *
+             * Every time the event fires, the callback method specified by `callback` will be called.
+
+             * @method _converse.api.listen.on
+             * @param {string} name The event's name
+             * @param {function} callback The callback method to be called when the event is emitted.
+             * @param {object} [context] The value of the `this` parameter for the callback.
+             * @example _converse.api.listen.on('message', function (messageXML) { ... });
+             */
             'on': _converse.on.bind(_converse),
+
+            /**
+             * To stop listening to an event, you can use the ``not`` method.
+             *
+             * Every time the event fires, the callback method specified by `callback` will be called.
+
+             * @method _converse.api.listen.not
+             * @param {string} name The event's name
+             * @param {function} callback The callback method that is to no longer be called when the event fires
+             * @example _converse.api.listen.not('message', function (messageXML);
+             */
             'not': _converse.off.bind(_converse),
+
+            /**
+             * Subscribe to an incoming stanza
+             *
+             * Every a matched stanza is received, the callback method specified by `callback` will be called.
+
+             * @method _converse.api.listen.stanza
+             * @param {string} name The stanza's name
+             * @param {object} options Matching options
+             * (e.g. 'ns' for namespace, 'type' for stanza type, also 'id' and 'from');
+             * @param {function} handler The callback method to be called when the stanza appears
+             */
             'stanza' (name, options, handler) {
                 if (_.isFunction(options)) {
                     handler = options;
@@ -1333,6 +1613,13 @@
                 );
             },
         },
+
+        /**
+         * Wait until a promise is resolved
+         *
+         * @method _converse.api.waitUntil
+         * @param {string} name The name of the promise
+         */
         'waitUntil' (name) {
             const promise = _converse.promises[name];
             if (_.isUndefined(promise)) {
@@ -1340,9 +1627,21 @@
             }
             return promise;
         },
+        /**
+         * Send a stanza
+         *
+         * @method _converse.api.send
+         */
         'send' (stanza) {
             _converse.connection.send(stanza);
         },
+        /**
+         * Send an IQ stanza and receive a promise
+         *
+         * @method _converse.api.sendIQ
+         * @returns {Promise} A promise which resolves when we receive a `result` stanza
+         * or is rejected when we receive an `error` stanza.
+         */
         'sendIQ' (stanza) {
             return new Promise((resolve, reject) => {
                 _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
@@ -1437,24 +1736,25 @@
                     _converse.pluggable.plugins[name] = plugin;
                 }
             }
+
         },
         /**
          * Utility methods and globals from bundled 3rd party libraries.
          * @memberOf window.converse
          *
-         * @property {function} converse.env.$build        - Creates a Strophe.Builder, for creating stanza objects.
-         * @property {function} converse.env.$iq           - Creates a Strophe.Builder with an <iq/> element as the root.
-         * @property {function} converse.env.$msg          - Creates a Strophe.Builder with an <message/> element as the root.
-         * @property {function} converse.env.$pres         - Creates a Strophe.Builder with an <presence/> element as the root.
-         * @property {object} converse.env.Backbone      - The [Backbone](http://backbonejs.org) object used by Converse to create models and views.
-         * @property {function} converse.env.Promise       - The Promise implementation used by Converse.
-         * @property {function} converse.env.Strophe       - The [Strophe](http://strophe.im/strophejs) XMPP library used by Converse.
-         * @property {object} converse.env._             - The instance of [lodash](http://lodash.com) used by Converse.
-         * @property {function} converse.env.f             - And instance of Lodash with its methods wrapped to produce immutable auto-curried iteratee-first data-last methods.
-         * @property {function} converse.env.b64_sha1      - Utility method from Strophe for creating base64 encoded sha1 hashes.
-         * @property {object} converse.env.moment        - [Moment](https://momentjs.com) date manipulation library.
-         * @property {function} converse.env.sizzle        - [Sizzle](https://sizzlejs.com) CSS selector engine.
-         * @property {object} converse.env.utils         - Module containing common utility methods used by Converse.
+         * @property {function} converse.env.$build    - Creates a Strophe.Builder, for creating stanza objects.
+         * @property {function} converse.env.$iq       - Creates a Strophe.Builder with an <iq/> element as the root.
+         * @property {function} converse.env.$msg      - Creates a Strophe.Builder with an <message/> element as the root.
+         * @property {function} converse.env.$pres     - Creates a Strophe.Builder with an <presence/> element as the root.
+         * @property {object} converse.env.Backbone    - The [Backbone](http://backbonejs.org) object used by Converse to create models and views.
+         * @property {function} converse.env.Promise   - The Promise implementation used by Converse.
+         * @property {function} converse.env.Strophe   - The [Strophe](http://strophe.im/strophejs) XMPP library used by Converse.
+         * @property {object} converse.env._           - The instance of [lodash](http://lodash.com) used by Converse.
+         * @property {function} converse.env.f         - And instance of Lodash with its methods wrapped to produce immutable auto-curried iteratee-first data-last methods.
+         * @property {function} converse.env.b64_sha1  - Utility method from Strophe for creating base64 encoded sha1 hashes.
+         * @property {object} converse.env.moment      - [Moment](https://momentjs.com) date manipulation library.
+         * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
+         * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
          */
         'env': {
             '$build': $build,

@@ -204,38 +204,37 @@
                 async encryptMessage (plaintext) {
                     // The client MUST use fresh, randomly generated key/IV pairs
                     // with AES-128 in Galois/Counter Mode (GCM).
-                    const iv = crypto.getRandomValues(new window.Uint8Array(16));
-                    const key = await crypto.subtle.generateKey(KEY_ALGO, true, ["encrypt", "decrypt"]);
-                    const algo = {
-                        'name': 'AES-GCM',
-                        'iv': iv,
-                        'tagLength': TAG_LENGTH
-                    }
-                    const encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext));
-                    const length = encrypted.byteLength - ((128 + 7) >> 3),
+                    const iv = crypto.getRandomValues(new window.Uint8Array(16)),
+                          key = await crypto.subtle.generateKey(KEY_ALGO, true, ["encrypt", "decrypt"]),
+                          algo = {
+                              'name': 'AES-GCM',
+                              'iv': iv,
+                              'tagLength': TAG_LENGTH
+                          },
+                          encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext)),
+                          length = encrypted.byteLength - ((128 + 7) >> 3),
                           ciphertext = encrypted.slice(0, length),
-                          tag = encrypted.slice(length);
+                          tag = encrypted.slice(length),
+                          exported_key = await crypto.subtle.exportKey("raw", key);
 
-                    const exported_key = await crypto.subtle.exportKey("raw", key)
                     return Promise.resolve({
-                        'key': key,
+                        'key': exported_key,
+                        'tag': tag,
                         'key_and_tag': u.appendArrayBuffer(exported_key, tag),
                         'payload': u.arrayBufferToBase64(ciphertext),
                         'iv': u.arrayBufferToBase64(iv)
                     });
                 },
 
-                decryptMessage (obj) {
-                    return crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt','decrypt'])
-                        .then(key_obj => {
-                            const algo = {
-                                'name': "AES-GCM",
-                                'iv': u.base64ToArrayBuffer(obj.iv),
-                                'tagLength': TAG_LENGTH
-                            }
-                            const cipher = u.appendArrayBuffer(u.base64ToArrayBuffer(obj.payload), obj.tag);
-                            return crypto.subtle.decrypt(algo, key_obj, cipher);
-                        }).then(out => u.arrayBufferToString(out));
+                async decryptMessage (obj) {
+                    const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt','decrypt']),
+                          cipher = u.appendArrayBuffer(u.base64ToArrayBuffer(obj.payload), obj.tag),
+                          algo = {
+                              'name': "AES-GCM",
+                              'iv': u.base64ToArrayBuffer(obj.iv),
+                              'tagLength': TAG_LENGTH
+                          }
+                    return u.arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
                 },
 
                 reportDecryptionError (e) {

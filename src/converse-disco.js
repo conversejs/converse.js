@@ -473,7 +473,7 @@
                         }
                     },
 
-                    'supports' (feature, entity_jid) {
+                    'supports' (feature, jid) {
                         /* Returns a Promise which resolves with a list containing
                          * _converse.Entity instances representing the entity
                          * itself or those items associated with the entity if
@@ -484,30 +484,25 @@
                          *         supported. In the XML stanza, this is the `var`
                          *         attribute of the `<feature>` element. For
                          *         example: 'http://jabber.org/protocol/muc'
-                         *    (String) entity_jid - The JID of the entity
+                         *    (String) jid - The JID of the entity
                          *         (and its associated items) which should be queried
                          */
-                        if (_.isNil(entity_jid)) {
+                        if (_.isNil(jid)) {
                             throw new TypeError('disco.supports: You need to provide an entity JID');
                         }
-                        return new Promise((resolve, reject) => {
-                            return _converse.api.waitUntil('discoInitialized').then(() => {
-                                _converse.api.disco.entities.get(entity_jid, true).then((entity) => {
-                                    entity.waitUntilFeaturesDiscovered.then(() => {
-                                        const promises = _.concat(
-                                            entity.items.map((item) => item.hasFeature(feature)),
-                                            entity.hasFeature(feature)
-                                        );
-                                        Promise.all(promises).then((result) => {
-                                            resolve(f.filter(f.isObject, result));
-                                        }).catch(reject);
-                                    }).catch(reject);
-                                }).catch(reject);
-                            }).catch(reject);
-                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        return _converse.api.waitUntil('discoInitialized')
+                        .then(() => _converse.api.disco.entities.get(jid, true))
+                        .then(entity => entity.waitUntilFeaturesDiscovered)
+                        .then(entity => {
+                            const promises = _.concat(
+                                entity.items.map(item => item.hasFeature(feature)),
+                                entity.hasFeature(feature)
+                            );
+                            return Promise.all(promises);
+                        }).then(result => f.filter(f.isObject, result));
                     },
 
-                    'getIdentity' (category, type, entity_jid) {
+                    'getIdentity' (category, type, jid) {
                         /* Returns a Promise which resolves with a map indicating
                          * whether an identity with a given type is provided by
                          * the entity.
@@ -521,12 +516,9 @@
                          *          In the XML stanza, this is the `type`
                          *          attribute of the `<identity>` element.
                          *          For example: 'pep'
-                         *    (String) entity_jid - The JID of the entity which might have the identity
+                         *    (String) jid - The JID of the entity which might have the identity
                          */
-                        return new Promise((resolve, reject) => {
-                            _converse.api.disco.entities.get(entity_jid, true)
-                                .then((entity) => resolve(entity.getIdentity(category, type)));
-                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        return _converse.api.disco.entities.get(jid, true).then(e => e.getIdentity(category, type));
                     }
                 }
             });

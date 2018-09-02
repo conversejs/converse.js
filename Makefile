@@ -231,6 +231,6 @@ html:
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
-.PHONY: apidoc
+ePHONY: apidoc
 apidoc:
-	$(JSDOC) -d docs/html/api src/*.js
+	$(JSDOC) --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/*.js

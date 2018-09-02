@@ -1350,12 +1350,83 @@
         }
     };
 
-    // The public API
+    /** 
+     * The Public API
+     * @namespace window
+     */
+
+    /**
+     * This namespace contains public API methods which are are
+     * accessible on the global window.converse object.
+     * They are public, because any JavaScript in the
+     * page can call them. Public methods therefore don’t expose any sensitive
+     * or closured data. To do that, you’ll need to create a plugin, which has
+     * access to the private API method.
+     *
+     * @namespace window.converse
+     * @memberOf window
+     */
     window.converse = {
+        /**
+         * Public API method which initializes Converse.
+         * This method must always be called when using Converse. 
+         *
+         * @memberOf window.converse
+         * @method initialize
+         * @param {object} config A map of [configuration-settings](https://conversejs.org/docs/html/configuration.html#configuration-settings).
+         *
+         * @example
+         *
+         * converse.initialize({
+         *     allow_otr: true,
+         *     auto_list_rooms: false,
+         *     auto_subscribe: false,
+         *     bosh_service_url: 'https://bind.example.com',
+         *     hide_muc_server: false,
+         *     i18n: locales['en'],
+         *     keepalive: true,
+         *     play_sounds: true,
+         *     prebind: false,
+         *     show_controlbox_by_default: true,
+         *     debug: false,
+         *     roster_groups: true
+         * });
+         */
         'initialize' (settings, callback) {
             return _converse.initialize(settings, callback);
         },
+        /**
+         * Exposes methods for adding and removing plugins. You'll need to write a plugin
+         * if you want to have access to the private API methods defined further down below.
+         * 
+         * For more information on plugins, read the section :ref:`writing-a-plugin`.
+         *
+         * @property {object} window.converse
+         * @memberOf window.converse
+         */
         'plugins': {
+            /** Registers a new plugin.
+             * 
+             * @memberOf window.converse.plugins
+             * @method add
+             * @param {string} name The name of the plugin
+             * @param {object} plugin The plugin object
+             *
+             * @example
+             * 
+             *  const plugin = {
+             *      initialize: function () {
+             *          // Gets called as soon as the plugin has been loaded.
+             * 
+             *          // Inside this method, you have access to the private
+             *          // API via `_covnerse.api`.
+             *
+             *          // The private _converse object contains the core logic
+             *          // and data-structures of Converse.
+             *      }
+             *  }
+             *  converse.plugins.add('myplugin', plugin);
+             */
             'add' (name, plugin) {
                 plugin.__name__ = name;
                 if (!_.isUndefined(_converse.pluggable.plugins[name])) {
@@ -1367,6 +1438,24 @@
                 }
             }
         },
+        /**
+         * Utility methods and globals from bundled 3rd party libraries.
+         * @memberOf window.converse
+         *
+         * @property {function} converse.env.$build        - Creates a Strophe.Builder, for creating stanza objects.
+         * @property {function} converse.env.$iq           - Creates a Strophe.Builder with an <iq/> element as the root.
+         * @property {function} converse.env.$msg          - Creates a Strophe.Builder with an <message/> element as the root.
+         * @property {function} converse.env.$pres         - Creates a Strophe.Builder with an <presence/> element as the root.
+         * @property {object} converse.env.Backbone      - The [Backbone](http://backbonejs.org) object used by Converse to create models and views.
+         * @property {function} converse.env.Promise       - The Promise implementation used by Converse.
+         * @property {function} converse.env.Strophe       - The [Strophe](http://strophe.im/strophejs) XMPP library used by Converse.
+         * @property {object} converse.env._             - The instance of [lodash](http://lodash.com) used by Converse.
+         * @property {function} converse.env.f             - And instance of Lodash with its methods wrapped to produce immutable auto-curried iteratee-first data-last methods.
+         * @property {function} converse.env.b64_sha1      - Utility method from Strophe for creating base64 encoded sha1 hashes.
+         * @property {object} converse.env.moment        - [Moment](https://momentjs.com) date manipulation library.
+         * @property {function} converse.env.sizzle        - [Sizzle](https://sizzlejs.com) CSS selector engine.
+         * @property {object} converse.env.utils         - Module containing common utility methods used by Converse.
+         */
         'env': {
             '$build': $build,
             '$iq': $iq,

@@ -36,7 +36,7 @@
                 }
                 Promise.all([
                     _converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)
-                ]).then((result) => {
+                ]).then(result => {
                     if (!result[0].length && !result[1].length) {
                         return _converse.log(
                             `Not disabling push app server "${push_app_server.jid}", no disco support from your server.`,

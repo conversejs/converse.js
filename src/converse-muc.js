@@ -423,7 +423,7 @@
                     const jid = Strophe.getBareJidFromJid(groupchat);
                     return jid + (nick !== null ? `/${nick}` : "");
                 },
-                
+
                 sendChatState () {
                     /* Sends a message with the status of the user in this chat session
                      * as taken from the 'chat_state' attribute of the chat box.
@@ -956,7 +956,7 @@
                         this.save('connection_status', converse.ROOMSTATUS.CONNECTED);
                     }
                 },
- 
+
                 onOwnPresence (pres) {
                     /* Handles a received presence relating to the current
                      * user.
@@ -1288,25 +1288,26 @@
             /************************ BEGIN API ************************/
             // We extend the default converse.js API to add methods specific to MUC groupchats.
             _.extend(_converse.api, {
+                /**
+                 * The "rooms" namespace groups methods relevant to chatrooms
+                 * (aka groupchats).
+                 *
+                 * @namespace _converse.api.rooms
+                 * @memberOf _converse.api
+                 */
                 'rooms': {
-                    'close' (jids) {
-                        if (_.isUndefined(jids)) {
-                            // FIXME: can't access views here
-                            _converse.chatboxviews.each(function (view) {
-                                if (view.is_chatroom && view.model) {
-                                    view.close();
-                                }
-                            });
-                        } else if (_.isString(jids)) {
-                            const view = _converse.chatboxviews.get(jids);
-                            if (view) { view.close(); }
-                        } else {
-                            _.each(jids, function (jid) {
-                                const view = _converse.chatboxviews.get(jid);
-                                if (view) { view.close(); }
-                            });
-                        }
-                    },
+                    /**
+                     * Creates a new MUC chatroom (aka groupchat)
+                     *
+                     * Similar to {@link _converse.api.rooms.open}, but creates
+                     * the chatroom in the background (i.e. doesn't cause a
+                     * view to open).
+                     *
+                     * @method _converse.api.rooms.create
+                     * @param {(string[]|string)} jid|jids The JID or array of
+                     *     JIDs of the chatroom(s) to create
+                     * @param {object} [attrs] attrs The room attributes
+                     */
                     'create' (jids, attrs) {
                         if (_.isString(attrs)) {
                             attrs = {'nick': attrs};
@@ -1327,6 +1328,60 @@
                         return _.map(jids, _.partial(createChatRoom, _, attrs));
                     },
 
+                    /**
+                     * Opens a MUC chatroom (aka groupchat)
+                     *
+                     * Similar to {@link _converse.api.chats.open}, but for groupchats.
+                     *
+                     * @method _converse.api.rooms.open
+                     * @param {string} jid The room JID or JIDs (if not specified, all
+                     *     currently open rooms will be returned).
+                     * @param {string} attrs A map  containing any extra room attributes.
+                     * @param {string} [attrs.nick] The current user's nickname for the MUC
+                     * @param {boolean} [attrs.auto_configure] A boolean, indicating
+                     *     whether the room should be configured automatically or not.
+                     *     If set to `true`, then it makes sense to pass in configuration settings.
+                     * @param {object} [attrs.roomconfig] A map of configuration settings to be used when the room gets
+                     *     configured automatically. Currently it doesn't make sense to specify
+                     *     `roomconfig` values if `auto_configure` is set to `false`.
+                     *     For a list of configuration values that can be passed in, refer to these values
+                     *     in the [XEP-0045 MUC specification](http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner).
+                     *     The values should be named without the `muc#roomconfig_` prefix.
+                     * @param {boolean} [attrs.maximize] A boolean, indicating whether minimized rooms should also be
+                     *     maximized, when opened. Set to `false` by default.
+                     * @param {boolean} [attrs.bring_to_foreground] A boolean indicating whether the room should be
+                     *     brought to the foreground and therefore replace the currently shown chat.
+                     *     If there is no chat currently open, then this option is ineffective.
+                     *
+                     * @example
+                     * this._converse.api.rooms.open('group@muc.example.com')
+                     *
+                     * @example
+                     * // To return an array of rooms, provide an array of room JIDs:
+                     * _converse.api.rooms.open(['group1@muc.example.com', 'group2@muc.example.com'])
+                     *
+                     * @example
+                     * // To setup a custom nickname when joining the room, provide the optional nick argument:
+                     * _converse.api.rooms.open('group@muc.example.com', {'nick': 'mycustomnick'})
+                     *
+                     * @example
+                     * // For example, opening a room with a specific default configuration:
+                     * _converse.api.rooms.open(
+                     *     'myroom@conference.example.org',
+                     *     { 'nick': 'coolguy69',
+                     *       'auto_configure': true,
+                     *       'roomconfig': {
+                     *           'changesubject': false,
+                     *           'membersonly': true,
+                     *           'persistentroom': true,
+                     *           'publicroom': true,
+                     *           'roomdesc': 'Comfy room for hanging out',
+                     *           'whois': 'anyone'
+                     *       }
+                     *     },
+                     *     true
+                     * );
+                     */
                     'open' (jids, attrs) {
                         return new Promise((resolve, reject) => {
                             _converse.api.waitUntil('chatBoxesFetched').then(() => {
@@ -1343,6 +1398,29 @@
                         });
                     },
 
+                    /**
+                     * Returns an object representing a MUC chatroom (aka groupchat)
+                     *
+                     * @method _converse.api.rooms.get
+                     * @param {string} [jid] The room JID (if not specified, all rooms will be returned).
+                     * @param {object} attrs A map containing any extra room attributes For example, if you want
+                     *     to specify the nickname, use `{'nick': 'bloodninja'}`. Previously (before
+                     *     version 1.0.7, the second parameter only accepted the nickname (as a string
+                     *     value). This is currently still accepted, but then you can't pass in any
+                     *     other room attributes. If the nickname is not specified then the node part of
+                     *     the user's JID will be used.
+                     * @param {boolean} create A boolean indicating whether the room should be created
+                     *     if not found (default: `false`)
+                     * @example
+                     * _converse.api.waitUntil('roomsAutoJoined').then(() => {
+                     *     const create_if_not_found = true;
+                     *     _converse.api.rooms.get(
+                     *         'group@muc.example.com',
+                     *         {'nick': 'dread-pirate-roberts'},
+                     *         create_if_not_found
+                     *     )
+                     * });
+                     */
                     'get' (jids, attrs, create) {
                         if (_.isString(attrs)) {
                             attrs = {'nick': attrs};

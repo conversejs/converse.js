@@ -303,7 +303,6 @@ room under the  ``with`` key.
 
 .. code-block:: javascript
 
-
     converse.plugins.add('myplugin', {
         initialize: function () {
 
@@ -541,24 +540,19 @@ Returns a `Promise` which, when resolved, returns a map/object with keys
     converse.plugins.add('myplugin', {
         initialize: function () {
 
-            _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
-                function (value) {
-                    // `value` is a map with two keys, `supported` and `feature`.
-
-                    if (value.supported) {
-                        // The feature is supported
-                    } else {
-                        // The feature is not supported
-                    }
-                },
-                function () { // Error
-                    _converse.log(
-                        "Error or timeout while checking for feature support",
-                        Strophe.LogLevel.ERROR
-                    );
+            _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid)
+            .then(value => {
+                // `value` is a map with two keys, `supported` and `feature`.
+                if (value.supported) {
+                    // The feature is supported
+                } else {
+                    // The feature is not supported
                 }
-            ).catch((msg) => {
-                _converse.log(msg, Strophe.LogLevel.FATAL);
+            }).catch(() => {
+                _converse.log(
+                    "Error or timeout while checking for feature support",
+                    Strophe.LogLevel.ERROR
+                );
             });
         }
     });

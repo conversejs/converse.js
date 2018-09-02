@@ -59,9 +59,8 @@
     };
 
     /** 
-     * A private, closured object containing the private api (via
-     * `_converse.api`) as well as private methods and internal
-     * data-structures.
+     * A private, closured object containing the private api (via `_converse.api`)
+     * as well as private methods and internal data-structures.
      *
      * @namespace _converse
      */
@@ -1234,7 +1233,7 @@
     /** 
      * ### The private API
      *
-     * The private API methods are only accessible via the closured `_converse`
+     * The private API methods are only accessible via the closured {@link _converse}
      * object, which is only available to plugins.
      * 
      * These methods are kept private (i.e. not global) because they may return
@@ -1273,10 +1272,10 @@
 
         /**
          * Lets you emit (i.e. trigger) events, which can be listened to via
-         * `_converse.api.listen.on` or `_converse.api.listen.once`
+         * {@link _converse.api.listen.on} or {@link _converse.api.listen.once}
          * (see [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)).
          *
-         * @method _converse.api.connection.emit
+         * @method _converse.api.emit
          */
         'emit' () {
             _converse.emit.apply(_converse, arguments);
@@ -1395,7 +1394,9 @@
         },
 
         /**
-         * This grouping allows access to the configuration settings of Converse.
+         * This grouping allows access to the
+         * [configuration settings](/docs/html/configuration.html#configuration-settings)
+         * of Converse.
          *
          * @namespace _converse.api.settings
          * @memberOf _converse.api
@@ -1436,7 +1437,7 @@
             /**
              * Set one or many configuration settings.
              *
-             * Note, this is not an alternative to calling `converse.initialize`, which still needs
+             * Note, this is not an alternative to calling {@link converse.initialize}, which still needs
              * to be called. Generally, you'd use this method after Converse is already
              * running and you want to change the configuration on-the-fly.
              *
@@ -1464,8 +1465,7 @@
 
         /**
          * Converse and its plugins emit various events which you can listen to via the
-         * [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)
-         * namespace.
+         * {@link _converse.api.listen} namespace.
          * 
          * Some of these events are also available as [ES2015 Promises](http://es6-features.org/#PromiseUsage)
          * although not all of them could logically act as promises, since some events
@@ -1494,14 +1494,14 @@
             /**
              * By calling `promises.add`, a new [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
              * is made available for other code or plugins to depend on via the
-             * `_converse.api.waitUntil` method.
+             * {@link _converse.api.waitUntil} method.
              * 
              * Generally, it's the responsibility of the plugin which adds the promise to
              * also resolve it.
              * 
-             * This is done by calling `_converse.api.emit`, which not only resolves the
+             * This is done by calling {@link _converse.api.emit}, which not only resolves the
              * promise, but also emits an event with the same name (which can be listened to
-             * via `_converse.api.listen`).
+             * via {@link _converse.api.listen}).
              * 
              * @method _converse.api.promises.add
              * @param {string|array} [name|names] The name or an array of names for the promise(s) to be added
@@ -1550,7 +1550,7 @@
         'listen': {
             /**
              * Lets you listen to an event exactly once.
-
+             *
              * @method _converse.api.listen.once
              * @param {string} name The event's name
              * @param {function} callback The callback method to be called when the event is emitted.
@@ -1563,7 +1563,7 @@
              * Lets you subscribe to an event.
              *
              * Every time the event fires, the callback method specified by `callback` will be called.
-
+             *
              * @method _converse.api.listen.on
              * @param {string} name The event's name
              * @param {function} callback The callback method to be called when the event is emitted.
@@ -1573,10 +1573,10 @@
             'on': _converse.on.bind(_converse),
 
             /**
-             * To stop listening to an event, you can use the ``not`` method.
+             * To stop listening to an event, you can use the `not` method.
              *
              * Every time the event fires, the callback method specified by `callback` will be called.
-
+             *
              * @method _converse.api.listen.not
              * @param {string} name The event's name
              * @param {function} callback The callback method that is to no longer be called when the event fires
@@ -1588,7 +1588,7 @@
              * Subscribe to an incoming stanza
              *
              * Every a matched stanza is received, the callback method specified by `callback` will be called.
-
+             *
              * @method _converse.api.listen.stanza
              * @param {string} name The stanza's name
              * @param {object} options Matching options
@@ -1619,6 +1619,7 @@
          *
          * @method _converse.api.waitUntil
          * @param {string} name The name of the promise
+         * @returns {Promise}
          */
         'waitUntil' (name) {
             const promise = _converse.promises[name];
@@ -1627,14 +1628,23 @@
             }
             return promise;
         },
+
         /**
-         * Send a stanza
-         *
+         * Allows you to send XML stanzas.
+         * 
          * @method _converse.api.send
+         * @example
+         * const msg = converse.env.$msg({
+         *     'from': 'juliet@example.com/balcony',
+         *     'to': 'romeo@example.net',
+         *     'type':'chat'
+         * });
+         * _converse.api.send(msg);
          */
         'send' (stanza) {
             _converse.connection.send(stanza);
         },
+
         /**
          * Send an IQ stanza and receive a promise
          *
@@ -1649,33 +1659,28 @@
         }
     };
 
-    /** 
-     * The Public API
-     * @namespace window
-     */
-
     /**
+     * ### The Public API
+     *
      * This namespace contains public API methods which are are
-     * accessible on the global window.converse object.
+     * accessible on the global `converse` object.
      * They are public, because any JavaScript in the
      * page can call them. Public methods therefore don’t expose any sensitive
      * or closured data. To do that, you’ll need to create a plugin, which has
      * access to the private API method.
      *
-     * @namespace window.converse
-     * @memberOf window
+     * @namespace converse
      */
-    window.converse = {
+    const converse = {
         /**
          * Public API method which initializes Converse.
          * This method must always be called when using Converse. 
          *
-         * @memberOf window.converse
+         * @memberOf converse
          * @method initialize
          * @param {object} config A map of [configuration-settings](https://conversejs.org/docs/html/configuration.html#configuration-settings).
          *
          * @example
-         *
          * converse.initialize({
          *     allow_otr: true,
          *     auto_list_rooms: false,
@@ -1698,16 +1703,15 @@
          * Exposes methods for adding and removing plugins. You'll need to write a plugin
          * if you want to have access to the private API methods defined further down below.
          * 
-         * For more information on plugins, read the section :ref:`writing-a-plugin`.
+         * For more information on plugins, read the documentation on [writing a plugin](/docs/html/plugin_development.html).
          *
-         * @property {object} window.converse
-         * @memberOf window.converse
+         * @namespace plugins
+         * @memberOf converse
          */
         'plugins': {
             /** Registers a new plugin.
              * 
-             * @memberOf window.converse.plugins
-             * @method add
+             * @method converse.plugins.add
              * @param {string} name The name of the plugin
              * @param {object} plugin The plugin object
              *
@@ -1740,7 +1744,7 @@
         },
         /**
          * Utility methods and globals from bundled 3rd party libraries.
-         * @memberOf window.converse
+         * @memberOf converse
          *
          * @property {function} converse.env.$build    - Creates a Strophe.Builder, for creating stanza objects.
          * @property {function} converse.env.$iq       - Creates a Strophe.Builder with an <iq/> element as the root.
@@ -1772,6 +1776,7 @@
             'utils': u
         }
     };
+    window.converse = converse;
     window.dispatchEvent(new CustomEvent('converse-loaded'));
-    return window.converse;
+    return converse;
 }));

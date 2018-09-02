@@ -1275,7 +1275,29 @@
 
             /************************ BEGIN API ************************/
             _.extend(_converse.api, {
+                /**
+                 * The "chatview" namespace groups methods pertaining to views
+                 * for one-on-one chats.
+                 *
+                 * @namespace _converse.api.chatviews
+                 * @memberOf _converse.api
+                 */
                 'chatviews': {
+                     /**
+                      * Get the view of an already open chat.
+                      *
+                      * @method _converse.api.chatviews.get
+                      * @returns {ChatBoxView} A [Backbone.View](http://backbonejs.org/#View) instance.
+                      *     The chat should already be open, otherwise `undefined` will be returned.
+                      * 
+                      * @example
+                      * // To return a single view, provide the JID of the contact:
+                      * _converse.api.chatviews.get('buddy@example.com')
+                      * 
+                      * @example
+                      * // To return an array of views, provide an array of JIDs:
+                      * _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])
+                      */
                     'get' (jids) {
                         if (_.isUndefined(jids)) {
                             _converse.log(

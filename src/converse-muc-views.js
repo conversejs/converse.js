@@ -1951,7 +1951,6 @@
             }
 
             /************************ BEGIN Event Handlers ************************/
-
             _converse.on('chatBoxesInitialized', () => {
                 const that = _converse.chatboxviews;
                 _converse.chatboxes.on('add', item => {
@@ -1983,6 +1982,47 @@
             }
             _converse.on('reconnected', reconnectToChatRooms);
             /************************ END Event Handlers ************************/
+
+
+            /************************ BEGIN API ************************/
+            _.extend(_converse.api, {
+                /**
+                 * The "roomviews" namespace groups methods relevant to chatroom
+                 * (aka groupchats) views.
+                 *
+                 * @namespace _converse.api.roomviews
+                 * @memberOf _converse.api
+                 */
+                'roomviews': {
+                    /**
+                     * Lets you close open chatrooms.
+                     *
+                     * You can call this method without any arguments to close
+                     * all open chatrooms, or you can specify a single JID or
+                     * an array of JIDs.
+                     *
+                     * @method _converse.api.roomviews.close
+                     * @param {(String[]|String)} jids The JID or array of JIDs of the chatroom(s)
+                     */
+                    'close' (jids) {
+                        if (_.isUndefined(jids)) {
+                            _converse.chatboxviews.each(function (view) {
+                                if (view.is_chatroom && view.model) {
+                                    view.close();
+                                }
+                            });
+                        } else if (_.isString(jids)) {
+                            const view = _converse.chatboxviews.get(jids);
+                            if (view) { view.close(); }
+                        } else {
+                            _.each(jids, function (jid) {
+                                const view = _converse.chatboxviews.get(jid);
+                                if (view) { view.close(); }
+                            });
+                        }
+                    }
+                }
+            });
         }
     });
 }));

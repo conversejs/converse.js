@@ -23,29 +23,15 @@ closured object.
 
 ## API Namespaces
 
-The Converse API is often broken up into different logical "namespaces" (for
-example `converse.plugins` or `converse.contacts`).
+The Converse API (private and public) makes use of namespaces to logically
+group relevant methods.
 
-There are some exceptions to this, like `converse.initialize`, which aren't
-namespaces but single methods.
+So, for example, all the XEP-0030 service discovery methods are under the
+{@link \_converse.api.disco} namespace, in the [private API]{@link \_converse.api}.
 
-The namespaces logically group methods, such as standardised accessors and
-mutators:
+Which means that you access it via `_converse.api.disco`.
 
-* .get
-* .set
-* .add
-* .remove
+Namespaces can be nested. So the {@link \_converse.api.disco} namespace
+namespace has {@link \_converse.api.disco.own} as a nested namespace.
 
-So for example, to get a contact, you would do the following:
-
-    _converse.api.contacts.get('jid@example.com');
-
-To get multiple contacts, just pass in an array of jids:
-
-    _converse.api.contacts.get(['jid1@example.com', 'jid2@example.com']);
-
-To get all contacts, simply call ``get`` without any jids:
-
-    _converse.api.contacts.get();
-
+Not all methods are however within a namespace. For example {@link converse.initialize}.

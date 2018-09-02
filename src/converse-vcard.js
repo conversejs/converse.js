@@ -146,12 +146,57 @@
             });
 
             _.extend(_converse.api, {
+                /**
+                 * The XEP-0054 VCard API
+                 *
+                 * This API lets you access and update user VCards
+                 *
+                 * @namespace _converse.api.vcard
+                 * @memberOf _converse.api
+                 */
                 'vcard': {
+                    /**
+                     * Enables setting new values for a VCard.
+                     *
+                     * @method _converse.api.vcard.set
+                     * @param {string} jid The JID for which the VCard should be set
+                     * @param {object} data A map of VCard keys and values
+                     * @example
+                     * _converse.api.vcard.set({
+                     *     'jid': _converse.bare_jid,
+                     *     'fn': 'John Doe',
+                     *     'nickname': 'jdoe'
+                     * }).then(() => {
+                     *     // Succes
+                     * }).catch(() => {
+                     *     // Failure
+                     * }).
+                     */
                     'set' (jid, data) {
                         return setVCard(jid, data);
                     },
 
-                    'get' (model, force) {
+                    /**
+                     * @method _converse.api.vcard.get
+                     * @param {Backbone.Model|string} model Either a `Backbone.Model` instance, or a string JID.
+                     *     If a `Backbone.Model` instance is passed in, then it must have either a `jid`
+                     *     attribute or a `muc_jid` attribute.
+                     * @param {boolean} [force] A boolean indicating whether the vcard should be
+                     *     fetched even if it's been fetched before.
+                     * @returns {promise} A Promise which resolves with the VCard data for a particular JID or for
+                     *     a `Backbone.Model` instance which represents an entity with a JID (such as a roster contact,
+                     *     chat or chatroom occupant).
+                     *
+                     * @example
+                     * _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                     *     _converse.api.vcard.get('someone@example.org').then(
+                     *         (vcard) => {
+                     *             // Do something with the vcard...
+                     *         }
+                     *     );
+                     * });
+                     */
+                     'get' (model, force) {
                         if (_.isString(model)) {
                             return getVCard(_converse, model);
                         } else if (force ||
@@ -168,14 +213,28 @@
                         }
                     },
 
+                    /**
+                     * Fetches the VCard associated with a particular `Backbone.Model` instance
+                     * (by using its `jid` or `muc_jid` attribute) and then updates the model with the
+                     * returned VCard data.
+                     *
+                     * @method _converse.api.vcard.update
+                     * @param {Backbone.Model} model A `Backbone.Model` instance
+                     * @param {boolean} [force] A boolean indicating whether the vcard should be
+                     *     fetched again even if it's been fetched before.
+                     * @returns {promise} A promise which resolves once the update has completed.
+                     * @example
+                     * _converse.api.waitUntil('rosterContactsFetched').then(() => {
+                     *     const chatbox = _converse.chatboxes.getChatBox('someone@example.org');
+                     *     _converse.api.vcard.update(chatbox);
+                     * });
+                     */
                     'update' (model, force) {
-                        return new Promise((resolve, reject) => {
-                            this.get(model, force).then((vcard) => {
+                        return this.get(model, force)
+                            .then(vcard => {
                                 delete vcard['stanza']
                                 model.save(vcard);
-                                resolve();
                             });
-                        });
                     }
                 }
             });

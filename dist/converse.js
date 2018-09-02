@@ -61092,11 +61092,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _.extend(_converse.api, {
         /**
-         * The "chats" grouping (used for one-on-one chats)
+         * The "chats" namespace (used for one-on-one chats)
          *
-         * @namespace
+         * @namespace _converse.api.chats
+         * @memberOf _converse.api
          */
         'chats': {
+          /**
+           * @method _converse.api.chats.create
+           * @param {string|string[]} jid|jids An jid or array of jids
+           * @param {object} attrs An object containing configuration attributes.
+           */
           'create'(jids, attrs) {
             if (_.isUndefined(jids)) {
               _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
@@ -61129,8 +61135,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           /**
            * Opens a new one-on-one chat.
            *
-           * @function
-           *
+           * @method _converse.api.chats.open
            * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
            * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
            *
@@ -61180,8 +61185,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           /**
            * Returns a chat model. The chat should already be open.
            *
-           * @function
-           *
+           * @method _converse.api.chats.get
            * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
            * @returns {Backbone.Model}
            *
@@ -62541,7 +62545,29 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
       _.extend(_converse.api, {
+        /**
+         * The "chatview" namespace groups methods pertaining to views
+         * for one-on-one chats.
+         *
+         * @namespace _converse.api.chatviews
+         * @memberOf _converse.api
+         */
         'chatviews': {
+          /**
+           * Get the view of an already open chat.
+           *
+           * @method _converse.api.chatviews.get
+           * @returns {ChatBoxView} A [Backbone.View](http://backbonejs.org/#View) instance.
+           *     The chat should already be open, otherwise `undefined` will be returned.
+           * 
+           * @example
+           * // To return a single view, provide the JID of the contact:
+           * _converse.api.chatviews.get('buddy@example.com')
+           * 
+           * @example
+           * // To return an array of views, provide an array of JIDs:
+           * _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])
+           */
           'get'(jids) {
             if (_.isUndefined(jids)) {
               _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
@@ -63300,6 +63326,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       '_': _
     }
   };
+  /** 
+   * A private, closured object containing the private api (via `_converse.api`)
+   * as well as private methods and internal data-structures.
+   *
+   * @namespace _converse
+   */
+
   const _converse = {
     'templates': {},
     'promises': {}
@@ -64515,43 +64548,139 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
 
     return init_promise;
-  }; // API methods only available to plugins
+  };
+  /** 
+   * ### The private API
+   *
+   * The private API methods are only accessible via the closured {@link _converse}
+   * object, which is only available to plugins.
+   * 
+   * These methods are kept private (i.e. not global) because they may return
+   * sensitive data which should be kept off-limits to other 3rd-party scripts
+   * that might be running in the page.
+   *
+   * @namespace _converse.api
+   * @memberOf _converse
+   */
 
 
   _converse.api = {
+    /**
+     * This grouping collects API functions related to the XMPP connection.
+     *
+     * @namespace _converse.api.connection
+     * @memberOf _converse.api
+     */
     'connection': {
+      /**
+       * @method _converse.api.connection.connected
+       * @memberOf _converse.api.connection
+       * @returns {boolean} Whether there is an established connection or not.
+       */
       'connected'() {
         return _converse.connection && _converse.connection.connected || false;
       },
 
+      /**
+       * Terminates the connection.
+       *
+       * @method _converse.api.connection.disconnect
+       * @memberOf _converse.api.connection
+       */
       'disconnect'() {
         _converse.connection.disconnect();
       }
 
     },
 
+    /**
+     * Lets you emit (i.e. trigger) events, which can be listened to via
+     * {@link _converse.api.listen.on} or {@link _converse.api.listen.once}
+     * (see [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)).
+     *
+     * @method _converse.api.emit
+     */
     'emit'() {
       _converse.emit.apply(_converse, arguments);
     },
 
+    /**
+     * This grouping collects API functions related to the current logged in user.
+     *
+     * @namespace _converse.api.user
+     * @memberOf _converse.api
+     */
     'user': {
+      /**
+       * @method _converse.api.user.jid
+       * @returns {string} The current user's full JID (Jabber ID)
+       * @example _converse.api.user.jid())
+       */
       'jid'() {
         return _converse.connection.jid;
       },
 
+      /**
+       * Logs the user in.
+       *
+       * If called without any parameters, Converse will try
+       * to log the user in by calling the `prebind_url` or `credentials_url` depending
+       * on whether prebinding is used or not.
+       *
+       * @method _converse.api.user.login
+       * @param {object} [credentials] An object with the credentials.
+       * @example
+       * converse.plugins.add('myplugin', {
+       *     initialize: function () {
+       *
+       *         this._converse.api.user.login({
+       *             'jid': 'dummy@example.com',
+       *             'password': 'secret'
+       *         });
+       *
+       *     }
+       * });
+       */
       'login'(credentials) {
         _converse.logIn(credentials);
       },
 
+      /**
+       * Logs the user out of the current XMPP session.
+       *
+       * @method _converse.api.user.logout
+       * @example _converse.api.user.logout();
+       */
       'logout'() {
         _converse.logOut();
       },
 
+      /**
+       * Set and get the user's chat status, also called their *availability*.
+       *
+       * @namespace _converse.api.user.status
+       * @memberOf _converse.api.user
+       */
       'status': {
+        /** Return the current user's availability status.
+         * 
+         * @method _converse.api.user.status.get
+         * @example _converse.api.user.status.get();
+         */
         'get'() {
           return _converse.xmppstatus.get('status');
         },
 
+        /** 
+         * The user's status can be set to one of the following values:
+         *
+         * @method _converse.api.user.status.set
+         * @param {string} value The user's chat status (e.g. 'away', 'dnd', 'offline', 'online', 'unavailable' or 'xa')
+         * @param {string} [message] A custom status message
+         *
+         * @example this._converse.api.user.status.set('dnd');
+         * @example this._converse.api.user.status.set('dnd', 'In a meeting');
+         */
         'set'(value, message) {
           const data = {
             'status': value
@@ -64570,33 +64699,98 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           _converse.xmppstatus.save(data);
         },
 
+        /**
+         * Set and retrieve the user's custom status message.
+         *
+         * @namespace _converse.api.user.status.message
+         * @memberOf _converse.api.user.status
+         */
         'message': {
+          /**
+           * @method _converse.api.user.status.message.get
+           * @returns {string} The status message
+           * @example const message = _converse.api.user.status.message.get()
+           */
           'get'() {
             return _converse.xmppstatus.get('status_message');
           },
 
-          'set'(stat) {
+          /**
+           * @method _converse.api.user.status.message.set
+           * @param {string} status The status message
+           * @example _converse.api.user.status.message.set('In a meeting');
+           */
+          'set'(status) {
             _converse.xmppstatus.save({
-              'status_message': stat
+              'status_message': status
             });
           }
 
         }
       }
     },
+
+    /**
+     * This grouping allows access to the
+     * [configuration settings](/docs/html/configuration.html#configuration-settings)
+     * of Converse.
+     *
+     * @namespace _converse.api.settings
+     * @memberOf _converse.api
+     */
     'settings': {
+      /**
+       * Allows new configuration settings to be specified, or new default values for
+       * existing configuration settings to be specified.
+       *
+       * @method _converse.api.settings.update
+       * @param {object} settings The configuration settings
+       * @example 
+       * _converse.api.settings.update({
+       *    'enable_foo': true
+       * });
+       *
+       * // The user can then override the default value of the configuration setting when
+       * // calling `converse.initialize`.
+       * converse.initialize({
+       *     'enable_foo': false
+       * });
+       */
       'update'(settings) {
         u.merge(_converse.default_settings, settings);
         u.merge(_converse, settings);
         u.applyUserSettings(_converse, settings, _converse.user_settings);
       },
 
+      /**
+       * @method _converse.api.settings.get
+       * @returns {*} Value of the particular configuration setting.
+       * @example _converse.api.settings.get("play_sounds");
+       */
       'get'(key) {
         if (_.includes(_.keys(_converse.default_settings), key)) {
           return _converse[key];
         }
       },
 
+      /**
+       * Set one or many configuration settings.
+       *
+       * Note, this is not an alternative to calling {@link converse.initialize}, which still needs
+       * to be called. Generally, you'd use this method after Converse is already
+       * running and you want to change the configuration on-the-fly.
+       *
+       * @method _converse.api.settings.set
+       * @param {Object} [settings] An object containing configuration settings.
+       * @param {string} [key] Alternatively to passing in an object, you can pass in a key and a value.
+       * @param {string} [value]
+       * @example _converse.api.settings.set("play_sounds", true);
+       * @example
+       * _converse.api.settings.set({
+       *     "play_sounds", true,
+       *     "hide_offline_users" true
+       * });
+       */
       'set'(key, val) {
         const o = {};
 
@@ -64610,7 +64804,51 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
     },
+
+    /**
+     * Converse and its plugins emit various events which you can listen to via the
+     * {@link _converse.api.listen} namespace.
+     * 
+     * Some of these events are also available as [ES2015 Promises](http://es6-features.org/#PromiseUsage)
+     * although not all of them could logically act as promises, since some events
+     * might be fired multpile times whereas promises are to be resolved (or
+     * rejected) only once.
+     * 
+     * Events which are also promises include:
+     * 
+     * * [cachedRoster](/docs/html/events.html#cachedroster)
+     * * [chatBoxesFetched](/docs/html/events.html#chatBoxesFetched)
+     * * [pluginsInitialized](/docs/html/events.html#pluginsInitialized)
+     * * [roster](/docs/html/events.html#roster)
+     * * [rosterContactsFetched](/docs/html/events.html#rosterContactsFetched)
+     * * [rosterGroupsFetched](/docs/html/events.html#rosterGroupsFetched)
+     * * [rosterInitialized](/docs/html/events.html#rosterInitialized)
+     * * [statusInitialized](/docs/html/events.html#statusInitialized)
+     * * [roomsPanelRendered](/docs/html/events.html#roomsPanelRendered)
+     * 
+     * The various plugins might also provide promises, and they do this by using the
+     * `promises.add` api method.
+     *
+     * @namespace _converse.api.promises
+     * @memberOf _converse.api
+     */
     'promises': {
+      /**
+       * By calling `promises.add`, a new [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+       * is made available for other code or plugins to depend on via the
+       * {@link _converse.api.waitUntil} method.
+       * 
+       * Generally, it's the responsibility of the plugin which adds the promise to
+       * also resolve it.
+       * 
+       * This is done by calling {@link _converse.api.emit}, which not only resolves the
+       * promise, but also emits an event with the same name (which can be listened to
+       * via {@link _converse.api.listen}).
+       * 
+       * @method _converse.api.promises.add
+       * @param {string|array} [name|names] The name or an array of names for the promise(s) to be added
+       * @example _converse.api.promises.add('foo-completed');
+       */
       'add'(promises) {
         promises = _.isArray(promises) ? promises : [promises];
 
@@ -64618,7 +64856,20 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
     },
+
+    /**
+     * This namespace lets you access the BOSH tokens
+     *
+     * @namespace _converse.api.tokens
+     * @memberOf _converse.api
+     */
     'tokens': {
+      /**
+       * @method _converse.api.tokens.get
+       * @param {string} [id] The type of token to return ('rid' or 'sid').
+       * @returns 'string' A token, either the RID or SID token depending on what's asked for.
+       * @example _converse.api.tokens.get('rid');
+       */
       'get'(id) {
         if (!_converse.expose_rid_and_sid || _.isUndefined(_converse.connection)) {
           return null;
@@ -64632,11 +64883,64 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
     },
+
+    /**
+     * Converse emits events to which you can subscribe to.
+     * 
+     * The `listen` namespace exposes methods for creating event listeners
+     * (aka handlers) for these events.
+     *
+     * @namespace _converse.api.listen
+     * @memberOf _converse
+     */
     'listen': {
+      /**
+       * Lets you listen to an event exactly once.
+       *
+       * @method _converse.api.listen.once
+       * @param {string} name The event's name
+       * @param {function} callback The callback method to be called when the event is emitted.
+       * @param {object} [context] The value of the `this` parameter for the callback.
+       * @example _converse.api.listen.once('message', function (messageXML) { ... });
+       */
       'once': _converse.once.bind(_converse),
+
+      /**
+       * Lets you subscribe to an event.
+       *
+       * Every time the event fires, the callback method specified by `callback` will be called.
+       *
+       * @method _converse.api.listen.on
+       * @param {string} name The event's name
+       * @param {function} callback The callback method to be called when the event is emitted.
+       * @param {object} [context] The value of the `this` parameter for the callback.
+       * @example _converse.api.listen.on('message', function (messageXML) { ... });
+       */
       'on': _converse.on.bind(_converse),
+
+      /**
+       * To stop listening to an event, you can use the `not` method.
+       *
+       * Every time the event fires, the callback method specified by `callback` will be called.
+       *
+       * @method _converse.api.listen.not
+       * @param {string} name The event's name
+       * @param {function} callback The callback method that is to no longer be called when the event fires
+       * @example _converse.api.listen.not('message', function (messageXML);
+       */
       'not': _converse.off.bind(_converse),
 
+      /**
+       * Subscribe to an incoming stanza
+       *
+       * Every a matched stanza is received, the callback method specified by `callback` will be called.
+       *
+       * @method _converse.api.listen.stanza
+       * @param {string} name The stanza's name
+       * @param {object} options Matching options
+       * (e.g. 'ns' for namespace, 'type' for stanza type, also 'id' and 'from');
+       * @param {function} handler The callback method to be called when the stanza appears
+       */
       'stanza'(name, options, handler) {
         if (_.isFunction(options)) {
           handler = options;
@@ -64650,6 +64954,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
     },
 
+    /**
+     * Wait until a promise is resolved
+     *
+     * @method _converse.api.waitUntil
+     * @param {string} name The name of the promise
+     * @returns {Promise}
+     */
     'waitUntil'(name) {
       const promise = _converse.promises[name];
 
@@ -64660,24 +64971,109 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       return promise;
     },
 
+    /**
+     * Allows you to send XML stanzas.
+     * 
+     * @method _converse.api.send
+     * @example
+     * const msg = converse.env.$msg({
+     *     'from': 'juliet@example.com/balcony',
+     *     'to': 'romeo@example.net',
+     *     'type':'chat'
+     * });
+     * _converse.api.send(msg);
+     */
     'send'(stanza) {
       _converse.connection.send(stanza);
     },
 
+    /**
+     * Send an IQ stanza and receive a promise
+     *
+     * @method _converse.api.sendIQ
+     * @returns {Promise} A promise which resolves when we receive a `result` stanza
+     * or is rejected when we receive an `error` stanza.
+     */
     'sendIQ'(stanza) {
       return new Promise((resolve, reject) => {
         _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
       });
     }
 
-  }; // The public API
+  };
+  /**
+   * ### The Public API
+   *
+   * This namespace contains public API methods which are are
+   * accessible on the global `converse` object.
+   * They are public, because any JavaScript in the
+   * page can call them. Public methods therefore don’t expose any sensitive
+   * or closured data. To do that, you’ll need to create a plugin, which has
+   * access to the private API method.
+   *
+   * @namespace converse
+   */
 
-  window.converse = {
+  const converse = {
+    /**
+     * Public API method which initializes Converse.
+     * This method must always be called when using Converse. 
+     *
+     * @memberOf converse
+     * @method initialize
+     * @param {object} config A map of [configuration-settings](https://conversejs.org/docs/html/configuration.html#configuration-settings).
+     *
+     * @example
+     * converse.initialize({
+     *     allow_otr: true,
+     *     auto_list_rooms: false,
+     *     auto_subscribe: false,
+     *     bosh_service_url: 'https://bind.example.com',
+     *     hide_muc_server: false,
+     *     i18n: locales['en'],
+     *     keepalive: true,
+     *     play_sounds: true,
+     *     prebind: false,
+     *     show_controlbox_by_default: true,
+     *     debug: false,
+     *     roster_groups: true
+     * });
+     */
     'initialize'(settings, callback) {
       return _converse.initialize(settings, callback);
     },
 
+    /**
+     * Exposes methods for adding and removing plugins. You'll need to write a plugin
+     * if you want to have access to the private API methods defined further down below.
+     * 
+     * For more information on plugins, read the documentation on [writing a plugin](/docs/html/plugin_development.html).
+     *
+     * @namespace plugins
+     * @memberOf converse
+     */
     'plugins': {
+      /** Registers a new plugin.
+       * 
+       * @method converse.plugins.add
+       * @param {string} name The name of the plugin
+       * @param {object} plugin The plugin object
+       *
+       * @example
+       * 
+       *  const plugin = {
+       *      initialize: function () {
+       *          // Gets called as soon as the plugin has been loaded.
+       * 
+       *          // Inside this method, you have access to the private
+       *          // API via `_covnerse.api`.
+       *
+       *          // The private _converse object contains the core logic
+       *          // and data-structures of Converse.
+       *      }
+       *  }
+       *  converse.plugins.add('myplugin', plugin);
+       */
       'add'(name, plugin) {
         plugin.__name__ = name;
 
@@ -64689,6 +65085,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
     },
+
+    /**
+     * Utility methods and globals from bundled 3rd party libraries.
+     * @memberOf converse
+     *
+     * @property {function} converse.env.$build    - Creates a Strophe.Builder, for creating stanza objects.
+     * @property {function} converse.env.$iq       - Creates a Strophe.Builder with an <iq/> element as the root.
+     * @property {function} converse.env.$msg      - Creates a Strophe.Builder with an <message/> element as the root.
+     * @property {function} converse.env.$pres     - Creates a Strophe.Builder with an <presence/> element as the root.
+     * @property {object} converse.env.Backbone    - The [Backbone](http://backbonejs.org) object used by Converse to create models and views.
+     * @property {function} converse.env.Promise   - The Promise implementation used by Converse.
+     * @property {function} converse.env.Strophe   - The [Strophe](http://strophe.im/strophejs) XMPP library used by Converse.
+     * @property {object} converse.env._           - The instance of [lodash](http://lodash.com) used by Converse.
+     * @property {function} converse.env.f         - And instance of Lodash with its methods wrapped to produce immutable auto-curried iteratee-first data-last methods.
+     * @property {function} converse.env.b64_sha1  - Utility method from Strophe for creating base64 encoded sha1 hashes.
+     * @property {object} converse.env.moment      - [Moment](https://momentjs.com) date manipulation library.
+     * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
+     * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
+     */
     'env': {
       '$build': $build,
       '$iq': $iq,
@@ -64705,8 +65120,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       'utils': u
     }
   };
+  window.converse = converse;
   window.dispatchEvent(new CustomEvent('converse-loaded'));
-  return window.converse;
+  return converse;
 });
 
 /***/ }),
@@ -64724,10 +65140,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2018, the Converse developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-/* This is a Converse.js plugin which add support for XEP-0030: Service Discovery */
+/* This is a Converse plugin which add support for XEP-0030: Service Discovery */
 (function (root, factory) {
   !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
@@ -64833,7 +65249,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.features.fetch({
               add: true,
               success: () => {
-                this.waitUntilFeaturesDiscovered.resolve();
+                this.waitUntilFeaturesDiscovered.resolve(this);
                 this.trigger('featuresDiscovered');
               }
             });
@@ -64845,7 +65261,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         queryInfo() {
           _converse.api.disco.info(this.get('jid'), null).then(stanza => this.onInfo(stanza)).catch(iq => {
-            this.waitUntilFeaturesDiscovered.resolve();
+            this.waitUntilFeaturesDiscovered.resolve(this);
 
             _converse.log(iq, Strophe.LogLevel.ERROR);
           });
@@ -64884,7 +65300,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return;
           }
 
-          _converse.api.disco.items(this.get('jid'), null, this.onDiscoItems.bind(this));
+          _converse.api.disco.items(this.get('jid')).then(stanza => this.onDiscoItems(stanza));
         },
 
         onInfo(stanza) {
@@ -64920,7 +65336,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             });
           });
 
-          this.waitUntilFeaturesDiscovered.resolve();
+          this.waitUntilFeaturesDiscovered.resolve(this);
           this.trigger('featuresDiscovered');
         }
 
@@ -64946,7 +65362,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       function addClientFeatures() {
         // See http://xmpp.org/registrar/disco-categories.html
-        _converse.api.disco.own.identities.add('client', 'web', 'Converse.js');
+        _converse.api.disco.own.identities.add('client', 'web', 'Converse');
 
         _converse.api.disco.own.features.add(Strophe.NS.BOSH);
 
@@ -65083,16 +65499,29 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         return true;
       }
-      /* We extend the default converse.js API to add methods specific to service discovery */
-
 
       _.extend(_converse.api, {
         /**
-         * The service discovery API
-         * @namespace
+         * The XEP-0030 service discovery API
+         *
+         * This API lets you discover information about entities on the
+         * XMPP network.
+         *
+         * @namespace _converse.api.disco
+         * @memberOf _converse.api
          */
         'disco': {
+          /**
+           * @namespace _converse.api.disco.stream
+           * @memberOf _converse.api.disco
+           */
           'stream': {
+            /**
+             * @method _converse.api.disco.stream.getFeature
+             * @param {String} name The feature name
+             * @param {String} xmlns The XML namespace
+             * @example _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver')
+             */
             'getFeature': function getFeature(name, xmlns) {
               if (_.isNil(name) || _.isNil(xmlns)) {
                 throw new Error("name and xmlns need to be provided when calling disco.stream.getFeature");
@@ -65106,26 +65535,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           },
 
           /**
-           * The "own" grouping
-           * @namespace
+           * @namespace _converse.api.disco.own
+           * @memberOf _converse.api.disco
            */
           'own': {
             /**
-             * The "identities" grouping
-             * @namespace
+             * @namespace _converse.api.disco.own.identities
+             * @memberOf _converse.api.disco.own
              */
             'identities': {
               /**
-               * Lets you add new identities for this client (i.e. instance of Converse.js)
-               * @function
+               * Lets you add new identities for this client (i.e. instance of Converse)
+               * @method _converse.api.disco.own.identities.add
                *
                * @param {String} category - server, client, gateway, directory, etc.
                * @param {String} type - phone, pc, web, etc.
-               * @param {String} name - "Converse.js"
+               * @param {String} name - "Converse"
                * @param {String} lang - en, el, de, etc.
                *
-               * @example
-               * _converse.api.disco.own.identities.clear();
+               * @example _converse.api.disco.own.identities.clear();
                */
               add(category, type, name, lang) {
                 for (var i = 0; i < plugin._identities.length; i++) {
@@ -65144,10 +65572,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
               /**
                * Clears all previously registered identities.
-               * @function
-               *
-               * @example
-               * _converse.api.disco.own.identities.clear();
+               * @method _converse.api.disco.own.identities.clear
+               * @example _converse.api.disco.own.identities.clear();
                */
               clear() {
                 plugin._identities = [];
@@ -65155,11 +65581,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
               /**
                * Returns all of the identities registered for this client
-               * (i.e. instance of Converse.js).
-               * @function
-               *
-               * @example
-               * const identities = _converse.api.disco.own.identities.get();
+               * (i.e. instance of Converse).
+               * @method _converse.api.disco.identities.get
+               * @example const identities = _converse.api.disco.own.identities.get();
                */
               get() {
                 return plugin._identities;
@@ -65168,18 +65592,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             },
 
             /**
-             * The "features" grouping
-             * @namespace
+             * @namespace _converse.api.disco.own.features
+             * @memberOf _converse.api.disco.own
              */
             'features': {
               /**
-               * Lets you register new disco features for this client (i.e. instance of Converse.js)
-               * @function
-               *
+               * Lets you register new disco features for this client (i.e. instance of Converse)
+               * @method _converse.api.disco.own.features.add
                * @param {String} name - e.g. http://jabber.org/protocol/caps
-               *
-               * @example
-               * _converse.api.disco.own.features.add("http://jabber.org/protocol/caps");
+               * @example _converse.api.disco.own.features.add("http://jabber.org/protocol/caps");
                */
               add(name) {
                 for (var i = 0; i < plugin._features.length; i++) {
@@ -65193,22 +65614,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
               /**
                * Clears all previously registered features.
-               * @function
-               *
-               * @example
-               * _converse.api.disco.own.features.clear();
+               * @method _converse.api.disco.own.features.clear
+               * @example _converse.api.disco.own.features.clear();
                */
               clear() {
                 plugin._features = [];
               },
 
               /**
-               * Returns all of the features registered for this client
-               * (i.e. instance of Converse.js).
-               * @function
-               *
-               * @example
-               * const features = _converse.api.disco.own.features.get();
+               * Returns all of the features registered for this client (i.e. instance of Converse).
+               * @method _converse.api.disco.own.features.get
+               * @example const features = _converse.api.disco.own.features.get();
                */
               get() {
                 return plugin._features;
@@ -65217,6 +65633,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }
           },
 
+          /**
+           * Query for information about an XMPP entity
+           *
+           * @method _converse.api.disco.info
+           * @param {string} jid The Jabber ID of the entity to query
+           * @param {string} [node] A specific node identifier associated with the JID
+           * @returns {promise} Promise which resolves once we have a result from the server.
+           */
           'info'(jid, node) {
             const attrs = {
               xmlns: Strophe.NS.DISCO_INFO
@@ -65234,7 +65658,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return _converse.api.sendIQ(info);
           },
 
-          'items'(jid, node, callback, errback, timeout) {
+          /**
+           * Query for items associated with an XMPP entity
+           *
+           * @method _converse.api.disco.items
+           * @param {string} jid The Jabber ID of the entity to query for items
+           * @param {string} [node] A specific node identifier associated with the JID
+           * @returns {promise} Promise which resolves once we have a result from the server.
+           */
+          'items'(jid, node) {
             const attrs = {
               'xmlns': Strophe.NS.DISCO_ITEMS
             };
@@ -65243,88 +65675,124 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               attrs.node = node;
             }
 
-            const items = $iq({
+            return _converse.api.sendIQ($iq({
               'from': _converse.connection.jid,
               'to': jid,
               'type': 'get'
-            }).c('query', attrs);
-
-            _converse.connection.sendIQ(items, callback, errback, timeout);
+            }).c('query', attrs));
           },
 
+          /**
+           * Namespace for methods associated with disco entities
+           *
+           * @namespace _converse.api.disco.entities
+           * @memberOf _converse.api.disco
+           */
           'entities': {
-            'get'(entity_jid, create = false) {
+            /**
+             * Get the the corresponding `DiscoEntity` instance.
+             * 
+             * @method _converse.api.disco.entities.get
+             * @param {string} jid The Jabber ID of the entity
+             * @param {boolean} [create] Whether the entity should be created if it doesn't exist.
+             * @example _converse.api.disco.entities.get(jid);
+             */
+            'get'(jid, create = false) {
               return _converse.api.waitUntil('discoInitialized').then(() => {
-                if (_.isNil(entity_jid)) {
+                if (_.isNil(jid)) {
                   return _converse.disco_entities;
                 }
 
-                const entity = _converse.disco_entities.get(entity_jid);
+                const entity = _converse.disco_entities.get(jid);
 
                 if (entity || !create) {
                   return entity;
                 }
 
                 return _converse.disco_entities.create({
-                  'jid': entity_jid
+                  'jid': jid
                 });
               });
             }
 
           },
 
-          'supports'(feature, entity_jid) {
-            /* Returns a Promise which resolves with a list containing
-             * _converse.Entity instances representing the entity
-             * itself or those items associated with the entity if
-             * they support the given feature.
-             *
-             * Parameters:
-             *    (String) feature - The feature that might be
-             *         supported. In the XML stanza, this is the `var`
-             *         attribute of the `<feature>` element. For
-             *         example: 'http://jabber.org/protocol/muc'
-             *    (String) entity_jid - The JID of the entity
-             *         (and its associated items) which should be queried
-             */
-            if (_.isNil(entity_jid)) {
+          /**
+           * Used to determine whether an entity supports a given feature.
+           *
+           * @method _converse.api.disco.supports
+           * @param {string} feature The feature that might be
+           *     supported. In the XML stanza, this is the `var`
+           *     attribute of the `<feature>` element. For
+           *     example: `http://jabber.org/protocol/muc`
+           * @param {string} jid The JID of the entity
+           *     (and its associated items) which should be queried
+           * @returns {promise} A promise which resolves with a list containing
+           *     _converse.Entity instances representing the entity
+           *     itself or those items associated with the entity if
+           *     they support the given feature.
+           *
+           * @example
+           * _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid)
+           * .then(value => {
+           *     // `value` is a map with two keys, `supported` and `feature`.
+           *     if (value.supported) {
+           *         // The feature is supported
+           *     } else {
+           *         // The feature is not supported
+           *     }
+           * }).catch(() => {
+           *     _converse.log(
+           *         "Error or timeout while checking for feature support",
+           *         Strophe.LogLevel.ERROR
+           *     );
+           * });
+           */
+          'supports'(feature, jid) {
+            if (_.isNil(jid)) {
               throw new TypeError('disco.supports: You need to provide an entity JID');
             }
 
-            return new Promise((resolve, reject) => {
-              return _converse.api.waitUntil('discoInitialized').then(() => {
-                _converse.api.disco.entities.get(entity_jid, true).then(entity => {
-                  entity.waitUntilFeaturesDiscovered.then(() => {
-                    const promises = _.concat(entity.items.map(item => item.hasFeature(feature)), entity.hasFeature(feature));
+            return _converse.api.waitUntil('discoInitialized').then(() => _converse.api.disco.entities.get(jid, true)).then(entity => entity.waitUntilFeaturesDiscovered).then(entity => {
+              const promises = _.concat(entity.items.map(item => item.hasFeature(feature)), entity.hasFeature(feature));
 
-                    Promise.all(promises).then(result => {
-                      resolve(f.filter(f.isObject, result));
-                    }).catch(reject);
-                  }).catch(reject);
-                }).catch(reject);
-              }).catch(reject);
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+              return Promise.all(promises);
+            }).then(result => f.filter(f.isObject, result));
           },
 
-          'getIdentity'(category, type, entity_jid) {
-            /* Returns a Promise which resolves with a map indicating
-             * whether an identity with a given type is provided by
-             * the entity.
-             *
-             * Parameters:
-             *    (String) category - The identity category.
-             *          In the XML stanza, this is the `category`
-             *          attribute of the `<identity>` element.
-             *          For example: 'pubsub'
-             *    (String) type - The identity type.
-             *          In the XML stanza, this is the `type`
-             *          attribute of the `<identity>` element.
-             *          For example: 'pep'
-             *    (String) entity_jid - The JID of the entity which might have the identity
-             */
-            return new Promise((resolve, reject) => {
-              _converse.api.disco.entities.get(entity_jid, true).then(entity => resolve(entity.getIdentity(category, type)));
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          /**
+           * Get the identity (with the given category and type) for a given disco entity.
+           *
+           * For example, when determining support for PEP (personal eventing protocol), you
+           * want to know whether the user's own JID has an identity with
+           * `category='pubsub'` and `type='pep'` as explained in this section of
+           * XEP-0163: https://xmpp.org/extensions/xep-0163.html#support
+           * 
+           * @method _converse.api.disco.getIdentity
+           * @param {string} The identity category.
+           *     In the XML stanza, this is the `category`
+           *     attribute of the `<identity>` element.
+           *     For example: 'pubsub'
+           * @param {string} type The identity type.
+           *     In the XML stanza, this is the `type`
+           *     attribute of the `<identity>` element.
+           *     For example: 'pep'
+           * @param {string} jid The JID of the entity which might have the identity
+           * @returns {promise} A promise which resolves with a map indicating
+           *     whether an identity with a given type is provided by the entity.
+           * @example
+           * _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid).then(
+           *     function (identity) {
+           *         if (_.isNil(identity)) {
+           *             // The entity DOES NOT have this identity
+           *         } else {
+           *             // The entity DOES have this identity
+           *         }
+           *     }
+           * ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+           */
+          'getIdentity'(category, type, jid) {
+            return _converse.api.disco.entities.get(jid, true).then(e => e.getIdentity(category, type));
           }
 
         }
@@ -66548,28 +67016,176 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
 
       _.extend(_converse.api, {
-        /* Extend default converse.js API to add methods specific to MAM
+        /**
+         * The [XEP-0313](https://xmpp.org/extensions/xep-0313.html) Message Archive Management API
+         *
+         * Enables you to query an XMPP server for archived messages.
+         *
+         * See also the [message-archiving](/docs/html/configuration.html#message-archiving)
+         * option in the configuration settings section, which you'll
+         * usually want to use in conjunction with this API.
+         *
+         * @namespace _converse.api.archive
+         * @memberOf _converse.api
          */
         'archive': {
+          /**
+           * Query for archived messages.
+           *
+           * The options parameter can also be an instance of
+           * Strophe.RSM to enable easy querying between results pages.
+           *
+           * @method _converse.api.archive.query
+           * @param {(Object|Strophe.RSM)} options Query parameters, either
+           *      MAM-specific or also for Result Set Management.
+           *      Can be either an object or an instance of Strophe.RSM.
+           *      Valid query parameters are:
+           * * `with`
+           * * `start`
+           * * `end`
+           * * `first`
+           * * `last`
+           * * `after`
+           * * `before`
+           * * `index`
+           * * `count`
+           * @param {Function} callback A function to call whenever
+           *      we receive query-relevant stanza.
+           *      When the callback is called, a Strophe.RSM object is
+           *      returned on which "next" or "previous" can be called
+           *      before passing it in again to this method, to
+           *      get the next or previous page in the result set.
+           * @param {Function} errback A function to call when an
+           *      error stanza is received, for example when it
+           *      doesn't support message archiving.
+           *
+           * @example
+           * // Requesting all archived messages
+           * // ================================
+           * //
+           * // The simplest query that can be made is to simply not pass in any parameters.
+           * // Such a query will return all archived messages for the current user.
+           * //
+           * // Generally, you'll however always want to pass in a callback method, to receive
+           * // the returned messages.
+           *
+           * this._converse.api.archive.query(
+           *     (messages) => {
+           *         // Do something with the messages, like showing them in your webpage.
+           *     },
+           *     (iq) => {
+           *         // The query was not successful, perhaps inform the user?
+           *         // The IQ stanza returned by the XMPP server is passed in, so that you
+           *         // may inspect it and determine what the problem was.
+           *     }
+           * )
+           * @example
+           * // Waiting until server support has been determined
+           * // ================================================
+           * //
+           * // The query method will only work if Converse has been able to determine that
+           * // the server supports MAM queries, otherwise the following error will be raised:
+           * //
+           * // "This server does not support XEP-0313, Message Archive Management"
+           * //
+           * // The very first time Converse loads in a browser tab, if you call the query
+           * // API too quickly, the above error might appear because service discovery has not
+           * // yet been completed.
+           * //
+           * // To work solve this problem, you can first listen for the `serviceDiscovered` event,
+           * // through which you can be informed once support for MAM has been determined.
+           *
+           *  _converse.api.listen.on('serviceDiscovered', function (feature) {
+           *      if (feature.get('var') === converse.env.Strophe.NS.MAM) {
+           *          _converse.api.archive.query()
+           *      }
+           *  });
+           *
+           * @example
+           * // Requesting all archived messages for a particular contact or room
+           * // =================================================================
+           * //
+           * // To query for messages sent between the current user and another user or room,
+           * // the query options need to contain the the JID (Jabber ID) of the user or
+           * // room under the  `with` key.
+           *
+           * // For a particular user
+           * this._converse.api.archive.query({'with': 'john@doe.net'}, callback, errback);)
+           *
+           * // For a particular room
+           * this._converse.api.archive.query({'with': 'discuss@conference.doglovers.net'}, callback, errback);)
+           *
+           * @example
+           * // Requesting all archived messages before or after a certain date
+           * // ===============================================================
+           * //
+           * // The `start` and `end` parameters are used to query for messages
+           * // within a certain timeframe. The passed in date values may either be ISO8601
+           * // formatted date strings, or JavaScript Date objects.
+           *
+           *  const options = {
+           *      'with': 'john@doe.net',
+           *      'start': '2010-06-07T00:00:00Z',
+           *      'end': '2010-07-07T13:23:54Z'
+           *  };
+           *  this._converse.api.archive.query(options, callback, errback);
+           *
+           * @example
+           * // Limiting the amount of messages returned
+           * // ========================================
+           * //
+           * // The amount of returned messages may be limited with the `max` parameter.
+           * // By default, the messages are returned from oldest to newest.
+           *
+           * // Return maximum 10 archived messages
+           * this._converse.api.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+           *
+           * @example
+           * // Paging forwards through a set of archived messages
+           * // ==================================================
+           * //
+           * // When limiting the amount of messages returned per query, you might want to
+           * // repeatedly make a further query to fetch the next batch of messages.
+           * //
+           * // To simplify this usecase for you, the callback method receives not only an array
+           * // with the returned archived messages, but also a special RSM (*Result Set
+           * // Management*) object which contains the query parameters you passed in, as well
+           * // as two utility methods `next`, and `previous`.
+           * //
+           * // When you call one of these utility methods on the returned RSM object, and then
+           * // pass the result into a new query, you'll receive the next or previous batch of
+           * // archived messages. Please note, when calling these methods, pass in an integer
+           * // to limit your results.
+           *
+           * const callback = function (messages, rsm) {
+           *     // Do something with the messages, like showing them in your webpage.
+           *     // ...
+           *     // You can now use the returned "rsm" object, to fetch the next batch of messages:
+           *     _converse.api.archive.query(rsm.next(10), callback, errback))
+           *
+           * }
+           * _converse.api.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+           *
+           * @example
+           * // Paging backwards through a set of archived messages
+           * // ===================================================
+           * //
+           * // To page backwards through the archive, you need to know the UID of the message
+           * // which you'd like to page backwards from and then pass that as value for the
+           * // `before` parameter. If you simply want to page backwards from the most recent
+           * // message, pass in the `before` parameter with an empty string value `''`.
+           *
+           * _converse.api.archive.query({'before': '', 'max':5}, function (message, rsm) {
+           *     // Do something with the messages, like showing them in your webpage.
+           *     // ...
+           *     // You can now use the returned "rsm" object, to fetch the previous batch of messages:
+           *     rsm.previous(5); // Call previous method, to update the object's parameters,
+           *                      // passing in a limit value of 5.
+           *     // Now we query again, to get the previous batch.
+           *     _converse.api.archive.query(rsm, callback, errback);
+           * }
+           */
           'query': function query(options, callback, errback) {
-            /* Do a MAM (XEP-0313) query for archived messages.
-             *
-             * Parameters:
-             *    (Object) options - Query parameters, either
-             *      MAM-specific or also for Result Set Management.
-             *    (Function) callback - A function to call whenever
-             *      we receive query-relevant stanza.
-             *    (Function) errback - A function to call when an
-             *      error stanza is received.
-             *
-             * The options parameter can also be an instance of
-             * Strophe.RSM to enable easy querying between results pages.
-             *
-             * When the the callback is called, a Strophe.RSM object is
-             * returned on which "next" or "previous" can be called
-             * before passing it in again to this method, to
-             * get the next or previous page in the result set.
-             */
             if (!_converse.api.connection.connected()) {
               throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
             }
@@ -69654,6 +70270,54 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse.on('reconnected', reconnectToChatRooms);
       /************************ END Event Handlers ************************/
 
+      /************************ BEGIN API ************************/
+
+
+      _.extend(_converse.api, {
+        /**
+         * The "roomviews" namespace groups methods relevant to chatroom
+         * (aka groupchats) views.
+         *
+         * @namespace _converse.api.roomviews
+         * @memberOf _converse.api
+         */
+        'roomviews': {
+          /**
+           * Lets you close open chatrooms.
+           *
+           * You can call this method without any arguments to close
+           * all open chatrooms, or you can specify a single JID or
+           * an array of JIDs.
+           *
+           * @method _converse.api.roomviews.close
+           * @param {(String[]|String)} jids The JID or array of JIDs of the chatroom(s)
+           */
+          'close'(jids) {
+            if (_.isUndefined(jids)) {
+              _converse.chatboxviews.each(function (view) {
+                if (view.is_chatroom && view.model) {
+                  view.close();
+                }
+              });
+            } else if (_.isString(jids)) {
+              const view = _converse.chatboxviews.get(jids);
+
+              if (view) {
+                view.close();
+              }
+            } else {
+              _.each(jids, function (jid) {
+                const view = _converse.chatboxviews.get(jid);
+
+                if (view) {
+                  view.close();
+                }
+              });
+            }
+          }
+
+        }
+      });
     }
 
   });
@@ -71128,32 +71792,26 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
       _.extend(_converse.api, {
+        /**
+         * The "rooms" namespace groups methods relevant to chatrooms
+         * (aka groupchats).
+         *
+         * @namespace _converse.api.rooms
+         * @memberOf _converse.api
+         */
         'rooms': {
-          'close'(jids) {
-            if (_.isUndefined(jids)) {
-              // FIXME: can't access views here
-              _converse.chatboxviews.each(function (view) {
-                if (view.is_chatroom && view.model) {
-                  view.close();
-                }
-              });
-            } else if (_.isString(jids)) {
-              const view = _converse.chatboxviews.get(jids);
-
-              if (view) {
-                view.close();
-              }
-            } else {
-              _.each(jids, function (jid) {
-                const view = _converse.chatboxviews.get(jid);
-
-                if (view) {
-                  view.close();
-                }
-              });
-            }
-          },
-
+          /**
+           * Creates a new MUC chatroom (aka groupchat)
+           *
+           * Similar to {@link _converse.api.rooms.open}, but creates
+           * the chatroom in the background (i.e. doesn't cause a
+           * view to open).
+           *
+           * @method _converse.api.rooms.create
+           * @param {(string[]|string)} jid|jids The JID or array of
+           *     JIDs of the chatroom(s) to create
+           * @param {object} [attrs] attrs The room attributes
+           */
           'create'(jids, attrs) {
             if (_.isString(attrs)) {
               attrs = {
@@ -71180,6 +71838,60 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             return _.map(jids, _.partial(createChatRoom, _, attrs));
           },
 
+          /**
+           * Opens a MUC chatroom (aka groupchat)
+           *
+           * Similar to {@link _converse.api.chats.open}, but for groupchats.
+           *
+           * @method _converse.api.rooms.open
+           * @param {string} jid The room JID or JIDs (if not specified, all
+           *     currently open rooms will be returned).
+           * @param {string} attrs A map  containing any extra room attributes.
+           * @param {string} [attrs.nick] The current user's nickname for the MUC
+           * @param {boolean} [attrs.auto_configure] A boolean, indicating
+           *     whether the room should be configured automatically or not.
+           *     If set to `true`, then it makes sense to pass in configuration settings.
+           * @param {object} [attrs.roomconfig] A map of configuration settings to be used when the room gets
+           *     configured automatically. Currently it doesn't make sense to specify
+           *     `roomconfig` values if `auto_configure` is set to `false`.
+           *     For a list of configuration values that can be passed in, refer to these values
+           *     in the [XEP-0045 MUC specification](http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner).
+           *     The values should be named without the `muc#roomconfig_` prefix.
+           * @param {boolean} [attrs.maximize] A boolean, indicating whether minimized rooms should also be
+           *     maximized, when opened. Set to `false` by default.
+           * @param {boolean} [attrs.bring_to_foreground] A boolean indicating whether the room should be
+           *     brought to the foreground and therefore replace the currently shown chat.
+           *     If there is no chat currently open, then this option is ineffective.
+           *
+           * @example
+           * this._converse.api.rooms.open('group@muc.example.com')
+           *
+           * @example
+           * // To return an array of rooms, provide an array of room JIDs:
+           * _converse.api.rooms.open(['group1@muc.example.com', 'group2@muc.example.com'])
+           *
+           * @example
+           * // To setup a custom nickname when joining the room, provide the optional nick argument:
+           * _converse.api.rooms.open('group@muc.example.com', {'nick': 'mycustomnick'})
+           *
+           * @example
+           * // For example, opening a room with a specific default configuration:
+           * _converse.api.rooms.open(
+           *     'myroom@conference.example.org',
+           *     { 'nick': 'coolguy69',
+           *       'auto_configure': true,
+           *       'roomconfig': {
+           *           'changesubject': false,
+           *           'membersonly': true,
+           *           'persistentroom': true,
+           *           'publicroom': true,
+           *           'roomdesc': 'Comfy room for hanging out',
+           *           'whois': 'anyone'
+           *       }
+           *     },
+           *     true
+           * );
+           */
           'open'(jids, attrs) {
             return new Promise((resolve, reject) => {
               _converse.api.waitUntil('chatBoxesFetched').then(() => {
@@ -71198,6 +71910,29 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             });
           },
 
+          /**
+           * Returns an object representing a MUC chatroom (aka groupchat)
+           *
+           * @method _converse.api.rooms.get
+           * @param {string} [jid] The room JID (if not specified, all rooms will be returned).
+           * @param {object} attrs A map containing any extra room attributes For example, if you want
+           *     to specify the nickname, use `{'nick': 'bloodninja'}`. Previously (before
+           *     version 1.0.7, the second parameter only accepted the nickname (as a string
+           *     value). This is currently still accepted, but then you can't pass in any
+           *     other room attributes. If the nickname is not specified then the node part of
+           *     the user's JID will be used.
+           * @param {boolean} create A boolean indicating whether the room should be created
+           *     if not found (default: `false`)
+           * @example
+           * _converse.api.waitUntil('roomsAutoJoined').then(() => {
+           *     const create_if_not_found = true;
+           *     _converse.api.rooms.get(
+           *         'group@muc.example.com',
+           *         {'nick': 'dread-pirate-roberts'},
+           *         create_if_not_found
+           *     )
+           * });
+           */
           'get'(jids, attrs, create) {
             if (_.isString(attrs)) {
               attrs = {
@@ -71772,36 +72507,36 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         async encryptMessage(plaintext) {
           // The client MUST use fresh, randomly generated key/IV pairs
           // with AES-128 in Galois/Counter Mode (GCM).
-          const iv = crypto.getRandomValues(new window.Uint8Array(16));
-          const key = await crypto.subtle.generateKey(KEY_ALGO, true, ["encrypt", "decrypt"]);
-          const algo = {
+          const iv = crypto.getRandomValues(new window.Uint8Array(16)),
+                key = await crypto.subtle.generateKey(KEY_ALGO, true, ["encrypt", "decrypt"]),
+                algo = {
             'name': 'AES-GCM',
             'iv': iv,
             'tagLength': TAG_LENGTH
-          };
-          const encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext));
-          const length = encrypted.byteLength - (128 + 7 >> 3),
+          },
+                encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext)),
+                length = encrypted.byteLength - (128 + 7 >> 3),
                 ciphertext = encrypted.slice(0, length),
-                tag = encrypted.slice(length);
-          const exported_key = await crypto.subtle.exportKey("raw", key);
+                tag = encrypted.slice(length),
+                exported_key = await crypto.subtle.exportKey("raw", key);
           return Promise.resolve({
-            'key': key,
+            'key': exported_key,
+            'tag': tag,
             'key_and_tag': u.appendArrayBuffer(exported_key, tag),
             'payload': u.arrayBufferToBase64(ciphertext),
             'iv': u.arrayBufferToBase64(iv)
           });
         },
 
-        decryptMessage(obj) {
-          return crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt', 'decrypt']).then(key_obj => {
-            const algo = {
-              'name': "AES-GCM",
-              'iv': u.base64ToArrayBuffer(obj.iv),
-              'tagLength': TAG_LENGTH
-            };
-            const cipher = u.appendArrayBuffer(u.base64ToArrayBuffer(obj.payload), obj.tag);
-            return crypto.subtle.decrypt(algo, key_obj, cipher);
-          }).then(out => u.arrayBufferToString(out));
+        async decryptMessage(obj) {
+          const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt', 'decrypt']),
+                cipher = u.appendArrayBuffer(u.base64ToArrayBuffer(obj.payload), obj.tag),
+                algo = {
+            'name': "AES-GCM",
+            'iv': u.base64ToArrayBuffer(obj.iv),
+            'tagLength': TAG_LENGTH
+          };
+          return u.arrayBufferToString((await crypto.subtle.decrypt(algo, key_obj, cipher)));
         },
 
         reportDecryptionError(e) {
@@ -75349,7 +76084,43 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
       _.extend(_converse.api, {
+        /**
+         * @namespace _converse.api.contacts
+         * @memberOf _converse.api
+         */
         'contacts': {
+          /**
+           * This method is used to retrieve roster contacts.
+           * 
+           * @method _converse.api.contacts.get
+           * @params {(string[]|string)} jid|jids The JID or JIDs of
+           *      the contacts to be returned.
+           * @returns {(RosterContact[]|RosterContact)} [Backbone.Model](http://backbonejs.org/#Model)
+           *      (or an array of them) representing the contact.
+           *
+           * @example
+           * // Fetch a single contact
+           * _converse.api.listen.on('rosterContactsFetched', function () {
+           *     const contact = _converse.api.contacts.get('buddy@example.com')
+           *     // ...
+           * });
+           * 
+           * @example
+           * // To get multiple contacts, pass in an array of JIDs:
+           * _converse.api.listen.on('rosterContactsFetched', function () {
+           *     const contacts = _converse.api.contacts.get(
+           *         ['buddy1@example.com', 'buddy2@example.com']
+           *     )
+           *     // ...
+           * });
+           * 
+           * @example
+           * // To return all contacts, simply call ``get`` without any parameters:
+           * _converse.api.listen.on('rosterContactsFetched', function () {
+           *     const contacts = _converse.api.contacts.get();
+           *     // ...
+           * });
+           */
           'get'(jids) {
             const _getter = function _getter(jid) {
               return _converse.roster.get(Strophe.getBareJidFromJid(jid)) || null;
@@ -75364,6 +76135,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return _.map(jids, _getter);
           },
 
+          /**
+           * Add a contact.
+           * 
+           * @method _converse.api.contacts.add
+           * @param {string} jid The JID of the contact to be added
+           * @param {string} [name] A custom name to show the user by
+           *     in the roster.
+           * @example
+           *     _converse.api.contacts.add('buddy@example.com')
+           * @example
+           *     _converse.api.contacts.add('buddy@example.com', 'Buddy')
+           */
           'add'(jid, name) {
             if (!_.isString(jid) || !_.includes(jid, '@')) {
               throw new TypeError('contacts.add: invalid jid');
@@ -76793,11 +77576,56 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       });
 
       _.extend(_converse.api, {
+        /**
+         * The XEP-0054 VCard API
+         *
+         * This API lets you access and update user VCards
+         *
+         * @namespace _converse.api.vcard
+         * @memberOf _converse.api
+         */
         'vcard': {
+          /**
+           * Enables setting new values for a VCard.
+           *
+           * @method _converse.api.vcard.set
+           * @param {string} jid The JID for which the VCard should be set
+           * @param {object} data A map of VCard keys and values
+           * @example
+           * _converse.api.vcard.set({
+           *     'jid': _converse.bare_jid,
+           *     'fn': 'John Doe',
+           *     'nickname': 'jdoe'
+           * }).then(() => {
+           *     // Succes
+           * }).catch(() => {
+           *     // Failure
+           * }).
+           */
           'set'(jid, data) {
             return setVCard(jid, data);
           },
 
+          /**
+           * @method _converse.api.vcard.get
+           * @param {Backbone.Model|string} model Either a `Backbone.Model` instance, or a string JID.
+           *     If a `Backbone.Model` instance is passed in, then it must have either a `jid`
+           *     attribute or a `muc_jid` attribute.
+           * @param {boolean} [force] A boolean indicating whether the vcard should be
+           *     fetched even if it's been fetched before.
+           * @returns {promise} A Promise which resolves with the VCard data for a particular JID or for
+           *     a `Backbone.Model` instance which represents an entity with a JID (such as a roster contact,
+           *     chat or chatroom occupant).
+           *
+           * @example
+           * _converse.api.waitUntil('rosterContactsFetched').then(() => {
+           *     _converse.api.vcard.get('someone@example.org').then(
+           *         (vcard) => {
+           *             // Do something with the vcard...
+           *         }
+           *     );
+           * });
+           */
           'get'(model, force) {
             if (_.isString(model)) {
               return getVCard(_converse, model);
@@ -76814,13 +77642,26 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }
           },
 
+          /**
+           * Fetches the VCard associated with a particular `Backbone.Model` instance
+           * (by using its `jid` or `muc_jid` attribute) and then updates the model with the
+           * returned VCard data.
+           *
+           * @method _converse.api.vcard.update
+           * @param {Backbone.Model} model A `Backbone.Model` instance
+           * @param {boolean} [force] A boolean indicating whether the vcard should be
+           *     fetched again even if it's been fetched before.
+           * @returns {promise} A promise which resolves once the update has completed.
+           * @example
+           * _converse.api.waitUntil('rosterContactsFetched').then(() => {
+           *     const chatbox = _converse.chatboxes.getChatBox('someone@example.org');
+           *     _converse.api.vcard.update(chatbox);
+           * });
+           */
           'update'(model, force) {
-            return new Promise((resolve, reject) => {
-              this.get(model, force).then(vcard => {
-                delete vcard['stanza'];
-                model.save(vcard);
-                resolve();
-              });
+            return this.get(model, force).then(vcard => {
+              delete vcard['stanza'];
+              model.save(vcard);
             });
           }
 

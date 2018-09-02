@@ -906,11 +906,17 @@
             /************************ BEGIN API ************************/
             _.extend(_converse.api, {
                 /**
-                 * The "chats" grouping (used for one-on-one chats)
+                 * The "chats" namespace (used for one-on-one chats)
                  *
-                 * @namespace
+                 * @namespace _converse.api.chats
+                 * @memberOf _converse.api
                  */
                 'chats': {
+                    /**
+                     * @method _converse.api.chats.create
+                     * @param {string|string[]} jid|jids An jid or array of jids
+                     * @param {object} attrs An object containing configuration attributes.
+                     */
                     'create' (jids, attrs) {
                         if (_.isUndefined(jids)) {
                             _converse.log(
@@ -939,8 +945,7 @@
                     /**
                      * Opens a new one-on-one chat.
                      *
-                     * @function
-                     *
+                     * @method _converse.api.chats.open
                      * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
                      * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
                      *
@@ -991,8 +996,7 @@
                     /**
                      * Returns a chat model. The chat should already be open.
                      *
-                     * @function
-                     *
+                     * @method _converse.api.chats.get
                      * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
                      * @returns {Backbone.Model}
                      *

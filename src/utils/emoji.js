@@ -173,7 +173,7 @@
         /* will output unicode from shortname
          * useful for sending emojis back to mobile devices
          */
-        // replace regular shortnames first
+        // Replace regular shortnames first
         str = str.replace(SHORTNAMES_REGEX, (shortname) => {
             if( (typeof shortname === 'undefined') || (shortname === '') || (!(shortname in emoji_list)) ) {
                 // if the shortname doesnt exist just return the entire matchhju

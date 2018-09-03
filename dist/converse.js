@@ -60961,7 +60961,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         initialize() {
           this.initDebounced();
-          this.createEmojiPicker();
           this.model.messages.on('add', this.onMessageAdded, this);
           this.model.messages.on('rendered', this.scrollDown, this);
           this.model.on('show', this.show, this);
@@ -61006,7 +61005,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
           this.addSpoilerButton(options);
           this.addFileUploadButton();
-          this.insertEmojiPicker();
 
           _converse.emit('renderToolbar', this);
 
@@ -61745,6 +61743,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         toggleEmojiMenu(ev) {
           if (_.isUndefined(this.emoji_dropdown)) {
             ev.stopPropagation();
+            this.createEmojiPicker();
+            this.insertEmojiPicker();
+            this.renderEmojiPicker();
             const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
             this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
             this.emoji_dropdown.toggle();
@@ -61878,7 +61879,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         afterShown() {
           this.model.clearUnreadMsgCounter();
           this.setChatState(_converse.ACTIVE);
-          this.renderEmojiPicker();
           this.scrollDown();
           this.focus();
         },
@@ -102993,7 +102993,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     /* will output unicode from shortname
      * useful for sending emojis back to mobile devices
      */
-    // replace regular shortnames first
+    // Replace regular shortnames first
     str = str.replace(SHORTNAMES_REGEX, shortname => {
       if (typeof shortname === 'undefined' || shortname === '' || !(shortname in emoji_list)) {
         // if the shortname doesnt exist just return the entire matchhju

@@ -310,7 +310,6 @@
                 initialize () {
                     this.initDebounced();
 
-                    this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.messages.on('rendered', this.scrollDown, this);
 
@@ -358,7 +357,6 @@
                     this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
                     this.addSpoilerButton(options);
                     this.addFileUploadButton();
-                    this.insertEmojiPicker();
                     _converse.emit('renderToolbar', this);
                     return this;
                 },
@@ -1057,6 +1055,10 @@
                 toggleEmojiMenu (ev) {
                     if (_.isUndefined(this.emoji_dropdown)) {
                         ev.stopPropagation();
+                        this.createEmojiPicker();
+                        this.insertEmojiPicker();
+                        this.renderEmojiPicker();
+
                         const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
                         this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
                         this.emoji_dropdown.toggle();
@@ -1179,7 +1181,6 @@
                 afterShown () {
                     this.model.clearUnreadMsgCounter();
                     this.setChatState(_converse.ACTIVE);
-                    this.renderEmojiPicker();
                     this.scrollDown();
                     this.focus();
                 },

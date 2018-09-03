@@ -23,7 +23,6 @@ or add new functionality to Converse.
    style_guide
    plugin_development
    api/index
-   developer_api
    events 
    other_frameworks
    builds

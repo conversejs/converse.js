@@ -5,9 +5,11 @@
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
-    define(["converse-core",
+    define([
+            "utils/emoji",
+            "converse-core",
             "bootstrap",
-            "emojione",
+            "twemoji",
             "xss",
             "templates/chatbox.html",
             "templates/chatbox_head.html",
@@ -28,9 +30,10 @@
             "converse-message-view"
     ], factory);
 }(this, function (
+            u,
             converse,
             bootstrap,
-            emojione,
+            twemoji,
             xss,
             tpl_chatbox,
             tpl_chatbox_head,
@@ -49,7 +52,6 @@
     ) {
     "use strict";
     const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, moment } = converse.env;
-    const u = converse.env.utils;
 
     converse.plugins.add('converse-chatview', {
         /* Plugin dependencies are other plugins which might be
@@ -73,11 +75,11 @@
                 { __ } = _converse;
 
             _converse.api.settings.update({
-                'emojione_image_path': emojione.imagePathPNG,
+                'emoji_image_path': twemoji.default.base,
                 'show_send_button': false,
                 'show_toolbar': true,
                 'time_format': 'HH:mm',
-                'use_emojione': false,
+                'use_system_emojis': true,
                 'visible_toolbar_buttons': {
                     'call': false,
                     'clear': true,
@@ -85,8 +87,7 @@
                     'spoiler': true
                 },
             });
-            emojione.imagePathPNG = _converse.emojione_image_path;
-            emojione.ascii = true;
+            twemoji.default.base = _converse.emoji_image_path;
 
             function onWindowStateChanged (data) {
                 if (_converse.chatboxviews) {
@@ -122,8 +123,8 @@
                         _.extend(
                             this.model.toJSON(), {
                                 '_': _,
-                                'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
-                                'emojis_by_category': u.getEmojisByCategory(_converse, emojione),
+                                'transform': u.getEmojiRenderer(_converse),
+                                'emojis_by_category': u.getEmojisByCategory(_converse),
                                 'toned_emojis': u.getTonedEmojis(_converse),
                                 'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
                                 'shouldBeHidden': this.shouldBeHidden

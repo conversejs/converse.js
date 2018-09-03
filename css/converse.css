@@ -7709,6 +7709,11 @@ body.reset {
 #conversejs .chatbox {
   text-align: left;
   margin: 0 0.5em; }
+  #conversejs .chatbox img.emoji {
+    height: 1.2em;
+    width: 1.2em;
+    margin: 0 .05em 0 .1em;
+    vertical-align: -0.1em; }
   @media screen and (max-height: 450px) {
     #conversejs .chatbox {
       margin: 0;
@@ -7885,8 +7890,9 @@ body.reset {
           background-color: #fff;
           bottom: 2rem;
           box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
+          height: auto;
           margin-bottom: 0;
-          min-width: 20rem;
+          min-width: 21rem;
           position: absolute;
           right: 0;
           top: auto;
@@ -7899,8 +7905,11 @@ body.reset {
               flex-direction: column; }
           #conversejs .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu a {
             color: #578EA9; }
+          #conversejs .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu .emoji-picker-container {
+            background: white; }
           #conversejs .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-picker {
-            overflow: scroll;
+            overflow-y: scroll;
+            overflow-x: hidden;
             padding: 0.5em; }
           #conversejs .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu ul li {
             margin-left: 0;
@@ -7929,7 +7938,7 @@ body.reset {
               justify-content: space-between; }
           #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker li,
           #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-skintone-picker li {
-            padding: 0.2em;
+            padding: 0.25em;
             font-size: 20px; }
             #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker li:hover,
             #conversejs .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-skintone-picker li:hover {
@@ -8053,7 +8062,7 @@ body.reset {
 #conversejs.converse-fullscreen .chat-textarea {
   max-height: 15em; }
 #conversejs.converse-fullscreen .emoji-picker {
-  height: 150px; }
+  height: 200px; }
 #conversejs.converse-fullscreen .chatbox {
   width: 100%;
   height: 100%;
@@ -9270,6 +9279,11 @@ body.reset {
     #conversejs .message.chat-msg .chat-msg__text a {
       word-wrap: break-word;
       word-break: break-all; }
+    #conversejs .message.chat-msg .chat-msg__text img.emoji {
+      height: 1.5em;
+      width: 1.5em;
+      margin: 0 .05em 0 .1em;
+      vertical-align: -0.1em; }
     #conversejs .message.chat-msg .chat-msg__text .emojione {
       margin-bottom: -6px; }
   #conversejs .message.chat-msg .chat-msg__media {

@@ -6,9 +6,9 @@
 
 (function (root, factory) {
     define([
+        "utils/emoji",
         "converse-core",
         "xss",
-        "emojione",
         "filesize",
         "templates/csn.html",
         "templates/file_progress.html",
@@ -17,9 +17,9 @@
         "templates/message_versions_modal.html",
     ], factory);
 }(this, function (
+        u,
         converse,
         xss,
-        emojione,
         filesize,
         tpl_csn,
         tpl_file_progress,
@@ -29,7 +29,6 @@
     ) {
     "use strict";
     const { Backbone, _, moment } = converse.env;
-    const u = converse.env.utils;
 
 
     converse.plugins.add('converse-message-view', {
@@ -171,7 +170,7 @@
                             _.partial(u.addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox),
                             u.addHyperlinks,
                             u.renderNewLines,
-                            _.partial(u.addEmoji, _converse, emojione, _)
+                            _.partial(u.addEmoji, _converse, _)
                         )(text);
                     }
                     u.renderImageURLs(_converse, msg_content).then(() => {

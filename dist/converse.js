@@ -61556,6 +61556,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
               return this.onEscapePressed(ev);
             } else if (ev.keyCode === _converse.keycodes.ENTER) {
+              _.invoke(this.emoji_dropdown, 'toggle');
+
               return this.onFormSubmitted(ev);
             } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
               return this.editEarlierMessage();
@@ -61735,6 +61737,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         insertEmoji(ev) {
+          ev.preventDefault();
           ev.stopPropagation();
           const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
           this.insertIntoTextArea(target.getAttribute('data-emoji'));

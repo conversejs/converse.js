@@ -48,7 +48,6 @@
     "bourbon": "^4.3.2",
     "bytebuffer": "^3.5.5",
     "clean-css-cli": "^4.0.10",
-    "emojione": "^3.0.3",
     "es6-promise": "^4.1.0",
     "eslint": "4.19.1",
     "eslint-plugin-lodash": "^2.3.3",

@@ -97,6 +97,10 @@ Open [tests.html](https://github.com/conversejs/converse.js/blob/master/tests.ht
 
 `Converse.js` is released under the [Mozilla Public License (MPL)](https://www.mozilla.org/MPL/2.0/index.txt).
 
+## Attribution
+
+Emoji images are courtesy of [Twemoji](https://emojitwo.github.io/).
+
 ## Support
 
 For support queries and discussions, please join the mailing list: <conversejs@librelist.com>

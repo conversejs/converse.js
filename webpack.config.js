@@ -88,7 +88,6 @@ const config = {
             "backbone.vdomview":        path.resolve(__dirname, "node_modules/backbone.vdomview/backbone.vdomview"),
             "bootstrap":                path.resolve(__dirname, "node_modules/bootstrap.native/dist/bootstrap-native-v4"),
             "crypto":                   path.resolve(__dirname, "node_modules/otr/build/dep/crypto"),
-            "emojione":                 path.resolve(__dirname, "node_modules/emojione/lib/js/emojione"),
             "es6-promise":              path.resolve(__dirname, "node_modules/es6-promise/dist/es6-promise.auto"),
             "filesize":                 path.resolve(__dirname, "node_modules/filesize/lib/filesize"),
             "jed":                      path.resolve(__dirname, "node_modules/jed/jed"),

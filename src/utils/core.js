@@ -205,15 +205,15 @@
         return matches;
     }
 
-    u.unescapeHTML = function (htmlEscapedText) {
+    u.unescapeHTML = function (string) {
         /* Helper method that replace HTML-escaped symbols with equivalent characters
          * (e.g. transform occurrences of '&amp;' to '&')
          *
          * Parameters:
-         *  (String) htmlEscapedText: a String containing the HTML-escaped symbols.
+         *  (String) string: a String containing the HTML-escaped symbols.
          */
         var div = document.createElement('div');
-        div.innerHTML = htmlEscapedText;
+        div.innerHTML = string;
         return div.innerText;
     };
 

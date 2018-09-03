@@ -8,14 +8,14 @@
     define([
             "utils/form",
             "converse-core",
-            "emojione",
             "converse-disco",
             "backbone.overview",
             "backbone.orderedlistview",
             "backbone.vdomview",
-            "utils/muc"
+            "utils/muc",
+            "utils/emoji"
     ], factory);
-}(this, function (u, converse, emojione) {
+}(this, function (u, converse) {
     "use strict";
 
     const MUC_ROLE_WEIGHTS = {
@@ -380,7 +380,7 @@
                         'from': `${this.get('jid')}/${this.get('nick')}`,
                         'fullname': this.get('nick'),
                         'is_spoiler': is_spoiler,
-                        'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
+                        'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
                         'nick': this.get('nick'),
                         'references': references,
                         'sender': 'me',

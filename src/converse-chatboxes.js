@@ -7,13 +7,13 @@
 (function (root, factory) {
     define([
         "converse-core",
-        "emojione",
         "filesize",
         "templates/chatboxes.html",
         "backbone.overview",
-        "utils/form"
+        "utils/form",
+        "utils/emoji"
     ], factory);
-}(this, function (converse, emojione, filesize, tpl_chatboxes) {
+}(this, function (converse, filesize, tpl_chatboxes) {
     "use strict";
 
     const { $msg, Backbone, Promise, Strophe, b64_sha1, moment, sizzle, utils, _ } = converse.env;
@@ -389,7 +389,7 @@
                         'from': _converse.bare_jid,
                         'sender': 'me',
                         'time': moment().format(),
-                        'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
+                        'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
                         'is_spoiler': is_spoiler,
                         'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
                         'type': this.get('message_type')

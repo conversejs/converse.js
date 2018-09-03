@@ -33,12 +33,12 @@
                     // `sendPresence`.
                     _converse.connection.connected = false;
 
-                    _converse.api.rooms.close('lounge@localhost');
+                    _converse.api.roomviews.close('lounge@localhost');
                     expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
                     expect(u.isVisible(_converse.chatboxviews.get('news@localhost').el)).toBeTruthy();
 
-                    _converse.api.rooms.close(['leisure@localhost', 'news@localhost']);
+                    _converse.api.roomviews.close(['leisure@localhost', 'news@localhost']);
                     expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('news@localhost')).toBeUndefined();
@@ -48,7 +48,7 @@
                 .then(() => {
                     expect(u.isVisible(_converse.chatboxviews.get('lounge@localhost').el)).toBeTruthy();
                     expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
-                    _converse.api.rooms.close();
+                    _converse.api.roomviews.close();
                     expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                     done();

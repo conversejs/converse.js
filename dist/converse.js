@@ -63341,7 +63341,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   _.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
 
 
-  _converse.core_plugins = ['converse-autocomplete', 'converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-omemo', 'converse-oauth', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Setting wait to 59 instead of 60 to avoid timing conflicts with the
+  _converse.core_plugins = ['converse-autocomplete', 'converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-omemo', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Setting wait to 59 instead of 60 to avoid timing conflicts with the
   // webserver, which is often also set to 60 and might therefore sometimes
   // return a 504 error page instead of passing through to the BOSH proxy.
 

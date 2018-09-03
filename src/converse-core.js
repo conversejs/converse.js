@@ -93,7 +93,6 @@
         'converse-muc-views',
         'converse-notification',
         'converse-omemo',
-        'converse-oauth',
         'converse-ping',
         'converse-profile',
         'converse-push',

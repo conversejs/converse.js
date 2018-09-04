@@ -79411,7 +79411,7 @@ __e(o.display_name) +
  if (o.allow_chat_pending_contacts)  { ;
 __p += '</a>\n';
  } ;
-__p += '\n<a class="remove-xmpp-contact fa fa-trash" title="' +
+__p += '\n<a class="remove-xmpp-contact far fa-trash-alt" title="' +
 __e(o.desc_remove) +
 '" href="#"></a>\n';
 return __p
@@ -80183,7 +80183,7 @@ __p += '">' +
 __e(o.display_name) +
 '</span></a>\n';
  if (o.allow_contact_removal) { ;
-__p += '\n<a class="list-item-action remove-xmpp-contact fa fa-trash" title="' +
+__p += '\n<a class="list-item-action remove-xmpp-contact far fa-trash-alt" title="' +
 __e(o.desc_remove) +
 '" href="#"></a>\n';
  } ;
@@ -80367,7 +80367,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/toolbar.html -->\n';
  if (o.use_emoji)  { ;
-__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="toggle-smiley fa fa-smile-o" title="' +
+__p += '\n<li class="toggle-toolbar-menu toggle-smiley dropup">\n    <a class="toggle-smiley far fa-smile" title="' +
 __e(o.tooltip_insert_smiley) +
 '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a> \n    <div class="emoji-picker dropdown-menu toolbar-menu"></div>\n</li>\n';
  } ;
@@ -80586,7 +80586,7 @@ __p += '\n                    </ul>\n                ';
  } ;
 __p += '\n            </div>\n            <div class="modal-footer">\n                ';
  if (o.allow_contact_removal && o.is_roster_contact) { ;
-__p += '\n                    <button type="button" class="btn btn-danger remove-contact"><i class="fa fa-trash"> </i>' +
+__p += '\n                    <button type="button" class="btn btn-danger remove-contact"><i class="far fa-trash-alt"> </i>' +
 __e(o.__('Remove as contact')) +
 '</button>\n                ';
  } ;

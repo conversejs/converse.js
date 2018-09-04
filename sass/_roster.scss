@@ -75,7 +75,7 @@
                 &.requesting-xmpp-contact {
                     a {
                         line-height: $line-height;
-                        &.fa {
+                        &.far, &.fas, &.fa {
                             width: 1.5em;
                         }
                     }

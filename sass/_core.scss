@@ -190,7 +190,7 @@ body.reset {
             text-shadow: none;
         }
 
-        &.fa {
+        &.fa, &.far, &.fas {
             color: $subdued-color;
             &:hover {
                 color: $gray-color;
@@ -202,11 +202,11 @@ body.reset {
         border-radius: $chatbox-border-radius;
     }
 
-    .fa {
+    .fa, .far, .fas {
         color: $subdued-color;
     }
 
-    .fa:hover {
+    .fa:hover, .far:hover, .fas:hover {
         color: $gray-color;
     }
 
@@ -256,20 +256,11 @@ body.reset {
         font-size: 90%;
     }
 
-    .fa {
-        font: normal normal normal 14px/1 ConverseFontAwesome;
-        display: inline-block;
-        font-size: inherit;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
-
     .btn {
         font-family: $heading-font; 
         font-weight: normal;
         color: #fff;
-        .fa {
+        .fa, .far, .fas {
             color: #fff;
             margin-right: 0.5em;
         }

@@ -78,7 +78,9 @@
 
         a, a:visited, a:hover, a:not([href]):not([tabindex]) {
             &.chatbox-btn {
-                &.fa {
+                &.fa,
+                &.fas,
+                &.far {
                     color: white;
                     &.button-on:before {
                         padding: 0.2em;
@@ -91,7 +93,7 @@
 
         .chatbox-btn {
             color: white;
-            &.fa  {
+            &.fa, &.far, &.fas  {
                 color: white;
             }
             &:active {
@@ -294,7 +296,9 @@
                 border-top: 4px solid $chat-head-color;
                 background-color: white;
                 color: $chat-head-color;
-                .fa, .fa:hover {
+                .fa, .fa:hover,
+                .far, .far:hover,
+                .fas, .fas:hover {
                     color: $chat-head-color;
                     font-size: $font-size-large;
                 }

@@ -10560,6 +10560,8 @@ body.reset {
     font-size: 12px; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .chat-area {
     min-width: 250px; }
+  #conversejs.converse-overlayed .chatbox.chatroom .sendXMPPMessage .chat-toolbar li .toolbar-menu {
+    min-width: 280px; }
 
 #conversejs.converse-fullscreen .chatroom .box-flyout .chatbox-title {
   flex: 0 0 75%;

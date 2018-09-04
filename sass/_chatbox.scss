@@ -486,6 +486,10 @@
         }
     }
 
+    .emoji-picker {
+        height: $embedded-emoji-picker-height;
+    }
+    
     .chatbox {
         min-width: $overlayed-chat-width!important;
         width: $overlayed-chat-width;
@@ -493,26 +497,6 @@
         .box-flyout {
             min-width: $overlayed-chat-width!important;
             width: $overlayed-chat-width;
-        }
-    }
-    .chatbox {
-        form.sendXMPPMessage {
-            .chat-toolbar {
-                li {
-                    .toolbar-menu {
-                        min-width: 235px;
-
-                        ul {
-                            &.emoji-toolbar {
-                                width: 100%;
-                                .emoji-category {
-                                    float: left;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
@@ -533,6 +517,25 @@
     }
     .emoji-picker {
         height: $overlayed-emoji-picker-height;
+    }
+    .chatbox {
+        form.sendXMPPMessage {
+            .chat-toolbar {
+                li {
+                    .toolbar-menu {
+                        min-width: 235px;
+                        ul {
+                            &.emoji-toolbar {
+                                width: 100%;
+                                .emoji-category {
+                                    float: left;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

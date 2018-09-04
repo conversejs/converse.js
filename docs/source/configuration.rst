@@ -328,6 +328,16 @@ wiped from memory. This configuration can however still be useful when using
 Converse in desktop apps, for example those based on `CEF <https://bitbucket.org/chromiumembedded/cef>`_
 or `electron <http://electron.atom.io/>`_.
 
+auto_register_muc_nickname
+--------------------------
+
+* Default: ``false``
+
+Determines whether Converse should automatically register a user's nickname
+when they enter a groupchat.
+
+See here fore more details: https://xmpp.org/extensions/xep-0045.html#register
+
 auto_subscribe
 --------------
 

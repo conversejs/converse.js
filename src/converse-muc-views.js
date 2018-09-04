@@ -1204,12 +1204,12 @@
                      */
                     this.showSpinner();
                     this.model.checkForReservedNick(
-                        this.onNickNameFound.bind(this),
-                        this.onNickNameNotFound.bind(this)
+                        this.onReservedNicknameFound.bind(this),
+                        this.onReservedNicknameNotFound.bind(this)
                     )
                 },
 
-                onNickNameFound (iq) {
+                onReservedNicknameFound (iq) {
                     /* We've received an IQ response from the server which
                      * might contain the user's reserved nickname.
                      * If no nickname is found we either render a form for
@@ -1228,7 +1228,7 @@
                     }
                 },
 
-                onNickNameNotFound (message) {
+                onReservedNicknameNotFound (message) {
                     const nick = this.getDefaultNickName();
                     if (nick) {
                         this.join(nick);

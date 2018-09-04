@@ -62864,6 +62864,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
   Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
   Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+  Strophe.addNamespace('REGISTER', 'jabber:iq:register');
   Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
   Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
   Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
@@ -68982,10 +68983,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * If so, we'll use that, otherwise we render the nickname form.
            */
           this.showSpinner();
-          this.model.checkForReservedNick(this.onNickNameFound.bind(this), this.onNickNameNotFound.bind(this));
+          this.model.checkForReservedNick(this.onReservedNicknameFound.bind(this), this.onReservedNicknameNotFound.bind(this));
         },
 
-        onNickNameFound(iq) {
+        onReservedNicknameFound(iq) {
           /* We've received an IQ response from the server which
            * might contain the user's reserved nickname.
            * If no nickname is found we either render a form for
@@ -69005,7 +69006,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
 
-        onNickNameNotFound(message) {
+        onReservedNicknameNotFound(message) {
           const nick = this.getDefaultNickName();
 
           if (nick) {
@@ -70032,6 +70033,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         allow_muc_invitations: true,
         auto_join_on_invite: false,
         auto_join_rooms: [],
+        auto_register_muc_nickname: false,
         muc_domain: undefined,
         muc_history_max_stanzas: undefined,
         muc_instant_rooms: true,
@@ -70100,10 +70102,22 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         initialize() {
           this.constructor.__super__.initialize.apply(this, arguments);
 
+          this.on('change:connection_status', this.onConnectionStatusChanged, this);
           this.occupants = new _converse.ChatRoomOccupants();
           this.occupants.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`));
           this.occupants.chatroom = this;
           this.registerHandlers();
+        },
+
+        async onConnectionStatusChanged() {
+          if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED && _converse.auto_register_muc_nickname) {
+            debugger;
+            const result = await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'));
+
+            if (result.length) {
+              this.registerNickname();
+            }
+          }
         },
 
         registerHandlers() {
@@ -70808,6 +70822,53 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           return this;
         },
 
+        async registerNickname() {
+          try {
+            await _converse.api.sendIQ($iq({
+              'from': _converse.bare_jid,
+              'to': this.get('jid'),
+              'type': 'get'
+            }).c('query', {
+              'xmlns': Strophe.NS.MUC_REGISTER
+            }));
+          } catch (e) {
+            if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              _converse.log(`Can't register nickname ${this.get('nick')} in the groupchat ${this.get('jid')} which does not exist.`);
+            } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              _converse.log(`You're not allowed to register in the groupchat ${this.get('jid')}`);
+            }
+
+            return _converse.log(e, Strophe.LogLevel.ERROR);
+          }
+
+          try {
+            await _converse.api.sendIQ($iq({
+              'from': _converse.bare_jid,
+              'to': this.get('jid'),
+              'type': 'set'
+            }).c('query', {
+              'xmlns': Strophe.NS.MUC_REGISTER
+            }).c('x', {
+              'xmlns': Strophe.NS.XFORM,
+              'type': 'submit'
+            }).c('field', {
+              'var': 'FORM_TYPE'
+            }).c('value').t('http://jabber.org/protocol/muc#register').up().up().c('field', {
+              'var': 'muc#register_roomnick'
+            }).c('value').t(this.get('nick')));
+          } catch (e) {
+            if (sizzle('conflict[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              _converse.log(`Can't register nickname ${this.get('nick')} in the groupchat ${this.get('jid')}, it's already taken.`);
+            } else if (sizzle('service-unavailable[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              _converse.log(`Can't register nickname ${this.get('nick')} in the groupchat ${this.get('jid')}, it doesn't support registration.`);
+            } else if (sizzle('bad-request[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              _converse.log(`Can't register nickname ${this.get('nick')} in the groupchat ${this.get('jid')}, invalid data form supplied.`);
+            }
+
+            return _converse.log(e, Strophe.LogLevel.ERROR);
+          }
+        },
+
         updateOccupantsOnPresence(pres) {
           /* Given a presence stanza, update the occupant model
            * based on its contents.
@@ -71327,6 +71388,22 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         _converse.chatboxes.each(function (model) {
           if (model.get('type') === _converse.CHATROOMS_TYPE) {
             model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+          }
+        });
+      }
+
+      function fetchRegistrationForm(room_jid, user_jid) {
+        _converse.api.sendIQ($iq({
+          'from': user_jid,
+          'to': room_jid,
+          'type': 'get'
+        }).c('query', {
+          'xmlns': Strophe.NS.REGISTER
+        })).then(iq => {}).catch(iq => {
+          if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', iq).length) {
+            this.feedback.set('error', __(`Error: the groupchat ${this.model.getDisplayName()} does not exist.`));
+          } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]').length) {
+            this.feedback.set('error', __(`Sorry, you're not allowed to registerd in this groupchat`));
           }
         });
       }
@@ -78494,6 +78571,8 @@ __e(o.info_configure) +
  } ;
 __p += '\n    <a class="chatbox-btn show-room-details-modal fa fa-info-circle" title="' +
 __e(o.info_details) +
+'"></a>\n    <a class="chatbox-btn show-room-registration-modal fa fa-file-signature" title="' +
+__e(o.info_register) +
 '"></a>\n</div>\n';
 return __p
 };

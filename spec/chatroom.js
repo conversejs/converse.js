@@ -12,7 +12,7 @@
           Backbone = converse.env.Backbone,
           u = converse.env.utils;
 
-    return describe("ChatRooms", function () {
+    return describe("Chatrooms", function () {
         describe("The \"rooms\" API", function () {
 
             it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments",
@@ -816,9 +816,8 @@
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         function (done, _converse) {
 
-                var view;
-                var sent_IQ, IQ_id;
-                var sendIQ = _converse.connection.sendIQ;
+                let view, sent_IQ, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_IQ = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);

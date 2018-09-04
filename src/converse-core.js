@@ -39,6 +39,7 @@
     Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
     Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
     Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+    Strophe.addNamespace('REGISTER', 'jabber:iq:register');
     Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
     Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
     Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
@@ -484,7 +485,7 @@
                 // Waiting time of less then one second means features aren't used.
                 return;
             }
-            _converse.idle_seconds = 0;
+            _converse.idle_seconds = 0
             _converse.auto_changed_status = false; // Was the user's status changed by _converse.js?
             window.addEventListener('click', _converse.onUserActivity);
             window.addEventListener('focus', _converse.onUserActivity);

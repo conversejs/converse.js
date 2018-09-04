@@ -111,7 +111,7 @@
         "no-bitwise": "off",
         "no-caller": "error",
         "no-console": "off",
-        "no-catch-shadow": "error",
+        "no-catch-shadow": "off",
         "no-cond-assign": [
             "error",
             "except-parens"

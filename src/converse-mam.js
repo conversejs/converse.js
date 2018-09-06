@@ -43,10 +43,11 @@
         if (_.isFunction(options)) {
             callback = options;
             errback = callback;
+            options = null;
         }
         const queryid = _converse.connection.getUniqueId();
         const attrs = {'type':'set'};
-        if (!_.isUndefined(options) && options.groupchat) {
+        if (options && options.groupchat) {
             if (!options['with']) { // eslint-disable-line dot-notation
                 throw new Error(
                     'You need to specify a "with" value containing '+
@@ -54,8 +55,9 @@
             }
             attrs.to = options['with']; // eslint-disable-line dot-notation
         }
+
         const stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
-        if (!_.isUndefined(options)) {
+        if (options) {
             stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
                     .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
                     .c('value').t(Strophe.NS.MAM).up().up();

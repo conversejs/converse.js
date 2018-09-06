@@ -224,7 +224,7 @@
         keepalive: true,
         locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
         locales: [
-            'af', 'ar', 'bg', 'ca', 'de', 'es', 'eu', 'en', 'fr', 'he',
+            'af', 'ar', 'bg', 'ca', 'cs', 'de', 'es', 'eu', 'en', 'fr', 'he',
             'hu', 'id', 'it', 'ja', 'nb', 'nl',
             'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
         ],

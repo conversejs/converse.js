@@ -4,7 +4,7 @@
             <input {[ if (o.filter_text) { ]} value="{{{o.filter_text}}}" {[ } ]}
                 class="roster-filter form-control {[ if (o.filter_type === 'state') { ]} hidden {[ } ]}"
                 placeholder="{{{o.placeholder}}}">
-            <span class="clear-input fa fa-times {[ if (!o.filter_text) { ]} hidden {[ } ]}"></span>
+            <span class="clear-input fa fa-times {[ if (!o.filter_text || o.filter_type === 'state') { ]} hidden {[ } ]}"></span>
         </div>
 
         <select class="form-control state-type {[ if (o.filter_type !== 'state') { ]} hidden {[ } ]}">

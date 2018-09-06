@@ -79562,7 +79562,7 @@ __e(o.title_your_profile) +
 __e(o.title_change_status) +
 '" data-toggle="modal" data-target="#settingsModal"></a> -->\n    ';
  if (o._converse.allow_logout) { ;
-__p += '\n        <a class="chatbox-btn logout fa fa-sign-out align-self-center" title="' +
+__p += '\n        <a class="chatbox-btn logout fa fa-sign-out-alt align-self-center" title="' +
 __e(o.title_log_out) +
 '"></a>\n    ';
  } ;
@@ -80078,7 +80078,7 @@ __p += ' hidden ';
 __p += '"\n                placeholder="' +
 __e(o.placeholder) +
 '">\n            <span class="clear-input fa fa-times ';
- if (!o.filter_text) { ;
+ if (!o.filter_text || o.filter_type === 'state') { ;
 __p += ' hidden ';
  } ;
 __p += '"></span>\n        </div>\n\n        <select class="form-control state-type ';

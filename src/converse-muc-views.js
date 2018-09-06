@@ -1951,7 +1951,7 @@
             }
 
             /************************ BEGIN Event Handlers ************************/
-            _converse.on('chatBoxesInitialized', () => {
+            _converse.on('chatBoxViewsInitialized', () => {
                 const that = _converse.chatboxviews;
                 _converse.chatboxes.on('add', item => {
                     if (!that.get(item.get('id')) && item.get('type') === _converse.CHATROOMS_TYPE) {

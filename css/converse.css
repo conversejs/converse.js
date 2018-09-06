@@ -8960,7 +8960,8 @@ body.reset {
     width: 100%; }
   #conversejs .avatar {
     border-radius: 10%;
-    border: 1px solid lightgrey; }
+    border: 1px solid lightgrey;
+    background: white; }
   #conversejs .activated {
     display: block !important; }
   #conversejs .button-primary {

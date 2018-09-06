@@ -1,10 +1,10 @@
 <div class="userinfo controlbox-padded">
 <div class="profile d-flex">
     <a class="show-profile" href="#">
-        <img alt="User Avatar" class="avatar align-self-center" height="40px" width="40px" src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
+        <canvas alt="o.__('Your avatar')" class="avatar align-self-center" height="40" width="40"></canvas>
     </a>
     <span class="username w-100 align-self-center">{{{o.fullname}}}</span>
-    <!-- <a class="chatbox-btn fa fa-vcard align-self-center" title="{{{o.title_your_profile}}}" data-toggle="modal" data-target="#userProfileModal"></a> -->
+    <!-- <a class="chatbox-btn fa fa-id-card align-self-center" title="{{{o.title_your_profile}}}" data-toggle="modal" data-target="#userProfileModal"></a> -->
     <!-- <a class="chatbox-btn fa fa-cog align-self-center" title="{{{o.title_change_status}}}" data-toggle="modal" data-target="#settingsModal"></a> -->
     {[ if (o._converse.allow_logout) { ]}
         <a class="chatbox-btn logout fa fa-sign-out-alt align-self-center" title="{{{o.title_log_out}}}"></a>

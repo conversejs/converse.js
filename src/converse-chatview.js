@@ -26,7 +26,7 @@
             "templates/status_message.html",
             "templates/toolbar.html",
             "converse-modal",
-            "converse-chatboxes",
+            "converse-chatboxviews",
             "converse-message-view"
     ], factory);
 }(this, function (
@@ -64,7 +64,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-disco", "converse-message-view", "converse-modal"],
+        dependencies: ["converse-chatboxviews", "converse-disco", "converse-message-view", "converse-modal"],
 
 
         initialize () {
@@ -1263,7 +1263,7 @@
                 }
             });
 
-            _converse.on('chatBoxesInitialized', () => {
+            _converse.on('chatBoxViewsInitialized', () => {
                 const that = _converse.chatboxviews;
                 _converse.chatboxes.on('add', item => {
                     if (!that.get(item.get('id')) && item.get('type') === _converse.PRIVATE_CHAT_TYPE) {

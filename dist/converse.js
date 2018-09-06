@@ -59547,11 +59547,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/backbone.overview.js"), __webpack_require__(/*! utils/form */ "./src/utils/form.js"), __webpack_require__(/*! utils/emoji */ "./src/utils/emoji.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js"), __webpack_require__(/*! utils/form */ "./src/utils/form.js"), __webpack_require__(/*! utils/emoji */ "./src/utils/emoji.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, filesize, tpl_chatboxes) {
+})(void 0, function (converse, filesize) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -59569,20 +59569,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
   converse.plugins.add('converse-chatboxes', {
     dependencies: ["converse-roster", "converse-vcard"],
-    overrides: {
-      // Overrides mentioned here will be picked up by converse.js's
-      // plugin architecture they will replace existing methods on the
-      // relevant objects or classes.
-      initStatus: function initStatus(reconnecting) {
-        const _converse = this.__super__._converse;
-
-        if (!reconnecting) {
-          _converse.chatboxviews.closeAllChatBoxes();
-        }
-
-        return this.__super__.initStatus.apply(this, arguments);
-      }
-    },
 
     initialize() {
       /* The initialize function gets called as soon as the plugin is
@@ -60397,79 +60383,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }
 
       });
-      _converse.ChatBoxViews = Backbone.Overview.extend({
-        _ensureElement() {
-          /* Override method from backbone.js
-           * If the #conversejs element doesn't exist, create it.
-           */
-          if (!this.el) {
-            let el = _converse.root.querySelector('#conversejs');
-
-            if (_.isNull(el)) {
-              el = document.createElement('div');
-              el.setAttribute('id', 'conversejs');
-
-              const body = _converse.root.querySelector('body');
-
-              if (body) {
-                body.appendChild(el);
-              } else {
-                // Perhaps inside a web component?
-                _converse.root.appendChild(el);
-              }
-            }
-
-            el.innerHTML = '';
-            this.setElement(el, false);
-          } else {
-            this.setElement(_.result(this, 'el'), false);
-          }
-        },
-
-        initialize() {
-          this.model.on("destroy", this.removeChat, this);
-          this.el.classList.add(`converse-${_converse.view_mode}`);
-          this.render();
-        },
-
-        render() {
-          try {
-            this.el.innerHTML = tpl_chatboxes();
-          } catch (e) {
-            this._ensureElement();
-
-            this.el.innerHTML = tpl_chatboxes();
-          }
-
-          this.row_el = this.el.querySelector('.row');
-        },
-
-        insertRowColumn(el) {
-          /* Add a new DOM element (likely a chat box) into the
-           * the row managed by this overview.
-           */
-          this.row_el.insertAdjacentElement('afterBegin', el);
-        },
-
-        removeChat(item) {
-          this.remove(item.get('id'));
-        },
-
-        closeAllChatBoxes() {
-          /* This method gets overridden in src/converse-controlbox.js if
-           * the controlbox plugin is active.
-           */
-          this.each(function (view) {
-            view.close();
-          });
-          return this;
-        },
-
-        chatBoxMayBeShown(chatbox) {
-          return this.model.chatBoxMayBeShown(chatbox);
-        }
-
-      });
 
       function autoJoinChats() {
         /* Automatically join private chats, based on the
@@ -60521,14 +60434,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.api.listen.on('pluginsInitialized', () => {
         _converse.chatboxes = new _converse.ChatBoxes();
-        _converse.chatboxviews = new _converse.ChatBoxViews({
-          'model': _converse.chatboxes
-        });
 
         _converse.emit('chatBoxesInitialized');
       });
-
-      _converse.api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());
 
       _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
       /************************ END Event Handlers ************************/
@@ -60680,6 +60588,200 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
+/***/ "./src/converse-chatboxviews.js":
+/*!**************************************!*\
+  !*** ./src/converse-chatboxviews.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
+
+// Converse.js
+// http://conversejs.org
+//
+// Copyright (c) 2012-2018, the Converse.js developers
+// Licensed under the Mozilla Public License (MPLv2)
+(function (root, factory) {
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html"), __webpack_require__(/*! converse-chatboxes */ "./src/converse-chatboxes.js"), __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/backbone.overview.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+})(void 0, function (converse, tpl_chatboxes) {
+  "use strict";
+
+  const _converse$env = converse.env,
+        Backbone = _converse$env.Backbone,
+        _ = _converse$env._;
+  const AvatarMixin = {
+    renderAvatar() {
+      const canvas_el = this.el.querySelector('canvas');
+
+      if (_.isNull(canvas_el)) {
+        return;
+      }
+
+      const image_type = this.model.vcard.get('image_type'),
+            image = this.model.vcard.get('image'),
+            img_src = "data:" + image_type + ";base64," + image,
+            img = new Image();
+
+      img.onload = () => {
+        const ctx = canvas_el.getContext('2d'),
+              ratio = img.width / img.height;
+        ctx.clearRect(0, 0, canvas_el.width, canvas_el.height);
+
+        if (ratio < 1) {
+          const scaled_img_with = canvas_el.width * ratio,
+                x = Math.floor((canvas_el.width - scaled_img_with) / 2);
+          ctx.drawImage(img, x, 0, scaled_img_with, canvas_el.height);
+        } else {
+          ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * ratio);
+        }
+      };
+
+      img.src = img_src;
+    }
+
+  };
+  converse.plugins.add('converse-chatboxviews', {
+    dependencies: ["converse-chatboxes"],
+    overrides: {
+      // Overrides mentioned here will be picked up by converse.js's
+      // plugin architecture they will replace existing methods on the
+      // relevant objects or classes.
+      initStatus: function initStatus(reconnecting) {
+        const _converse = this.__super__._converse;
+
+        if (!reconnecting) {
+          _converse.chatboxviews.closeAllChatBoxes();
+        }
+
+        return this.__super__.initStatus.apply(this, arguments);
+      }
+    },
+
+    initialize() {
+      /* The initialize function gets called as soon as the plugin is
+       * loaded by converse.js's plugin machinery.
+       */
+      const _converse = this._converse,
+            __ = _converse.__;
+
+      _converse.api.promises.add(['chatBoxViewsInitialized']);
+
+      _converse.ViewWithAvatar = Backbone.NativeView.extend(AvatarMixin);
+      _converse.VDOMViewWithAvatar = Backbone.VDOMView.extend(AvatarMixin);
+      _converse.ChatBoxViews = Backbone.Overview.extend({
+        _ensureElement() {
+          /* Override method from backbone.js
+           * If the #conversejs element doesn't exist, create it.
+           */
+          if (!this.el) {
+            let el = _converse.root.querySelector('#conversejs');
+
+            if (_.isNull(el)) {
+              el = document.createElement('div');
+              el.setAttribute('id', 'conversejs');
+
+              const body = _converse.root.querySelector('body');
+
+              if (body) {
+                body.appendChild(el);
+              } else {
+                // Perhaps inside a web component?
+                _converse.root.appendChild(el);
+              }
+            }
+
+            el.innerHTML = '';
+            this.setElement(el, false);
+          } else {
+            this.setElement(_.result(this, 'el'), false);
+          }
+        },
+
+        initialize() {
+          this.model.on("destroy", this.removeChat, this);
+          this.el.classList.add(`converse-${_converse.view_mode}`);
+          this.render();
+        },
+
+        render() {
+          try {
+            this.el.innerHTML = tpl_chatboxes();
+          } catch (e) {
+            this._ensureElement();
+
+            this.el.innerHTML = tpl_chatboxes();
+          }
+
+          this.row_el = this.el.querySelector('.row');
+        },
+
+        insertRowColumn(el) {
+          /* Add a new DOM element (likely a chat box) into the
+           * the row managed by this overview.
+           */
+          this.row_el.insertAdjacentElement('afterBegin', el);
+        },
+
+        removeChat(item) {
+          this.remove(item.get('id'));
+        },
+
+        closeAllChatBoxes() {
+          /* This method gets overridden in src/converse-controlbox.js if
+           * the controlbox plugin is active.
+           */
+          this.each(function (view) {
+            view.close();
+          });
+          return this;
+        },
+
+        chatBoxMayBeShown(chatbox) {
+          return this.model.chatBoxMayBeShown(chatbox);
+        }
+
+      });
+      /************************ BEGIN Event Handlers ************************/
+
+      _converse.api.waitUntil('rosterContactsFetched').then(() => {
+        _converse.roster.on('add', contact => {
+          /* When a new contact is added, check if we already have a
+           * chatbox open for it, and if so attach it to the chatbox.
+           */
+          const chatbox = _converse.chatboxes.findWhere({
+            'jid': contact.get('jid')
+          });
+
+          if (chatbox) {
+            chatbox.addRelatedContact(contact);
+          }
+        });
+      });
+
+      _converse.api.listen.on('chatBoxesInitialized', () => {
+        _converse.chatboxviews = new _converse.ChatBoxViews({
+          'model': _converse.chatboxes
+        });
+
+        _converse.emit('chatBoxViewsInitialized');
+      });
+
+      _converse.api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());
+      /************************ END Event Handlers ************************/
+
+    }
+
+  });
+  return converse;
+});
+
+/***/ }),
+
 /***/ "./src/converse-chatview.js":
 /*!**********************************!*\
   !*** ./src/converse-chatview.js ***!
@@ -60696,7 +60798,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils/emoji */ "./src/utils/emoji.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! twemoji */ "./node_modules/twemoji/2/esm.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/chatbox.html */ "./src/templates/chatbox.html"), __webpack_require__(/*! templates/chatbox_head.html */ "./src/templates/chatbox_head.html"), __webpack_require__(/*! templates/chatbox_message_form.html */ "./src/templates/chatbox_message_form.html"), __webpack_require__(/*! templates/emojis.html */ "./src/templates/emojis.html"), __webpack_require__(/*! templates/error_message.html */ "./src/templates/error_message.html"), __webpack_require__(/*! templates/help_message.html */ "./src/templates/help_message.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/new_day.html */ "./src/templates/new_day.html"), __webpack_require__(/*! templates/user_details_modal.html */ "./src/templates/user_details_modal.html"), __webpack_require__(/*! templates/toolbar_fileupload.html */ "./src/templates/toolbar_fileupload.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! templates/spoiler_button.html */ "./src/templates/spoiler_button.html"), __webpack_require__(/*! templates/status_message.html */ "./src/templates/status_message.html"), __webpack_require__(/*! templates/toolbar.html */ "./src/templates/toolbar.html"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js"), __webpack_require__(/*! converse-chatboxes */ "./src/converse-chatboxes.js"), __webpack_require__(/*! converse-message-view */ "./src/converse-message-view.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! utils/emoji */ "./src/utils/emoji.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! twemoji */ "./node_modules/twemoji/2/esm.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/chatbox.html */ "./src/templates/chatbox.html"), __webpack_require__(/*! templates/chatbox_head.html */ "./src/templates/chatbox_head.html"), __webpack_require__(/*! templates/chatbox_message_form.html */ "./src/templates/chatbox_message_form.html"), __webpack_require__(/*! templates/emojis.html */ "./src/templates/emojis.html"), __webpack_require__(/*! templates/error_message.html */ "./src/templates/error_message.html"), __webpack_require__(/*! templates/help_message.html */ "./src/templates/help_message.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/new_day.html */ "./src/templates/new_day.html"), __webpack_require__(/*! templates/user_details_modal.html */ "./src/templates/user_details_modal.html"), __webpack_require__(/*! templates/toolbar_fileupload.html */ "./src/templates/toolbar_fileupload.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! templates/spoiler_button.html */ "./src/templates/spoiler_button.html"), __webpack_require__(/*! templates/status_message.html */ "./src/templates/status_message.html"), __webpack_require__(/*! templates/toolbar.html */ "./src/templates/toolbar.html"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js"), __webpack_require__(/*! converse-chatboxviews */ "./src/converse-chatboxviews.js"), __webpack_require__(/*! converse-message-view */ "./src/converse-message-view.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -60724,7 +60826,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
      *
      * NB: These plugins need to have already been loaded via require.js.
      */
-    dependencies: ["converse-chatboxes", "converse-disco", "converse-message-view", "converse-modal"],
+    dependencies: ["converse-chatboxviews", "converse-disco", "converse-message-view", "converse-modal"],
 
     initialize() {
       /* The initialize function gets called as soon as the plugin is
@@ -61972,7 +62074,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       });
 
-      _converse.on('chatBoxesInitialized', () => {
+      _converse.on('chatBoxViewsInitialized', () => {
         const that = _converse.chatboxviews;
 
         _converse.chatboxes.on('add', item => {
@@ -62643,7 +62745,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       });
 
-      _converse.on('chatBoxesInitialized', () => {
+      _converse.on('chatBoxViewsInitialized', () => {
         const that = _converse.chatboxviews;
 
         _converse.chatboxes.on('add', item => {
@@ -62678,7 +62780,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }
       });
 
-      Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxesInitialized')]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+      Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxViewsInitialized')]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
       _converse.on('chatBoxesFetched', () => {
         const controlbox = _converse.chatboxes.get('controlbox') || _converse.addControlBox();
@@ -62788,7 +62890,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   _.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
 
 
-  _converse.core_plugins = ['converse-autocomplete', 'converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-omemo', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Setting wait to 59 instead of 60 to avoid timing conflicts with the
+  _converse.core_plugins = ['converse-autocomplete', 'converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatboxviews', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-omemo', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Setting wait to 59 instead of 60 to avoid timing conflicts with the
   // webserver, which is often also set to 60 and might therefore sometimes
   // return a 504 error page instead of passing through to the BOSH proxy.
 
@@ -65959,7 +66061,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       _converse.on('reconnected', registerHeadlineHandler);
 
-      _converse.on('chatBoxesInitialized', () => {
+      _converse.on('chatBoxViewsInitialized', () => {
         const that = _converse.chatboxviews;
 
         _converse.chatboxes.on('add', item => {
@@ -66682,35 +66784,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
        */
       const _converse = this._converse,
             __ = _converse.__;
-      _converse.ViewWithAvatar = Backbone.NativeView.extend({
-        renderAvatar() {
-          const canvas_el = this.el.querySelector('canvas');
-
-          if (_.isNull(canvas_el)) {
-            return;
-          }
-
-          const image_type = this.model.vcard.get('image_type'),
-                image = this.model.vcard.get('image'),
-                img_src = "data:" + image_type + ";base64," + image,
-                img = new Image();
-
-          img.onload = () => {
-            const ctx = canvas_el.getContext('2d'),
-                  ratio = img.width / img.height;
-            ctx.clearRect(0, 0, canvas_el.width, canvas_el.height);
-
-            if (ratio < 1) {
-              ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * (1 / ratio));
-            } else {
-              ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * ratio);
-            }
-          };
-
-          img.src = img_src;
-        }
-
-      });
       _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
         toHTML() {
           return tpl_message_versions_modal(_.extend(this.model.toJSON(), {
@@ -67513,7 +67586,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }
 
       });
-      Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxesInitialized')]).then(() => {
+      Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxViewsInitialized')]).then(() => {
         _converse.minimized_chats = new _converse.MinimizedChats({
           model: _converse.chatboxes
         });
@@ -69679,7 +69752,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       /************************ BEGIN Event Handlers ************************/
 
 
-      _converse.on('chatBoxesInitialized', () => {
+      _converse.on('chatBoxViewsInitialized', () => {
         const that = _converse.chatboxviews;
 
         _converse.chatboxes.on('add', item => {
@@ -73040,7 +73113,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
@@ -73062,7 +73135,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         moment = _converse$env.moment;
   const u = converse.env.utils;
   converse.plugins.add('converse-profile', {
-    dependencies: ["converse-modal", "converse-vcard"],
+    dependencies: ["converse-modal", "converse-vcard", "converse-chatboxviews"],
 
     initialize() {
       /* The initialize function gets called as soon as the plugin is
@@ -73219,7 +73292,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         }
 
       });
-      _converse.XMPPStatusView = Backbone.VDOMView.extend({
+      _converse.XMPPStatusView = _converse.VDOMViewWithAvatar.extend({
         tagName: "div",
         events: {
           "click a.show-profile": "showProfileModal",
@@ -73235,6 +73308,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         toHTML() {
           const chat_status = this.model.get('status') || 'offline';
           return tpl_profile_view(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+            '__': __,
             'fullname': this.model.vcard.get('fullname') || _converse.bare_jid,
             'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
             'chat_status': chat_status,
@@ -73244,6 +73318,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'title_log_out': __('Log out'),
             'title_your_profile': __('Your profile')
           }));
+        },
+
+        afterRender() {
+          this.renderAvatar();
         },
 
         showProfileModal(ev) {
@@ -77153,7 +77231,7 @@ if (true) {
   __webpack_require__(/*! converse-mam */ "./src/converse-mam.js"), // XEP-0313 Message Archive Management
   __webpack_require__(/*! converse-minimize */ "./src/converse-minimize.js"), // Allows chat boxes to be minimized
   __webpack_require__(/*! converse-muc */ "./src/converse-muc.js"), // XEP-0045 Multi-user chat
-  __webpack_require__(/*! converse-muc-views */ "./src/converse-muc-views.js"), __webpack_require__(/*! converse-muc-views */ "./src/converse-muc-views.js"), // Views related to MUC
+  __webpack_require__(/*! converse-muc-views */ "./src/converse-muc-views.js"), // Views related to MUC
   __webpack_require__(/*! converse-notification */ "./src/converse-notification.js"), // HTML5 Notifications
   __webpack_require__(/*! converse-omemo */ "./src/converse-omemo.js"), __webpack_require__(/*! converse-ping */ "./src/converse-ping.js"), // XEP-0199 XMPP Ping
   __webpack_require__(/*! converse-register */ "./src/converse-register.js"), // XEP-0077 In-band registration
@@ -77794,9 +77872,9 @@ __p += '\n                    </a>\n                ';
  } ;
 __p += '\n                <p class="user-custom-message">' +
 __e( o.status ) +
-'</p>\n            </div>\n        </div>\n    </div>\n    <div class="chatbox-buttons row no-gutters">\n        <a class="chatbox-btn close-chatbox-button fa fa-close" title=' +
+'</p>\n            </div>\n        </div>\n    </div>\n    <div class="chatbox-buttons row no-gutters">\n        <a class="chatbox-btn close-chatbox-button fa fa-times" title=' +
 __e(o.info_close) +
-'></a>\n        <a class="chatbox-btn show-user-details-modal fa fa-vcard" title="' +
+'></a>\n        <a class="chatbox-btn show-user-details-modal fa fa-id-card" title="' +
 __e(o.info_details) +
 '"></a>\n    </div>\n</div>\n';
 return __p
@@ -78442,7 +78520,7 @@ var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/controlbox.html -->\n<div class="flyout box-flyout">\n    <div class="chat-head controlbox-head">\n        ';
  if (!o.sticky_controlbox) { ;
-__p += '\n            <a class="chatbox-btn close-chatbox-button fa fa-close"></a>\n        ';
+__p += '\n            <a class="chatbox-btn close-chatbox-button fa fa-times"></a>\n        ';
  } ;
 __p += '\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
 return __p
@@ -79550,13 +79628,9 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/profile_view.html -->\n<div class="userinfo controlbox-padded">\n<div class="profile d-flex">\n    <a class="show-profile" href="#">\n        <img alt="User Avatar" class="avatar align-self-center" height="40px" width="40px" src="data:' +
-__e(o.image_type) +
-';base64,' +
-__e(o.image) +
-'"/>\n    </a>\n    <span class="username w-100 align-self-center">' +
+__p += '<!-- src/templates/profile_view.html -->\n<div class="userinfo controlbox-padded">\n<div class="profile d-flex">\n    <a class="show-profile" href="#">\n        <canvas alt="o.__(\'Your avatar\')" class="avatar align-self-center" height="40" width="40"></canvas>\n    </a>\n    <span class="username w-100 align-self-center">' +
 __e(o.fullname) +
-'</span>\n    <!-- <a class="chatbox-btn fa fa-vcard align-self-center" title="' +
+'</span>\n    <!-- <a class="chatbox-btn fa fa-id-card align-self-center" title="' +
 __e(o.title_your_profile) +
 '" data-toggle="modal" data-target="#userProfileModal"></a> -->\n    <!-- <a class="chatbox-btn fa fa-cog align-self-center" title="' +
 __e(o.title_change_status) +

@@ -567,7 +567,7 @@
                 }
             });
 
-            _converse.on('chatBoxesInitialized', () => {
+            _converse.on('chatBoxViewsInitialized', () => {
                 const that = _converse.chatboxviews;
                 _converse.chatboxes.on('add', item => {
                     if (item.get('type') === _converse.CONTROLBOX_TYPE) {
@@ -598,7 +598,7 @@
 
             Promise.all([
                 _converse.api.waitUntil('connectionInitialized'),
-                _converse.api.waitUntil('chatBoxesInitialized')
+                _converse.api.waitUntil('chatBoxViewsInitialized')
             ]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
             _converse.on('chatBoxesFetched', () => {

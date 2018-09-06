@@ -9634,11 +9634,11 @@ body.reset {
 #conversejs .xmpp-status .fa-dot-circle-o,
 #conversejs .roster-contacts .fa-dot-circle-o {
   color: #E7A151; }
-#conversejs .set-xmpp-status .fa-circle-o,
+#conversejs .set-xmpp-status .far.fa-circle,
 #conversejs .set-xmpp-status .fa-times-circle,
-#conversejs .xmpp-status .fa-circle-o,
+#conversejs .xmpp-status .far.fa-circle,
 #conversejs .xmpp-status .fa-times-circle,
-#conversejs .roster-contacts .fa-circle-o,
+#conversejs .roster-contacts .far.fa-circle,
 #conversejs .roster-contacts .fa-times-circle {
   color: #A8ABA1; }
 #conversejs .room-info {
@@ -10256,7 +10256,7 @@ body.reset {
         color: #f0a794; }
       #conversejs .items-list .list-item.open .fa-dot-circle-o {
         color: #f0c594; }
-      #conversejs .items-list .list-item.open .fa-circle-o,
+      #conversejs .items-list .list-item.open .far .fa-circle,
       #conversejs .items-list .list-item.open .fa-times-circle {
         color: #e6e7e4; }
     #conversejs .items-list .list-item:hover {

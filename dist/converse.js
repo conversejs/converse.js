@@ -76190,17 +76190,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         renderRosterItem(item) {
-          let status_icon = 'fa-times-circle';
+          let status_icon = 'fa fa-times-circle';
           const show = item.presence.get('show') || 'offline';
 
           if (show === 'online') {
-            status_icon = 'fa-circle';
+            status_icon = 'fa fa-circle';
           } else if (show === 'away') {
-            status_icon = 'fa-dot-circle-o';
+            status_icon = 'fa fa-dot-circle';
           } else if (show === 'xa') {
-            status_icon = 'fa-circle-o';
+            status_icon = 'far fa-circle';
           } else if (show === 'dnd') {
-            status_icon = 'fa-minus-circle';
+            status_icon = 'fa fa-minus-circle';
           }
 
           const display_name = item.getDisplayName();
@@ -77781,13 +77781,13 @@ __e(o.label_busy) +
  if (o.status === 'away') { ;
 __p += ' checked="checked" ';
  } ;
-__p += '\n                                   type="radio" id="radio-away" value="away" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-away">\n                                <span class="fa fa-dot-circle-o"></span>&nbsp;' +
+__p += '\n                                   type="radio" id="radio-away" value="away" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-away">\n                                <span class="fa fa-dot-circle"></span>&nbsp;' +
 __e(o.label_away) +
 '</label>\n                        </div>\n                        <div class="custom-control custom-radio">\n                            <input ';
  if (o.status === 'xa') { ;
 __p += ' checked="checked" ';
  } ;
-__p += '\n                                   type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-xa">\n                                <span class="fa fa-circle-o"></span>&nbsp;' +
+__p += '\n                                   type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-xa">\n                                <span class="far fa-circle"></span>&nbsp;' +
 __e(o.label_xa) +
 '</label>\n                        </div>\n                    </div>\n                    <div class="btn-group w-100">\n                        <input name="status_message" type="text" class="form-control" \n                               value="' +
 __e(o.status_message) +
@@ -79313,7 +79313,7 @@ __p += '</div>';
  } ;
 __p += '\n            ';
  if (o.type !== 'headline' && !o.is_me_message && o.sender === 'me') { ;
-__p += '\n            <div class="chat-msg__actions">\n                <button class="chat-msg__action chat-msg__action-edit fa fa-pencil" title="' +
+__p += '\n            <div class="chat-msg__actions">\n                <button class="chat-msg__action chat-msg__action-edit fa fa-pencil-alt" title="' +
 __e(o.__('Edit this message')) +
 '">&nbsp;</button>\n            </div>\n            ';
  } ;
@@ -79646,29 +79646,29 @@ __p += '\n</div>\n<div class="d-flex xmpp-status">\n    <span class="' +
 __e(o.chat_status) +
 ' w-100 align-self-center" data-value="' +
 __e(o.chat_status) +
-'">\n        <span class="fa\n            ';
+'">\n        <span class="\n            ';
  if (o.chat_status === 'online') { ;
-__p += ' fa-circle ';
+__p += ' fa fa-circle ';
  } ;
 __p += '\n            ';
  if (o.chat_status === 'dnd') { ;
-__p += ' fa-minus-circle ';
+__p += ' fa fa-minus-circle ';
  } ;
 __p += '\n            ';
  if (o.chat_status === 'away') { ;
-__p += ' fa-dot-circle-o ';
+__p += ' fa fa-dot-circle ';
  } ;
 __p += '\n            ';
  if (o.chat_status === 'xa') { ;
-__p += ' fa-circle-o ';
+__p += ' far fa-circle ';
  } ;
 __p += '\n            ';
  if (o.chat_status === 'offline') { ;
-__p += ' fa-times-circle ';
+__p += ' fa fa-times-circle ';
  } ;
 __p += '"></span> ' +
 __e(o.status_message) +
-'</span>\n    <a class="chatbox-btn change-status fa fa-pencil" title="' +
+'</span>\n    <a class="chatbox-btn change-status fa fa-pencil-alt" title="' +
 __e(o.title_change_status) +
 '" data-toggle="modal" data-target="#changeStatusModal"></a>\n</div>\n</div>\n';
 return __p
@@ -80246,7 +80246,7 @@ __p += ' unread-msgs ';
  } ;
 __p += '"\n   title="' +
 __e(o.desc_chat) +
-'" href="#">\n    <span class="fa ' +
+'" href="#">\n    <span class="' +
 __e(o.status_icon) +
 '" title="' +
 __e(o.desc_status) +

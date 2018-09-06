@@ -268,11 +268,12 @@
                         // so we don't send out a presence stanza again.
                         return this;
                     }
+
                     const stanza = $pres({
                         'from': _converse.connection.jid,
                         'to': this.getRoomJIDAndNick(nick)
                     }).c("x", {'xmlns': Strophe.NS.MUC})
-                      .c("history", {'maxstanzas': _converse.muc_history_max_stanzas}).up();
+                      .c("history", {'maxstanzas': this.get('mam_enabled') ? 0 : _converse.muc_history_max_stanzas}).up();
                     if (password) {
                         stanza.cnode(Strophe.xmlElement("password", [], password));
                     }

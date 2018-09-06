@@ -76740,13 +76740,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   const _converse$env = converse.env,
         _ = _converse$env._,
         Strophe = _converse$env.Strophe;
+  const u = converse.env.utils;
 
   function hideChat(view) {
     if (view.model.get('id') === 'controlbox') {
       return;
     }
 
-    view.model.save({
+    u.safeSave(view.model, {
       'hidden': true
     });
     view.hide();
@@ -76820,7 +76821,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (_converse.isSingleton()) {
             _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
 
-            this.model.set('hidden', false);
+            u.safeSave(this.model, {
+              'hidden': false
+            });
           }
 
           return this.__super__._show.apply(this, arguments);
@@ -76834,7 +76837,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (_converse.isSingleton()) {
             _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
 
-            this.model.set('hidden', false);
+            u.safeSave(this.model, {
+              'hidden': false
+            });
           }
 
           return this.__super__.show.apply(this, arguments);

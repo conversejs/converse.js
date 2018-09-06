@@ -22,12 +22,15 @@
 }(this, function (converse) {
     "use strict";
     const { _, Strophe } = converse.env;
+    const u = converse.env.utils;
+
 
     function hideChat (view) {
         if (view.model.get('id') === 'controlbox') { return; }
-        view.model.save({'hidden': true});
+        u.safeSave(view.model, {'hidden': true});
         view.hide();
     }
+
 
     converse.plugins.add('converse-singleton', {
         // It's possible however to make optional dependencies non-optional.
@@ -94,7 +97,7 @@
                     const { _converse } = this.__super__;
                     if (_converse.isSingleton()) {
                         _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
-                        this.model.set('hidden', false);
+                        u.safeSave(this.model, {'hidden': false});
                     }
                     return this.__super__._show.apply(this, arguments);
                 }
@@ -105,7 +108,7 @@
                     const { _converse } = this.__super__;
                     if (_converse.isSingleton()) {
                         _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
-                        this.model.set('hidden', false);
+                        u.safeSave(this.model, {'hidden': false});
                     }
                     return this.__super__.show.apply(this, arguments);
                 }

@@ -506,6 +506,10 @@
                                             'jid': 'first@conference.shakespeare.lit'
                                         }).c('nick').t('JC').up().up()
                                         .c('conference', {
+                                            'autojoin': 'false',
+                                            'jid': 'noname@conference.shakespeare.lit'
+                                        }).c('nick').t('JC').up().up()
+                                        .c('conference', {
                                             'name': 'Bookmark with a very very long name that will be shortened',
                                             'autojoin': 'false',
                                             'jid': 'longname@conference.shakespeare.lit'
@@ -517,27 +521,26 @@
                                         }).c('nick').t('JC').up().up();
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                    test_utils.waitUntil(function () {
-                        return document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length;
-                    }, 300).then(function () {
-                        expect(document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length).toBe(4);
+                    test_utils.waitUntil(() => document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length, 300)
+                    .then(() => {
+                        expect(document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length).toBe(5);
                         const els = document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item a.list-item-link');
                         expect(els[0].textContent).toBe("1st Bookmark");
                         expect(els[1].textContent).toBe("Another room");
                         expect(els[2].textContent).toBe("Bookmark with a very very long name that will be shortened");
-                        expect(els[3].textContent).toBe("The Play's the Thing");
+                        expect(els[3].textContent).toBe("noname@conference.shakespeare.lit");
+                        expect(els[4].textContent).toBe("The Play's the Thing");
 
                         spyOn(window, 'confirm').and.returnValue(true);
                         document.querySelector('#chatrooms .bookmarks.rooms-list .room-item:nth-child(2) a:nth-child(2)').click();
                         expect(window.confirm).toHaveBeenCalled();
-                        return test_utils.waitUntil(function () {
-                            return document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length === 3;
-                        }, 300)
+                        return test_utils.waitUntil(() => document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length === 4, 300)
                     }).then(() => {
                         const els = document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item a.list-item-link');
                         expect(els[0].textContent).toBe("1st Bookmark");
                         expect(els[1].textContent).toBe("Bookmark with a very very long name that will be shortened");
-                        expect(els[2].textContent).toBe("The Play's the Thing");
+                        expect(els[2].textContent).toBe("noname@conference.shakespeare.lit");
+                        expect(els[3].textContent).toBe("The Play's the Thing");
                         done();
                     }).catch(_.partial(console.error, _));
                 });

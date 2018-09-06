@@ -59069,7 +59069,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       _converse.Bookmark = Backbone.Model;
       _converse.Bookmarks = Backbone.Collection.extend({
         model: _converse.Bookmark,
-        comparator: 'name',
+        comparator: item => item.get('name').toLowerCase(),
 
         initialize() {
           this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
@@ -59205,9 +59205,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const bookmarks = sizzle('items[node="storage:bookmarks"] ' + 'item#current ' + 'storage[xmlns="storage:bookmarks"] ' + 'conference', stanza);
 
           _.forEach(bookmarks, bookmark => {
+            const jid = bookmark.getAttribute('jid');
             this.create({
-              'jid': bookmark.getAttribute('jid'),
-              'name': bookmark.getAttribute('name'),
+              'jid': jid,
+              'name': bookmark.getAttribute('name') || jid,
               'autojoin': bookmark.getAttribute('autojoin') === 'true',
               'nick': _.get(bookmark.querySelector('nick'), 'textContent')
             });
@@ -70141,7 +70142,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           }).c("x", {
             'xmlns': Strophe.NS.MUC
           }).c("history", {
-            'maxstanzas': _converse.muc_history_max_stanzas
+            'maxstanzas': this.get('mam_enabled') ? 0 : _converse.muc_history_max_stanzas
           }).up();
 
           if (password) {
@@ -78387,7 +78388,7 @@ __e( o.Strophe.getDomainFromJid(o.jid) ) +
  } ;
 __p += '\n    </div>\n    <p class="chatroom-description">' +
 __e( o.description ) +
-'<p/>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out" title="' +
+'<p/>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="' +
 __e(o.info_close) +
 '"></a>\n    ';
  if (o.affiliation == 'owner') { ;

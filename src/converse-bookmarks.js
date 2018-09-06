@@ -243,7 +243,7 @@
 
             _converse.Bookmarks = Backbone.Collection.extend({
                 model: _converse.Bookmark,
-                comparator: 'name',
+                comparator: (item) => item.get('name').toLowerCase(),
 
                 initialize () {
                     this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
@@ -367,9 +367,10 @@
                         stanza
                     )
                     _.forEach(bookmarks, (bookmark) => {
+                        const jid = bookmark.getAttribute('jid');
                         this.create({
-                            'jid': bookmark.getAttribute('jid'),
-                            'name': bookmark.getAttribute('name'),
+                            'jid': jid,
+                            'name': bookmark.getAttribute('name') || jid,
                             'autojoin': bookmark.getAttribute('autojoin') === 'true',
                             'nick': _.get(bookmark.querySelector('nick'), 'textContent')
                         });

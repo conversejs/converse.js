@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-07-22 11:17+0200\n"
-"PO-Revision-Date: 2018-07-22 15:37+0200\n"
+"PO-Revision-Date: 2018-09-06 09:13+0200\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -662,7 +662,7 @@ msgstr ""
 msgid ""
 "Sorry, an error happened while running the command. Check your browser's "
 "developer console for details."
-msgstr ""
+msgstr "Jammer, 'n fout het tydens die opdrag voorgekom."
 
 #: dist/converse-no-dependencies.js:49282
 msgid "Change user's affiliation to admin"
@@ -895,13 +895,13 @@ msgid "Invite"
 msgstr "Nooi uit"
 
 #: dist/converse-no-dependencies.js:50196
-#, fuzzy, javascript-format
 msgid ""
 "You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
-"U mag na keuse 'n boodskap insluit, om bv. die rede vir die uitnodiging te "
-"staaf."
+"U is op die drumpel om %1$s na die groepgesprek \"%2$s\" uit te nooi. "
+"U mag na keuse 'n boodskap insluit, om bv. 'n rede vir die uitnodiging te "
+"gee."
 
 #: dist/converse-no-dependencies.js:50218
 msgid "Please enter a valid XMPP username"
@@ -971,7 +971,8 @@ msgstr "Groepgesprek-adres (JID)"
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
-msgstr ""
+msgstr "Gebruik kommas om rolle te onderskei. Rolle word langs u naam op
+boodspakke aangedui."
 
 #: dist/converse-no-dependencies.js:52486
 msgid "Your avatar image"
@@ -983,7 +984,7 @@ msgstr "Jammer, 'n fout het voorgekom tydens storing van u profieldata."
 
 #: dist/converse-no-dependencies.js:52513
 msgid "You can check your browser's developer console for any error output."
-msgstr ""
+msgstr "Verwys na u webblaaier se ontwikkelaarskonsole vir fout-boodskappe."
 
 #: dist/converse-no-dependencies.js:52561
 #: dist/converse-no-dependencies.js:55131
@@ -1200,7 +1201,7 @@ msgstr "Voeg 'n kontak by"
 
 #: dist/converse-no-dependencies.js:55009
 msgid "XMPP Address"
-msgstr ""
+msgstr "XMPP Adres"
 
 #: dist/converse-no-dependencies.js:55011
 msgid "name@example.org"
@@ -1431,7 +1432,10 @@ msgid ""
 "if this is a public computer or if you want your data to be deleted when you "
 "log out. It's important that you explicitly log out, otherwise not all "
 "cached data might be deleted."
-msgstr ""
+msgstr "Om prestasie te verbeter, stoor ons data in hierdie webblaaier. Ontmerk "
+"hierdie box indien hierdie 'n publieke rekenaar is of indien u data na "
+"afmelding verwyder moet word. Dit is belangrik om eksplisiet af te meld, "
+"anders sal u data nie geskrap word nie."
 
 #: dist/converse-no-dependencies.js:58287
 msgid "Log in"
@@ -1510,336 +1514,3 @@ msgstr "Laai video-lêer af"
 #: dist/converse-no-dependencies.js:60032
 msgid "Download audio file"
 msgstr "Laai oudio-lêer af"
-
-#~ msgid "Room address (JID)"
-#~ msgstr "Groepklets-adres (JID)"
-
-#~ msgid "This room requires a password before entry"
-#~ msgstr "Hierdie kletskamer benodig 'n wagwoord"
-
-#~ msgid "This room does not require a password upon entry"
-#~ msgstr "Hiedie kletskamer benodig nie 'n wagwoord nie"
-
-#~ msgid "This room is not publicly searchable"
-#~ msgstr "Hierdie kletskamer is nie publiek opspoorbaar nie"
-
-#~ msgid "This room is publicly searchable"
-#~ msgstr "Hierdie kletskamer is publiek opspoorbaar"
-
-#, fuzzy
-#~ msgid "this room is restricted to members only"
-#~ msgstr "Hierdie kletskamer is slegs tot lede beperk"
-
-#~ msgid "Anyone can join this room"
-#~ msgstr "Enige iemand kan hierdie kletskamer binnekom"
-
-#~ msgid "This room persists even if it's unoccupied"
-#~ msgstr "Hierdie kletskamer bestaan voort selfs al is dit leeg"
-
-#~ msgid "This room will disappear once the last person leaves"
-#~ msgstr "Hierdie kletskamer sal verdwyn sodra die laaste persoon dit verlaat"
-
-#~ msgid "All other room occupants can see your XMPP username"
-#~ msgstr "Alle ander deelnemers can u Jabber ID sien"
-
-#~ msgid "This room is being moderated"
-#~ msgstr "Hierdie kletskamer word gemodereer"
-
-#~ msgid "This room is not being moderated"
-#~ msgstr "Hierdie kletskamer word nie gemodereer nie"
-
-#~ msgid "Show rooms"
-#~ msgstr "Wys groepkletse"
-
-#, fuzzy
-#~ msgid "Rooms found:"
-#~ msgstr "groepkletse gevind"
-
-#, fuzzy
-#~ msgid "Query for rooms"
-#~ msgstr "Verban gebruiker uit hierdie kletskamer"
-
-#~ msgid "Open room"
-#~ msgstr "Oop kletskamer"
-
-#~ msgid "Temporary room"
-#~ msgstr "Tydelike kamer"
-
-#, fuzzy
-#~ msgid "Chatrooms"
-#~ msgstr "Wys groepkletse"
-
-#~ msgid "Occupants"
-#~ msgstr "Deelnemers"
-
-#~ msgid "Open Rooms"
-#~ msgstr "Oop groepkletse"
-
-#~ msgid "Re-establishing encrypted session"
-#~ msgstr "Herstel versleutelde sessie"
-
-#~ msgid "Generating private key."
-#~ msgstr "Genereer private sleutel."
-
-#~ msgid "Your browser might become unresponsive."
-#~ msgstr "U webblaaier mag tydelik onreageerbaar word."
-
-#~ msgid ""
-#~ "Authentication request from %1$s\n"
-#~ "\n"
-#~ "Your chat contact is attempting to verify your identity, by asking you "
-#~ "the question below.\n"
-#~ "\n"
-#~ "%2$s"
-#~ msgstr ""
-#~ "Identiteitbevestigingsversoek van  %1$s\n"
-#~ "\n"
-#~ "U gespreksmaat probeer om u identiteit te bevestig, deur die volgende "
-#~ "vraag te vra \n"
-#~ "\n"
-#~ "%2$s"
-
-#~ msgid "Could not verify this user's identify."
-#~ msgstr "Kon nie hierdie gebruiker se identitied bevestig nie."
-
-#~ msgid "Exchanging private key with contact."
-#~ msgstr "Sleutels word met gespreksmaat uitgeruil."
-
-#~ msgid "Your messages are not encrypted anymore"
-#~ msgstr "U boodskappe is nie meer versleutel nie"
-
-#~ msgid ""
-#~ "Your messages are now encrypted but your contact's identity has not been "
-#~ "verified."
-#~ msgstr ""
-#~ "U boodskappe is nou versleutel maar u gespreksmaat se identiteit is nog "
-#~ "onseker."
-
-#~ msgid "Your contact's identify has been verified."
-#~ msgstr "U gespreksmaat se identiteit is bevestig."
-
-#~ msgid ""
-#~ "Your contact has ended encryption on their end, you should do the same."
-#~ msgstr ""
-#~ "U gespreksmaat het versleuteling gestaak, u behoort nou dieselfde te doen."
-
-#~ msgid "Your message could not be sent"
-#~ msgstr "U boodskap kon nie gestuur word nie"
-
-#~ msgid "We received an unencrypted message"
-#~ msgstr "Ons het 'n onversleutelde boodskap ontvang"
-
-#~ msgid "We received an unreadable encrypted message"
-#~ msgstr "Ons het 'n onleesbare versleutelde boodskap ontvang"
-
-#~ msgid ""
-#~ "Here are the fingerprints, please confirm them with %1$s, outside of this "
-#~ "chat.\n"
-#~ "\n"
-#~ "Fingerprint for you, %2$s: %3$s\n"
-#~ "\n"
-#~ "Fingerprint for %1$s: %4$s\n"
-#~ "\n"
-#~ "If you have confirmed that the fingerprints match, click OK, otherwise "
-#~ "click Cancel."
-#~ msgstr ""
-#~ "Hier is die vingerafdrukke, bevestig hulle met %1$s, buite hierdie "
-#~ "kletskanaal \n"
-#~ "\n"
-#~ "U vingerafdruk, %2$s: %3$s\n"
-#~ "\n"
-#~ "Vingerafdruk vir %1$s: %4$s\n"
-#~ "\n"
-#~ "Indien u die vingerafdrukke bevestig het, klik OK, andersinds klik "
-#~ "Kanselleer."
-
-#~ msgid ""
-#~ "You will be prompted to provide a security question and then an answer to "
-#~ "that question.\n"
-#~ "\n"
-#~ "Your contact will then be prompted the same question and if they type the "
-#~ "exact same answer (case sensitive), their identity will be verified."
-#~ msgstr ""
-#~ "Daar sal van u verwag word om 'n sekuriteitsvraag te stel, en dan ook die "
-#~ "antwoord tot daardie vraag te verskaf.\n"
-#~ "\n"
-#~ "U gespreksmaat sal dan daardie vraag gestel word, en indien hulle presies "
-#~ "dieselfde antwoord (lw. hoofletters tel) verskaf, sal hul identiteit "
-#~ "bevestig wees."
-
-#~ msgid "What is your security question?"
-#~ msgstr "Wat is u sekuriteitsvraag?"
-
-#~ msgid "What is the answer to the security question?"
-#~ msgstr "Wat is die antwoord tot die sekuriteitsvraag?"
-
-#~ msgid "Invalid authentication scheme provided"
-#~ msgstr "Ongeldige verifikasiemetode verskaf"
-
-#~ msgid ""
-#~ "Your messages are not encrypted. Click here to enable OTR encryption."
-#~ msgstr ""
-#~ "U boodskappe is nie versleutel nie. Klik hier om OTR versleuteling te "
-#~ "aktiveer."
-
-#~ msgid "Your messages are encrypted, but your contact has not been verified."
-#~ msgstr ""
-#~ "U boodskappe is versleutel, maar u gespreksmaat se identiteit is not "
-#~ "onseker."
-
-#~ msgid "Your messages are encrypted and your contact verified."
-#~ msgstr ""
-#~ "U boodskappe is versleutel en u gespreksmaat se identiteit bevestig."
-
-#~ msgid ""
-#~ "Your contact has closed their end of the private session, you should do "
-#~ "the same"
-#~ msgstr ""
-#~ "U gespreksmaat het die private sessie gestaak. U behoort dieselfde te doen"
-
-#~ msgid "End encrypted conversation"
-#~ msgstr "Beëindig versleutelde gesprek"
-
-#~ msgid "Refresh encrypted conversation"
-#~ msgstr "Verfris versleutelde gesprek"
-
-#~ msgid "Start encrypted conversation"
-#~ msgstr "Begin versleutelde gesprek"
-
-#~ msgid "Verify with fingerprints"
-#~ msgstr "Bevestig met vingerafdrukke"
-
-#~ msgid "Verify with SMP"
-#~ msgstr "Bevestig met SMP"
-
-#~ msgid "What's this?"
-#~ msgstr "Wat is hierdie?"
-
-#~ msgid "unencrypted"
-#~ msgstr "nie-privaat"
-
-#~ msgid "unverified"
-#~ msgstr "onbevestig"
-
-#~ msgid "verified"
-#~ msgstr "privaat"
-
-#~ msgid "finished"
-#~ msgstr "afgesluit"
-
-#~ msgid "Error: could not execute the command"
-#~ msgstr "Fout: kon nie die opdrag uitvoer nie"
-
-#~ msgid "me"
-#~ msgstr "ek"
-
-#~ msgid "Are you sure you want to clear the messages from this room?"
-#~ msgstr "Is u seker dat u die boodskappe in hierdie kamer wil verwyder?"
-
-#~ msgid "Login"
-#~ msgstr "Aanmelding"
-
-#~ msgid "State"
-#~ msgstr "Kletsstand"
-
-#~ msgid "Click here to write a custom status message"
-#~ msgstr "Klik hier om jou eie statusboodskap te skryf"
-
-#~ msgid "Click to add new chat contacts"
-#~ msgstr "Klik om nuwe kletskontakte by te voeg"
-
-#~ msgid "Search"
-#~ msgstr "Soek"
-
-#~ msgid "No users found"
-#~ msgstr "Geen gebruikers gevind"
-
-#~ msgid "Click to add as a chat contact"
-#~ msgstr "Klik om as kletskontak by te voeg"
-
-#~ msgid "Room name"
-#~ msgstr "Kamer naam"
-
-#~ msgid "Rooms"
-#~ msgstr "groepkletse"
-
-#, fuzzy
-#~ msgid ""
-#~ "A very large message has been received. This might be due to an attack "
-#~ "meant to degrade the chat performance. Output has been shortened."
-#~ msgstr ""
-#~ "'n Baie groot boodskap is ontvang. Dit mag dalk 'n aanval wees om "
-#~ "werkverrigting te ontwrig. Die boodskap word dus slegs in verkorte "
-#~ "weergawe vertoon."
-
-#~ msgid "You are about to invite %1$s to the chat room \"%2$s\". "
-#~ msgstr "U is op die punt om %1$s na die kletskamer \"%2$s\" uit te nooi. "
-
-#~ msgid "No rooms on %1$s"
-#~ msgstr "Geen groepkletse op %1$s"
-
-#~ msgid " has left the room. \""
-#~ msgstr " het die kamer verlaat.\""
-
-#~ msgid " has joined the room. \""
-#~ msgstr " het die kamer binnegekom.\""
-
-#~ msgid "Unsecured"
-#~ msgstr "Onversekerd"
-
-#~ msgid "Please enter your password"
-#~ msgstr "Verskaf asseblief u wagwoord"
-
-#~ msgid "The reason given is: \"%1$s \""
-#~ msgstr "Die gegewe rede is: \"%1$s\""
-
-#~ msgid "Close this box"
-#~ msgstr "Maak hierdie kletskas toe"
-
-#~ msgid "Account Registration"
-#~ msgstr "Registreer 'n rekening"
-
-#~ msgid "user@server"
-#~ msgstr "gebruiker@bediener"
-
-#~ msgid "Sign in"
-#~ msgstr "Teken in"
-
-#~ msgid "Your XMPP provider's domain name:"
-#~ msgstr "U XMPP-verskaffer se domein naam:"
-
-#~ msgid "Requesting a registration form from the XMPP server"
-#~ msgstr "Vra tans die XMPP-bediener vir 'n registrasie vorm"
-
-#~ msgid "Reconnecting"
-#~ msgstr "Herkonnekteer"
-
-#~ msgid "Connection error"
-#~ msgstr "Fout tydens verbinding"
-
-#~ msgid "Connecting"
-#~ msgstr "Verbind tans"
-
-#~ msgid "Authenticating"
-#~ msgstr "Besig om te bekragtig"
-
-#~ msgid "Authentication Failed"
-#~ msgstr "Bekragtiging het gefaal"
-
-#~ msgid "Connection failed"
-#~ msgstr "Verbinding het gefaal"
-
-#~ msgid "An error occurred while connecting to the chat server: "
-#~ msgstr "A fout het voorgekom tydens verbinding met die kletsbediener: "
-
-#~ msgid "Error: the \""
-#~ msgstr "Fout: die \""
-
-#~ msgid "The reason given is: \""
-#~ msgstr "Die gegewe rede is: \""
-
-#~ msgid "Server:"
-#~ msgstr "Bediener:"
-
-#~ msgid "Return"
-#~ msgstr "Terug"

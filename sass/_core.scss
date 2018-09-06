@@ -40,12 +40,62 @@ body.reset {
     content: "\e600";
 }
 
-.converse-brand-heading {
+.converse-brand {
+    display: flex;
+    justify-content: space-between;
+}
+
+.converse-brand__padding {
+    @include make-col-ready();
+    @include media-breakpoint-up(md) {
+        @include make-col(4);
+    }
+    @include media-breakpoint-up(lg) {
+        @include make-col(3);
+    }
+    @include media-breakpoint-up(xl) {
+        @include make-col(2);
+    }
+    padding: 0;
+}
+
+.converse-brand__heading {
+    @include make-col-ready();
+    @include media-breakpoint-up(md) {
+        font-size: 4em;
+        @include make-col(8);
+    }
+    @include media-breakpoint-up(lg) {
+        font-size: 5em;
+        @include make-col(9);
+    }
+    @include media-breakpoint-up(xl) {
+        font-size: 6em;
+        @include make-col(10);
+    }
+    padding: 0;
+}
+
+.converse-brand__text {
     font-family: $heading-font; 
-    font-size: 6em;
     font-weight: normal;
+    width: 50%;
+    margin: auto;
+    margin-top: 10%;
+    text-align: center;
     .icon-conversejs {
         font-size: 60%;
+    }
+}
+.converse-brand__byline {
+    font-size: $font-size-small;
+    width: 50%;
+    margin: auto;
+    text-align: center;
+
+    a {
+        text-decoration: none;
+        color: lighten($chatroom-head-color, 25%);
     }
 }
 
@@ -442,7 +492,7 @@ body.reset {
 
 @media screen and (max-width: 575px) {
     body {
-      .converse-brand-heading {
+      .converse-brand {
         font-size: 3.75em;
       }
     }

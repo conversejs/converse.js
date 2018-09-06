@@ -8631,12 +8631,71 @@ body.reset {
 .icon-conversejs:before {
   content: "\e600"; }
 
-.converse-brand-heading {
+.converse-brand {
+  display: flex;
+  justify-content: space-between; }
+
+.converse-brand__padding {
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding: 0; }
+  @media (min-width: 768px) {
+    .converse-brand__padding {
+      flex: 0 0 33.3333333333%;
+      max-width: 33.3333333333%; } }
+  @media (min-width: 992px) {
+    .converse-brand__padding {
+      flex: 0 0 25%;
+      max-width: 25%; } }
+  @media (min-width: 1200px) {
+    .converse-brand__padding {
+      flex: 0 0 16.6666666667%;
+      max-width: 16.6666666667%; } }
+
+.converse-brand__heading {
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding: 0; }
+  @media (min-width: 768px) {
+    .converse-brand__heading {
+      font-size: 4em;
+      flex: 0 0 66.6666666667%;
+      max-width: 66.6666666667%; } }
+  @media (min-width: 992px) {
+    .converse-brand__heading {
+      font-size: 5em;
+      flex: 0 0 75%;
+      max-width: 75%; } }
+  @media (min-width: 1200px) {
+    .converse-brand__heading {
+      font-size: 6em;
+      flex: 0 0 83.3333333333%;
+      max-width: 83.3333333333%; } }
+
+.converse-brand__text {
   font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
-  font-size: 6em;
-  font-weight: normal; }
-  .converse-brand-heading .icon-conversejs {
+  font-weight: normal;
+  width: 50%;
+  margin: auto;
+  margin-top: 10%;
+  text-align: center; }
+  .converse-brand__text .icon-conversejs {
     font-size: 60%; }
+
+.converse-brand__byline {
+  font-size: 12px;
+  width: 50%;
+  margin: auto;
+  text-align: center; }
+  .converse-brand__byline a {
+    text-decoration: none;
+    color: #f6ccc1; }
 
 #conversejs {
   bottom: 0;
@@ -8981,7 +9040,7 @@ body.reset {
     margin: 0; }
 
 @media screen and (max-width: 575px) {
-  body .converse-brand-heading {
+  body .converse-brand {
     font-size: 3.75em; }
 
   #conversejs:not(.converse-embedded) .chatbox .chat-body {

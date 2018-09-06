@@ -63002,7 +63002,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     jid: undefined,
     keepalive: true,
     locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
-    locales: ['af', 'ar', 'bg', 'ca', 'de', 'es', 'eu', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
+    locales: ['af', 'ar', 'bg', 'ca', 'cs', 'de', 'es', 'eu', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
     message_carbons: true,
     nickname: undefined,
     password: undefined,
@@ -66140,6 +66140,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     if (_.isFunction(options)) {
       callback = options;
       errback = callback;
+      options = null;
     }
 
     const queryid = _converse.connection.getUniqueId();
@@ -66148,7 +66149,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       'type': 'set'
     };
 
-    if (!_.isUndefined(options) && options.groupchat) {
+    if (options && options.groupchat) {
       if (!options['with']) {
         // eslint-disable-line dot-notation
         throw new Error('You need to specify a "with" value containing ' + 'the chat room JID, when querying groupchat messages.');
@@ -66162,7 +66163,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       'queryid': queryid
     });
 
-    if (!_.isUndefined(options)) {
+    if (options) {
       stanza.c('x', {
         'xmlns': Strophe.NS.XFORM,
         'type': 'submit'
@@ -77259,13 +77260,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 //
 // This is the internationalization module.
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
 /*global define */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! es6-promise */ "./node_modules/es6-promise/dist/es6-promise.auto.js"), __webpack_require__(/*! jed */ "./node_modules/jed/jed.js"), __webpack_require__(/*! lodash.noconflict */ "./src/lodash.noconflict.js"), __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"), __webpack_require__(/*! moment/locale/af */ "./node_modules/moment/locale/af.js"), __webpack_require__(/*! moment/locale/ar */ "./node_modules/moment/locale/ar.js"), __webpack_require__(/*! moment/locale/bg */ "./node_modules/moment/locale/bg.js"), __webpack_require__(/*! moment/locale/ca */ "./node_modules/moment/locale/ca.js"), __webpack_require__(/*! moment/locale/de */ "./node_modules/moment/locale/de.js"), __webpack_require__(/*! moment/locale/es */ "./node_modules/moment/locale/es.js"), __webpack_require__(/*! moment/locale/eu */ "./node_modules/moment/locale/eu.js"), __webpack_require__(/*! moment/locale/fr */ "./node_modules/moment/locale/fr.js"), __webpack_require__(/*! moment/locale/he */ "./node_modules/moment/locale/he.js"), __webpack_require__(/*! moment/locale/hu */ "./node_modules/moment/locale/hu.js"), __webpack_require__(/*! moment/locale/id */ "./node_modules/moment/locale/id.js"), __webpack_require__(/*! moment/locale/it */ "./node_modules/moment/locale/it.js"), __webpack_require__(/*! moment/locale/ja */ "./node_modules/moment/locale/ja.js"), __webpack_require__(/*! moment/locale/nb */ "./node_modules/moment/locale/nb.js"), __webpack_require__(/*! moment/locale/nl */ "./node_modules/moment/locale/nl.js"), __webpack_require__(/*! moment/locale/pl */ "./node_modules/moment/locale/pl.js"), __webpack_require__(/*! moment/locale/pt-br */ "./node_modules/moment/locale/pt-br.js"), __webpack_require__(/*! moment/locale/ru */ "./node_modules/moment/locale/ru.js"), __webpack_require__(/*! moment/locale/tr */ "./node_modules/moment/locale/tr.js"), __webpack_require__(/*! moment/locale/uk */ "./node_modules/moment/locale/uk.js"), __webpack_require__(/*! moment/locale/zh-cn */ "./node_modules/moment/locale/zh-cn.js"), __webpack_require__(/*! moment/locale/zh-tw */ "./node_modules/moment/locale/zh-tw.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! es6-promise */ "./node_modules/es6-promise/dist/es6-promise.auto.js"), __webpack_require__(/*! jed */ "./node_modules/jed/jed.js"), __webpack_require__(/*! lodash.noconflict */ "./src/lodash.noconflict.js"), __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"), __webpack_require__(/*! moment/locale/af */ "./node_modules/moment/locale/af.js"), __webpack_require__(/*! moment/locale/ar */ "./node_modules/moment/locale/ar.js"), __webpack_require__(/*! moment/locale/bg */ "./node_modules/moment/locale/bg.js"), __webpack_require__(/*! moment/locale/ca */ "./node_modules/moment/locale/ca.js"), __webpack_require__(/*! moment/locale/cs */ "./node_modules/moment/locale/cs.js"), __webpack_require__(/*! moment/locale/de */ "./node_modules/moment/locale/de.js"), __webpack_require__(/*! moment/locale/es */ "./node_modules/moment/locale/es.js"), __webpack_require__(/*! moment/locale/eu */ "./node_modules/moment/locale/eu.js"), __webpack_require__(/*! moment/locale/fr */ "./node_modules/moment/locale/fr.js"), __webpack_require__(/*! moment/locale/he */ "./node_modules/moment/locale/he.js"), __webpack_require__(/*! moment/locale/hu */ "./node_modules/moment/locale/hu.js"), __webpack_require__(/*! moment/locale/id */ "./node_modules/moment/locale/id.js"), __webpack_require__(/*! moment/locale/it */ "./node_modules/moment/locale/it.js"), __webpack_require__(/*! moment/locale/ja */ "./node_modules/moment/locale/ja.js"), __webpack_require__(/*! moment/locale/nb */ "./node_modules/moment/locale/nb.js"), __webpack_require__(/*! moment/locale/nl */ "./node_modules/moment/locale/nl.js"), __webpack_require__(/*! moment/locale/pl */ "./node_modules/moment/locale/pl.js"), __webpack_require__(/*! moment/locale/pt-br */ "./node_modules/moment/locale/pt-br.js"), __webpack_require__(/*! moment/locale/ru */ "./node_modules/moment/locale/ru.js"), __webpack_require__(/*! moment/locale/tr */ "./node_modules/moment/locale/tr.js"), __webpack_require__(/*! moment/locale/uk */ "./node_modules/moment/locale/uk.js"), __webpack_require__(/*! moment/locale/zh-cn */ "./node_modules/moment/locale/zh-cn.js"), __webpack_require__(/*! moment/locale/zh-tw */ "./node_modules/moment/locale/zh-tw.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -77308,7 +77309,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
 
   function isMomentLocale(locale) {
-    return _.isString(locale) && moment.locale() === moment.locale(locale);
+    return _.isString(locale) && moment.locale(locale) === moment.locale();
   }
 
   function isConverseLocale(locale, supported_locales) {

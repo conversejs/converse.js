@@ -80956,22 +80956,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   u.renderFileURL = function (_converse, url) {
     const uri = new URI(url),
           __ = _converse.__,
-          filename = uri.filename();
+          filename = uri.filename(),
+          lower_filename = filename.toLowerCase();
 
-    if (!_.includes(["https", "http"], uri.protocol()) || filename.endsWith('mp3') || filename.endsWith('mp4') || filename.endsWith('jpg') || filename.endsWith('jpeg') || filename.endsWith('png') || filename.endsWith('gif') || filename.endsWith('svg')) {
+    if (!_.includes(["https", "http"], uri.protocol().toLowerCase()) || lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') || lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') || lower_filename.endsWith('png') || lower_filename.endsWith('gif') || lower_filename.endsWith('svg')) {
       return url;
     }
 
     return tpl_file({
       'url': url,
-      'label_download': __('Download "%1$s"', filename)
+      'label_download': __('Download "%1$s"', uri.filename())
     });
   };
 
   u.renderImageURL = function (_converse, url) {
-    const __ = _converse.__;
+    const __ = _converse.__,
+          lurl = url.toLowerCase();
 
-    if (url.endsWith('jpg') || url.endsWith('jpeg') || url.endsWith('png') || url.endsWith('gif') || url.endsWith('svg')) {
+    if (lurl.endsWith('jpg') || lurl.endsWith('jpeg') || lurl.endsWith('png') || lurl.endsWith('gif') || lurl.endsWith('svg')) {
       return tpl_image({
         'url': url,
         'label_download': __('Download')

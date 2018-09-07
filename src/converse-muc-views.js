@@ -1956,7 +1956,7 @@
                 function featureAdded (feature) {
                     if (!feature) { return; }
                     if (feature.get('var') === Strophe.NS.MUC) {
-                        feature.getIdentity('conference', 'text').then(identity => {
+                        feature.entity.getIdentity('conference', 'text').then(identity => {
                             if (identity) {
                                 setMUCDomain(feature.get('from'), controlboxview);
                             }

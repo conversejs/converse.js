@@ -68264,6 +68264,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.occupants.on('add', this.showJoinNotification, this);
           this.model.occupants.on('remove', this.showLeaveNotification, this);
           this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
+          this.model.occupants.on('change:role', this.informOfOccupantsRoleChange, this);
+          this.model.occupants.on('change:affiliation', this.informOfOccupantsAffiliationChange, this);
           this.createEmojiPicker();
           this.createOccupantsView();
           this.render().insertIntoDOM();
@@ -68382,8 +68384,32 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.occupantsview = new _converse.ChatRoomOccupantsView({
             'model': this.model.occupants
           });
-          this.occupantsview.model.on('change:role', this.informOfOccupantsRoleChange, this);
           return this;
+        },
+
+        informOfOccupantsAffiliationChange(occupant, changed) {
+          const previous_affiliation = occupant._previousAttributes.affiliation,
+                current_affiliation = occupant.get('affiliation');
+
+          if (previous_affiliation === 'admin') {
+            this.showChatEvent(__("%1$s is no longer an admin of this groupchat", occupant.get('nick')));
+          } else if (previous_affiliation === 'owner') {
+            this.showChatEvent(__("%1$s is no longer an owner of this groupchat", occupant.get('nick')));
+          } else if (previous_affiliation === 'outcast') {
+            this.showChatEvent(__("%1$s is no longer banned from this groupchat", occupant.get('nick')));
+          }
+
+          if (current_affiliation === 'none' && previous_affiliation === 'member') {
+            this.showChatEvent(__("%1$s is no longer a permanent member of this groupchat", occupant.get('nick')));
+          }
+
+          if (current_affiliation === 'member') {
+            this.showChatEvent(__("%1$s is now a permanent member of this groupchat", occupant.get('nick')));
+          } else if (current_affiliation === 'outcast') {
+            this.showChatEvent(__("%1$s has been banned from this groupchat", occupant.get('nick')));
+          } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
+            this.showChatEvent(__(`%1$s is now an ${current_affiliation} of this groupchat`, occupant.get('nick')));
+          }
         },
 
         informOfOccupantsRoleChange(occupant, changed) {
@@ -68605,9 +68631,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           /* Check that a command to change a groupchat user's role or
            * affiliation has anough arguments.
            */
-          // TODO check if first argument is valid
           if (args.length < 1 || args.length > 2) {
             this.showErrorMessage(__('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command));
+            return false;
+          }
+
+          if (!this.model.occupants.findWhere({
+            'nick': args[0]
+          }) && !this.model.occupants.findWhere({
+            'jid': args[0]
+          })) {
+            this.showErrorMessage(__('Error: couldn\'t find a groupchat participant "%1$s"', args[0]));
             return false;
           }
 
@@ -68692,13 +68726,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
                 const occupant = this.model.occupants.findWhere({
                   'nick': args[0]
+                }) || this.model.occupants.findWhere({
+                  'jid': args[0]
                 });
-
-                if (!occupant) {
-                  this.showErrorMessage(__(`Error: Can't find a groupchat participant with the nickname "${args[0]}"`));
-                  break;
-                }
-
                 this.model.setAffiliation('member', [{
                   'jid': occupant.get('jid'),
                   'reason': args[1]
@@ -69275,6 +69305,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         showLeaveNotification(occupant) {
+          if (_.includes(occupant.get('states'), '303') || _.includes(occupant.get('states'), '307')) {
+            return;
+          }
+
           const nick = occupant.get('nick'),
                 stat = occupant.get('status'),
                 last_el = this.content.lastElementChild;

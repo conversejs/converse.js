@@ -542,6 +542,8 @@
                     this.model.occupants.on('add', this.showJoinNotification, this);
                     this.model.occupants.on('remove', this.showLeaveNotification, this);
                     this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
+                    this.model.occupants.on('change:role', this.informOfOccupantsRoleChange, this);
+                    this.model.occupants.on('change:affiliation', this.informOfOccupantsAffiliationChange, this);
 
                     this.createEmojiPicker();
                     this.createOccupantsView();
@@ -643,8 +645,30 @@
                      */
                     this.model.occupants.chatroomview = this;
                     this.occupantsview = new _converse.ChatRoomOccupantsView({'model': this.model.occupants});
-                    this.occupantsview.model.on('change:role', this.informOfOccupantsRoleChange, this);
                     return this;
+                },
+
+                informOfOccupantsAffiliationChange(occupant, changed) {
+                    const previous_affiliation = occupant._previousAttributes.affiliation,
+                          current_affiliation = occupant.get('affiliation');
+
+                    if (previous_affiliation === 'admin') {
+                        this.showChatEvent(__("%1$s is no longer an admin of this groupchat", occupant.get('nick')))
+                    } else if (previous_affiliation === 'owner') {
+                        this.showChatEvent(__("%1$s is no longer an owner of this groupchat", occupant.get('nick')))
+                    } else if (previous_affiliation === 'outcast') {
+                        this.showChatEvent(__("%1$s is no longer banned from this groupchat", occupant.get('nick')))
+                    }
+
+                    if (current_affiliation === 'none' && previous_affiliation === 'member') {
+                        this.showChatEvent(__("%1$s is no longer a permanent member of this groupchat", occupant.get('nick')))
+                    } if (current_affiliation === 'member') {
+                        this.showChatEvent(__("%1$s is now a permanent member of this groupchat", occupant.get('nick')))
+                    } else if (current_affiliation === 'outcast') {
+                        this.showChatEvent(__("%1$s has been banned from this groupchat", occupant.get('nick')))
+                    } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
+                        this.showChatEvent(__(`%1$s is now an ${current_affiliation} of this groupchat`, occupant.get('nick')))
+                    }
                 },
 
                 informOfOccupantsRoleChange (occupant, changed) {
@@ -831,11 +855,14 @@
                     /* Check that a command to change a groupchat user's role or
                      * affiliation has anough arguments.
                      */
-                    // TODO check if first argument is valid
                     if (args.length < 1 || args.length > 2) {
                         this.showErrorMessage(
                             __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command)
                         );
+                        return false;
+                    }
+                    if (!this.model.occupants.findWhere({'nick': args[0]}) && !this.model.occupants.findWhere({'jid': args[0]})) {
+                        this.showErrorMessage(__('Error: couldn\'t find a groupchat participant "%1$s"', args[0]));
                         return false;
                     }
                     return true;
@@ -854,8 +881,8 @@
                         return false;
                     }
                     const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
-                        args = match[2] && match[2].splitOnce(' ') || [],
-                        command = match[1].toLowerCase();
+                          args = match[2] && match[2].splitOnce(' ') || [],
+                          command = match[1].toLowerCase();
                     switch (command) {
                         case 'admin':
                             if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
@@ -873,6 +900,7 @@
                             if (!this.verifyAffiliations(['owner', 'admin']) || !this.validateRoleChangeCommand(command, args)) {
                                 break;
                             }
+
                             this.model.setAffiliation('outcast',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -929,11 +957,9 @@
                             if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                                 break;
                             }
-                            const occupant = this.model.occupants.findWhere({'nick': args[0]});
-                            if (!occupant) {
-                                this.showErrorMessage(__(`Error: Can't find a groupchat participant with the nickname "${args[0]}"`));
-                                break;
-                            }
+                            const occupant = this.model.occupants.findWhere({'nick': args[0]}) ||
+                                             this.model.occupants.findWhere({'jid': args[0]});
+
                             this.model.setAffiliation('member',
                                     [{ 'jid': occupant.get('jid'),
                                        'reason': args[1]
@@ -1485,6 +1511,9 @@
                 },
 
                 showLeaveNotification (occupant) {
+                    if (_.includes(occupant.get('states'), '303') || _.includes(occupant.get('states'), '307')) {
+                        return;
+                    }
                     const nick = occupant.get('nick'),
                           stat = occupant.get('status'),
                           last_el = this.content.lastElementChild;

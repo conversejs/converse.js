@@ -10,6 +10,7 @@
 - #421 XEP-0308: Last Message Correction
 - #497 XEP-0384: OMEMO encrypted messaging
 - #968 Use nickname from VCard when joining a room
+- #986 Affiliation changes aren't displayed in the chat
 - #1081 Allow for shift-enter to insert newlines
 - #1091 There's now only one CSS file for all view modes.
 - #1094 Show room members who aren't currently online

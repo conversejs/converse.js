@@ -53711,7 +53711,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   };
 
   u.renderNewLines = function (text) {
-    return text.replace(/\n\n+/g, '<br><br>').replace(/\n/g, '<br/>');
+    return text.replace(/\n\n+/g, '<br/><br/>').replace(/\n/g, '<br/>');
   };
 
   u.renderImageURLs = function (_converse, obj) {

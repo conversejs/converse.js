@@ -10,7 +10,7 @@
     define(["converse-core"], factory);
 }(this, function (converse) {
     "use strict";
-    const { Strophe, _ } = converse.env,
+    const { Strophe, _, sizzle } = converse.env,
           u = converse.env.utils;
 
     converse.plugins.add('converse-notification', {
@@ -165,8 +165,13 @@
                         }
                     }
                 }
+                // TODO: we should suppress notifications if we cannot decrypt
+                // the message...
+                const body = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, message).length ?
+                             __('OMEMO Message received') :
+                             message.querySelector('body').textContent;
                 const n = new Notification(title, {
-                        body: message.querySelector('body').textContent,
+                        body: body,
                         lang: _converse.locale,
                         icon: _converse.notification_icon
                     });

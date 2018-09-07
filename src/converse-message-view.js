@@ -131,13 +131,12 @@
                             _.partial(u.renderImageURL, _converse))(url);
                     }
 
-                    const encrypted = this.model.get('encrypted');
-                    let text = encrypted ? this.model.get('plaintext') : this.model.get('message');
-                    if (is_me_message) {
-                        text = text.replace(/^\/me/, '');
-                    }
+                    let text = this.getMessageText();
                     const msg_content = msg.querySelector('.chat-msg__text');
-                    if (text !== url) {
+                    if (text && text !== url) {
+                        if (is_me_message) {
+                            text = text.replace(/^\/me/, '');
+                        }
                         text = xss.filterXSS(text, {'whiteList': {}});
                         msg_content.innerHTML = _.flow(
                             _.partial(u.geoUriToHttp, _, _converse.geouri_replacement),
@@ -217,8 +216,16 @@
                     this.model.message_versions_modal.show(ev);
                 },
 
+                getMessageText () {
+                    if (this.model.get('is_encrypted')) {
+                        return this.model.get('plaintext') ||
+                               (_converse.debug ? __('Unencryptable OMEMO message') : null);
+                    }
+                    return this.model.get('message');
+                },
+
                 isMeCommand () {
-                    const text = this.model.get('message');
+                    const text = this.getMessageText();
                     if (!text) {
                         return false;
                     }

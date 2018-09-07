@@ -409,6 +409,7 @@
 
                     if (this.get('omemo_active') && attrs.message) {
                         attrs['is_encrypted'] = true;
+                        attrs['plaintext'] = attrs.message;
                         const message = this.messages.create(attrs);
                         this.getBundlesAndBuildSessions()
                             .then(devices => this.createOMEMOMessageStanza(message, devices))

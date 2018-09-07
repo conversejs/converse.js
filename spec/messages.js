@@ -953,7 +953,7 @@
             }).then(() => {
                 const view = _converse.chatboxviews.get(contact_jid);
                 chat_content = view.el.querySelector('.chat-content');
-                expect(chat_content.querySelector('.chat-msg__text').innerHTML).toBe('Hey<br>Have you heard the news?');
+                expect(chat_content.querySelector('.chat-msg__text').innerHTML).toBe('Hey<br/>Have you heard the news?');
 
                 stanza = Strophe.xmlHtmlNode(
                     "<message from='"+contact_jid+"'"+
@@ -964,7 +964,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 return test_utils.waitUntil(() => view.model.messages.length);
             }).then(() => {
-                expect(chat_content.querySelector('.message:last-child .chat-msg__text').innerHTML).toBe('Hey<br><br>Have you heard the news?');
+                expect(chat_content.querySelector('.message:last-child .chat-msg__text').innerHTML).toBe('Hey<br/><br/>Have you heard the news?');
                 stanza = Strophe.xmlHtmlNode(
                     "<message from='"+contact_jid+"'"+
                     "         type='chat'"+
@@ -974,7 +974,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 return test_utils.waitUntil(() => view.model.messages.length);
             }).then(() => {
-                expect(chat_content.querySelector('.message:last-child .chat-msg__text').innerHTML).toBe('Hey<br>Have you heard<br>the news?');
+                expect(chat_content.querySelector('.message:last-child .chat-msg__text').innerHTML).toBe('Hey<br/>Have you heard<br/>the news?');
                 done();
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
         }));

@@ -1011,6 +1011,7 @@
                             break;
                         case 'topic':
                         case 'subject':
+                            // TODO: should be done via API call to _converse.api.rooms
                             _converse.connection.send(
                                 $msg({
                                     to: this.model.get('jid'),

@@ -61587,7 +61587,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.sendMessage(attrs);
         },
 
-        setChatState(state) {
+        setChatState(state, options) {
           /* Mutator for setting the chat state of this chat session.
            * Handles clearing of any chat state notification timeouts and
            * setting new ones if necessary.
@@ -61609,7 +61609,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.chat_state_timeout = window.setTimeout(this.setChatState.bind(this), _converse.TIMEOUTS.INACTIVE, _converse.INACTIVE);
           }
 
-          this.model.set('chat_state', state);
+          this.model.set('chat_state', state, options);
           return this;
         },
 
@@ -61639,9 +61639,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           textarea.dispatchEvent(event);
           this.onMessageSubmitted(message, spoiler_hint);
 
-          _converse.emit('messageSend', message);
+          _converse.emit('messageSend', message); // Suppress events, otherwise superfluous CSN gets set
+          // immediately after the message, causing rate-limiting issues.
 
-          this.setChatState(_converse.ACTIVE);
+
+          this.setChatState(_converse.ACTIVE, {
+            'silent': true
+          });
         },
 
         keyPressed(ev) {
@@ -68780,6 +68784,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             case 'topic':
             case 'subject':
+              // TODO: should be done via API call to _converse.api.rooms
               _converse.connection.send($msg({
                 to: this.model.get('jid'),
                 from: _converse.connection.jid,
@@ -70089,7 +70094,6 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           this.occupants.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`));
           this.occupants.chatroom = this;
           this.registerHandlers();
-          this.on('change:chat_state', this.sendChatState, this);
         },
 
         registerHandlers() {

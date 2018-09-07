@@ -189,9 +189,7 @@
                         b64_sha1(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`)
                     );
                     this.occupants.chatroom  = this;
-
                     this.registerHandlers();
-                    this.on('change:chat_state', this.sendChatState, this);
                 },
 
                 registerHandlers () {

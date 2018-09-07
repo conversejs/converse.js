@@ -823,7 +823,7 @@
                     this.model.sendMessage(attrs);
                 },
 
-                setChatState (state) {
+                setChatState (state, options) {
                     /* Mutator for setting the chat state of this chat session.
                      * Handles clearing of any chat state notification timeouts and
                      * setting new ones if necessary.
@@ -851,7 +851,7 @@
                             _converse.INACTIVE
                         );
                     }
-                    this.model.set('chat_state', state);
+                    this.model.set('chat_state', state, options);
                     return this;
                 },
 
@@ -879,7 +879,9 @@
 
                     this.onMessageSubmitted(message, spoiler_hint);
                     _converse.emit('messageSend', message);
-                    this.setChatState(_converse.ACTIVE);
+                    // Suppress events, otherwise superfluous CSN gets set
+                    // immediately after the message, causing rate-limiting issues.
+                    this.setChatState(_converse.ACTIVE, {'silent': true});
                 },
 
                 keyPressed (ev) {

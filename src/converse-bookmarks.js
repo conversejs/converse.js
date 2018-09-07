@@ -63,8 +63,12 @@
                 },
 
                 renderBookmarkToggle () {
+                    if (this.el.querySelector('.chat-head .toggle-bookmark')) {
+                        return;
+                    }
                     const { _converse } = this.__super__,
                           { __ } = _converse;
+
                     const bookmark_button = tpl_chatroom_bookmark_toggle(
                         _.assignIn(this.model.toJSON(), {
                             info_toggle_bookmark: __('Bookmark this groupchat'),

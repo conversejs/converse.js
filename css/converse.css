@@ -8633,7 +8633,19 @@ body.reset {
 
 .converse-brand {
   display: flex;
-  justify-content: space-between; }
+  justify-content: space-between;
+  -webkit-animation-name: fadein;
+  -moz-animation-name: fadein;
+  animation-name: fadein;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  -webkit-animation-duration: 750ms;
+  -moz-animation-duration: 750ms;
+  animation-duration: 750ms;
+  -webkit-animation-timing-function: ease;
+  -moz-animation-timing-function: ease;
+  animation-timing-function: ease; }
 
 .converse-brand__padding {
   position: relative;

@@ -12,7 +12,7 @@
     <script src="dist/converse.js"></script>
 </head>
 <body class="reset">
-    <div class="content">
+    <div class="converse-content" style="display:none">
         <div class="inner-content converse-brand row">
             <div class="converse-brand__padding"></div>
             <div class="converse-brand__heading">
@@ -60,6 +60,10 @@
         bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
         message_archiving: 'always',
         view_mode: 'fullscreen'
+    }).then(function () {
+        setTimeout(function () {
+            document.querySelector('.converse-content').style = '';
+        }, 1000);
     });
 </script>
 </body>

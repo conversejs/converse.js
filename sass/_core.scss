@@ -43,6 +43,10 @@ body.reset {
 .converse-brand {
     display: flex;
     justify-content: space-between;
+    @include animation-name(fadein);
+    @include animation-fill-mode(forwards);
+    @include animation-duration(750ms);
+    @include animation-timing-function(ease);
 }
 
 .converse-brand__padding {

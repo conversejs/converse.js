@@ -66,7 +66,7 @@
                     return;
                 }
                 _converse.api.disco.getIdentity('pubsub', 'push', push_app_server.jid)
-                .then((identity) => {
+                .then(identity => {
                     if (!identity) {
                         return _converse.log(
                             `Not enabling push the service "${push_app_server.jid}", it doesn't have the right disco identtiy.`,

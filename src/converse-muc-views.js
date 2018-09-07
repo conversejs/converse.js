@@ -399,9 +399,9 @@
                      */
                     _converse.connection.sendIQ(
                         $iq({
-                            to: this.model.get('muc_domain'),
-                            from: _converse.connection.jid,
-                            type: "get"
+                            'to': this.model.get('muc_domain'),
+                            'from': _converse.connection.jid,
+                            'type': "get"
                         }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
                         this.onRoomsFound.bind(this),
                         this.informNoRoomsFound.bind(this),
@@ -417,7 +417,7 @@
                 },
 
                 setDomain (ev) {
-                    this.model.save({muc_domain: ev.target.value});
+                    this.model.save({'muc_domain': ev.target.value});
                 },
 
                 setNick (ev) {
@@ -451,8 +451,7 @@
                 parseRoomDataFromEvent (form) {
                     const data = new FormData(form);
                     const jid = data.get('chatroom');
-                    const server = Strophe.getDomainFromJid(jid);
-                    this.model.save('muc_domain', server);
+                    this.model.save('muc_domain', Strophe.getDomainFromJid(jid));
                     return {
                         'jid': jid,
                         'nick': data.get('nickname')
@@ -1954,22 +1953,20 @@
                  * set the MUC domain in the "Add groupchat" modal.
                  */
                 function featureAdded (feature) {
-                    if (feature.get('var') === Strophe.NS.MUC &&
-                            f.includes('conference', feature.entity.identities.pluck('category'))) {
-
-                        setMUCDomain(feature.get('from'), controlboxview);
+                    if (!feature) { return; }
+                    if (feature.get('var') === Strophe.NS.MUC) {
+                        feature.getIdentity('conference', 'text').then(identity => {
+                            if (identity) {
+                                setMUCDomain(feature.get('from'), controlboxview);
+                            }
+                        });
                     }
                 }
                 _converse.api.waitUntil('discoInitialized').then(() => {
                     _converse.api.listen.on('serviceDiscovered', featureAdded);
                     // Features could have been added before the controlbox was
                     // initialized. We're only interested in MUC
-                    _converse.disco_entities.each((entity) => {
-                        const feature = entity.features.findWhere({'var': Strophe.NS.MUC });
-                        if (feature) {
-                            featureAdded(feature)
-                        }
-                    });
+                    _converse.disco_entities.each(entity => featureAdded(entity.features.findWhere({'var': Strophe.NS.MUC })));
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             }
 

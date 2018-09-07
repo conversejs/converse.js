@@ -10878,7 +10878,7 @@ body.reset {
 #conversejs .chatroom-body .message .separator {
   border: 0.5px solid #E77051; }
 
-#conversejs.converse-overlayed .message.chat-msg.chat-msg--followup .chat-msg__body {
+#conversejs.converse-overlayed .message.chat-msg.chat-msg--followup .chat-msg__content {
   margin-left: 0; }
 
 @media screen and (max-width: 767px) {

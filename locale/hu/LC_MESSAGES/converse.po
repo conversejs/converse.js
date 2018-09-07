@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-09-06 15:52+0200\n"
-"PO-Revision-Date: 2018-08-17 08:02+0000\n"
+"PO-Revision-Date: 2018-09-07 13:43+0000\n"
 "Last-Translator: Szilágyi Gyula <gyula.n7@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/hu/>\n"
@@ -380,13 +380,10 @@ msgstr ""
 "lehetnek jelen"
 
 #: dist/converse-no-dependencies.js:40668
-#, fuzzy
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
-msgstr ""
-"Kiléptettük a konferenciából, mert a MUC (Csoportos csevegés) szolgáltatás "
-"leállításra került"
+msgstr "Kiléptettük a konferenciából, mert a szolgáltatás leállításra került"
 
 #. XXX: Note the triple underscore function and not double
 #. * underscore.
@@ -526,9 +523,8 @@ msgid "No groupchats found"
 msgstr "Nem találhatók szobák"
 
 #: dist/converse-no-dependencies.js:40839
-#, fuzzy
 msgid "Groupchats found:"
-msgstr "talált konferenciák:"
+msgstr "Létező konferenciák:"
 
 #: dist/converse-no-dependencies.js:40891
 msgid "Enter a new Groupchat"
@@ -594,12 +590,12 @@ msgstr "Résztvevők listájának elrejtése"
 
 #: dist/converse-no-dependencies.js:41296
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "Tilos: nincs meg a szükséges szerepköre, hogy ezt megtehesse."
 
 #: dist/converse-no-dependencies.js:41308
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr ""
+msgstr "Tilos: nincs meg a szükséges kapcsolata, hogy ezt megtehesse."
 
 #: dist/converse-no-dependencies.js:41320
 #, javascript-format
@@ -676,7 +672,7 @@ msgstr "Elnémított felhasználók is küldhetnek üzeneteket"
 
 #: dist/converse-no-dependencies.js:41416
 msgid "Error: Can't find a groupchat participant with the nickname \""
-msgstr ""
+msgstr "Hiba: nem található konferencia résztvevő ezzel a becenévvel \""
 
 #: dist/converse-no-dependencies.js:41731
 msgid ""
@@ -918,24 +914,24 @@ msgid "wants to be your contact"
 msgstr "szeretne ismerősöd lenni"
 
 #: dist/converse-no-dependencies.js:44651
-#, fuzzy
 msgid "Sorry, an error occurred while trying to remove the devices."
-msgstr "Hiba történt az adatok mentése közben."
+msgstr "Sajnáljuk, de hiba történt az eszközök eltávolítása közben."
 
 #: dist/converse-no-dependencies.js:44774
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
-msgstr ""
+msgstr "Sajnálom, nem lehet visszafejteni a kapott OMEMO üzenetet hiba miatt."
 
 #: dist/converse-no-dependencies.js:44925
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
 msgstr ""
+"Ez egy OMEMO kódolt üzenet, amelyet az ügyfele úgy tűnik, hogy nem "
+"támogatja. További információkat itt talál: https://conversations.im/omemo"
 
 #: dist/converse-no-dependencies.js:44985
-#, fuzzy
 msgid "Sorry, could not send the message due to an error."
-msgstr "Sajnáljuk, nem sikerült meghatározni a feltöltési URL-t."
+msgstr "Sajnáljuk, de nem lehet elküldeni az üzenetet egy hiba miatt."
 
 #: dist/converse-no-dependencies.js:45923
 msgid "Your avatar image"
@@ -1471,37 +1467,37 @@ msgstr "Üzenetverziók"
 
 #: dist/converse-no-dependencies.js:52190
 msgid "Save and close"
-msgstr ""
+msgstr "Mentés és bezárás"
 
 #: dist/converse-no-dependencies.js:52194
 msgid "This device's OMEMO fingerprint"
-msgstr ""
+msgstr "Készülékének OMEMO ujjlenyomata"
 
 #: dist/converse-no-dependencies.js:52206
 msgid "Select all"
-msgstr ""
+msgstr "Mindent kijelöl"
 
 #: dist/converse-no-dependencies.js:52208
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr ""
+"Jelölőnégyzet az összes egyéb OMEMO eszköz ujjlenyomatának kijelöléséhez"
 
 #: dist/converse-no-dependencies.js:52210
 msgid "Other OMEMO-enabled devices"
-msgstr ""
+msgstr "Más OMEMO-engedélyezett eszközök"
 
 #: dist/converse-no-dependencies.js:52218
 #: dist/converse-no-dependencies.js:52226
 msgid "Checkbox for selecting the following fingerprint"
-msgstr ""
+msgstr "Jelölőnégyzet az alábbi ujjlenyomat kiválasztására"
 
 #: dist/converse-no-dependencies.js:52228
-#, fuzzy
 msgid "Device without a fingerprint"
-msgstr "Ellenőrzés újjlenyomattal"
+msgstr "Eszköz ujjlenyomat nélkül"
 
 #: dist/converse-no-dependencies.js:52234
 msgid "Remove checked devices and close"
-msgstr ""
+msgstr "Ellenőrzött eszközök eltávolítása és bezárás"
 
 #: dist/converse-no-dependencies.js:52316
 msgid "Don't have a chat account?"
@@ -1545,7 +1541,7 @@ msgstr "Tartson ki, most kérjük le a regisztrációs űrlapot…"
 
 #: dist/converse-no-dependencies.js:53132
 msgid "Messages are being sent in plaintext"
-msgstr ""
+msgstr "Üzenetek küldése egyszerű szövegként"
 
 #: dist/converse-no-dependencies.js:53184
 msgid "The User's Profile Image"
@@ -1553,15 +1549,15 @@ msgstr "A felhasználó profilképe"
 
 #: dist/converse-no-dependencies.js:53242
 msgid "OMEMO Fingerprints"
-msgstr ""
+msgstr "OMEMO Ujjlenyomatok"
 
 #: dist/converse-no-dependencies.js:53266
 msgid "Trusted"
-msgstr ""
+msgstr "Megbízható"
 
 #: dist/converse-no-dependencies.js:53280
 msgid "Untrusted"
-msgstr ""
+msgstr "Megbízhatatlan"
 
 #: dist/converse-no-dependencies.js:53294
 msgid "Remove as contact"

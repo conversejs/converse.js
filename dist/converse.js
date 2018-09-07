@@ -68255,8 +68255,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.messages.on('rendered', this.scrollDown, this);
           this.model.on('change:affiliation', this.renderHeading, this);
           this.model.on('change:connection_status', this.afterConnected, this);
-          this.model.on('change:description', this.renderHeading, this);
           this.model.on('change:name', this.renderHeading, this);
+          this.model.on('change:subject', this.renderHeading, this);
           this.model.on('change:subject', this.setChatRoomSubject, this);
           this.model.on('configurationNeeded', this.getAndRenderConfigurationForm, this);
           this.model.on('destroy', this.hide, this);
@@ -68414,7 +68414,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'info_close': __('Close and leave this groupchat'),
             'info_configure': __('Configure this groupchat'),
             'info_details': __('Show more details about this groupchat'),
-            'description': this.model.get('description') || ''
+            'description': _.get(this.model.get('subject'), 'text') || ''
           }));
         },
 

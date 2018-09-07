@@ -770,54 +770,6 @@
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
-            it("shows its description in the chat heading",
-                    mock.initConverseWithPromises(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        function (done, _converse) {
-
-                let sent_IQ, IQ_id, view;
-                const sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
-                _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'})
-                .then(() => {
-                    view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                    const features_stanza = $iq({
-                            from: 'coven@chat.shakespeare.lit',
-                            'id': IQ_id,
-                            'to': 'dummy@localhost/desktop',
-                            'type': 'result'
-                        })
-                        .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
-                            .c('identity', {
-                                'category': 'conference',
-                                'name': 'A Dark Cave',
-                                'type': 'text'
-                            }).up()
-                            .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
-                            .c('feature', {'var': 'muc_passwordprotected'}).up()
-                            .c('feature', {'var': 'muc_hidden'}).up()
-                            .c('feature', {'var': 'muc_temporary'}).up()
-                            .c('feature', {'var': 'muc_open'}).up()
-                            .c('feature', {'var': 'muc_unmoderated'}).up()
-                            .c('feature', {'var': 'muc_nonanonymous'}).up()
-                            .c('feature', {'var': 'urn:xmpp:mam:0'}).up()
-                            .c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
-                                .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
-                                    .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
-                                .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
-                                    .c('value').t('This is the description').up().up()
-                                .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of participants'})
-                                    .c('value').t(0);
-                    _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
-                    return test_utils.waitUntil(() => _.get(view.el.querySelector('.chatroom-description'), 'textContent'))
-                }).then(function () {
-                    expect(view.el.querySelector('.chatroom-description').textContent).toBe('This is the description');
-                    done();
-                });
-            }));
 
             it("supports the /me command",
                 mock.initConverseWithPromises(
@@ -1600,7 +1552,7 @@
                 });
             }));
 
-            it("shows received groupchat subject messages",
+            it("shows the room topic in the header",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -1618,6 +1570,7 @@
                     var chat_content = view.el.querySelector('.chat-content');
                     expect($(chat_content).find('.chat-event:last').text()).toBe('Topic set by ralphm');
                     expect($(chat_content).find('.chat-topic:last').text()).toBe(text);
+                    expect(view.el.querySelector('.chatroom-description').textContent).toBe(text);
                     done();
                 });
             }));

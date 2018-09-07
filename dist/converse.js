@@ -68757,7 +68757,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 type: "groupchat"
               }).c("subject", {
                 xmlns: "jabber:client"
-              }).t(match[2]).tree());
+              }).t(match[2] || "").tree());
 
               break;
 
@@ -69428,19 +69428,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           // For translators: the %1$s and %2$s parts will get
           // replaced by the user and topic text respectively
           // Example: Topic set by JC Brand to: Hello World!
-          const subject = this.model.get('subject');
+          const subject = this.model.get('subject'),
+                message = subject.text ? __('Topic set by %1$s', subject.author) : __('Topic cleared by %1$s', subject.author),
+                date = moment().format();
           this.content.insertAdjacentHTML('beforeend', tpl_info({
             'data': '',
-            'isodate': moment().format(),
+            'isodate': date,
             'extra_classes': 'chat-event',
-            'message': __('Topic set by %1$s', subject.author)
+            'message': message
           }));
-          this.content.insertAdjacentHTML('beforeend', tpl_info({
-            'data': '',
-            'isodate': moment().format(),
-            'extra_classes': 'chat-topic',
-            'message': subject.text
-          }));
+
+          if (subject.text) {
+            this.content.insertAdjacentHTML('beforeend', tpl_info({
+              'data': '',
+              'isodate': date,
+              'extra_classes': 'chat-topic',
+              'message': subject.text
+            }));
+          }
+
           this.scrollDown();
         }
 
@@ -70893,19 +70899,20 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
                 sender = resource && Strophe.unescapeNode(resource) || '';
 
           if (!this.handleMessageCorrection(stanza)) {
-            const subject = _.propertyOf(stanza.querySelector('subject'))('textContent');
+            if (sender === '') {
+              return;
+            }
 
-            if (subject) {
+            const subject_el = stanza.querySelector('subject');
+
+            if (subject_el) {
+              const subject = _.propertyOf(subject_el)('textContent') || '';
               u.safeSave(this, {
                 'subject': {
                   'author': sender,
                   'text': subject
                 }
               });
-            }
-
-            if (sender === '') {
-              return;
             }
 
             this.createMessage(stanza, original_stanza).then(msg => this.incrementUnreadMsgCounter(msg)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
@@ -78386,8 +78393,10 @@ __e( o.Strophe.getNodeFromJid(o.jid) ) +
 __e( o.Strophe.getDomainFromJid(o.jid) ) +
 '\n        ';
  } ;
-__p += '\n    </div>\n    <p class="chatroom-description">' +
-__e( o.description ) +
+__p += '\n    </div>\n    <p class="chatroom-description" title="' +
+__e(o.description) +
+'">' +
+__e(o.description) +
 '<p/>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="' +
 __e(o.info_close) +
 '"></a>\n    ';

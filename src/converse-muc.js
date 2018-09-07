@@ -921,12 +921,13 @@
                           sender = resource && Strophe.unescapeNode(resource) || '';
 
                     if (!this.handleMessageCorrection(stanza)) {
-                        const subject = _.propertyOf(stanza.querySelector('subject'))('textContent');
-                        if (subject) {
-                            u.safeSave(this, {'subject': {'author': sender, 'text': subject}});
-                        }
                         if (sender === '') {
                             return;
+                        }
+                        const subject_el = stanza.querySelector('subject');
+                        if (subject_el) {
+                            const subject = _.propertyOf(subject_el)('textContent') || '';
+                            u.safeSave(this, {'subject': {'author': sender, 'text': subject}});
                         }
                         this.createMessage(stanza, original_stanza)
                             .then(msg => this.incrementUnreadMsgCounter(msg))

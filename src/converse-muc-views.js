@@ -991,7 +991,7 @@
                                     to: this.model.get('jid'),
                                     from: _converse.connection.jid,
                                     type: "groupchat"
-                                }).c("subject", {xmlns: "jabber:client"}).t(match[2]).tree()
+                                }).c("subject", {xmlns: "jabber:client"}).t(match[2] || "").tree()
                             );
                             break;
                         case 'voice':
@@ -1632,23 +1632,29 @@
                     // For translators: the %1$s and %2$s parts will get
                     // replaced by the user and topic text respectively
                     // Example: Topic set by JC Brand to: Hello World!
-                    const subject = this.model.get('subject');
+                    const subject = this.model.get('subject'),
+                          message = subject.text ? __('Topic set by %1$s', subject.author) :
+                                                   __('Topic cleared by %1$s', subject.author),
+                          date = moment().format();
                     this.content.insertAdjacentHTML(
                         'beforeend',
                         tpl_info({
                             'data': '',
-                            'isodate': moment().format(),
+                            'isodate': date,
                             'extra_classes': 'chat-event',
-                            'message': __('Topic set by %1$s', subject.author)
+                            'message': message
                         }));
-                    this.content.insertAdjacentHTML(
-                        'beforeend',
-                        tpl_info({
-                            'data': '',
-                            'isodate': moment().format(),
-                            'extra_classes': 'chat-topic',
-                            'message': subject.text
-                        }));
+
+                    if (subject.text) {
+                        this.content.insertAdjacentHTML(
+                            'beforeend',
+                            tpl_info({
+                                'data': '',
+                                'isodate': date,
+                                'extra_classes': 'chat-topic',
+                                'message': subject.text
+                            }));
+                    }
                     this.scrollDown();
                 }
             });

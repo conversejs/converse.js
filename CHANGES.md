@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0.0 (Unreleased)
+## 4.0.0 (2018-09-07)
 
 ## New Features
 

@@ -58869,6 +58869,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         renderBookmarkToggle() {
+          if (this.el.querySelector('.chat-head .toggle-bookmark')) {
+            return;
+          }
+
           const _converse = this.__super__._converse,
                 __ = _converse.__;
           const bookmark_button = tpl_chatroom_bookmark_toggle(_.assignIn(this.model.toJSON(), {
@@ -66874,16 +66878,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             msg.querySelector('.chat-msg__media').innerHTML = _.flow(_.partial(u.renderFileURL, _converse), _.partial(u.renderMovieURL, _converse), _.partial(u.renderAudioURL, _converse), _.partial(u.renderImageURL, _converse))(url);
           }
 
-          const encrypted = this.model.get('encrypted');
-          let text = encrypted ? this.model.get('plaintext') : this.model.get('message');
-
-          if (is_me_message) {
-            text = text.replace(/^\/me/, '');
-          }
-
+          let text = this.getMessageText();
           const msg_content = msg.querySelector('.chat-msg__text');
 
-          if (text !== url) {
+          if (text && text !== url) {
+            if (is_me_message) {
+              text = text.replace(/^\/me/, '');
+            }
+
             text = xss.filterXSS(text, {
               'whiteList': {}
             });
@@ -66961,8 +66963,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.message_versions_modal.show(ev);
         },
 
+        getMessageText() {
+          if (this.model.get('is_encrypted')) {
+            return this.model.get('plaintext') || (_converse.debug ? __('Unencryptable OMEMO message') : null);
+          }
+
+          return this.model.get('message');
+        },
+
         isMeCommand() {
-          const text = this.model.get('message');
+          const text = this.getMessageText();
 
           if (!text) {
             return false;
@@ -69767,7 +69777,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           if (feature.get('var') === Strophe.NS.MUC) {
-            feature.getIdentity('conference', 'text').then(identity => {
+            feature.entity.getIdentity('conference', 'text').then(identity => {
               if (identity) {
                 setMUCDomain(feature.get('from'), controlboxview);
               }
@@ -71572,6 +71582,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   const _converse$env = converse.env,
         Strophe = _converse$env.Strophe,
         _ = _converse$env._,
+        sizzle = _converse$env.sizzle,
         u = converse.env.utils;
   converse.plugins.add('converse-notification', {
     dependencies: ["converse-chatboxes"],
@@ -71725,10 +71736,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               return;
             }
           }
-        }
+        } // TODO: we should suppress notifications if we cannot decrypt
+        // the message...
 
+
+        const body = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, message).length ? __('OMEMO Message received') : message.querySelector('body').textContent;
         const n = new Notification(title, {
-          body: message.querySelector('body').textContent,
+          body: body,
           lang: _converse.locale,
           icon: _converse.notification_icon
         });
@@ -72299,6 +72313,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           if (this.get('omemo_active') && attrs.message) {
             attrs['is_encrypted'] = true;
+            attrs['plaintext'] = attrs.message;
             const message = this.messages.create(attrs);
             this.getBundlesAndBuildSessions().then(devices => this.createOMEMOMessageStanza(message, devices)).then(stanza => this.sendMessageStanza(stanza)).catch(e => {
               this.messages.create({

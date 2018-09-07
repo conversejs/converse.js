@@ -6,6 +6,12 @@
  * Licensed under the Mozilla Public License
  */
 @font-face {
+  font-family: 'ConverseFontAwesomeBrands';
+  font-style: normal;
+  font-weight: normal;
+  src: url("webfonts/fa-brands-400.eot");
+  src: url("webfonts/fa-brands-400.eot?#iefix") format("embedded-opentype"), url("webfonts/fa-brands-400.woff2") format("woff2"), url("webfonts/fa-brands-400.woff") format("woff"), url("webfonts/fa-brands-400.ttf") format("truetype"), url("webfonts/fa-brands-400.svg#fontawesome") format("svg"); }
+@font-face {
   font-family: 'ConverseFontAwesomeRegular';
   font-style: normal;
   font-weight: 400;
@@ -28,7 +34,10 @@
   font-family: 'ConverseFontAwesomeSolid' !important;
   font-weight: 900; }
 
-.fa, .far, .fas {
+.fab {
+  font-family: 'ConverseFontAwesomeBrands'; }
+
+.fa, .far, .fas, .fab {
   display: inline-block;
   font-size: inherit;
   text-rendering: auto;
@@ -10899,7 +10908,7 @@ body.reset {
 #conversejs.converse-overlayed #minimized-chats {
   order: 100;
   width: 130px;
-  margin-bottom: -1em;
+  margin-bottom: 0;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   color: white;

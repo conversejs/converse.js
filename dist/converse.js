@@ -77317,7 +77317,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
 
   function isMomentLocale(locale) {
-    return _.isString(locale) && moment.locale(locale) === moment.locale();
+    return _.includes(moment.locales(), locale);
   }
 
   function isConverseLocale(locale, supported_locales) {

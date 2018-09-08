@@ -6,9 +6,9 @@
 
 (function (root, factory) {
     define([
+        "utils/emoji",
         "converse-core",
         "xss",
-        "emojione",
         "filesize",
         "templates/csn.html",
         "templates/file_progress.html",
@@ -17,9 +17,9 @@
         "templates/message_versions_modal.html",
     ], factory);
 }(this, function (
+        u,
         converse,
         xss,
-        emojione,
         filesize,
         tpl_csn,
         tpl_file_progress,
@@ -29,7 +29,6 @@
     ) {
     "use strict";
     const { Backbone, _, moment } = converse.env;
-    const u = converse.env.utils;
 
 
     converse.plugins.add('converse-message-view', {
@@ -40,32 +39,6 @@
              */
             const { _converse } = this,
                 { __ } = _converse;
-
-            _converse.ViewWithAvatar = Backbone.NativeView.extend({
-
-                renderAvatar () {
-                    const canvas_el = this.el.querySelector('canvas');
-                    if (_.isNull(canvas_el)) {
-                        return;
-                    }
-                    const image_type = this.model.vcard.get('image_type'),
-                          image = this.model.vcard.get('image'),
-                          img_src = "data:" + image_type + ";base64," + image,
-                          img = new Image();
-
-                    img.onload = () => {
-                        const ctx = canvas_el.getContext('2d'),
-                              ratio = img.width / img.height;
-                        ctx.clearRect(0, 0, canvas_el.width, canvas_el.height);
-                        if (ratio < 1) {
-                            ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * (1 / ratio));
-                        } else {
-                            ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * ratio);
-                        }
-                    };
-                    img.src = img_src;
-                },
-            });
 
 
             _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
@@ -158,20 +131,19 @@
                             _.partial(u.renderImageURL, _converse))(url);
                     }
 
-                    const encrypted = this.model.get('encrypted');
-                    let text = encrypted ? this.model.get('plaintext') : this.model.get('message');
-                    if (is_me_message) {
-                        text = text.replace(/^\/me/, '');
-                    }
+                    let text = this.getMessageText();
                     const msg_content = msg.querySelector('.chat-msg__text');
-                    if (text !== url) {
+                    if (text && text !== url) {
+                        if (is_me_message) {
+                            text = text.replace(/^\/me/, '');
+                        }
                         text = xss.filterXSS(text, {'whiteList': {}});
                         msg_content.innerHTML = _.flow(
                             _.partial(u.geoUriToHttp, _, _converse.geouri_replacement),
                             _.partial(u.addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox),
                             u.addHyperlinks,
                             u.renderNewLines,
-                            _.partial(u.addEmoji, _converse, emojione, _)
+                            _.partial(u.addEmoji, _converse, _)
                         )(text);
                     }
                     u.renderImageURLs(_converse, msg_content).then(() => {
@@ -244,8 +216,16 @@
                     this.model.message_versions_modal.show(ev);
                 },
 
+                getMessageText () {
+                    if (this.model.get('is_encrypted')) {
+                        return this.model.get('plaintext') ||
+                               (_converse.debug ? __('Unencryptable OMEMO message') : null);
+                    }
+                    return this.model.get('message');
+                },
+
                 isMeCommand () {
-                    const text = this.model.get('message');
+                    const text = this.getMessageText();
                     if (!text) {
                         return false;
                     }

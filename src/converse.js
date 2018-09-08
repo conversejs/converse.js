@@ -20,7 +20,6 @@ if (typeof define !== 'undefined') {
         "converse-mam",             // XEP-0313 Message Archive Management
         "converse-minimize",        // Allows chat boxes to be minimized
         "converse-muc",             // XEP-0045 Multi-user chat
-        "converse-muc-views",
         "converse-muc-views",       // Views related to MUC
         "converse-notification",    // HTML5 Notifications
         "converse-omemo",

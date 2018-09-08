@@ -567,7 +567,7 @@
                 }
             });
 
-            _converse.on('chatBoxesInitialized', () => {
+            _converse.on('chatBoxViewsInitialized', () => {
                 const that = _converse.chatboxviews;
                 _converse.chatboxes.on('add', item => {
                     if (item.get('type') === _converse.CONTROLBOX_TYPE) {
@@ -598,7 +598,7 @@
 
             Promise.all([
                 _converse.api.waitUntil('connectionInitialized'),
-                _converse.api.waitUntil('chatBoxesInitialized')
+                _converse.api.waitUntil('chatBoxViewsInitialized')
             ]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
             _converse.on('chatBoxesFetched', () => {
@@ -613,9 +613,9 @@
                  */
                 const view = _converse.chatboxviews.get('controlbox');
                 view.model.set({'connected': false});
-                view.renderLoginPanel();
+                return view;
             };
-            _converse.on('disconnected', disconnect);
+            _converse.on('disconnected', () => disconnect().renderLoginPanel());
             _converse.on('will-reconnect', disconnect);
         }
     });

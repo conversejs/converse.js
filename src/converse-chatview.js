@@ -5,9 +5,11 @@
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
-    define(["converse-core",
+    define([
+            "utils/emoji",
+            "converse-core",
             "bootstrap",
-            "emojione",
+            "twemoji",
             "xss",
             "templates/chatbox.html",
             "templates/chatbox_head.html",
@@ -24,13 +26,14 @@
             "templates/status_message.html",
             "templates/toolbar.html",
             "converse-modal",
-            "converse-chatboxes",
+            "converse-chatboxviews",
             "converse-message-view"
     ], factory);
 }(this, function (
+            u,
             converse,
             bootstrap,
-            emojione,
+            twemoji,
             xss,
             tpl_chatbox,
             tpl_chatbox_head,
@@ -49,7 +52,6 @@
     ) {
     "use strict";
     const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, moment } = converse.env;
-    const u = converse.env.utils;
 
     converse.plugins.add('converse-chatview', {
         /* Plugin dependencies are other plugins which might be
@@ -62,7 +64,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-disco", "converse-message-view", "converse-modal"],
+        dependencies: ["converse-chatboxviews", "converse-disco", "converse-message-view", "converse-modal"],
 
 
         initialize () {
@@ -73,11 +75,11 @@
                 { __ } = _converse;
 
             _converse.api.settings.update({
-                'emojione_image_path': emojione.imagePathPNG,
+                'emoji_image_path': twemoji.default.base,
                 'show_send_button': false,
                 'show_toolbar': true,
                 'time_format': 'HH:mm',
-                'use_emojione': false,
+                'use_system_emojis': true,
                 'visible_toolbar_buttons': {
                     'call': false,
                     'clear': true,
@@ -85,8 +87,7 @@
                     'spoiler': true
                 },
             });
-            emojione.imagePathPNG = _converse.emojione_image_path;
-            emojione.ascii = true;
+            twemoji.default.base = _converse.emoji_image_path;
 
             function onWindowStateChanged (data) {
                 if (_converse.chatboxviews) {
@@ -122,8 +123,8 @@
                         _.extend(
                             this.model.toJSON(), {
                                 '_': _,
-                                'transform': _converse.use_emojione ? emojione.shortnameToImage : emojione.shortnameToUnicode,
-                                'emojis_by_category': u.getEmojisByCategory(_converse, emojione),
+                                'transform': u.getEmojiRenderer(_converse),
+                                'emojis_by_category': u.getEmojisByCategory(_converse),
                                 'toned_emojis': u.getTonedEmojis(_converse),
                                 'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
                                 'shouldBeHidden': this.shouldBeHidden
@@ -309,7 +310,6 @@
                 initialize () {
                     this.initDebounced();
 
-                    this.createEmojiPicker();
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.messages.on('rendered', this.scrollDown, this);
 
@@ -357,7 +357,6 @@
                     this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
                     this.addSpoilerButton(options);
                     this.addFileUploadButton();
-                    this.insertEmojiPicker();
                     _converse.emit('renderToolbar', this);
                     return this;
                 },
@@ -824,7 +823,7 @@
                     this.model.sendMessage(attrs);
                 },
 
-                setChatState (state) {
+                setChatState (state, options) {
                     /* Mutator for setting the chat state of this chat session.
                      * Handles clearing of any chat state notification timeouts and
                      * setting new ones if necessary.
@@ -852,7 +851,7 @@
                             _converse.INACTIVE
                         );
                     }
-                    this.model.set('chat_state', state);
+                    this.model.set('chat_state', state, options);
                     return this;
                 },
 
@@ -880,7 +879,9 @@
 
                     this.onMessageSubmitted(message, spoiler_hint);
                     _converse.emit('messageSend', message);
-                    this.setChatState(_converse.ACTIVE);
+                    // Suppress events, otherwise superfluous CSN gets set
+                    // immediately after the message, causing rate-limiting issues.
+                    this.setChatState(_converse.ACTIVE, {'silent': true});
                 },
 
                 keyPressed (ev) {
@@ -897,6 +898,7 @@
                         } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
                             return this.onEscapePressed(ev);
                         } else if (ev.keyCode === _converse.keycodes.ENTER) {
+                            _.invoke(this.emoji_dropdown, 'toggle');
                             return this.onFormSubmitted(ev);
                         } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
                             return this.editEarlierMessage();
@@ -1048,6 +1050,7 @@
                 },
 
                 insertEmoji (ev) {
+                    ev.preventDefault();
                     ev.stopPropagation();
                     const target = ev.target.nodeName === 'IMG' ? ev.target.parentElement : ev.target;
                     this.insertIntoTextArea(target.getAttribute('data-emoji'));
@@ -1056,6 +1059,10 @@
                 toggleEmojiMenu (ev) {
                     if (_.isUndefined(this.emoji_dropdown)) {
                         ev.stopPropagation();
+                        this.createEmojiPicker();
+                        this.insertEmojiPicker();
+                        this.renderEmojiPicker();
+
                         const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
                         this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
                         this.emoji_dropdown.toggle();
@@ -1178,7 +1185,6 @@
                 afterShown () {
                     this.model.clearUnreadMsgCounter();
                     this.setChatState(_converse.ACTIVE);
-                    this.renderEmojiPicker();
                     this.scrollDown();
                     this.focus();
                 },
@@ -1259,7 +1265,7 @@
                 }
             });
 
-            _converse.on('chatBoxesInitialized', () => {
+            _converse.on('chatBoxViewsInitialized', () => {
                 const that = _converse.chatboxviews;
                 _converse.chatboxes.on('add', item => {
                     if (!that.get(item.get('id')) && item.get('type') === _converse.PRIVATE_CHAT_TYPE) {
@@ -1275,7 +1281,29 @@
 
             /************************ BEGIN API ************************/
             _.extend(_converse.api, {
+                /**
+                 * The "chatview" namespace groups methods pertaining to views
+                 * for one-on-one chats.
+                 *
+                 * @namespace _converse.api.chatviews
+                 * @memberOf _converse.api
+                 */
                 'chatviews': {
+                     /**
+                      * Get the view of an already open chat.
+                      *
+                      * @method _converse.api.chatviews.get
+                      * @returns {ChatBoxView} A [Backbone.View](http://backbonejs.org/#View) instance.
+                      *     The chat should already be open, otherwise `undefined` will be returned.
+                      * 
+                      * @example
+                      * // To return a single view, provide the JID of the contact:
+                      * _converse.api.chatviews.get('buddy@example.com')
+                      * 
+                      * @example
+                      * // To return an array of views, provide an array of JIDs:
+                      * _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])
+                      */
                     'get' (jids) {
                         if (_.isUndefined(jids)) {
                             _converse.log(

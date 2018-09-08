@@ -164,8 +164,9 @@
                                     'name': 'Music from the time of Shakespeare'
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                            entities = _converse.disco_entities;
+                            return test_utils.waitUntil(() => _converse.disco_entities);
+                        }).then(() => {
+                            const entities = _converse.disco_entities;
                             expect(entities.length).toBe(2); // We have an extra entity, which is the user's JID
                             expect(entities.get(_converse.domain).items.length).toBe(3);
                             expect(_.includes(entities.get(_converse.domain).items.pluck('jid'), 'people.shakespeare.lit')).toBeTruthy();

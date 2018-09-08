@@ -36,7 +36,7 @@
                 }
                 Promise.all([
                     _converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)
-                ]).then((result) => {
+                ]).then(result => {
                     if (!result[0].length && !result[1].length) {
                         return _converse.log(
                             `Not disabling push app server "${push_app_server.jid}", no disco support from your server.`,
@@ -66,7 +66,7 @@
                     return;
                 }
                 _converse.api.disco.getIdentity('pubsub', 'push', push_app_server.jid)
-                .then((identity) => {
+                .then(identity => {
                     if (!identity) {
                         return _converse.log(
                             `Not enabling push the service "${push_app_server.jid}", it doesn't have the right disco identtiy.`,

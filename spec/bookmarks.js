@@ -26,15 +26,15 @@
                 [{'category': 'pubsub', 'type': 'pep'}],
                 ['http://jabber.org/protocol/pubsub#publish-options']
             ).then(function () {
-                var sent_stanza, IQ_id;
-                var sendIQ = _converse.connection.sendIQ;
+                let sent_stanza, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 spyOn(_converse.connection, 'getUniqueId').and.callThrough();
 
-                let view;
+                let view, bookmark;
                 test_utils.openChatRoom(_converse, 'theplay', 'conference.shakespeare.lit', 'JC')
                 .then(() => {
                     var jid = 'theplay@conference.shakespeare.lit';
@@ -43,7 +43,7 @@
                     spyOn(view, 'closeForm').and.callThrough();
                     return test_utils.waitUntil(() => !_.isNull(view.el.querySelector('.toggle-bookmark')));
                 }).then(() => {
-                    var bookmark = view.el.querySelector('.toggle-bookmark');
+                    bookmark = view.el.querySelector('.toggle-bookmark');
                     bookmark.click();
                     expect(view.renderBookmarkForm).toHaveBeenCalled();
 
@@ -55,46 +55,47 @@
                     expect(view.renderBookmarkForm).toHaveBeenCalled();
 
                     /* Client uploads data:
-                    * --------------------
-                    *  <iq from='juliet@capulet.lit/balcony' type='set' id='pip1'>
-                    *      <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-                    *          <publish node='storage:bookmarks'>
-                    *              <item id='current'>
-                    *                  <storage xmlns='storage:bookmarks'>
-                    *                      <conference name='The Play&apos;s the Thing'
-                    *                                  autojoin='true'
-                    *                                  jid='theplay@conference.shakespeare.lit'>
-                    *                          <nick>JC</nick>
-                    *                      </conference>
-                    *                  </storage>
-                    *              </item>
-                    *          </publish>
-                    *          <publish-options>
-                    *              <x xmlns='jabber:x:data' type='submit'>
-                    *                  <field var='FORM_TYPE' type='hidden'>
-                    *                      <value>http://jabber.org/protocol/pubsub#publish-options</value>
-                    *                  </field>
-                    *                  <field var='pubsub#persist_items'>
-                    *                      <value>true</value>
-                    *                  </field>
-                    *                  <field var='pubsub#access_model'>
-                    *                      <value>whitelist</value>
-                    *                  </field>
-                    *              </x>
-                    *          </publish-options>
-                    *      </pubsub>
-                    *  </iq>
-                    */
+                     * --------------------
+                     *  <iq from='juliet@capulet.lit/balcony' type='set' id='pip1'>
+                     *      <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+                     *          <publish node='storage:bookmarks'>
+                     *              <item id='current'>
+                     *                  <storage xmlns='storage:bookmarks'>
+                     *                      <conference name='The Play&apos;s the Thing'
+                     *                                  autojoin='true'
+                     *                                  jid='theplay@conference.shakespeare.lit'>
+                     *                          <nick>JC</nick>
+                     *                      </conference>
+                     *                  </storage>
+                     *              </item>
+                     *          </publish>
+                     *          <publish-options>
+                     *              <x xmlns='jabber:x:data' type='submit'>
+                     *                  <field var='FORM_TYPE' type='hidden'>
+                     *                      <value>http://jabber.org/protocol/pubsub#publish-options</value>
+                     *                  </field>
+                     *                  <field var='pubsub#persist_items'>
+                     *                      <value>true</value>
+                     *                  </field>
+                     *                  <field var='pubsub#access_model'>
+                     *                      <value>whitelist</value>
+                     *                  </field>
+                     *              </x>
+                     *          </publish-options>
+                     *      </pubsub>
+                     *  </iq>
+                     */
                     expect(view.model.get('bookmarked')).toBeFalsy();
-                    var $form = $(view.el).find('.chatroom-form');
-                    $form.find('input[name="name"]').val('Play&apos;s the Thing');
-                    $form.find('input[name="autojoin"]').prop('checked', true);
-                    $form.find('input[name="nick"]').val('JC');
+                    const form = view.el.querySelector('.chatroom-form');
+                    form.querySelector('input[name="name"]').value = 'Play&apos;s the Thing';
+                    form.querySelector('input[name="autojoin"]').checked = 'checked';
+                    form.querySelector('input[name="nick"]').value = 'JC';
+
+                    _converse.connection.IQ_stanzas = [];
                     view.el.querySelector('.btn-primary').click();
 
-                    expect(view.model.get('bookmarked')).toBeTruthy();
-                    expect(u.hasClass('on-button', bookmark), true);
-
+                    return test_utils.waitUntil(() => sent_stanza);
+                }).then(() => {
                     expect(sent_stanza.toLocaleString()).toBe(
                         "<iq type='set' from='dummy@localhost/resource' xmlns='jabber:client' id='"+IQ_id+"'>"+
                             "<pubsub xmlns='http://jabber.org/protocol/pubsub'>"+
@@ -123,21 +124,24 @@
                             "</pubsub>"+
                         "</iq>"
                     );
-
                     /* Server acknowledges successful storage
-                    *
-                    * <iq to='juliet@capulet.lit/balcony' type='result' id='pip1'/>
-                    */
-                    var stanza = $iq({
+                     *
+                     * <iq to='juliet@capulet.lit/balcony' type='result' id='pip1'/>
+                     */
+                    const stanza = $iq({
                         'to':_converse.connection.jid,
                         'type':'result',
                         'id':IQ_id
                     });
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    return test_utils.waitUntil(() => view.model.get('bookmarked'));
+                }).then(() => {
+                    expect(view.model.get('bookmarked')).toBeTruthy();
+                    expect(u.hasClass('on-button', bookmark), true);
                     // We ignore this IQ stanza... (unless it's an error stanza), so
                     // nothing to test for here.
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             });
         }));
 
@@ -502,6 +506,10 @@
                                             'jid': 'first@conference.shakespeare.lit'
                                         }).c('nick').t('JC').up().up()
                                         .c('conference', {
+                                            'autojoin': 'false',
+                                            'jid': 'noname@conference.shakespeare.lit'
+                                        }).c('nick').t('JC').up().up()
+                                        .c('conference', {
                                             'name': 'Bookmark with a very very long name that will be shortened',
                                             'autojoin': 'false',
                                             'jid': 'longname@conference.shakespeare.lit'
@@ -513,27 +521,26 @@
                                         }).c('nick').t('JC').up().up();
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                    test_utils.waitUntil(function () {
-                        return document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length;
-                    }, 300).then(function () {
-                        expect(document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length).toBe(4);
+                    test_utils.waitUntil(() => document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length, 300)
+                    .then(() => {
+                        expect(document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length).toBe(5);
                         const els = document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item a.list-item-link');
                         expect(els[0].textContent).toBe("1st Bookmark");
                         expect(els[1].textContent).toBe("Another room");
                         expect(els[2].textContent).toBe("Bookmark with a very very long name that will be shortened");
-                        expect(els[3].textContent).toBe("The Play's the Thing");
+                        expect(els[3].textContent).toBe("noname@conference.shakespeare.lit");
+                        expect(els[4].textContent).toBe("The Play's the Thing");
 
                         spyOn(window, 'confirm').and.returnValue(true);
                         document.querySelector('#chatrooms .bookmarks.rooms-list .room-item:nth-child(2) a:nth-child(2)').click();
                         expect(window.confirm).toHaveBeenCalled();
-                        return test_utils.waitUntil(function () {
-                            return document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length === 3;
-                        }, 300)
+                        return test_utils.waitUntil(() => document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item').length === 4, 300)
                     }).then(() => {
                         const els = document.querySelectorAll('#chatrooms div.bookmarks.rooms-list .room-item a.list-item-link');
                         expect(els[0].textContent).toBe("1st Bookmark");
                         expect(els[1].textContent).toBe("Bookmark with a very very long name that will be shortened");
-                        expect(els[2].textContent).toBe("The Play's the Thing");
+                        expect(els[2].textContent).toBe("noname@conference.shakespeare.lit");
+                        expect(els[3].textContent).toBe("The Play's the Thing");
                         done();
                     }).catch(_.partial(console.error, _));
                 });

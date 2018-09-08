@@ -399,9 +399,9 @@
                      */
                     _converse.connection.sendIQ(
                         $iq({
-                            to: this.model.get('muc_domain'),
-                            from: _converse.connection.jid,
-                            type: "get"
+                            'to': this.model.get('muc_domain'),
+                            'from': _converse.connection.jid,
+                            'type': "get"
                         }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
                         this.onRoomsFound.bind(this),
                         this.informNoRoomsFound.bind(this),
@@ -417,7 +417,7 @@
                 },
 
                 setDomain (ev) {
-                    this.model.save({muc_domain: ev.target.value});
+                    this.model.save({'muc_domain': ev.target.value});
                 },
 
                 setNick (ev) {
@@ -451,8 +451,7 @@
                 parseRoomDataFromEvent (form) {
                     const data = new FormData(form);
                     const jid = data.get('chatroom');
-                    const server = Strophe.getDomainFromJid(jid);
-                    this.model.save('muc_domain', server);
+                    this.model.save('muc_domain', Strophe.getDomainFromJid(jid));
                     return {
                         'jid': jid,
                         'nick': data.get('nickname')
@@ -532,8 +531,8 @@
 
                     this.model.on('change:affiliation', this.renderHeading, this);
                     this.model.on('change:connection_status', this.afterConnected, this);
-                    this.model.on('change:description', this.renderHeading, this);
                     this.model.on('change:name', this.renderHeading, this);
+                    this.model.on('change:subject', this.renderHeading, this);
                     this.model.on('change:subject', this.setChatRoomSubject, this);
                     this.model.on('configurationNeeded', this.getAndRenderConfigurationForm, this);
                     this.model.on('destroy', this.hide, this);
@@ -542,6 +541,8 @@
                     this.model.occupants.on('add', this.showJoinNotification, this);
                     this.model.occupants.on('remove', this.showLeaveNotification, this);
                     this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
+                    this.model.occupants.on('change:role', this.informOfOccupantsRoleChange, this);
+                    this.model.occupants.on('change:affiliation', this.informOfOccupantsAffiliationChange, this);
 
                     this.createEmojiPicker();
                     this.createOccupantsView();
@@ -643,8 +644,30 @@
                      */
                     this.model.occupants.chatroomview = this;
                     this.occupantsview = new _converse.ChatRoomOccupantsView({'model': this.model.occupants});
-                    this.occupantsview.model.on('change:role', this.informOfOccupantsRoleChange, this);
                     return this;
+                },
+
+                informOfOccupantsAffiliationChange(occupant, changed) {
+                    const previous_affiliation = occupant._previousAttributes.affiliation,
+                          current_affiliation = occupant.get('affiliation');
+
+                    if (previous_affiliation === 'admin') {
+                        this.showChatEvent(__("%1$s is no longer an admin of this groupchat", occupant.get('nick')))
+                    } else if (previous_affiliation === 'owner') {
+                        this.showChatEvent(__("%1$s is no longer an owner of this groupchat", occupant.get('nick')))
+                    } else if (previous_affiliation === 'outcast') {
+                        this.showChatEvent(__("%1$s is no longer banned from this groupchat", occupant.get('nick')))
+                    }
+
+                    if (current_affiliation === 'none' && previous_affiliation === 'member') {
+                        this.showChatEvent(__("%1$s is no longer a permanent member of this groupchat", occupant.get('nick')))
+                    } if (current_affiliation === 'member') {
+                        this.showChatEvent(__("%1$s is now a permanent member of this groupchat", occupant.get('nick')))
+                    } else if (current_affiliation === 'outcast') {
+                        this.showChatEvent(__("%1$s has been banned from this groupchat", occupant.get('nick')))
+                    } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
+                        this.showChatEvent(__(`%1$s is now an ${current_affiliation} of this groupchat`, occupant.get('nick')))
+                    }
                 },
 
                 informOfOccupantsRoleChange (occupant, changed) {
@@ -672,7 +695,7 @@
                             'info_close': __('Close and leave this groupchat'),
                             'info_configure': __('Configure this groupchat'),
                             'info_details': __('Show more details about this groupchat'),
-                            'description': this.model.get('description') || ''
+                            'description': _.get(this.model.get('subject'), 'text') || ''
                     }));
                 },
 
@@ -831,11 +854,14 @@
                     /* Check that a command to change a groupchat user's role or
                      * affiliation has anough arguments.
                      */
-                    // TODO check if first argument is valid
                     if (args.length < 1 || args.length > 2) {
                         this.showErrorMessage(
                             __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command)
                         );
+                        return false;
+                    }
+                    if (!this.model.occupants.findWhere({'nick': args[0]}) && !this.model.occupants.findWhere({'jid': args[0]})) {
+                        this.showErrorMessage(__('Error: couldn\'t find a groupchat participant "%1$s"', args[0]));
                         return false;
                     }
                     return true;
@@ -854,8 +880,8 @@
                         return false;
                     }
                     const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
-                        args = match[2] && match[2].splitOnce(' ') || [],
-                        command = match[1].toLowerCase();
+                          args = match[2] && match[2].splitOnce(' ') || [],
+                          command = match[1].toLowerCase();
                     switch (command) {
                         case 'admin':
                             if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
@@ -873,6 +899,7 @@
                             if (!this.verifyAffiliations(['owner', 'admin']) || !this.validateRoleChangeCommand(command, args)) {
                                 break;
                             }
+
                             this.model.setAffiliation('outcast',
                                     [{ 'jid': args[0],
                                        'reason': args[1]
@@ -929,11 +956,9 @@
                             if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                                 break;
                             }
-                            const occupant = this.model.occupants.findWhere({'nick': args[0]});
-                            if (!occupant) {
-                                this.showErrorMessage(__(`Error: Can't find a groupchat participant with the nickname "${args[0]}"`));
-                                break;
-                            }
+                            const occupant = this.model.occupants.findWhere({'nick': args[0]}) ||
+                                             this.model.occupants.findWhere({'jid': args[0]});
+
                             this.model.setAffiliation('member',
                                     [{ 'jid': occupant.get('jid'),
                                        'reason': args[1]
@@ -986,12 +1011,13 @@
                             break;
                         case 'topic':
                         case 'subject':
+                            // TODO: should be done via API call to _converse.api.rooms
                             _converse.connection.send(
                                 $msg({
                                     to: this.model.get('jid'),
                                     from: _converse.connection.jid,
                                     type: "groupchat"
-                                }).c("subject", {xmlns: "jabber:client"}).t(match[2]).tree()
+                                }).c("subject", {xmlns: "jabber:client"}).t(match[2] || "").tree()
                             );
                             break;
                         case 'voice':
@@ -1441,12 +1467,13 @@
                     if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                         return;
                     }
-                    const nick = occupant.get('nick');
-                    const stat = occupant.get('status');
-                    const last_el = this.content.lastElementChild;
+                    const nick = occupant.get('nick'),
+                          stat = occupant.get('status'),
+                          last_el = this.content.lastElementChild;
 
                     if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
                         _.get(last_el, 'dataset', {}).leave === `"${nick}"`) {
+
                         last_el.outerHTML =
                             tpl_info({
                                 'data': `data-leavejoin="${nick}"`,
@@ -1454,6 +1481,9 @@
                                 'extra_classes': 'chat-event',
                                 'message': __('%1$s has left and re-entered the groupchat', nick)
                             });
+                        const el = this.content.lastElementChild;
+                        setTimeout(() => u.addClass('fade-out', el), 5000);
+                        setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5250);
                     } else {
                         let  message;
                         if (_.isNil(stat)) {
@@ -1481,6 +1511,9 @@
                 },
 
                 showLeaveNotification (occupant) {
+                    if (_.includes(occupant.get('states'), '303') || _.includes(occupant.get('states'), '307')) {
+                        return;
+                    }
                     const nick = occupant.get('nick'),
                           stat = occupant.get('status'),
                           last_el = this.content.lastElementChild;
@@ -1503,6 +1536,9 @@
                                 'extra_classes': 'chat-event',
                                 'message': message
                             });
+                        const el = this.content.lastElementChild;
+                        setTimeout(() => u.addClass('fade-out', el), 5000);
+                        setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5250);
                     } else {
                         let message;
                         if (_.isNil(stat)) {
@@ -1625,23 +1661,29 @@
                     // For translators: the %1$s and %2$s parts will get
                     // replaced by the user and topic text respectively
                     // Example: Topic set by JC Brand to: Hello World!
-                    const subject = this.model.get('subject');
+                    const subject = this.model.get('subject'),
+                          message = subject.text ? __('Topic set by %1$s', subject.author) :
+                                                   __('Topic cleared by %1$s', subject.author),
+                          date = moment().format();
                     this.content.insertAdjacentHTML(
                         'beforeend',
                         tpl_info({
                             'data': '',
-                            'isodate': moment().format(),
+                            'isodate': date,
                             'extra_classes': 'chat-event',
-                            'message': __('Topic set by %1$s', subject.author)
+                            'message': message
                         }));
-                    this.content.insertAdjacentHTML(
-                        'beforeend',
-                        tpl_info({
-                            'data': '',
-                            'isodate': moment().format(),
-                            'extra_classes': 'chat-topic',
-                            'message': subject.text
-                        }));
+
+                    if (subject.text) {
+                        this.content.insertAdjacentHTML(
+                            'beforeend',
+                            tpl_info({
+                                'data': '',
+                                'isodate': date,
+                                'extra_classes': 'chat-topic',
+                                'message': subject.text
+                            }));
+                    }
                     this.scrollDown();
                 }
             });
@@ -1912,22 +1954,20 @@
                  * set the MUC domain in the "Add groupchat" modal.
                  */
                 function featureAdded (feature) {
-                    if (feature.get('var') === Strophe.NS.MUC &&
-                            f.includes('conference', feature.entity.identities.pluck('category'))) {
-
-                        setMUCDomain(feature.get('from'), controlboxview);
+                    if (!feature) { return; }
+                    if (feature.get('var') === Strophe.NS.MUC) {
+                        feature.entity.getIdentity('conference', 'text').then(identity => {
+                            if (identity) {
+                                setMUCDomain(feature.get('from'), controlboxview);
+                            }
+                        });
                     }
                 }
                 _converse.api.waitUntil('discoInitialized').then(() => {
                     _converse.api.listen.on('serviceDiscovered', featureAdded);
                     // Features could have been added before the controlbox was
                     // initialized. We're only interested in MUC
-                    _converse.disco_entities.each((entity) => {
-                        const feature = entity.features.findWhere({'var': Strophe.NS.MUC });
-                        if (feature) {
-                            featureAdded(feature)
-                        }
-                    });
+                    _converse.disco_entities.each(entity => featureAdded(entity.features.findWhere({'var': Strophe.NS.MUC })));
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             }
 
@@ -1944,8 +1984,7 @@
             }
 
             /************************ BEGIN Event Handlers ************************/
-
-            _converse.on('chatBoxesInitialized', () => {
+            _converse.on('chatBoxViewsInitialized', () => {
                 const that = _converse.chatboxviews;
                 _converse.chatboxes.on('add', item => {
                     if (!that.get(item.get('id')) && item.get('type') === _converse.CHATROOMS_TYPE) {
@@ -1976,6 +2015,47 @@
             }
             _converse.on('reconnected', reconnectToChatRooms);
             /************************ END Event Handlers ************************/
+
+
+            /************************ BEGIN API ************************/
+            _.extend(_converse.api, {
+                /**
+                 * The "roomviews" namespace groups methods relevant to chatroom
+                 * (aka groupchats) views.
+                 *
+                 * @namespace _converse.api.roomviews
+                 * @memberOf _converse.api
+                 */
+                'roomviews': {
+                    /**
+                     * Lets you close open chatrooms.
+                     *
+                     * You can call this method without any arguments to close
+                     * all open chatrooms, or you can specify a single JID or
+                     * an array of JIDs.
+                     *
+                     * @method _converse.api.roomviews.close
+                     * @param {(String[]|String)} jids The JID or array of JIDs of the chatroom(s)
+                     */
+                    'close' (jids) {
+                        if (_.isUndefined(jids)) {
+                            _converse.chatboxviews.each(function (view) {
+                                if (view.is_chatroom && view.model) {
+                                    view.close();
+                                }
+                            });
+                        } else if (_.isString(jids)) {
+                            const view = _converse.chatboxviews.get(jids);
+                            if (view) { view.close(); }
+                        } else {
+                            _.each(jids, function (jid) {
+                                const view = _converse.chatboxviews.get(jid);
+                                if (view) { view.close(); }
+                            });
+                        }
+                    }
+                }
+            });
         }
     });
 }));

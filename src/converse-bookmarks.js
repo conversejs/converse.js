@@ -63,8 +63,12 @@
                 },
 
                 renderBookmarkToggle () {
+                    if (this.el.querySelector('.chat-head .toggle-bookmark')) {
+                        return;
+                    }
                     const { _converse } = this.__super__,
                           { __ } = _converse;
+
                     const bookmark_button = tpl_chatroom_bookmark_toggle(
                         _.assignIn(this.model.toJSON(), {
                             info_toggle_bookmark: __('Bookmark this groupchat'),
@@ -243,7 +247,7 @@
 
             _converse.Bookmarks = Backbone.Collection.extend({
                 model: _converse.Bookmark,
-                comparator: 'name',
+                comparator: (item) => item.get('name').toLowerCase(),
 
                 initialize () {
                     this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
@@ -290,12 +294,12 @@
                 },
 
                 createBookmark (options) {
-                    _converse.bookmarks.create(options);
-                    _converse.bookmarks.sendBookmarkStanza();
+                    this.create(options);
+                    this.sendBookmarkStanza().catch(iq => this.onBookmarkError(iq, options));
                 },
 
                 sendBookmarkStanza () {
-                    let stanza = $iq({
+                    const stanza = $iq({
                             'type': 'set',
                             'from': _converse.connection.jid,
                         })
@@ -303,8 +307,8 @@
                             .c('publish', {'node': 'storage:bookmarks'})
                                 .c('item', {'id': 'current'})
                                     .c('storage', {'xmlns':'storage:bookmarks'});
-                    this.each(function (model) {
-                        stanza = stanza.c('conference', {
+                    this.each(model => {
+                        stanza.c('conference', {
                             'name': model.get('name'),
                             'autojoin': model.get('autojoin'),
                             'jid': model.get('jid'),
@@ -319,17 +323,17 @@
                                 .c('value').t('true').up().up()
                             .c('field', {'var':'pubsub#access_model'})
                                 .c('value').t('whitelist');
-                    _converse.connection.sendIQ(stanza, null, this.onBookmarkError.bind(this));
+                    return _converse.api.sendIQ(stanza);
                 },
 
-                onBookmarkError (iq) {
+                onBookmarkError (iq, options) {
                     _converse.log("Error while trying to add bookmark", Strophe.LogLevel.ERROR);
                     _converse.log(iq);
-                    // We remove all locally cached bookmarks and fetch them
-                    // again from the server.
-                    this.reset();
-                    this.fetchBookmarksFromServer(null);
-                    window.alert(__("Sorry, something went wrong while trying to save your bookmark."));
+                    _converse.api.alert.show(
+                        Strophe.LogLevel.ERROR,
+                        __('Error'), [__("Sorry, something went wrong while trying to save your bookmark.")]
+                    )
+                    this.findWhere({'jid': options.jid}).destroy();
                 },
 
                 fetchBookmarksFromServer (deferred) {
@@ -367,9 +371,10 @@
                         stanza
                     )
                     _.forEach(bookmarks, (bookmark) => {
+                        const jid = bookmark.getAttribute('jid');
                         this.create({
-                            'jid': bookmark.getAttribute('jid'),
-                            'name': bookmark.getAttribute('name'),
+                            'jid': jid,
+                            'name': bookmark.getAttribute('name') || jid,
                             'autojoin': bookmark.getAttribute('autojoin') === 'true',
                             'nick': _.get(bookmark.querySelector('nick'), 'textContent')
                         });

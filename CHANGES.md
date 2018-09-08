@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0.0 (Unreleased)
+## 4.0.0 (2018-09-07)
 
 ## New Features
 
@@ -10,10 +10,12 @@
 - #421 XEP-0308: Last Message Correction
 - #497 XEP-0384: OMEMO encrypted messaging
 - #968 Use nickname from VCard when joining a room
+- #986 Affiliation changes aren't displayed in the chat
+- #1081 Allow for shift-enter to insert newlines
 - #1091 There's now only one CSS file for all view modes.
 - #1094 Show room members who aren't currently online
 - #1106 Support for Roster Versioning
-- #1081 Allow for shift-enter to insert newlines
+- #1137 Autocompletion and support for [XEP-0372 References](https://xmpp.org/extensions/xep-0372.html), specifically section "3.2 Mentions".
 - It's now also possible to edit your VCard via the UI
 - Automatically grow/shrink input as text is entered/removed
 - MP4 and MP3 files when sent as XEP-0066 Out of Band Data, are now playable directly in chat
@@ -24,7 +26,6 @@
   If the device is trusted, localStorage is used and user data is cached indefinitely.
 - Initial support for [XEP-0357 Push Notifications](https://xmpp.org/extensions/xep-0357.html), specifically registering an "App Server".
 - Add support for logging in via OAuth (see the [oauth_providers](https://conversejs.org/docs/html/configurations.html#oauth-providers) setting)
-- Add support for [XEP-0372 References](https://xmpp.org/extensions/xep-0372.html), specifically section "3.2 Mentions".
 
 ### Bugfixes
 
@@ -50,6 +51,7 @@
 
 - #956 Conversation pane should show my own identity in pane header
 - The UI is now based on Bootstrap4 and Flexbox is used extensively.
+- Fontawesome 5 is used for icons.
 - User Avatars are now shown in chat messages.
 
 ## Configuration changes 

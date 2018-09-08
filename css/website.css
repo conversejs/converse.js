@@ -241,6 +241,8 @@ section h4 {
 
 .banner-social-buttons {
   padding-top: 3em; }
+  .banner-social-buttons a {
+    padding: 0.15em; }
 
 ::-moz-selection {
   text-shadow: none;

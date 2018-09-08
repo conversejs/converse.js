@@ -8,16 +8,16 @@ CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
 ESLINT		  	?= ./node_modules/.bin/eslint
 HTTPSERVE	   	?= ./node_modules/.bin/http-server
-HTTPSERVE_PORT		?= 8000
+HTTPSERVE_PORT	?= 8000
 INKSCAPE		?= inkscape
 JSDOC			?=  ./node_modules/.bin/jsdoc
 OXIPNG			?= oxipng
 PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
-RJS			?= ./node_modules/.bin/r.js
+RJS				?= ./node_modules/.bin/r.js
 WEBPACK 		?= ./node_modules/.bin/npx
 SASS			?= ./.bundle/bin/sass
-SED			?= sed
+SED				?= sed
 SPHINXBUILD	 	?= ./bin/sphinx-build
 SPHINXOPTS	  	=
 UGLIFYJS		?= node_modules/.bin/uglifyjs
@@ -71,7 +71,7 @@ serve_bg: dev
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=3.3.4 -c
+GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=4.0.0 -c
 
 .PHONY: pot
 pot: dist/converse-no-dependencies-es2015.js
@@ -231,6 +231,6 @@ html:
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
-.PHONY: apidoc
+ePHONY: apidoc
 apidoc:
-	$(JSDOC) -d docs/html/api src/*.js
+	$(JSDOC) --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/*.js

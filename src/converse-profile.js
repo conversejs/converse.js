@@ -1,7 +1,7 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
@@ -34,7 +34,7 @@
 
     converse.plugins.add('converse-profile', {
 
-        dependencies: ["converse-modal", "converse-vcard"],
+        dependencies: ["converse-modal", "converse-vcard", "converse-chatboxviews"],
 
         initialize () {
             /* The initialize function gets called as soon as the plugin is
@@ -196,7 +196,7 @@
                 }
             });
 
-            _converse.XMPPStatusView = Backbone.VDOMView.extend({
+            _converse.XMPPStatusView = _converse.VDOMViewWithAvatar.extend({
                 tagName: "div",
                 events: {
                     "click a.show-profile": "showProfileModal",
@@ -214,6 +214,7 @@
                     return tpl_profile_view(_.extend(
                         this.model.toJSON(),
                         this.model.vcard.toJSON(), {
+                        '__': __,
                         'fullname': this.model.vcard.get('fullname') || _converse.bare_jid,
                         'status_message': this.model.get('status_message') ||
                                             __("I am %1$s", this.getPrettyStatus(chat_status)),
@@ -224,6 +225,10 @@
                         'title_log_out': __('Log out'),
                         'title_your_profile': __('Your profile')
                     }));
+                },
+
+                afterRender () {
+                    this.renderAvatar();
                 },
 
                 showProfileModal (ev) {

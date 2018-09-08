@@ -43,10 +43,11 @@
         if (_.isFunction(options)) {
             callback = options;
             errback = callback;
+            options = null;
         }
         const queryid = _converse.connection.getUniqueId();
         const attrs = {'type':'set'};
-        if (!_.isUndefined(options) && options.groupchat) {
+        if (options && options.groupchat) {
             if (!options['with']) { // eslint-disable-line dot-notation
                 throw new Error(
                     'You need to specify a "with" value containing '+
@@ -54,8 +55,9 @@
             }
             attrs.to = options['with']; // eslint-disable-line dot-notation
         }
+
         const stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
-        if (!_.isUndefined(options)) {
+        if (options) {
             stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
                     .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
                     .c('value').t(Strophe.NS.MAM).up().up();
@@ -407,28 +409,176 @@
             });
 
             _.extend(_converse.api, {
-                /* Extend default converse.js API to add methods specific to MAM
+                /**
+                 * The [XEP-0313](https://xmpp.org/extensions/xep-0313.html) Message Archive Management API
+                 *
+                 * Enables you to query an XMPP server for archived messages.
+                 *
+                 * See also the [message-archiving](/docs/html/configuration.html#message-archiving)
+                 * option in the configuration settings section, which you'll
+                 * usually want to use in conjunction with this API.
+                 *
+                 * @namespace _converse.api.archive
+                 * @memberOf _converse.api
                  */
                 'archive': {
+                     /**
+                      * Query for archived messages.
+                      *
+                      * The options parameter can also be an instance of
+                      * Strophe.RSM to enable easy querying between results pages.
+                      *
+                      * @method _converse.api.archive.query
+                      * @param {(Object|Strophe.RSM)} options Query parameters, either
+                      *      MAM-specific or also for Result Set Management.
+                      *      Can be either an object or an instance of Strophe.RSM.
+                      *      Valid query parameters are:
+                      * * `with`
+                      * * `start`
+                      * * `end`
+                      * * `first`
+                      * * `last`
+                      * * `after`
+                      * * `before`
+                      * * `index`
+                      * * `count`
+                      * @param {Function} callback A function to call whenever
+                      *      we receive query-relevant stanza.
+                      *      When the callback is called, a Strophe.RSM object is
+                      *      returned on which "next" or "previous" can be called
+                      *      before passing it in again to this method, to
+                      *      get the next or previous page in the result set.
+                      * @param {Function} errback A function to call when an
+                      *      error stanza is received, for example when it
+                      *      doesn't support message archiving.
+                      *
+                      * @example
+                      * // Requesting all archived messages
+                      * // ================================
+                      * //
+                      * // The simplest query that can be made is to simply not pass in any parameters.
+                      * // Such a query will return all archived messages for the current user.
+                      * //
+                      * // Generally, you'll however always want to pass in a callback method, to receive
+                      * // the returned messages.
+                      *
+                      * this._converse.api.archive.query(
+                      *     (messages) => {
+                      *         // Do something with the messages, like showing them in your webpage.
+                      *     },
+                      *     (iq) => {
+                      *         // The query was not successful, perhaps inform the user?
+                      *         // The IQ stanza returned by the XMPP server is passed in, so that you
+                      *         // may inspect it and determine what the problem was.
+                      *     }
+                      * )
+                      * @example
+                      * // Waiting until server support has been determined
+                      * // ================================================
+                      * //
+                      * // The query method will only work if Converse has been able to determine that
+                      * // the server supports MAM queries, otherwise the following error will be raised:
+                      * //
+                      * // "This server does not support XEP-0313, Message Archive Management"
+                      * //
+                      * // The very first time Converse loads in a browser tab, if you call the query
+                      * // API too quickly, the above error might appear because service discovery has not
+                      * // yet been completed.
+                      * //
+                      * // To work solve this problem, you can first listen for the `serviceDiscovered` event,
+                      * // through which you can be informed once support for MAM has been determined.
+                      *
+                      *  _converse.api.listen.on('serviceDiscovered', function (feature) {
+                      *      if (feature.get('var') === converse.env.Strophe.NS.MAM) {
+                      *          _converse.api.archive.query()
+                      *      }
+                      *  });
+                      *
+                      * @example
+                      * // Requesting all archived messages for a particular contact or room
+                      * // =================================================================
+                      * //
+                      * // To query for messages sent between the current user and another user or room,
+                      * // the query options need to contain the the JID (Jabber ID) of the user or
+                      * // room under the  `with` key.
+                      *
+                      * // For a particular user
+                      * this._converse.api.archive.query({'with': 'john@doe.net'}, callback, errback);)
+                      *
+                      * // For a particular room
+                      * this._converse.api.archive.query({'with': 'discuss@conference.doglovers.net'}, callback, errback);)
+                      *
+                      * @example
+                      * // Requesting all archived messages before or after a certain date
+                      * // ===============================================================
+                      * //
+                      * // The `start` and `end` parameters are used to query for messages
+                      * // within a certain timeframe. The passed in date values may either be ISO8601
+                      * // formatted date strings, or JavaScript Date objects.
+                      *
+                      *  const options = {
+                      *      'with': 'john@doe.net',
+                      *      'start': '2010-06-07T00:00:00Z',
+                      *      'end': '2010-07-07T13:23:54Z'
+                      *  };
+                      *  this._converse.api.archive.query(options, callback, errback);
+                      *
+                      * @example
+                      * // Limiting the amount of messages returned
+                      * // ========================================
+                      * //
+                      * // The amount of returned messages may be limited with the `max` parameter.
+                      * // By default, the messages are returned from oldest to newest.
+                      *
+                      * // Return maximum 10 archived messages
+                      * this._converse.api.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+                      *
+                      * @example
+                      * // Paging forwards through a set of archived messages
+                      * // ==================================================
+                      * //
+                      * // When limiting the amount of messages returned per query, you might want to
+                      * // repeatedly make a further query to fetch the next batch of messages.
+                      * //
+                      * // To simplify this usecase for you, the callback method receives not only an array
+                      * // with the returned archived messages, but also a special RSM (*Result Set
+                      * // Management*) object which contains the query parameters you passed in, as well
+                      * // as two utility methods `next`, and `previous`.
+                      * //
+                      * // When you call one of these utility methods on the returned RSM object, and then
+                      * // pass the result into a new query, you'll receive the next or previous batch of
+                      * // archived messages. Please note, when calling these methods, pass in an integer
+                      * // to limit your results.
+                      *
+                      * const callback = function (messages, rsm) {
+                      *     // Do something with the messages, like showing them in your webpage.
+                      *     // ...
+                      *     // You can now use the returned "rsm" object, to fetch the next batch of messages:
+                      *     _converse.api.archive.query(rsm.next(10), callback, errback))
+                      *
+                      * }
+                      * _converse.api.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+                      *
+                      * @example
+                      * // Paging backwards through a set of archived messages
+                      * // ===================================================
+                      * //
+                      * // To page backwards through the archive, you need to know the UID of the message
+                      * // which you'd like to page backwards from and then pass that as value for the
+                      * // `before` parameter. If you simply want to page backwards from the most recent
+                      * // message, pass in the `before` parameter with an empty string value `''`.
+                      *
+                      * _converse.api.archive.query({'before': '', 'max':5}, function (message, rsm) {
+                      *     // Do something with the messages, like showing them in your webpage.
+                      *     // ...
+                      *     // You can now use the returned "rsm" object, to fetch the previous batch of messages:
+                      *     rsm.previous(5); // Call previous method, to update the object's parameters,
+                      *                      // passing in a limit value of 5.
+                      *     // Now we query again, to get the previous batch.
+                      *     _converse.api.archive.query(rsm, callback, errback);
+                      * }
+                      */
                     'query': function (options, callback, errback) {
-                        /* Do a MAM (XEP-0313) query for archived messages.
-                         *
-                         * Parameters:
-                         *    (Object) options - Query parameters, either
-                         *      MAM-specific or also for Result Set Management.
-                         *    (Function) callback - A function to call whenever
-                         *      we receive query-relevant stanza.
-                         *    (Function) errback - A function to call when an
-                         *      error stanza is received.
-                         *
-                         * The options parameter can also be an instance of
-                         * Strophe.RSM to enable easy querying between results pages.
-                         *
-                         * When the the callback is called, a Strophe.RSM object is
-                         * returned on which "next" or "previous" can be called
-                         * before passing it in again to this method, to
-                         * get the next or previous page in the result set.
-                         */
                         if (!_converse.api.connection.connected()) {
                             throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
                         }

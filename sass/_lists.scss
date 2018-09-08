@@ -90,7 +90,7 @@
                 .fa-dot-circle-o {
                     color: lighten($orange, 15%);
                 }
-                .fa-circle-o,
+                .far .fa-circle,
                 .fa-times-circle {
                     color: lighten($subdued-color, 25%);
                 }
@@ -98,7 +98,7 @@
 
             &:hover {
                 background-color: lighten($controlbox-head-color, 45%);
-                .fa {
+                .fa, .far, .fas {
                     opacity: 1;
                 }
             }

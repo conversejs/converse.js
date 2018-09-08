@@ -262,6 +262,8 @@
                 background-color: white;
                 border-top: 4px solid $chatroom-head-color;
                 color: $chatroom-head-color;
+                .fas, .fas:hover,
+                .far, .far:hover,
                 .fa, .fa:hover {
                     color: $chatroom-head-color;
                 }
@@ -318,6 +320,15 @@
                 }
                 .chat-area {
                     min-width: $overlayed-chat-width;
+                }
+            }
+            .sendXMPPMessage {
+                .chat-toolbar {
+                    li {
+                        .toolbar-menu {
+                            min-width: 280px;
+                        }
+                    }
                 }
             }
         }

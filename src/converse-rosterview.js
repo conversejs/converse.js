@@ -472,16 +472,16 @@
                 },
 
                 renderRosterItem (item) {
-                    let status_icon = 'fa-times-circle';
+                    let status_icon = 'fa fa-times-circle';
                     const show = item.presence.get('show') || 'offline';
                     if (show === 'online') {
-                        status_icon = 'fa-circle';
+                        status_icon = 'fa fa-circle';
                     } else if (show === 'away') {
-                        status_icon = 'fa-dot-circle-o';
+                        status_icon = 'fa fa-dot-circle';
                     } else if (show === 'xa') {
-                        status_icon = 'fa-circle-o';
+                        status_icon = 'far fa-circle';
                     } else if (show === 'dnd') {
-                        status_icon = 'fa-minus-circle';
+                        status_icon = 'fa fa-minus-circle';
                     }
                     const display_name = item.getDisplayName();
                     this.el.innerHTML = tpl_roster_item(

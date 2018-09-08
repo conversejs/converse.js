@@ -33,12 +33,12 @@
                     // `sendPresence`.
                     _converse.connection.connected = false;
 
-                    _converse.api.rooms.close('lounge@localhost');
+                    _converse.api.roomviews.close('lounge@localhost');
                     expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
                     expect(u.isVisible(_converse.chatboxviews.get('news@localhost').el)).toBeTruthy();
 
-                    _converse.api.rooms.close(['leisure@localhost', 'news@localhost']);
+                    _converse.api.roomviews.close(['leisure@localhost', 'news@localhost']);
                     expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('news@localhost')).toBeUndefined();
@@ -48,7 +48,7 @@
                 .then(() => {
                     expect(u.isVisible(_converse.chatboxviews.get('lounge@localhost').el)).toBeTruthy();
                     expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
-                    _converse.api.rooms.close();
+                    _converse.api.roomviews.close();
                     expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                     expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                     done();
@@ -770,54 +770,6 @@
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
-            it("shows its description in the chat heading",
-                    mock.initConverseWithPromises(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        function (done, _converse) {
-
-                let sent_IQ, IQ_id, view;
-                const sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
-                _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'})
-                .then(() => {
-                    view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                    const features_stanza = $iq({
-                            from: 'coven@chat.shakespeare.lit',
-                            'id': IQ_id,
-                            'to': 'dummy@localhost/desktop',
-                            'type': 'result'
-                        })
-                        .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
-                            .c('identity', {
-                                'category': 'conference',
-                                'name': 'A Dark Cave',
-                                'type': 'text'
-                            }).up()
-                            .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
-                            .c('feature', {'var': 'muc_passwordprotected'}).up()
-                            .c('feature', {'var': 'muc_hidden'}).up()
-                            .c('feature', {'var': 'muc_temporary'}).up()
-                            .c('feature', {'var': 'muc_open'}).up()
-                            .c('feature', {'var': 'muc_unmoderated'}).up()
-                            .c('feature', {'var': 'muc_nonanonymous'}).up()
-                            .c('feature', {'var': 'urn:xmpp:mam:0'}).up()
-                            .c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
-                                .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
-                                    .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
-                                .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
-                                    .c('value').t('This is the description').up().up()
-                                .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of participants'})
-                                    .c('value').t(0);
-                    _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
-                    return test_utils.waitUntil(() => _.get(view.el.querySelector('.chatroom-description'), 'textContent'))
-                }).then(function () {
-                    expect(view.el.querySelector('.chatroom-description').textContent).toBe('This is the description');
-                    done();
-                });
-            }));
 
             it("supports the /me command",
                 mock.initConverseWithPromises(
@@ -1600,7 +1552,7 @@
                 });
             }));
 
-            it("shows received groupchat subject messages",
+            it("shows the room topic in the header",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
@@ -1618,6 +1570,7 @@
                     var chat_content = view.el.querySelector('.chat-content');
                     expect($(chat_content).find('.chat-event:last').text()).toBe('Topic set by ralphm');
                     expect($(chat_content).find('.chat-topic:last').text()).toBe(text);
+                    expect(view.el.querySelector('.chatroom-description').textContent).toBe(text);
                     done();
                 });
             }));
@@ -2154,7 +2107,7 @@
                     expect(_converse.connection.send).not.toHaveBeenCalled();
                     expect(view.el.querySelectorAll('.chat-error').length).toBe(1);
                     expect(view.el.querySelector('.chat-error').textContent.trim())
-                        .toBe(`Error: Can't find a groupchat participant with the nickname "chris"`)
+                        .toBe(`Error: couldn't find a groupchat participant "chris"`)
 
                     // Now test with an existing nick
                     textarea.value = '/member marc Welcome to the club!';
@@ -2359,18 +2312,33 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                let sent_IQ, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                    var sent_IQ, IQ_id;
-                    var sendIQ = _converse.connection.sendIQ;
-                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                        sent_IQ = iq;
-                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                    });
                     var view = _converse.chatboxviews.get('lounge@localhost');
                     spyOn(view, 'onMessageSubmitted').and.callThrough();
                     spyOn(view.model, 'setAffiliation').and.callThrough();
                     spyOn(view, 'showErrorMessage').and.callThrough();
                     spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+
+                    let presence = $pres({
+                            'from': 'lounge@localhost/annoyingGuy',
+                            'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
+                            'to': 'dummy@localhost/desktop'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'annoyingguy@localhost',
+                                'affiliation': 'member',
+                                'role': 'participant'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+
                     var textarea = view.el.querySelector('.chat-textarea')
                     textarea.value = '/owner';
                     view.keyPressed({
@@ -2384,23 +2352,42 @@
                         "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.");
                     expect(view.model.setAffiliation).not.toHaveBeenCalled();
 
+                    view.onMessageSubmitted('/owner nobody You\'re responsible');
+                    expect(view.showErrorMessage).toHaveBeenCalledWith(
+                        'Error: couldn\'t find a groupchat participant "nobody"');
+                    expect(view.model.setAffiliation).not.toHaveBeenCalled();
+
                     // Call now with the correct amount of arguments.
                     // XXX: Calling onMessageSubmitted directly, trying
                     // again via triggering Event doesn't work for some weird
                     // reason.
-                    view.onMessageSubmitted('/owner annoyingGuy@localhost You\'re responsible');
-                    expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
-                    expect(view.showErrorMessage.calls.count()).toBe(1);
+                    view.onMessageSubmitted('/owner annoyingGuy You\'re responsible');
+                    expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
                     expect(view.model.setAffiliation).toHaveBeenCalled();
+                    expect(view.showErrorMessage.calls.count()).toBe(2);
                     // Check that the member list now gets updated
                     expect(sent_IQ.toLocaleString()).toBe(
                         "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                             "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
-                                "<item affiliation='owner' jid='annoyingGuy@localhost'>"+
+                                "<item affiliation='owner' jid='annoyingGuy'>"+
                                     "<reason>You&apos;re responsible</reason>"+
                                 "</item>"+
                             "</query>"+
                         "</iq>");
+
+                    presence = $pres({
+                            'from': 'lounge@localhost/annoyingGuy',
+                            'id':'27C55F89-1C6A-459A-9EB5-77690145D628',
+                            'to': 'dummy@localhost/desktop'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'annoyingguy@localhost',
+                                'affiliation': 'owner',
+                                'role': 'participant'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(view.el.querySelectorAll('.chat-info')[4].textContent).toBe("annoyingGuy is now an owner of this groupchat");
                     done();
                 }).catch(_.partial(console.error, _));
             }));
@@ -2410,19 +2397,35 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                    var sent_IQ, IQ_id;
-                    var sendIQ = _converse.connection.sendIQ;
-                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                        sent_IQ = iq;
-                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                    });
-                    var view = _converse.chatboxviews.get('lounge@localhost');
+                let sent_IQ, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy')
+                .then(() => {
+                    const view = _converse.chatboxviews.get('lounge@localhost');
                     spyOn(view, 'onMessageSubmitted').and.callThrough();
                     spyOn(view.model, 'setAffiliation').and.callThrough();
                     spyOn(view, 'showErrorMessage').and.callThrough();
                     spyOn(view, 'validateRoleChangeCommand').and.callThrough();
-                    var textarea = view.el.querySelector('.chat-textarea')
+
+                    let presence = $pres({
+                            'from': 'lounge@localhost/annoyingGuy',
+                            'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
+                            'to': 'dummy@localhost/desktop'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'annoyingguy@localhost',
+                                'affiliation': 'member',
+                                'role': 'participant'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                    const textarea = view.el.querySelector('.chat-textarea')
                     textarea.value = '/ban';
                     view.keyPressed({
                         target: textarea,
@@ -2435,10 +2438,11 @@
                         "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.");
                     expect(view.model.setAffiliation).not.toHaveBeenCalled();
                     // Call now with the correct amount of arguments.
+
                     // XXX: Calling onMessageSubmitted directly, trying
                     // again via triggering Event doesn't work for some weird
                     // reason.
-                    view.onMessageSubmitted('/ban annoyingGuy@localhost You\'re annoying');
+                    view.onMessageSubmitted('/ban annoyingGuy You\'re annoying');
                     expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
                     expect(view.showErrorMessage.calls.count()).toBe(1);
                     expect(view.model.setAffiliation).toHaveBeenCalled();
@@ -2446,11 +2450,27 @@
                     expect(sent_IQ.toLocaleString()).toBe(
                         "<iq to='lounge@localhost' type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
                             "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
-                                "<item affiliation='outcast' jid='annoyingGuy@localhost'>"+
+                                "<item affiliation='outcast' jid='annoyingGuy'>"+
                                     "<reason>You&apos;re annoying</reason>"+
                                 "</item>"+
                             "</query>"+
                         "</iq>");
+
+                    presence = $pres({
+                            'from': 'lounge@localhost/annoyingGuy',
+                            'id':'27C55F89-1C6A-459A-9EB5-77690145D628',
+                            'to': 'dummy@localhost/desktop'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'annoyingguy@localhost',
+                                'affiliation': 'outcast',
+                                'role': 'participant'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(
+                        view.el.querySelectorAll('.chat-info')[3].textContent).toBe(
+                        "annoyingGuy has been banned from this groupchat");
                     done();
                 }).catch(_.partial(console.error, _));
             }));
@@ -2460,18 +2480,32 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
+                let sent_IQ, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                    var sent_IQ, IQ_id;
-                    var sendIQ = _converse.connection.sendIQ;
-                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                        sent_IQ = iq;
-                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                    });
-                    var view = _converse.chatboxviews.get('lounge@localhost');
+                    const view = _converse.chatboxviews.get('lounge@localhost');
                     spyOn(view, 'onMessageSubmitted').and.callThrough();
                     spyOn(view, 'modifyRole').and.callThrough();
                     spyOn(view, 'showErrorMessage').and.callThrough();
                     spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+
+                    let presence = $pres({
+                            'from': 'lounge@localhost/annoyingGuy',
+                            'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
+                            'to': 'dummy@localhost/desktop'
+                        })
+                        .c('x', { 'xmlns': 'http://jabber.org/protocol/muc#user'})
+                            .c('item', {
+                                'jid': 'annoyingguy@localhost',
+                                'affiliation': 'none',
+                                'role': 'participant'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
 
                     var textarea = view.el.querySelector('.chat-textarea')
                     textarea.value = '/kick';
@@ -2512,7 +2546,7 @@
                      *       </x>
                      *     </presence>
                      */
-                    var presence = $pres({
+                    presence = $pres({
                             'from': 'lounge@localhost/annoyingGuy',
                             'to': 'dummy@localhost/desktop',
                             'type': 'unavailable'
@@ -2524,9 +2558,8 @@
                             }).up()
                             .c('status', {'code': '307'});
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(
-                        view.el.querySelectorAll('.chat-info')[2].textContent).toBe(
-                        "annoyingGuy has been kicked out");
+                    expect(view.el.querySelectorAll('.chat-info')[3].textContent).toBe("annoyingGuy has been kicked out");
+                    expect(view.el.querySelectorAll('.chat-info').length).toBe(4);
                     done();
                 }).catch(_.partial(console.error, _));
             }));

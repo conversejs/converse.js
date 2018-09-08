@@ -275,6 +275,10 @@ section {
 }
 .banner-social-buttons {
     padding-top: 3em;
+
+    a {
+        padding: 0.15em;
+    }
 }
 ::-moz-selection {
   text-shadow: none;

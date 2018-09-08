@@ -78,7 +78,9 @@
 
         a, a:visited, a:hover, a:not([href]):not([tabindex]) {
             &.chatbox-btn {
-                &.fa {
+                &.fa,
+                &.fas,
+                &.far {
                     color: white;
                     &.button-on:before {
                         padding: 0.2em;
@@ -91,7 +93,7 @@
 
         .chatbox-btn {
             color: white;
-            &.fa  {
+            &.fa, &.far, &.fas  {
                 color: white;
             }
             &:active {
@@ -109,6 +111,15 @@
     .chatbox {
         text-align: left;
         margin: 0 $chat-gutter;
+
+        img {
+            &.emoji {
+                height: 1.2em;
+                width: 1.2em;
+                margin: 0 .05em 0 .1em;
+                vertical-align: -0.1em;
+            }
+        }
 
         @media screen and (max-height: $mobile-landscape-height) {
             margin: 0;
@@ -285,7 +296,9 @@
                 border-top: 4px solid $chat-head-color;
                 background-color: white;
                 color: $chat-head-color;
-                .fa, .fa:hover {
+                .fa, .fa:hover,
+                .far, .far:hover,
+                .fas, .fas:hover {
                     color: $chat-head-color;
                     font-size: $font-size-large;
                 }
@@ -321,8 +334,9 @@
                         background-color: #fff;
                         bottom: 2rem;
                         box-shadow: -1px -1px 2px 0 rgba(0, 0, 0, 0.4);
+                        height: auto;
                         margin-bottom: 0;
-                        min-width: 20rem;
+                        min-width: 21rem;
                         position: absolute;
                         right: 0;
                         top: auto;
@@ -341,9 +355,13 @@
                         a {
                             color: $link-color;
                         }
+                        .emoji-picker-container {
+                            background: white;
+                        }
                         ul {
                             &.emoji-picker {
-                                overflow: scroll;
+                                overflow-y: scroll;
+                                overflow-x: hidden;
                                 padding: 0.5em;
                             }
                             li {
@@ -351,8 +369,6 @@
                                 cursor: pointer;
                                 list-style: none;
                                 position: relative;
-                                &.emoji-skintone {
-                                }
                                 &.insert-emoji {
                                     padding: 0.2em;
                                     &.picked {
@@ -377,7 +393,6 @@
                         }
                         .emoji-toolbar {
                             box-shadow: 0 -1px 1px 0 rgba(0, 0, 0, 0.4);
-
                             .emoji-category-picker {
                                 padding-top: 0.5em;
                                 ul {
@@ -390,7 +405,7 @@
                             .emoji-category-picker,
                             .emoji-skintone-picker {
                                 li {
-                                    padding: 0.2em;
+                                    padding: 0.25em;
                                     font-size: $font-size-huge;
                                     &:hover {
                                         background-color: $highlight-color;
@@ -475,6 +490,10 @@
         }
     }
 
+    .emoji-picker {
+        height: $embedded-emoji-picker-height;
+    }
+    
     .chatbox {
         min-width: $overlayed-chat-width!important;
         width: $overlayed-chat-width;
@@ -482,26 +501,6 @@
         .box-flyout {
             min-width: $overlayed-chat-width!important;
             width: $overlayed-chat-width;
-        }
-    }
-    .chatbox {
-        form.sendXMPPMessage {
-            .chat-toolbar {
-                li {
-                    .toolbar-menu {
-                        min-width: 235px;
-
-                        ul {
-                            &.emoji-toolbar {
-                                width: 100%;
-                                .emoji-category {
-                                    float: left;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
@@ -522,6 +521,25 @@
     }
     .emoji-picker {
         height: $overlayed-emoji-picker-height;
+    }
+    .chatbox {
+        form.sendXMPPMessage {
+            .chat-toolbar {
+                li {
+                    .toolbar-menu {
+                        min-width: 235px;
+                        ul {
+                            &.emoji-toolbar {
+                                width: 100%;
+                                .emoji-category {
+                                    float: left;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

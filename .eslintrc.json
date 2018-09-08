@@ -29,6 +29,7 @@
         "lodash/prefer-constant": "off",
         "lodash/prefer-noop": "off",
         "lodash/prefer-lodash-typecheck": "off",
+        "lodash/prefer-includes": "off",
         "lodash/preferred-alias": "off",
         "lodash/prefer-get": "off",
         "accessor-pairs": "error",

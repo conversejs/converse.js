@@ -205,15 +205,15 @@
         return matches;
     }
 
-    u.unescapeHTML = function (htmlEscapedText) {
+    u.unescapeHTML = function (string) {
         /* Helper method that replace HTML-escaped symbols with equivalent characters
          * (e.g. transform occurrences of '&amp;' to '&')
          *
          * Parameters:
-         *  (String) htmlEscapedText: a String containing the HTML-escaped symbols.
+         *  (String) string: a String containing the HTML-escaped symbols.
          */
         var div = document.createElement('div');
-        div.innerHTML = htmlEscapedText;
+        div.innerHTML = string;
         return div.innerText;
     };
 
@@ -308,25 +308,28 @@
     u.renderFileURL = function (_converse, url) {
         const uri = new URI(url),
               { __ } = _converse,
-              filename = uri.filename();
-        if (!_.includes(["https", "http"], uri.protocol()) ||
-            filename.endsWith('mp3') || filename.endsWith('mp4') ||
-            filename.endsWith('jpg') || filename.endsWith('jpeg') ||
-            filename.endsWith('png') || filename.endsWith('gif') ||
-            filename.endsWith('svg')) {
+              filename = uri.filename(),
+              lower_filename = filename.toLowerCase();
+        if (!_.includes(["https", "http"], uri.protocol().toLowerCase()) ||
+            lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') ||
+            lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') ||
+            lower_filename.endsWith('png') || lower_filename.endsWith('gif') ||
+            lower_filename.endsWith('svg')) {
 
             return url;
         }
         return tpl_file({
             'url': url,
-            'label_download': __('Download "%1$s"', filename)
+            'label_download': __('Download "%1$s"', uri.filename())
         })
     };
 
     u.renderImageURL = function (_converse, url) {
-        const { __ } = _converse;
-        if (url.endsWith('jpg') || url.endsWith('jpeg') || url.endsWith('png') ||
-            url.endsWith('gif') || url.endsWith('svg')) {
+        const { __ } = _converse,
+              lurl = url.toLowerCase();
+
+        if (lurl.endsWith('jpg') || lurl.endsWith('jpeg') || lurl.endsWith('png') ||
+            lurl.endsWith('gif') || lurl.endsWith('svg')) {
 
             return tpl_image({
                 'url': url,
@@ -730,72 +733,6 @@
         return frag
     };
 
-    u.addEmoji = function (_converse, emojione, text) {
-        if (_converse.use_emojione) {
-            return emojione.toImage(text);
-        } else {
-            return emojione.shortnameToUnicode(text);
-        }
-    }
-
-    u.getEmojisByCategory = function (_converse, emojione) {
-        /* Return a dict of emojis with the categories as keys and
-         * lists of emojis in that category as values.
-         */
-        if (_.isUndefined(_converse.emojis_by_category)) {
-            const emojis = _.values(_.mapValues(emojione.emojioneList, function (value, key, o) {
-                value._shortname = key;
-                return value
-            }));
-            const tones = [':tone1:', ':tone2:', ':tone3:', ':tone4:', ':tone5:'];
-            const excluded = [':kiss_ww:', ':kiss_mm:', ':kiss_woman_man:'];
-            const excluded_substrings = [
-                ':woman', ':man', ':women_', ':men_', '_man_', '_woman_', '_woman:', '_man:'
-            ];
-            const excluded_categories = ['modifier', 'regional'];
-            const categories = _.difference(
-                _.uniq(_.map(emojis, _.partial(_.get, _, 'category'))),
-                excluded_categories
-            );
-            const emojis_by_category = {};
-            _.forEach(categories, (cat) => {
-                let list = _.sortBy(_.filter(emojis, ['category', cat]), ['uc_base']);
-                list = _.filter(
-                    list,
-                    (item) => !_.includes(_.concat(tones, excluded), item._shortname) &&
-                              !_.some(excluded_substrings, _.partial(_.includes, item._shortname))
-                );
-                if (cat === 'people') {
-                    const idx = _.findIndex(list, ['uc_base', '1f600']);
-                    list = _.union(_.slice(list, idx), _.slice(list, 0, idx+1));
-                } else if (cat === 'activity') {
-                    list = _.union(_.slice(list, 27-1), _.slice(list, 0, 27));
-                } else if (cat === 'objects') {
-                    list = _.union(_.slice(list, 24-1), _.slice(list, 0, 24));
-                } else if (cat === 'travel') {
-                    list = _.union(_.slice(list, 17-1), _.slice(list, 0, 17));
-                } else if (cat === 'symbols') {
-                    list = _.union(_.slice(list, 60-1), _.slice(list, 0, 60));
-                }
-                emojis_by_category[cat] = list;
-            });
-            _converse.emojis_by_category = emojis_by_category;
-        }
-        return _converse.emojis_by_category;
-    };
-
-    u.getTonedEmojis = function (_converse) {
-        _converse.toned_emojis = _.uniq(
-            _.map(
-                _.filter(
-                    u.getEmojisByCategory(_converse).people,
-                    (person) => _.includes(person._shortname, '_tone')
-                ),
-                (person) => person._shortname.replace(/_tone[1-5]/, '')
-            ));
-        return _converse.toned_emojis;
-    };
-
     u.isPersistableModel = function (model) {
         return model.collection && model.collection.browserStorage;
     };
@@ -916,23 +853,34 @@
         return fp;
     };
 
+    u.appendArrayBuffer = function (buffer1, buffer2) {
+        const tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
+        tmp.set(new Uint8Array(buffer1), 0);
+        tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
+        return tmp.buffer;
+    };
+
     u.arrayBufferToHex = function (ab) {
         // https://stackoverflow.com/questions/40031688/javascript-arraybuffer-to-hex#40031979
         return Array.prototype.map.call(new Uint8Array(ab), x => ('00' + x.toString(16)).slice(-2)).join('');
     };
 
     u.arrayBufferToString = function (ab) {
-        const enc = new TextDecoder("utf-8");
-        return enc.decode(ab);
+        return (new Uint8Array(ab)).reduce((data, byte) => data + String.fromCharCode(byte), '');
+    };
+
+    u.stringToArrayBuffer = function (string) {
+        const len = string.length,
+              bytes = new Uint8Array(len);
+
+        for (let i = 0; i < len; i++) {
+            bytes[i] = string.charCodeAt(i)
+        }
+        return bytes.buffer
     };
 
     u.arrayBufferToBase64 = function (ab) {
         return btoa((new Uint8Array(ab)).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-    };
-
-    u.stringToArrayBuffer = function (string) {
-        const enc = new TextEncoder(); // always utf-8
-        return enc.encode(string);
     };
 
     u.base64ToArrayBuffer = function (b64) {

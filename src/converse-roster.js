@@ -864,7 +864,43 @@
             // API methods only available to plugins
 
             _.extend(_converse.api, {
+                /**
+                 * @namespace _converse.api.contacts
+                 * @memberOf _converse.api
+                 */
                 'contacts': {
+                    /**
+                     * This method is used to retrieve roster contacts.
+                     * 
+                     * @method _converse.api.contacts.get
+                     * @params {(string[]|string)} jid|jids The JID or JIDs of
+                     *      the contacts to be returned.
+                     * @returns {(RosterContact[]|RosterContact)} [Backbone.Model](http://backbonejs.org/#Model)
+                     *      (or an array of them) representing the contact.
+                     *
+                     * @example
+                     * // Fetch a single contact
+                     * _converse.api.listen.on('rosterContactsFetched', function () {
+                     *     const contact = _converse.api.contacts.get('buddy@example.com')
+                     *     // ...
+                     * });
+                     * 
+                     * @example
+                     * // To get multiple contacts, pass in an array of JIDs:
+                     * _converse.api.listen.on('rosterContactsFetched', function () {
+                     *     const contacts = _converse.api.contacts.get(
+                     *         ['buddy1@example.com', 'buddy2@example.com']
+                     *     )
+                     *     // ...
+                     * });
+                     * 
+                     * @example
+                     * // To return all contacts, simply call ``get`` without any parameters:
+                     * _converse.api.listen.on('rosterContactsFetched', function () {
+                     *     const contacts = _converse.api.contacts.get();
+                     *     // ...
+                     * });
+                     */
                     'get' (jids) {
                         const _getter = function (jid) {
                             return _converse.roster.get(Strophe.getBareJidFromJid(jid)) || null;
@@ -876,6 +912,18 @@
                         }
                         return _.map(jids, _getter);
                     },
+                    /**
+                     * Add a contact.
+                     * 
+                     * @method _converse.api.contacts.add
+                     * @param {string} jid The JID of the contact to be added
+                     * @param {string} [name] A custom name to show the user by
+                     *     in the roster.
+                     * @example
+                     *     _converse.api.contacts.add('buddy@example.com')
+                     * @example
+                     *     _converse.api.contacts.add('buddy@example.com', 'Buddy')
+                     */
                     'add' (jid, name) {
                         if (!_.isString(jid) || !_.includes(jid, '@')) {
                             throw new TypeError('contacts.add: invalid jid');

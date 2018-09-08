@@ -4,7 +4,7 @@
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-/* global libsignal, ArrayBuffer, parseInt */
+/* global libsignal, ArrayBuffer, parseInt, crypto */
 
 (function (root, factory) {
     define([
@@ -28,7 +28,7 @@
     const TAG_LENGTH = 128;
     const KEY_ALGO = {
         'name': "AES-GCM",
-        'length': 256
+        'length': 128
     };
 
 
@@ -201,57 +201,67 @@
                     });
                 },
 
-                getKeyAndTag (string) {
-                    return {
-                        'key': string.slice(0, 43), // 256bit key
-                        'tag': string.slice(43, string.length) // rest is tag
-                    }
+                async encryptMessage (plaintext) {
+                    // The client MUST use fresh, randomly generated key/IV pairs
+                    // with AES-128 in Galois/Counter Mode (GCM).
+                    const iv = crypto.getRandomValues(new window.Uint8Array(16)),
+                          key = await crypto.subtle.generateKey(KEY_ALGO, true, ["encrypt", "decrypt"]),
+                          algo = {
+                              'name': 'AES-GCM',
+                              'iv': iv,
+                              'tagLength': TAG_LENGTH
+                          },
+                          encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext)),
+                          length = encrypted.byteLength - ((128 + 7) >> 3),
+                          ciphertext = encrypted.slice(0, length),
+                          tag = encrypted.slice(length),
+                          exported_key = await crypto.subtle.exportKey("raw", key);
+
+                    return Promise.resolve({
+                        'key': exported_key,
+                        'tag': tag,
+                        'key_and_tag': u.appendArrayBuffer(exported_key, tag),
+                        'payload': u.arrayBufferToBase64(ciphertext),
+                        'iv': u.arrayBufferToBase64(iv)
+                    });
                 },
 
-                decryptMessage (obj) {
-                    const { _converse } = this.__super__,
-                          key_obj = {
-                              "alg": "A256GCM",
-                              "ext": true,
-                              "k": obj.key,
-                              "key_ops": ["encrypt","decrypt"],
-                              "kty": "oct"
-                          };
-                    return crypto.subtle.importKey('jwk', key_obj, KEY_ALGO, true, ['encrypt','decrypt'])
-                        .then((key_obj) => {
-                            const algo = {
-                                'name': "AES-GCM",
-                                'iv': u.base64ToArrayBuffer(obj.iv),
-                                'tagLength': TAG_LENGTH 
-                            }
-                            return window.crypto.subtle.decrypt(algo, key_obj, u.base64ToArrayBuffer(obj.payload));
-                        }).then(out => (new TextDecoder()).decode(out));
+                async decryptMessage (obj) {
+                    const key_obj = await crypto.subtle.importKey('raw', obj.key, KEY_ALGO, true, ['encrypt','decrypt']),
+                          cipher = u.appendArrayBuffer(u.base64ToArrayBuffer(obj.payload), obj.tag),
+                          algo = {
+                              'name': "AES-GCM",
+                              'iv': u.base64ToArrayBuffer(obj.iv),
+                              'tagLength': TAG_LENGTH
+                          }
+                    return u.arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));
                 },
 
                 reportDecryptionError (e) {
-                    const { _converse } = this.__super__,
-                          { __ } = _converse;
-                    this.messages.create({
-                        'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + `${e.name} ${e.message}`,
-                        'type': 'error',
-                    });
-                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    const { _converse } = this.__super__;
+                    if (_converse.debug) {
+                        const { __ } = _converse;
+                        this.messages.create({
+                            'message': __("Sorry, could not decrypt a received OMEMO message due to an error.") + ` ${e.name} ${e.message}`,
+                            'type': 'error',
+                        });
+                    }
+                    _converse.log(`${e.name} ${e.message}`, Strophe.LogLevel.ERROR);
                 },
 
                 decrypt (attrs) {
                     const { _converse } = this.__super__,
-                          address  = new libsignal.SignalProtocolAddress(attrs.from, parseInt(attrs.encrypted.device_id, 10)),
-                          session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address),
-                          libsignal_payload = JSON.parse(atob(attrs.encrypted.key));
+                          session_cipher = this.getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
 
                     // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
                     if (attrs.encrypted.prekey === 'true') {
                         let plaintext;
-                        return session_cipher.decryptPreKeyWhisperMessage(libsignal_payload.body, 'binary')
+                        return session_cipher.decryptPreKeyWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary')
                             .then(key_and_tag => {
                                 if (attrs.encrypted.payload) {
-                                    const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
-                                    return this.decryptMessage(_.extend(attrs.encrypted, {'key': aes_data.key, 'tag': aes_data.tag}));
+                                    const key = key_and_tag.slice(0, 16),
+                                          tag = key_and_tag.slice(16);
+                                    return this.decryptMessage(_.extend(attrs.encrypted, {'key': key, 'tag': tag}));
                                 }
                                 return Promise.resolve();
                             }).then(pt => {
@@ -264,17 +274,18 @@
                                 } else {
                                     return _.extend(attrs, {'is_only_key': true});
                                 }
-                            }).catch((e) => {
+                            }).catch(e => {
                                 this.reportDecryptionError(e);
                                 return attrs;
                             });
                     } else {
-                        return session_cipher.decryptWhisperMessage(libsignal_payload.body, 'binary')
+                        return session_cipher.decryptWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary')
                             .then(key_and_tag => {
-                                const aes_data = this.getKeyAndTag(u.arrayBufferToString(key_and_tag));
-                                return this.decryptMessage(_.extend(attrs.encrypted, {'key': aes_data.key, 'tag': aes_data.tag}));
+                                const key = key_and_tag.slice(0, 16),
+                                      tag = key_and_tag.slice(16);
+                                return this.decryptMessage(_.extend(attrs.encrypted, {'key': key, 'tag': tag}));
                             }).then(plaintext => _.extend(attrs, {'plaintext': plaintext}))
-                              .catch((e) => {
+                              .catch(e => {
                                   this.reportDecryptionError(e);
                                   return attrs;
                               });
@@ -315,44 +326,17 @@
                     return Promise.all(devices.map(device => this.getSession(device))).then(() => devices);
                 },
 
-                encryptMessage (plaintext) {
-                    // The client MUST use fresh, randomly generated key/IV pairs
-                    // with AES-128 in Galois/Counter Mode (GCM).
-                    const iv = window.crypto.getRandomValues(new window.Uint8Array(16));
-                    let key;
-                    return window.crypto.subtle.generateKey(
-                        KEY_ALGO,
-                        true, // extractable
-                        ["encrypt", "decrypt"] // key usages
-                    ).then((result) => {
-                        key = result;
-                        const algo = {
-                            'name': 'AES-GCM',
-                            'iv': iv,
-                            'tagLength': TAG_LENGTH
-                        }
-                        return window.crypto.subtle.encrypt(algo, key, new TextEncoder().encode(plaintext));
-                    }).then(ciphertext => {
-                        return window.crypto.subtle.exportKey("jwk", key)
-                            .then(key_obj => {
-                                const tag = u.arrayBufferToBase64(ciphertext.slice(ciphertext.byteLength - ((TAG_LENGTH + 7) >> 3)));
-                                return Promise.resolve({
-                                    'key': key_obj.k,
-                                    'tag': tag,
-                                    'key_and_tag': key_obj.k + tag,
-                                    'payload': u.arrayBufferToBase64(ciphertext),
-                                    'iv': u.arrayBufferToBase64(iv)
-                                });
-                            });
-                    });
+                getSessionCipher (jid, id) {
+                    const { _converse } = this.__super__,
+                            address = new libsignal.SignalProtocolAddress(jid, id);
+                    this.session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
+                    return this.session_cipher;
                 },
 
                 encryptKey (plaintext, device) {
-                    const { _converse } = this.__super__,
-                          address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
-                          session_cipher = new window.libsignal.SessionCipher(_converse.omemo_store, address);
-
-                    return session_cipher.encrypt(plaintext).then(payload => ({'payload': payload, 'device': device}));
+                    return this.getSessionCipher(device.get('jid'), device.get('id'))
+                        .encrypt(plaintext)
+                        .then(payload => ({'payload': payload, 'device': device}));
                 },
 
                 addKeysToMessageStanza (stanza, dicts, iv) {
@@ -362,7 +346,7 @@
                                   device = dicts[i].device,
                                   prekey = 3 == parseInt(payload.type, 10);
 
-                            stanza.c('key', {'rid': device.get('id') }).t(btoa(JSON.stringify(dicts[i].payload)));
+                            stanza.c('key', {'rid': device.get('id') }).t(btoa(payload.body));
                             if (prekey) {
                                 stanza.attrs({'prekey': prekey});
                             }
@@ -425,6 +409,7 @@
 
                     if (this.get('omemo_active') && attrs.message) {
                         attrs['is_encrypted'] = true;
+                        attrs['plaintext'] = attrs.message;
                         const message = this.messages.create(attrs);
                         this.getBundlesAndBuildSessions()
                             .then(devices => this.createOMEMOMessageStanza(message, devices))
@@ -436,7 +421,6 @@
                                 });
                                 _converse.log(e, Strophe.LogLevel.ERROR);
                             });
-                        
                     } else {
                         return this.__super__.sendMessage.apply(this, arguments);
                     }
@@ -1040,7 +1024,9 @@
             }
 
             _converse.api.listen.on('afterTearDown', () => {
-                _converse.devicelists.reset();
+                if (_converse.devicelists) {
+                    _converse.devicelists.reset();
+                }
                 delete _converse.omemo_store;
             });
             _converse.api.listen.on('connected', registerPEPPushHandler);

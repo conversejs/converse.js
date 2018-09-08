@@ -608,13 +608,16 @@ domain_placeholder
 The placeholder text shown in the domain input on the registration form.
 
 
-emojione_image_path
--------------------
+emoji_image_path
+----------------
 
-* Default: ``'https://cdn.jsdelivr.net/emojione/assets/' + emojioneVersion + '/png/'``
+* Default: ``'https://twemoji.maxcdn.com/2/'``
 
-When `use_emojione`_ is set to ``true``, then this is the URL from where PNG image files for
+When `use_system_emojis`_ is set to ``false``, then this is the URL from where image files for
 displaying emojis will be fetched.
+
+If you've run ``make dev``, then these files are also available in ``./node_modules/twemoji/2/``,
+which means you can avoid the CDN and host them yourself if you wish.
 
 
 expose_rid_and_sid
@@ -1219,15 +1222,16 @@ Notification will be shown in the following cases:
 
 Requires the `src/converse-notification.js` plugin.
 
-use_emojione
-------------
+use_system_emojis
+-----------------
 * Default: ``true``
 
-Determines whether `Emojione <https://www.emojione.com/>`_ should be used to
-render emojis. If set to ``false``, then rendering support will fall back to
-the operating system or browser (which might not support emoji).
+Determines whether emojis should be rendered by the user's system.
 
-See also `emojione_image_path`_.
+Not all operating systems support (all) emojis. So alternatively you can let
+Converse render the emojis with [Twemoji](https://twemoji.twitter.com/).
+
+See also `emoji_image_path`_.
 
 show_only_online_users
 ----------------------

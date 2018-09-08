@@ -7,13 +7,11 @@
 (function (root, factory) {
     define([
         "converse-core",
-        "emojione",
         "filesize",
-        "templates/chatboxes.html",
-        "backbone.overview",
-        "utils/form"
+        "utils/form",
+        "utils/emoji"
     ], factory);
-}(this, function (converse, emojione, filesize, tpl_chatboxes) {
+}(this, function (converse, filesize) {
     "use strict";
 
     const { $msg, Backbone, Promise, Strophe, b64_sha1, moment, sizzle, utils, _ } = converse.env;
@@ -26,20 +24,6 @@
     converse.plugins.add('converse-chatboxes', {
 
         dependencies: ["converse-roster", "converse-vcard"],
-
-        overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-
-            initStatus: function (reconnecting) {
-                const { _converse } = this.__super__;
-                if (!reconnecting) {
-                    _converse.chatboxviews.closeAllChatBoxes();
-                }
-                return this.__super__.initStatus.apply(this, arguments);
-            }
-        },
 
         initialize () {
             /* The initialize function gets called as soon as the plugin is
@@ -389,7 +373,7 @@
                         'from': _converse.bare_jid,
                         'sender': 'me',
                         'time': moment().format(),
-                        'message': text ? u.httpToGeoUri(emojione.shortnameToUnicode(text), _converse) : undefined,
+                        'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
                         'is_spoiler': is_spoiler,
                         'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
                         'type': this.get('message_type')
@@ -780,72 +764,6 @@
                 }
             });
 
-            _converse.ChatBoxViews = Backbone.Overview.extend({
-
-                _ensureElement () {
-                    /* Override method from backbone.js
-                     * If the #conversejs element doesn't exist, create it.
-                     */
-                    if (!this.el) {
-                        let el = _converse.root.querySelector('#conversejs');
-                        if (_.isNull(el)) {
-                            el = document.createElement('div');
-                            el.setAttribute('id', 'conversejs');
-                            const body = _converse.root.querySelector('body');
-                            if (body) {
-                                body.appendChild(el);
-                            } else {
-                                // Perhaps inside a web component?
-                                _converse.root.appendChild(el);
-                            }
-                        }
-                        el.innerHTML = '';
-                        this.setElement(el, false);
-                    } else {
-                        this.setElement(_.result(this, 'el'), false);
-                    }
-                },
-
-                initialize () {
-                    this.model.on("destroy", this.removeChat, this);
-                    this.el.classList.add(`converse-${_converse.view_mode}`);
-                    this.render();
-                },
-
-                render () {
-                    try {
-                        this.el.innerHTML = tpl_chatboxes();
-                    } catch (e) {
-                        this._ensureElement();
-                        this.el.innerHTML = tpl_chatboxes();
-                    }
-                    this.row_el = this.el.querySelector('.row');
-                },
-
-                insertRowColumn (el) {
-                    /* Add a new DOM element (likely a chat box) into the
-                     * the row managed by this overview.
-                     */
-                    this.row_el.insertAdjacentElement('afterBegin', el);
-                },
-
-                removeChat (item) {
-                    this.remove(item.get('id'));
-                },
-
-                closeAllChatBoxes () {
-                    /* This method gets overridden in src/converse-controlbox.js if
-                     * the controlbox plugin is active.
-                     */
-                    this.each(function (view) { view.close(); });
-                    return this;
-                },
-
-                chatBoxMayBeShown (chatbox) {
-                    return this.model.chatBoxMayBeShown(chatbox);
-                }
-            });
-
 
             function autoJoinChats () {
                 /* Automatically join private chats, based on the
@@ -892,13 +810,9 @@
 
             _converse.api.listen.on('pluginsInitialized', () => {
                 _converse.chatboxes = new _converse.ChatBoxes();
-                _converse.chatboxviews = new _converse.ChatBoxViews({
-                    'model': _converse.chatboxes
-                });
                 _converse.emit('chatBoxesInitialized');
             });
 
-            _converse.api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());
             _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
             /************************ END Event Handlers ************************/
 
@@ -906,11 +820,17 @@
             /************************ BEGIN API ************************/
             _.extend(_converse.api, {
                 /**
-                 * The "chats" grouping (used for one-on-one chats)
+                 * The "chats" namespace (used for one-on-one chats)
                  *
-                 * @namespace
+                 * @namespace _converse.api.chats
+                 * @memberOf _converse.api
                  */
                 'chats': {
+                    /**
+                     * @method _converse.api.chats.create
+                     * @param {string|string[]} jid|jids An jid or array of jids
+                     * @param {object} attrs An object containing configuration attributes.
+                     */
                     'create' (jids, attrs) {
                         if (_.isUndefined(jids)) {
                             _converse.log(
@@ -939,8 +859,7 @@
                     /**
                      * Opens a new one-on-one chat.
                      *
-                     * @function
-                     *
+                     * @method _converse.api.chats.open
                      * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
                      * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
                      *
@@ -991,8 +910,7 @@
                     /**
                      * Returns a chat model. The chat should already be open.
                      *
-                     * @function
-                     *
+                     * @method _converse.api.chats.get
                      * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
                      * @returns {Backbone.Model}
                      *

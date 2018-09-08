@@ -3,7 +3,7 @@
 //
 // This is the internationalization module.
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
@@ -18,6 +18,7 @@
         'moment/locale/ar',
         'moment/locale/bg',
         'moment/locale/ca',
+        'moment/locale/cs',
         'moment/locale/de',
         'moment/locale/es',
         'moment/locale/eu',
@@ -70,7 +71,7 @@
     }
 
     function isMomentLocale (locale) {
-        return _.isString(locale) && moment.locale() === moment.locale(locale);
+        return _.includes(moment.locales(), locale);
     }
 
     function isConverseLocale (locale, supported_locales) {

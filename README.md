@@ -39,22 +39,23 @@ You'll probably want to begin with the [quickstart guide](https://conversejs.org
 which shows you how to use the CDN (content delivery network) to quickly get a demo up and running.
 
 ## Features
-
+-   Available as overlayed chat boxes or as a fullscreen application. See [inverse.chat](https://inverse.chat) for the fullscreen version.
 -   A [plugin architecture](https://conversejs.org/docs/html/plugin_development.html) based on [pluggable.js](https://conversejs.github.io/pluggable.js/)
 -   Single-user and group chats
 -   Contacts and groups
 -   Multi-user chat rooms [XEP 45](https://xmpp.org/extensions/xep-0045.html)
+-   Chatroom bookmarks [XEP 48](https://xmpp.org/extensions/xep-0048.html)
 -   Direct invitations to chat rooms [XEP 249](https://xmpp.org/extensions/xep-0249.html)
 -   vCard support [XEP 54](https://xmpp.org/extensions/xep-0054.html)
 -   Service discovery [XEP 30](https://xmpp.org/extensions/xep-0030.html)
 -   In-band registration [XEP 77](https://xmpp.org/extensions/xep-0077.html)
--   Chat room bookmarks [XEP 48](https://xmpp.org/extensions/xep-0048.html)
 -   Roster item exchange [XEP 144](https://xmpp.org/extensions/tmp/xep-0144-1.1.html)
 -   Chat statuses (online, busy, away, offline)
 -   Custom status messages
--   Desktop notifications
 -   Typing and state notifications [XEP 85](https://xmpp.org/extensions/xep-0085.html)
--   Messages appear in all connnected chat clients [XEP 280](https://xmpp.org/extensions/xep-0280.html)
+-   Desktop notifications
+-   File sharing / HTTP File Upload [XEP 363](https://xmpp.org/extensions/xep-0363.html)
+-   Messages appear in all connnected chat clients / Message Carbons [XEP 280](https://xmpp.org/extensions/xep-0280.html)
 -   Third person "/me" messages [XEP 245](https://xmpp.org/extensions/xep-0245.html)
 -   XMPP Ping [XEP 199](https://xmpp.org/extensions/xep-0199.html)
 -   Server-side archiving of messages [XEP 313](https://xmpp.org/extensions/xep-0313.html)
@@ -62,16 +63,20 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   Client state indication [XEP 352](https://xmpp.org/extensions/xep-0352.html)
 -   Last Message Correction [XEP 308](https://xmpp.org/extensions/xep-0308.html)
 -   Off-the-record encryption
--   Translated into 16 languages
+-   OMEMO encrypted messaging [XEP 384](https://xmpp.org/extensions/xep-0384.html")
+-   Supports anonymous logins, see the [anonymous login demo](https://conversejs.org/demo/anonymous.html).
+-   Translated into 17 languages
 
 ## Integration into other frameworks
 
+-   **[Prosody](https://prosody.im/)**: [mod_conversejs](https://modules.prosody.im/mod_conversejs.html)
+-   **[Openfire](https://www.igniterealtime.org/projects/openfire/index.jsp)**: [inverse.jar](https://www.igniterealtime.org/projects/openfire/plugins.jsp)
 -   **[Ruby on Rails](https://rubyonrails.org)**: [conversejs-rails](https://github.com/mikemarsian/conversejs-rails)
 -   **[Django](https://www.djangoproject.com)**: [django-conversejs](https://pypi.python.org/pypi/django-conversejs) or [django-xmpp](https://github.com/fpytloun/django-xmpp)
--   **[Plone](https://plone.com)**: [collective.converse](https://github.com/collective/collective.converse)
+-   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)
 -   **[Roundcube](https://roundcube.net)**: [roundcube-converse.js-xmpp-plugin](https://github.com/devurandom/roundcube-converse.js-xmpp-plugin)
 -   **[Wordpress](https://wordpress.org)**: [ConverseJS](https://wordpress.org/plugins/conversejs/)
--   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)
+-   **[Plone](https://plone.com)**: [collective.converse](https://github.com/collective/collective.converse)
 -   **[Alfresco](https://www.alfresco.com)**: [alfresco-js-chat-share](https://github.com/keensoft/alfresco-js-chat-share)
 -   **[Friendica](https://friendi.ca)**: [converse](https://github.com/friendica/friendica-addons/tree/master/xmpp/converse)
 -   **[Tiki Wiki CMS Groupware](https://tiki.org)**: [built-in optional feature](https://doc.tiki.org/XMPP)

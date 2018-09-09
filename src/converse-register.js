@@ -210,6 +210,10 @@
                      * requesting the registration fields.
                      */
                     const conn = _converse.connection;
+                    if (_.isUndefined(conn)) {
+                        _converse.log('Failed to setup register hooks: currently disabled for 0156.', Strophe.LogLevel.ERROR);
+                        return;
+                    }
                     const connect_cb = conn._connect_cb.bind(conn);
                     conn._connect_cb = (req, callback, raw) => {
                         if (!this._registering) {

@@ -959,8 +959,10 @@
                 }
             }
             try {
-                this.connection.restore(this.jid, this.onConnectStatusChanged);
-                return true;
+                if (!_.isUndefined(this.connection)) {
+                    this.connection.restore(this.jid, this.onConnectStatusChanged);
+                    return true;
+                }
             } catch (e) {
                 _converse.log(
                     "Could not restore session for jid: "+
@@ -1083,14 +1085,13 @@
             }
         };
 
-        this.initConnection = function () {
+        this.initConnection = function (domain) {
             /* Creates a new Strophe.Connection instance if we don't already have one.
              */
             if (!this.connection) {
                 if (this.use_xep_0156) {
-                    var server = "jabberfr.org";
                     let xhr = new XMLHttpRequest();
-                    xhr.open('GET', "https://" + server + "/.well-known/host-meta", true);
+                    xhr.open('GET', "https://" + domain + "/.well-known/host-meta", true);
                     xhr.setRequestHeader('Accept', "application/xrd+xml, text/xml");
                     xhr.onload = function(evt) {
                         if (xhr.status >= 200 && xhr.status < 400) {
@@ -1220,7 +1221,6 @@
 
         function finishInitialization () {
             _converse.initPlugins();
-            _converse.initConnection();
             _converse.setUpXMLLogging();
             _converse.logIn();
             _converse.registerGlobalEventHandlers();

@@ -70817,7 +70817,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            */
           const data = this.parsePresence(pres);
 
-          if (data.type === 'error') {
+          if (data.type === 'error' || !data.jid && !data.nick) {
             return true;
           }
 

@@ -806,7 +806,7 @@
                      *  (XMLElement) pres: The presence stanza
                      */
                     const data = this.parsePresence(pres);
-                    if (data.type === 'error') {
+                    if (data.type === 'error' || (!data.jid && !data.nick)) {
                         return true;
                     }
                     const occupant = this.occupants.findOccupant(data);

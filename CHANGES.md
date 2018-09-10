@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.0.1 (Unreleased)
+
+- #1182 MUC occupants without nick or JID created
+- #1184 Notification error when message has no body
+
 ## 4.0.0 (2018-09-07)
 
 ## New Features

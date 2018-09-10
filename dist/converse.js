@@ -71740,11 +71740,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         // the message...
 
 
-        const body = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, message).length ? __('OMEMO Message received') : message.querySelector('body').textContent;
+        const body = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, message).length ? __('OMEMO Message received') : _.get(message.querySelector('body'), 'textContent');
+
+        if (!body) {
+          return;
+        }
+
         const n = new Notification(title, {
-          body: body,
-          lang: _converse.locale,
-          icon: _converse.notification_icon
+          'body': body,
+          'lang': _converse.locale,
+          'icon': _converse.notification_icon
         });
         setTimeout(n.close.bind(n), 5000);
       };

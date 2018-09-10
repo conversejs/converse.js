@@ -169,12 +169,15 @@
                 // the message...
                 const body = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, message).length ?
                              __('OMEMO Message received') :
-                             message.querySelector('body').textContent;
+                             _.get(message.querySelector('body'), 'textContent');
+                if (!body) {
+                    return;
+                }
                 const n = new Notification(title, {
-                        body: body,
-                        lang: _converse.locale,
-                        icon: _converse.notification_icon
-                    });
+                    'body': body,
+                    'lang': _converse.locale,
+                    'icon': _converse.notification_icon
+                });
                 setTimeout(n.close.bind(n), 5000);
             };
 

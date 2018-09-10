@@ -78451,7 +78451,7 @@ __p += '\n    </div>\n    <p class="chatroom-description" title="' +
 __e(o.description) +
 '">' +
 __e(o.description) +
-'<p/>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="' +
+'</p>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="' +
 __e(o.info_close) +
 '"></a>\n    ';
  if (o.affiliation == 'owner') { ;

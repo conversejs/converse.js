@@ -543,7 +543,7 @@
                      * XXX: Prosody doesn't accept multiple JIDs' affiliations
                      * being set in one IQ stanza, so as a workaround we send
                      * a separate stanza for each JID.
-                     * Related ticket: https://prosody.im/issues/issue/795
+                     * Related ticket: https://issues.prosody.im/345
                      *
                      * Parameters:
                      *  (String) affiliation: The affiliation
@@ -701,6 +701,7 @@
                             .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
                             .c("item", {
                                 'affiliation': member.affiliation || affiliation,
+                                'nick': member.nick,
                                 'jid': member.jid
                             });
                         if (!_.isUndefined(member.reason)) {
@@ -810,6 +811,7 @@
                 },
 
                 async registerNickname () {
+                    // See https://xmpp.org/extensions/xep-0045.html#register
                     const nick = this.get('nick'),
                           jid = this.get('jid');
                     let iq;
@@ -829,7 +831,6 @@
                         }
                         return _converse.log(e, Strophe.LogLevel.ERROR);
                     }
-
                     const required_fields = _.map(sizzle('field required', iq), 'parentElement');
                     if (required_fields.length > 1 || required_fields[0].getAttribute('var') !== 'muc#register_roomnick') {
                         return _converse.log(`Can't register the user register in the groupchat ${jid} due to the required fields`);

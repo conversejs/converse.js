@@ -960,6 +960,7 @@
                                              this.model.occupants.findWhere({'jid': args[0]});
                             this.model.setAffiliation('member', [{
                                 'jid': occupant.get('jid'),
+                                'nick': occupant.get('nick'),
                                 'reason': args[1]
                             }]).then(
                                 () => this.model.occupants.fetchMembers(),

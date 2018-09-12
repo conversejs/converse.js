@@ -64742,6 +64742,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.features = new Backbone.Collection();
           this.features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.features-${this.get('jid')}`));
           this.features.on('add', this.onFeatureAdded, this);
+          this.fields = new Backbone.Collection();
+          this.fields.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.fields-${this.get('jid')}`));
+          this.fields.on('add', this.onFieldAdded, this);
           this.identities = new Backbone.Collection();
           this.identities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.identities-${this.get('jid')}`));
           this.fetchFeatures();
@@ -64799,6 +64802,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           feature.entity = this;
 
           _converse.emit('serviceDiscovered', feature);
+        },
+
+        onFieldAdded(field) {
+          field.entity = this;
+
+          _converse.emit('discoExtensionFieldDiscovered', field);
         },
 
         fetchFeatures() {
@@ -64891,6 +64900,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           _.forEach(stanza.querySelectorAll('feature'), feature => {
             this.features.create({
               'var': feature.getAttribute('var'),
+              'from': stanza.getAttribute('from')
+            });
+          }); // XEP-0128 Service Discovery Extensions
+
+
+          _.forEach(sizzle('x[type="result"][xmlns="jabber:x:data"] field', stanza), field => {
+            this.fields.create({
+              'var': field.getAttribute('var'),
+              'value': _.get(field.querySelector('value'), 'textContent'),
               'from': stanza.getAttribute('from')
             });
           });
@@ -65309,7 +65327,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            */
           'supports'(feature, jid) {
             if (_.isNil(jid)) {
-              throw new TypeError('disco.supports: You need to provide an entity JID');
+              throw new TypeError('api.disco.supports: You need to provide an entity JID');
             }
 
             return _converse.api.waitUntil('discoInitialized').then(() => _converse.api.disco.entities.get(jid, true)).then(entity => entity.waitUntilFeaturesDiscovered).then(entity => {
@@ -65317,6 +65335,41 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
               return Promise.all(promises);
             }).then(result => f.filter(f.isObject, result));
+          },
+
+          /**
+           * Return all the features associated with a disco entity
+           *
+           * @method _converse.api.disco.getFeatures
+           * @param {string} jid The JID of the entity whose features are returned.
+           * @example
+           * const features = await _converse.api.disco.getFeatures('room@conference.example.org');
+           */
+          'getFeatures'(jid) {
+            if (_.isNil(jid)) {
+              throw new TypeError('api.disco.getFeatures: You need to provide an entity JID');
+            }
+
+            return _converse.api.waitUntil('discoInitialized').then(() => _converse.api.disco.entities.get(jid, true)).then(entity => entity.waitUntilFeaturesDiscovered).then(entity => entity.features).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          },
+
+          /**
+           * Return all the service discovery extensions fields
+           * associated with an entity.
+           *
+           * See [XEP-0129: Service Discovery Extensions](https://xmpp.org/extensions/xep-0128.html)
+           *
+           * @method _converse.api.disco.getFields
+           * @param {string} jid The JID of the entity whose fields are returned.
+           * @example
+           * const fields = await _converse.api.disco.getFields('room@conference.example.org');
+           */
+          'getFields'(jid) {
+            if (_.isNil(jid)) {
+              throw new TypeError('api.disco.getFields: You need to provide an entity JID');
+            }
+
+            return _converse.api.waitUntil('discoInitialized').then(() => _converse.api.disco.entities.get(jid, true)).then(entity => entity.waitUntilFeaturesDiscovered).then(entity => entity.fields).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
           },
 
           /**
@@ -68678,7 +68731,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
-                args = match[2] && match[2].splitOnce(' ') || [],
+                args = match[2] && match[2].splitOnce(' ').filter(s => s) || [],
                 command = match[1].toLowerCase();
 
           switch (command) {
@@ -68713,7 +68766,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'help':
-              this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`]);
+              this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this room")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`]);
               break;
 
             case 'kick':
@@ -68742,11 +68795,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                   'nick': args[0]
                 }) || this.model.occupants.findWhere({
                   'jid': args[0]
-                });
-                this.model.setAffiliation('member', [{
+                }),
+                      attrs = {
                   'jid': occupant.get('jid'),
                   'reason': args[1]
-                }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
+                };
+
+                if (_converse.auto_register_muc_nickname) {
+                  attrs['nick'] = occupant.get('nick');
+                }
+
+                this.model.setAffiliation('member', [attrs]).then(() => this.model.occupants.fetchMembers()).catch(err => this.onCommandError(err));
                 break;
               }
 
@@ -68780,6 +68839,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               }
 
               this.modifyRole(this.model.get('jid'), args[0], 'moderator', args[1], undefined, this.onCommandError.bind(this));
+              break;
+
+            case 'register':
+              if (args.length > 1) {
+                this.showErrorMessage(__(`Error: invalid number of arguments`));
+              } else {
+                this.model.registerNickname();
+              }
+
               break;
 
             case 'revoke':
@@ -68926,7 +68994,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
           form_el.addEventListener('submit', ev => {
             ev.preventDefault();
-            this.model.saveConfiguration(ev.target).then(this.model.getRoomFeatures.bind(this.model));
+            this.model.saveConfiguration(ev.target).then(() => this.model.refreshRoomFeatures());
             this.closeForm();
           }, false);
         },
@@ -70208,6 +70276,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           this.occupants.reset();
 
+          const disco_entity = _converse.disco_entities.get(this.get('jid'));
+
+          if (disco_entity) {
+            disco_entity.destroy();
+          }
+
           if (_converse.connection.connected) {
             this.sendUnavailablePresence(exit_msg);
           }
@@ -70330,21 +70404,6 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           };
         },
 
-        getRoomFeatures() {
-          /* Fetch the groupchat disco info, parse it and then save it.
-           */
-          // XXX: Currently we store disco info on the room itself.
-          // A better design would probably be to create a
-          // DiscoEntity for this room, and then to let
-          // converse-disco manage all disco-related tasks.
-          // Then we can also use _converse.api.disco.supports.
-          return _converse.api.disco.info(this.get('jid'), null).then(stanza => this.parseRoomFeatures(stanza)).catch(err => {
-            _converse.log("Could not parse the groupchat features", Strophe.LogLevel.WARN);
-
-            _converse.log(err, Strophe.LogLevel.WARN);
-          });
-        },
-
         getRoomJIDAndNick(nick) {
           /* Utility method to construct the JID for the current user
            * as occupant of the groupchat.
@@ -70447,50 +70506,41 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           });
         },
 
-        parseRoomFeatures(iq) {
-          /* Parses an IQ stanza containing the groupchat's features.
-           *
-           * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
-           *
-           *  <identity
-           *      category='conference'
-           *      name='A Dark Cave'
-           *      type='text'/>
-           *  <feature var='http://jabber.org/protocol/muc'/>
-           *  <feature var='muc_passwordprotected'/>
-           *  <feature var='muc_hidden'/>
-           *  <feature var='muc_temporary'/>
-           *  <feature var='muc_open'/>
-           *  <feature var='muc_unmoderated'/>
-           *  <feature var='muc_nonanonymous'/>
-           *  <feature var='urn:xmpp:mam:0'/>
-           */
-          const features = {
-            'features_fetched': moment().format(),
-            'name': iq.querySelector('identity').getAttribute('name')
-          };
+        refreshRoomFeatures() {
+          const entity = _converse.disco_entities.get(this.get('jid'));
 
-          _.each(iq.querySelectorAll('feature'), function (field) {
-            const fieldname = field.getAttribute('var');
+          if (entity) {
+            entity.destroy();
+          }
+
+          return this.getRoomFeatures();
+        },
+
+        async getRoomFeatures() {
+          const features = await _converse.api.disco.getFeatures(this.get('jid')),
+                fields = await _converse.api.disco.getFields(this.get('jid')),
+                identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid')),
+                attrs = {
+            'features_fetched': moment().format(),
+            'name': identity && identity.get('name')
+          };
+          features.each(feature => {
+            const fieldname = feature.get('var');
 
             if (!fieldname.startsWith('muc_')) {
               if (fieldname === Strophe.NS.MAM) {
-                features.mam_enabled = true;
+                attrs.mam_enabled = true;
               }
 
               return;
             }
 
-            features[fieldname.replace('muc_', '')] = true;
+            attrs[fieldname.replace('muc_', '')] = true;
           });
-
-          const desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
-
-          if (!_.isNull(desc_field)) {
-            features.description = desc_field.textContent;
-          }
-
-          this.save(features);
+          attrs.description = _.get(fields.findWhere({
+            'var': "muc#roominfo_description"
+          }), 'attributes.value');
+          this.save(attrs);
         },
 
         requestMemberList(affiliation) {
@@ -70528,7 +70578,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            * XXX: Prosody doesn't accept multiple JIDs' affiliations
            * being set in one IQ stanza, so as a workaround we send
            * a separate stanza for each JID.
-           * Related ticket: https://prosody.im/issues/issue/795
+           * Related ticket: https://issues.prosody.im/345
            *
            * Parameters:
            *  (String) affiliation: The affiliation
@@ -70710,6 +70760,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
               xmlns: Strophe.NS.MUC_ADMIN
             }).c("item", {
               'affiliation': member.affiliation || affiliation,
+              'nick': member.nick,
               'jid': member.jid
             });
 
@@ -70816,28 +70867,39 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         },
 
         async registerNickname() {
+          // See https://xmpp.org/extensions/xep-0045.html#register
+          const nick = this.get('nick'),
+                jid = this.get('jid');
+          let iq;
+
           try {
-            await _converse.api.sendIQ($iq({
-              'from': _converse.bare_jid,
-              'to': this.get('jid'),
+            iq = await _converse.api.sendIQ($iq({
+              'to': jid,
+              'from': _converse.connection.jid,
               'type': 'get'
             }).c('query', {
               'xmlns': Strophe.NS.MUC_REGISTER
             }));
           } catch (e) {
             if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-              _converse.log(`Can't register nickname ${this.get('nick')} in the groupchat ${this.get('jid')} which does not exist.`);
+              _converse.log(`Can't register nickname ${nick} in the groupchat ${jid} which does not exist.`);
             } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-              _converse.log(`You're not allowed to register in the groupchat ${this.get('jid')}`);
+              _converse.log(`You're not allowed to register in the groupchat ${jid}`);
             }
 
             return _converse.log(e, Strophe.LogLevel.ERROR);
           }
 
+          const required_fields = _.map(sizzle('field required', iq), 'parentElement');
+
+          if (required_fields.length > 1 || required_fields[0].getAttribute('var') !== 'muc#register_roomnick') {
+            return _converse.log(`Can't register the user register in the groupchat ${jid} due to the required fields`);
+          }
+
           try {
             await _converse.api.sendIQ($iq({
-              'from': _converse.bare_jid,
-              'to': this.get('jid'),
+              'to': jid,
+              'from': _converse.connection.jid,
               'type': 'set'
             }).c('query', {
               'xmlns': Strophe.NS.MUC_REGISTER
@@ -70848,14 +70910,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
               'var': 'FORM_TYPE'
             }).c('value').t('http://jabber.org/protocol/muc#register').up().up().c('field', {
               'var': 'muc#register_roomnick'
-            }).c('value').t(this.get('nick')));
+            }).c('value').t(nick));
           } catch (e) {
             if (sizzle('conflict[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-              _converse.log(`Can't register nickname ${this.get('nick')} in the groupchat ${this.get('jid')}, it's already taken.`);
+              _converse.log(`Can't register nickname ${nick} in the groupchat ${jid}, it's already taken.`);
             } else if (sizzle('service-unavailable[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-              _converse.log(`Can't register nickname ${this.get('nick')} in the groupchat ${this.get('jid')}, it doesn't support registration.`);
+              _converse.log(`Can't register nickname ${nick} in the groupchat ${jid}, it doesn't support registration.`);
             } else if (sizzle('bad-request[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-              _converse.log(`Can't register nickname ${this.get('nick')} in the groupchat ${this.get('jid')}, invalid data form supplied.`);
+              _converse.log(`Can't register nickname ${nick} in the groupchat ${jid}, invalid data form supplied.`);
             }
 
             return _converse.log(e, Strophe.LogLevel.ERROR);
@@ -70975,7 +71037,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
                 room_now_fully_anon = stanza.querySelector("status[code='173']");
 
           if (configuration_changed || logging_enabled || logging_disabled || room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
-            this.getRoomFeatures();
+            this.refreshRoomFeatures();
           }
         },
 
@@ -71075,10 +71137,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           if (locked_room) {
             if (this.get('auto_configure')) {
-              this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+              this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
             } else if (_converse.muc_instant_rooms) {
               // Accept default configuration
-              this.saveConfiguration().then(this.getRoomFeatures.bind(this));
+              this.saveConfiguration().then(() => this.getRoomFeatures());
             } else {
               this.trigger('configurationNeeded');
               return; // We haven't yet entered the groupchat, so bail here.
@@ -71090,7 +71152,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             // otherwise the features would have been fetched in
             // the "initialize" method already.
             if (this.get('affiliation') === 'owner' && this.get('auto_configure')) {
-              this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+              this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
             } else {
               this.getRoomFeatures();
             }
@@ -73556,7 +73618,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             __ = _converse.__;
 
       _converse.api.settings.update({
-        'push_app_servers': []
+        'push_app_servers': [],
+        'enable_muc_push': false
       });
 
       async function disablePushAppServer(domain, push_app_server) {
@@ -73672,15 +73735,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         _converse.session.save('push_enabled', push_enabled);
       }
 
+      _converse.api.listen.on('statusInitialized', () => enablePush());
+
       function onChatBoxAdded(model) {
         if (model.get('type') == _converse.CHATROOMS_TYPE) {
           enablePush(Strophe.getDomainFromJid(model.get('jid')));
         }
       }
 
-      _converse.api.listen.on('statusInitialized', () => enablePush());
-
-      _converse.api.listen.on('chatBoxesInitialized', () => _converse.chatboxes.on('add', onChatBoxAdded));
+      if (_converse.enable_muc_push) {
+        _converse.api.listen.on('chatBoxesInitialized', () => _converse.chatboxes.on('add', onChatBoxAdded));
+      }
     }
 
   });
@@ -78564,8 +78629,6 @@ __e(o.info_configure) +
  } ;
 __p += '\n    <a class="chatbox-btn show-room-details-modal fa fa-info-circle" title="' +
 __e(o.info_details) +
-'"></a>\n    <a class="chatbox-btn show-room-registration-modal fa fa-file-signature" title="' +
-__e(o.info_register) +
 '"></a>\n</div>\n';
 return __p
 };

@@ -1141,9 +1141,8 @@
                     form_el.addEventListener('submit',
                         (ev) => {
                             ev.preventDefault();
-                            this.model.saveConfiguration(ev.target).then(
-                                this.model.getRoomFeatures.bind(this.model)
-                            );
+                            this.model.saveConfiguration(ev.target)
+                                .then(() => this.model.refreshRoomFeatures());
                             this.closeForm();
                         },
                         false

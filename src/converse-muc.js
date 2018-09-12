@@ -403,22 +403,6 @@
                     };
                 },
 
-                getRoomFeatures () {
-                    /* Fetch the groupchat disco info, parse it and then save it.
-                     */
-                    // XXX: Currently we store disco info on the room itself.
-                    // A better design would probably be to create a
-                    // DiscoEntity for this room, and then to let
-                    // converse-disco manage all disco-related tasks.
-                    // Then we can also use _converse.api.disco.supports.
-                    return _converse.api.disco.info(this.get('jid'), null)
-                        .then(stanza => this.parseRoomFeatures(stanza))
-                        .catch(err => {
-                            _converse.log("Could not parse the groupchat features", Strophe.LogLevel.WARN);
-                            _converse.log(err, Strophe.LogLevel.WARN);
-                        });
-                },
-
                 getRoomJIDAndNick (nick) {
                     /* Utility method to construct the JID for the current user
                      * as occupant of the groupchat.
@@ -499,43 +483,34 @@
                     });
                 },
 
-                parseRoomFeatures (iq) {
-                    /* Parses an IQ stanza containing the groupchat's features.
-                     *
-                     * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
-                     *
-                     *  <identity
-                     *      category='conference'
-                     *      name='A Dark Cave'
-                     *      type='text'/>
-                     *  <feature var='http://jabber.org/protocol/muc'/>
-                     *  <feature var='muc_passwordprotected'/>
-                     *  <feature var='muc_hidden'/>
-                     *  <feature var='muc_temporary'/>
-                     *  <feature var='muc_open'/>
-                     *  <feature var='muc_unmoderated'/>
-                     *  <feature var='muc_nonanonymous'/>
-                     *  <feature var='urn:xmpp:mam:0'/>
-                     */
-                    const features = {
-                        'features_fetched': moment().format(),
-                        'name': iq.querySelector('identity').getAttribute('name')
+                refreshRoomFeatures () {
+                    const entity = _converse.disco_entities.get(this.get('jid'));
+                    if (entity) {
+                        entity.destroy();
                     }
-                    _.each(iq.querySelectorAll('feature'), function (field) {
-                        const fieldname = field.getAttribute('var');
+                    return this.getRoomFeatures();
+                },
+
+                async getRoomFeatures () {
+                    const features = await _converse.api.disco.getFeatures(this.get('jid')),
+                          fields = await _converse.api.disco.getFields(this.get('jid')),
+                          identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid')),
+                          attrs = {
+                              'features_fetched': moment().format(),
+                              'name': identity && identity.get('name')
+                          };
+                    features.each(feature => {
+                        const fieldname = feature.get('var');
                         if (!fieldname.startsWith('muc_')) {
                             if (fieldname === Strophe.NS.MAM) {
-                                features.mam_enabled = true;
+                                attrs.mam_enabled = true;
                             }
                             return;
                         }
-                        features[fieldname.replace('muc_', '')] = true;
+                        attrs[fieldname.replace('muc_', '')] = true;
                     });
-                    const desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
-                    if (!_.isNull(desc_field)) {
-                        features.description = desc_field.textContent;
-                    }
-                    this.save(features);
+                    attrs.description = _.get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value');
+                    this.save(attrs);
                 },
 
                 requestMemberList (affiliation) {
@@ -969,7 +944,7 @@
 
                     if (configuration_changed || logging_enabled || logging_disabled ||
                             room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
-                        this.getRoomFeatures();
+                        this.refreshRoomFeatures();
                     }
                 },
 
@@ -1053,10 +1028,10 @@
                     const locked_room = pres.querySelector("status[code='201']");
                     if (locked_room) {
                         if (this.get('auto_configure')) {
-                            this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+                            this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
                         } else if (_converse.muc_instant_rooms) {
                             // Accept default configuration
-                            this.saveConfiguration().then(this.getRoomFeatures.bind(this));
+                            this.saveConfiguration().then(() => this.getRoomFeatures());
                         } else {
                             this.trigger('configurationNeeded');
                             return; // We haven't yet entered the groupchat, so bail here.
@@ -1068,7 +1043,7 @@
                         // otherwise the features would have been fetched in
                         // the "initialize" method already.
                         if (this.get('affiliation') === 'owner' && this.get('auto_configure')) {
-                            this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+                            this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
                         } else {
                             this.getRoomFeatures();
                         }

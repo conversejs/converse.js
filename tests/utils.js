@@ -127,19 +127,44 @@
 
     utils.openAndEnterChatRoom = function (_converse, room, server, nick) {
         let last_stanza, view;
+        const room_jid = `${room}@${server}`.toLowerCase();
 
-        return _converse.api.rooms.open(`${room}@${server}`).then(() => {
-            view = _converse.chatboxviews.get((room+'@'+server).toLowerCase());
-            // We pretend this is a new room, so no disco info is returned.
-            last_stanza = _.last(_converse.connection.IQ_stanzas).nodeTree;
-            const IQ_id = last_stanza.getAttribute('id');
+        return _converse.api.rooms.open(room_jid).then(() => {
+            view = _converse.chatboxviews.get(room_jid);
+            return utils.waitUntil(() => _.get(_.filter(
+                _converse.connection.IQ_stanzas,
+                iq => iq.nodeTree.querySelector(
+                    `iq[to="coven@chat.shakespeare.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                )
+            ).pop(), 'nodeTree'));
+        }).then(stanza => {
             const features_stanza = $iq({
-                    'from': room+'@'+server,
-                    'id': IQ_id,
-                    'to': nick+'@'+server,
-                    'type': 'error'
-                }).c('error', {'type': 'cancel'})
-                    .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+                    'from': room_jid,
+                    'id': stanza.getAttribute('id'),
+                    'to': 'dummy@localhost/desktop',
+                    'type': 'result'
+                })
+                .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                    .c('identity', {
+                        'category': 'conference',
+                        'name': 'A Dark Cave',
+                        'type': 'text'
+                    }).up()
+                    .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+                    .c('feature', {'var': 'jabber:iq:register'}).up()
+                    .c('feature', {'var': 'muc_passwordprotected'}).up()
+                    .c('feature', {'var': 'muc_hidden'}).up()
+                    .c('feature', {'var': 'muc_temporary'}).up()
+                    .c('feature', {'var': 'muc_open'}).up()
+                    .c('feature', {'var': 'muc_unmoderated'}).up()
+                    .c('feature', {'var': 'muc_nonanonymous'})
+                    .c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
+                        .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
+                            .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
+                        .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
+                            .c('value').t('This is the description').up().up()
+                        .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
+                            .c('value').t(0);
             _converse.connection._dataRecv(utils.createRequest(features_stanza));
             return utils.waitUntil(() => {
                 return _.filter(
@@ -179,8 +204,11 @@
                 }).up()
                 .c('status').attrs({code:'110'});
             _converse.connection._dataRecv(utils.createRequest(presence));
-            return utils.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED);
-        }).catch(_.partial(console.error, _));
+            return utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED));
+        }).catch(e => {
+            console.error(e);
+            throw e;
+        });
     };
 
     utils.clearBrowserStorage = function () {

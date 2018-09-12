@@ -887,26 +887,25 @@
                             if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
                                 break;
                             }
-                            this.model.setAffiliation('admin',
-                                    [{ 'jid': args[0],
-                                       'reason': args[1]
-                                    }]).then(
-                                        () => this.model.occupants.fetchMembers(),
-                                        (err) => this.onCommandError(err)
-                                    );
+                            this.model.setAffiliation('admin', [{
+                                'jid': args[0],
+                                'reason': args[1]
+                            }]).then(
+                                () => this.model.occupants.fetchMembers(),
+                                (err) => this.onCommandError(err)
+                            );
                             break;
                         case 'ban':
                             if (!this.verifyAffiliations(['owner', 'admin']) || !this.validateRoleChangeCommand(command, args)) {
                                 break;
                             }
-
-                            this.model.setAffiliation('outcast',
-                                    [{ 'jid': args[0],
-                                       'reason': args[1]
-                                    }]).then(
-                                        () => this.model.occupants.fetchMembers(),
-                                        (err) => this.onCommandError(err)
-                                    );
+                            this.model.setAffiliation('outcast', [{
+                                'jid': args[0],
+                                'reason': args[1]
+                            }]).then(
+                                () => this.model.occupants.fetchMembers(),
+                                (err) => this.onCommandError(err)
+                            );
                             break;
                         case 'deop':
                             if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
@@ -959,14 +958,13 @@
                             }
                             const occupant = this.model.occupants.findWhere({'nick': args[0]}) ||
                                              this.model.occupants.findWhere({'jid': args[0]});
-
-                            this.model.setAffiliation('member',
-                                    [{ 'jid': occupant.get('jid'),
-                                       'reason': args[1]
-                                    }]).then(
-                                        () => this.model.occupants.fetchMembers(),
-                                        (err) => this.onCommandError(err)
-                                    );
+                            this.model.setAffiliation('member', [{
+                                'jid': occupant.get('jid'),
+                                'reason': args[1]
+                            }]).then(
+                                () => this.model.occupants.fetchMembers(),
+                                (err) => this.onCommandError(err)
+                            );
                             break;
                         } case 'nick':
                             if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
@@ -982,13 +980,13 @@
                             if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
                                 break;
                             }
-                            this.model.setAffiliation('owner',
-                                    [{ 'jid': args[0],
-                                       'reason': args[1]
-                                    }]).then(
-                                        () => this.model.occupants.fetchMembers(),
-                                        (err) => this.onCommandError(err)
-                                    );
+                            this.model.setAffiliation('owner', [{
+                                'jid': args[0],
+                                'reason': args[1]
+                            }]).then(
+                                () => this.model.occupants.fetchMembers(),
+                                (err) => this.onCommandError(err)
+                            );
                             break;
                         case 'op':
                             if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
@@ -1009,13 +1007,13 @@
                             if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                                 break;
                             }
-                            this.model.setAffiliation('none',
-                                    [{ 'jid': args[0],
-                                       'reason': args[1]
-                                    }]).then(
-                                        () => this.model.occupants.fetchMembers(),
-                                        (err) => this.onCommandError(err)
-                                    );
+                            this.model.setAffiliation('none', [{
+                                'jid': args[0],
+                                'reason': args[1]
+                            }]).then(
+                                () => this.model.occupants.fetchMembers(),
+                                (err) => this.onCommandError(err)
+                            );
                             break;
                         case 'topic':
                         case 'subject':

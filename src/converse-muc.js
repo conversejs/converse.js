@@ -810,45 +810,47 @@
                 },
 
                 async registerNickname () {
+                    const nick = this.get('nick'),
+                          jid = this.get('jid');
                     let iq;
                     try {
                         iq = await _converse.api.sendIQ(
                             $iq({
-                                'to': this.get('jid'),
+                                'to': jid,
                                 'from': _converse.connection.jid,
                                 'type': 'get'
                             }).c('query', {'xmlns': Strophe.NS.MUC_REGISTER})
                         );
                     } catch (e) {
                         if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-                            _converse.log(`Can't register nickname ${this.get('nick')} in the groupchat ${this.get('jid')} which does not exist.`);
+                            _converse.log(`Can't register nickname ${nick} in the groupchat ${jid} which does not exist.`);
                         } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-                            _converse.log(`You're not allowed to register in the groupchat ${this.get('jid')}`);
+                            _converse.log(`You're not allowed to register in the groupchat ${jid}`);
                         }
                         return _converse.log(e, Strophe.LogLevel.ERROR);
                     }
 
                     const required_fields = _.map(sizzle('field required', iq), 'parentElement');
                     if (required_fields.length > 1 || required_fields[0].getAttribute('var') !== 'muc#register_roomnick') {
-                        return _converse.log(`Can't register the user register in the groupchat ${this.get('jid')} due to the required fields`);
+                        return _converse.log(`Can't register the user register in the groupchat ${jid} due to the required fields`);
                     }
                     try {
                         await _converse.api.sendIQ($iq({
-                                'to': this.get('jid'),
+                                'to': jid,
                                 'from': _converse.connection.jid,
                                 'type': 'set'
                             }).c('query', {'xmlns': Strophe.NS.MUC_REGISTER})
                                 .c('x', {'xmlns': Strophe.NS.XFORM, 'type': 'submit'})
                                     .c('field', {'var': 'FORM_TYPE'}).c('value').t('http://jabber.org/protocol/muc#register').up().up()
-                                    .c('field', {'var': 'muc#register_roomnick'}).c('value').t(this.get('nick'))
+                                    .c('field', {'var': 'muc#register_roomnick'}).c('value').t(nick)
                         );
                     } catch (e) {
                         if (sizzle('conflict[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-                            _converse.log(`Can't register nickname ${this.get('nick')} in the groupchat ${this.get('jid')}, it's already taken.`);
+                            _converse.log(`Can't register nickname ${nick} in the groupchat ${jid}, it's already taken.`);
                         } else if (sizzle('service-unavailable[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-                            _converse.log(`Can't register nickname ${this.get('nick')} in the groupchat ${this.get('jid')}, it doesn't support registration.`);
+                            _converse.log(`Can't register nickname ${nick} in the groupchat ${jid}, it doesn't support registration.`);
                         } else if (sizzle('bad-request[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-                            _converse.log(`Can't register nickname ${this.get('nick')} in the groupchat ${this.get('jid')}, invalid data form supplied.`);
+                            _converse.log(`Can't register nickname ${nick} in the groupchat ${jid}, invalid data form supplied.`);
                         }
                         return _converse.log(e, Strophe.LogLevel.ERROR);
                     }

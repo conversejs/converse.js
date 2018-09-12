@@ -241,7 +241,7 @@
                 el.querySelector('span.spinner').remove();
                 el.querySelector('a.room-info').classList.add('selected');
                 el.insertAdjacentHTML(
-                    'beforeEnd', 
+                    'beforeEnd',
                     tpl_room_description({
                         'jid': stanza.getAttribute('from'),
                         'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
@@ -290,7 +290,7 @@
                 }
             }
 
-            
+
             _converse.ListChatRoomsModal = _converse.BootstrapModal.extend({
 
                 events: {
@@ -880,7 +880,7 @@
                         return false;
                     }
                     const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
-                          args = match[2] && match[2].splitOnce(' ') || [],
+                          args = match[2] && match[2].splitOnce(' ').filter(s => s) || [],
                           command = match[1].toLowerCase();
                     switch (command) {
                         case 'admin':
@@ -930,6 +930,7 @@
                                 `<strong>/nick</strong>: ${__('Change your nickname')}`,
                                 `<strong>/op</strong>: ${__('Grant moderator role to user')}`,
                                 `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`,
+                                `<strong>/register</strong>: ${__("Register a nickname for this room")}`,
                                 `<strong>/revoke</strong>: ${__("Revoke user's membership")}`,
                                 `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
                                 `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,
@@ -996,6 +997,13 @@
                             this.modifyRole(
                                     this.model.get('jid'), args[0], 'moderator', args[1],
                                     undefined, this.onCommandError.bind(this));
+                            break;
+                        case 'register':
+                            if (args.length > 1) {
+                                this.showErrorMessage(__(`Error: invalid number of arguments`))
+                            } else {
+                                this.model.registerNickname();
+                            }
                             break;
                         case 'revoke':
                             if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {

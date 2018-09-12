@@ -354,8 +354,8 @@
                     }).c('error', {'type': 'cancel'})
                     .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                    var input = view.el.querySelector('input[name="nick"]');
+                    return test_utils.waitUntil(() => view.el.querySelector('input[name="nick"]'));
+                }).then(input => {
                     input.value = 'nicky';
                     view.el.querySelector('input[type=submit]').click();
                     expect(view.submitNickname).toHaveBeenCalled();
@@ -402,7 +402,7 @@
                             "<query xmlns='http://jabber.org/protocol/muc#owner'><x xmlns='jabber:x:data' type='submit'/>"+
                         "</query></iq>");
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
         });
 
@@ -1899,7 +1899,8 @@
                  *  </x>
                  *  </presence>
                  */
-                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
+                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy')
+                .then(() => {
                     var presence = $pres().attrs({
                             from:'lounge@localhost/dummy',
                             to:'dummy@localhost/pda',

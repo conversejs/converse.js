@@ -262,7 +262,7 @@
                         type: 'groupchat'
                     }).c('body').t('romeo: Your attention is required').tree()
                 );
-                return test_utils.waitUntil(() => _converse.rooms_list_view.el.querySelectorAll(".msgs-indicator"));
+                return test_utils.waitUntil(() => _converse.rooms_list_view.el.querySelectorAll(".msgs-indicator").length);
             }).then(() => {
                 spyOn(view.model, 'incrementUnreadMsgCounter').and.callThrough();
                 const indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");

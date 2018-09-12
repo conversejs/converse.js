@@ -1203,51 +1203,25 @@
                      * If so, we'll use that, otherwise we render the nickname form.
                      */
                     this.showSpinner();
-                    this.model.checkForReservedNick(
-                        this.onReservedNicknameFound.bind(this),
-                        this.onReservedNicknameNotFound.bind(this)
-                    )
+                    this.model.checkForReservedNick()
+                        .then(this.onReservedNickFound.bind(this))
+                        .catch(this.onReservedNickNotFound.bind(this));
                 },
 
-                onReservedNicknameFound (iq) {
-                    /* We've received an IQ response from the server which
-                     * might contain the user's reserved nickname.
-                     * If no nickname is found we either render a form for
-                     * them to specify one, or we try to join the groupchat with the
-                     * node of the user's JID.
-                     *
-                     * Parameters:
-                     *  (XMLElement) iq: The received IQ stanza
-                     */
-                    const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
-                          nick = identity_el ? identity_el.getAttribute('name') : null;
-                    if (!nick) {
-                        this.onNickNameNotFound();
+                onReservedNickFound (iq) {
+                    if (this.model.get('nick')) {
+                        this.join();
                     } else {
-                        this.join(nick);
+                        this.onReservedNickNotFound();
                     }
                 },
 
-                onReservedNicknameNotFound (message) {
-                    const nick = this.getDefaultNickName();
+                onReservedNickNotFound (message) {
+                    const nick = this.model.getDefaultNick();
                     if (nick) {
                         this.join(nick);
                     } else {
                         this.renderNicknameForm(message);
-                    }
-                },
-
-                getDefaultNickName () {
-                    /* The default nickname (used when muc_nickname_from_jid is true)
-                     * is the node part of the user's JID.
-                     * We put this in a separate method so that it can be
-                     * overridden by plugins.
-                     */
-                    const nick = _converse.xmppstatus.vcard.get('nickname');
-                    if (nick) {
-                        return nick;
-                    } else if (_converse.muc_nickname_from_jid) {
-                        return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
                     }
                 },
 
@@ -1262,7 +1236,7 @@
                      */
                     if (_converse.muc_nickname_from_jid) {
                         const nick = presence.getAttribute('from').split('/')[1];
-                        if (nick === this.getDefaultNickName()) {
+                        if (nick === this.model.getDefaultNick()) {
                             this.join(nick + '-2');
                         } else {
                             const del= nick.lastIndexOf("-");

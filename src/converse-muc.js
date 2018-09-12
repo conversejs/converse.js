@@ -406,17 +406,17 @@
                 getRoomFeatures () {
                     /* Fetch the groupchat disco info, parse it and then save it.
                      */
-                    return new Promise((resolve, reject) => {
-                        _converse.api.disco.info(this.get('jid'), null)
-                            .then((stanza) => {
-                                this.parseRoomFeatures(stanza);
-                                resolve()
-                            }).catch((err) => {
-                                _converse.log("Could not parse the groupchat features", Strophe.LogLevel.WARN);
-                                _converse.log(err, Strophe.LogLevel.WARN);
-                                reject(err);
-                            });
-                    });
+                    // XXX: Currently we store disco info on the room itself.
+                    // A better design would probably be to create a
+                    // DiscoEntity for this room, and then to let
+                    // converse-disco manage all disco-related tasks.
+                    // Then we can also use _converse.api.disco.supports.
+                    return _converse.api.disco.info(this.get('jid'), null)
+                        .then(stanza => this.parseRoomFeatures(stanza))
+                        .catch(err => {
+                            _converse.log("Could not parse the groupchat features", Strophe.LogLevel.WARN);
+                            _converse.log(err, Strophe.LogLevel.WARN);
+                        });
                 },
 
                 getRoomJIDAndNick (nick) {
@@ -791,7 +791,21 @@
                         .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 },
 
-                checkForReservedNick (callback, errback) {
+                getDefaultNick () {
+                    /* The default nickname (used when muc_nickname_from_jid is true)
+                     * is the node part of the user's JID.
+                     * We put this in a separate method so that it can be
+                     * overridden by plugins.
+                     */
+                    const nick = _converse.xmppstatus.vcard.get('nickname');
+                    if (nick) {
+                        return nick;
+                    } else if (_converse.muc_nickname_from_jid) {
+                        return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    }
+                },
+
+                checkForReservedNick () {
                     /* Use service-discovery to ask the XMPP server whether
                      * this user has a reserved nickname for this groupchat.
                      * If so, we'll use that, otherwise we render the nickname form.
@@ -800,7 +814,7 @@
                      *  (Function) callback: Callback upon succesful IQ response
                      *  (Function) errback: Callback upon error IQ response
                      */
-                    _converse.connection.sendIQ(
+                    return _converse.api.sendIQ(
                         $iq({
                             'to': this.get('jid'),
                             'from': _converse.connection.jid,
@@ -808,9 +822,16 @@
                         }).c("query", {
                             'xmlns': Strophe.NS.DISCO_INFO,
                             'node': 'x-roomuser-item'
-                        }),
-                        callback, errback);
-                    return this;
+                        })
+                    ).then(iq => {
+                        const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
+                              nick = identity_el ? identity_el.getAttribute('name') : null;
+                        this.save({
+                            'reserved_nick': nick,
+                            'nick': nick
+                        }, {'silent': true});
+                        return iq;
+                    });
                 },
 
                 async registerNickname () {

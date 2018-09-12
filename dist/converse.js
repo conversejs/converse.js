@@ -68983,51 +68983,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * If so, we'll use that, otherwise we render the nickname form.
            */
           this.showSpinner();
-          this.model.checkForReservedNick(this.onReservedNicknameFound.bind(this), this.onReservedNicknameNotFound.bind(this));
+          this.model.checkForReservedNick().then(this.onReservedNickFound.bind(this)).catch(this.onReservedNickNotFound.bind(this));
         },
 
-        onReservedNicknameFound(iq) {
-          /* We've received an IQ response from the server which
-           * might contain the user's reserved nickname.
-           * If no nickname is found we either render a form for
-           * them to specify one, or we try to join the groupchat with the
-           * node of the user's JID.
-           *
-           * Parameters:
-           *  (XMLElement) iq: The received IQ stanza
-           */
-          const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
-                nick = identity_el ? identity_el.getAttribute('name') : null;
-
-          if (!nick) {
-            this.onNickNameNotFound();
+        onReservedNickFound(iq) {
+          if (this.model.get('nick')) {
+            this.join();
           } else {
-            this.join(nick);
+            this.onReservedNickNotFound();
           }
         },
 
-        onReservedNicknameNotFound(message) {
-          const nick = this.getDefaultNickName();
+        onReservedNickNotFound(message) {
+          const nick = this.model.getDefaultNick();
 
           if (nick) {
             this.join(nick);
           } else {
             this.renderNicknameForm(message);
-          }
-        },
-
-        getDefaultNickName() {
-          /* The default nickname (used when muc_nickname_from_jid is true)
-           * is the node part of the user's JID.
-           * We put this in a separate method so that it can be
-           * overridden by plugins.
-           */
-          const nick = _converse.xmppstatus.vcard.get('nickname');
-
-          if (nick) {
-            return nick;
-          } else if (_converse.muc_nickname_from_jid) {
-            return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
           }
         },
 
@@ -69043,7 +69016,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (_converse.muc_nickname_from_jid) {
             const nick = presence.getAttribute('from').split('/')[1];
 
-            if (nick === this.getDefaultNickName()) {
+            if (nick === this.model.getDefaultNick()) {
               this.join(nick + '-2');
             } else {
               const del = nick.lastIndexOf("-");
@@ -70110,8 +70083,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         },
 
         async onConnectionStatusChanged() {
-          if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED && _converse.auto_register_muc_nickname) {
-            debugger;
+          if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED && _converse.auto_register_muc_nickname && this.get('reserved_nick')) {
             const result = await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'));
 
             if (result.length) {
@@ -70361,17 +70333,15 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         getRoomFeatures() {
           /* Fetch the groupchat disco info, parse it and then save it.
            */
-          return new Promise((resolve, reject) => {
-            _converse.api.disco.info(this.get('jid'), null).then(stanza => {
-              this.parseRoomFeatures(stanza);
-              resolve();
-            }).catch(err => {
-              _converse.log("Could not parse the groupchat features", Strophe.LogLevel.WARN);
+          // XXX: Currently we store disco info on the room itself.
+          // A better design would probably be to create a
+          // DiscoEntity for this room, and then to let
+          // converse-disco manage all disco-related tasks.
+          // Then we can also use _converse.api.disco.supports.
+          return _converse.api.disco.info(this.get('jid'), null).then(stanza => this.parseRoomFeatures(stanza)).catch(err => {
+            _converse.log("Could not parse the groupchat features", Strophe.LogLevel.WARN);
 
-              _converse.log(err, Strophe.LogLevel.WARN);
-
-              reject(err);
-            });
+            _converse.log(err, Strophe.LogLevel.WARN);
           });
         },
 
@@ -70801,7 +70771,22 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           this.getJidsWithAffiliations(affiliations).then(old_members => this.setAffiliations(deltaFunc(members, old_members))).then(() => this.occupants.fetchMembers()).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
         },
 
-        checkForReservedNick(callback, errback) {
+        getDefaultNick() {
+          /* The default nickname (used when muc_nickname_from_jid is true)
+           * is the node part of the user's JID.
+           * We put this in a separate method so that it can be
+           * overridden by plugins.
+           */
+          const nick = _converse.xmppstatus.vcard.get('nickname');
+
+          if (nick) {
+            return nick;
+          } else if (_converse.muc_nickname_from_jid) {
+            return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+          }
+        },
+
+        checkForReservedNick() {
           /* Use service-discovery to ask the XMPP server whether
            * this user has a reserved nickname for this groupchat.
            * If so, we'll use that, otherwise we render the nickname form.
@@ -70810,16 +70795,24 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            *  (Function) callback: Callback upon succesful IQ response
            *  (Function) errback: Callback upon error IQ response
            */
-          _converse.connection.sendIQ($iq({
+          return _converse.api.sendIQ($iq({
             'to': this.get('jid'),
             'from': _converse.connection.jid,
             'type': "get"
           }).c("query", {
             'xmlns': Strophe.NS.DISCO_INFO,
             'node': 'x-roomuser-item'
-          }), callback, errback);
-
-          return this;
+          })).then(iq => {
+            const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
+                  nick = identity_el ? identity_el.getAttribute('name') : null;
+            this.save({
+              'reserved_nick': nick,
+              'nick': nick
+            }, {
+              'silent': true
+            });
+            return iq;
+          });
         },
 
         async registerNickname() {

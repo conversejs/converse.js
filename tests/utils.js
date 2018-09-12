@@ -126,61 +126,60 @@
     };
 
     utils.openAndEnterChatRoom = function (_converse, room, server, nick) {
-        let last_stanza;
+        let last_stanza, view;
 
-        return new Promise((resolve, reject) => {
-            return _converse.api.rooms.open(`${room}@${server}`).then(() => {
-                const view = _converse.chatboxviews.get((room+'@'+server).toLowerCase());
-                // We pretend this is a new room, so no disco info is returned.
-                let last_stanza = _.last(_converse.connection.IQ_stanzas).nodeTree;
-                const IQ_id = last_stanza.getAttribute('id');
-                const features_stanza = $iq({
-                        'from': room+'@'+server,
-                        'id': IQ_id,
-                        'to': nick+'@'+server,
-                        'type': 'error'
-                    }).c('error', {'type': 'cancel'})
-                        .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
-                _converse.connection._dataRecv(utils.createRequest(features_stanza));
-
-                utils.waitUntil(() => {
-                    return _.filter(
-                        _converse.connection.IQ_stanzas, (node) => {
-                            const query = node.nodeTree.querySelector('query');
-                            if (query && query.getAttribute('node') === 'x-roomuser-item') {
-                                last_stanza = node.nodeTree;
-                                return true;
-                            }
-                        }).length
-                }).then(function () {
-                    // The XMPP server returns the reserved nick for this user.
-                    const IQ_id = last_stanza.getAttribute('id');
-                    const stanza = $iq({
-                        'type': 'result',
-                        'id': IQ_id,
-                        'from': view.model.get('jid'),
-                        'to': _converse.connection.jid 
-                    }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
-                        .c('identity', {'category': 'conference', 'name': nick, 'type': 'text'});
-                    _converse.connection._dataRecv(utils.createRequest(stanza));
-                    // The user has just entered the room (because join was called)
-                    // and receives their own presence from the server.
-                    // See example 24: http://xmpp.org/extensions/xep-0045.html#enter-pres
-                    var presence = $pres({
-                            to: _converse.connection.jid,
-                            from: room+'@'+server+'/'+nick,
-                            id: 'DC352437-C019-40EC-B590-AF29E879AF97'
-                    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
-                        .c('item').attrs({
-                            affiliation: 'owner',
-                            jid: _converse.bare_jid,
-                            role: 'moderator'
-                        }).up()
-                        .c('status').attrs({code:'110'});
-                    _converse.connection._dataRecv(utils.createRequest(presence));
-                    resolve();
-                }).catch(_.partial(console.error, _));
-            }).catch(_.partial(console.error, _));
+        return _converse.api.rooms.open(`${room}@${server}`).then(() => {
+            view = _converse.chatboxviews.get((room+'@'+server).toLowerCase());
+            // We pretend this is a new room, so no disco info is returned.
+            last_stanza = _.last(_converse.connection.IQ_stanzas).nodeTree;
+            const IQ_id = last_stanza.getAttribute('id');
+            const features_stanza = $iq({
+                    'from': room+'@'+server,
+                    'id': IQ_id,
+                    'to': nick+'@'+server,
+                    'type': 'error'
+                }).c('error', {'type': 'cancel'})
+                    .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+            _converse.connection._dataRecv(utils.createRequest(features_stanza));
+            return utils.waitUntil(() => {
+                return _.filter(
+                    _converse.connection.IQ_stanzas, (node) => {
+                        const query = node.nodeTree.querySelector('query');
+                        if (query && query.getAttribute('node') === 'x-roomuser-item') {
+                            last_stanza = node.nodeTree;
+                            return true;
+                        }
+                    }).length
+            });
+        }).then(() => {
+            // The XMPP server returns the reserved nick for this user.
+            const IQ_id = last_stanza.getAttribute('id');
+            const stanza = $iq({
+                'type': 'result',
+                'id': IQ_id,
+                'from': view.model.get('jid'),
+                'to': _converse.connection.jid 
+            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
+                .c('identity', {'category': 'conference', 'name': nick, 'type': 'text'});
+            _converse.connection._dataRecv(utils.createRequest(stanza));
+            return utils.waitUntil(() => view.model.get('nick'));
+        }).then(() => {
+            // The user has just entered the room (because join was called)
+            // and receives their own presence from the server.
+            // See example 24: http://xmpp.org/extensions/xep-0045.html#enter-pres
+            var presence = $pres({
+                    to: _converse.connection.jid,
+                    from: room+'@'+server+'/'+nick,
+                    id: 'DC352437-C019-40EC-B590-AF29E879AF97'
+            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({
+                    affiliation: 'owner',
+                    jid: _converse.bare_jid,
+                    role: 'moderator'
+                }).up()
+                .c('status').attrs({code:'110'});
+            _converse.connection._dataRecv(utils.createRequest(presence));
+            return utils.waitUntil(() => view.model.get('connection_status') === converse.ROOMSTATUS.ENTERED);
         }).catch(_.partial(console.error, _));
     };
 

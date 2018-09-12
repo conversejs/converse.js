@@ -810,11 +810,12 @@
                 },
 
                 async registerNickname () {
+                    let iq;
                     try {
-                        await _converse.api.sendIQ(
+                        iq = await _converse.api.sendIQ(
                             $iq({
-                                'from': _converse.bare_jid,
                                 'to': this.get('jid'),
+                                'from': _converse.connection.jid,
                                 'type': 'get'
                             }).c('query', {'xmlns': Strophe.NS.MUC_REGISTER})
                         );
@@ -826,10 +827,15 @@
                         }
                         return _converse.log(e, Strophe.LogLevel.ERROR);
                     }
+
+                    const required_fields = _.map(sizzle('field required', iq), 'parentElement');
+                    if (required_fields.length > 1 || required_fields[0].getAttribute('var') !== 'muc#register_roomnick') {
+                        return _converse.log(`Can't register the user register in the groupchat ${this.get('jid')} due to the required fields`);
+                    }
                     try {
                         await _converse.api.sendIQ($iq({
-                                'from': _converse.bare_jid,
                                 'to': this.get('jid'),
+                                'from': _converse.connection.jid,
                                 'type': 'set'
                             }).c('query', {'xmlns': Strophe.NS.MUC_REGISTER})
                                 .c('x', {'xmlns': Strophe.NS.XFORM, 'type': 'submit'})

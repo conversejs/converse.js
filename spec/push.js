@@ -57,7 +57,7 @@
             }).then(done).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }));
 
-        it("can enabled for a MUC domain",
+        it("can be enabled for a MUC domain",
             mock.initConverseWithPromises(null,
                 ['rosterGroupsFetched'], {
                     'push_app_servers': [{

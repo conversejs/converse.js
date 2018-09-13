@@ -957,15 +957,17 @@
                                 break;
                             }
                             const occupant = this.model.occupants.findWhere({'nick': args[0]}) ||
-                                             this.model.occupants.findWhere({'jid': args[0]});
-                            this.model.setAffiliation('member', [{
-                                'jid': occupant.get('jid'),
-                                'nick': occupant.get('nick'),
-                                'reason': args[1]
-                            }]).then(
-                                () => this.model.occupants.fetchMembers(),
-                                (err) => this.onCommandError(err)
-                            );
+                                             this.model.occupants.findWhere({'jid': args[0]}),
+                                  attrs = {
+                                    'jid': occupant.get('jid'),
+                                    'reason': args[1]
+                                  };
+                            if (_converse.auto_register_muc_nickname) {
+                                attrs['nick'] = occupant.get('nick');
+                            }
+                            this.model.setAffiliation('member', [attrs])
+                                .then(() => this.model.occupants.fetchMembers())
+                                .catch(err => this.onCommandError(err));
                             break;
                         } case 'nick':
                             if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {

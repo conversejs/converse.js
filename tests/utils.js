@@ -19,20 +19,17 @@
         if (_.isNil(type)) {
             type = 'info';
         }
-        var IQ_disco, stanza;
-        return utils.waitUntil(function () {
-            IQ_disco = _.filter(_converse.connection.IQ_stanzas, function (iq) {
-                return iq.nodeTree.querySelector('query[xmlns="http://jabber.org/protocol/disco#'+type+'"]') &&
-                    iq.nodeTree.getAttribute('to') === entity_jid;
-            }).pop();
-            return !_.isUndefined(IQ_disco);
-        }, 300).then(function () {
-            var info_IQ_id = IQ_disco.nodeTree.getAttribute('id');
-            var stanza = $iq({
+        return utils.waitUntil(() => {
+            return _.filter(
+                _converse.connection.IQ_stanzas,
+                (iq) => sizzle(`iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`, iq.nodeTree).length
+            ).pop();
+        }, 300).then(iq => {
+            const stanza = $iq({
                 'type': 'result',
                 'from': entity_jid,
                 'to': 'dummy@localhost/resource',
-                'id': info_IQ_id
+                'id': iq.nodeTree.getAttribute('id'), 
             }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#'+type});
 
             _.forEach(identities, function (identity) {
@@ -169,18 +166,17 @@
                     _converse.connection._dataRecv(utils.createRequest(features_stanza));
                 });
             }
-            return utils.waitUntil(() => _.get(_.filter(
+            return utils.waitUntil(() => _.filter(
                     stanzas,
                     s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s.nodeTree).length
-                ).pop(), 'nodeTree')
+                ).pop()
             );
-        }).then(last_stanza => {
-            // We empty the array, otherwise we might get stale stanzas
-            // returned in our filter above.
-            stanzas.length = 0;
+        }).then(iq => {
+            // We remove the stanza, otherwise we might get stale stanzas returned in our filter above.
+            stanzas.splice(stanzas.indexOf(iq), 1)
 
             // The XMPP server returns the reserved nick for this user.
-            const IQ_id = last_stanza.getAttribute('id');
+            const IQ_id = iq.nodeTree.getAttribute('id');
             const stanza = $iq({
                 'type': 'result',
                 'id': IQ_id,

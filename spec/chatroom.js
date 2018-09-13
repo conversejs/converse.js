@@ -285,6 +285,7 @@
 
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
                 const sendIQ = _converse.connection.sendIQ;
+                const room_jid = 'lounge@localhost';
                 let sent_IQ, IQ_id, view;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     if (iq.nodeTree.getAttribute('to') === 'lounge@localhost') {
@@ -296,8 +297,14 @@
                 });
                 test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy')
                 .then(() => {
+                    return test_utils.waitUntil(() => _.get(_.filter(
+                        IQ_stanzas,
+                        iq => iq.nodeTree.querySelector(
+                            `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                        )).pop(), 'nodeTree'));
+                }).then(stanza => {
                     // We pretend this is a new room, so no disco info is returned.
-                    //
+ 
                     /* <iq from="jordie.langen@chat.example.org/converse.js-11659299" to="myroom@conference.chat.example.org" type="get">
                      *     <query xmlns="http://jabber.org/protocol/disco#info"/>
                      * </iq>
@@ -309,7 +316,7 @@
                      */
                     var features_stanza = $iq({
                             'from': 'lounge@localhost',
-                            'id': IQ_id,
+                            'id': stanza.getAttribute('id'),
                             'to': 'dummy@localhost/desktop',
                             'type': 'error'
                         }).c('error', {'type': 'cancel'})
@@ -327,17 +334,16 @@
                      *          node="x-roomuser-item"/>
                      * </iq>
                      */
-                    return test_utils.waitUntil(() => _.filter(IQ_stanzas, (iq) => iq.nodeTree.querySelector('query[node="x-roomuser-item"]')).length);
-                }).then(() => {
-                    const iq = _.filter(IQ_stanzas, function (iq) {
-                        return iq.nodeTree.querySelector(`query[node="x-roomuser-item"]`);
-                    }).pop();
-
-                    const id = iq.nodeTree.getAttribute('id');
-                    expect(iq.toLocaleString()).toBe(
-                        "<iq to='lounge@localhost' from='dummy@localhost/resource' "+
-                            "type='get' xmlns='jabber:client' id='"+id+"'>"+
-                                "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>");
+                    return test_utils.waitUntil(() => _.get(_.filter(
+                            IQ_stanzas,
+                            s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s.nodeTree).length
+                        ).pop(), 'nodeTree')
+                    );
+                }).then(stanza => {
+                    expect(stanza.outerHTML.trim()).toBe(
+                        `<iq to="lounge@localhost" from="dummy@localhost/resource" `+
+                            `type="get" xmlns="jabber:client" id="${stanza.getAttribute("id")}">`+
+                                `<query xmlns="http://jabber.org/protocol/disco#info" node="x-roomuser-item"/></iq>`);
 
                     /* <iq xmlns="jabber:client" type="error" to="jordie.langen@chat.example.org/converse.js-11659299" from="myroom@conference.chat.example.org">
                      *      <error type="cancel">
@@ -345,14 +351,14 @@
                      *      </error>
                      *  </iq>
                      */
-                    var stanza = $iq({
+                    var result_stanza = $iq({
                         'type': 'error',
-                        'id': id,
+                        'id': stanza.getAttribute('id'),
                         'from': view.model.get('jid'),
                         'to': _converse.connection.jid
                     }).c('error', {'type': 'cancel'})
-                    .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
-                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+                    _converse.connection._dataRecv(test_utils.createRequest(result_stanza));
                     return test_utils.waitUntil(() => view.el.querySelector('input[name="nick"]'));
                 }).then(input => {
                     input.value = 'nicky';
@@ -366,13 +372,13 @@
                     // http://xmpp.org/extensions/xep-0045.html#enter-pres
                     //
                     /* <presence xmlns="jabber:client" to="jordie.langen@chat.example.org/converse.js-11659299" from="myroom@conference.chat.example.org/jc">
-                    *    <x xmlns="http://jabber.org/protocol/muc#user">
-                    *        <item jid="jordie.langen@chat.example.org/converse.js-11659299" affiliation="owner" role="moderator"/>
-                    *        <status code="110"/>
-                    *        <status code="201"/>
-                    *    </x>
-                    *  </presence>
-                    */
+                     *    <x xmlns="http://jabber.org/protocol/muc#user">
+                     *        <item jid="jordie.langen@chat.example.org/converse.js-11659299" affiliation="owner" role="moderator"/>
+                     *        <status code="110"/>
+                     *        <status code="201"/>
+                     *    </x>
+                     *  </presence>
+                     */
                     var presence = $pres({
                             to:'dummy@localhost/resource',
                             from:'lounge@localhost/thirdwitch',
@@ -1246,6 +1252,7 @@
                 let sent_IQ, IQ_id, view;
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
                 const sendIQ = _converse.connection.sendIQ;
+                const room_jid = 'lounge@localhost';
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     if (iq.nodeTree.getAttribute('to') === 'lounge@localhost') {
                         sent_IQ = iq;
@@ -1257,10 +1264,16 @@
 
                 test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy')
                 .then(() => {
+                    return test_utils.waitUntil(() => _.get(_.filter(
+                        IQ_stanzas,
+                        iq => iq.nodeTree.querySelector(
+                            `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                        )).pop(), 'nodeTree'));
+                }).then(stanza => {
                     // We pretend this is a new room, so no disco info is returned.
                     var features_stanza = $iq({
                             from: 'lounge@localhost',
-                            'id': IQ_id,
+                            'id': stanza.getAttribute('id'),
                             'to': 'dummy@localhost/desktop',
                             'type': 'error'
                         }).c('error', {'type': 'cancel'})
@@ -1278,16 +1291,16 @@
                      *         node='x-roomuser-item'/>
                      * </iq>
                      */
-                    return test_utils.waitUntil(() => _.filter(IQ_stanzas, (iq) => iq.nodeTree.querySelector('query[node="x-roomuser-item"]')).length)
-                }).then(() => {
-                    const iq = _.filter(IQ_stanzas, function (iq) {
-                        return iq.nodeTree.querySelector(`query[node="x-roomuser-item"]`);
-                    }).pop();
-                    const id = iq.nodeTree.getAttribute('id');
-                    expect(iq.toLocaleString()).toBe(
-                        "<iq to='lounge@localhost' from='dummy@localhost/resource' "+
-                            "type='get' xmlns='jabber:client' id='"+id+"'>"+
-                                "<query xmlns='http://jabber.org/protocol/disco#info' node='x-roomuser-item'/></iq>");
+                    return test_utils.waitUntil(() => _.get(_.filter(
+                            IQ_stanzas,
+                            s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s.nodeTree).length
+                        ).pop(), 'nodeTree')
+                    );
+                }).then(iq => {
+                    expect(iq.outerHTML).toBe(
+                        `<iq to="lounge@localhost" from="dummy@localhost/resource" `+
+                            `type="get" xmlns="jabber:client" id="${iq.getAttribute('id')}">`+
+                                `<query xmlns="http://jabber.org/protocol/disco#info" node="x-roomuser-item"/></iq>`);
 
                     /* <iq from='coven@chat.shakespeare.lit'
                      *     id='getnick1'
@@ -1704,24 +1717,23 @@
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         function (done, _converse) {
 
-                var sent_IQ, IQ_id;
-                var sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
+                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                const room_jid = 'coven@chat.shakespeare.lit';
 
-                let view;
-                _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'})
+                _converse.api.rooms.open(room_jid, {'nick': 'some1'})
                 .then(() => {
+                    return test_utils.waitUntil(() => _.get(_.filter(
+                        IQ_stanzas,
+                        iq => iq.nodeTree.querySelector(
+                            `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                        )).pop(), 'nodeTree'));
+                }).then(stanza => {
                     // Check that the groupchat queried for the feautures.
-                    expect(sent_IQ.toLocaleString()).toBe(
-                        "<iq from='dummy@localhost/resource' to='coven@chat.shakespeare.lit' type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<query xmlns='http://jabber.org/protocol/disco#info'/>"+
-                        "</iq>");
+                    expect(stanza.outerHTML).toBe(
+                        `<iq from="dummy@localhost/resource" to="${room_jid}" type="get" xmlns="jabber:client" id="${stanza.getAttribute("id")}">`+
+                            `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
+                        `</iq>`);
 
-                    view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                    spyOn(view.model, 'parseRoomFeatures').and.callThrough();
                     /* <iq from='coven@chat.shakespeare.lit'
                      *      id='ik3vs715'
                      *      to='hag66@shakespeare.lit/pda'
@@ -1742,8 +1754,8 @@
                      *  </iq>
                      */
                     const features_stanza = $iq({
-                            from: 'coven@chat.shakespeare.lit',
-                            'id': IQ_id,
+                            'from': room_jid,
+                            'id': stanza.getAttribute('id'),
                             'to': 'dummy@localhost/desktop',
                             'type': 'result'
                         })
@@ -1761,8 +1773,10 @@
                             .c('feature', {'var': 'muc_unmoderated'}).up()
                             .c('feature', {'var': 'muc_nonanonymous'});
                     _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
-                    return test_utils.waitUntil(() => view.model.parseRoomFeatures.calls.count(), 300)
+                    const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    return test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
                 }).then(() => {
+                    const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                     expect(view.model.get('features_fetched')).toBeTruthy();
                     expect(view.model.get('passwordprotected')).toBe(true);
                     expect(view.model.get('hidden')).toBe(true);
@@ -1771,7 +1785,7 @@
                     expect(view.model.get('unmoderated')).toBe(true);
                     expect(view.model.get('nonanonymous')).toBe(true);
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
 
             it("updates the shown features when the groupchat configuration has changed",
@@ -2041,11 +2055,12 @@
 
                     expect(view.onMessageSubmitted).toHaveBeenCalled();
                     const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                    expect(info_messages.length).toBe(17);
+                    expect(info_messages.length).toBe(18);
                     expect(info_messages.pop().textContent).toBe('/voice: Allow muted user to post messages');
                     expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                     expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
                     expect(info_messages.pop().textContent).toBe('/revoke: Revoke user\'s membership');
+                    expect(info_messages.pop().textContent).toBe('/register: Register a nickname for this room');
                     expect(info_messages.pop().textContent).toBe('/owner: Grant ownership of this groupchat');
                     expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
                     expect(info_messages.pop().textContent).toBe('/nick: Change your nickname');
@@ -2071,7 +2086,6 @@
 
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'muc.localhost', 'dummy')
                 .then(() => {
-
                     view = _converse.chatboxviews.get('lounge@muc.localhost');
                     /* We don't show join/leave messages for existing occupants. We
                      * know about them because we receive their presences before we
@@ -3136,17 +3150,30 @@
 
                 var sent_IQs = [], IQ_ids = [];
                 let invitee_jid, sent_stanza, sent_id, view;
-                var sendIQ = _converse.connection.sendIQ;
+                const sendIQ = _converse.connection.sendIQ;
+                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                const room_jid = 'coven@chat.shakespeare.lit';
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_IQs.push(iq);
                     IQ_ids.push(sendIQ.bind(this)(iq, callback, errback));
                 });
 
-                _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'dummy'})
+                _converse.api.rooms.open(room_jid, {'nick': 'dummy'})
                 .then(() => {
-                    view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                    spyOn(view.model, 'parseRoomFeatures').and.callThrough();
+                    return test_utils.waitUntil(() => _.get(_.filter(
+                        IQ_stanzas,
+                        iq => iq.nodeTree.querySelector(
+                            `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                        )).pop(), 'nodeTree'));
+                }).then(stanza => {
+                    // Check that the groupchat queried for the feautures.
+                    expect(stanza.outerHTML).toBe(
+                        `<iq from="dummy@localhost/resource" to="${room_jid}" type="get" xmlns="jabber:client" id="${stanza.getAttribute("id")}">`+
+                            `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
+                        `</iq>`);
 
+
+                    view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                     // State that the chat is members-only via the features IQ
                     var features_stanza = $iq({
                             from: 'coven@chat.shakespeare.lit',
@@ -3165,8 +3192,7 @@
                             .c('feature', {'var': 'muc_temporary'}).up()
                             .c('feature', {'var': 'muc_membersonly'}).up();
                     _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
-
-                    return test_utils.waitUntil(() => view.model.parseRoomFeatures.calls.count(), 300);
+                    return test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
                 }).then(() => {
                    expect(view.model.get('membersonly')).toBeTruthy();
 
@@ -3279,7 +3305,7 @@
                         "</message>"
                     );
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
         });
 

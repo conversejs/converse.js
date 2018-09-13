@@ -100,16 +100,4 @@
             }
         );
     };
-
-    u.marshallAffiliationIQs = function marshallAffiliationIQs () {
-        /* Marshall a list of IQ stanzas into a map of JIDs and
-            * affiliations.
-            *
-            * Parameters:
-            *  Any amount of XMLElement objects, representing the IQ
-            *  stanzas.
-            */
-        return _.flatMap(arguments[0], u.parseMemberListIQ);
-    }
-
 }));

@@ -730,21 +730,21 @@
                     return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
                 },
 
-                getJidsWithAffiliations (affiliations) {
+                async getJidsWithAffiliations (affiliations) {
                     /* Returns a map of JIDs that have the affiliations
                      * as provided.
                      */
                     if (_.isString(affiliations)) {
                         affiliations = [affiliations];
                     }
-                    const promises = _.map(
-                        affiliations,
-                        _.partial(this.requestMemberList.bind(this))
-                    );
-                    return Promise.all(promises).then(
-                        (iq) => u.marshallAffiliationIQs(iq),
-                        (iq) => u.marshallAffiliationIQs(iq)
-                    );
+                    const result = await Promise.all(affiliations.map(a =>
+                        this.requestMemberList(a)
+                            .then(iq => u.parseMemberListIQ(iq))
+                            .catch(iq => {
+                                _converse.log(iq, Strophe.LogLevel.ERROR);
+                            })
+                    ));
+                    return [].concat.apply([], result).filter(p => p);
                 },
 
                 updateMemberLists (members, affiliations, deltaFunc) {
@@ -766,7 +766,7 @@
                      *  to update the list.
                      */
                     this.getJidsWithAffiliations(affiliations)
-                        .then((old_members) => this.setAffiliations(deltaFunc(members, old_members)))
+                        .then(old_members => this.setAffiliations(deltaFunc(members, old_members)))
                         .then(() => this.occupants.fetchMembers())
                         .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 },

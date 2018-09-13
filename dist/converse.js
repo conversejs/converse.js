@@ -70790,7 +70790,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
         },
 
-        getJidsWithAffiliations(affiliations) {
+        async getJidsWithAffiliations(affiliations) {
           /* Returns a map of JIDs that have the affiliations
            * as provided.
            */
@@ -70798,9 +70798,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             affiliations = [affiliations];
           }
 
-          const promises = _.map(affiliations, _.partial(this.requestMemberList.bind(this)));
-
-          return Promise.all(promises).then(iq => u.marshallAffiliationIQs(iq), iq => u.marshallAffiliationIQs(iq));
+          const result = await Promise.all(affiliations.map(a => this.requestMemberList(a).then(iq => u.parseMemberListIQ(iq)).catch(iq => {
+            _converse.log(iq, Strophe.LogLevel.ERROR);
+          })));
+          return [].concat.apply([], result).filter(p => p);
         },
 
         updateMemberLists(members, affiliations, deltaFunc) {
@@ -103692,17 +103693,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       return data;
     });
-  };
-
-  u.marshallAffiliationIQs = function marshallAffiliationIQs() {
-    /* Marshall a list of IQ stanzas into a map of JIDs and
-        * affiliations.
-        *
-        * Parameters:
-        *  Any amount of XMLElement objects, representing the IQ
-        *  stanzas.
-        */
-    return _.flatMap(arguments[0], u.parseMemberListIQ);
   };
 });
 

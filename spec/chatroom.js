@@ -3172,7 +3172,6 @@
                             `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
                         `</iq>`);
 
-
                     view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                     // State that the chat is members-only via the features IQ
                     var features_stanza = $iq({
@@ -3288,16 +3287,20 @@
                    _converse.connection._dataRecv(test_utils.createRequest(owner_list_stanza));
                     return test_utils.waitUntil(() => IQ_ids.length, 300);
                 }).then(() => {
-                    // Check that the member list now gets updated
-                    var iq = "<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+IQ_ids.pop()+"'>"+
+                    return test_utils.waitUntil(() => _.get(_.filter(
+                        IQ_stanzas,
+                        iq => iq.nodeTree.querySelector(
+                            `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/muc#admin"]`
+                        )).pop(), 'nodeTree'));
+                }).then(stanza => {
+                    expect(stanza.outerHTML,
+                        "<iq to='coven@chat.shakespeare.lit' type='set' xmlns='jabber:client' id='"+IQ_ids.pop()+"'>"+
                             "<query xmlns='http://jabber.org/protocol/muc#admin'>"+
                                 "<item affiliation='member' jid='"+invitee_jid+"'>"+
                                     "<reason>Please join this groupchat</reason>"+
                                 "</item>"+
                             "</query>"+
-                        "</iq>";
-                    return test_utils.waitUntil(() => _.includes(_.invokeMap(sent_IQs, Object.prototype.toLocaleString), iq), 300);
-                }).then(() => {
+                        "</iq>");
                     // Finally check that the user gets invited.
                     expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
                         "<message from='dummy@localhost/resource' to='"+invitee_jid+"' id='"+sent_id+"' xmlns='jabber:client'>"+

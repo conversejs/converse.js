@@ -130,42 +130,39 @@
 
         return _converse.api.rooms.open(room_jid).then(() => {
             view = _converse.chatboxviews.get(room_jid);
-            if (!_converse.disco_entities.get(room_jid)) {
-                utils.waitUntil(() => _.get(_.filter(
-                    stanzas,
-                    iq => iq.nodeTree.querySelector(
-                        `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-                    )).pop(), 'nodeTree'))
-                .then(stanza => {
-                    const features_stanza = $iq({
-                        'from': room_jid,
-                        'id': stanza.getAttribute('id'),
-                        'to': 'dummy@localhost/desktop',
-                        'type': 'result'
-                    }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
-                        .c('identity', {
-                            'category': 'conference',
-                            'name': room[0].toUpperCase() + room.slice(1),
-                            'type': 'text'
-                        }).up()
-                        .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
-                        .c('feature', {'var': 'jabber:iq:register'}).up()
-                        .c('feature', {'var': 'muc_passwordprotected'}).up()
-                        .c('feature', {'var': 'muc_hidden'}).up()
-                        .c('feature', {'var': 'muc_temporary'}).up()
-                        .c('feature', {'var': 'muc_open'}).up()
-                        .c('feature', {'var': 'muc_unmoderated'}).up()
-                        .c('feature', {'var': 'muc_nonanonymous'})
-                        .c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
-                            .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
-                                .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
-                            .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
-                                .c('value').t('This is the description').up().up()
-                            .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
-                                .c('value').t(0);
-                    _converse.connection._dataRecv(utils.createRequest(features_stanza));
-                });
-            }
+            return utils.waitUntil(() => _.get(_.filter(
+                stanzas,
+                iq => iq.nodeTree.querySelector(
+                    `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                )).pop(), 'nodeTree'));
+        }).then(stanza => {
+            const features_stanza = $iq({
+                'from': room_jid,
+                'id': stanza.getAttribute('id'),
+                'to': 'dummy@localhost/desktop',
+                'type': 'result'
+            }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                .c('identity', {
+                    'category': 'conference',
+                    'name': room[0].toUpperCase() + room.slice(1),
+                    'type': 'text'
+                }).up()
+                .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+                .c('feature', {'var': 'jabber:iq:register'}).up()
+                .c('feature', {'var': 'muc_passwordprotected'}).up()
+                .c('feature', {'var': 'muc_hidden'}).up()
+                .c('feature', {'var': 'muc_temporary'}).up()
+                .c('feature', {'var': 'muc_open'}).up()
+                .c('feature', {'var': 'muc_unmoderated'}).up()
+                .c('feature', {'var': 'muc_nonanonymous'})
+                .c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
+                    .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
+                        .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
+                    .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
+                        .c('value').t('This is the description').up().up()
+                    .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
+                        .c('value').t(0);
+            _converse.connection._dataRecv(utils.createRequest(features_stanza));
             return utils.waitUntil(() => _.filter(
                     stanzas,
                     s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s.nodeTree).length

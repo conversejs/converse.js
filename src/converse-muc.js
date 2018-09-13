@@ -304,6 +304,10 @@
                      */
                     this.occupants.browserStorage._clear();
                     this.occupants.reset();
+                    const disco_entity = _converse.disco_entities.get(this.get('jid'));
+                    if (disco_entity) {
+                        disco_entity.destroy();
+                    }
                     if (_converse.connection.connected) {
                         this.sendUnavailablePresence(exit_msg);
                     }

@@ -1003,7 +1003,9 @@
                             if (args.length > 1) {
                                 this.showErrorMessage(__(`Error: invalid number of arguments`))
                             } else {
-                                this.model.registerNickname();
+                                this.model.registerNickname().then(err_msg => {
+                                    if (err_msg) this.showErrorMessage(err_msg)
+                                });
                             }
                             break;
                         case 'revoke':

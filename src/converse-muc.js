@@ -198,7 +198,7 @@
                 async onConnectionStatusChanged () {
                     if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED &&
                             _converse.auto_register_muc_nickname &&
-                            this.get('reserved_nick')) {
+                            !this.get('reserved_nick')) {
 
                         const result = await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'));
                         if (result.length) {
@@ -818,7 +818,7 @@
                     // See https://xmpp.org/extensions/xep-0045.html#register
                     const nick = this.get('nick'),
                           jid = this.get('jid');
-                    let iq;
+                    let iq, err_msg;
                     try {
                         iq = await _converse.api.sendIQ(
                             $iq({
@@ -828,12 +828,13 @@
                             }).c('query', {'xmlns': Strophe.NS.MUC_REGISTER})
                         );
                     } catch (e) {
-                        if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-                            _converse.log(`Can't register nickname ${nick} in the groupchat ${jid} which does not exist.`);
-                        } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-                            _converse.log(`You're not allowed to register in the groupchat ${jid}`);
+                        if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+                            err_msg = __("You're not allowed to register yourself in this groupchat.");
+                        } else if (sizzle('registration-required[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+                            err_msg = __("You're not allowed to register in this groupchat because it's members-only.");
                         }
-                        return _converse.log(e, Strophe.LogLevel.ERROR);
+                        _converse.log(e, Strophe.LogLevel.ERROR);
+                        return err_msg;
                     }
                     const required_fields = _.map(sizzle('field required', iq), 'parentElement');
                     if (required_fields.length > 1 || required_fields[0].getAttribute('var') !== 'muc#register_roomnick') {
@@ -850,14 +851,14 @@
                                     .c('field', {'var': 'muc#register_roomnick'}).c('value').t(nick)
                         );
                     } catch (e) {
-                        if (sizzle('conflict[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-                            _converse.log(`Can't register nickname ${nick} in the groupchat ${jid}, it's already taken.`);
-                        } else if (sizzle('service-unavailable[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-                            _converse.log(`Can't register nickname ${nick} in the groupchat ${jid}, it doesn't support registration.`);
+                        if (sizzle('service-unavailable[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+                            err_msg = __("Can't register your nickname in this groupchat, it doesn't support registration.");
                         } else if (sizzle('bad-request[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
-                            _converse.log(`Can't register nickname ${nick} in the groupchat ${jid}, invalid data form supplied.`);
+                            err_msg = __("Can't register your nickname in this groupchat, invalid data form supplied.");
                         }
-                        return _converse.log(e, Strophe.LogLevel.ERROR);
+                        _converse.log(err_msg);
+                        _converse.log(e, Strophe.LogLevel.ERROR);
+                        return err_msg;
                     }
                 },
 

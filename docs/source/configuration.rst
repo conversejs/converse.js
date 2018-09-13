@@ -630,6 +630,21 @@ If you've run ``make dev``, then these files are also available in ``./node_modu
 which means you can avoid the CDN and host them yourself if you wish.
 
 
+enable_muc_push
+---------------
+
+* Default: ``false``
+
+If true, then Converse will try to register
+`XEP-0357 push notification App Server(s) <https://xmpp.org/extensions/xep-0357.html#general-architecture>`_
+for the MUC domain of any newly entered groupchat.
+
+The app servers are specified with the `push_app_servers`_ option.
+
+.. note::
+    Registering a push app server against a MUC domain is not (yet) standardized
+    and this feature should be considered experimental.
+
 expose_rid_and_sid
 ------------------
 

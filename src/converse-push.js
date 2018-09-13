@@ -28,6 +28,7 @@
 
             _converse.api.settings.update({
                 'push_app_servers': [],
+                'enable_muc_push': false
             });
 
             async function disablePushAppServer (domain, push_app_server) {
@@ -119,14 +120,16 @@
                 _converse.session.save('push_enabled', push_enabled);
             }
 
+            _converse.api.listen.on('statusInitialized', () => enablePush());
+
             function onChatBoxAdded (model) {
                 if (model.get('type') == _converse.CHATROOMS_TYPE) {
                     enablePush(Strophe.getDomainFromJid(model.get('jid')));
                 }
             }
-
-            _converse.api.listen.on('statusInitialized', () => enablePush());
-            _converse.api.listen.on('chatBoxesInitialized',  () => _converse.chatboxes.on('add', onChatBoxAdded));
+            if (_converse.enable_muc_push) {
+                _converse.api.listen.on('chatBoxesInitialized',  () => _converse.chatboxes.on('add', onChatBoxAdded));
+            }
         }
     });
 }));

@@ -836,8 +836,8 @@
                         _converse.log(e, Strophe.LogLevel.ERROR);
                         return err_msg;
                     }
-                    const required_fields = _.map(sizzle('field required', iq), 'parentElement');
-                    if (required_fields.length > 1 || required_fields[0].getAttribute('var') !== 'muc#register_roomnick') {
+                    const required_fields = sizzle('field required', iq).map(f => f.parentElement);
+                    if (required_fields.length > 1 && required_fields[0].getAttribute('var') !== 'muc#register_roomnick') {
                         return _converse.log(`Can't register the user register in the groupchat ${jid} due to the required fields`);
                     }
                     try {

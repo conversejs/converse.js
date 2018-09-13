@@ -60,6 +60,7 @@
         it("can be enabled for a MUC domain",
             mock.initConverseWithPromises(null,
                 ['rosterGroupsFetched'], {
+                    'enable_muc_push': true,
                     'push_app_servers': [{
                         'jid': 'push-5@client.example',
                         'node': 'yxs32uqsflafdk3iuqo'

@@ -61,7 +61,6 @@
                     function (done, _converse) {
 
                 let jid, room, chatroomview;
-
                 test_utils.createContacts(_converse, 'current');
                 test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group .group-toggle').length, 300)
                 .then(() => test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy'))
@@ -103,7 +102,7 @@
                     room = _converse.api.rooms.get(jid);
                     expect(typeof room === 'undefined').toBeTruthy();
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
 
             it("has a method 'open' which opens (optionally configures) and returns a wrapped chat box",

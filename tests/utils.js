@@ -6,6 +6,7 @@
     var $pres = converse.env.$pres;
     var $iq = converse.env.$iq;
     var Strophe = converse.env.Strophe;
+    var sizzle = converse.env.sizzle;
     var u = converse.env.utils;
     var utils = {};
 
@@ -126,57 +127,58 @@
     };
 
     utils.openAndEnterChatRoom = function (_converse, room, server, nick) {
-        let last_stanza, view;
+        let view;
         const room_jid = `${room}@${server}`.toLowerCase();
+        const stanzas = _converse.connection.IQ_stanzas; 
 
         return _converse.api.rooms.open(room_jid).then(() => {
             view = _converse.chatboxviews.get(room_jid);
+            if (!_converse.disco_entities.get(room_jid)) {
+                utils.waitUntil(() => _.get(_.filter(
+                    stanzas,
+                    iq => iq.nodeTree.querySelector(
+                        `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                    )).pop(), 'nodeTree'))
+                .then(stanza => {
+                    const features_stanza = $iq({
+                        'from': room_jid,
+                        'id': stanza.getAttribute('id'),
+                        'to': 'dummy@localhost/desktop',
+                        'type': 'result'
+                    }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                        .c('identity', {
+                            'category': 'conference',
+                            'name': room[0].toUpperCase() + room.slice(1),
+                            'type': 'text'
+                        }).up()
+                        .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
+                        .c('feature', {'var': 'jabber:iq:register'}).up()
+                        .c('feature', {'var': 'muc_passwordprotected'}).up()
+                        .c('feature', {'var': 'muc_hidden'}).up()
+                        .c('feature', {'var': 'muc_temporary'}).up()
+                        .c('feature', {'var': 'muc_open'}).up()
+                        .c('feature', {'var': 'muc_unmoderated'}).up()
+                        .c('feature', {'var': 'muc_nonanonymous'})
+                        .c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
+                            .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
+                                .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
+                            .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
+                                .c('value').t('This is the description').up().up()
+                            .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
+                                .c('value').t(0);
+                    _converse.connection._dataRecv(utils.createRequest(features_stanza));
+                });
+            }
             return utils.waitUntil(() => _.get(_.filter(
-                _converse.connection.IQ_stanzas,
-                iq => iq.nodeTree.querySelector(
-                    `iq[to="coven@chat.shakespeare.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-                )
-            ).pop(), 'nodeTree'));
-        }).then(stanza => {
-            const features_stanza = $iq({
-                    'from': room_jid,
-                    'id': stanza.getAttribute('id'),
-                    'to': 'dummy@localhost/desktop',
-                    'type': 'result'
-                })
-                .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
-                    .c('identity', {
-                        'category': 'conference',
-                        'name': 'A Dark Cave',
-                        'type': 'text'
-                    }).up()
-                    .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
-                    .c('feature', {'var': 'jabber:iq:register'}).up()
-                    .c('feature', {'var': 'muc_passwordprotected'}).up()
-                    .c('feature', {'var': 'muc_hidden'}).up()
-                    .c('feature', {'var': 'muc_temporary'}).up()
-                    .c('feature', {'var': 'muc_open'}).up()
-                    .c('feature', {'var': 'muc_unmoderated'}).up()
-                    .c('feature', {'var': 'muc_nonanonymous'})
-                    .c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
-                        .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
-                            .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
-                        .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
-                            .c('value').t('This is the description').up().up()
-                        .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
-                            .c('value').t(0);
-            _converse.connection._dataRecv(utils.createRequest(features_stanza));
-            return utils.waitUntil(() => {
-                return _.filter(
-                    _converse.connection.IQ_stanzas, (node) => {
-                        const query = node.nodeTree.querySelector('query');
-                        if (query && query.getAttribute('node') === 'x-roomuser-item') {
-                            last_stanza = node.nodeTree;
-                            return true;
-                        }
-                    }).length
-            });
-        }).then(() => {
+                    stanzas,
+                    s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s.nodeTree).length
+                ).pop(), 'nodeTree')
+            );
+        }).then(last_stanza => {
+            // We empty the array, otherwise we might get stale stanzas
+            // returned in our filter above.
+            stanzas.length = 0;
+
             // The XMPP server returns the reserved nick for this user.
             const IQ_id = last_stanza.getAttribute('id');
             const stanza = $iq({
@@ -194,8 +196,8 @@
             // See example 24: http://xmpp.org/extensions/xep-0045.html#enter-pres
             var presence = $pres({
                     to: _converse.connection.jid,
-                    from: room+'@'+server+'/'+nick,
-                    id: 'DC352437-C019-40EC-B590-AF29E879AF97'
+                    from: `${room_jid}/${nick}`,
+                    id: u.getUniqueId()
             }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
                 .c('item').attrs({
                     affiliation: 'owner',

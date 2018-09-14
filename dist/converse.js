@@ -68202,14 +68202,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         showRooms(ev) {
           ev.preventDefault();
           const data = new FormData(ev.target);
-          this.model.save('muc_domain', data.get('server'));
+          this.model.save('muc_domain', Strophe.getDomainFromJid(data.get('server')));
           this.updateRoomsList();
         },
 
         setDomain(ev) {
-          this.model.save({
-            'muc_domain': ev.target.value
-          });
+          this.model.save('muc_domain', Strophe.getDomainFromJid(ev.target.value));
         },
 
         setNick(ev) {
@@ -69805,9 +69803,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       function setMUCDomain(domain, controlboxview) {
         _converse.muc_domain = domain;
-        controlboxview.roomspanel.model.save({
-          'muc_domain': domain
-        });
+        controlboxview.roomspanel.model.save('muc_domain', Strophe.getDomainFromJid(domain));
       }
 
       function setMUCDomainFromDisco(controlboxview) {

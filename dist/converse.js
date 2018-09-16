@@ -48012,7 +48012,7 @@ function $pres(attrs) { return new Strophe.Builder("presence", attrs); }
  */
 Strophe = {
     /** Constant: VERSION */
-    VERSION: "1.2.15",
+    VERSION: "1.2.16",
 
     /** Constants: XMPP Namespace Constants
      *  Common namespace constants from the XMPP RFCs and XEPs.
@@ -50562,26 +50562,6 @@ Strophe.Connection.prototype = {
      */
     mechanisms: {},
 
-    /** PrivateFunction: _no_auth_received
-     *
-     * Called on stream start/restart when no stream:features
-     * has been received or when no viable authentication mechanism is offered.
-     *
-     * Sends a blank poll request.
-     */
-    _no_auth_received: function (_callback) {
-        var error_msg =  "Server did not offer a supported authentication mechanism";
-        Strophe.error(error_msg);
-        this._changeConnectStatus(
-            Strophe.Status.CONNFAIL,
-            Strophe.ErrorCondition.NO_AUTH_MECH
-        );
-        if (_callback) {
-            _callback.call(this);
-        }
-        this._doDisconnect();
-    },
-
     /** PrivateFunction: _connect_cb
      *  _Private_ handler for initial connection request.
      *
@@ -50644,7 +50624,7 @@ Strophe.Connection.prototype = {
                             bodyWrap.getElementsByTagName("features").length > 0;
         }
         if (!hasFeatures) {
-            this._no_auth_received(_callback);
+            this._proto._no_auth_received(_callback);
             return;
         }
 
@@ -50660,7 +50640,7 @@ Strophe.Connection.prototype = {
             if (bodyWrap.getElementsByTagName("auth").length === 0) {
                 // There are no matching SASL mechanisms and also no legacy
                 // auth available.
-                this._no_auth_received(_callback);
+                this._proto._no_auth_received(_callback);
                 return;
             }
         }
@@ -52106,6 +52086,30 @@ Strophe.Bosh.prototype = {
         }
     },
 
+    /** PrivateFunction: _no_auth_received
+     *
+     * Called on stream start/restart when no stream:features
+     * has been received and sends a blank poll request.
+     */
+    _no_auth_received: function (callback) {
+        Strophe.warn("Server did not yet offer a supported authentication "+
+                     "mechanism. Sending a blank poll request.");
+        if (callback) {
+            callback = callback.bind(this._conn);
+        } else {
+            callback = this._conn._connect_cb.bind(this._conn);
+        }
+        var body = this._buildBody();
+        this._requests.push(
+            new Strophe.Request(
+                body.tree(),
+                this._onRequestStateChange.bind(this, callback),
+                body.tree().getAttribute("rid")
+            )
+        );
+        this._throttledRequestHandler();
+    },
+
     /** PrivateFunction: _onDisconnectTimeout
      *  _Private_ timeout handler for handling non-graceful disconnection.
      *
@@ -52806,17 +52810,25 @@ Strophe.Websocket.prototype = {
                 this._connect_cb(streamStart);
             }
         } else if (message.data.indexOf("<close ") === 0) { // <close xmlns="urn:ietf:params:xml:ns:xmpp-framing />
+            // Parse the raw string to an XML element
+            var parsedMessage = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
+            // Report this input to the raw and xml handlers
+            this._conn.xmlInput(parsedMessage);
             this._conn.rawInput(message.data);
-            this._conn.xmlInput(message);
-            var see_uri = message.getAttribute("see-other-uri");
+            var see_uri = parsedMessage.getAttribute("see-other-uri");
             if (see_uri) {
-                this._conn._changeConnectStatus(
-                    Strophe.Status.REDIRECT,
-                    "Received see-other-uri, resetting connection"
-                );
-                this._conn.reset();
-                this._conn.service = see_uri;
-                this._connect();
+                var service = this._conn.service;
+                // Valid scenarios: WSS->WSS, WS->ANY
+                var isSecureRedirect = (service.indexOf("wss:") >= 0 && see_uri.indexOf("wss:") >= 0) || (service.indexOf("ws:") >= 0);
+                if(isSecureRedirect) {
+                    this._conn._changeConnectStatus(
+                        Strophe.Status.REDIRECT,
+                        "Received see-other-uri, resetting connection"
+                    );
+                    this._conn.reset();
+                    this._conn.service = see_uri;
+                    this._connect();
+                }
             } else {
                 this._conn._changeConnectStatus(
                     Strophe.Status.CONNFAIL,
@@ -52923,6 +52935,23 @@ Strophe.Websocket.prototype = {
         } else {
             Strophe.info("Websocket closed");
         }
+    },
+
+    /** PrivateFunction: _no_auth_received
+     *
+     * Called on stream start/restart when no stream:features
+     * has been received.
+     */
+    _no_auth_received: function (callback) {
+        Strophe.error("Server did not offer a supported authentication mechanism");
+        this._changeConnectStatus(
+            Strophe.Status.CONNFAIL,
+            Strophe.ErrorCondition.NO_AUTH_MECH
+        );
+        if (callback) {
+            callback.call(this._conn);
+        }
+        this._conn._doDisconnect();
     },
 
     /** PrivateFunction: _onDisconnectTimeout

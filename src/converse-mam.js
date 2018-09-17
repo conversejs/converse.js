@@ -26,10 +26,15 @@
 
 
     function getMessageArchiveID (stanza) {
+        // See https://xmpp.org/extensions/xep-0313.html#results
+        //
+        // The result messages MUST contain a <result/> element with an 'id'
+        // attribute that gives the current message's archive UID
         const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
         if (!_.isUndefined(result)) {
             return result.getAttribute('id');
         }
+        // See: https://xmpp.org/extensions/xep-0313.html#archives_id
         const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
         if (!_.isUndefined(stanza_id)) {
             return stanza_id.getAttribute('id');

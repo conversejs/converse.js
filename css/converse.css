@@ -10632,13 +10632,13 @@ body.reset {
     min-width: 400px !important;
     width: 400px; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatbox-title {
-    flex: 0 0 66.6666666667%;
-    max-width: 66.6666666667%; }
+    flex: 0 0 58.3333333333%;
+    max-width: 58.3333333333%; }
     #conversejs.converse-overlayed .chatbox.chatroom .chatbox-title .chatroom-description {
       font-size: 80%; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatbox-buttons {
-    flex: 0 0 33.3333333333%;
-    max-width: 33.3333333333%; }
+    flex: 0 0 41.6666666667%;
+    max-width: 41.6666666667%; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .occupants-heading {
     padding: 0; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .chatroom-features .feature {

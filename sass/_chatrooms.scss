@@ -300,13 +300,13 @@
                 width: $chatroom-width;
             }
             .chatbox-title {
-                @include make-col(8);
+                @include make-col(7);
                 .chatroom-description {
                     font-size: 80%;
                 }
             }
             .chatbox-buttons {
-                @include make-col(4);
+                @include make-col(5);
             }
             .chatroom-body {
                 .occupants {

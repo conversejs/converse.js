@@ -352,6 +352,9 @@
             width: $controlbox-width;
         }
 
+        #converse-login-trusted {
+            margin-top: 0.5em;
+        }
         &:not(.logged-out) {
             .controlbox-head {
                 height: 15px;

@@ -75694,6 +75694,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             _converse.xmppstatus.save({
               'status': show
+            }, {
+              'silent': true
             });
 
             const status_message = _.propertyOf(presence.querySelector('status'))('textContent');
@@ -79452,11 +79454,11 @@ __e(o.__("Password:")) +
 __e(o.__('password')) +
 '">\n                </div>\n                ';
  } ;
-__p += '\n                <div class="form-group form-check">\n                    <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ';
+__p += '\n                <div class="form-group form-check login-trusted">\n                    <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ';
  if (o._converse.config.get('trusted')) { ;
 __p += ' checked="checked" ';
  } ;
-__p += '>\n                    <label for="converse-login-trusted" class="form-check-label">' +
+__p += '>\n                    <label for="converse-login-trusted" class="form-check-label login-trusted__desc">' +
 __e(o.__('This is a trusted device')) +
 '</label>\n                    <i class="fa fa-info-circle" data-toggle="popover"\n                       data-title="Trusted device?"\n                       data-content="' +
 __e(o.__('To improve performance, we cache your data in this browser. Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. It\'s important that you explicitly log out, otherwise not all cached data might be deleted.')) +

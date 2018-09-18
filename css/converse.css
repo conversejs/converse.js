@@ -9938,6 +9938,8 @@ body.reset {
   #conversejs.converse-overlayed #controlbox .box-flyout {
     min-width: 250px !important;
     width: 250px; }
+  #conversejs.converse-overlayed #controlbox #converse-login-trusted {
+    margin-top: 0.5em; }
   #conversejs.converse-overlayed #controlbox:not(.logged-out) .controlbox-head {
     height: 15px; }
   #conversejs.converse-overlayed #controlbox .controlbox-head {

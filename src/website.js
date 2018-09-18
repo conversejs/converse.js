@@ -3,12 +3,11 @@
 
         window.addEventListener('scroll', function (ev) {
             var navbar = document.querySelector(".navbar");
-            var fixed_top = document.querySelector(".navbar-fixed-top");
             var rect = navbar.getBoundingClientRect();
             if (rect.top + window.scrollY > 50) {
-                fixed_top.classList.add("top-nav-collapse");
+                navbar.classList.add("top-nav-collapse");
             } else {
-                fixed_top.classList.remove("top-nav-collapse");
+                navbar.classList.remove("top-nav-collapse");
             }
         });
 
@@ -23,7 +22,12 @@
         Array.prototype.forEach.call(document.querySelectorAll('.page-scroll a'), function (el) {
             el.addEventListener('click', function (ev) {
                 ev.preventDefault();
-                var hash = this.getAttribute("href")
+                Array.prototype.forEach.call(document.querySelectorAll('.page-scroll'), function (child) {
+                    child.classList.remove('active');
+                });
+                this.parentElement.classList.add('active');
+
+                var hash = this.getAttribute("href");
                 var endLocation = document.querySelector(hash).offsetTop;
                 var startLocation = window.pageYOffset;
                 var distance = endLocation - startLocation;

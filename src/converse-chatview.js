@@ -898,7 +898,9 @@
                         } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
                             return this.onEscapePressed(ev);
                         } else if (ev.keyCode === _converse.keycodes.ENTER) {
-                            _.invoke(this.emoji_dropdown, 'toggle');
+                            if (this.emoji_dropdown && u.isVisible(this.emoji_dropdown.el.querySelector('.emoji-picker'))) {
+                                this.emoji_dropdown.toggle();
+                            }
                             return this.onFormSubmitted(ev);
                         } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
                             return this.editEarlierMessage();
@@ -1065,6 +1067,7 @@
 
                         const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
                         this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
+                        this.emoji_dropdown.el = dropdown_el;
                         this.emoji_dropdown.toggle();
                     }
                 },

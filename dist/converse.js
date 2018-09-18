@@ -61696,7 +61696,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
               return this.onEscapePressed(ev);
             } else if (ev.keyCode === _converse.keycodes.ENTER) {
-              _.invoke(this.emoji_dropdown, 'toggle');
+              if (this.emoji_dropdown && u.isVisible(this.emoji_dropdown.el.querySelector('.emoji-picker'))) {
+                this.emoji_dropdown.toggle();
+              }
 
               return this.onFormSubmitted(ev);
             } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
@@ -61891,6 +61893,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.renderEmojiPicker();
             const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
             this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
+            this.emoji_dropdown.el = dropdown_el;
             this.emoji_dropdown.toggle();
           }
         },

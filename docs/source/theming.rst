@@ -11,7 +11,7 @@ Theming
 Setting up your environment
 ===========================
 
-In order to theme converse.js, you first need to set up a :ref:`development` environment.
+In order to theme Converse, you first need to set up a :ref:`development` environment.
 
 You'll also want to preview the changes you make in your browser, for which a
 webserver will be useful.
@@ -28,7 +28,7 @@ serve the files for you, simply run::
     Windows you can use `Chocolatey <https://chocolatey.org/>`_.
 
 After running ``make serve`` you can open http://localhost:8000 in your webbrowser you'll
-see the converse.js website.
+see the Converse website.
 
 However, when developing or changing the theme, you'll want to load all the
 unminified JS and CSS resources as separate files. To do this, open http://localhost:8000/dev.html
@@ -37,7 +37,7 @@ instead.
 Mockups
 =======
 
-Converse.js contains some mockups in the ``./mockup`` directory against which you
+Converse contains some mockups in the ``./mockup`` directory against which you
 can preview and tweak your changes.
 
 The ``./mockup/index.html`` file contains the most comprehensive mockup, while
@@ -46,13 +46,13 @@ the other files focus on particular UI aspects.
 To see it in your browser, simply open: http://localhost:8000/mockup
 
 
-Modifying the HTML templates of Converse.js
-===========================================
+Modifying the HTML templates of Converse
+========================================
 
-The HTML markup of converse.js is contained in small ``.html`` files in the
+The HTML markup of Converse is contained in small ``.html`` files in the
 ``./src/templates`` directory.
 
-You can modify HTML markup that converse.js generates by modifying these files.
+You can modify HTML markup that Converse generates by modifying these files.
 
 Modifying the CSS
 =================
@@ -66,7 +66,7 @@ To generate the CSS you can run::
 Creating dist files
 ===================
 
-Once you've themed converse.js, you'll want to create new minified distribution
+Once you've themed Converse, you'll want to create new minified distribution
 files of all the JavaScript and CSS.
 
 Please refer to the :doc:`builds` section for information on how this is done.

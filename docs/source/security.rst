@@ -7,12 +7,12 @@ Security considerations
 =======================
 
 .. note::
-    Converse.js comes with no warranty of any kind and the authors are not liable for any damages.
+    Converse comes with no warranty of any kind and the authors are not liable for any damages.
 
-The data-structures of Converse.js encapsulate sensitive user data such as
+The data-structures of Converse encapsulate sensitive user data such as
 XMPP account details (in case of manual login) and personal conversations.
 
-In an environment where, besides Converse.js, other untrusted 3rd party scripts
+In an environment where, besides Converse, other untrusted 3rd party scripts
 might also be running, it's important to guard against malicious or invasive
 access to user data and/or the API.
 
@@ -22,18 +22,18 @@ The threat model
 The following threat model is considered:
 
 Malicious 3rd party scripts served through compromised side-channels, such as ad-networks,
-which attempt to access Converse.js's API and/or data-structures in order to personify users
+which attempt to access Converse's API and/or data-structures in order to personify users
 or to pilfer their data.
 
 Mitigating measures
 ===================
 
-As of version 3.0.0, the following actions were taken to harden Converse.js against attacks:
+As of version 3.0.0, the following actions were taken to harden Converse against attacks:
 
 Separate code/data into public and private parts
 ------------------------------------------------
 
-1. Encapsulate Converse.js's data structures into a private closured object (named ``_converse``).
+1. Encapsulate Converse's data structures into a private closured object (named ``_converse``).
 2. Split the API into public and private parts.
 
 Restrict access to private code/data
@@ -46,7 +46,7 @@ Restrict access to private code/data
    (otherwise the whitelist could be circumvented).
 
 .. note::
-    Care should be taken when using a custom build of Converse.js where some
+    Care should be taken when using a custom build of Converse where some
     of the core plugins contained in the default build are omitted. In this case
     the omitted plugins should also be removed from the whitelist, otherwise
     malicious plugins could be registered under their names.
@@ -81,12 +81,12 @@ soon as the last tab or window is closed. User credentials are not cached at
 all.
 
 Perhaps the ability to encrypt this cached data could be added in future
-versions of Converse.js, if there is sufficient demand for it.
+versions of Converse, if there is sufficient demand for it.
 
 However to date no significant mitigation or hardening measures have been taken to
 secure this cached data.
 
-Therefore, the best defence as website host is to avoid serving Converse.js with
+Therefore, the best defence as website host is to avoid serving Converse with
 untrusted 3rd party code, and the best defence as an end-user is to avoid chatting
 on websites that host untrusted 3rd party code. The most common examples of such
 being advertising and analytics scripts.

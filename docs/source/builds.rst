@@ -5,9 +5,9 @@
 
 .. _builds:
 
-===============
-Creating builds
-===============
+=================
+Generating builds
+=================
 
 .. contents:: Table of Contents
    :depth: 3
@@ -15,72 +15,65 @@ Creating builds
 
 
 .. warning:: There current documentation in this section does not adequately
-    explain how to create custom builds.
+    explain how to create custom bundles.
 
-.. note:: Please make sure to read the section :doc:`development` and that you have installed
+.. Note:: Please make sure to read the section :doc:`development` and that you have installed
     all development dependencies (long story short, you should be able to just run  ``make dev``)
 
-Creating builds and distribution files
-======================================
+Creating JavaScript and CSS bundles and distribution files
+==========================================================
 
-Converse.js uses `AMD (Asynchronous Modules Definition) <http://requirejs.org/docs/whyamd.html#amd>`_
-to define modules and their dependencies.
+Converse uses `webpack <https://webpack.js.org/>`_ to create single build files containing the core code and
+all of the 3rd party dependencies.
 
-Dependencies can then be loaded on-the-fly with `require.js <http://requirejs.org>`_.
-This is very useful during development, but when it comes to
-deployement you'll usually want to create a single, minified distribution build.
+These files are in the `dist <https://github.com/conversejs/converse.js/tree/master/dist>`_ directory.
 
-For this, the `r.js optimizer <http://requirejs.org/docs/optimization.html>`_
-is used together with `almond.js <https://github.com/requirejs/almond>`_, which
-is a smaller and minimal AMD API implementation that replaces require.js in builds.
+Before you start changing the core code, you can run ``make watchjs`` in your terminal.
 
-To create the distribution builds, simply run::
+This command will listen for any changed files and then automatically create a
+new build of ``dist/converse.js``.
+
+The CSS files are also generated, from the scss files in the
+`sass <https://github.com/conversejs/converse.js/tree/master/sass>`_ directory.
+
+Similarly to ``make watchjs``, you can run ``make watch`` to automatically
+generate the css files in the ``./css/`` directory.
+
+The Converse repository does not include the minified files in the ``dist`` or
+``css`` directories. Before deployment, you'll want to generate them yourself.
+
+To do so, run the following:
+
+::
+    make dist/converse.min.js
+    make css/converse.min.css
+
+Alternatively, if you want to generate ALL the bundles files (minified and
+unminified), then you can also run::
 
     make dist
 
-This command does the following:
 
-* It creates different builds of Converse.js in the ``./dist/`` directory.
+Creating custom bundles
+=======================
 
-* It bundles all the translation files in ``./locale/`` into a single file ``locales.js``.
-  This file can then be included via the ``<script>`` tag. See for example the ``non_amd.html`` example page.
-
-* Also, the CSS files in the ``./css`` directory will be minified.
-
-The JavaScript build files are contained in the ``./dist`` directory:
-
-.. code-block:: bash
-
-    jc@conversejs:~/converse.js (master)$ ls dist/
-    converse-mobile.js               converse.min.js
-    converse-mobile.min.js           converse.nojquery.js
-    converse-no-dependencies.js      converse.nojquery.min.js
-    converse-no-dependencies.min.js  locales.js
-    converse.js
-
-.. _`minification`:
-
-Creating custom builds
-----------------------
-
-One reason you might want to create your own builds, is because you want to
-remove some of the core plugins of converse.js, or perhaps you want to include
+One reason you might want to create your own bundles, is because you want to
+remove some of the core plugins of Converse, or perhaps you want to include
 your own.
 
 To add or remove plugins from the build, you need to modify the
-``src/converse.js`` file.
+`src/converse.js <https://github.com/conversejs/converse.js/blob/master/src/converse.js>`_ file.
 
 You'll find a section marked ``/* START: Removable components`` and
 ``/* END: Removable components */``.
 
-In this section is listed all the converse.js plugins that will make up a
-build.
+In this section is listed the Converse plugins that will make up a bundle.
 
 You could for example decide to disable the ControlBox altogether by removing
 the ``converse-controlbox`` plugin.
 
 After doing so, you need to run ``make dist`` again in the root or your
-converse.js repository, in order to generate the new build.
+Converse repository, in order to generate the new build.
 
 Be aware that some plugins might have dependencies on other plugins, so if you
 remove a certain plugin but other included plugins still depend on it, then it
@@ -91,12 +84,35 @@ text editor and look at the list specified as the second parameter to the
 ``define`` call, near the top of the file. This list specifies the dependencies
 of that plugin.
 
-Minifying the CSS
------------------
+Besides the standard build, the Converse repository includes configuration
+for certain other non-standard builds, which we'll now mention below.
 
-To only minify the CSS files, nothing else, run the following command::
+Excluding all 3rd party dependencies
+------------------------------------
 
-    make cssmin
+The ``dist/converse-no-dependencies.js`` bundle contains only the core Converse
+code and none of the 3rd party dependencies. This might be useful if you need
+to load the dependencies separately.
 
-The CSS files  are minified via `cssmin <https://github.com/gruntjs/grunt-contrib-cssmin>`_.
+To generate this bundle, you can run:
 
+::
+
+    make dist/converse-no-dependencies.js
+    make dist/converse-no-dependencies.min.js
+
+Headless build
+--------------
+
+There is also the option of making a headless build of Converse.
+
+This is a build without any UI code but still containing the core functionality of
+maintaining a roster, chats and messages.
+
+The file `src/headless.js <https://github.com/jcbrand/converse.js/blob/master/src/headless.js>`_
+is used to determine which plugins are included in the build.
+
+.. Note:: Unfortunately it's currently not yet possible to include Multi-user chat (MUC)
+    functionality in the headless build. This is because both the UI and core
+    functionality is still contained in one plugin and would first need to be
+    split up into two parts, with the UI part dropped for this build.

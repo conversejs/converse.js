@@ -241,20 +241,20 @@ authenticated BOSH session with the XMPP server or a standalone `BOSH <http://xm
 connection manager.
 
 Once authenticated, it receives RID and SID tokens which need to be passed
-on to converse.js upon pa. Converse will then attach to that same session using
+on to Converse. Converse will then attach to that same session using
 those tokens.
 
 It's called "prebind" because you bind to the BOSH session beforehand, and then
 later in the page you just attach to that session again.
 
 The RID and SID tokens can be passed in manually when calling
-`converse.initialize`, but a more convenient way is to pass converse.js a :ref:`prebind_url`
+`converse.initialize`, but a more convenient way is to pass Converse a :ref:`prebind_url`
 which it will call when it needs the tokens. This way it will be able to
 automatically reconnect whenever the connection drops, by simply calling that
 URL again to fetch new tokens.
 
 Prebinding reduces network traffic and also speeds up the startup time for
-converse.js. Additionally, because prebind works with tokens, it's not necessary
+Converse. Additionally, because prebind works with tokens, it's not necessary
 for the XMPP client to know or store users' passwords.
 
 One potential drawback of using prebind is that in order to establish the
@@ -266,11 +266,11 @@ This is however not the case if you for example use LDAP or Active Directory as
 your authentication backend, since you could then configure your XMPP server to
 use that as well.
 
-To prebind you will require a BOSH-enabled XMPP server for converse.js to connect to
+To prebind you will require a BOSH-enabled XMPP server for Converse to connect to
 (see the :ref:`bosh-service-url` under :ref:`configuration-settings`)
 as well as a BOSH client in your web application (written for example in
 Python, Ruby or PHP) that will set up an authenticated BOSH session, which
-converse.js can then attach to.
+Converse can then attach to.
 
 .. note::
     A BOSH server acts as a bridge between HTTP, the protocol of the web, and
@@ -297,7 +297,7 @@ page load). Each page load is a new request which requires a new unique RID.
 The best way to achieve this is to simply increment the RID with each page
 load.
 
-You'll need to configure converse.js with the ``prebind``, :ref:`keepalive` and
+You'll need to configure Converse with the ``prebind``, :ref:`keepalive` and
 :ref:`prebind_url` settings.
 
 Please read the documentation on those settings for a fuller picture of what
@@ -360,4 +360,4 @@ signed with the right key and that they conform to some kind of pre-arranged
 format.
 
 In this case, you would also use the :ref:`credentials_url` setting, to specify a
-URL from which converse.js should fetch the username and token.
+URL from which Converse should fetch the username and token.

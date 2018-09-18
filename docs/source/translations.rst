@@ -6,17 +6,17 @@
 Translations
 ============
 
-Converse.js supports localization of its user interface and date formats. As
+Converse supports localization of its user interface and date formats. As
 of writing, 17 languages are supported.
 
-The translations of converse.js can be found in the `locale
+The translations of Converse can be found in the `locale
 <https://github.com/jcbrand/converse.js/tree/master/locale>`_ directory.
 
-Translations of Converse.js are very welcome. You can add translations either
+Translations of Converse are very welcome. You can add translations either
 manually by editing the ``.po`` files in the above-mentioned ``locale``
 directory, or through the web at `weblate <https://hosted.weblate.org/projects/conversejs/#languages>`_.
 
-As of version 3.3.0, converse.js no longer automatically bundles translations
+As of version 3.3.0, Converse no longer automatically bundles translations
 in its source file and instead fetches only the relevant locale for the current
 session from a URL as specified by the :ref:`locales-url` setting.
 
@@ -34,7 +34,7 @@ If you simply want to add a few missing translations, then consider doing it
 through the web at `weblate <https://hosted.weblate.org/projects/conversejs/#languages>`_.
 
 Some things however cannot be done via weblate and instead have to be done
-manually in a checkout of the converse.js source repository.
+manually in a checkout of the Converse source repository.
 
 These tasks are documented below.
 
@@ -46,7 +46,7 @@ The gettext `.pot` file located in
 is the template containing all translations and from which for each language an individual PO
 file is generated.
 
-The `.pot` file contains all translateable strings extracted from converse.js.
+The `.pot` file contains all translateable strings extracted from Converse.
 
 To make a user-facing string translateable, wrap it in the double underscore helper
 function like so:
@@ -64,7 +64,7 @@ After adding the string, you'll need to regenerate the POT file:
 Making translations file for a new language
 -------------------------------------------
 
-To create a new translations file for a language in which converse.js is not yet
+To create a new translations file for a language in which Converse is not yet
 translated into, do the following
 
 .. note:: In this example we use Polish (pl), you need to substitute 'pl' to your own language's code.
@@ -108,7 +108,7 @@ Generating a JSON file from a translations file
 -----------------------------------------------
 
 Unfortunately `Jed <http://slexaxton.github.io/Jed>`_, which we use for
-translations in converse.js cannot use the `.po` files directly. We have
+translations in Converse cannot use the `.po` files directly. We have
 to generate from it a file in JSON format and then put that in a `.js` file
 for the specific language.
 

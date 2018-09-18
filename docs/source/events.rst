@@ -340,7 +340,7 @@ Plugins can listen to this event as cue to register their own global event
 handlers.
 
 roomsAutoJoined
----------------
+~~~~~~~~~~~~~~~
 
 Emitted once any rooms that have been configured to be automatically joined,
 specified via the _`auto_join_rooms` setting, have been entered.

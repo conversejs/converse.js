@@ -6,6 +6,7 @@
 - New config setting [enable_muc_push](https://conversejs.org/docs/html/configuration.html#enable-muc-push)
 - #1182 MUC occupants without nick or JID created
 - #1184 Notification error when message has no body
+- Use https://compliance.conversations.im instead of (dead) https://xmpp.net
 
 ## 4.0.0 (2018-09-07)
 

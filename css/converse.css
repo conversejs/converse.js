@@ -9554,6 +9554,9 @@ body.reset {
   #conversejs.converse-overlayed .chatbox .box-flyout {
     min-width: 250px !important;
     width: 250px; }
+    #conversejs.converse-embedded .chatbox .box-flyout .chat-body,
+    #conversejs.converse-overlayed .chatbox .box-flyout .chat-body {
+      height: calc(100% - 55px); }
 
 #conversejs.converse-overlayed .flyout {
   bottom: 1em; }

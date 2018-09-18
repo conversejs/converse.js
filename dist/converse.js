@@ -79531,13 +79531,13 @@ __p += '**';
  }; ;
 __p +=
 __e(o.username) +
-'\n                ';
+'</span>\n            ';
 o.roles.forEach(function (role) { ;
 __p += ' <span class="badge badge-secondary">' +
 __e(role) +
 '</span> ';
  }); ;
-__p += '\n            </span>\n            ';
+__p += '\n            ';
  if (!o.is_me_message) { ;
 __p += '<time timestamp="' +
 __e(o.isodate) +

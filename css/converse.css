@@ -10828,7 +10828,8 @@ body.reset {
     white-space: pre-wrap; }
     #conversejs .message.chat-msg .chat-msg__text a {
       word-wrap: break-word;
-      word-break: break-all; }
+      word-break: break-all;
+      display: inline-block; }
     #conversejs .message.chat-msg .chat-msg__text img.emoji {
       height: 1.5em;
       width: 1.5em;
@@ -10865,6 +10866,9 @@ body.reset {
     padding-bottom: 0.25rem;
     display: block; }
     #conversejs .message.chat-msg .chat-msg__heading .chat-msg__author {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
       font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
       font-size: 115%; }

@@ -1,6 +1,5 @@
 #conversejs {
     .message {
-
         .mention {
             font-weight: bold;
         }
@@ -154,6 +153,7 @@
                 a {
                     word-wrap: break-word;
                     word-break: break-all;
+                    display: inline-block;
                 }
                 img {
                     &.emoji {
@@ -209,6 +209,9 @@
                 display: block;
 
                 .chat-msg__author {
+                    display: block;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                     white-space: nowrap;
                     font-family: $heading-font; 
                     font-size: 115%;

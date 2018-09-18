@@ -10500,10 +10500,9 @@ body.reset {
           #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-header .hide-occupants {
             align-self: flex-end;
             cursor: pointer; }
-          #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .occupants-header .occupants-heading,
-          #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-header .occupants-heading {
-            font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
-            padding: 0.3em 0; }
+        #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .occupants-heading,
+        #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-heading {
+          font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif; }
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul {
           padding: 0; }
@@ -10640,8 +10639,10 @@ body.reset {
   #conversejs.converse-overlayed .chatbox.chatroom .chatbox-buttons {
     flex: 0 0 33.3333333333%;
     max-width: 33.3333333333%; }
+  #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .occupants-heading {
+    padding: 0; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .chatroom-features .feature {
-    font-size: 12px; }
+    font-size: 10px; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .chat-area {
     min-width: 250px; }
   #conversejs.converse-overlayed .chatbox.chatroom .sendXMPPMessage .chat-toolbar li .toolbar-menu {

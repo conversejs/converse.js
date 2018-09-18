@@ -126,7 +126,7 @@
                 .chat-area {
                     display: flex;
                     flex-direction: column;
-                    word-wrap: break-word; 
+                    word-wrap: break-word;
                     .new-msgs-indicator {
                         background-color: $chatroom-head-color;
                     }
@@ -153,12 +153,10 @@
                             align-self: flex-end;
                             cursor: pointer;
                         }
-                        .occupants-heading {
-                            font-family: $heading-font; 
-                            padding: 0.3em 0;
-                        }
                     }
-
+                    .occupants-heading {
+                        font-family: $heading-font;
+                    }
                     .awesomplete {
                         ul {
                             padding: 0;
@@ -312,9 +310,12 @@
             }
             .chatroom-body {
                 .occupants {
+                    .occupants-heading {
+                        padding: 0;
+                    }
                     .chatroom-features {
                         .feature {
-                            font-size: $font-size-small;
+                            font-size: $font-size-tiny;
                         }
                     }
                 }

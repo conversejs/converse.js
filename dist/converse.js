@@ -61123,7 +61123,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           // XXX: Is this still needed?
           this.el.setAttribute('id', this.model.get('box_id'));
           this.el.innerHTML = tpl_chatbox(_.extend(this.model.toJSON(), {
-            unread_msgs: __('You have unread messages')
+            'unread_msgs': __('You have unread messages')
           }));
           this.content = this.el.querySelector('.chat-content');
           this.renderMessageForm();
@@ -61554,7 +61554,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               // when the user writes a message as opposed to when a
               // message is received.
               this.model.set('scrolled', false);
-            } else if (this.model.get('scrolled', true)) {
+            } else if (this.model.get('scrolled', true) && !u.isOnlyChatStateNotification(message)) {
               this.showNewMessagesIndicator();
             }
           }

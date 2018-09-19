@@ -146,7 +146,7 @@
             _converse.api.settings.update({
                 'allow_registration': true,
                 'domain_placeholder': __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
-                'providers_link': 'https://xmpp.net/directory.php', // Link to XMPP providers shown on registration page
+                'providers_link': 'https://compliance.conversations.im/', // Link to XMPP providers shown on registration page
                 'registration_domain': ''
             });
 

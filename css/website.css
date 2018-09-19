@@ -5366,18 +5366,16 @@ a:hover, a:focus {
 .navbar {
   font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
   margin-bottom: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-  text-transform: uppercase;
-  background: transparent; }
+  background: transparent;
+  font-size: 95%;
+  font-weight: normal; }
   .navbar .navbar-collapse {
     justify-content: space-between; }
   .navbar a {
     color: white; }
 
-.navbar-brand {
-  font-weight: 700; }
-  .navbar-brand:focus {
-    outline: none; }
+.navbar-brand:focus {
+  outline: none; }
 
 .navbar-custom a {
   color: #ffffff; }

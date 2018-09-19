@@ -72,9 +72,9 @@ a:hover, a:focus {
 .navbar {
     font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
     margin-bottom: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    text-transform: uppercase;
 	background: transparent;
+    font-size: 95%;
+    font-weight: normal;
 
 	.navbar-collapse {
 		justify-content: space-between;
@@ -85,7 +85,6 @@ a:hover, a:focus {
 }
 
 .navbar-brand {
-    font-weight: 700;
     &:focus {
         outline: none;
     }

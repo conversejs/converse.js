@@ -62478,6 +62478,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.loginpanel.render();
           }
 
+          this.loginpanel.initPopovers();
           return this;
         },
 
@@ -62588,14 +62589,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.on('change', this.render, this);
           this.listenTo(_converse.connfeedback, 'change', this.render);
           this.render();
-
-          _.forEach(this.el.querySelectorAll('[data-title]'), el => {
-            const popover = new bootstrap.Popover(el, {
-              'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
-              'dismissible': _converse.view_mode === 'mobile' && true || false,
-              'container': _converse.chatboxviews.el
-            });
-          });
         },
 
         toHTML() {
@@ -62623,6 +62616,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'conn_feedback_message': _converse.connfeedback.get('message'),
             'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain')
           }));
+        },
+
+        initPopovers() {
+          _.forEach(this.el.querySelectorAll('[data-title]'), el => {
+            const popover = new bootstrap.Popover(el, {
+              'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
+              'dismissible': _converse.view_mode === 'mobile' && true || false,
+              'container': this.el.parentElement.parentElement.parentElement
+            });
+          });
         },
 
         validate() {
@@ -73944,7 +73947,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         'allow_registration': true,
         'domain_placeholder': __(" e.g. conversejs.org"),
         // Placeholder text shown in the domain input on the registration form
-        'providers_link': 'https://xmpp.net/directory.php',
+        'providers_link': 'https://compliance.conversations.im/',
         // Link to XMPP providers shown on registration page
         'registration_domain': ''
       });
@@ -74172,8 +74175,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           this.reset({
-            domain: Strophe.getDomainFromJid(domain_name),
-            _registering: true
+            'domain': Strophe.getDomainFromJid(domain_name),
+            '_registering': true
           });
 
           _converse.connection.connect(this.domain, "", this.onConnectStatusChanged.bind(this));

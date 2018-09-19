@@ -352,6 +352,11 @@
             width: $controlbox-width;
         }
 
+        .login-trusted {
+            white-space: nowrap;
+            font-size: 90%;
+        }
+
         #converse-login-trusted {
             margin-top: 0.5em;
         }

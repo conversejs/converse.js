@@ -198,9 +198,7 @@
                         'domain_placeholder': _converse.domain_placeholder
                     });
                     if (_converse.registration_domain) {
-                        this.fetchRegistrationForm(
-                            _converse.registration_domain
-                        );
+                        this.fetchRegistrationForm(_converse.registration_domain);
                     }
                     return this;
                 },
@@ -353,12 +351,10 @@
                         this.renderRegistrationRequest();
                     }
                     this.reset({
-                        domain: Strophe.getDomainFromJid(domain_name),
-                        _registering: true
+                        'domain': Strophe.getDomainFromJid(domain_name),
+                        '_registering': true
                     });
-                    _converse.connection.connect(
-                        this.domain, "", this.onConnectStatusChanged.bind(this)
-                    );
+                    _converse.connection.connect(this.domain, "", this.onConnectStatusChanged.bind(this));
                     return false;
                 },
 
@@ -381,10 +377,7 @@
                         feedback.parentNode.removeChild(feedback);
                     }
                     const form = this.el.querySelector('form');
-                    form.insertAdjacentHTML(
-                        'afterbegin',
-                        '<span class="reg-feedback"></span>'
-                    );
+                    form.insertAdjacentHTML('afterbegin', '<span class="reg-feedback"></span>');
                     feedback = form.querySelector('.reg-feedback');
                     feedback.textContent = message;
                     if (klass) {

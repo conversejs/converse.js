@@ -33997,7 +33997,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           // XXX: Is this still needed?
           this.el.setAttribute('id', this.model.get('box_id'));
           this.el.innerHTML = tpl_chatbox(_.extend(this.model.toJSON(), {
-            unread_msgs: __('You have unread messages')
+            'unread_msgs': __('You have unread messages')
           }));
           this.content = this.el.querySelector('.chat-content');
           this.renderMessageForm();
@@ -34416,7 +34416,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               // when the user writes a message as opposed to when a
               // message is received.
               this.model.set('scrolled', false);
-            } else if (this.model.get('scrolled', true)) {
+            } else if (this.model.get('scrolled', true) && !u.isOnlyChatStateNotification(message)) {
               this.showNewMessagesIndicator();
             }
           }
@@ -34552,7 +34552,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
               return this.onEscapePressed(ev);
             } else if (ev.keyCode === _converse.keycodes.ENTER) {
-              _.invoke(this.emoji_dropdown, 'toggle');
+              if (this.emoji_dropdown && u.isVisible(this.emoji_dropdown.el.querySelector('.emoji-picker'))) {
+                this.emoji_dropdown.toggle();
+              }
 
               return this.onFormSubmitted(ev);
             } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
@@ -34740,6 +34742,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.renderEmojiPicker();
             var dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
             this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
+            this.emoji_dropdown.el = dropdown_el;
             this.emoji_dropdown.toggle();
           }
         },
@@ -35295,6 +35298,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.loginpanel.render();
           }
 
+          this.loginpanel.initPopovers();
           return this;
         },
         renderControlBoxPane: function renderControlBoxPane() {
@@ -35396,14 +35400,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.on('change', this.render, this);
           this.listenTo(_converse.connfeedback, 'change', this.render);
           this.render();
-
-          _.forEach(this.el.querySelectorAll('[data-title]'), function (el) {
-            var popover = new bootstrap.Popover(el, {
-              'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
-              'dismissible': _converse.view_mode === 'mobile' && true || false,
-              'container': _converse.chatboxviews.el
-            });
-          });
         },
         toHTML: function toHTML() {
           var connection_status = _converse.connfeedback.get('connection_status');
@@ -35430,6 +35426,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'conn_feedback_message': _converse.connfeedback.get('message'),
             'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain')
           }));
+        },
+        initPopovers: function initPopovers() {
+          var _this2 = this;
+
+          _.forEach(this.el.querySelectorAll('[data-title]'), function (el) {
+            var popover = new bootstrap.Popover(el, {
+              'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
+              'dismissible': _converse.view_mode === 'mobile' && true || false,
+              'container': _this2.el.parentElement.parentElement.parentElement
+            });
+          });
         },
         validate: function validate() {
           var form = this.el.querySelector('form');
@@ -35693,6 +35700,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
   Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
   Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+  Strophe.addNamespace('REGISTER', 'jabber:iq:register');
   Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
   Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
   Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
@@ -37571,6 +37579,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.features = new Backbone.Collection();
           this.features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.features-".concat(this.get('jid'))));
           this.features.on('add', this.onFeatureAdded, this);
+          this.fields = new Backbone.Collection();
+          this.fields.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.fields-".concat(this.get('jid'))));
+          this.fields.on('add', this.onFieldAdded, this);
           this.identities = new Backbone.Collection();
           this.identities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.identities-".concat(this.get('jid'))));
           this.fetchFeatures();
@@ -37625,6 +37636,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           feature.entity = this;
 
           _converse.emit('serviceDiscovered', feature);
+        },
+        onFieldAdded: function onFieldAdded(field) {
+          field.entity = this;
+
+          _converse.emit('discoExtensionFieldDiscovered', field);
         },
         fetchFeatures: function fetchFeatures() {
           var _this = this;
@@ -37727,6 +37743,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           _.forEach(stanza.querySelectorAll('feature'), function (feature) {
             _this5.features.create({
               'var': feature.getAttribute('var'),
+              'from': stanza.getAttribute('from')
+            });
+          }); // XEP-0128 Service Discovery Extensions
+
+
+          _.forEach(sizzle('x[type="result"][xmlns="jabber:x:data"] field', stanza), function (field) {
+            _this5.fields.create({
+              'var': field.getAttribute('var'),
+              'value': _.get(field.querySelector('value'), 'textContent'),
               'from': stanza.getAttribute('from')
             });
           });
@@ -38139,7 +38164,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            */
           'supports': function supports(feature, jid) {
             if (_.isNil(jid)) {
-              throw new TypeError('disco.supports: You need to provide an entity JID');
+              throw new TypeError('api.disco.supports: You need to provide an entity JID');
             }
 
             return _converse.api.waitUntil('discoInitialized').then(function () {
@@ -38155,6 +38180,53 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }).then(function (result) {
               return f.filter(f.isObject, result);
             });
+          },
+
+          /**
+           * Return all the features associated with a disco entity
+           *
+           * @method _converse.api.disco.getFeatures
+           * @param {string} jid The JID of the entity whose features are returned.
+           * @example
+           * const features = await _converse.api.disco.getFeatures('room@conference.example.org');
+           */
+          'getFeatures': function getFeatures(jid) {
+            if (_.isNil(jid)) {
+              throw new TypeError('api.disco.getFeatures: You need to provide an entity JID');
+            }
+
+            return _converse.api.waitUntil('discoInitialized').then(function () {
+              return _converse.api.disco.entities.get(jid, true);
+            }).then(function (entity) {
+              return entity.waitUntilFeaturesDiscovered;
+            }).then(function (entity) {
+              return entity.features;
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          },
+
+          /**
+           * Return all the service discovery extensions fields
+           * associated with an entity.
+           *
+           * See [XEP-0129: Service Discovery Extensions](https://xmpp.org/extensions/xep-0128.html)
+           *
+           * @method _converse.api.disco.getFields
+           * @param {string} jid The JID of the entity whose fields are returned.
+           * @example
+           * const fields = await _converse.api.disco.getFields('room@conference.example.org');
+           */
+          'getFields': function getFields(jid) {
+            if (_.isNil(jid)) {
+              throw new TypeError('api.disco.getFields: You need to provide an entity JID');
+            }
+
+            return _converse.api.waitUntil('discoInitialized').then(function () {
+              return _converse.api.disco.entities.get(jid, true);
+            }).then(function (entity) {
+              return entity.waitUntilFeaturesDiscovered;
+            }).then(function (entity) {
+              return entity.fields;
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
           },
 
           /**
@@ -38925,11 +38997,16 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   var MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
   function getMessageArchiveID(stanza) {
+    // See https://xmpp.org/extensions/xep-0313.html#results
+    //
+    // The result messages MUST contain a <result/> element with an 'id'
+    // attribute that gives the current message's archive UID
     var result = sizzle("result[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), stanza).pop();
 
     if (!_.isUndefined(result)) {
       return result.getAttribute('id');
-    }
+    } // See: https://xmpp.org/extensions/xep-0313.html#archives_id
+
 
     var stanza_id = sizzle("stanza-id[xmlns=\"".concat(Strophe.NS.SID, "\"]"), stanza).pop();
 
@@ -40886,13 +40963,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         showRooms: function showRooms(ev) {
           ev.preventDefault();
           var data = new FormData(ev.target);
-          this.model.save('muc_domain', data.get('server'));
+          this.model.save('muc_domain', Strophe.getDomainFromJid(data.get('server')));
           this.updateRoomsList();
         },
         setDomain: function setDomain(ev) {
-          this.model.save({
-            'muc_domain': ev.target.value
-          });
+          this.model.save('muc_domain', Strophe.getDomainFromJid(ev.target.value));
         },
         setNick: function setNick(ev) {
           this.model.save({
@@ -41390,7 +41465,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
-              args = match[2] && match[2].splitOnce(' ') || [],
+              args = match[2] && match[2].splitOnce(' ').filter(function (s) {
+            return s;
+          }) || [],
               command = match[1].toLowerCase();
 
           switch (command) {
@@ -41433,7 +41510,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'help':
-              this.showHelpMessages(["<strong>/admin</strong>: ".concat(__("Change user's affiliation to admin")), "<strong>/ban</strong>: ".concat(__('Ban user from groupchat')), "<strong>/clear</strong>: ".concat(__('Remove messages')), "<strong>/deop</strong>: ".concat(__('Change user role to participant')), "<strong>/help</strong>: ".concat(__('Show this menu')), "<strong>/kick</strong>: ".concat(__('Kick user from groupchat')), "<strong>/me</strong>: ".concat(__('Write in 3rd person')), "<strong>/member</strong>: ".concat(__('Grant membership to a user')), "<strong>/mute</strong>: ".concat(__("Remove user's ability to post messages")), "<strong>/nick</strong>: ".concat(__('Change your nickname')), "<strong>/op</strong>: ".concat(__('Grant moderator role to user')), "<strong>/owner</strong>: ".concat(__('Grant ownership of this groupchat')), "<strong>/revoke</strong>: ".concat(__("Revoke user's membership")), "<strong>/subject</strong>: ".concat(__('Set groupchat subject')), "<strong>/topic</strong>: ".concat(__('Set groupchat subject (alias for /subject)')), "<strong>/voice</strong>: ".concat(__('Allow muted user to post messages'))]);
+              this.showHelpMessages(["<strong>/admin</strong>: ".concat(__("Change user's affiliation to admin")), "<strong>/ban</strong>: ".concat(__('Ban user from groupchat')), "<strong>/clear</strong>: ".concat(__('Remove messages')), "<strong>/deop</strong>: ".concat(__('Change user role to participant')), "<strong>/help</strong>: ".concat(__('Show this menu')), "<strong>/kick</strong>: ".concat(__('Kick user from groupchat')), "<strong>/me</strong>: ".concat(__('Write in 3rd person')), "<strong>/member</strong>: ".concat(__('Grant membership to a user')), "<strong>/mute</strong>: ".concat(__("Remove user's ability to post messages")), "<strong>/nick</strong>: ".concat(__('Change your nickname')), "<strong>/op</strong>: ".concat(__('Grant moderator role to user')), "<strong>/owner</strong>: ".concat(__('Grant ownership of this groupchat')), "<strong>/register</strong>: ".concat(__("Register a nickname for this room")), "<strong>/revoke</strong>: ".concat(__("Revoke user's membership")), "<strong>/subject</strong>: ".concat(__('Set groupchat subject')), "<strong>/topic</strong>: ".concat(__('Set groupchat subject (alias for /subject)')), "<strong>/voice</strong>: ".concat(__('Allow muted user to post messages'))]);
               break;
 
             case 'kick':
@@ -41462,13 +41539,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                   'nick': args[0]
                 }) || this.model.occupants.findWhere({
                   'jid': args[0]
-                });
-                this.model.setAffiliation('member', [{
+                }),
+                    attrs = {
                   'jid': occupant.get('jid'),
                   'reason': args[1]
-                }]).then(function () {
+                };
+
+                if (_converse.auto_register_muc_nickname) {
+                  attrs['nick'] = occupant.get('nick');
+                }
+
+                this.model.setAffiliation('member', [attrs]).then(function () {
                   return _this5.model.occupants.fetchMembers();
-                }, function (err) {
+                }).catch(function (err) {
                   return _this5.onCommandError(err);
                 });
                 break;
@@ -41508,6 +41591,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               }
 
               this.modifyRole(this.model.get('jid'), args[0], 'moderator', args[1], undefined, this.onCommandError.bind(this));
+              break;
+
+            case 'register':
+              if (args.length > 1) {
+                this.showErrorMessage(__("Error: invalid number of arguments"));
+              } else {
+                this.model.registerNickname().then(function (err_msg) {
+                  if (err_msg) _this5.showErrorMessage(err_msg);
+                });
+              }
+
               break;
 
             case 'revoke':
@@ -41657,7 +41751,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           form_el.addEventListener('submit', function (ev) {
             ev.preventDefault();
 
-            _this6.model.saveConfiguration(ev.target).then(_this6.model.getRoomFeatures.bind(_this6.model));
+            _this6.model.saveConfiguration(ev.target).then(function () {
+              return _this6.model.refreshRoomFeatures();
+            });
 
             _this6.closeForm();
           }, false);
@@ -41711,48 +41807,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * If so, we'll use that, otherwise we render the nickname form.
            */
           this.showSpinner();
-          this.model.checkForReservedNick(this.onNickNameFound.bind(this), this.onNickNameNotFound.bind(this));
+          this.model.checkForReservedNick().then(this.onReservedNickFound.bind(this)).catch(this.onReservedNickNotFound.bind(this));
         },
-        onNickNameFound: function onNickNameFound(iq) {
-          /* We've received an IQ response from the server which
-           * might contain the user's reserved nickname.
-           * If no nickname is found we either render a form for
-           * them to specify one, or we try to join the groupchat with the
-           * node of the user's JID.
-           *
-           * Parameters:
-           *  (XMLElement) iq: The received IQ stanza
-           */
-          var identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
-              nick = identity_el ? identity_el.getAttribute('name') : null;
-
-          if (!nick) {
-            this.onNickNameNotFound();
+        onReservedNickFound: function onReservedNickFound(iq) {
+          if (this.model.get('nick')) {
+            this.join();
           } else {
-            this.join(nick);
+            this.onReservedNickNotFound();
           }
         },
-        onNickNameNotFound: function onNickNameNotFound(message) {
-          var nick = this.getDefaultNickName();
+        onReservedNickNotFound: function onReservedNickNotFound(message) {
+          var nick = this.model.getDefaultNick();
 
           if (nick) {
             this.join(nick);
           } else {
             this.renderNicknameForm(message);
-          }
-        },
-        getDefaultNickName: function getDefaultNickName() {
-          /* The default nickname (used when muc_nickname_from_jid is true)
-           * is the node part of the user's JID.
-           * We put this in a separate method so that it can be
-           * overridden by plugins.
-           */
-          var nick = _converse.xmppstatus.vcard.get('nickname');
-
-          if (nick) {
-            return nick;
-          } else if (_converse.muc_nickname_from_jid) {
-            return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
           }
         },
         onNicknameClash: function onNicknameClash(presence) {
@@ -41767,7 +41837,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (_converse.muc_nickname_from_jid) {
             var nick = presence.getAttribute('from').split('/')[1];
 
-            if (nick === this.getDefaultNickName()) {
+            if (nick === this.model.getDefaultNick()) {
               this.join(nick + '-2');
             } else {
               var del = nick.lastIndexOf("-");
@@ -42463,9 +42533,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       function setMUCDomain(domain, controlboxview) {
         _converse.muc_domain = domain;
-        controlboxview.roomspanel.model.save({
-          'muc_domain': domain
-        });
+        controlboxview.roomspanel.model.save('muc_domain', Strophe.getDomainFromJid(domain));
       }
 
       function setMUCDomainFromDisco(controlboxview) {
@@ -42733,6 +42801,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         allow_muc_invitations: true,
         auto_join_on_invite: false,
         auto_join_rooms: [],
+        auto_register_muc_nickname: false,
         muc_domain: undefined,
         muc_history_max_stanzas: undefined,
         muc_instant_rooms: true,
@@ -42800,10 +42869,20 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         initialize: function initialize() {
           this.constructor.__super__.initialize.apply(this, arguments);
 
+          this.on('change:connection_status', this.onConnectionStatusChanged, this);
           this.occupants = new _converse.ChatRoomOccupants();
           this.occupants.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.occupants-".concat(_converse.bare_jid).concat(this.get('jid'))));
           this.occupants.chatroom = this;
           this.registerHandlers();
+        },
+        onConnectionStatusChanged: async function onConnectionStatusChanged() {
+          if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED && _converse.auto_register_muc_nickname && !this.get('reserved_nick')) {
+            var result = await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'));
+
+            if (result.length) {
+              this.registerNickname();
+            }
+          }
         },
         registerHandlers: function registerHandlers() {
           var _this = this;
@@ -42924,6 +43003,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           this.occupants.reset();
 
+          var disco_entity = _converse.disco_entities.get(this.get('jid'));
+
+          if (disco_entity) {
+            disco_entity.destroy();
+          }
+
           if (_converse.connection.connected) {
             this.sendUnavailablePresence(exit_msg);
           }
@@ -43042,25 +43127,6 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             'type': 'groupchat'
           };
         },
-        getRoomFeatures: function getRoomFeatures() {
-          var _this2 = this;
-
-          /* Fetch the groupchat disco info, parse it and then save it.
-           */
-          return new Promise(function (resolve, reject) {
-            _converse.api.disco.info(_this2.get('jid'), null).then(function (stanza) {
-              _this2.parseRoomFeatures(stanza);
-
-              resolve();
-            }).catch(function (err) {
-              _converse.log("Could not parse the groupchat features", Strophe.LogLevel.WARN);
-
-              _converse.log(err, Strophe.LogLevel.WARN);
-
-              reject(err);
-            });
-          });
-        },
         getRoomJIDAndNick: function getRoomJIDAndNick(nick) {
           /* Utility method to construct the JID for the current user
            * as occupant of the groupchat.
@@ -43160,50 +43226,40 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             'reason': reason
           });
         },
-        parseRoomFeatures: function parseRoomFeatures(iq) {
-          /* Parses an IQ stanza containing the groupchat's features.
-           *
-           * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
-           *
-           *  <identity
-           *      category='conference'
-           *      name='A Dark Cave'
-           *      type='text'/>
-           *  <feature var='http://jabber.org/protocol/muc'/>
-           *  <feature var='muc_passwordprotected'/>
-           *  <feature var='muc_hidden'/>
-           *  <feature var='muc_temporary'/>
-           *  <feature var='muc_open'/>
-           *  <feature var='muc_unmoderated'/>
-           *  <feature var='muc_nonanonymous'/>
-           *  <feature var='urn:xmpp:mam:0'/>
-           */
-          var features = {
-            'features_fetched': moment().format(),
-            'name': iq.querySelector('identity').getAttribute('name')
-          };
+        refreshRoomFeatures: function refreshRoomFeatures() {
+          var entity = _converse.disco_entities.get(this.get('jid'));
 
-          _.each(iq.querySelectorAll('feature'), function (field) {
-            var fieldname = field.getAttribute('var');
+          if (entity) {
+            entity.destroy();
+          }
+
+          return this.getRoomFeatures();
+        },
+        getRoomFeatures: async function getRoomFeatures() {
+          var features = await _converse.api.disco.getFeatures(this.get('jid')),
+              fields = await _converse.api.disco.getFields(this.get('jid')),
+              identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid')),
+              attrs = {
+            'features_fetched': moment().format(),
+            'name': identity && identity.get('name')
+          };
+          features.each(function (feature) {
+            var fieldname = feature.get('var');
 
             if (!fieldname.startsWith('muc_')) {
               if (fieldname === Strophe.NS.MAM) {
-                features.mam_enabled = true;
+                attrs.mam_enabled = true;
               }
 
               return;
             }
 
-            features[fieldname.replace('muc_', '')] = true;
+            attrs[fieldname.replace('muc_', '')] = true;
           });
-
-          var desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
-
-          if (!_.isNull(desc_field)) {
-            features.description = desc_field.textContent;
-          }
-
-          this.save(features);
+          attrs.description = _.get(fields.findWhere({
+            'var': "muc#roominfo_description"
+          }), 'attributes.value');
+          this.save(attrs);
         },
         requestMemberList: function requestMemberList(affiliation) {
           /* Send an IQ stanza to the server, asking it for the
@@ -43239,7 +43295,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            * XXX: Prosody doesn't accept multiple JIDs' affiliations
            * being set in one IQ stanza, so as a workaround we send
            * a separate stanza for each JID.
-           * Related ticket: https://prosody.im/issues/issue/795
+           * Related ticket: https://issues.prosody.im/345
            *
            * Parameters:
            *  (String) affiliation: The affiliation
@@ -43264,7 +43320,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           return Promise.all(promises);
         },
         saveConfiguration: function saveConfiguration(form) {
-          var _this3 = this;
+          var _this2 = this;
 
           /* Submit the groupchat configuration form by sending an IQ
            * stanza to the server.
@@ -43281,11 +43337,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             var inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
                 configArray = _.map(inputs, u.webForm2xForm);
 
-            _this3.sendConfiguration(configArray, resolve, reject);
+            _this2.sendConfiguration(configArray, resolve, reject);
           });
         },
         autoConfigureChatRoom: function autoConfigureChatRoom() {
-          var _this4 = this;
+          var _this3 = this;
 
           /* Automatically configure groupchat based on this model's
            * 'roomconfig' data.
@@ -43294,10 +43350,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            * been received.
            */
           return new Promise(function (resolve, reject) {
-            _this4.fetchRoomConfiguration().then(function (stanza) {
+            _this3.fetchRoomConfiguration().then(function (stanza) {
               var configArray = [],
                   fields = stanza.querySelectorAll('field'),
-                  config = _this4.get('roomconfig');
+                  config = _this3.get('roomconfig');
 
               var count = fields.length;
 
@@ -43327,14 +43383,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
                 configArray.push(field);
 
                 if (! --count) {
-                  _this4.sendConfiguration(configArray, resolve, reject);
+                  _this3.sendConfiguration(configArray, resolve, reject);
                 }
               });
             });
           });
         },
         fetchRoomConfiguration: function fetchRoomConfiguration() {
-          var _this5 = this;
+          var _this4 = this;
 
           /* Send an IQ stanza to fetch the groupchat configuration data.
            * Returns a promise which resolves once the response IQ
@@ -43342,7 +43398,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            */
           return new Promise(function (resolve, reject) {
             _converse.connection.sendIQ($iq({
-              'to': _this5.get('jid'),
+              'to': _this4.get('jid'),
               'type': "get"
             }).c("query", {
               xmlns: Strophe.NS.MUC_OWNER
@@ -43409,7 +43465,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           }
         },
         sendAffiliationIQ: function sendAffiliationIQ(affiliation, member) {
-          var _this6 = this;
+          var _this5 = this;
 
           /* Send an IQ stanza specifying an affiliation change.
            *
@@ -43421,12 +43477,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            */
           return new Promise(function (resolve, reject) {
             var iq = $iq({
-              to: _this6.get('jid'),
+              to: _this5.get('jid'),
               type: "set"
             }).c("query", {
               xmlns: Strophe.NS.MUC_ADMIN
             }).c("item", {
               'affiliation': member.affiliation || affiliation,
+              'nick': member.nick,
               'jid': member.jid
             });
 
@@ -43452,7 +43509,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
         },
-        getJidsWithAffiliations: function getJidsWithAffiliations(affiliations) {
+        getJidsWithAffiliations: async function getJidsWithAffiliations(affiliations) {
+          var _this6 = this;
+
           /* Returns a map of JIDs that have the affiliations
            * as provided.
            */
@@ -43460,12 +43519,15 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             affiliations = [affiliations];
           }
 
-          var promises = _.map(affiliations, _.partial(this.requestMemberList.bind(this)));
-
-          return Promise.all(promises).then(function (iq) {
-            return u.marshallAffiliationIQs(iq);
-          }, function (iq) {
-            return u.marshallAffiliationIQs(iq);
+          var result = await Promise.all(affiliations.map(function (a) {
+            return _this6.requestMemberList(a).then(function (iq) {
+              return u.parseMemberListIQ(iq);
+            }).catch(function (iq) {
+              _converse.log(iq, Strophe.LogLevel.ERROR);
+            });
+          }));
+          return [].concat.apply([], result).filter(function (p) {
+            return p;
           });
         },
         updateMemberLists: function updateMemberLists(members, affiliations, deltaFunc) {
@@ -43494,7 +43556,23 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             return _this7.occupants.fetchMembers();
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
         },
-        checkForReservedNick: function checkForReservedNick(callback, errback) {
+        getDefaultNick: function getDefaultNick() {
+          /* The default nickname (used when muc_nickname_from_jid is true)
+           * is the node part of the user's JID.
+           * We put this in a separate method so that it can be
+           * overridden by plugins.
+           */
+          var nick = _converse.xmppstatus.vcard.get('nickname');
+
+          if (nick) {
+            return nick;
+          } else if (_converse.muc_nickname_from_jid) {
+            return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+          }
+        },
+        checkForReservedNick: function checkForReservedNick() {
+          var _this8 = this;
+
           /* Use service-discovery to ask the XMPP server whether
            * this user has a reserved nickname for this groupchat.
            * If so, we'll use that, otherwise we render the nickname form.
@@ -43503,16 +43581,89 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            *  (Function) callback: Callback upon succesful IQ response
            *  (Function) errback: Callback upon error IQ response
            */
-          _converse.connection.sendIQ($iq({
+          return _converse.api.sendIQ($iq({
             'to': this.get('jid'),
             'from': _converse.connection.jid,
             'type': "get"
           }).c("query", {
             'xmlns': Strophe.NS.DISCO_INFO,
             'node': 'x-roomuser-item'
-          }), callback, errback);
+          })).then(function (iq) {
+            var identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
+                nick = identity_el ? identity_el.getAttribute('name') : null;
 
-          return this;
+            _this8.save({
+              'reserved_nick': nick,
+              'nick': nick
+            }, {
+              'silent': true
+            });
+
+            return iq;
+          });
+        },
+        registerNickname: async function registerNickname() {
+          // See https://xmpp.org/extensions/xep-0045.html#register
+          var nick = this.get('nick'),
+              jid = this.get('jid');
+          var iq, err_msg;
+
+          try {
+            iq = await _converse.api.sendIQ($iq({
+              'to': jid,
+              'from': _converse.connection.jid,
+              'type': 'get'
+            }).c('query', {
+              'xmlns': Strophe.NS.MUC_REGISTER
+            }));
+          } catch (e) {
+            if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              err_msg = __("You're not allowed to register yourself in this groupchat.");
+            } else if (sizzle('registration-required[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              err_msg = __("You're not allowed to register in this groupchat because it's members-only.");
+            }
+
+            _converse.log(e, Strophe.LogLevel.ERROR);
+
+            return err_msg;
+          }
+
+          var required_fields = sizzle('field required', iq).map(function (f) {
+            return f.parentElement;
+          });
+
+          if (required_fields.length > 1 && required_fields[0].getAttribute('var') !== 'muc#register_roomnick') {
+            return _converse.log("Can't register the user register in the groupchat ".concat(jid, " due to the required fields"));
+          }
+
+          try {
+            await _converse.api.sendIQ($iq({
+              'to': jid,
+              'from': _converse.connection.jid,
+              'type': 'set'
+            }).c('query', {
+              'xmlns': Strophe.NS.MUC_REGISTER
+            }).c('x', {
+              'xmlns': Strophe.NS.XFORM,
+              'type': 'submit'
+            }).c('field', {
+              'var': 'FORM_TYPE'
+            }).c('value').t('http://jabber.org/protocol/muc#register').up().up().c('field', {
+              'var': 'muc#register_roomnick'
+            }).c('value').t(nick));
+          } catch (e) {
+            if (sizzle('service-unavailable[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              err_msg = __("Can't register your nickname in this groupchat, it doesn't support registration.");
+            } else if (sizzle('bad-request[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              err_msg = __("Can't register your nickname in this groupchat, invalid data form supplied.");
+            }
+
+            _converse.log(err_msg);
+
+            _converse.log(e, Strophe.LogLevel.ERROR);
+
+            return err_msg;
+          }
         },
         updateOccupantsOnPresence: function updateOccupantsOnPresence(pres) {
           /* Given a presence stanza, update the occupant model
@@ -43523,7 +43674,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            */
           var data = this.parsePresence(pres);
 
-          if (data.type === 'error') {
+          if (data.type === 'error' || !data.jid && !data.nick) {
             return true;
           }
 
@@ -43624,11 +43775,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
               room_now_fully_anon = stanza.querySelector("status[code='173']");
 
           if (configuration_changed || logging_enabled || logging_disabled || room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
-            this.getRoomFeatures();
+            this.refreshRoomFeatures();
           }
         },
         onMessage: function onMessage(stanza) {
-          var _this8 = this;
+          var _this9 = this;
 
           /* Handler for all MUC messages sent to this groupchat.
            *
@@ -43669,7 +43820,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             }
 
             this.createMessage(stanza, original_stanza).then(function (msg) {
-              return _this8.incrementUnreadMsgCounter(msg);
+              return _this9.incrementUnreadMsgCounter(msg);
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
           }
 
@@ -43705,6 +43856,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           }
         },
         onOwnPresence: function onOwnPresence(pres) {
+          var _this10 = this;
+
           /* Handles a received presence relating to the current
            * user.
            *
@@ -43725,10 +43878,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           if (locked_room) {
             if (this.get('auto_configure')) {
-              this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+              this.autoConfigureChatRoom().then(function () {
+                return _this10.refreshRoomFeatures();
+              });
             } else if (_converse.muc_instant_rooms) {
               // Accept default configuration
-              this.saveConfiguration().then(this.getRoomFeatures.bind(this));
+              this.saveConfiguration().then(function () {
+                return _this10.getRoomFeatures();
+              });
             } else {
               this.trigger('configurationNeeded');
               return; // We haven't yet entered the groupchat, so bail here.
@@ -43740,7 +43897,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             // otherwise the features would have been fetched in
             // the "initialize" method already.
             if (this.get('affiliation') === 'owner' && this.get('auto_configure')) {
-              this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+              this.autoConfigureChatRoom().then(function () {
+                return _this10.refreshRoomFeatures();
+              });
             } else {
               this.getRoomFeatures();
             }
@@ -43858,7 +44017,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           }
         },
         fetchMembers: function fetchMembers() {
-          var _this9 = this;
+          var _this11 = this;
 
           this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']).then(function (new_members) {
             var new_jids = new_members.map(function (m) {
@@ -43871,7 +44030,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             }).filter(function (m) {
               return !_.isUndefined(m);
             }),
-                removed_members = _this9.filter(function (m) {
+                removed_members = _this11.filter(function (m) {
               return f.includes(m.get('affiliation'), ['admin', 'member', 'owner']) && !f.includes(m.get('nick'), new_nicks) && !f.includes(m.get('jid'), new_jids);
             });
 
@@ -43889,11 +44048,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
               var occupant;
 
               if (attrs.jid) {
-                occupant = _this9.findOccupant({
+                occupant = _this11.findOccupant({
                   'jid': attrs.jid
                 });
               } else {
-                occupant = _this9.findOccupant({
+                occupant = _this11.findOccupant({
                   'nick': attrs.nick
                 });
               }
@@ -43901,7 +44060,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
               if (occupant) {
                 occupant.save(attrs);
               } else {
-                _this9.create(attrs);
+                _this11.create(attrs);
               }
             });
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
@@ -44032,6 +44191,24 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         _converse.chatboxes.each(function (model) {
           if (model.get('type') === _converse.CHATROOMS_TYPE) {
             model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+          }
+        });
+      }
+
+      function fetchRegistrationForm(room_jid, user_jid) {
+        var _this12 = this;
+
+        _converse.api.sendIQ($iq({
+          'from': user_jid,
+          'to': room_jid,
+          'type': 'get'
+        }).c('query', {
+          'xmlns': Strophe.NS.REGISTER
+        })).then(function (iq) {}).catch(function (iq) {
+          if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', iq).length) {
+            _this12.feedback.set('error', __("Error: the groupchat ".concat(_this12.model.getDisplayName(), " does not exist.")));
+          } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]').length) {
+            _this12.feedback.set('error', __("Sorry, you're not allowed to registerd in this groupchat"));
           }
         });
       }
@@ -44447,11 +44624,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         // the message...
 
 
-        var body = sizzle("encrypted[xmlns=\"".concat(Strophe.NS.OMEMO, "\"]"), message).length ? __('OMEMO Message received') : message.querySelector('body').textContent;
+        var body = sizzle("encrypted[xmlns=\"".concat(Strophe.NS.OMEMO, "\"]"), message).length ? __('OMEMO Message received') : _.get(message.querySelector('body'), 'textContent');
+
+        if (!body) {
+          return;
+        }
+
         var n = new Notification(title, {
-          body: body,
-          lang: _converse.locale,
-          icon: _converse.notification_icon
+          'body': body,
+          'lang': _converse.locale,
+          'icon': _converse.notification_icon
         });
         setTimeout(n.close.bind(n), 5000);
       };
@@ -46233,107 +46415,138 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           __ = _converse.__;
 
       _converse.api.settings.update({
-        'push_app_servers': []
+        'push_app_servers': [],
+        'enable_muc_push': false
       });
 
-      function disablePushAppServer(push_app_server) {
+      async function disablePushAppServer(domain, push_app_server) {
         if (!push_app_server.jid) {
           return;
         }
 
-        Promise.all([_converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)]).then(function (result) {
-          if (!result[0].length && !result[1].length) {
-            return _converse.log("Not disabling push app server \"".concat(push_app_server.jid, "\", no disco support from your server."), Strophe.LogLevel.WARN);
-          }
+        var result = await _converse.api.disco.supports(Strophe.NS.PUSH, domain || _converse.bare_jid);
 
-          var stanza = $iq({
-            'type': 'set'
-          }).c('disable', {
-            'xmlns': Strophe.NS.PUSH,
-            'jid': push_app_server.jid
+        if (!result.length) {
+          return _converse.log("Not disabling push app server \"".concat(push_app_server.jid, "\", no disco support from your server."), Strophe.LogLevel.WARN);
+        }
+
+        var stanza = $iq({
+          'type': 'set'
+        });
+
+        if (domain !== _converse.bare_jid) {
+          stanza.attrs({
+            'to': domain
           });
+        }
 
-          if (push_app_server.node) {
-            stanza.attrs({
-              'node': push_app_server.node
-            });
-          }
+        stanza.c('disable', {
+          'xmlns': Strophe.NS.PUSH,
+          'jid': push_app_server.jid
+        });
 
-          _converse.api.sendIQ(stanza).then(function () {
-            return _converse.session.set('push_enabled', true);
-          }).catch(function (e) {
-            _converse.log("Could not enable push app server for ".concat(push_app_server.jid), Strophe.LogLevel.ERROR);
-
-            _converse.log(e, Strophe.LogLevel.ERROR);
+        if (push_app_server.node) {
+          stanza.attrs({
+            'node': push_app_server.node
           });
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        }
+
+        _converse.api.sendIQ(stanza).catch(function (e) {
+          _converse.log("Could not disable push app server for ".concat(push_app_server.jid), Strophe.LogLevel.ERROR);
+
+          _converse.log(e, Strophe.LogLevel.ERROR);
+        });
       }
 
-      function enablePushAppServer(push_app_server) {
+      async function enablePushAppServer(domain, push_app_server) {
         if (!push_app_server.jid || !push_app_server.node) {
           return;
         }
 
-        _converse.api.disco.getIdentity('pubsub', 'push', push_app_server.jid).then(function (identity) {
-          if (!identity) {
-            return _converse.log("Not enabling push the service \"".concat(push_app_server.jid, "\", it doesn't have the right disco identtiy."), Strophe.LogLevel.WARN);
-          }
+        var identity = await _converse.api.disco.getIdentity('pubsub', 'push', push_app_server.jid);
 
-          return Promise.all([_converse.api.disco.supports(Strophe.NS.PUSH, push_app_server.jid), _converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)]).then(function (result) {
-            if (!result[0].length && !result[1].length) {
-              return _converse.log("Not enabling push app server \"".concat(push_app_server.jid, "\", no disco support from your server."), Strophe.LogLevel.WARN);
-            }
+        if (!identity) {
+          return _converse.log("Not enabling push the service \"".concat(push_app_server.jid, "\", it doesn't have the right disco identtiy."), Strophe.LogLevel.WARN);
+        }
 
-            var stanza = $iq({
-              'type': 'set'
-            }).c('enable', {
-              'xmlns': Strophe.NS.PUSH,
-              'jid': push_app_server.jid,
-              'node': push_app_server.node
-            });
+        var result = await Promise.all([_converse.api.disco.supports(Strophe.NS.PUSH, push_app_server.jid), _converse.api.disco.supports(Strophe.NS.PUSH, domain)]);
 
-            if (push_app_server.secret) {
-              stanza.c('x', {
-                'xmlns': Strophe.NS.XFORM,
-                'type': 'submit'
-              }).c('field', {
-                'var': 'FORM_TYPE'
-              }).c('value').t("".concat(Strophe.NS.PUBSUB, "#publish-options")).up().up().c('field', {
-                'var': 'secret'
-              }).c('value').t(push_app_server.secret);
-            }
+        if (!result[0].length && !result[1].length) {
+          return _converse.log("Not enabling push app server \"".concat(push_app_server.jid, "\", no disco support from your server."), Strophe.LogLevel.WARN);
+        }
 
-            _converse.api.sendIQ(stanza).then(function () {
-              return _converse.session.save('push_enabled', true);
-            }).catch(function (e) {
-              _converse.log("Could not enable push app server for ".concat(push_app_server.jid), Strophe.LogLevel.ERROR);
+        var stanza = $iq({
+          'type': 'set'
+        });
 
-              _converse.log(e, Strophe.LogLevel.ERROR);
-            });
-          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        if (domain !== _converse.bare_jid) {
+          stanza.attrs({
+            'to': domain
+          });
+        }
+
+        stanza.c('enable', {
+          'xmlns': Strophe.NS.PUSH,
+          'jid': push_app_server.jid,
+          'node': push_app_server.node
+        });
+
+        if (push_app_server.secret) {
+          stanza.c('x', {
+            'xmlns': Strophe.NS.XFORM,
+            'type': 'submit'
+          }).c('field', {
+            'var': 'FORM_TYPE'
+          }).c('value').t("".concat(Strophe.NS.PUBSUB, "#publish-options")).up().up().c('field', {
+            'var': 'secret'
+          }).c('value').t(push_app_server.secret);
+        }
+
+        return _converse.api.sendIQ(stanza);
       }
 
-      function enablePush() {
-        if (_converse.session.get('push_enabled')) {
-          // XXX: this code is still a bit naive. We set push_enabled
-          // to true as soon as the first push app server has been set.
-          //
-          // When enabling or disabling multiple push app servers,
-          // we won't wait until we have confirmation that all have been set.
+      async function enablePush(domain) {
+        domain = domain || _converse.bare_jid;
+        var push_enabled = _converse.session.get('push_enabled') || [];
+
+        if (_.includes(push_enabled, domain)) {
           return;
         }
 
         var enabled_services = _.reject(_converse.push_app_servers, 'disable');
 
-        _.each(enabled_services, enablePushAppServer);
+        try {
+          await Promise.all(_.map(enabled_services, _.partial(enablePushAppServer, domain)));
+        } catch (e) {
+          _converse.log('Could not enable push App Server', Strophe.LogLevel.ERROR);
+
+          if (e) _converse.log(e, Strophe.LogLevel.ERROR);
+        } finally {
+          push_enabled.push(domain);
+        }
 
         var disabled_services = _.filter(_converse.push_app_servers, 'disable');
 
-        _.each(disabled_services, disablePushAppServer);
+        _.each(disabled_services, _.partial(disablePushAppServer, domain));
+
+        _converse.session.save('push_enabled', push_enabled);
       }
 
-      _converse.api.listen.on('statusInitialized', enablePush);
+      _converse.api.listen.on('statusInitialized', function () {
+        return enablePush();
+      });
+
+      function onChatBoxAdded(model) {
+        if (model.get('type') == _converse.CHATROOMS_TYPE) {
+          enablePush(Strophe.getDomainFromJid(model.get('jid')));
+        }
+      }
+
+      if (_converse.enable_muc_push) {
+        _converse.api.listen.on('chatBoxesInitialized', function () {
+          return _converse.chatboxes.on('add', onChatBoxAdded);
+        });
+      }
     }
   });
 });
@@ -46484,7 +46697,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         'allow_registration': true,
         'domain_placeholder': __(" e.g. conversejs.org"),
         // Placeholder text shown in the domain input on the registration form
-        'providers_link': 'https://xmpp.net/directory.php',
+        'providers_link': 'https://compliance.conversations.im/',
         // Link to XMPP providers shown on registration page
         'registration_domain': ''
       });
@@ -46704,8 +46917,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           this.reset({
-            domain: Strophe.getDomainFromJid(domain_name),
-            _registering: true
+            'domain': Strophe.getDomainFromJid(domain_name),
+            '_registering': true
           });
 
           _converse.connection.connect(this.domain, "", this.onConnectStatusChanged.bind(this));
@@ -48186,6 +48399,8 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
             _converse.xmppstatus.save({
               'status': show
+            }, {
+              'silent': true
             });
 
             var status_message = _.propertyOf(presence.querySelector('status'))('textContent');
@@ -51079,7 +51294,7 @@ __p += '\n    </div>\n    <p class="chatroom-description" title="' +
 __e(o.description) +
 '">' +
 __e(o.description) +
-'<p/>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="' +
+'</p>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="' +
 __e(o.info_close) +
 '"></a>\n    ';
  if (o.affiliation == 'owner') { ;
@@ -51875,11 +52090,11 @@ __e(o.__("Password:")) +
 __e(o.__('password')) +
 '">\n                </div>\n                ';
  } ;
-__p += '\n                <div class="form-group form-check">\n                    <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ';
+__p += '\n                <div class="form-group form-check login-trusted">\n                    <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ';
  if (o._converse.config.get('trusted')) { ;
 __p += ' checked="checked" ';
  } ;
-__p += '>\n                    <label for="converse-login-trusted" class="form-check-label">' +
+__p += '>\n                    <label for="converse-login-trusted" class="form-check-label login-trusted__desc">' +
 __e(o.__('This is a trusted device')) +
 '</label>\n                    <i class="fa fa-info-circle" data-toggle="popover"\n                       data-title="Trusted device?"\n                       data-content="' +
 __e(o.__('To improve performance, we cache your data in this browser. Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. It\'s important that you explicitly log out, otherwise not all cached data might be deleted.')) +
@@ -51954,13 +52169,13 @@ __p += '**';
  }; ;
 __p +=
 __e(o.username) +
-'\n                ';
+'</span>\n            ';
 o.roles.forEach(function (role) { ;
 __p += ' <span class="badge badge-secondary">' +
 __e(role) +
 '</span> ';
  }); ;
-__p += '\n            </span>\n            ';
+__p += '\n            ';
  if (!o.is_me_message) { ;
 __p += '<time timestamp="' +
 __e(o.isodate) +
@@ -76200,17 +76415,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       return data;
     });
-  };
-
-  u.marshallAffiliationIQs = function marshallAffiliationIQs() {
-    /* Marshall a list of IQ stanzas into a map of JIDs and
-        * affiliations.
-        *
-        * Parameters:
-        *  Any amount of XMLElement objects, representing the IQ
-        *  stanzas.
-        */
-    return _.flatMap(arguments[0], u.parseMemberListIQ);
   };
 });
 

@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0.1 (Unreleased)
+## 4.0.1 (2018-09-19)
 
 - Use https://compliance.conversations.im instead of (dead) https://xmpp.net
 - New config  setting [auto_register_muc_nickname](https://conversejs.org/docs/html/configuration.html#auto-register-muc-nickname)

@@ -25,8 +25,8 @@ breakage when a new version is released and the above URLs load new resources.
 
 To load a specific version of Converse you can put the version in the URL, like so:
 
-* https://cdn.conversejs.org/4.0.0/dist/converse.min.js
-* https://cdn.conversejs.org/4.0.0/css/converse.min.css
+* https://cdn.conversejs.org/4.0.1/dist/converse.min.js
+* https://cdn.conversejs.org/4.0.1/css/converse.min.css
 
 You can include these two URLs inside the *<head>* element of your website
 via the *script* and *link* tags:

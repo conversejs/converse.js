@@ -18,9 +18,9 @@
                     <input id="converse-login-password" class="form-control" required="required" type="password" name="password" placeholder="{{{o.__('password')}}}">
                 </div>
                 {[ } ]}
-                <div class="form-group form-check">
+                <div class="form-group form-check login-trusted">
                     <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" {[ if (o._converse.config.get('trusted')) { ]} checked="checked" {[ } ]}>
-                    <label for="converse-login-trusted" class="form-check-label">{{{o.__('This is a trusted device')}}}</label>
+                    <label for="converse-login-trusted" class="form-check-label login-trusted__desc">{{{o.__('This is a trusted device')}}}</label>
                     <i class="fa fa-info-circle" data-toggle="popover"
                        data-title="Trusted device?"
                        data-content="{{{o.__('To improve performance, we cache your data in this browser. Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. It\'s important that you explicitly log out, otherwise not all cached data might be deleted.')}}}"></i>

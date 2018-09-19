@@ -11,9 +11,8 @@
 
     <!-- These files are NOT needed when using converse.js in your own project. -->
     <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="css/bootstrap.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="css/font-awesome.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="css/website.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/website.css" />
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
     <script type="text/javascript" src="/src/website.js"></script>
     <script type="text/javascript" src="analytics.js"></script>
@@ -25,60 +24,53 @@
     <![endif]>
 </head>
 
-<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
-    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-        <div class="container">
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-                    <i class="fa fa-bars"></i>
-                </button>
-                <a class="navbar-brand" href="#page-top">
-                    <i class="fa fa-play-circle"></i>  <span class="light">Home</span>
-                </a>
-            </div>
+<body id="page-top" data-spy="scroll">
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-                <ul class="nav navbar-nav">
-                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
-                    <li class="hidden">
-                        <a href="#page-top"></a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#about">About</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#features">Features</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#contact">Contact</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#sponsors">Sponsor</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#hosting">Hosting</a>
-                    </li>
-                    <li>
-                        <a href="/docs/html/index.html">Documentation</a>
-                    </li>
-                    <li>
-                        <a href="https://github.com/jcbrand/converse.js/releases" class="button" target="_blank" rel="noopener">Download</a>
-                    </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>
+<section class="section-wrapper">
+	<nav class="navbar sticky-top navbar-expand-lg" role="navigation">
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+			<span class="page-scroll">
+				<a class="navbar-brand" href="#intro"><span class="converse-brand-heading"><i class="icon-conversejs"></i>Converse</span></a>
+			</span>
+			<ul class="navbar-nav mt-2 mt-lg-0">
+				<!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+				<li class="hidden">
+					<a class="nav-link" href="#page-top"></a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#about">About</a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#features">Features</a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#contact">Contact</a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#sponsors">Sponsor</a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#hosting">Hosting</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/docs/html/index.html">Documentation&nbsp;<i class="fa fa-external-link-alt"></i></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="https://github.com/jcbrand/converse.js/releases" class="button" target="_blank" rel="noopener">Download&nbsp;<i class="fa fa-external-link-alt"></i></a>
+				</li>
+			</ul>
+		</div>
+	</nav>
 
-    <section class="intro" class="container">
+    <section id="intro" class="intro" class="container">
         <div class="row">
-            <h1 class="brand-heading converse-brand-heading"><i class="icon-conversejs"></i>Converse</h1>
-            <div class="col-md-8 col-md-offset-2">
+            <div class="col-md-12 col-md-offset-2">
+                <h1 class="brand-heading converse-brand-heading"><i class="icon-conversejs"></i>Converse</h1>
                 <p class="intro-text">A free and open-source XMPP chat client in your browser</p>
-                <p>Also available as a <a href="https://conversejs.org/fullscreen.html">fullpage</a> app</p>
-
+                <p>Try out the <a href="/fullscreen.html">fullpage</a> version</p>
                 <p>
                 <a href="https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org"
                    target="_blank" rel="noopener"><img src="https://inverse.chat/badge.svg?room=discuss@conference.conversejs.org"/></a>
@@ -90,11 +82,11 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-8 col-md-offset-2 banner-social-buttons">
+            <div class="col-md-12 col-md-offset-2 banner-social-buttons">
                 <ul class="list-inline">
-                    <li><a href="https://twitter.com/jcopkode" class="btn btn-circle btn-lg" title="Twitter" target="_blank" rel="noopener"><i class="fab fa-twitter"></i></a></li>
-                    <li><a href="https://mastodon.xyz/@jcbrand" class="btn btn-lg" title="Mastodon" target="_blank" rel="noopener"><img class="mastodon" src="/logo/mastodon.svg"/></a></li>
-                    <li><a href="https://github.com/jcbrand/converse.js" class="btn btn-circle btn-lg" title="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a></li>
+                    <li class="list-inline-item"><a href="https://twitter.com/jcopkode" class="btn btn-circle btn-lg" title="Twitter" target="_blank" rel="noopener"><i class="fab fa-twitter"></i></a></li>
+                    <li class="list-inline-item"><a href="https://mastodon.xyz/@jcbrand" class="btn btn-lg" title="Mastodon" target="_blank" rel="noopener"><img class="mastodon" src="/logo/mastodon.svg"/></a></li>
+                    <li class="list-inline-item"><a href="https://github.com/jcbrand/converse.js" class="btn btn-circle btn-lg" title="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a></li>
                 </ul>
             </div>
         </div>
@@ -102,7 +94,7 @@
 
     <section id="about" class="container content-section text-center">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
+            <div class="col-lg-12 col-lg-offset-2">
                 <h2>Converse is easy to set up</h2>
                 <p class="text-left">You can start using it here immediately, or you can <a href="/docs/html/index.html">integrate it into your own website</a>.</p>
                 <p class="text-left">Take a look at the <a href="/demo">demo page</a> for other examples of how Converse can be configured and used.</a>
@@ -194,7 +186,7 @@
     <section class="outro content-section text-center" id="contact">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
+                <div class="col-lg-12 col-lg-offset-2">
                     <h2>Contact</h2>
                     <ul class="contact">
                         <li>Follow me on <a href="https://twitter.com/jcopkode" target="_blank" rel="noopener">Twitter</a>
@@ -206,7 +198,7 @@
                     </ul>
                 </div>
 
-                <div class="col-lg-8 col-lg-offset-2" style="margin-top: 4em; text-align: left">
+                <div class="col-lg-12 col-lg-offset-2" style="margin-top: 4em; text-align: left">
                     <h2 style="text-align: center">Professional support and custom development</h2>
                     <p>
                         I'm available for paid-for features, custom development and consulting.<br/>
@@ -223,13 +215,12 @@
     <section class="outro content-section text-center" id="sponsors">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2" style="margin-top: 3em">
+                <div class="col-lg-12 col-lg-offset-2" style="margin-top: 3em">
                     <div class="sponsors">
                         <h2>Converse is supported by:</h2>
                         <ul>
                             <li><a href="https://www.keycdn.com/?utm_source=conversejs" target="_blank" rel="noopener"><img style="height: 3em" src="/logo/keycdn.svg" alt="KeyCDN"></a></li>
                             <li><a href="https://wikisuite.org/?utm_source=conversejs" target="_blank" rel="noopener"><img style="height: 4em" src="/logo/wikisuite-white.png" alt="WikiSuite"></a></li>
-                            <li><a href="https://hostpresto.com/?utm_source=conversejs" target="_blank" rel="noopener"><img style="height: 3em" src="/logo/hostpresto.png" alt="HostPresto"></a></li>
                         </ul>
                     </div>
 
@@ -248,7 +239,7 @@
     <section class="outro content-section text-center" id="hosting">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2" style="margin-top: 3em">
+                <div class="col-lg-12 col-lg-offset-2" style="margin-top: 3em">
                     <h2>XMPP Account Hosting</h2>
                     <p>
                         We provide free XMPP accounts under the domain <strong>conversejs.org</strong>.
@@ -330,6 +321,7 @@
             </div>
         </div>
     </section>
+</section>
 </body>
 
 <script>

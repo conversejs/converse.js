@@ -5,22 +5,13 @@
 Software Style Guide
 ====================
 
-.. note:: Converse.js doesn't yet use any of the new `ES2015
-    <https://babeljs.io/docs/learn-es2015/>`_ features, because we don't
-    rely on a transpiler and still support older browsers.
-
 Most of the style guide recommendations here come from Douglas Crockford's book
 `JavaScript, the good parts <http://shop.oreilly.com/product/9780596517748.do>`_
-
-This style guide is fairly opinionated. Some of these opinions perhaps don't
-conform to your expectations on how JavaScript code should look like.
-I apologize for that. However, for the sake of sanity, consistency and having
-code that is pleasing to the eye, please stick to these guidelines.
 
 Tabs or spaces?
 ---------------
 
-We always indent 4 spaces. Proper indentation is very important for readability.
+We always indent 4 spaces. Proper indentation is important for readability.
 
 Underscores or camelCase?
 -------------------------

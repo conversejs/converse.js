@@ -1,4 +1,4 @@
-.. Converse.js documentation master file, created by
+.. Converse documentation master file, created by
    sphinx-quickstart on Fri Apr 26 20:48:03 2013.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -7,14 +7,14 @@
 
     <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/index.rst">Edit me on GitHub</a></div>
 
-=========================
-Converse.js Documentation
-=========================
+======================
+Converse Documentation
+======================
 
 Preface
 =======
 
-This is the official documentation for Converse.js. If you'd like to
+This is the official documentation for Converse. If you'd like to
 contribute, please read the :doc:`documentation` page.
 
 You might instead be looking for the `User Manual <manual.html>`_.
@@ -22,7 +22,7 @@ You might instead be looking for the `User Manual <manual.html>`_.
 Introduction
 ============
 
-Converse.js is a free and open-source `XMPP <http://xmpp.org/about-xmpp/>`_
+Converse is a free and open-source `XMPP <http://xmpp.org/about-xmpp/>`_
 chat client written in JavaScript which can be tightly integrated into any website.
 
 The benefit of using converse.js as opposed to relying on a SaaS

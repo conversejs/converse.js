@@ -9,8 +9,8 @@
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="xmpp chat webchat converse.js" />
     <link rel="shortcut icon" type="image/ico" href="../css/images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="/css/bootstrap.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="/css/theme.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/website.css" />
     <script type="text/javascript" src="/src/website.js"></script>
     <script type="text/javascript" src="/analytics.js"></script>
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
@@ -26,20 +26,42 @@
     </style>
 </head>
 
-<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
-    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-        <div class="container">
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-                    <i class="fa fa-bars"></i>
-                </button>
-            </div>
-            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-                <ul class="nav navbar-nav"><li> <a href="/docs/html/index.html">Documentation</a> </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<body id="page-top" data-spy="scroll">
+	<nav class="navbar sticky-top navbar-expand-lg" role="navigation">
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <a class="navbar-brand" href="/"><span class="converse-brand-heading"><i class="icon-conversejs"></i>Converse</span></a>
+			<ul class="navbar-nav mt-2 mt-lg-0">
+				<!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+				<li class="hidden">
+					<a class="nav-link" href="#page-top"></a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#about">About</a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#features">Features</a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#contact">Contact</a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#sponsors">Sponsor</a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#hosting">Hosting</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/docs/html/index.html">Documentation&nbsp;<i class="fa fa-external-link-alt"></i></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="https://github.com/jcbrand/converse.js/releases" class="button" target="_blank" rel="noopener">Download&nbsp;<i class="fa fa-external-link-alt"></i></a>
+				</li>
+			</ul>
+		</div>
+	</nav>
 
     <section class="intro">
         <div class="intro-body">

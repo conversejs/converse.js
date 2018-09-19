@@ -10875,7 +10875,6 @@ body.reset {
     padding-bottom: 0.25rem;
     display: block; }
     #conversejs .message.chat-msg .chat-msg__heading .chat-msg__author {
-      display: block;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

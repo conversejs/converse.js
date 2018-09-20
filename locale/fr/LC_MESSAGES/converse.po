@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-19 16:10+0200\n"
-"PO-Revision-Date: 2018-09-06 15:41+0200\n"
+"POT-Creation-Date: 2018-09-06 15:52+0200\n"
+"PO-Revision-Date: 2018-10-02 17:19+0200\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -393,14 +393,13 @@ msgstr ""
 "Vous avez été retiré de ce salon parce que ce salon est devenu réservé aux "
 "membres et vous n’êtes pas membre"
 
-#: dist/converse-no-dependencies.js:40763
-#, fuzzy
+#: dist/converse-no-dependencies.js:40668
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
 msgstr ""
 "Vous avez été retiré de ce salon parce que le service sur lequel il est "
-"hébergé est en cours d’extinction"
+"hébergé est en train d’être arrêté"
 
 #. XXX: Note the triple underscore function and not double
 #. * underscore.
@@ -539,8 +538,7 @@ msgstr "chat.exemple.org"
 msgid "No groupchats found"
 msgstr "Aucun salon trouvé"
 
-#: dist/converse-no-dependencies.js:40934
-#, fuzzy
+#: dist/converse-no-dependencies.js:40839
 msgid "Groupchats found:"
 msgstr "Salons trouvés :"
 
@@ -1023,25 +1021,29 @@ msgstr "s’est déconnecté"
 msgid "wants to be your contact"
 msgstr "veut être votre contact"
 
-#: dist/converse-no-dependencies.js:44898
-#, fuzzy
+#: dist/converse-no-dependencies.js:44651
 msgid "Sorry, an error occurred while trying to remove the devices."
-msgstr "Une erreur est survenue lors de l'enregistrement du formulaire."
+msgstr ""
+"Désolé, une erreur est survenue en tentant de supprimer les clients OMEMO."
 
 #: dist/converse-no-dependencies.js:45021
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr ""
+"Désolé, impossible de déchiffrer un message chiffré avec OMEMO à cause d’une "
+"erreur."
 
 #: dist/converse-no-dependencies.js:45172
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
 msgstr ""
+"Ceci est un message chiffré avec OMEMO, que votre client ne semble pas "
+"prendre en charge. Pour plus d’informations, allez voir "
+"https://conversations.im/omemo"
 
-#: dist/converse-no-dependencies.js:45233
-#, fuzzy
+#: dist/converse-no-dependencies.js:44985
 msgid "Sorry, could not send the message due to an error."
-msgstr "Désolé, impossible de déterminer l’URL d’envoi de fichier."
+msgstr "Désolé, impossible d’envoyer ce message à cause d’une erreur."
 
 #: dist/converse-no-dependencies.js:46171
 msgid "Your avatar image"
@@ -1584,15 +1586,15 @@ msgstr "Versions du message"
 
 #: dist/converse-no-dependencies.js:52473
 msgid "Save and close"
-msgstr ""
+msgstr "Enregistrer et fermer"
 
 #: dist/converse-no-dependencies.js:52477
 msgid "This device's OMEMO fingerprint"
-msgstr ""
+msgstr "Empreinte de clé OMEMO de ce client"
 
 #: dist/converse-no-dependencies.js:52489
 msgid "Select all"
-msgstr ""
+msgstr "Tout sélectionner"
 
 #: dist/converse-no-dependencies.js:52491
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
@@ -1600,17 +1602,16 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:52493
 msgid "Other OMEMO-enabled devices"
-msgstr ""
+msgstr "Autres clients ayant activé le chiffrement OMEMO"
 
 #: dist/converse-no-dependencies.js:52501
 #: dist/converse-no-dependencies.js:52509
 msgid "Checkbox for selecting the following fingerprint"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:52511
-#, fuzzy
+#: dist/converse-no-dependencies.js:52228
 msgid "Device without a fingerprint"
-msgstr "Vérifier par empreintes de sécurité"
+msgstr "Client sans empreinte de clé OMEMO"
 
 #: dist/converse-no-dependencies.js:52517
 msgid "Remove checked devices and close"
@@ -1658,7 +1659,7 @@ msgstr "Ne bougez pas, on va chercher le formulaire d’inscription…"
 
 #: dist/converse-no-dependencies.js:53415
 msgid "Messages are being sent in plaintext"
-msgstr ""
+msgstr "Les messages sont envoyés en clair"
 
 #: dist/converse-no-dependencies.js:53467
 msgid "The User's Profile Image"
@@ -1666,7 +1667,7 @@ msgstr "Image de profil de l’utilisateur"
 
 #: dist/converse-no-dependencies.js:53525
 msgid "OMEMO Fingerprints"
-msgstr ""
+msgstr "Empreintes de clé OMEMO"
 
 #: dist/converse-no-dependencies.js:53549
 msgid "Trusted"

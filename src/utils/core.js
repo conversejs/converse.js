@@ -314,6 +314,7 @@
             lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') ||
             lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') ||
             lower_filename.endsWith('png') || lower_filename.endsWith('gif') ||
+            lower_filename.endsWith('m4a') || lower_filename.endsWith('webm') ||
             lower_filename.endsWith('svg')) {
 
             return url;
@@ -341,7 +342,7 @@
 
     u.renderMovieURL = function (_converse, url) {
         const { __ } = _converse;
-        if (url.endsWith('mp4')) {
+        if (url.endsWith('mp4') || url.endsWith('webm')) {
             return tpl_video({
                 'url': url,
                 'label_download': __('Download video file')
@@ -352,7 +353,7 @@
 
     u.renderAudioURL = function (_converse, url) {
         const { __ } = _converse;
-        if (url.endsWith('mp3')) {
+        if (url.endsWith('mp3') || url.endsWith('m4a')) {
             return tpl_audio({
                 'url': url,
                 'label_download': __('Download audio file')
@@ -471,7 +472,7 @@
 
             el.style.overflow = 'hidden';
 
-            function draw () { 
+            function draw () {
                 height -= original_height/steps;
                 if (height > 0) {
                     el.style.height = height + 'px';

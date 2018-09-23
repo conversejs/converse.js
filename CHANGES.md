@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.2 (2018-??-??)
+
+- M4A and WEBM files when sent as XEP-0066 Out of Band Data, are now playable directly in chat
+
 ## 4.0.1 (2018-09-19)
 
 - Use https://compliance.conversations.im instead of (dead) https://xmpp.net

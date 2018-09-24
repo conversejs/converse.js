@@ -81419,9 +81419,9 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/video.html -->\n<video controls><source src="' +
+__p += '<!-- src/templates/video.html -->\n<video controls src="' +
 __e(o.url) +
-'" type="video/mp4"></video>\n<a target="_blank" rel="noopener" href="' +
+'" type="video/mp4" style="max-height: 50vh"></video>\n<a target="_blank" rel="noopener" href="' +
 __e(o.url) +
 '">' +
 __e(o.label_download) +

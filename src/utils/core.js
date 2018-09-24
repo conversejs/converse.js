@@ -307,11 +307,10 @@
 
     u.renderFileURL = function (_converse, url) {
         const uri = new URI(url),
-              { __ } = _converse,
               filename = uri.filename(),
               lower_filename = filename.toLowerCase();
         if (!_.includes(["https", "http"], uri.protocol().toLowerCase()) ||
-            lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') ||
+            lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') || lower_filename.endsWith('ogg') ||
             lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') ||
             lower_filename.endsWith('png') || lower_filename.endsWith('gif') ||
             lower_filename.endsWith('m4a') || lower_filename.endsWith('webm') ||
@@ -319,44 +318,47 @@
 
             return url;
         }
+        const { __ } = _converse;
         return tpl_file({
             'url': url,
-            'label_download': __('Download "%1$s"', uri.filename())
+            'label_download': __('Download file "%1$s"', decodeURI(filename))
         })
     };
 
     u.renderImageURL = function (_converse, url) {
-        const { __ } = _converse,
-              lurl = url.toLowerCase();
-
+        const lurl = url.toLowerCase();
         if (lurl.endsWith('jpg') || lurl.endsWith('jpeg') || lurl.endsWith('png') ||
             lurl.endsWith('gif') || lurl.endsWith('svg')) {
 
+            const { __ } = _converse,
+                  uri = new URI(url);
             return tpl_image({
                 'url': url,
-                'label_download': __('Download')
+                'label_download': __('Download image "%1$s"', decodeURI(uri.filename()))
             })
         }
         return url;
     };
 
     u.renderMovieURL = function (_converse, url) {
-        const { __ } = _converse;
         if (url.endsWith('mp4') || url.endsWith('webm')) {
+            const { __ } = _converse,
+                  uri = new URI(url);
             return tpl_video({
                 'url': url,
-                'label_download': __('Download video file')
+                'label_download': __('Download video file "%1$s"', decodeURI(uri.filename()))
             })
         }
         return url;
     };
 
     u.renderAudioURL = function (_converse, url) {
-        const { __ } = _converse;
-        if (url.endsWith('mp3') || url.endsWith('m4a')) {
+        if (url.endsWith('mp3') || url.endsWith('m4a') || url.endsWith('ogg')) {
+            const { __ } = _converse,
+                  uri = new URI(url);
             return tpl_audio({
                 'url': url,
-                'label_download': __('Download audio file')
+                'label_download': __('Download audio file "%1$s"', decodeURI(uri.filename()))
             })
         }
         return url;

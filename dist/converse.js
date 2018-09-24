@@ -78364,9 +78364,9 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/audio.html -->\n<audio controls><source src="' +
+__p += '<!-- src/templates/audio.html -->\n<audio controls src="' +
 __e(o.url) +
-'" type="audio/mpeg"></audio>\n<a target="_blank" rel="noopener" href="' +
+'"></audio>\n<a target="_blank" rel="noopener" href="' +
 __e(o.url) +
 '">' +
 __e(o.label_download) +
@@ -81421,7 +81421,7 @@ module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/video.html -->\n<video controls src="' +
 __e(o.url) +
-'" type="video/mp4" style="max-height: 50vh"></video>\n<a target="_blank" rel="noopener" href="' +
+'" style="max-height: 50vh"></video>\n<a target="_blank" rel="noopener" href="' +
 __e(o.url) +
 '">' +
 __e(o.label_download) +
@@ -81729,28 +81729,29 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
   u.renderFileURL = function (_converse, url) {
     const uri = new URI(url),
-          __ = _converse.__,
           filename = uri.filename(),
           lower_filename = filename.toLowerCase();
 
-    if (!_.includes(["https", "http"], uri.protocol().toLowerCase()) || lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') || lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') || lower_filename.endsWith('png') || lower_filename.endsWith('gif') || lower_filename.endsWith('m4a') || lower_filename.endsWith('webm') || lower_filename.endsWith('svg')) {
+    if (!_.includes(["https", "http"], uri.protocol().toLowerCase()) || lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') || lower_filename.endsWith('ogg') || lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') || lower_filename.endsWith('png') || lower_filename.endsWith('gif') || lower_filename.endsWith('m4a') || lower_filename.endsWith('webm') || lower_filename.endsWith('svg')) {
       return url;
     }
 
+    const __ = _converse.__;
     return tpl_file({
       'url': url,
-      'label_download': __('Download "%1$s"', uri.filename())
+      'label_download': __('Download file "%1$s"', decodeURI(filename))
     });
   };
 
   u.renderImageURL = function (_converse, url) {
-    const __ = _converse.__,
-          lurl = url.toLowerCase();
+    const lurl = url.toLowerCase();
 
     if (lurl.endsWith('jpg') || lurl.endsWith('jpeg') || lurl.endsWith('png') || lurl.endsWith('gif') || lurl.endsWith('svg')) {
+      const __ = _converse.__,
+            uri = new URI(url);
       return tpl_image({
         'url': url,
-        'label_download': __('Download')
+        'label_download': __('Download image "%1$s"', decodeURI(uri.filename()))
       });
     }
 
@@ -81758,12 +81759,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   };
 
   u.renderMovieURL = function (_converse, url) {
-    const __ = _converse.__;
-
     if (url.endsWith('mp4') || url.endsWith('webm')) {
+      const __ = _converse.__,
+            uri = new URI(url);
       return tpl_video({
         'url': url,
-        'label_download': __('Download video file')
+        'label_download': __('Download video file "%1$s"', decodeURI(uri.filename()))
       });
     }
 
@@ -81771,12 +81772,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   };
 
   u.renderAudioURL = function (_converse, url) {
-    const __ = _converse.__;
-
-    if (url.endsWith('mp3') || url.endsWith('m4a')) {
+    if (url.endsWith('mp3') || url.endsWith('m4a') || url.endsWith('ogg')) {
+      const __ = _converse.__,
+            uri = new URI(url);
       return tpl_audio({
         'url': url,
-        'label_download': __('Download audio file')
+        'label_download': __('Download audio file "%1$s"', decodeURI(uri.filename()))
       });
     }
 

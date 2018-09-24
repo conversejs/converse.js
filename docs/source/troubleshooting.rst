@@ -56,3 +56,20 @@ One simple trick to improve performance is to set ``show_only_online_users: true
 This will (usually) reduce the amount of contacts that get rendered in the
 roster, which eases one of the remaining performance bottlenecks.
 
+404 response for an OPTIONS request
+===================================
+
+This often happens when trying to upload a file to the XEP-0363 file server
+which is under a different domain or port than the one that's hosting Converse.
+
+An OPTIONS request usually a so-called
+`CORS pre-flight request <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS#Preflighted_requests_in_CORS>`_
+which is used by the browser to find out whether the endpoint supports
+`Cross-Origin Resource Sharing (CORS) <https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS>`_.
+
+If you get a 404 response for such a request, then the endpoint does NOT
+support CORS and the browser will prevent requests from being made to it.
+
+This will prevent you from uploading images to it.
+
+Take a look at the section ":ref:`CORS`" for more information on how to solve this problem.

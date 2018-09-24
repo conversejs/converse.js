@@ -9,7 +9,7 @@
 
 You can either use it as a webchat app, or you can integrate it into your own website.
 
-It''s 100% client-side JavaScript, HTML and CSS and the only backend required
+It's 100% client-side JavaScript, HTML and CSS and the only backend required
 is a modern XMPP server.
 
 Please support this project via [Patreon](https://www.patreon.com/jcbrand) or [Liberapay](https://liberapay.com/jcbrand)

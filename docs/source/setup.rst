@@ -52,14 +52,16 @@ The various components
 An XMPP server
 ==============
 
-*Converse* uses `XMPP <http://xmpp.org/about-xmpp/>`_ as its
+Converse uses `XMPP <http://xmpp.org/about-xmpp/>`_ as its
 messaging protocol, and therefore needs to connect to an XMPP/Jabber
 server (Jabber® is an older and more user-friendly synonym for XMPP).
 
 You can connect to public XMPP servers like ``conversejs.org`` but if you want to
-have :ref:`session support <session-support>` you'll have to set up your own XMPP server.
+integrate Converse into your own website and to use your website's
+authentication sessions to log in users to the XMPP server (i.e. :ref:`session support <session-support>`)
+then you'll have to set up your own XMPP server.
 
-You can find a list of public XMPP servers/providers on `xmpp.net <https://list.jabber.at>`_
+You can find a list of public XMPP servers/providers on `compliance.conversations.im <http://compliance.conversations.im/>`_
 and a list of servers that you can set up yourself on `xmpp.org <http://xmpp.org/xmpp-software/servers/>`_.
 
 .. _`BOSH-section`:
@@ -78,7 +80,7 @@ stanzas to be sent over an HTTP connection.
 HTTP connections are stateless and usually shortlived.
 XMPP connections on the other hand are stateful and usually last much longer.
 
-So to enable a web application like *Converse* to communicate with an XMPP
+So to enable a web application like Converse to communicate with an XMPP
 server, we need a proxy which acts as a bridge between these two protocols.
 
 This is the job of a BOSH connection manager. BOSH (Bidirectional-streams Over
@@ -127,31 +129,30 @@ configure Converse to connect to a websocket URL.
 The Webserver
 =============
 
+.. _CORS:
+
 Overcoming cross-domain request restrictions
 --------------------------------------------
 
-Lets say your domain is *example.org*, but the domain of your connection
-manager is *example.com*.
+Lets say the domain under which you host Converse is *example.org:80*,
+but the domain of your connection manager or the domain of
+your HTTP file server (for `XEP-0363 HTTP File Upload <https://xmpp.org/extensions/xep-0363.html>`_)
+is at a different domain, either a different port like *example.org:5280* or a
+different name like *elsehwere.org*.
 
-HTTP requests are made by *Converse* to the BOSH connection manager via
-XmlHttpRequests (XHR). Until recently, it was not possible to make such
-requests to a different domain than the one currently being served
-(to prevent XSS attacks).
+In cases like this, cross-domain request restrictions of the browser come into
+force. For security purposes a browser does not by default allow a website to
+make certain types of requests to other domains.
 
-Luckily there is now a standard called
-`CORS <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_
-(Cross-origin resource sharing), which enables exactly that.
-Modern browsers support CORS, but there are problems with Internet Explorer < 10.
+One solution is to add a reverse proxy to a webserver such as Nginx or Apache to ensure that
+all services you use are hosted under the same domain name and port.
 
-IE 8 and 9 partially support CORS via a proprietary implementation called
-XDomainRequest. There is a `Strophe.js plugin <https://gist.github.com/1095825/6b4517276f26b66b01fa97b0a78c01275fdc6ff2>`_
-which you can use to enable support for XDomainRequest when it is present.
+Alternatively you can use something called `CORS <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`__
+(Cross-origin resource sharing).
 
-In IE < 8, there is no support for CORS.
+By enabling CORS on the non-local domains (e.g. *elsewhere.org*, when
+*example.org* is the local domain), you allow the browser to make requests to it.
 
-Instead of using CORS, you can add a reverse proxy in
-Apache/Nginx which serves the connection manager under the same domain as your
-website. This will remove the need for any cross-domain XHR support.
 
 Examples:
 *********

@@ -80,6 +80,7 @@ const config = {
             "IPv6":                     path.resolve(__dirname, "node_modules/urijs/src/IPv6"),
             "SecondLevelDomains":       path.resolve(__dirname, "node_modules/urijs/src/SecondLevelDomains"),
             "awesomplete":              path.resolve(__dirname, "node_modules/awesomplete-avoid-xss/awesomplete"),
+            "formdata-polyfill":        path.resolve(__dirname, "node_modules/formdata-polyfill/FormData"),
             "backbone":                 path.resolve(__dirname, "node_modules/backbone/backbone"),
             "backbone.browserStorage":  path.resolve(__dirname, "node_modules/backbone.browserStorage/backbone.browserStorage"),
             "backbone.nativeview":      path.resolve(__dirname, "node_modules/backbone.nativeview/backbone.nativeview"),

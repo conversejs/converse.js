@@ -6,6 +6,7 @@
 
 (function (root, factory) {
     define(["converse-core",
+            "formdata-polyfill",
             "templates/add_contact_modal.html",
             "templates/group_header.html",
             "templates/pending_contact.html",
@@ -20,6 +21,7 @@
     ], factory);
 }(this, function (
             converse, 
+            _FormData,
             tpl_add_contact_modal,
             tpl_group_header,
             tpl_pending_contact,

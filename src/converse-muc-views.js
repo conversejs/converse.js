@@ -7,6 +7,7 @@
 (function (root, factory) {
     define([
         "converse-core",
+        "formdata-polyfill",
         "utils/muc",
         "xss",
         "templates/add_chatroom_modal.html",
@@ -34,6 +35,7 @@
     ], factory);
 }(this, function (
     converse,
+    _FormData,
     muc_utils,
     xss,
     tpl_add_chatroom_modal,

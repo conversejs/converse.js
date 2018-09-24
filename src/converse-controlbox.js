@@ -9,6 +9,7 @@
 (function (root, factory) {
     define(["converse-core",
             "bootstrap",
+            "formdata-polyfill",
             "lodash.fp",
             "templates/converse_brand_heading.html",
             "templates/controlbox.html",
@@ -21,6 +22,7 @@
 }(this, function (
             converse,
             bootstrap,
+            _FormData,
             fp,
             tpl_brand_heading,
             tpl_controlbox,

@@ -1,8 +1,9 @@
 # Changelog
 
-## 4.0.2 (2018-??-??)
+## 4.0.2 (Unreleased)
 
 - M4A and WEBM files when sent as XEP-0066 Out of Band Data, are now playable directly in chat
+- #1220 Converse not working in Edge
 
 ## 4.0.1 (2018-09-19)
 

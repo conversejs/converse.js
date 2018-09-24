@@ -157,11 +157,9 @@
         }
 
         .brand-heading-container {
-
             .brand-heading {
                 text-align: center;
             }
-            
             .brand-name {
                 font-size: 120%;
             }
@@ -366,16 +364,17 @@
             }
         }
 
+        .brand-heading-container {
+            width: 100%;
+        }
+
         .controlbox-head {
             display: flex;
             flex-direction: row-reverse;
             flex-wrap: nowrap;
             justify-content: space-between;
 
-
             .brand-heading {
-                @include make-col-ready();
-                @include make-col(8);
                 color: $text-color;
                 font-size: 2em;
             }

@@ -9945,19 +9945,14 @@ body.reset {
     margin-top: 0.5em; }
   #conversejs.converse-overlayed #controlbox:not(.logged-out) .controlbox-head {
     height: 15px; }
+  #conversejs.converse-overlayed #controlbox .brand-heading-container {
+    width: 100%; }
   #conversejs.converse-overlayed #controlbox .controlbox-head {
     display: flex;
     flex-direction: row-reverse;
     flex-wrap: nowrap;
     justify-content: space-between; }
     #conversejs.converse-overlayed #controlbox .controlbox-head .brand-heading {
-      position: relative;
-      width: 100%;
-      min-height: 1px;
-      padding-right: 15px;
-      padding-left: 15px;
-      flex: 0 0 66.6666666667%;
-      max-width: 66.6666666667%;
       color: #666;
       font-size: 2em; }
     #conversejs.converse-overlayed #controlbox .controlbox-head .chatbox-btn {

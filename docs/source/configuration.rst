@@ -7,10 +7,10 @@ Configuration
 =============
 
 The included minified JavaScript and CSS files can be used for demoing or testing, but
-you'll want to configure *Converse* to suit your needs before you deploy it
+you'll want to configure Converse to suit your needs before you deploy it
 on your website.
 
-*Converse* is passed its configuration settings when you call its *initialize* method.
+Converse is passed its configuration settings when you call its *initialize* method.
 
 You'll most likely want to call the *initialize* method in your HTML page. For
 an example of how this is done, please see the bottom of the *./index.html* page.
@@ -18,7 +18,7 @@ an example of how this is done, please see the bottom of the *./index.html* page
 Please refer to the `Configuration settings`_ section below for info on
 all the available configuration settings.
 
-After you have configured *Converse*, you'll have to regenerate the minified
+After you have configured Converse, you'll have to regenerate the minified
 JavaScript file so that it will include the new settings. Please refer to the
 :ref:`minification` section for more info on how to do this.
 

@@ -12,6 +12,7 @@
         define([
             "sizzle",
             "es6-promise",
+            "fast-text-encoding",
             "lodash.noconflict",
             "backbone",
             "strophe",
@@ -39,6 +40,7 @@
         root.converse_utils = factory(
             root.sizzle,
             root.Promise,
+            null,
             root._,
             root.Backbone,
             Strophe
@@ -47,6 +49,7 @@
 }(this, function (
         sizzle,
         Promise,
+        FastTextEncoding,
         _,
         Backbone,
         Strophe,
@@ -869,17 +872,12 @@
     };
 
     u.arrayBufferToString = function (ab) {
-        return (new Uint8Array(ab)).reduce((data, byte) => data + String.fromCharCode(byte), '');
+        return new TextDecoder("utf-8").decode(ab);
     };
 
     u.stringToArrayBuffer = function (string) {
-        const len = string.length,
-              bytes = new Uint8Array(len);
-
-        for (let i = 0; i < len; i++) {
-            bytes[i] = string.charCodeAt(i)
-        }
-        return bytes.buffer
+        const bytes = new TextEncoder("utf-8").encode(string);
+        return bytes.buffer;
     };
 
     u.arrayBufferToBase64 = function (ab) {

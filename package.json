@@ -90,5 +90,8 @@
     "webpack": "^4.0.1",
     "webpack-cli": "^2.1.4",
     "xss": "^0.3.3"
+  },
+  "dependencies": {
+    "fast-text-encoding": "^1.0.0"
   }
 }

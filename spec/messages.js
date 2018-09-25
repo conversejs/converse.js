@@ -1752,8 +1752,8 @@
                     media = view.el.querySelector('.chat-msg .chat-msg__media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                         '<!-- src/templates/audio.html -->'+
-                        '<audio controls=""><source src="http://localhost/audio.mp3" type="audio/mpeg"></audio>'+
-                        '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file</a>');
+                        '<audio controls="" src="http://localhost/audio.mp3"></audio>'+
+                        '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file "audio.mp3"</a>');
 
                     // If the <url> and <body> contents is the same, don't duplicate.
                     const stanza = Strophe.xmlHtmlNode(
@@ -1771,8 +1771,9 @@
                     media = view.el.querySelector('.chat-msg:last-child .chat-msg__media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                         '<!-- src/templates/audio.html -->'+
-                        '<audio controls=""><source src="http://localhost/audio.mp3" type="audio/mpeg"></audio>'+
-                        '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file</a>');
+                        '<audio controls="" src="http://localhost/audio.mp3"></audio>'+
+                        '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file "audio.mp3"</a>'
+                    );
                     done();
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
@@ -1807,8 +1808,8 @@
                     media = view.el.querySelector('.chat-msg .chat-msg__media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                         '<!-- src/templates/video.html -->'+
-                        '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
-                        '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
+                        '<video controls="" src="http://localhost/video.mp4" style="max-height: 50vh"></video>'+
+                        '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file "video.mp4"</a>');
 
                     // If the <url> and <body> contents is the same, don't duplicate.
                     const stanza = Strophe.xmlHtmlNode(
@@ -1826,8 +1827,8 @@
                     media = view.el.querySelector('.chat-msg:last-child .chat-msg__media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                         '<!-- src/templates/video.html -->'+
-                        '<video controls=""><source src="http://localhost/video.mp4" type="video/mp4"></video>'+
-                        '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file</a>');
+                        '<video controls="" src="http://localhost/video.mp4" style="max-height: 50vh"></video>'+
+                        '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file "video.mp4"</a>');
                     done();
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
@@ -1862,7 +1863,7 @@
                     const media = view.el.querySelector('.chat-msg .chat-msg__media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                         '<!-- src/templates/file.html -->'+
-                        '<a target="_blank" rel="noopener" href="http://localhost/funny.pdf">Download "funny.pdf"</a>');
+                        '<a target="_blank" rel="noopener" href="http://localhost/funny.pdf">Download file "funny.pdf"</a>');
                     done();
                 });
             }));

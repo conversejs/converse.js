@@ -204,11 +204,21 @@
                 async encryptMessage (plaintext) {
                     // The client MUST use fresh, randomly generated key/IV pairs
                     // with AES-128 in Galois/Counter Mode (GCM).
-                    const iv = crypto.getRandomValues(new window.Uint8Array(16)),
+
+                    // For GCM a 12 byte IV is strongly suggested as other IV lengths
+                    // will require additional calculations. In principle any IV size
+                    // can be used as long as the IV doesn't ever repeat. NIST however
+                    // suggests that only an IV size of 12 bytes needs to be supported
+                    // by implementations.
+                    //
+                    // https://crypto.stackexchange.com/questions/26783/ciphertext-and-tag-size-and-iv-transmission-with-aes-in-gcm-mode
+
+                    const iv = crypto.getRandomValues(new window.Uint8Array(12)),
                           key = await crypto.subtle.generateKey(KEY_ALGO, true, ["encrypt", "decrypt"]),
                           algo = {
                               'name': 'AES-GCM',
                               'iv': iv,
+                              'additionalData': new Uint8Array(1),
                               'tagLength': TAG_LENGTH
                           },
                           encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext)),
@@ -232,6 +242,7 @@
                           algo = {
                               'name': "AES-GCM",
                               'iv': u.base64ToArrayBuffer(obj.iv),
+                              'additionalData': new Uint8Array(1),
                               'tagLength': TAG_LENGTH
                           }
                     return u.arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));

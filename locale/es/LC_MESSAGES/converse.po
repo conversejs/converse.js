@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-19 16:10+0200\n"
-"PO-Revision-Date: 2018-09-04 15:23+0000\n"
-"Last-Translator: juan <pepecanoa@gmail.com>\n"
+"POT-Creation-Date: 2018-09-06 15:52+0200\n"
+"PO-Revision-Date: 2018-10-02 17:19+0200\n"
+"Last-Translator: madmalkav <hamletpod@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
 "Language: es\n"
@@ -519,7 +519,7 @@ msgstr "Sin moderar"
 
 #: dist/converse-no-dependencies.js:40865
 msgid "Query for Groupchats"
-msgstr "Expulsar usuario de la sala"
+msgstr "Buscar una sala"
 
 #: dist/converse-no-dependencies.js:40866
 msgid "Server address"
@@ -527,7 +527,7 @@ msgstr "Dirección del servidor"
 
 #: dist/converse-no-dependencies.js:40867
 msgid "Show groupchats"
-msgstr "Mostrar groupchats"
+msgstr "Mostrar salas"
 
 #: dist/converse-no-dependencies.js:40868
 msgid "conference.example.org"
@@ -537,14 +537,13 @@ msgstr "conference.example.org"
 msgid "No groupchats found"
 msgstr "Ninguna sala encontrada"
 
-#: dist/converse-no-dependencies.js:40934
-#, fuzzy
+#: dist/converse-no-dependencies.js:40839
 msgid "Groupchats found:"
-msgstr "charlas de grupo encontradas:"
+msgstr "Salas encontradas:"
 
 #: dist/converse-no-dependencies.js:40984
 msgid "Enter a new Groupchat"
-msgstr "Entrar en un nuevo Groupchat"
+msgstr "Entrar en una nueva sala"
 
 #: dist/converse-no-dependencies.js:40985
 msgid "Groupchat address"
@@ -566,7 +565,7 @@ msgstr "Unirse"
 #: dist/converse-no-dependencies.js:41036
 #, javascript-format
 msgid "Groupchat info for %1$s"
-msgstr "Información de Groupchat por %1$s"
+msgstr "Información de sala %1$s"
 
 #: dist/converse-no-dependencies.js:41212
 #, fuzzy, javascript-format
@@ -633,10 +632,9 @@ msgstr "Cerrar y dejar la sala"
 msgid "Configure this groupchat"
 msgstr "Configurar esta sala"
 
-#: dist/converse-no-dependencies.js:41257
-#, fuzzy
+#: dist/converse-no-dependencies.js:41140
 msgid "Show more details about this groupchat"
-msgstr "Mostrar más información en esta sala"
+msgstr "Mostrar más información sobre esta sala"
 
 #: dist/converse-no-dependencies.js:41297
 #, fuzzy

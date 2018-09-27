@@ -641,12 +641,12 @@ msgstr "Cacher la liste des participants"
 
 #: dist/converse-no-dependencies.js:41413
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "Interdit : vous n’avez pas le rôle nécessaire pour faire ça."
 
 #: dist/converse-no-dependencies.js:41425
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr ""
+msgstr "Interdit : vous n’avez pas l’affiliation nécessaire pour faire ça."
 
 #: dist/converse-no-dependencies.js:41436
 #, javascript-format
@@ -1599,6 +1599,8 @@ msgstr "Tout sélectionner"
 #: dist/converse-no-dependencies.js:52491
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr ""
+"Case à cocher pour sélectionner les empreintes de tous les autres clients "
+"OMEMO"
 
 #: dist/converse-no-dependencies.js:52493
 msgid "Other OMEMO-enabled devices"
@@ -1607,7 +1609,7 @@ msgstr "Autres clients ayant activé le chiffrement OMEMO"
 #: dist/converse-no-dependencies.js:52501
 #: dist/converse-no-dependencies.js:52509
 msgid "Checkbox for selecting the following fingerprint"
-msgstr ""
+msgstr "Case à cocher pour sélectionner l'empreinte OMEMO suivante"
 
 #: dist/converse-no-dependencies.js:52228
 msgid "Device without a fingerprint"
@@ -1615,7 +1617,7 @@ msgstr "Client sans empreinte de clé OMEMO"
 
 #: dist/converse-no-dependencies.js:52517
 msgid "Remove checked devices and close"
-msgstr ""
+msgstr "Supprimer les clients OMEMO sélectionnés, et fermer"
 
 #: dist/converse-no-dependencies.js:52599
 msgid "Don't have a chat account?"
@@ -1671,11 +1673,11 @@ msgstr "Empreintes de clé OMEMO"
 
 #: dist/converse-no-dependencies.js:53549
 msgid "Trusted"
-msgstr ""
+msgstr "De confiance"
 
 #: dist/converse-no-dependencies.js:53563
 msgid "Untrusted"
-msgstr ""
+msgstr "Pas de confiance"
 
 #: dist/converse-no-dependencies.js:53577
 msgid "Remove as contact"

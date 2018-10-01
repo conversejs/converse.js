@@ -4,11 +4,14 @@
 
 - M4A and WEBM files when sent as XEP-0066 Out of Band Data, are now playable directly in chat
 - OMEMO fixes for Edge.
+- #1187 UTF-8 characters have the wrong encoding when using OMEMO
+- #1189 Video playback failure
 - #1220 Converse not working in Edge
+- #1225 User profile sometimes not displayed when libsignal-protocol.js is used
 
 ## 4.0.1 (2018-09-19)
 
-- Use https://compliance.conversations.im instead of (dead) https://xmpp.net
+- Use https://compliance.conversations.im instead of dead link tot st https://xmpp.net
 - New config  setting [auto_register_muc_nickname](https://conversejs.org/docs/html/configuration.html#auto-register-muc-nickname)
 - New config setting [enable_muc_push](https://conversejs.org/docs/html/configuration.html#enable-muc-push)
 - #1182 MUC occupants without nick or JID created

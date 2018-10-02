@@ -2,8 +2,10 @@
 
 ## 4.0.2 (Unreleased)
 
-- M4A and WEBM files when sent as XEP-0066 Out of Band Data, are now playable directly in chat
+- M4A and WEBM files, when sent as XEP-0066 Out of Band Data, are now playable directly in chat
 - OMEMO fixes for Edge.
+- Updated French and Spanish translations
+- Two new languages supported, [Hindi](https://hosted.weblate.org/languages/hi/conversejs/) and [Romanian](https://hosted.weblate.org/languages/ro/conversejs/)
 - #1187 UTF-8 characters have the wrong encoding when using OMEMO
 - #1189 Video playback failure
 - #1220 Converse not working in Edge

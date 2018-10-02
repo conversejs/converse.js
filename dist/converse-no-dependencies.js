@@ -4219,6 +4219,205 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 
 /***/ }),
 
+/***/ "./node_modules/fast-text-encoding/text.js":
+/*!*************************************************!*\
+  !*** ./node_modules/fast-text-encoding/text.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {/*
+ * Copyright 2017 Sam Thorogood. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+/**
+ * @fileoverview Polyfill for TextEncoder and TextDecoder.
+ *
+ * You probably want `text.min.js`, and not this file directly.
+ */
+
+(function(scope) {
+'use strict';
+
+// fail early
+if (scope['TextEncoder'] && scope['TextDecoder']) {
+  return false;
+}
+
+/**
+ * @constructor
+ * @param {string=} utfLabel
+ */
+function FastTextEncoder(utfLabel='utf-8') {
+  if (utfLabel !== 'utf-8') {
+    throw new RangeError(
+      `Failed to construct 'TextEncoder': The encoding label provided ('${utfLabel}') is invalid.`);
+  }
+}
+
+Object.defineProperty(FastTextEncoder.prototype, 'encoding', {value: 'utf-8'});
+
+/**
+ * @param {string} string
+ * @param {{stream: boolean}=} options
+ * @return {!Uint8Array}
+ */
+FastTextEncoder.prototype.encode = function(string, options={stream: false}) {
+  if (options.stream) {
+    throw new Error(`Failed to encode: the 'stream' option is unsupported.`);
+  }
+
+  let pos = 0;
+  const len = string.length;
+  const out = [];
+
+  let at = 0;  // output position
+  let tlen = Math.max(32, len + (len >> 1) + 7);  // 1.5x size
+  let target = new Uint8Array((tlen >> 3) << 3);  // ... but at 8 byte offset
+
+  while (pos < len) {
+    let value = string.charCodeAt(pos++);
+    if (value >= 0xd800 && value <= 0xdbff) {
+      // high surrogate
+      if (pos < len) {
+        const extra = string.charCodeAt(pos);
+        if ((extra & 0xfc00) === 0xdc00) {
+          ++pos;
+          value = ((value & 0x3ff) << 10) + (extra & 0x3ff) + 0x10000;
+        }
+      }
+      if (value >= 0xd800 && value <= 0xdbff) {
+        continue;  // drop lone surrogate
+      }
+    }
+
+    // expand the buffer if we couldn't write 4 bytes
+    if (at + 4 > target.length) {
+      tlen += 8;  // minimum extra
+      tlen *= (1.0 + (pos / string.length) * 2);  // take 2x the remaining
+      tlen = (tlen >> 3) << 3;  // 8 byte offset
+
+      const update = new Uint8Array(tlen);
+      update.set(target);
+      target = update;
+    }
+
+    if ((value & 0xffffff80) === 0) {  // 1-byte
+      target[at++] = value;  // ASCII
+      continue;
+    } else if ((value & 0xfffff800) === 0) {  // 2-byte
+      target[at++] = ((value >>  6) & 0x1f) | 0xc0;
+    } else if ((value & 0xffff0000) === 0) {  // 3-byte
+      target[at++] = ((value >> 12) & 0x0f) | 0xe0;
+      target[at++] = ((value >>  6) & 0x3f) | 0x80;
+    } else if ((value & 0xffe00000) === 0) {  // 4-byte
+      target[at++] = ((value >> 18) & 0x07) | 0xf0;
+      target[at++] = ((value >> 12) & 0x3f) | 0x80;
+      target[at++] = ((value >>  6) & 0x3f) | 0x80;
+    } else {
+      // FIXME: do we care
+      continue;
+    }
+
+    target[at++] = (value & 0x3f) | 0x80;
+  }
+
+  return target.slice(0, at);
+}
+
+/**
+ * @constructor
+ * @param {string=} utfLabel
+ * @param {{fatal: boolean}=} options
+ */
+function FastTextDecoder(utfLabel='utf-8', options={fatal: false}) {
+  if (utfLabel !== 'utf-8') {
+    throw new RangeError(
+      `Failed to construct 'TextDecoder': The encoding label provided ('${utfLabel}') is invalid.`);
+  }
+  if (options.fatal) {
+    throw new Error(`Failed to construct 'TextDecoder': the 'fatal' option is unsupported.`);
+  }
+}
+
+Object.defineProperty(FastTextDecoder.prototype, 'encoding', {value: 'utf-8'});
+
+Object.defineProperty(FastTextDecoder.prototype, 'fatal', {value: false});
+
+Object.defineProperty(FastTextDecoder.prototype, 'ignoreBOM', {value: false});
+
+/**
+ * @param {(!ArrayBuffer|!ArrayBufferView)} buffer
+ * @param {{stream: boolean}=} options
+ */
+FastTextDecoder.prototype.decode = function(buffer, options={stream: false}) {
+  if (options['stream']) {
+    throw new Error(`Failed to decode: the 'stream' option is unsupported.`);
+  }
+
+  const bytes = new Uint8Array(buffer);
+  let pos = 0;
+  const len = bytes.length;
+  const out = [];
+
+  while (pos < len) {
+    const byte1 = bytes[pos++];
+    if (byte1 === 0) {
+      break;  // NULL
+    }
+  
+    if ((byte1 & 0x80) === 0) {  // 1-byte
+      out.push(byte1);
+    } else if ((byte1 & 0xe0) === 0xc0) {  // 2-byte
+      const byte2 = bytes[pos++] & 0x3f;
+      out.push(((byte1 & 0x1f) << 6) | byte2);
+    } else if ((byte1 & 0xf0) === 0xe0) {
+      const byte2 = bytes[pos++] & 0x3f;
+      const byte3 = bytes[pos++] & 0x3f;
+      out.push(((byte1 & 0x1f) << 12) | (byte2 << 6) | byte3);
+    } else if ((byte1 & 0xf8) === 0xf0) {
+      const byte2 = bytes[pos++] & 0x3f;
+      const byte3 = bytes[pos++] & 0x3f;
+      const byte4 = bytes[pos++] & 0x3f;
+
+      // this can be > 0xffff, so possibly generate surrogates
+      let codepoint = ((byte1 & 0x07) << 0x12) | (byte2 << 0x0c) | (byte3 << 0x06) | byte4;
+      if (codepoint > 0xffff) {
+        // codepoint &= ~0x10000;
+        codepoint -= 0x10000;
+        out.push((codepoint >>> 10) & 0x3ff | 0xd800)
+        codepoint = 0xdc00 | codepoint & 0x3ff;
+      }
+      out.push(codepoint);
+    } else {
+      // FIXME: we're ignoring this
+    }
+  }
+
+  return String.fromCharCode.apply(null, out);
+}
+
+scope['TextEncoder'] = FastTextEncoder;
+scope['TextDecoder'] = FastTextDecoder;
+
+}(typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : this)));
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
 /***/ "./node_modules/filesize/lib/filesize.js":
 /*!***********************************************!*\
   !*** ./node_modules/filesize/lib/filesize.js ***!
@@ -4396,6 +4595,407 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 })(typeof window !== "undefined" ? window : global);
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "./node_modules/formdata-polyfill/FormData.js":
+/*!****************************************************!*\
+  !*** ./node_modules/formdata-polyfill/FormData.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+if (typeof FormData === 'undefined' || !FormData.prototype.keys) {
+  const global = typeof window === 'object'
+    ? window : typeof self === 'object'
+    ? self : this
+
+  // keep a reference to native implementation
+  const _FormData = global.FormData
+
+  // To be monkey patched
+  const _send = global.XMLHttpRequest && global.XMLHttpRequest.prototype.send
+  const _fetch = global.Request && global.fetch
+
+  // Unable to patch Request constructor correctly
+  // const _Request = global.Request
+  // only way is to use ES6 class extend
+  // https://github.com/babel/babel/issues/1966
+
+  const stringTag = global.Symbol && Symbol.toStringTag
+  const map = new WeakMap
+  const wm = o => map.get(o)
+  const arrayFrom = Array.from || (obj => [].slice.call(obj))
+
+  // Add missing stringTags to blob and files
+  if (stringTag) {
+    if (!Blob.prototype[stringTag]) {
+      Blob.prototype[stringTag] = 'Blob'
+    }
+
+    if ('File' in global && !File.prototype[stringTag]) {
+      File.prototype[stringTag] = 'File'
+    }
+  }
+
+  // Fix so you can construct your own File
+  try {
+    new File([], '')
+  } catch (a) {
+    global.File = function(b, d, c) {
+      const blob = new Blob(b, c)
+      const t = c && void 0 !== c.lastModified ? new Date(c.lastModified) : new Date
+
+      Object.defineProperties(blob, {
+        name: {
+          value: d
+        },
+        lastModifiedDate: {
+          value: t
+        },
+        lastModified: {
+          value: +t
+        },
+        toString: {
+          value() {
+            return '[object File]'
+          }
+        }
+      })
+
+      if (stringTag) {
+        Object.defineProperty(blob, stringTag, {
+          value: 'File'
+        })
+      }
+
+      return blob
+    }
+  }
+
+  function normalizeValue([value, filename]) {
+    if (value instanceof Blob)
+      // Should always returns a new File instance
+      // console.assert(fd.get(x) !== fd.get(x))
+      value = new File([value], filename, {
+        type: value.type,
+        lastModified: value.lastModified
+      })
+
+    return value
+  }
+
+  function stringify(name) {
+    if (!arguments.length)
+      throw new TypeError('1 argument required, but only 0 present.')
+
+    return [name + '']
+  }
+
+  function normalizeArgs(name, value, filename) {
+    if (arguments.length < 2)
+      throw new TypeError(
+        `2 arguments required, but only ${arguments.length} present.`
+      )
+
+    return value instanceof Blob
+      // normalize name and filename if adding an attachment
+      ? [name + '', value, filename !== undefined
+        ? filename + '' // Cast filename to string if 3th arg isn't undefined
+        : typeof value.name === 'string' // if name prop exist
+          ? value.name // Use File.name
+          : 'blob'] // otherwise fallback to Blob
+
+      // If no attachment, just cast the args to strings
+      : [name + '', value + '']
+  }
+
+  /**
+   * @implements {Iterable}
+   */
+  class FormDataPolyfill {
+
+    /**
+     * FormData class
+     *
+     * @param {HTMLElement=} form
+     */
+    constructor(form) {
+      map.set(this, Object.create(null))
+
+      if (!form)
+        return this
+
+      for (let elm of arrayFrom(form.elements)) {
+        if (!elm.name || elm.disabled) continue
+
+        if (elm.type === 'file')
+          for (let file of arrayFrom(elm.files || []))
+            this.append(elm.name, file)
+        else if (elm.type === 'select-multiple' || elm.type === 'select-one')
+          for (let opt of arrayFrom(elm.options))
+            !opt.disabled && opt.selected && this.append(elm.name, opt.value)
+        else if (elm.type === 'checkbox' || elm.type === 'radio') {
+          if (elm.checked) this.append(elm.name, elm.value)
+        } else
+          this.append(elm.name, elm.value)
+      }
+    }
+
+
+    /**
+     * Append a field
+     *
+     * @param   {String}           name      field name
+     * @param   {String|Blob|File} value     string / blob / file
+     * @param   {String=}          filename  filename to use with blob
+     * @return  {Undefined}
+     */
+    append(name, value, filename) {
+      const map = wm(this)
+
+      if (!map[name])
+        map[name] = []
+
+      map[name].push([value, filename])
+    }
+
+
+    /**
+     * Delete all fields values given name
+     *
+     * @param   {String}  name  Field name
+     * @return  {Undefined}
+     */
+    delete(name) {
+      delete wm(this)[name]
+    }
+
+
+    /**
+     * Iterate over all fields as [name, value]
+     *
+     * @return {Iterator}
+     */
+    *entries() {
+      const map = wm(this)
+
+      for (let name in map)
+        for (let value of map[name])
+          yield [name, normalizeValue(value)]
+    }
+
+    /**
+     * Iterate over all fields
+     *
+     * @param   {Function}  callback  Executed for each item with parameters (value, name, thisArg)
+     * @param   {Object=}   thisArg   `this` context for callback function
+     * @return  {Undefined}
+     */
+    forEach(callback, thisArg) {
+      for (let [name, value] of this)
+        callback.call(thisArg, value, name, this)
+    }
+
+
+    /**
+     * Return first field value given name
+     * or null if non existen
+     *
+     * @param   {String}  name      Field name
+     * @return  {String|File|null}  value Fields value
+     */
+    get(name) {
+      const map = wm(this)
+      return map[name] ? normalizeValue(map[name][0]) : null
+    }
+
+
+    /**
+     * Return all fields values given name
+     *
+     * @param   {String}  name  Fields name
+     * @return  {Array}         [{String|File}]
+     */
+    getAll(name) {
+      return (wm(this)[name] || []).map(normalizeValue)
+    }
+
+
+    /**
+     * Check for field name existence
+     *
+     * @param   {String}   name  Field name
+     * @return  {boolean}
+     */
+    has(name) {
+      return name in wm(this)
+    }
+
+
+    /**
+     * Iterate over all fields name
+     *
+     * @return {Iterator}
+     */
+    *keys() {
+      for (let [name] of this)
+        yield name
+    }
+
+
+    /**
+     * Overwrite all values given name
+     *
+     * @param   {String}    name      Filed name
+     * @param   {String}    value     Field value
+     * @param   {String=}   filename  Filename (optional)
+     * @return  {Undefined}
+     */
+    set(name, value, filename) {
+      wm(this)[name] = [[value, filename]]
+    }
+
+
+    /**
+     * Iterate over all fields
+     *
+     * @return {Iterator}
+     */
+    *values() {
+      for (let [name, value] of this)
+        yield value
+    }
+
+
+    /**
+     * Return a native (perhaps degraded) FormData with only a `append` method
+     * Can throw if it's not supported
+     *
+     * @return {FormData}
+     */
+    ['_asNative']() {
+      const fd = new _FormData
+
+      for (let [name, value] of this)
+        fd.append(name, value)
+
+      return fd
+    }
+
+
+    /**
+     * [_blob description]
+     *
+     * @return {Blob} [description]
+     */
+    ['_blob']() {
+      const boundary = '----formdata-polyfill-' + Math.random()
+      const chunks = []
+
+      for (let [name, value] of this) {
+        chunks.push(`--${boundary}\r\n`)
+
+        if (value instanceof Blob) {
+          chunks.push(
+            `Content-Disposition: form-data; name="${name}"; filename="${value.name}"\r\n`,
+            `Content-Type: ${value.type || 'application/octet-stream'}\r\n\r\n`,
+            value,
+            '\r\n'
+          )
+        } else {
+          chunks.push(
+            `Content-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`
+          )
+        }
+      }
+
+      chunks.push(`--${boundary}--`)
+
+      return new Blob(chunks, {type: 'multipart/form-data; boundary=' + boundary})
+    }
+
+
+    /**
+     * The class itself is iterable
+     * alias for formdata.entries()
+     *
+     * @return  {Iterator}
+     */
+    [Symbol.iterator]() {
+      return this.entries()
+    }
+
+
+    /**
+     * Create the default string description.
+     *
+     * @return  {String} [object FormData]
+     */
+    toString() {
+      return '[object FormData]'
+    }
+  }
+
+
+  if (stringTag) {
+    /**
+     * Create the default string description.
+     * It is accessed internally by the Object.prototype.toString().
+     *
+     * @return {String} FormData
+     */
+    FormDataPolyfill.prototype[stringTag] = 'FormData'
+  }
+
+  const decorations = [
+    ['append', normalizeArgs],
+    ['delete', stringify],
+    ['get',    stringify],
+    ['getAll', stringify],
+    ['has',    stringify],
+    ['set',    normalizeArgs]
+  ]
+
+  decorations.forEach(arr => {
+    const orig = FormDataPolyfill.prototype[arr[0]]
+    FormDataPolyfill.prototype[arr[0]] = function() {
+      return orig.apply(this, arr[1].apply(this, arrayFrom(arguments)))
+    }
+  })
+
+  // Patch xhr's send method to call _blob transparently
+  if (_send) {
+      XMLHttpRequest.prototype.send = function(data) {
+      // I would check if Content-Type isn't already set
+      // But xhr lacks getRequestHeaders functionallity
+      // https://github.com/jimmywarting/FormData/issues/44
+      if (data instanceof FormDataPolyfill) {
+        const blob = data['_blob']()
+        this.setRequestHeader('Content-Type', blob.type)
+        _send.call(this, blob)
+      } else {
+        _send.call(this, data)
+      }
+    }
+  }
+
+  // Patch fetch's function to call _blob transparently
+  if (_fetch) {
+    const _fetch = global.fetch
+
+    global.fetch = function(input, init) {
+      if (init && init.body && init.body instanceof FormDataPolyfill) {
+        init.body = init.body['_blob']()
+      }
+
+      return _fetch(input, init)
+    }
+  }
+
+  global['FormData'] = FormDataPolyfill
+}
+
 
 /***/ }),
 
@@ -35033,11 +35633,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /*global define */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! lodash.fp */ "./src/lodash.fp.js"), __webpack_require__(/*! templates/converse_brand_heading.html */ "./src/templates/converse_brand_heading.html"), __webpack_require__(/*! templates/controlbox.html */ "./src/templates/controlbox.html"), __webpack_require__(/*! templates/controlbox_toggle.html */ "./src/templates/controlbox_toggle.html"), __webpack_require__(/*! templates/login_panel.html */ "./src/templates/login_panel.html"), __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js"), __webpack_require__(/*! converse-rosterview */ "./src/converse-rosterview.js"), __webpack_require__(/*! converse-profile */ "./src/converse-profile.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js"), __webpack_require__(/*! lodash.fp */ "./src/lodash.fp.js"), __webpack_require__(/*! templates/converse_brand_heading.html */ "./src/templates/converse_brand_heading.html"), __webpack_require__(/*! templates/controlbox.html */ "./src/templates/controlbox.html"), __webpack_require__(/*! templates/controlbox_toggle.html */ "./src/templates/controlbox_toggle.html"), __webpack_require__(/*! templates/login_panel.html */ "./src/templates/login_panel.html"), __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js"), __webpack_require__(/*! converse-rosterview */ "./src/converse-rosterview.js"), __webpack_require__(/*! converse-profile */ "./src/converse-profile.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, bootstrap, fp, tpl_brand_heading, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel) {
+})(void 0, function (converse, bootstrap, _FormData, fp, tpl_brand_heading, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel) {
   "use strict";
 
   var CHATBOX_TYPE = 'chatbox';
@@ -35848,7 +36448,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
     jid: undefined,
     keepalive: true,
     locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
-    locales: ['af', 'ar', 'bg', 'ca', 'cs', 'de', 'es', 'eu', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
+    locales: ['af', 'ar', 'bg', 'ca', 'cs', 'de', 'es', 'eu', 'en', 'fr', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
     message_carbons: true,
     nickname: undefined,
     password: undefined,
@@ -40606,11 +41206,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "awesomplete"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "awesomplete"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, muc_utils, xss, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_details_modal, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
+})(void 0, function (converse, _FormData, muc_utils, xss, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_details_modal, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -44982,11 +45582,19 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
         encryptMessage: async function encryptMessage(plaintext) {
           // The client MUST use fresh, randomly generated key/IV pairs
           // with AES-128 in Galois/Counter Mode (GCM).
-          var iv = crypto.getRandomValues(new window.Uint8Array(16)),
+          // For GCM a 12 byte IV is strongly suggested as other IV lengths
+          // will require additional calculations. In principle any IV size
+          // can be used as long as the IV doesn't ever repeat. NIST however
+          // suggests that only an IV size of 12 bytes needs to be supported
+          // by implementations.
+          //
+          // https://crypto.stackexchange.com/questions/26783/ciphertext-and-tag-size-and-iv-transmission-with-aes-in-gcm-mode
+          var iv = crypto.getRandomValues(new window.Uint8Array(12)),
               key = await crypto.subtle.generateKey(KEY_ALGO, true, ["encrypt", "decrypt"]),
               algo = {
             'name': 'AES-GCM',
             'iv': iv,
+            'additionalData': new Uint8Array(1),
             'tagLength': TAG_LENGTH
           },
               encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext)),
@@ -45008,6 +45616,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
               algo = {
             'name': "AES-GCM",
             'iv': u.base64ToArrayBuffer(obj.iv),
+            'additionalData': new Uint8Array(1),
             'tagLength': TAG_LENGTH
           };
           return u.arrayBufferToString((await crypto.subtle.decrypt(algo, key_obj, cipher)));
@@ -46127,11 +46736,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /*global define */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! templates/alert.html */ "./src/templates/alert.html"), __webpack_require__(/*! templates/chat_status_modal.html */ "./src/templates/chat_status_modal.html"), __webpack_require__(/*! templates/profile_modal.html */ "./src/templates/profile_modal.html"), __webpack_require__(/*! templates/profile_view.html */ "./src/templates/profile_view.html"), __webpack_require__(/*! templates/status_option.html */ "./src/templates/status_option.html"), __webpack_require__(/*! converse-vcard */ "./src/converse-vcard.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js"), __webpack_require__(/*! templates/alert.html */ "./src/templates/alert.html"), __webpack_require__(/*! templates/chat_status_modal.html */ "./src/templates/chat_status_modal.html"), __webpack_require__(/*! templates/profile_modal.html */ "./src/templates/profile_modal.html"), __webpack_require__(/*! templates/profile_view.html */ "./src/templates/profile_view.html"), __webpack_require__(/*! templates/status_option.html */ "./src/templates/status_option.html"), __webpack_require__(/*! converse-vcard */ "./src/converse-vcard.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, bootstrap, tpl_alert, tpl_chat_status_modal, tpl_profile_modal, tpl_profile_view, tpl_status_option) {
+})(void 0, function (converse, bootstrap, _FormData, tpl_alert, tpl_chat_status_modal, tpl_profile_modal, tpl_profile_view, tpl_status_option) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -48674,11 +49283,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/add_contact_modal.html */ "./src/templates/add_contact_modal.html"), __webpack_require__(/*! templates/group_header.html */ "./src/templates/group_header.html"), __webpack_require__(/*! templates/pending_contact.html */ "./src/templates/pending_contact.html"), __webpack_require__(/*! templates/requesting_contact.html */ "./src/templates/requesting_contact.html"), __webpack_require__(/*! templates/roster.html */ "./src/templates/roster.html"), __webpack_require__(/*! templates/roster_filter.html */ "./src/templates/roster_filter.html"), __webpack_require__(/*! templates/roster_item.html */ "./src/templates/roster_item.html"), __webpack_require__(/*! templates/search_contact.html */ "./src/templates/search_contact.html"), __webpack_require__(/*! awesomplete */ "awesomplete"), __webpack_require__(/*! converse-chatboxes */ "./src/converse-chatboxes.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js"), __webpack_require__(/*! templates/add_contact_modal.html */ "./src/templates/add_contact_modal.html"), __webpack_require__(/*! templates/group_header.html */ "./src/templates/group_header.html"), __webpack_require__(/*! templates/pending_contact.html */ "./src/templates/pending_contact.html"), __webpack_require__(/*! templates/requesting_contact.html */ "./src/templates/requesting_contact.html"), __webpack_require__(/*! templates/roster.html */ "./src/templates/roster.html"), __webpack_require__(/*! templates/roster_filter.html */ "./src/templates/roster_filter.html"), __webpack_require__(/*! templates/roster_item.html */ "./src/templates/roster_item.html"), __webpack_require__(/*! templates/search_contact.html */ "./src/templates/search_contact.html"), __webpack_require__(/*! awesomplete */ "awesomplete"), __webpack_require__(/*! converse-chatboxes */ "./src/converse-chatboxes.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, tpl_add_contact_modal, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item, tpl_search_contact, Awesomplete) {
+})(void 0, function (converse, _FormData, tpl_add_contact_modal, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item, tpl_search_contact, Awesomplete) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -50192,7 +50801,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /*global define */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! es6-promise */ "es6-promise"), __webpack_require__(/*! jed */ "./node_modules/jed/jed.js"), __webpack_require__(/*! lodash.noconflict */ "lodash.noconflict"), __webpack_require__(/*! moment */ "moment"), __webpack_require__(/*! moment/locale/af */ "./node_modules/moment/locale/af.js"), __webpack_require__(/*! moment/locale/ar */ "./node_modules/moment/locale/ar.js"), __webpack_require__(/*! moment/locale/bg */ "./node_modules/moment/locale/bg.js"), __webpack_require__(/*! moment/locale/ca */ "./node_modules/moment/locale/ca.js"), __webpack_require__(/*! moment/locale/cs */ "./node_modules/moment/locale/cs.js"), __webpack_require__(/*! moment/locale/de */ "./node_modules/moment/locale/de.js"), __webpack_require__(/*! moment/locale/es */ "./node_modules/moment/locale/es.js"), __webpack_require__(/*! moment/locale/eu */ "./node_modules/moment/locale/eu.js"), __webpack_require__(/*! moment/locale/fr */ "./node_modules/moment/locale/fr.js"), __webpack_require__(/*! moment/locale/he */ "./node_modules/moment/locale/he.js"), __webpack_require__(/*! moment/locale/hu */ "./node_modules/moment/locale/hu.js"), __webpack_require__(/*! moment/locale/id */ "./node_modules/moment/locale/id.js"), __webpack_require__(/*! moment/locale/it */ "./node_modules/moment/locale/it.js"), __webpack_require__(/*! moment/locale/ja */ "./node_modules/moment/locale/ja.js"), __webpack_require__(/*! moment/locale/nb */ "./node_modules/moment/locale/nb.js"), __webpack_require__(/*! moment/locale/nl */ "./node_modules/moment/locale/nl.js"), __webpack_require__(/*! moment/locale/pl */ "./node_modules/moment/locale/pl.js"), __webpack_require__(/*! moment/locale/pt-br */ "./node_modules/moment/locale/pt-br.js"), __webpack_require__(/*! moment/locale/ru */ "./node_modules/moment/locale/ru.js"), __webpack_require__(/*! moment/locale/tr */ "./node_modules/moment/locale/tr.js"), __webpack_require__(/*! moment/locale/uk */ "./node_modules/moment/locale/uk.js"), __webpack_require__(/*! moment/locale/zh-cn */ "./node_modules/moment/locale/zh-cn.js"), __webpack_require__(/*! moment/locale/zh-tw */ "./node_modules/moment/locale/zh-tw.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! es6-promise */ "es6-promise"), __webpack_require__(/*! jed */ "./node_modules/jed/jed.js"), __webpack_require__(/*! lodash.noconflict */ "lodash.noconflict"), __webpack_require__(/*! moment */ "moment"), __webpack_require__(/*! moment/locale/af */ "./node_modules/moment/locale/af.js"), __webpack_require__(/*! moment/locale/ar */ "./node_modules/moment/locale/ar.js"), __webpack_require__(/*! moment/locale/bg */ "./node_modules/moment/locale/bg.js"), __webpack_require__(/*! moment/locale/ca */ "./node_modules/moment/locale/ca.js"), __webpack_require__(/*! moment/locale/cs */ "./node_modules/moment/locale/cs.js"), __webpack_require__(/*! moment/locale/de */ "./node_modules/moment/locale/de.js"), __webpack_require__(/*! moment/locale/es */ "./node_modules/moment/locale/es.js"), __webpack_require__(/*! moment/locale/eu */ "./node_modules/moment/locale/eu.js"), __webpack_require__(/*! moment/locale/fr */ "./node_modules/moment/locale/fr.js"), __webpack_require__(/*! moment/locale/he */ "./node_modules/moment/locale/he.js"), __webpack_require__(/*! moment/locale/hi */ "./node_modules/moment/locale/hi.js"), __webpack_require__(/*! moment/locale/hu */ "./node_modules/moment/locale/hu.js"), __webpack_require__(/*! moment/locale/id */ "./node_modules/moment/locale/id.js"), __webpack_require__(/*! moment/locale/it */ "./node_modules/moment/locale/it.js"), __webpack_require__(/*! moment/locale/ja */ "./node_modules/moment/locale/ja.js"), __webpack_require__(/*! moment/locale/nb */ "./node_modules/moment/locale/nb.js"), __webpack_require__(/*! moment/locale/nl */ "./node_modules/moment/locale/nl.js"), __webpack_require__(/*! moment/locale/pl */ "./node_modules/moment/locale/pl.js"), __webpack_require__(/*! moment/locale/pt-br */ "./node_modules/moment/locale/pt-br.js"), __webpack_require__(/*! moment/locale/ro */ "./node_modules/moment/locale/ro.js"), __webpack_require__(/*! moment/locale/ru */ "./node_modules/moment/locale/ru.js"), __webpack_require__(/*! moment/locale/tr */ "./node_modules/moment/locale/tr.js"), __webpack_require__(/*! moment/locale/uk */ "./node_modules/moment/locale/uk.js"), __webpack_require__(/*! moment/locale/zh-cn */ "./node_modules/moment/locale/zh-cn.js"), __webpack_require__(/*! moment/locale/zh-tw */ "./node_modules/moment/locale/zh-tw.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -50572,9 +51181,9 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/audio.html -->\n<audio controls><source src="' +
+__p += '<!-- src/templates/audio.html -->\n<audio controls src="' +
 __e(o.url) +
-'" type="audio/mpeg"></audio>\n<a target="_blank" rel="noopener" href="' +
+'"></audio>\n<a target="_blank" rel="noopener" href="' +
 __e(o.url) +
 '">' +
 __e(o.label_download) +
@@ -52475,13 +53084,13 @@ __e(o.__('Save and close')) +
  if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ;
 __p += '\n                        <div class="tab-pane fade" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">\n                            <form class="converse-form fingerprint-removal">\n                                <ul class="list-group fingerprints">\n                                    <li class="list-group-item active">' +
 __e(o.__("This device's OMEMO fingerprint")) +
-'</li>\n                                    <li class="list-group-item">\n                                        ';
- if (o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint) { ;
+'</li>\n                                    <li class="list-group-item">\n                                    ';
+ if (o.view.current_device && o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint) { ;
 __p += '\n                                        <span class="fingerprint">' +
 __e(o.utils.formatFingerprint(o.view.current_device.get('bundle').fingerprint)) +
-'</span>\n                                        ';
+'</span>\n                                    ';
  } else {;
-__p += '\n                                            <span class="spinner fa fa-spinner centered"/>\n                                        ';
+__p += '\n                                        <span class="spinner fa fa-spinner centered"/>\n                                    ';
  } ;
 __p += '\n                                    </li>\n                                </ul>\n                                ';
  if (o.view.other_devices.length) { ;
@@ -53627,9 +54236,9 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/video.html -->\n<video controls><source src="' +
+__p += '<!-- src/templates/video.html -->\n<video controls src="' +
 __e(o.url) +
-'" type="video/mp4"></video>\n<a target="_blank" rel="noopener" href="' +
+'" style="max-height: 50vh"></video>\n<a target="_blank" rel="noopener" href="' +
 __e(o.url) +
 '">' +
 __e(o.label_download) +
@@ -53683,12 +54292,12 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 /*global define, escape, window, Uint8Array */
 (function (root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! es6-promise */ "es6-promise"), __webpack_require__(/*! lodash.noconflict */ "lodash.noconflict"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! strophe */ "strophe"), __webpack_require__(/*! uri */ "./node_modules/urijs/src/URI.js"), __webpack_require__(/*! templates/audio.html */ "./src/templates/audio.html"), __webpack_require__(/*! templates/file.html */ "./src/templates/file.html"), __webpack_require__(/*! templates/image.html */ "./src/templates/image.html"), __webpack_require__(/*! templates/video.html */ "./src/templates/video.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! es6-promise */ "es6-promise"), __webpack_require__(/*! fast-text-encoding */ "./node_modules/fast-text-encoding/text.js"), __webpack_require__(/*! lodash.noconflict */ "lodash.noconflict"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! strophe */ "strophe"), __webpack_require__(/*! uri */ "./node_modules/urijs/src/URI.js"), __webpack_require__(/*! templates/audio.html */ "./src/templates/audio.html"), __webpack_require__(/*! templates/file.html */ "./src/templates/file.html"), __webpack_require__(/*! templates/image.html */ "./src/templates/image.html"), __webpack_require__(/*! templates/video.html */ "./src/templates/video.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var Strophe; }
-})(void 0, function (sizzle, Promise, _, Backbone, Strophe, URI, tpl_audio, tpl_file, tpl_image, tpl_video) {
+})(void 0, function (sizzle, Promise, FastTextEncoding, _, Backbone, Strophe, URI, tpl_audio, tpl_file, tpl_image, tpl_video) {
   "use strict";
 
   Strophe = Strophe.Strophe;
@@ -53957,28 +54566,29 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
   u.renderFileURL = function (_converse, url) {
     var uri = new URI(url),
-        __ = _converse.__,
         filename = uri.filename(),
         lower_filename = filename.toLowerCase();
 
-    if (!_.includes(["https", "http"], uri.protocol().toLowerCase()) || lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') || lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') || lower_filename.endsWith('png') || lower_filename.endsWith('gif') || lower_filename.endsWith('svg')) {
+    if (!_.includes(["https", "http"], uri.protocol().toLowerCase()) || lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') || lower_filename.endsWith('ogg') || lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') || lower_filename.endsWith('png') || lower_filename.endsWith('gif') || lower_filename.endsWith('m4a') || lower_filename.endsWith('webm') || lower_filename.endsWith('svg')) {
       return url;
     }
 
+    var __ = _converse.__;
     return tpl_file({
       'url': url,
-      'label_download': __('Download "%1$s"', uri.filename())
+      'label_download': __('Download file "%1$s"', decodeURI(filename))
     });
   };
 
   u.renderImageURL = function (_converse, url) {
-    var __ = _converse.__,
-        lurl = url.toLowerCase();
+    var lurl = url.toLowerCase();
 
     if (lurl.endsWith('jpg') || lurl.endsWith('jpeg') || lurl.endsWith('png') || lurl.endsWith('gif') || lurl.endsWith('svg')) {
+      var __ = _converse.__,
+          uri = new URI(url);
       return tpl_image({
         'url': url,
-        'label_download': __('Download')
+        'label_download': __('Download image "%1$s"', decodeURI(uri.filename()))
       });
     }
 
@@ -53986,12 +54596,12 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   };
 
   u.renderMovieURL = function (_converse, url) {
-    var __ = _converse.__;
-
-    if (url.endsWith('mp4')) {
+    if (url.endsWith('mp4') || url.endsWith('webm')) {
+      var __ = _converse.__,
+          uri = new URI(url);
       return tpl_video({
         'url': url,
-        'label_download': __('Download video file')
+        'label_download': __('Download video file "%1$s"', decodeURI(uri.filename()))
       });
     }
 
@@ -53999,12 +54609,12 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   };
 
   u.renderAudioURL = function (_converse, url) {
-    var __ = _converse.__;
-
-    if (url.endsWith('mp3')) {
+    if (url.endsWith('mp3') || url.endsWith('m4a') || url.endsWith('ogg')) {
+      var __ = _converse.__,
+          uri = new URI(url);
       return tpl_audio({
         'url': url,
-        'label_download': __('Download audio file')
+        'label_download': __('Download audio file "%1$s"', decodeURI(uri.filename()))
       });
     }
 
@@ -54545,19 +55155,11 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   };
 
   u.arrayBufferToString = function (ab) {
-    return new Uint8Array(ab).reduce(function (data, byte) {
-      return data + String.fromCharCode(byte);
-    }, '');
+    return new TextDecoder("utf-8").decode(ab);
   };
 
   u.stringToArrayBuffer = function (string) {
-    var len = string.length,
-        bytes = new Uint8Array(len);
-
-    for (var i = 0; i < len; i++) {
-      bytes[i] = string.charCodeAt(i);
-    }
-
+    var bytes = new TextEncoder("utf-8").encode(string);
     return bytes.buffer;
   };
 

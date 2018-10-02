@@ -218,7 +218,6 @@
                           algo = {
                               'name': 'AES-GCM',
                               'iv': iv,
-                              'additionalData': new Uint8Array(1),
                               'tagLength': TAG_LENGTH
                           },
                           encrypted = await crypto.subtle.encrypt(algo, key, u.stringToArrayBuffer(plaintext)),
@@ -242,7 +241,6 @@
                           algo = {
                               'name': "AES-GCM",
                               'iv': u.base64ToArrayBuffer(obj.iv),
-                              'additionalData': new Uint8Array(1),
                               'tagLength': TAG_LENGTH
                           }
                     return u.arrayBufferToString(await crypto.subtle.decrypt(algo, key_obj, cipher));

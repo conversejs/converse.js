@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0.2 (Unreleased)
+## 4.0.2 (2018-10-02)
 
 - M4A and WEBM files, when sent as XEP-0066 Out of Band Data, are now playable directly in chat
 - Updated French and Spanish translations

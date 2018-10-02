@@ -620,6 +620,7 @@
             overflow: hidden;
         }
         .chat-body {
+            height: calc(100% - #{$fullpage-chat-head-height});
             background-color: $chat-head-color;
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;

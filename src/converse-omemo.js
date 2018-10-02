@@ -927,10 +927,6 @@
             });
 
 
-            _converse.omemo = {
-
-            }
-
             function fetchDeviceLists () {
                 return new Promise((resolve, reject) => _converse.devicelists.fetch({
                     'success': resolve

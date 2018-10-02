@@ -60321,7 +60321,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         setVCard() {
-          if (this.get('type') === 'groupchat') {
+          if (this.get('type') === 'error') {
+            return;
+          } else if (this.get('type') === 'groupchat') {
             this.vcard = this.getVCardForChatroomOccupant();
           } else {
             const jid = this.get('from');
@@ -67523,7 +67525,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         initialize() {
-          this.model.vcard.on('change', this.render, this);
+          if (this.model.vcard) {
+            this.model.vcard.on('change', this.render, this);
+          }
+
           this.model.on('change:correcting', this.onMessageCorrection, this);
           this.model.on('change:message', this.render, this);
           this.model.on('change:progress', this.renderFileUploadProgresBar, this);
@@ -67575,7 +67580,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         renderChatMessage() {
           const is_me_message = this.isMeCommand(),
                 moment_time = moment(this.model.get('time')),
-                role = this.model.vcard.get('role'),
+                role = this.model.vcard ? this.model.vcard.get('role') : null,
                 roles = role ? role.split(',') : [];
           const msg = u.stringToElement(tpl_message(_.extend(this.model.toJSON(), {
             '__': __,

@@ -109,7 +109,9 @@
                 },
 
                 setVCard () {
-                    if (this.get('type') === 'groupchat') {
+                    if (this.get('type') === 'error') {
+                        return;
+                    } else if (this.get('type') === 'groupchat') {
                         this.vcard = this.getVCardForChatroomOccupant();
                     } else {
                         const jid = this.get('from');

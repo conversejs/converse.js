@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-02 17:29+0200\n"
-"PO-Revision-Date: 2018-10-02 17:19+0200\n"
+"PO-Revision-Date: 2018-10-03 18:26+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -569,34 +569,34 @@ msgid "Groupchat info for %1$s"
 msgstr "Informations sur le salon %1$s"
 
 #: dist/converse-no-dependencies.js:41812
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr "%1$s a rejoint puis quitté le salon"
+msgstr "%1$s n’est plus un administrateur de ce salon"
 
 #: dist/converse-no-dependencies.js:41814
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr "Accorder la propriété à ce salon"
+msgstr "%1$s n’est plus un propriétaire de ce salon"
 
 #: dist/converse-no-dependencies.js:41816
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "Vous avez été banni de ce salon"
+msgstr "%1$s n’est plus banni de ce salon"
 
 #: dist/converse-no-dependencies.js:41820
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a permanent member of this groupchat"
-msgstr "Vous n’êtes pas dans la liste des membres de ce salon."
+msgstr "%1$s n’est plus un membre permanent de ce salon"
 
 #: dist/converse-no-dependencies.js:41824
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a permanent member of this groupchat"
-msgstr "Vous n’êtes pas dans la liste des membres de ce salon."
+msgstr "%1$s est désormais un membre permanent de ce salon"
 
 #: dist/converse-no-dependencies.js:41826
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned from this groupchat"
-msgstr "Vous avez été banni de ce salon"
+msgstr "%1$s a été banni de ce salon"
 
 #: dist/converse-no-dependencies.js:41828
 #, fuzzy, javascript-format
@@ -660,7 +660,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:42045
 #, javascript-format
 msgid "Error: couldn't find a groupchat participant \"%1$s\""
-msgstr ""
+msgstr "Erreur : impossible de trouver le participant « %1$s » dans ce salon"
 
 #: dist/converse-no-dependencies.js:42054
 msgid ""
@@ -734,7 +734,7 @@ msgstr "Autoriser les utilisateurs muets à poster des messages"
 
 #: dist/converse-no-dependencies.js:42198
 msgid "Error: invalid number of arguments"
-msgstr ""
+msgstr "Erreur : nombre d’arguments invalide"
 
 #: dist/converse-no-dependencies.js:42448
 msgid ""
@@ -859,9 +859,9 @@ msgid "Topic set by %1$s"
 msgstr "Le sujet a été défini par %1$s"
 
 #: dist/converse-no-dependencies.js:42870
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr "Le sujet a été défini par %1$s"
+msgstr "Le sujet de ce salon a été retiré par %1$s"
 
 #: dist/converse-no-dependencies.js:42903
 msgid "Groupchats"
@@ -935,26 +935,30 @@ msgid "Please enter a valid XMPP username"
 msgstr "Veuillez saisir un identifiant utilisateur XMPP valide"
 
 #: dist/converse-no-dependencies.js:44221
-#, fuzzy
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr "Vous n’êtes pas autorisé à créer des salons."
+msgstr "Vous n’êtes pas autorisé à vous enregistrer vous-mêmes dans ce salon."
 
 #: dist/converse-no-dependencies.js:44223
-#, fuzzy
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr "Vous n’êtes pas autorisé à créer des salons."
+msgstr ""
+"Vous n’êtes pas autorisé à vous inscrire dans ce salon parce qu’il est "
+"réservé aux membres."
 
 #: dist/converse-no-dependencies.js:44256
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
+"Impossible d’enregistrer votre pseudo dans ce salon, il ne gère pas "
+"l’enregistrement."
 
 #: dist/converse-no-dependencies.js:44258
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
+"Impossible d’enregistrer votre pseudo dans ce salon, un formulaire invalide "
+"a été envoyé."
 
 #: dist/converse-no-dependencies.js:44718
 #, javascript-format
@@ -976,9 +980,8 @@ msgid "Error: the groupchat "
 msgstr "Entrer dans le salon"
 
 #: dist/converse-no-dependencies.js:44811
-#, fuzzy
 msgid "Sorry, you're not allowed to registerd in this groupchat"
-msgstr "Vous n’êtes pas autorisé à créer des salons."
+msgstr "Désolé, vous n’êtes pas autorisé à vous enregistrer dans ce salon"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:45196
@@ -997,9 +1000,8 @@ msgstr "%1$s dit"
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
 #: dist/converse-no-dependencies.js:45227
-#, fuzzy
 msgid "OMEMO Message received"
-msgstr "Archivage des messages"
+msgstr "Message OMEMO reçu"
 
 #: dist/converse-no-dependencies.js:45254
 msgid "has gone offline"
@@ -1692,24 +1694,24 @@ msgid "Download"
 msgstr "Télécharger"
 
 #: dist/converse-no-dependencies.js:54579
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download file \"%1$s\""
-msgstr "Télécharger « %1$s »"
+msgstr "Télécharger le fichier « %1$s »"
 
 #: dist/converse-no-dependencies.js:54591
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download image \"%1$s\""
-msgstr "Télécharger « %1$s »"
+msgstr "Télécharger l’image « %1$s »"
 
 #: dist/converse-no-dependencies.js:54604
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download video file \"%1$s\""
-msgstr "Télécharger le fichier vidéo"
+msgstr "Télécharger la vidéo « %1$s »"
 
 #: dist/converse-no-dependencies.js:54617
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download audio file \"%1$s\""
-msgstr "Télécharger le fichier audio"
+msgstr "Télécharger le fichier audio « %1$s »"
 
 #~ msgid "Jabber ID"
 #~ msgstr "Identifiant Jabber"

@@ -2,6 +2,7 @@
 
 ## 4.0.3 (Unreleased)
 
+- New translations: Arabic, Basque, Czech, French, German, Hungarian, Japanese, Norwegian Bokmål, Polish, Romanian, Spanish
 - Bugfix. Converse continuously publishes an empty OMEMO devicelist for itself
 - Bugfix. Handler not triggered when submitting MUC password form 2nd time
 - Bugfix. MUC features weren't being refreshed when saving the config form

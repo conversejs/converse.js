@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-02 17:29+0200\n"
-"PO-Revision-Date: 2018-10-02 17:13+0200\n"
+"PO-Revision-Date: 2018-10-03 16:21+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -548,9 +548,9 @@ msgid "Groupchat info for %1$s"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:41812
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr "لقد إلتحق %1$s بغرفة المحادثة ثم غادرها"
+msgstr "لم يعد %1$s مديرا لفريق المحادثة هذا بعد الآن"
 
 #: dist/converse-no-dependencies.js:41814
 #, fuzzy, javascript-format
@@ -573,14 +573,14 @@ msgid "%1$s is now a permanent member of this groupchat"
 msgstr "أنت لست مِن بين قائمة أعضاء غرفة المحادثة هذه."
 
 #: dist/converse-no-dependencies.js:41826
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned from this groupchat"
-msgstr "لقد تم طردُك مِن فريق المحادثة هذا"
+msgstr "لقد تم طردُ %1$s مِن فريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:41828
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now an "
-msgstr "أصبح %1$s مُشرفًا"
+msgstr "أصبح %1$s "
 
 #: dist/converse-no-dependencies.js:41835
 #, javascript-format
@@ -686,9 +686,8 @@ msgid "Grant ownership of this groupchat"
 msgstr "منح صفة ملكية فريق المحادثة للمستخدِم"
 
 #: dist/converse-no-dependencies.js:42113
-#, fuzzy
 msgid "Register a nickname for this room"
-msgstr "تسمية الفاصلة المرجعية :"
+msgstr "قم بتسجيل اسم مستعار على هذه الغرفة"
 
 #: dist/converse-no-dependencies.js:42113
 msgid "Revoke user's membership"
@@ -833,9 +832,9 @@ msgid "Topic set by %1$s"
 msgstr "قام %1$s بتحديد الموضوع"
 
 #: dist/converse-no-dependencies.js:42870
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr "قام %1$s بتحديد الموضوع"
+msgstr "قام %1$s بمحو الموضوع"
 
 #: dist/converse-no-dependencies.js:42903
 msgid "Groupchats"
@@ -907,9 +906,8 @@ msgid "Please enter a valid XMPP username"
 msgstr "يُرجى إدخال إسم مستخدِم XMPP صحيح"
 
 #: dist/converse-no-dependencies.js:44221
-#, fuzzy
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr "لا يُسمح لك بإنشاء غُرف محادثة جديدة."
+msgstr "لا يُسمح لك بتسجيل نفسك في فريق المحادثة هذا."
 
 #: dist/converse-no-dependencies.js:44223
 #, fuzzy
@@ -941,14 +939,12 @@ msgid ""
 msgstr "قام %1$s بدعوتك للإلتحاق بفريق المحادثة : %2$s"
 
 #: dist/converse-no-dependencies.js:44809
-#, fuzzy
 msgid "Error: the groupchat "
-msgstr "الإلتحاق بفريق المحادثة"
+msgstr "خطأ: فريق المحادثة "
 
 #: dist/converse-no-dependencies.js:44811
-#, fuzzy
 msgid "Sorry, you're not allowed to registerd in this groupchat"
-msgstr "لا يُسمح لك بإنشاء غُرف محادثة جديدة."
+msgstr "المعذرة، لا يُسمح لك بتسجيل نفسك في فريق المحادثة هذا"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:45196
@@ -967,9 +963,8 @@ msgstr "%1$s قال"
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
 #: dist/converse-no-dependencies.js:45227
-#, fuzzy
 msgid "OMEMO Message received"
-msgstr "أرشفة الرسائل"
+msgstr "تم تلقي رسالة أوميمو"
 
 #: dist/converse-no-dependencies.js:45254
 msgid "has gone offline"
@@ -1635,24 +1630,24 @@ msgid "Download"
 msgstr "تنزيل"
 
 #: dist/converse-no-dependencies.js:54579
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download file \"%1$s\""
-msgstr "تنزيل : \"%1$s\""
+msgstr "تنزيل الملف: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:54591
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download image \"%1$s\""
-msgstr "تنزيل : \"%1$s\""
+msgstr "تنزيل الصورة: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:54604
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download video file \"%1$s\""
-msgstr "تنزيل ملف الفيديو"
+msgstr "تنزيل ملف الفيديو: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:54617
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download audio file \"%1$s\""
-msgstr "تنزيل ملف صوتي"
+msgstr "تنزيل الملف الصوتي: \"%1$s\""
 
 #~ msgid "Jabber ID"
 #~ msgstr "مُعرَّف حساب جابر"

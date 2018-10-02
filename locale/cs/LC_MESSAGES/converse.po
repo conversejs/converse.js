@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-02 17:29+0200\n"
-"PO-Revision-Date: 2018-09-07 13:43+0000\n"
+"PO-Revision-Date: 2018-10-04 16:24+0000\n"
 "Last-Translator: Lorem Ipsum <aditoo@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
 "translations/cs/>\n"
@@ -303,7 +303,7 @@ msgstr "%1$s přestal/a psát"
 
 #: dist/converse-no-dependencies.js:40437
 msgid "Unencryptable OMEMO message"
-msgstr ""
+msgstr "Nezašifrovatelná zpráva OMEMO"
 
 #: dist/converse-no-dependencies.js:40655
 #: dist/converse-no-dependencies.js:40698
@@ -556,39 +556,39 @@ msgid "Groupchat info for %1$s"
 msgstr "Informace o skupinovém chatu %1$s"
 
 #: dist/converse-no-dependencies.js:41812
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr "%1$s vstoupil/a a odešel/la ze skupinového chatu"
+msgstr "%1$s již není administrátorem tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:41814
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr "Poskytnout vlastnictví tohoto skupinového chatu"
+msgstr "%1$s již není vlastníkem tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:41816
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "Byl/a jste na tomto skupinovém chatu zakázán/a"
+msgstr "%1$s již není na tomto skupinovém chatu zakázán/a"
 
 #: dist/converse-no-dependencies.js:41820
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a permanent member of this groupchat"
-msgstr "Nejste na seznamu členů tohoto skupinového chatu."
+msgstr "%1$s již není trvalým členem tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:41824
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a permanent member of this groupchat"
-msgstr "Nejste na seznamu členů tohoto skupinového chatu."
+msgstr "%1$s je nyní trvalým členem tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:41826
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned from this groupchat"
-msgstr "Byl/a jste na tomto skupinovém chatu zakázán/a"
+msgstr "%1$s byl/a na tomto skupinového chatu zakázán/a"
 
 #: dist/converse-no-dependencies.js:41828
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now an "
-msgstr "%1$s je nyní moderátorem"
+msgstr "%1$s je nyní "
 
 #: dist/converse-no-dependencies.js:41835
 #, javascript-format
@@ -645,9 +645,9 @@ msgstr ""
 "důvod."
 
 #: dist/converse-no-dependencies.js:42045
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: couldn't find a groupchat participant \"%1$s\""
-msgstr "Chyba: Nelze najít účastníika skupinového chatu s přezdívkou „"
+msgstr "Chyba: Nelze najít účastníka skupinového chatu s přezdívkou „%1$s“"
 
 #: dist/converse-no-dependencies.js:42054
 msgid ""
@@ -698,9 +698,8 @@ msgid "Grant ownership of this groupchat"
 msgstr "Poskytnout vlastnictví tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:42113
-#, fuzzy
 msgid "Register a nickname for this room"
-msgstr "Název pro tuto záložku:"
+msgstr "Registrujte si přezdívku pro tuto místnost"
 
 #: dist/converse-no-dependencies.js:42113
 msgid "Revoke user's membership"
@@ -720,7 +719,7 @@ msgstr "Povolit utišeným uživatelům posílat zprávy"
 
 #: dist/converse-no-dependencies.js:42198
 msgid "Error: invalid number of arguments"
-msgstr ""
+msgstr "Chyba: neplatný počet argumentů"
 
 #: dist/converse-no-dependencies.js:42448
 msgid ""
@@ -921,26 +920,30 @@ msgid "Please enter a valid XMPP username"
 msgstr "Prosím zadejte platné uživatelské jméno XMPP"
 
 #: dist/converse-no-dependencies.js:44221
-#, fuzzy
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr "Nemáte povolení vytvářet nové skupinové chaty."
+msgstr "Nemáte povolení se registrovat v tomto skupinovém chatu."
 
 #: dist/converse-no-dependencies.js:44223
-#, fuzzy
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr "Nemáte povolení vytvářet nové skupinové chaty."
+msgstr ""
+"Nemáte povolení se registrovat v tomto skupinovém chatu, neboť je pouze pro "
+"členy."
 
 #: dist/converse-no-dependencies.js:44256
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
+"Nelze registrovat vaši přezdívku v tomto skupinovém chatu, protože "
+"nepodporuje registraci."
 
 #: dist/converse-no-dependencies.js:44258
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
+"Nelze registrovat vaši přezdívku v tomto skupinovém chatu, protože je "
+"poskytnuta neplatná forma dat."
 
 #: dist/converse-no-dependencies.js:44718
 #, javascript-format
@@ -957,14 +960,12 @@ msgstr ""
 "důvod: „%3$s“"
 
 #: dist/converse-no-dependencies.js:44809
-#, fuzzy
 msgid "Error: the groupchat "
-msgstr "Vstoupit do skupinového chatu"
+msgstr "Chyba: skupinový chat "
 
 #: dist/converse-no-dependencies.js:44811
-#, fuzzy
 msgid "Sorry, you're not allowed to registerd in this groupchat"
-msgstr "Nemáte povolení vytvářet nové skupinové chaty."
+msgstr "Omlouváme se, nemáte povolení se registrovat v tomto skupinovém chatu"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:45196
@@ -983,9 +984,8 @@ msgstr "%1$s říká"
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
 #: dist/converse-no-dependencies.js:45227
-#, fuzzy
 msgid "OMEMO Message received"
-msgstr "Archivace zpráv"
+msgstr "Zpráva OMEMO obdržena"
 
 #: dist/converse-no-dependencies.js:45254
 msgid "has gone offline"
@@ -1670,24 +1670,24 @@ msgid "Download"
 msgstr "Stáhnout"
 
 #: dist/converse-no-dependencies.js:54579
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download file \"%1$s\""
-msgstr "Stáhnout „%1$s“"
+msgstr "Stáhnout soubor „%1$s“"
 
 #: dist/converse-no-dependencies.js:54591
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download image \"%1$s\""
-msgstr "Stáhnout „%1$s“"
+msgstr "Stáhnout obrázek „%1$s“"
 
 #: dist/converse-no-dependencies.js:54604
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download video file \"%1$s\""
-msgstr "Stáhnout videosoubor"
+msgstr "Stáhnout videosoubor „%1$s“"
 
 #: dist/converse-no-dependencies.js:54617
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download audio file \"%1$s\""
-msgstr "Stáhnout audiosoubor"
+msgstr "Stáhnout audiosoubor „%1$s“"
 
 #~ msgid "Jabber ID"
 #~ msgstr "Jabber ID"

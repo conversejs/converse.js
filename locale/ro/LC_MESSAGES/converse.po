@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-02 17:29+0200\n"
-"PO-Revision-Date: 2018-09-25 23:35+0000\n"
+"PO-Revision-Date: 2018-10-10 01:35+0000\n"
 "Last-Translator: Licaon Kter <licaon.kter@protonmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ro/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 3.2-dev\n"
+"X-Generator: Weblate 3.2.1\n"
 
 #: dist/converse-no-dependencies.js:32421
 #: dist/converse-no-dependencies.js:32506
@@ -569,19 +569,19 @@ msgid "Groupchat info for %1$s"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:41812
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr "Arată mai multe informații despre această discuție de grup"
+msgstr "%1$s nu mai are rol de administrator în această discuție de grup"
 
 #: dist/converse-no-dependencies.js:41814
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr "Faceți click pentru a deschide această discuție de grup"
+msgstr "%1$s nu mai are rol de proprietar în această discuție de grup"
 
 #: dist/converse-no-dependencies.js:41816
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "Ați fost excluși(se) din această discuție de grup"
+msgstr "%1$s nu mai este exclus(ă) din această discuție de grup"
 
 #: dist/converse-no-dependencies.js:41820
 #, javascript-format
@@ -589,19 +589,19 @@ msgid "%1$s is no longer a permanent member of this groupchat"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:41824
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a permanent member of this groupchat"
-msgstr "Ați fost excluși(se) din această discuție de grup"
+msgstr "%1$s acum un(o) membru(ă) permanent(ă) al acestei discuții de grup"
 
 #: dist/converse-no-dependencies.js:41826
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned from this groupchat"
-msgstr "Ați fost excluși(se) din această discuție de grup"
+msgstr "%1$s a fost exclus(ă) din această discuție de grup"
 
 #: dist/converse-no-dependencies.js:41828
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now an "
-msgstr "%1$s este conectat(ă)"
+msgstr "%1$s este acum un(o) "
 
 #: dist/converse-no-dependencies.js:41835
 #, javascript-format
@@ -707,9 +707,8 @@ msgid "Grant ownership of this groupchat"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:42113
-#, fuzzy
 msgid "Register a nickname for this room"
-msgstr "Numele acestui semn de carte:"
+msgstr "Înregistrează un pseudonim pentru această cameră"
 
 #: dist/converse-no-dependencies.js:42113
 msgid "Revoke user's membership"
@@ -958,14 +957,13 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:44809
-#, fuzzy
 msgid "Error: the groupchat "
-msgstr "Adaugă semn de carte pentru această discuție de grup"
+msgstr "Eroare: discuție de grup "
 
 #: dist/converse-no-dependencies.js:44811
-#, fuzzy
 msgid "Sorry, you're not allowed to registerd in this groupchat"
-msgstr "Arată mai multe informații despre această discuție de grup"
+msgstr ""
+"Ne pare rău, nu vă este permis să vă înscrieți în acestă discuție de grup"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:45196

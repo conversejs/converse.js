@@ -33,19 +33,14 @@
                     [{'category': 'account', 'type':'registered'}],
                     ['urn:xmpp:push:0'], [], 'info'))
             .then(() => {
-                return test_utils.waitUntil(() => {
-                    const node = _.filter(IQ_stanzas, function (iq) {
-                        return iq.nodeTree.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]');
-                    }).pop();
-                    if (node) {
-                        stanza = node.nodeTree;
-                        return true;
-                    }
-                })
-            }).then(() => {
-                expect(stanza.outerHTML).toEqual(
-                    `<iq type="set" xmlns="jabber:client" id="${stanza.getAttribute('id')}">`+
-                        '<enable xmlns="urn:xmpp:push:0" jid="push-5@client.example" node="yxs32uqsflafdk3iuqo"/>'+
+                return test_utils.waitUntil(() => 
+                    _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop()
+                )
+            }).then(node => {
+                const stanza = node.nodeTree;
+                expect(node.toLocaleString()).toEqual(
+                    `<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                        '<enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>'+
                     '</iq>'
                 )
                 _converse.connection._dataRecv(test_utils.createRequest($iq({
@@ -85,9 +80,9 @@
                 return test_utils.waitUntil(
                     () => _.filter(IQ_stanzas, (iq) => iq.nodeTree.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop())
             }).then(stanza => {
-                expect(stanza.nodeTree.outerHTML).toEqual(
-                    `<iq type="set" xmlns="jabber:client" to="chat.shakespeare.lit" id="${stanza.nodeTree.getAttribute('id')}">`+
-                        '<enable xmlns="urn:xmpp:push:0" jid="push-5@client.example" node="yxs32uqsflafdk3iuqo"/>'+
+                expect(stanza.toLocaleString()).toEqual(
+                    `<iq id="${stanza.nodeTree.getAttribute('id')}" to="chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
+                        '<enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>'+
                     '</iq>'
                 )
                 _converse.connection._dataRecv(test_utils.createRequest($iq({
@@ -111,7 +106,6 @@
 
             const IQ_stanzas = _converse.connection.IQ_stanzas;
             let stanza;
-
             expect(_converse.session.get('push_enabled')).toBeFalsy();
 
             test_utils.waitUntilDiscoConfirmed(
@@ -119,20 +113,13 @@
                 _converse.bare_jid,
                 [{'category': 'account', 'type':'registered'}],
                 ['urn:xmpp:push:0'], [], 'info')
-            .then(() => {
-                return test_utils.waitUntil(() => {
-                    const node = _.filter(IQ_stanzas, function (iq) {
-                        return iq.nodeTree.querySelector('iq[type="set"] disable[xmlns="urn:xmpp:push:0"]');
-                    }).pop();
-                    if (node) {
-                        stanza = node.nodeTree;
-                        return true;
-                    }
-                })
-            }).then(() => {
-                expect(stanza.outerHTML).toEqual(
-                    `<iq type="set" xmlns="jabber:client" id="${stanza.getAttribute('id')}">`+
-                        '<disable xmlns="urn:xmpp:push:0" jid="push-5@client.example" node="yxs32uqsflafdk3iuqo"/>'+
+            .then(() => test_utils.waitUntil(
+                () => _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq[type="set"] disable[xmlns="urn:xmpp:push:0"]')).pop()
+            )).then(node => {
+                const stanza = node.nodeTree;
+                expect(node.toLocaleString()).toEqual(
+                    `<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                        '<disable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>'+
                     '</iq>'
                 )
                 _converse.connection._dataRecv(test_utils.createRequest($iq({
@@ -168,21 +155,14 @@
                     _converse.bare_jid,
                     [{'category': 'account', 'type':'registered'}],
                     ['urn:xmpp:push:0'], [], 'info'))
-            .then(() => {
-                return test_utils.waitUntil(() => {
-                    const node = _.filter(IQ_stanzas, function (iq) {
-                        return iq.nodeTree.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]');
-                    }).pop();
-                    if (node) {
-                        stanza = node.nodeTree;
-                        return true;
-                    }
-                })
-            }).then(() => {
-                expect(stanza.outerHTML).toEqual(
-                    `<iq type="set" xmlns="jabber:client" id="${stanza.getAttribute('id')}">`+
-                        '<enable xmlns="urn:xmpp:push:0" jid="push-5@client.example" node="yxs32uqsflafdk3iuqo">'+
-                            '<x xmlns="jabber:x:data" type="submit">'+
+            .then(() => test_utils.waitUntil(
+                () => _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop()
+            )).then(node => {
+                const stanza = node.nodeTree;
+                expect(node.toLocaleString()).toEqual(
+                    `<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                        '<enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0">'+
+                            '<x type="submit" xmlns="jabber:x:data">'+
                                 '<field var="FORM_TYPE"><value>http://jabber.org/protocol/pubsub#publish-options</value></field>'+
                                 '<field var="secret"><value>eruio234vzxc2kla-91</value></field>'+
                             '</x>'+

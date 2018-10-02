@@ -79,7 +79,7 @@
     "sinon": "^2.1.0",
     "sizzle": "^2.3.3",
     "snabbdom": "0.7.1",
-    "strophe.js": "1.2.16",
+    "strophe.js": "strophe/strophejs#a2692dcfdaf7d591254ac73f3d8584992b6f8da7",
     "strophejs-plugin-ping": "0.0.1",
     "strophejs-plugin-register": "0.0.1",
     "strophejs-plugin-rsm": "0.0.1",

@@ -118,9 +118,9 @@
                         });
                         var IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                         expect(stanza.toLocaleString()).toBe(
-                            "<iq from='dummy@localhost/resource' to='upload.localhost' type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                                "<query xmlns='http://jabber.org/protocol/disco#info'/>"+
-                            "</iq>");
+                            `<iq from="dummy@localhost/resource" id="`+IQ_id+`" to="upload.localhost" type="get" xmlns="jabber:client">`+
+                                `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
+                            `</iq>`);
 
                         // Upload service responds and reports a maximum file size of 5MiB
                         /* <iq from='upload.montague.tld'
@@ -301,16 +301,17 @@
                                 }).then(function () {
                                     var iq = IQ_stanzas.pop();
                                     expect(iq.toLocaleString()).toBe(
-                                        "<iq from='dummy@localhost/resource' "+
-                                            "to='upload.montague.tld' "+
-                                            "type='get' "+
-                                            "xmlns='jabber:client' "+
-                                            "id='"+iq.nodeTree.getAttribute('id')+"'>"+
-                                        "<request xmlns='urn:xmpp:http:upload:0' "+
-                                            "filename='my-juliet.jpg' "+
-                                            "size='23456' "+
-                                            "content-type='image/jpeg'/>"+
-                                        "</iq>");
+                                        `<iq from="dummy@localhost/resource" `+
+                                            `id="${iq.nodeTree.getAttribute("id")}" `+
+                                            `to="upload.montague.tld" `+
+                                            `type="get" `+
+                                            `xmlns="jabber:client">`+
+                                        `<request `+
+                                            `content-type="image/jpeg" `+
+                                            `filename="my-juliet.jpg" `+
+                                            `size="23456" `+
+                                            `xmlns="urn:xmpp:http:upload:0"/>`+
+                                        `</iq>`);
 
                                     var base_url = document.URL.split(window.location.pathname)[0];
                                     var message = base_url+"/logo/conversejs-filled.svg";
@@ -352,19 +353,18 @@
                                         return sent_stanza;
                                     }, 1000).then(function () {
                                         expect(sent_stanza.toLocaleString()).toBe(
-                                            "<message from='dummy@localhost/resource' "+
-                                                "to='irini.vlastuin@localhost' "+
-                                                "type='chat' "+
-                                                "id='"+sent_stanza.nodeTree.getAttribute('id')+"' xmlns='jabber:client'>"+
-                                                    "<body>"+message+"</body>"+
-                                                    "<active xmlns='http://jabber.org/protocol/chatstates'/>"+
-                                                    "<x xmlns='jabber:x:oob'>"+
-                                                        "<url>"+message+"</url>"+
-                                                    "</x>"+
-                                            "</message>");
-                                        return test_utils.waitUntil(function () {
-                                            return view.el.querySelector('.chat-image');
-                                        }, 1000);
+                                            `<message from="dummy@localhost/resource" `+
+                                                `id="${sent_stanza.nodeTree.getAttribute("id")}" `+
+                                                `to="irini.vlastuin@localhost" `+
+                                                `type="chat" `+
+                                                `xmlns="jabber:client">`+
+                                                    `<body>${message}</body>`+
+                                                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                                    `<x xmlns="jabber:x:oob">`+
+                                                        `<url>${message}</url>`+
+                                                    `</x>`+
+                                            `</message>`);
+                                        return test_utils.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
                                     }).then(function () {
                                         // Check that the image renders
                                         expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
@@ -408,16 +408,17 @@
                                         }).then(function () {
                                             var iq = IQ_stanzas.pop();
                                             expect(iq.toLocaleString()).toBe(
-                                                "<iq from='dummy@localhost/resource' "+
-                                                    "to='upload.montague.tld' "+
-                                                    "type='get' "+
-                                                    "xmlns='jabber:client' "+
-                                                    "id='"+iq.nodeTree.getAttribute('id')+"'>"+
-                                                "<request xmlns='urn:xmpp:http:upload:0' "+
-                                                    "filename='my-juliet.jpg' "+
-                                                    "size='23456' "+
-                                                    "content-type='image/jpeg'/>"+
-                                                "</iq>");
+                                                `<iq from="dummy@localhost/resource" `+
+                                                    `id="${iq.nodeTree.getAttribute("id")}" `+
+                                                    `to="upload.montague.tld" `+
+                                                    `type="get" `+
+                                                    `xmlns="jabber:client">`+
+                                                `<request `+
+                                                    `content-type="image/jpeg" `+
+                                                    `filename="my-juliet.jpg" `+
+                                                    `size="23456" `+
+                                                    `xmlns="urn:xmpp:http:upload:0"/>`+
+                                                `</iq>`);
 
                                             var base_url = document.URL.split(window.location.pathname)[0];
                                             var message = base_url+"/logo/conversejs-filled.svg";
@@ -455,23 +456,21 @@
                                             });
                                             _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                                            return test_utils.waitUntil(function () {
-                                                return sent_stanza;
-                                            }, 1000).then(function () {
+                                            return test_utils.waitUntil(() => sent_stanza, 1000).then(function () {
                                                 expect(sent_stanza.toLocaleString()).toBe(
-                                                    "<message from='dummy@localhost/resource' "+
-                                                        "to='lounge@localhost' "+
-                                                        "type='groupchat' "+
-                                                        "id='"+sent_stanza.nodeTree.getAttribute('id')+"' xmlns='jabber:client'>"+
-                                                            "<body>"+message+"</body>"+
-                                                            "<active xmlns='http://jabber.org/protocol/chatstates'/>"+
-                                                            "<x xmlns='jabber:x:oob'>"+
-                                                                "<url>"+message+"</url>"+
-                                                            "</x>"+
-                                                    "</message>");
-                                                return test_utils.waitUntil(function () {
-                                                    return view.el.querySelector('.chat-image');
-                                                }, 1000);
+                                                    `<message `+
+                                                        `from="dummy@localhost/resource" `+
+                                                        `id="${sent_stanza.nodeTree.getAttribute("id")}" `+
+                                                        `to="lounge@localhost" `+
+                                                        `type="groupchat" `+
+                                                        `xmlns="jabber:client">`+
+                                                            `<body>${message}</body>`+
+                                                            `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                                            `<x xmlns="jabber:x:oob">`+
+                                                                `<url>${message}</url>`+
+                                                            `</x>`+
+                                                    `</message>`);
+                                                return test_utils.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
                                             }).then(function () {
                                                 // Check that the image renders
                                                 expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
@@ -569,9 +568,9 @@
                             });
                             var IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                             expect(stanza.toLocaleString()).toBe(
-                                "<iq from='dummy@localhost/resource' to='upload.localhost' type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                                    "<query xmlns='http://jabber.org/protocol/disco#info'/>"+
-                                "</iq>");
+                                `<iq from="dummy@localhost/resource" id="${IQ_id}" to="upload.localhost" type="get" xmlns="jabber:client">`+
+                                    `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
+                                `</iq>`);
 
                             // Upload service responds and reports a maximum file size of 5MiB
                             stanza = $iq({'type': 'result', 'to': 'dummy@localhost/resource', 'id': IQ_id, 'from': 'upload.localhost'})
@@ -650,16 +649,17 @@
                         }).then(function () {
                             const iq = IQ_stanzas.pop();
                             expect(iq.toLocaleString()).toBe(
-                                "<iq from='dummy@localhost/resource' "+
-                                    "to='upload.montague.tld' "+
-                                    "type='get' "+
-                                    "xmlns='jabber:client' "+
-                                    "id='"+iq.nodeTree.getAttribute('id')+"'>"+
-                                "<request xmlns='urn:xmpp:http:upload:0' "+
-                                    "filename='my-juliet.jpg' "+
-                                    "size='23456' "+
-                                    "content-type='image/jpeg'/>"+
-                                "</iq>");
+                                `<iq from="dummy@localhost/resource" `+
+                                    `id="${iq.nodeTree.getAttribute("id")}" `+
+                                    `to="upload.montague.tld" `+
+                                    `type="get" `+
+                                    `xmlns="jabber:client">`+
+                                `<request `+
+                                    `content-type="image/jpeg" `+
+                                    `filename="my-juliet.jpg" `+
+                                    `size="23456" `+
+                                    `xmlns="urn:xmpp:http:upload:0"/>`+
+                                `</iq>`);
 
                             const base_url = document.URL.split(window.location.pathname)[0];
                             const message = base_url+"/logo/conversejs-filled.svg";

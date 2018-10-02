@@ -69,12 +69,12 @@
 
                 const msg = _converse.connection.send.calls.all()[0].args[0];
                 expect(msg.toLocaleString())
-                .toBe(`<message from='dummy@localhost/resource' `+
-                        `to='max.frankfurter@localhost' type='chat' id='${msg.nodeTree.getAttribute('id')}' `+
-                        `xmlns='jabber:client'>`+
+                .toBe(`<message from="dummy@localhost/resource" id="${msg.nodeTree.getAttribute("id")}" `+
+                        `to="max.frankfurter@localhost" type="chat" `+
+                        `xmlns="jabber:client">`+
                             `<body>But soft, what light through yonder window breaks?</body>`+
-                            `<active xmlns='http://jabber.org/protocol/chatstates'/>`+
-                            `<replace xmlns='urn:xmpp:message-correct:0' id='${first_msg.get('msgid')}'/>`+
+                            `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                            `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
                     `</message>`);
                 expect(view.model.messages.models.length).toBe(1);
                 const corrected_message = view.model.messages.at(0);
@@ -172,12 +172,12 @@
 
                 const msg = _converse.connection.send.calls.all()[0].args[0];
                 expect(msg.toLocaleString())
-                .toBe(`<message from='dummy@localhost/resource' `+
-                        `to='max.frankfurter@localhost' type='chat' id='${msg.nodeTree.getAttribute('id')}' `+
-                        `xmlns='jabber:client'>`+
+                .toBe(`<message from="dummy@localhost/resource" id="${msg.nodeTree.getAttribute("id")}" `+
+                        `to="max.frankfurter@localhost" type="chat" `+
+                        `xmlns="jabber:client">`+
                             `<body>But soft, what light through yonder window breaks?</body>`+
-                            `<active xmlns='http://jabber.org/protocol/chatstates'/>`+
-                            `<replace xmlns='urn:xmpp:message-correct:0' id='${first_msg.get('msgid')}'/>`+
+                            `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                            `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
                     `</message>`);
                 expect(view.model.messages.models.length).toBe(1);
                 const corrected_message = view.model.messages.at(0);
@@ -2090,12 +2090,12 @@
 
                 const msg = _converse.connection.send.calls.all()[0].args[0];
                 expect(msg.toLocaleString())
-                .toBe(`<message from='dummy@localhost/resource' `+
-                        `to='lounge@localhost' type='groupchat' id='${msg.nodeTree.getAttribute('id')}' `+
-                        `xmlns='jabber:client'>`+
+                .toBe(`<message from="dummy@localhost/resource" id="${msg.nodeTree.getAttribute("id")}" `+
+                        `to="lounge@localhost" type="groupchat" `+
+                        `xmlns="jabber:client">`+
                             `<body>But soft, what light through yonder window breaks?</body>`+
-                            `<active xmlns='http://jabber.org/protocol/chatstates'/>`+
-                            `<replace xmlns='urn:xmpp:message-correct:0' id='${first_msg.get('msgid')}'/>`+
+                            `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                            `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
                     `</message>`);
 
                 expect(view.model.messages.models.length).toBe(1);
@@ -2291,14 +2291,14 @@
                     view.keyPressed(enter_event);
                     const msg = _converse.connection.send.calls.all()[0].args[0];
                     expect(msg.toLocaleString())
-                        .toBe(`<message from='dummy@localhost/resource' `+
-                                `to='lounge@localhost' type='groupchat' id='${msg.nodeTree.getAttribute('id')}' `+
-                                `xmlns='jabber:client'>`+
+                        .toBe(`<message from="dummy@localhost/resource" id="${msg.nodeTree.getAttribute("id")}" `+
+                                `to="lounge@localhost" type="groupchat" `+
+                                `xmlns="jabber:client">`+
                                     `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
-                                    `<active xmlns='http://jabber.org/protocol/chatstates'/>`+
-                                    `<reference xmlns='urn:xmpp:reference:0' begin='18' end='26' type='mention' uri='xmpp:mr.robot@localhost'/>`+
-                                    `<reference xmlns='urn:xmpp:reference:0' begin='11' end='17' type='mention' uri='xmpp:gibson@localhost'/>`+
-                                    `<reference xmlns='urn:xmpp:reference:0' begin='6' end='10' type='mention' uri='xmpp:z3r0@localhost'/>`+
+                                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                    `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@localhost" xmlns="urn:xmpp:reference:0"/>`+
+                                    `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
+                                    `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+
                               `</message>`);
 
                     const first_msg = view.model.messages.findWhere({'message': 'hello z3r0 gibson mr.robot, how are you?'});
@@ -2316,15 +2316,15 @@
 
                     const correction = _converse.connection.send.calls.all()[1].args[0];
                     expect(correction.toLocaleString())
-                        .toBe(`<message from='dummy@localhost/resource' `+
-                                `to='lounge@localhost' type='groupchat' id='${correction.nodeTree.getAttribute('id')}' `+
-                                `xmlns='jabber:client'>`+
+                        .toBe(`<message from="dummy@localhost/resource" id="${correction.nodeTree.getAttribute("id")}" `+
+                                `to="lounge@localhost" type="groupchat" `+
+                                `xmlns="jabber:client">`+
                                     `<body>hello z3r0 gibson sw0rdf1sh, how are you?</body>`+
-                                    `<active xmlns='http://jabber.org/protocol/chatstates'/>`+
-                                    `<reference xmlns='urn:xmpp:reference:0' begin='18' end='27' type='mention' uri='xmpp:sw0rdf1sh@localhost'/>`+
-                                    `<reference xmlns='urn:xmpp:reference:0' begin='11' end='17' type='mention' uri='xmpp:gibson@localhost'/>`+
-                                    `<reference xmlns='urn:xmpp:reference:0' begin='6' end='10' type='mention' uri='xmpp:z3r0@localhost'/>`+
-                                    `<replace xmlns='urn:xmpp:message-correct:0' id='${msg.nodeTree.getAttribute('id')}'/>`+
+                                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                    `<reference begin="18" end="27" type="mention" uri="xmpp:sw0rdf1sh@localhost" xmlns="urn:xmpp:reference:0"/>`+
+                                    `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
+                                    `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+
+                                    `<replace id="${msg.nodeTree.getAttribute("id")}" xmlns="urn:xmpp:message-correct:0"/>`+
                               `</message>`);
                     done();
                 }).catch(_.partial(console.error, _));
@@ -2365,14 +2365,14 @@
 
                     const msg = _converse.connection.send.calls.all()[0].args[0];
                     expect(msg.toLocaleString())
-                        .toBe(`<message from='dummy@localhost/resource' `+
-                                `to='lounge@localhost' type='groupchat' id='${msg.nodeTree.getAttribute('id')}' `+
-                                `xmlns='jabber:client'>`+
+                        .toBe(`<message from="dummy@localhost/resource" id="${msg.nodeTree.getAttribute("id")}" `+
+                                `to="lounge@localhost" type="groupchat" `+
+                                `xmlns="jabber:client">`+
                                     `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
-                                    `<active xmlns='http://jabber.org/protocol/chatstates'/>`+
-                                    `<reference xmlns='urn:xmpp:reference:0' begin='18' end='26' type='mention' uri='xmpp:mr.robot@localhost'/>`+
-                                    `<reference xmlns='urn:xmpp:reference:0' begin='11' end='17' type='mention' uri='xmpp:gibson@localhost'/>`+
-                                    `<reference xmlns='urn:xmpp:reference:0' begin='6' end='10' type='mention' uri='xmpp:z3r0@localhost'/>`+
+                                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                    `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@localhost" xmlns="urn:xmpp:reference:0"/>`+
+                                    `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
+                                    `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+
                               `</message>`);
                     done();
                 }).catch(_.partial(console.error, _));

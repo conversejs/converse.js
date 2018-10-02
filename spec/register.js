@@ -265,17 +265,17 @@
 
                 expect(_converse.connection.send).toHaveBeenCalled();
                 stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
-                expect(stanza.outerHTML.trim().replace(/(\n|\s{2,})/g, '')).toEqual(
-                    '<iq type="set" id="'+stanza.getAttribute('id')+'" xmlns="jabber:client">'+
+                expect(Strophe.serialize(stanza).toLocaleString().trim().replace(/(\n|\s{2,})/g, '')).toEqual(
+                    '<iq id="'+stanza.getAttribute('id')+'" type="set" xmlns="jabber:client">'+
                         '<query xmlns="jabber:iq:register">'+
-                            '<x xmlns="jabber:x:data" type="submit">'+
-                                '<field xmlns="http://www.w3.org/1999/xhtml" var="username">'+
+                            '<x type="submit" xmlns="jabber:x:data">'+
+                                '<field var="username">'+
                                     '<value>testusername</value>'+
                                 '</field>'+
-                                '<field xmlns="http://www.w3.org/1999/xhtml" var="password">'+
+                                '<field var="password">'+
                                     '<value>testpassword</value>'+
                                 '</field>'+
-                                '<field xmlns="http://www.w3.org/1999/xhtml" var="email">'+
+                                '<field var="email">'+
                                     '<value>test@email.local</value>'+
                                 '</field>'+
                             '</x>'+

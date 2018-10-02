@@ -40,21 +40,14 @@
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
-            var IQ_stanzas = _converse.connection.IQ_stanzas;
-            var stanza;
-
-            test_utils.waitUntil(() => {
-                const node = _.filter(IQ_stanzas, function (iq) {
-                    return iq.nodeTree.querySelector('iq query[xmlns="jabber:iq:roster"]');
-                }).pop();
-                if (node) {
-                    stanza = node.nodeTree;
-                    return true;
-                }
-            }).then(() => {
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            test_utils.waitUntil(
+                () => _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop()
+            ).then(node => {
+                let stanza = node.nodeTree;
                 expect(_converse.roster.data.get('version')).toBeUndefined();
-                expect(stanza.outerHTML).toBe(
-                    `<iq type="get" id="${stanza.getAttribute('id')}" xmlns="jabber:client">`+
+                expect(node.toLocaleString()).toBe(
+                    `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
                         `<query xmlns="jabber:iq:roster"/>`+
                     `</iq>`);
                 let result = $iq({
@@ -71,10 +64,11 @@
                 expect(_converse.roster.models.length).toBe(2);
 
                 _converse.roster.fetchFromServer();
-                stanza = _converse.connection.IQ_stanzas.pop().nodeTree;
-                expect(stanza.outerHTML).toBe(
-                    `<iq type="get" id="${stanza.getAttribute('id')}" xmlns="jabber:client">`+
-                        `<query xmlns="jabber:iq:roster" ver="ver7"/>`+
+                node = _converse.connection.IQ_stanzas.pop();
+                stanza = node.nodeTree;
+                expect(node.toLocaleString()).toBe(
+                    `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
+                        `<query ver="ver7" xmlns="jabber:iq:roster"/>`+
                     `</iq>`);
 
                 result = $iq({
@@ -656,11 +650,11 @@
                     expect(window.confirm).toHaveBeenCalled();
                     expect(contact.removeFromRoster).toHaveBeenCalled();
                     expect(sent_IQ.toLocaleString()).toBe(
-                        "<iq type='set' xmlns='jabber:client'>"+
-                            "<query xmlns='jabber:iq:roster'>"+
-                                "<item jid='suleyman.van.beusichem@localhost' subscription='remove'/>"+
-                            "</query>"+
-                        "</iq>");
+                        `<iq type="set" xmlns="jabber:client">`+
+                            `<query xmlns="jabber:iq:roster">`+
+                                `<item jid="suleyman.van.beusichem@localhost" subscription="remove"/>`+
+                            `</query>`+
+                        `</iq>`);
                     done();
                 });
             }));
@@ -851,9 +845,9 @@
 
                     expect(window.confirm).toHaveBeenCalled();
                     expect(sent_IQ.toLocaleString()).toBe(
-                        "<iq type='set' xmlns='jabber:client'>"+
-                            "<query xmlns='jabber:iq:roster'><item jid='max.frankfurter@localhost' subscription='remove'/></query>"+
-                        "</iq>");
+                        `<iq type="set" xmlns="jabber:client">`+
+                            `<query xmlns="jabber:iq:roster"><item jid="max.frankfurter@localhost" subscription="remove"/></query>`+
+                        `</iq>`);
                     expect(contact.removeFromRoster).toHaveBeenCalled();
                     expect($(_converse.rosterview.el).find(".open-chat:contains('"+name+"')").length).toEqual(0);
                     done();

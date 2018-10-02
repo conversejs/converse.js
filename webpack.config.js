@@ -106,7 +106,7 @@ const config = {
             "snabbdom-eventlisteners":  path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-eventlisteners"),
             "snabbdom-props":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-props"),
             "snabbdom-style":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-style"),
-            "strophe":                  path.resolve(__dirname, "node_modules/strophe.js/strophe"),
+            "strophe":                  path.resolve(__dirname, "node_modules/strophe.js/dist/strophe"),
             "strophe.ping":             path.resolve(__dirname, "node_modules/strophejs-plugin-ping/strophe.ping"),
             "strophe.rsm":              path.resolve(__dirname, "node_modules/strophejs-plugin-rsm/strophe.rsm"),
             "tovnode":                  path.resolve(__dirname, "node_modules/snabbdom/dist/tovnode"),

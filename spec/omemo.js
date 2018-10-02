@@ -183,18 +183,19 @@
                 return test_utils.waitUntil(() => sent_stanza);
             }).then(() => {
                 expect(sent_stanza.toLocaleString()).toBe(
-                    `<message from='dummy@localhost/resource' to='max.frankfurter@localhost' `+
-                             `type='chat' id='${sent_stanza.nodeTree.getAttribute('id')}' xmlns='jabber:client'>`+
+                    `<message from="dummy@localhost/resource" id="${sent_stanza.nodeTree.getAttribute("id")}" `+
+                             `to="max.frankfurter@localhost" `+
+                             `type="chat" xmlns="jabber:client">`+
                         `<body>This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo</body>`+
-                        `<encrypted xmlns='eu.siacs.conversations.axolotl'>`+
-                            `<header sid='123456789'>`+
-                                `<key rid='482886413b977930064a5888b92134fe'>YzFwaDNSNzNYNw==</key>`+
-                                `<key rid='555'>YzFwaDNSNzNYNw==</key>`+
-                                `<iv>${sent_stanza.nodeTree.querySelector('iv').textContent}</iv>`+
+                        `<encrypted xmlns="eu.siacs.conversations.axolotl">`+
+                            `<header sid="123456789">`+
+                                `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+
+                                `<key rid="555">YzFwaDNSNzNYNw==</key>`+
+                                `<iv>${sent_stanza.nodeTree.querySelector("iv").textContent}</iv>`+
                             `</header>`+
-                            `<payload>${sent_stanza.nodeTree.querySelector('payload').textContent}</payload>`+
+                            `<payload>${sent_stanza.nodeTree.querySelector("payload").textContent}</payload>`+
                         `</encrypted>`+
-                        `<store xmlns='urn:xmpp:hints'/>`+
+                        `<store xmlns="urn:xmpp:hints"/>`+
                     `</message>`);
 
                 // Test reception of an encrypted message
@@ -296,20 +297,20 @@
             }).then(() => test_utils.waitUntil(() => bundleHasBeenPublished(_converse)))
             .then(iq_stanza => {
                 expect(iq_stanza.toLocaleString()).toBe(
-                    `<iq from='dummy@localhost' type='set' xmlns='jabber:client' id='${iq_stanza.nodeTree.getAttribute('id')}'>`+
-                        `<pubsub xmlns='http://jabber.org/protocol/pubsub'>`+
-                            `<publish node='eu.siacs.conversations.axolotl.bundles:123456789'>`+
+                    `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" type="set" xmlns="jabber:client">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                            `<publish node="eu.siacs.conversations.axolotl.bundles:123456789">`+
                                 `<item>`+
-                                    `<bundle xmlns='eu.siacs.conversations.axolotl'>`+
-                                        `<signedPreKeyPublic signedPreKeyId='0'>${btoa('1234')}</signedPreKeyPublic>`+
-                                            `<signedPreKeySignature>${btoa('11112222333344445555')}</signedPreKeySignature>`+
-                                            `<identityKey>${btoa('1234')}</identityKey>`+
+                                    `<bundle xmlns="eu.siacs.conversations.axolotl">`+
+                                        `<signedPreKeyPublic signedPreKeyId="0">${btoa("1234")}</signedPreKeyPublic>`+
+                                            `<signedPreKeySignature>${btoa("11112222333344445555")}</signedPreKeySignature>`+
+                                            `<identityKey>${btoa("1234")}</identityKey>`+
                                         `<prekeys>`+
-                                            `<preKeyPublic preKeyId='0'>${btoa('1234')}</preKeyPublic>`+
-                                            `<preKeyPublic preKeyId='1'>${btoa('1234')}</preKeyPublic>`+
-                                            `<preKeyPublic preKeyId='2'>${btoa('1234')}</preKeyPublic>`+
-                                            `<preKeyPublic preKeyId='3'>${btoa('1234')}</preKeyPublic>`+
-                                            `<preKeyPublic preKeyId='4'>${btoa('1234')}</preKeyPublic>`+
+                                            `<preKeyPublic preKeyId="0">${btoa("1234")}</preKeyPublic>`+
+                                            `<preKeyPublic preKeyId="1">${btoa("1234")}</preKeyPublic>`+
+                                            `<preKeyPublic preKeyId="2">${btoa("1234")}</preKeyPublic>`+
+                                            `<preKeyPublic preKeyId="3">${btoa("1234")}</preKeyPublic>`+
+                                            `<preKeyPublic preKeyId="4">${btoa("1234")}</preKeyPublic>`+
                                         `</prekeys>`+
                                     `</bundle>`+
                                 `</item>`+
@@ -336,9 +337,9 @@
             test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid))
             .then(iq_stanza => {
                 expect(iq_stanza.toLocaleString()).toBe(
-                    `<iq type='get' from='dummy@localhost' to='dummy@localhost' xmlns='jabber:client' id='${iq_stanza.nodeTree.getAttribute('id')}'>`+
-                        `<pubsub xmlns='http://jabber.org/protocol/pubsub'>`+
-                            `<items node='eu.siacs.conversations.axolotl.devicelist'/>`+
+                    `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="dummy@localhost" type="get" xmlns="jabber:client">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                            `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
                         `</pubsub>`+
                     `</iq>`);
 
@@ -453,13 +454,13 @@
                 // Check that our own device is added again, but that removed
                 // devices are not added.
                 expect(iq_stanza.toLocaleString()).toBe(
-                    `<iq from='dummy@localhost' type='set' xmlns='jabber:client' id='${iq_stanza.nodeTree.getAttribute(`id`)}'>`+
-                        `<pubsub xmlns='http://jabber.org/protocol/pubsub'>`+
-                            `<publish node='eu.siacs.conversations.axolotl.devicelist'>`+
+                    `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute(`id`)}" type="set" xmlns="jabber:client">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                            `<publish node="eu.siacs.conversations.axolotl.devicelist">`+
                                 `<item>`+
-                                    `<list xmlns='eu.siacs.conversations.axolotl'>`+
-                                        `<device id='123456789'/>`+
-                                        `<device id='444'/>`+
+                                    `<list xmlns="eu.siacs.conversations.axolotl">`+
+                                        `<device id="123456789"/>`+
+                                        `<device id="444"/>`+
                                     `</list>`+
                                 `</item>`+
                             `</publish>`+
@@ -487,9 +488,9 @@
             test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid))
             .then(iq_stanza => {
                 expect(iq_stanza.toLocaleString()).toBe(
-                    `<iq type='get' from='dummy@localhost' to='dummy@localhost' xmlns='jabber:client' id='${iq_stanza.nodeTree.getAttribute('id')}'>`+
-                        `<pubsub xmlns='http://jabber.org/protocol/pubsub'>`+
-                            `<items node='eu.siacs.conversations.axolotl.devicelist'/>`+
+                    `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="dummy@localhost" type="get" xmlns="jabber:client">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                            `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
                         `</pubsub>`+
                     `</iq>`);
 
@@ -666,17 +667,17 @@
                 return test_utils.waitUntil(() => bundleHasBeenPublished(_converse));
             }).then(iq_stanza => {
                 expect(iq_stanza.toLocaleString()).toBe(
-                    `<iq from='dummy@localhost' type='set' xmlns='jabber:client' id='${iq_stanza.nodeTree.getAttribute('id')}'>`+
-                        `<pubsub xmlns='http://jabber.org/protocol/pubsub'>`+
-                            `<publish node='eu.siacs.conversations.axolotl.bundles:123456789'>`+
+                    `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" type="set" xmlns="jabber:client">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                            `<publish node="eu.siacs.conversations.axolotl.bundles:123456789">`+
                                 `<item>`+
-                                    `<bundle xmlns='eu.siacs.conversations.axolotl'>`+
-                                        `<signedPreKeyPublic signedPreKeyId='0'>${btoa('1234')}</signedPreKeyPublic>`+
-                                            `<signedPreKeySignature>${btoa('11112222333344445555')}</signedPreKeySignature>`+
-                                            `<identityKey>${btoa('1234')}</identityKey>`+
+                                    `<bundle xmlns="eu.siacs.conversations.axolotl">`+
+                                        `<signedPreKeyPublic signedPreKeyId="0">${btoa("1234")}</signedPreKeyPublic>`+
+                                            `<signedPreKeySignature>${btoa("11112222333344445555")}</signedPreKeySignature>`+
+                                            `<identityKey>${btoa("1234")}</identityKey>`+
                                         `<prekeys>`+
-                                            `<preKeyPublic preKeyId='0'>${btoa('1234')}</preKeyPublic>`+
-                                            `<preKeyPublic preKeyId='1'>${btoa('1234')}</preKeyPublic>`+
+                                            `<preKeyPublic preKeyId="0">${btoa("1234")}</preKeyPublic>`+
+                                            `<preKeyPublic preKeyId="1">${btoa("1234")}</preKeyPublic>`+
                                         `</prekeys>`+
                                     `</bundle>`+
                                 `</item>`+
@@ -708,9 +709,9 @@
             test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid))
             .then(iq_stanza => {
                 expect(iq_stanza.toLocaleString()).toBe(
-                    `<iq type='get' from='dummy@localhost' to='dummy@localhost' xmlns='jabber:client' id='${iq_stanza.nodeTree.getAttribute('id')}'>`+
-                        `<pubsub xmlns='http://jabber.org/protocol/pubsub'>`+
-                            `<items node='eu.siacs.conversations.axolotl.devicelist'/>`+
+                    `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="dummy@localhost" type="get" xmlns="jabber:client">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                            `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
                         `</pubsub>`+
                     `</iq>`);
 
@@ -736,13 +737,13 @@
                 return test_utils.waitUntil(() => ownDeviceHasBeenPublished(_converse));
             }).then(iq_stanza => {
                 expect(iq_stanza.toLocaleString()).toBe(
-                    `<iq from='dummy@localhost' type='set' xmlns='jabber:client' id='${iq_stanza.nodeTree.getAttribute(`id`)}'>`+
-                        `<pubsub xmlns='http://jabber.org/protocol/pubsub'>`+
-                            `<publish node='eu.siacs.conversations.axolotl.devicelist'>`+
+                    `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute(`id`)}" type="set" xmlns="jabber:client">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                            `<publish node="eu.siacs.conversations.axolotl.devicelist">`+
                                 `<item>`+
-                                    `<list xmlns='eu.siacs.conversations.axolotl'>`+
-                                        `<device id='482886413b977930064a5888b92134fe'/>`+
-                                        `<device id='123456789'/>`+
+                                    `<list xmlns="eu.siacs.conversations.axolotl">`+
+                                        `<device id="482886413b977930064a5888b92134fe"/>`+
+                                        `<device id="123456789"/>`+
                                     `</list>`+
                                 `</item>`+
                             `</publish>`+
@@ -781,9 +782,9 @@
                 return test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
             }).then(iq_stanza => {
                 expect(iq_stanza.toLocaleString()).toBe(
-                    `<iq type='get' from='dummy@localhost' to='${contact_jid}' xmlns='jabber:client' id='${iq_stanza.nodeTree.getAttribute('id')}'>`+
-                        `<pubsub xmlns='http://jabber.org/protocol/pubsub'>`+
-                            `<items node='eu.siacs.conversations.axolotl.devicelist'/>`+
+                    `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                            `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
                         `</pubsub>`+
                     `</iq>`);
 
@@ -870,8 +871,8 @@
             }).then(() => test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid)))
             .then(iq_stanza => {
                 expect(iq_stanza.toLocaleString()).toBe(
-                    `<iq type='get' from='dummy@localhost' to='max.frankfurter@localhost' xmlns='jabber:client' id='${iq_stanza.nodeTree.getAttribute('id')}'>`+
-                        `<pubsub xmlns='http://jabber.org/protocol/pubsub'><items node='eu.siacs.conversations.axolotl.devicelist'/></pubsub>`+
+                    `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="max.frankfurter@localhost" type="get" xmlns="jabber:client">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub>`+
                     `</iq>`);
 
                 const stanza = $iq({
@@ -890,9 +891,9 @@
             }).then(() => test_utils.waitUntil(() => bundleFetched(_converse, contact_jid, '555')))
               .then(iq_stanza => {
                 expect(iq_stanza.toLocaleString()).toBe(
-                    `<iq type='get' from='dummy@localhost' to='max.frankfurter@localhost' xmlns='jabber:client' id='${iq_stanza.nodeTree.getAttribute('id')}'>`+
-                        `<pubsub xmlns='http://jabber.org/protocol/pubsub'>`+
-                            `<items node='eu.siacs.conversations.axolotl.bundles:555'/>`+
+                    `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="max.frankfurter@localhost" type="get" xmlns="jabber:client">`+
+                        `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                            `<items node="eu.siacs.conversations.axolotl.bundles:555"/>`+
                         `</pubsub>`+
                     `</iq>`);
 

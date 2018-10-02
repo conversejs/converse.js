@@ -69,19 +69,9 @@
         dependencies: ["converse-chatboxes", "converse-disco", "converse-controlbox"],
 
         overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // New functions which don't exist yet can also be added.
-
             tearDown () {
-                const { _converse } = this.__super__,
-                      groupchats = this.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
-
-                _.each(groupchats, function (groupchat) {
-                    u.safeSave(groupchat, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
-                });
+                const groupchats = this.chatboxes.where({'type': this.CHATROOMS_TYPE});
+                _.each(groupchats, gc => u.safeSave(gc, {'connection_status': this.ROOMSTATUS.DISCONNECTED}));
                 this.__super__.tearDown.call(this, arguments);
             },
 

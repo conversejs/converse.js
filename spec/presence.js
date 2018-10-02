@@ -34,42 +34,42 @@
 
                 const presence = _converse.xmppstatus.constructPresence();
                 expect(presence.toLocaleString()).toBe(
-                    "<presence xmlns='jabber:client'>"+
-                        "<priority>0</priority>"+
-                        "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='QgayPKawpkPSDYmwT/WM94uAlu0='/>"+
-                    "</presence>")
+                    `<presence xmlns="jabber:client">`+
+                        `<priority>0</priority>`+
+                        `<c hash="sha-1" node="https://conversejs.org" ver="QgayPKawpkPSDYmwT/WM94uAlu0=" xmlns="http://jabber.org/protocol/caps"/>`+
+                    `</presence>`)
                 done();
         }));
 
         it("has a given priority", mock.initConverse(function (_converse) {
             var pres = _converse.xmppstatus.constructPresence('online', 'Hello world');
             expect(pres.toLocaleString()).toBe(
-                "<presence xmlns='jabber:client'>"+
-                    "<status>Hello world</status>"+
-                    "<priority>0</priority>"+
-                    "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='K7kn/M6VtmdMyo61pgn/jkZlax8='/>"+
-                "</presence>"
+                `<presence xmlns="jabber:client">`+
+                    `<status>Hello world</status>`+
+                    `<priority>0</priority>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="K7kn/M6VtmdMyo61pgn/jkZlax8=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `</presence>`
             );
             _converse.priority = 2;
             pres = _converse.xmppstatus.constructPresence('away', 'Going jogging');
             expect(pres.toLocaleString()).toBe(
-                "<presence xmlns='jabber:client'>"+
-                    "<show>away</show>"+
-                    "<status>Going jogging</status>"+
-                    "<priority>2</priority>"+
-                    "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='K7kn/M6VtmdMyo61pgn/jkZlax8='/>"+
-                "</presence>"
+                `<presence xmlns="jabber:client">`+
+                    `<show>away</show>`+
+                    `<status>Going jogging</status>`+
+                    `<priority>2</priority>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="K7kn/M6VtmdMyo61pgn/jkZlax8=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `</presence>`
             );
 
             delete _converse.priority;
             pres = _converse.xmppstatus.constructPresence('dnd', 'Doing taxes');
             expect(pres.toLocaleString()).toBe(
-                "<presence xmlns='jabber:client'>"+
-                    "<show>dnd</show>"+
-                    "<status>Doing taxes</status>"+
-                    "<priority>0</priority>"+
-                    "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='K7kn/M6VtmdMyo61pgn/jkZlax8='/>"+
-                "</presence>"
+                `<presence xmlns="jabber:client">`+
+                    `<show>dnd</show>`+
+                    `<status>Doing taxes</status>`+
+                    `<priority>0</priority>`+
+                    `<c hash="sha-1" node="https://conversejs.org" ver="K7kn/M6VtmdMyo61pgn/jkZlax8=" xmlns="http://jabber.org/protocol/caps"/>`+
+                `</presence>`
             );
         }));
 
@@ -94,27 +94,23 @@
                 modal.el.querySelector('[type="submit"]').click();
                 expect(view.model.sendPresence).toHaveBeenCalled();
                 expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
-                    .toBe("<presence xmlns='jabber:client'>"+
-                          "<status>My custom status</status>"+
-                          "<priority>0</priority>"+
-                          "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='K7kn/M6VtmdMyo61pgn/jkZlax8='/>"+
-                          "</presence>")
+                    .toBe(`<presence xmlns="jabber:client">`+
+                          `<status>My custom status</status>`+
+                          `<priority>0</priority>`+
+                          `<c hash="sha-1" node="https://conversejs.org" ver="K7kn/M6VtmdMyo61pgn/jkZlax8=" xmlns="http://jabber.org/protocol/caps"/>`+
+                          `</presence>`)
 
-                return test_utils.waitUntil(function () {
-                    return modal.el.getAttribute('aria-hidden') === "true";
-                });
+                return test_utils.waitUntil(() => modal.el.getAttribute('aria-hidden') === "true");
             }).then(function () {
                 cbview.el.querySelector('.change-status').click()
-                return test_utils.waitUntil(function () {
-                    return modal.el.getAttribute('aria-hidden') === "false";
-                }, 1000);
+                return test_utils.waitUntil(() => modal.el.getAttribute('aria-hidden') === "false", 1000);
             }).then(function () {
                 modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
                 modal.el.querySelector('[type="submit"]').click();
                 expect(_converse.connection.send.calls.mostRecent().args[0].toLocaleString())
-                    .toBe("<presence xmlns='jabber:client'><show>dnd</show><status>My custom status</status><priority>0</priority>"+
-                          "<c xmlns='http://jabber.org/protocol/caps' hash='sha-1' node='https://conversejs.org' ver='K7kn/M6VtmdMyo61pgn/jkZlax8='/>"+
-                          "</presence>")
+                    .toBe(`<presence xmlns="jabber:client"><show>dnd</show><status>My custom status</status><priority>0</priority>`+
+                          `<c hash="sha-1" node="https://conversejs.org" ver="K7kn/M6VtmdMyo61pgn/jkZlax8=" xmlns="http://jabber.org/protocol/caps"/>`+
+                          `</presence>`)
                 done();
             });
         }));

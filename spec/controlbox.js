@@ -223,9 +223,9 @@
                 input_name.value = 'Someone';
                 modal.el.querySelector('button[type="submit"]').click();
                 expect(sent_stanza.toLocaleString()).toEqual(
-                "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                    "<query xmlns='jabber:iq:roster'><item jid='someone@localhost' name='Someone'/></query>"+
-                "</iq>");
+                `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                    `<query xmlns="jabber:iq:roster"><item jid="someone@localhost" name="Someone"/></query>`+
+                `</iq>`);
                 done();
             });
         }));
@@ -294,9 +294,9 @@
                 expect(modal.el.querySelector('input[name="jid"]').value).toBe('marty@mcfly.net');
                 modal.el.querySelector('button[type="submit"]').click();
                 expect(sent_stanza.toLocaleString()).toEqual(
-                "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                    "<query xmlns='jabber:iq:roster'><item jid='marty@mcfly.net' name='Marty McFly'/></query>"+
-                "</iq>");
+                `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                    `<query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"/></query>`+
+                `</iq>`);
                 window.XMLHttpRequest = XMLHttpRequestBackup;
                 done();
             });

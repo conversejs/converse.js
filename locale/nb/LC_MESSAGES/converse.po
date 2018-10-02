@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-02 17:29+0200\n"
-"PO-Revision-Date: 2018-09-07 13:43+0000\n"
+"PO-Revision-Date: 2018-10-03 16:32+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb/>\n"
@@ -304,7 +304,7 @@ msgstr "%1$s har stoppet å skrive"
 
 #: dist/converse-no-dependencies.js:40437
 msgid "Unencryptable OMEMO message"
-msgstr ""
+msgstr "Ukrypterbar OMEMO-melding"
 
 #: dist/converse-no-dependencies.js:40655
 #: dist/converse-no-dependencies.js:40698
@@ -751,7 +751,7 @@ msgstr "Tillat stumme brukere å skrive meldinger"
 
 #: dist/converse-no-dependencies.js:42198
 msgid "Error: invalid number of arguments"
-msgstr ""
+msgstr "Feil: Ugyldig antall argumenter"
 
 #: dist/converse-no-dependencies.js:42448
 msgid ""
@@ -981,11 +981,15 @@ msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
+"Kan ikke registrere kallenavnet ditt i denne gruppesludringen, siden den "
+"ikke støtter det."
 
 #: dist/converse-no-dependencies.js:44258
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
+"Kan ikke registrere kallenavnet ditt i denne gruppesludringen, ugydlig "
+"dataskjema innsendt."
 
 #: dist/converse-no-dependencies.js:44718
 #, fuzzy, javascript-format

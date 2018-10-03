@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.9.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-02 17:29+0200\n"
-"PO-Revision-Date: 2018-10-02 17:18+0200\n"
+"PO-Revision-Date: 2018-10-04 08:34+0000\n"
 "Last-Translator: Sneer Sneerowski <weblate@0xf.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/conversejs/"
 "translations/pl/>\n"
@@ -305,7 +305,7 @@ msgstr "%1$s przestał pisać"
 
 #: dist/converse-no-dependencies.js:40437
 msgid "Unencryptable OMEMO message"
-msgstr ""
+msgstr "Niezaszyfrowana wiadomość OMEMO"
 
 #: dist/converse-no-dependencies.js:40655
 #: dist/converse-no-dependencies.js:40698
@@ -511,7 +511,6 @@ msgid "Query for Groupchats"
 msgstr "Wyszukaj pokoje"
 
 #: dist/converse-no-dependencies.js:41466
-#, fuzzy
 msgid "Server address"
 msgstr "Adres serwera"
 
@@ -532,14 +531,12 @@ msgid "Groupchats found:"
 msgstr "Znalezione pokoje:"
 
 #: dist/converse-no-dependencies.js:41584
-#, fuzzy
 msgid "Enter a new Groupchat"
 msgstr "Wejdź do pokoju"
 
 #: dist/converse-no-dependencies.js:41585
-#, fuzzy
 msgid "Groupchat address"
-msgstr "Nazwa pokoju"
+msgstr "Adres  pokoju"
 
 #: dist/converse-no-dependencies.js:41586
 #: dist/converse-no-dependencies.js:49410
@@ -560,34 +557,34 @@ msgid "Groupchat info for %1$s"
 msgstr "Informacje o o pokoju %1$s"
 
 #: dist/converse-no-dependencies.js:41812
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr "%1$s wszedł i wyszedł z pokoju"
+msgstr "%1$s nie jest już administratorem tego pokoju"
 
 #: dist/converse-no-dependencies.js:41814
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr "Uczyń właścicielem pokoju"
+msgstr "%1$s nie jest już właścicielem tego pokoju"
 
 #: dist/converse-no-dependencies.js:41816
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "Zostałeś zablokowany w tym pokoju"
+msgstr "%1$s nie jest już zablokowany w tym pokoju"
 
 #: dist/converse-no-dependencies.js:41820
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a permanent member of this groupchat"
-msgstr "Nie jesteś członkiem tego pokoju rozmów."
+msgstr "%1$s nie jest już stałym członkiem tego pokoju"
 
 #: dist/converse-no-dependencies.js:41824
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a permanent member of this groupchat"
-msgstr "Nie jesteś członkiem tego pokoju rozmów."
+msgstr "%1$s jest obecnie stałym członkiem tego pokoju"
 
 #: dist/converse-no-dependencies.js:41826
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned from this groupchat"
-msgstr "Zostałeś zablokowany w tym pokoju"
+msgstr "%1$s został zablokowany w tym pokoju"
 
 #: dist/converse-no-dependencies.js:41828
 #, fuzzy, javascript-format
@@ -724,7 +721,7 @@ msgstr "Pozwól uciszonemu człowiekowi na rozmowę"
 
 #: dist/converse-no-dependencies.js:42198
 msgid "Error: invalid number of arguments"
-msgstr ""
+msgstr "Błąd: nieprawidłowa liczba argumentów"
 
 #: dist/converse-no-dependencies.js:42448
 msgid ""
@@ -945,11 +942,15 @@ msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
+"Nie można zarejestrować swojego pseudonimu w tym pokoju, nie wspiera on "
+"rejestracji."
 
 #: dist/converse-no-dependencies.js:44258
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
+"Nie można zarejestrować swojego pseudonimu w tym pokoju, w formularzu "
+"dostarczono niepoprawne dane."
 
 #: dist/converse-no-dependencies.js:44718
 #, fuzzy, javascript-format

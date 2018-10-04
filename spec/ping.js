@@ -44,9 +44,9 @@
                 });
                 _converse.ping();
                 expect(sent_stanza.toLocaleString()).toBe(
-                    "<iq type='get' to='localhost' id='"+IQ_id+"' xmlns='jabber:client'>"+
-                        "<ping xmlns='urn:xmpp:ping'/>"+
-                    "</iq>");
+                    `<iq id="${IQ_id}" to="localhost" type="get" xmlns="jabber:client">`+
+                        `<ping xmlns="urn:xmpp:ping"/>`+
+                    `</iq>`);
             }));
         });
     });

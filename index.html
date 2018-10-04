@@ -11,9 +11,8 @@
 
     <!-- These files are NOT needed when using converse.js in your own project. -->
     <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="css/bootstrap.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="css/font-awesome.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="css/website.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="/css/website.css" />
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
     <script type="text/javascript" src="/src/website.js"></script>
     <script type="text/javascript" src="analytics.js"></script>
@@ -25,60 +24,53 @@
     <![endif]>
 </head>
 
-<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
-    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-        <div class="container">
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-                    <i class="fa fa-bars"></i>
-                </button>
-                <a class="navbar-brand" href="#page-top">
-                    <i class="fa fa-play-circle"></i>  <span class="light">Home</span>
-                </a>
-            </div>
+<body id="page-top" data-spy="scroll">
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-                <ul class="nav navbar-nav">
-                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
-                    <li class="hidden">
-                        <a href="#page-top"></a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#about">About</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#features">Features</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#contact">Contact</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#sponsors">Sponsor</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#hosting">Hosting</a>
-                    </li>
-                    <li>
-                        <a href="/docs/html/index.html">Documentation</a>
-                    </li>
-                    <li>
-                        <a href="https://github.com/jcbrand/converse.js/releases" class="button" target="_blank" rel="noopener">Download</a>
-                    </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>
+<section class="section-wrapper">
+	<nav class="navbar sticky-top navbar-expand-lg" role="navigation">
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+			<span class="page-scroll">
+				<a class="navbar-brand" href="#intro"><span class="converse-brand-heading"><i class="icon-conversejs"></i>Converse</span></a>
+			</span>
+			<ul class="navbar-nav mt-2 mt-lg-0">
+				<!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+				<li class="hidden">
+					<a class="nav-link" href="#page-top"></a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#about">About</a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#features">Features</a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#contact">Contact</a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#sponsors">Sponsor</a>
+				</li>
+				<li class="nav-item page-scroll">
+					<a class="nav-link" href="#hosting">Hosting</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/docs/html/index.html">Documentation&nbsp;<i class="fa fa-external-link-alt"></i></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="https://github.com/jcbrand/converse.js/releases" class="button" target="_blank" rel="noopener">Download&nbsp;<i class="fa fa-external-link-alt"></i></a>
+				</li>
+			</ul>
+		</div>
+	</nav>
 
-    <section class="intro" class="container">
+    <section id="intro" class="intro" class="container">
         <div class="row">
-            <h1 class="brand-heading converse-brand-heading"><i class="icon-conversejs"></i>Converse</h1>
-            <div class="col-md-8 col-md-offset-2">
+            <div class="col-md-12 col-md-offset-2">
+                <h1 class="brand-heading converse-brand-heading"><i class="icon-conversejs"></i>Converse</h1>
                 <p class="intro-text">A free and open-source XMPP chat client in your browser</p>
-                <p>Also available as a <a href="https://conversejs.org/fullscreen.html">fullpage</a> app</p>
-
+                <p>Try out the <a href="/fullscreen.html">fullpage</a> version</p>
                 <p>
                 <a href="https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org"
                    target="_blank" rel="noopener"><img src="https://inverse.chat/badge.svg?room=discuss@conference.conversejs.org"/></a>
@@ -90,11 +82,11 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-8 col-md-offset-2 banner-social-buttons">
+            <div class="col-md-12 col-md-offset-2 banner-social-buttons">
                 <ul class="list-inline">
-                    <li><a href="https://twitter.com/jcopkode" class="btn btn-circle btn-lg" title="Twitter" target="_blank" rel="noopener"><i class="fab fa-twitter"></i></a></li>
-                    <li><a href="https://mastodon.xyz/@jcbrand" class="btn btn-lg" title="Mastodon" target="_blank" rel="noopener"><img class="mastodon" src="/logo/mastodon.svg"/></a></li>
-                    <li><a href="https://github.com/jcbrand/converse.js" class="btn btn-circle btn-lg" title="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a></li>
+                    <li class="list-inline-item"><a href="https://twitter.com/jcopkode" class="btn btn-circle btn-lg" title="Twitter" target="_blank" rel="noopener"><i class="fab fa-twitter"></i></a></li>
+                    <li class="list-inline-item"><a href="https://mastodon.xyz/@jcbrand" class="btn btn-lg" title="Mastodon" target="_blank" rel="noopener"><img class="mastodon" src="/logo/mastodon.svg"/></a></li>
+                    <li class="list-inline-item"><a href="https://github.com/jcbrand/converse.js" class="btn btn-circle btn-lg" title="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a></li>
                 </ul>
             </div>
         </div>
@@ -102,7 +94,7 @@
 
     <section id="about" class="container content-section text-center">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
+            <div class="col-lg-12 col-lg-offset-2">
                 <h2>Converse is easy to set up</h2>
                 <p class="text-left">You can start using it here immediately, or you can <a href="/docs/html/index.html">integrate it into your own website</a>.</p>
                 <p class="text-left">Take a look at the <a href="/demo">demo page</a> for other examples of how Converse can be configured and used.</a>
@@ -130,18 +122,21 @@
                             <h2>Integration</h2>
                         </header>
                         <ul class="integration">
-                            <li><a href="https://doc.tiki.org/xmpp" target="_blank" rel="noopener">Tiki Wiki CMS Groupware</a></li>
+                            <!-- xmpp server -->
                             <li><a href="https://www.igniterealtime.org/projects/openfire/plugins.jsp" target="_blank" rel="noopener">Openfire</a></li>
                             <li><a href="https://modules.prosody.im/mod_conversejs.html" target="_blank" rel="noopener">Prosody</a></li>
+                            <!-- xmpp frameworks -->
                             <li><a href="https://github.com/mikemarsian/conversejs-rails" target="_blank" rel="noopener">Ruby on Rails</a></li>
-                            <li><a href="https://github.com/collective/collective.converse" target="_blank" rel="noopener">Plone</a></li>
                             <li><a href="https://pypi.python.org/pypi/django-conversejs" target="_blank" rel="noopener">Django (option 1)</a></li>
                             <li><a href="https://github.com/fpytloun/django-xmpp" target="_blank" rel="noopener">Django (option 2)</a></li>
+                            <!-- xmpp as plugin -->
+                            <li><a href="https://github.com/jcbrand/patterns.converse" target="_blank" rel="noopener">Patternslib</a></li>
                             <li><a href="https://github.com/devurandom/roundcube-converse.js-xmpp-plugin" target="_blank" rel="noopener">Roundcube</a></li>
                             <li><a href="https://wordpress.org/plugins/conversejs/" target="_blank" rel="noopener">Wordpress</a></li>
-                            <li><a href="https://github.com/jcbrand/patterns.converse" target="_blank" rel="noopener">Patternslib</a></li>
+                            <li><a href="https://github.com/collective/collective.converse" target="_blank" rel="noopener">Plone</a></li>
                             <li><a href="https://github.com/keensoft/alfresco-js-chat-share" target="_blank" rel="noopener">Alfresco</a></li>
                             <li><a href="https://github.com/friendica/friendica-addons/tree/master/xmpp/converse" target="_blank" rel="noopener">Friendica</a></li>
+                            <li><a href="https://doc.tiki.org/xmpp" target="_blank" rel="noopener">Tiki Wiki CMS Groupware</a></li>
                         </ul>
                     </section>
                 </div>
@@ -156,8 +151,9 @@
                             <li>Available as overlayed chat boxes or as a fullscreen application.
                                 See <a href="https://inverse.chat" target="_blank" rel="noopener">inverse.chat</a> for the fullscreen version.
                             </li>
-                            <li><a href="https://conversejs.org/docs/html/plugin_development.html">Plugin Architecture</a></li>
+                            <li>A <a href="https://conversejs.org/docs/html/plugin_development.html" target="_blank" rel="noopener">plugin architecture</a> based on <a href="https://conversejs.github.io/pluggable.js/" target="_blank" rel="noopener">pluggable.js</a></li>
                             <li>Single-user and group chat</li>
+                            <li>Contacts and groups</li>
                             <li>Multi-user chatrooms (<a href="https://xmpp.org/extensions/xep-0045.html" target="_blank" rel="noopener">XEP 45</a>)</li>
                             <li>Chatroom bookmarks (<a href="https://xmpp.org/extensions/xep-0048.html" target="_blank" rel="noopener">XEP 48</a>)</li>
                             <li>Direct invitations to chat rooms (<a href="https://xmpp.org/extensions/xep-0249.html" target="_blank" rel="noopener">XEP 249</a>)</li>
@@ -165,11 +161,12 @@
                             <li>Service discovery (<a href="https://xmpp.org/extensions/xep-0030.html" target="_blank" rel="noopener">XEP 30</a>)</li>
                             <li>In-band registration (<a href="https://xmpp.org/extensions/xep-0077.html" target="_blank" rel="noopener">XEP 77</a>)</li>
                             <li>Roster item exchange (<a href="https://xmpp.org/extensions/xep-0144.html" target="_blank" rel="noopener">XEP 144</a>)</li>
+                            <li>Chat statuses (online, busy, away, offline)</li>
                             <li>Custom status messages</li>
                             <li>Typing and chat state notifications (<a href="https://xmpp.org/extensions/xep-0085.html" target="_blank" rel="noopener">XEP 85</a>)</li>
                             <li>Desktop notifications</li>
-                            <li>File sharing (<a href="https://xmpp.org/extensions/xep-0363.html" target="_blank" rel="noopener">XEP 363</a>)</li>
-                            <li>Messages appear in all connected chat clients (<a href="https://xmpp.org/extensions/xep-0280.html" target="_blank" rel="noopener">XEP 280</a>)</li>
+                            <li>File sharing / HTTP File Upload (<a href="https://xmpp.org/extensions/xep-0363.html" target="_blank" rel="noopener">XEP 363</a>)</li>
+                            <li>Messages appear in all connected chat clients / Message Carbons (<a href="https://xmpp.org/extensions/xep-0280.html" target="_blank" rel="noopener">XEP 280</a>)</li>
                             <li>Third person "/me" messages (<a href="https://xmpp.org/extensions/xep-0245.html" target="_blank" rel="noopener">XEP 245</a>)</li>
                             <li>XMPP Ping (<a href="https://xmpp.org/extensions/xep-0199.html" target="_blank" rel="noopener">XEP 199</a>)</li>
                             <li>Server-side archiving of messages (<a href="https://xmpp.org/extensions/xep-0313.html" target="_blank" rel="noopener">XEP 313</a>)</li>
@@ -177,6 +174,7 @@
                             <li>Client state indication (<a href="https://xmpp.org/extensions/xep-0352.html" target="_blank" rel="noopener">XEP 352</a>)</li>
                             <li>Last Message Correction (<a href="https://xmpp.org/extensions/xep-0308.html" target="_blank" rel="noopener">XEP 308</a>)</li>
                             <li>Off-the-record encryption</li>
+                            <li>OMEMO encrypted messaging (<a href="https://xmpp.org/extensions/xep-0384.html" target="_blank" rel="noopener">XEP 384</a>)</li>
                             <li>Supports anonymous logins, see the <a href="https://conversejs.org/demo/anonymous.html" target="_blank" rel="noopener">anonymous login demo</a>.</li>
                             <li>Translated into 17 languages</li>
                         </ul>
@@ -188,7 +186,7 @@
     <section class="outro content-section text-center" id="contact">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
+                <div class="col-lg-12 col-lg-offset-2">
                     <h2>Contact</h2>
                     <ul class="contact">
                         <li>Follow me on <a href="https://twitter.com/jcopkode" target="_blank" rel="noopener">Twitter</a>
@@ -200,14 +198,14 @@
                     </ul>
                 </div>
 
-                <div class="col-lg-8 col-lg-offset-2" style="margin-top: 4em; text-align: left">
+                <div class="col-lg-12 col-lg-offset-2" style="margin-top: 4em; text-align: left">
                     <h2 style="text-align: center">Professional support and custom development</h2>
                     <p>
                         I'm available for paid-for features, custom development and consulting.<br/>
                         However, please don't contact me personally for free support, use
-                        the other channels mentioned above.</br></br>
+                        the other channels mentioned above.<br/><br/>
 
-                        Here's my <a href="https://opkode.com/contact.html" target="_blank" rel="noopener">contact form</a>.</br>
+                        Here's my <a href="https://opkode.com/contact.html" target="_blank" rel="noopener">contact form</a>.<br/>
                     </p>
                 </div>
             </div>
@@ -217,13 +215,12 @@
     <section class="outro content-section text-center" id="sponsors">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2" style="margin-top: 3em">
+                <div class="col-lg-12 col-lg-offset-2" style="margin-top: 3em">
                     <div class="sponsors">
                         <h2>Converse is supported by:</h2>
                         <ul>
                             <li><a href="https://www.keycdn.com/?utm_source=conversejs" target="_blank" rel="noopener"><img style="height: 3em" src="/logo/keycdn.svg" alt="KeyCDN"></a></li>
                             <li><a href="https://wikisuite.org/?utm_source=conversejs" target="_blank" rel="noopener"><img style="height: 4em" src="/logo/wikisuite-white.png" alt="WikiSuite"></a></li>
-                            <li><a href="https://hostpresto.com/?utm_source=conversejs" target="_blank" rel="noopener"><img style="height: 3em" src="/logo/hostpresto.png" alt="HostPresto"></a></li>
                         </ul>
                     </div>
 
@@ -242,7 +239,7 @@
     <section class="outro content-section text-center" id="hosting">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2" style="margin-top: 3em">
+                <div class="col-lg-12 col-lg-offset-2" style="margin-top: 3em">
                     <h2>XMPP Account Hosting</h2>
                     <p>
                         We provide free XMPP accounts under the domain <strong>conversejs.org</strong>.
@@ -324,6 +321,7 @@
             </div>
         </div>
     </section>
+</section>
 </body>
 
 <script>

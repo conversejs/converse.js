@@ -7,6 +7,7 @@
 (function (root, factory) {
     define([
         "converse-core",
+        "formdata-polyfill",
         "utils/muc",
         "xss",
         "templates/add_chatroom_modal.html",
@@ -34,6 +35,7 @@
     ], factory);
 }(this, function (
     converse,
+    _FormData,
     muc_utils,
     xss,
     tpl_add_chatroom_modal,
@@ -241,7 +243,7 @@
                 el.querySelector('span.spinner').remove();
                 el.querySelector('a.room-info').classList.add('selected');
                 el.insertAdjacentHTML(
-                    'beforeEnd', 
+                    'beforeEnd',
                     tpl_room_description({
                         'jid': stanza.getAttribute('from'),
                         'desc': _.get(_.head(sizzle('field[var="muc#roominfo_description"] value', stanza)), 'textContent'),
@@ -290,7 +292,7 @@
                 }
             }
 
-            
+
             _converse.ListChatRoomsModal = _converse.BootstrapModal.extend({
 
                 events: {
@@ -412,12 +414,12 @@
                 showRooms (ev) {
                     ev.preventDefault();
                     const data = new FormData(ev.target);
-                    this.model.save('muc_domain', data.get('server'));
+                    this.model.save('muc_domain', Strophe.getDomainFromJid(data.get('server')));
                     this.updateRoomsList();
                 },
 
                 setDomain (ev) {
-                    this.model.save({'muc_domain': ev.target.value});
+                    this.model.save('muc_domain', Strophe.getDomainFromJid(ev.target.value));
                 },
 
                 setNick (ev) {
@@ -880,33 +882,32 @@
                         return false;
                     }
                     const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
-                          args = match[2] && match[2].splitOnce(' ') || [],
+                          args = match[2] && match[2].splitOnce(' ').filter(s => s) || [],
                           command = match[1].toLowerCase();
                     switch (command) {
                         case 'admin':
                             if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
                                 break;
                             }
-                            this.model.setAffiliation('admin',
-                                    [{ 'jid': args[0],
-                                       'reason': args[1]
-                                    }]).then(
-                                        () => this.model.occupants.fetchMembers(),
-                                        (err) => this.onCommandError(err)
-                                    );
+                            this.model.setAffiliation('admin', [{
+                                'jid': args[0],
+                                'reason': args[1]
+                            }]).then(
+                                () => this.model.occupants.fetchMembers(),
+                                (err) => this.onCommandError(err)
+                            );
                             break;
                         case 'ban':
                             if (!this.verifyAffiliations(['owner', 'admin']) || !this.validateRoleChangeCommand(command, args)) {
                                 break;
                             }
-
-                            this.model.setAffiliation('outcast',
-                                    [{ 'jid': args[0],
-                                       'reason': args[1]
-                                    }]).then(
-                                        () => this.model.occupants.fetchMembers(),
-                                        (err) => this.onCommandError(err)
-                                    );
+                            this.model.setAffiliation('outcast', [{
+                                'jid': args[0],
+                                'reason': args[1]
+                            }]).then(
+                                () => this.model.occupants.fetchMembers(),
+                                (err) => this.onCommandError(err)
+                            );
                             break;
                         case 'deop':
                             if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
@@ -930,6 +931,7 @@
                                 `<strong>/nick</strong>: ${__('Change your nickname')}`,
                                 `<strong>/op</strong>: ${__('Grant moderator role to user')}`,
                                 `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`,
+                                `<strong>/register</strong>: ${__("Register a nickname for this room")}`,
                                 `<strong>/revoke</strong>: ${__("Revoke user's membership")}`,
                                 `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
                                 `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,
@@ -957,15 +959,17 @@
                                 break;
                             }
                             const occupant = this.model.occupants.findWhere({'nick': args[0]}) ||
-                                             this.model.occupants.findWhere({'jid': args[0]});
-
-                            this.model.setAffiliation('member',
-                                    [{ 'jid': occupant.get('jid'),
-                                       'reason': args[1]
-                                    }]).then(
-                                        () => this.model.occupants.fetchMembers(),
-                                        (err) => this.onCommandError(err)
-                                    );
+                                             this.model.occupants.findWhere({'jid': args[0]}),
+                                  attrs = {
+                                    'jid': occupant.get('jid'),
+                                    'reason': args[1]
+                                  };
+                            if (_converse.auto_register_muc_nickname) {
+                                attrs['nick'] = occupant.get('nick');
+                            }
+                            this.model.setAffiliation('member', [attrs])
+                                .then(() => this.model.occupants.fetchMembers())
+                                .catch(err => this.onCommandError(err));
                             break;
                         } case 'nick':
                             if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
@@ -981,13 +985,13 @@
                             if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
                                 break;
                             }
-                            this.model.setAffiliation('owner',
-                                    [{ 'jid': args[0],
-                                       'reason': args[1]
-                                    }]).then(
-                                        () => this.model.occupants.fetchMembers(),
-                                        (err) => this.onCommandError(err)
-                                    );
+                            this.model.setAffiliation('owner', [{
+                                'jid': args[0],
+                                'reason': args[1]
+                            }]).then(
+                                () => this.model.occupants.fetchMembers(),
+                                (err) => this.onCommandError(err)
+                            );
                             break;
                         case 'op':
                             if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
@@ -997,17 +1001,26 @@
                                     this.model.get('jid'), args[0], 'moderator', args[1],
                                     undefined, this.onCommandError.bind(this));
                             break;
+                        case 'register':
+                            if (args.length > 1) {
+                                this.showErrorMessage(__(`Error: invalid number of arguments`))
+                            } else {
+                                this.model.registerNickname().then(err_msg => {
+                                    if (err_msg) this.showErrorMessage(err_msg)
+                                });
+                            }
+                            break;
                         case 'revoke':
                             if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                                 break;
                             }
-                            this.model.setAffiliation('none',
-                                    [{ 'jid': args[0],
-                                       'reason': args[1]
-                                    }]).then(
-                                        () => this.model.occupants.fetchMembers(),
-                                        (err) => this.onCommandError(err)
-                                    );
+                            this.model.setAffiliation('none', [{
+                                'jid': args[0],
+                                'reason': args[1]
+                            }]).then(
+                                () => this.model.occupants.fetchMembers(),
+                                (err) => this.onCommandError(err)
+                            );
                             break;
                         case 'topic':
                         case 'subject':
@@ -1141,9 +1154,8 @@
                     form_el.addEventListener('submit',
                         (ev) => {
                             ev.preventDefault();
-                            this.model.saveConfiguration(ev.target).then(
-                                this.model.getRoomFeatures.bind(this.model)
-                            );
+                            this.model.saveConfiguration(ev.target)
+                                .then(() => this.model.refreshRoomFeatures());
                             this.closeForm();
                         },
                         false
@@ -1203,51 +1215,25 @@
                      * If so, we'll use that, otherwise we render the nickname form.
                      */
                     this.showSpinner();
-                    this.model.checkForReservedNick(
-                        this.onNickNameFound.bind(this),
-                        this.onNickNameNotFound.bind(this)
-                    )
+                    this.model.checkForReservedNick()
+                        .then(this.onReservedNickFound.bind(this))
+                        .catch(this.onReservedNickNotFound.bind(this));
                 },
 
-                onNickNameFound (iq) {
-                    /* We've received an IQ response from the server which
-                     * might contain the user's reserved nickname.
-                     * If no nickname is found we either render a form for
-                     * them to specify one, or we try to join the groupchat with the
-                     * node of the user's JID.
-                     *
-                     * Parameters:
-                     *  (XMLElement) iq: The received IQ stanza
-                     */
-                    const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
-                          nick = identity_el ? identity_el.getAttribute('name') : null;
-                    if (!nick) {
-                        this.onNickNameNotFound();
+                onReservedNickFound (iq) {
+                    if (this.model.get('nick')) {
+                        this.join();
                     } else {
-                        this.join(nick);
+                        this.onReservedNickNotFound();
                     }
                 },
 
-                onNickNameNotFound (message) {
-                    const nick = this.getDefaultNickName();
+                onReservedNickNotFound (message) {
+                    const nick = this.model.getDefaultNick();
                     if (nick) {
                         this.join(nick);
                     } else {
                         this.renderNicknameForm(message);
-                    }
-                },
-
-                getDefaultNickName () {
-                    /* The default nickname (used when muc_nickname_from_jid is true)
-                     * is the node part of the user's JID.
-                     * We put this in a separate method so that it can be
-                     * overridden by plugins.
-                     */
-                    const nick = _converse.xmppstatus.vcard.get('nickname');
-                    if (nick) {
-                        return nick;
-                    } else if (_converse.muc_nickname_from_jid) {
-                        return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
                     }
                 },
 
@@ -1262,7 +1248,7 @@
                      */
                     if (_converse.muc_nickname_from_jid) {
                         const nick = presence.getAttribute('from').split('/')[1];
-                        if (nick === this.getDefaultNickName()) {
+                        if (nick === this.model.getDefaultNick()) {
                             this.join(nick + '-2');
                         } else {
                             const del= nick.lastIndexOf("-");
@@ -1945,7 +1931,7 @@
 
             function setMUCDomain (domain, controlboxview) {
                 _converse.muc_domain = domain;
-                controlboxview.roomspanel.model.save({'muc_domain': domain});
+                controlboxview.roomspanel.model.save('muc_domain', Strophe.getDomainFromJid(domain));
             }
 
             function setMUCDomainFromDisco (controlboxview) {

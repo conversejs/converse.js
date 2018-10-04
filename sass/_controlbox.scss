@@ -157,11 +157,9 @@
         }
 
         .brand-heading-container {
-
             .brand-heading {
                 text-align: center;
             }
-            
             .brand-name {
                 font-size: 120%;
             }
@@ -352,10 +350,22 @@
             width: $controlbox-width;
         }
 
+        .login-trusted {
+            white-space: nowrap;
+            font-size: 90%;
+        }
+
+        #converse-login-trusted {
+            margin-top: 0.5em;
+        }
         &:not(.logged-out) {
             .controlbox-head {
                 height: 15px;
             }
+        }
+
+        .brand-heading-container {
+            width: 100%;
         }
 
         .controlbox-head {
@@ -364,10 +374,7 @@
             flex-wrap: nowrap;
             justify-content: space-between;
 
-
             .brand-heading {
-                @include make-col-ready();
-                @include make-col(8);
                 color: $text-color;
                 font-size: 2em;
             }

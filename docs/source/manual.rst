@@ -8,7 +8,7 @@ The Converse.js User Manual
 
 .. |br| raw:: html
 
-   <br />
+   <br/>
 
 .. figure:: images/homepage.jpg
    :align: right

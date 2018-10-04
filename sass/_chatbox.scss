@@ -495,12 +495,16 @@
     }
     
     .chatbox {
-        min-width: $overlayed-chat-width!important;
+        min-width: $overlayed-chat-width !important;
         width: $overlayed-chat-width;
 
         .box-flyout {
-            min-width: $overlayed-chat-width!important;
+            min-width: $overlayed-chat-width !important;
             width: $overlayed-chat-width;
+
+            .chat-body {
+                height: calc(100% - #{$overlayed-chat-head-height});
+            }
         }
     }
 }
@@ -616,6 +620,7 @@
             overflow: hidden;
         }
         .chat-body {
+            height: calc(100% - #{$fullpage-chat-head-height});
             background-color: $chat-head-color;
             border-top-left-radius: $chatbox-border-radius;
             border-top-right-radius: $chatbox-border-radius;

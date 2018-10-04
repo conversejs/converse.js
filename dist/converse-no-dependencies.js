@@ -4219,6 +4219,205 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 
 /***/ }),
 
+/***/ "./node_modules/fast-text-encoding/text.js":
+/*!*************************************************!*\
+  !*** ./node_modules/fast-text-encoding/text.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {/*
+ * Copyright 2017 Sam Thorogood. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+/**
+ * @fileoverview Polyfill for TextEncoder and TextDecoder.
+ *
+ * You probably want `text.min.js`, and not this file directly.
+ */
+
+(function(scope) {
+'use strict';
+
+// fail early
+if (scope['TextEncoder'] && scope['TextDecoder']) {
+  return false;
+}
+
+/**
+ * @constructor
+ * @param {string=} utfLabel
+ */
+function FastTextEncoder(utfLabel='utf-8') {
+  if (utfLabel !== 'utf-8') {
+    throw new RangeError(
+      `Failed to construct 'TextEncoder': The encoding label provided ('${utfLabel}') is invalid.`);
+  }
+}
+
+Object.defineProperty(FastTextEncoder.prototype, 'encoding', {value: 'utf-8'});
+
+/**
+ * @param {string} string
+ * @param {{stream: boolean}=} options
+ * @return {!Uint8Array}
+ */
+FastTextEncoder.prototype.encode = function(string, options={stream: false}) {
+  if (options.stream) {
+    throw new Error(`Failed to encode: the 'stream' option is unsupported.`);
+  }
+
+  let pos = 0;
+  const len = string.length;
+  const out = [];
+
+  let at = 0;  // output position
+  let tlen = Math.max(32, len + (len >> 1) + 7);  // 1.5x size
+  let target = new Uint8Array((tlen >> 3) << 3);  // ... but at 8 byte offset
+
+  while (pos < len) {
+    let value = string.charCodeAt(pos++);
+    if (value >= 0xd800 && value <= 0xdbff) {
+      // high surrogate
+      if (pos < len) {
+        const extra = string.charCodeAt(pos);
+        if ((extra & 0xfc00) === 0xdc00) {
+          ++pos;
+          value = ((value & 0x3ff) << 10) + (extra & 0x3ff) + 0x10000;
+        }
+      }
+      if (value >= 0xd800 && value <= 0xdbff) {
+        continue;  // drop lone surrogate
+      }
+    }
+
+    // expand the buffer if we couldn't write 4 bytes
+    if (at + 4 > target.length) {
+      tlen += 8;  // minimum extra
+      tlen *= (1.0 + (pos / string.length) * 2);  // take 2x the remaining
+      tlen = (tlen >> 3) << 3;  // 8 byte offset
+
+      const update = new Uint8Array(tlen);
+      update.set(target);
+      target = update;
+    }
+
+    if ((value & 0xffffff80) === 0) {  // 1-byte
+      target[at++] = value;  // ASCII
+      continue;
+    } else if ((value & 0xfffff800) === 0) {  // 2-byte
+      target[at++] = ((value >>  6) & 0x1f) | 0xc0;
+    } else if ((value & 0xffff0000) === 0) {  // 3-byte
+      target[at++] = ((value >> 12) & 0x0f) | 0xe0;
+      target[at++] = ((value >>  6) & 0x3f) | 0x80;
+    } else if ((value & 0xffe00000) === 0) {  // 4-byte
+      target[at++] = ((value >> 18) & 0x07) | 0xf0;
+      target[at++] = ((value >> 12) & 0x3f) | 0x80;
+      target[at++] = ((value >>  6) & 0x3f) | 0x80;
+    } else {
+      // FIXME: do we care
+      continue;
+    }
+
+    target[at++] = (value & 0x3f) | 0x80;
+  }
+
+  return target.slice(0, at);
+}
+
+/**
+ * @constructor
+ * @param {string=} utfLabel
+ * @param {{fatal: boolean}=} options
+ */
+function FastTextDecoder(utfLabel='utf-8', options={fatal: false}) {
+  if (utfLabel !== 'utf-8') {
+    throw new RangeError(
+      `Failed to construct 'TextDecoder': The encoding label provided ('${utfLabel}') is invalid.`);
+  }
+  if (options.fatal) {
+    throw new Error(`Failed to construct 'TextDecoder': the 'fatal' option is unsupported.`);
+  }
+}
+
+Object.defineProperty(FastTextDecoder.prototype, 'encoding', {value: 'utf-8'});
+
+Object.defineProperty(FastTextDecoder.prototype, 'fatal', {value: false});
+
+Object.defineProperty(FastTextDecoder.prototype, 'ignoreBOM', {value: false});
+
+/**
+ * @param {(!ArrayBuffer|!ArrayBufferView)} buffer
+ * @param {{stream: boolean}=} options
+ */
+FastTextDecoder.prototype.decode = function(buffer, options={stream: false}) {
+  if (options['stream']) {
+    throw new Error(`Failed to decode: the 'stream' option is unsupported.`);
+  }
+
+  const bytes = new Uint8Array(buffer);
+  let pos = 0;
+  const len = bytes.length;
+  const out = [];
+
+  while (pos < len) {
+    const byte1 = bytes[pos++];
+    if (byte1 === 0) {
+      break;  // NULL
+    }
+  
+    if ((byte1 & 0x80) === 0) {  // 1-byte
+      out.push(byte1);
+    } else if ((byte1 & 0xe0) === 0xc0) {  // 2-byte
+      const byte2 = bytes[pos++] & 0x3f;
+      out.push(((byte1 & 0x1f) << 6) | byte2);
+    } else if ((byte1 & 0xf0) === 0xe0) {
+      const byte2 = bytes[pos++] & 0x3f;
+      const byte3 = bytes[pos++] & 0x3f;
+      out.push(((byte1 & 0x1f) << 12) | (byte2 << 6) | byte3);
+    } else if ((byte1 & 0xf8) === 0xf0) {
+      const byte2 = bytes[pos++] & 0x3f;
+      const byte3 = bytes[pos++] & 0x3f;
+      const byte4 = bytes[pos++] & 0x3f;
+
+      // this can be > 0xffff, so possibly generate surrogates
+      let codepoint = ((byte1 & 0x07) << 0x12) | (byte2 << 0x0c) | (byte3 << 0x06) | byte4;
+      if (codepoint > 0xffff) {
+        // codepoint &= ~0x10000;
+        codepoint -= 0x10000;
+        out.push((codepoint >>> 10) & 0x3ff | 0xd800)
+        codepoint = 0xdc00 | codepoint & 0x3ff;
+      }
+      out.push(codepoint);
+    } else {
+      // FIXME: we're ignoring this
+    }
+  }
+
+  return String.fromCharCode.apply(null, out);
+}
+
+scope['TextEncoder'] = FastTextEncoder;
+scope['TextDecoder'] = FastTextDecoder;
+
+}(typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : this)));
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
 /***/ "./node_modules/filesize/lib/filesize.js":
 /*!***********************************************!*\
   !*** ./node_modules/filesize/lib/filesize.js ***!
@@ -4396,6 +4595,407 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 })(typeof window !== "undefined" ? window : global);
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "./node_modules/formdata-polyfill/FormData.js":
+/*!****************************************************!*\
+  !*** ./node_modules/formdata-polyfill/FormData.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+if (typeof FormData === 'undefined' || !FormData.prototype.keys) {
+  const global = typeof window === 'object'
+    ? window : typeof self === 'object'
+    ? self : this
+
+  // keep a reference to native implementation
+  const _FormData = global.FormData
+
+  // To be monkey patched
+  const _send = global.XMLHttpRequest && global.XMLHttpRequest.prototype.send
+  const _fetch = global.Request && global.fetch
+
+  // Unable to patch Request constructor correctly
+  // const _Request = global.Request
+  // only way is to use ES6 class extend
+  // https://github.com/babel/babel/issues/1966
+
+  const stringTag = global.Symbol && Symbol.toStringTag
+  const map = new WeakMap
+  const wm = o => map.get(o)
+  const arrayFrom = Array.from || (obj => [].slice.call(obj))
+
+  // Add missing stringTags to blob and files
+  if (stringTag) {
+    if (!Blob.prototype[stringTag]) {
+      Blob.prototype[stringTag] = 'Blob'
+    }
+
+    if ('File' in global && !File.prototype[stringTag]) {
+      File.prototype[stringTag] = 'File'
+    }
+  }
+
+  // Fix so you can construct your own File
+  try {
+    new File([], '')
+  } catch (a) {
+    global.File = function(b, d, c) {
+      const blob = new Blob(b, c)
+      const t = c && void 0 !== c.lastModified ? new Date(c.lastModified) : new Date
+
+      Object.defineProperties(blob, {
+        name: {
+          value: d
+        },
+        lastModifiedDate: {
+          value: t
+        },
+        lastModified: {
+          value: +t
+        },
+        toString: {
+          value() {
+            return '[object File]'
+          }
+        }
+      })
+
+      if (stringTag) {
+        Object.defineProperty(blob, stringTag, {
+          value: 'File'
+        })
+      }
+
+      return blob
+    }
+  }
+
+  function normalizeValue([value, filename]) {
+    if (value instanceof Blob)
+      // Should always returns a new File instance
+      // console.assert(fd.get(x) !== fd.get(x))
+      value = new File([value], filename, {
+        type: value.type,
+        lastModified: value.lastModified
+      })
+
+    return value
+  }
+
+  function stringify(name) {
+    if (!arguments.length)
+      throw new TypeError('1 argument required, but only 0 present.')
+
+    return [name + '']
+  }
+
+  function normalizeArgs(name, value, filename) {
+    if (arguments.length < 2)
+      throw new TypeError(
+        `2 arguments required, but only ${arguments.length} present.`
+      )
+
+    return value instanceof Blob
+      // normalize name and filename if adding an attachment
+      ? [name + '', value, filename !== undefined
+        ? filename + '' // Cast filename to string if 3th arg isn't undefined
+        : typeof value.name === 'string' // if name prop exist
+          ? value.name // Use File.name
+          : 'blob'] // otherwise fallback to Blob
+
+      // If no attachment, just cast the args to strings
+      : [name + '', value + '']
+  }
+
+  /**
+   * @implements {Iterable}
+   */
+  class FormDataPolyfill {
+
+    /**
+     * FormData class
+     *
+     * @param {HTMLElement=} form
+     */
+    constructor(form) {
+      map.set(this, Object.create(null))
+
+      if (!form)
+        return this
+
+      for (let elm of arrayFrom(form.elements)) {
+        if (!elm.name || elm.disabled) continue
+
+        if (elm.type === 'file')
+          for (let file of arrayFrom(elm.files || []))
+            this.append(elm.name, file)
+        else if (elm.type === 'select-multiple' || elm.type === 'select-one')
+          for (let opt of arrayFrom(elm.options))
+            !opt.disabled && opt.selected && this.append(elm.name, opt.value)
+        else if (elm.type === 'checkbox' || elm.type === 'radio') {
+          if (elm.checked) this.append(elm.name, elm.value)
+        } else
+          this.append(elm.name, elm.value)
+      }
+    }
+
+
+    /**
+     * Append a field
+     *
+     * @param   {String}           name      field name
+     * @param   {String|Blob|File} value     string / blob / file
+     * @param   {String=}          filename  filename to use with blob
+     * @return  {Undefined}
+     */
+    append(name, value, filename) {
+      const map = wm(this)
+
+      if (!map[name])
+        map[name] = []
+
+      map[name].push([value, filename])
+    }
+
+
+    /**
+     * Delete all fields values given name
+     *
+     * @param   {String}  name  Field name
+     * @return  {Undefined}
+     */
+    delete(name) {
+      delete wm(this)[name]
+    }
+
+
+    /**
+     * Iterate over all fields as [name, value]
+     *
+     * @return {Iterator}
+     */
+    *entries() {
+      const map = wm(this)
+
+      for (let name in map)
+        for (let value of map[name])
+          yield [name, normalizeValue(value)]
+    }
+
+    /**
+     * Iterate over all fields
+     *
+     * @param   {Function}  callback  Executed for each item with parameters (value, name, thisArg)
+     * @param   {Object=}   thisArg   `this` context for callback function
+     * @return  {Undefined}
+     */
+    forEach(callback, thisArg) {
+      for (let [name, value] of this)
+        callback.call(thisArg, value, name, this)
+    }
+
+
+    /**
+     * Return first field value given name
+     * or null if non existen
+     *
+     * @param   {String}  name      Field name
+     * @return  {String|File|null}  value Fields value
+     */
+    get(name) {
+      const map = wm(this)
+      return map[name] ? normalizeValue(map[name][0]) : null
+    }
+
+
+    /**
+     * Return all fields values given name
+     *
+     * @param   {String}  name  Fields name
+     * @return  {Array}         [{String|File}]
+     */
+    getAll(name) {
+      return (wm(this)[name] || []).map(normalizeValue)
+    }
+
+
+    /**
+     * Check for field name existence
+     *
+     * @param   {String}   name  Field name
+     * @return  {boolean}
+     */
+    has(name) {
+      return name in wm(this)
+    }
+
+
+    /**
+     * Iterate over all fields name
+     *
+     * @return {Iterator}
+     */
+    *keys() {
+      for (let [name] of this)
+        yield name
+    }
+
+
+    /**
+     * Overwrite all values given name
+     *
+     * @param   {String}    name      Filed name
+     * @param   {String}    value     Field value
+     * @param   {String=}   filename  Filename (optional)
+     * @return  {Undefined}
+     */
+    set(name, value, filename) {
+      wm(this)[name] = [[value, filename]]
+    }
+
+
+    /**
+     * Iterate over all fields
+     *
+     * @return {Iterator}
+     */
+    *values() {
+      for (let [name, value] of this)
+        yield value
+    }
+
+
+    /**
+     * Return a native (perhaps degraded) FormData with only a `append` method
+     * Can throw if it's not supported
+     *
+     * @return {FormData}
+     */
+    ['_asNative']() {
+      const fd = new _FormData
+
+      for (let [name, value] of this)
+        fd.append(name, value)
+
+      return fd
+    }
+
+
+    /**
+     * [_blob description]
+     *
+     * @return {Blob} [description]
+     */
+    ['_blob']() {
+      const boundary = '----formdata-polyfill-' + Math.random()
+      const chunks = []
+
+      for (let [name, value] of this) {
+        chunks.push(`--${boundary}\r\n`)
+
+        if (value instanceof Blob) {
+          chunks.push(
+            `Content-Disposition: form-data; name="${name}"; filename="${value.name}"\r\n`,
+            `Content-Type: ${value.type || 'application/octet-stream'}\r\n\r\n`,
+            value,
+            '\r\n'
+          )
+        } else {
+          chunks.push(
+            `Content-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`
+          )
+        }
+      }
+
+      chunks.push(`--${boundary}--`)
+
+      return new Blob(chunks, {type: 'multipart/form-data; boundary=' + boundary})
+    }
+
+
+    /**
+     * The class itself is iterable
+     * alias for formdata.entries()
+     *
+     * @return  {Iterator}
+     */
+    [Symbol.iterator]() {
+      return this.entries()
+    }
+
+
+    /**
+     * Create the default string description.
+     *
+     * @return  {String} [object FormData]
+     */
+    toString() {
+      return '[object FormData]'
+    }
+  }
+
+
+  if (stringTag) {
+    /**
+     * Create the default string description.
+     * It is accessed internally by the Object.prototype.toString().
+     *
+     * @return {String} FormData
+     */
+    FormDataPolyfill.prototype[stringTag] = 'FormData'
+  }
+
+  const decorations = [
+    ['append', normalizeArgs],
+    ['delete', stringify],
+    ['get',    stringify],
+    ['getAll', stringify],
+    ['has',    stringify],
+    ['set',    normalizeArgs]
+  ]
+
+  decorations.forEach(arr => {
+    const orig = FormDataPolyfill.prototype[arr[0]]
+    FormDataPolyfill.prototype[arr[0]] = function() {
+      return orig.apply(this, arr[1].apply(this, arrayFrom(arguments)))
+    }
+  })
+
+  // Patch xhr's send method to call _blob transparently
+  if (_send) {
+      XMLHttpRequest.prototype.send = function(data) {
+      // I would check if Content-Type isn't already set
+      // But xhr lacks getRequestHeaders functionallity
+      // https://github.com/jimmywarting/FormData/issues/44
+      if (data instanceof FormDataPolyfill) {
+        const blob = data['_blob']()
+        this.setRequestHeader('Content-Type', blob.type)
+        _send.call(this, blob)
+      } else {
+        _send.call(this, data)
+      }
+    }
+  }
+
+  // Patch fetch's function to call _blob transparently
+  if (_fetch) {
+    const _fetch = global.fetch
+
+    global.fetch = function(input, init) {
+      if (init && init.body && init.body instanceof FormDataPolyfill) {
+        init.body = init.body['_blob']()
+      }
+
+      return _fetch(input, init)
+    }
+  }
+
+  global['FormData'] = FormDataPolyfill
+}
+
 
 /***/ }),
 
@@ -32599,7 +33199,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
         setVCard: function setVCard() {
-          if (this.get('type') === 'groupchat') {
+          if (this.get('type') === 'error') {
+            return;
+          } else if (this.get('type') === 'groupchat') {
             this.vcard = this.getVCardForChatroomOccupant();
           } else {
             var jid = this.get('from');
@@ -33997,7 +34599,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           // XXX: Is this still needed?
           this.el.setAttribute('id', this.model.get('box_id'));
           this.el.innerHTML = tpl_chatbox(_.extend(this.model.toJSON(), {
-            unread_msgs: __('You have unread messages')
+            'unread_msgs': __('You have unread messages')
           }));
           this.content = this.el.querySelector('.chat-content');
           this.renderMessageForm();
@@ -34416,7 +35018,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               // when the user writes a message as opposed to when a
               // message is received.
               this.model.set('scrolled', false);
-            } else if (this.model.get('scrolled', true)) {
+            } else if (this.model.get('scrolled', true) && !u.isOnlyChatStateNotification(message)) {
               this.showNewMessagesIndicator();
             }
           }
@@ -34552,7 +35154,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
               return this.onEscapePressed(ev);
             } else if (ev.keyCode === _converse.keycodes.ENTER) {
-              _.invoke(this.emoji_dropdown, 'toggle');
+              if (this.emoji_dropdown && u.isVisible(this.emoji_dropdown.el.querySelector('.emoji-picker'))) {
+                this.emoji_dropdown.toggle();
+              }
 
               return this.onFormSubmitted(ev);
             } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
@@ -34740,6 +35344,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.renderEmojiPicker();
             var dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
             this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
+            this.emoji_dropdown.el = dropdown_el;
             this.emoji_dropdown.toggle();
           }
         },
@@ -35030,11 +35635,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /*global define */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! lodash.fp */ "./src/lodash.fp.js"), __webpack_require__(/*! templates/converse_brand_heading.html */ "./src/templates/converse_brand_heading.html"), __webpack_require__(/*! templates/controlbox.html */ "./src/templates/controlbox.html"), __webpack_require__(/*! templates/controlbox_toggle.html */ "./src/templates/controlbox_toggle.html"), __webpack_require__(/*! templates/login_panel.html */ "./src/templates/login_panel.html"), __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js"), __webpack_require__(/*! converse-rosterview */ "./src/converse-rosterview.js"), __webpack_require__(/*! converse-profile */ "./src/converse-profile.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js"), __webpack_require__(/*! lodash.fp */ "./src/lodash.fp.js"), __webpack_require__(/*! templates/converse_brand_heading.html */ "./src/templates/converse_brand_heading.html"), __webpack_require__(/*! templates/controlbox.html */ "./src/templates/controlbox.html"), __webpack_require__(/*! templates/controlbox_toggle.html */ "./src/templates/controlbox_toggle.html"), __webpack_require__(/*! templates/login_panel.html */ "./src/templates/login_panel.html"), __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js"), __webpack_require__(/*! converse-rosterview */ "./src/converse-rosterview.js"), __webpack_require__(/*! converse-profile */ "./src/converse-profile.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, bootstrap, fp, tpl_brand_heading, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel) {
+})(void 0, function (converse, bootstrap, _FormData, fp, tpl_brand_heading, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel) {
   "use strict";
 
   var CHATBOX_TYPE = 'chatbox';
@@ -35295,6 +35900,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.loginpanel.render();
           }
 
+          this.loginpanel.initPopovers();
           return this;
         },
         renderControlBoxPane: function renderControlBoxPane() {
@@ -35396,14 +36002,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.on('change', this.render, this);
           this.listenTo(_converse.connfeedback, 'change', this.render);
           this.render();
-
-          _.forEach(this.el.querySelectorAll('[data-title]'), function (el) {
-            var popover = new bootstrap.Popover(el, {
-              'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
-              'dismissible': _converse.view_mode === 'mobile' && true || false,
-              'container': _converse.chatboxviews.el
-            });
-          });
         },
         toHTML: function toHTML() {
           var connection_status = _converse.connfeedback.get('connection_status');
@@ -35430,6 +36028,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'conn_feedback_message': _converse.connfeedback.get('message'),
             'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain')
           }));
+        },
+        initPopovers: function initPopovers() {
+          var _this2 = this;
+
+          _.forEach(this.el.querySelectorAll('[data-title]'), function (el) {
+            var popover = new bootstrap.Popover(el, {
+              'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
+              'dismissible': _converse.view_mode === 'mobile' && true || false,
+              'container': _this2.el.parentElement.parentElement.parentElement
+            });
+          });
         },
         validate: function validate() {
           var form = this.el.querySelector('form');
@@ -35693,6 +36302,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
   Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
   Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
+  Strophe.addNamespace('REGISTER', 'jabber:iq:register');
   Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
   Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
   Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
@@ -35840,7 +36450,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
     jid: undefined,
     keepalive: true,
     locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
-    locales: ['af', 'ar', 'bg', 'ca', 'cs', 'de', 'es', 'eu', 'en', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
+    locales: ['af', 'ar', 'bg', 'ca', 'cs', 'de', 'es', 'eu', 'en', 'fr', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
     message_carbons: true,
     nickname: undefined,
     password: undefined,
@@ -37571,6 +38181,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.features = new Backbone.Collection();
           this.features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.features-".concat(this.get('jid'))));
           this.features.on('add', this.onFeatureAdded, this);
+          this.fields = new Backbone.Collection();
+          this.fields.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.fields-".concat(this.get('jid'))));
+          this.fields.on('add', this.onFieldAdded, this);
           this.identities = new Backbone.Collection();
           this.identities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.identities-".concat(this.get('jid'))));
           this.fetchFeatures();
@@ -37625,6 +38238,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           feature.entity = this;
 
           _converse.emit('serviceDiscovered', feature);
+        },
+        onFieldAdded: function onFieldAdded(field) {
+          field.entity = this;
+
+          _converse.emit('discoExtensionFieldDiscovered', field);
         },
         fetchFeatures: function fetchFeatures() {
           var _this = this;
@@ -37727,6 +38345,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           _.forEach(stanza.querySelectorAll('feature'), function (feature) {
             _this5.features.create({
               'var': feature.getAttribute('var'),
+              'from': stanza.getAttribute('from')
+            });
+          }); // XEP-0128 Service Discovery Extensions
+
+
+          _.forEach(sizzle('x[type="result"][xmlns="jabber:x:data"] field', stanza), function (field) {
+            _this5.fields.create({
+              'var': field.getAttribute('var'),
+              'value': _.get(field.querySelector('value'), 'textContent'),
               'from': stanza.getAttribute('from')
             });
           });
@@ -38139,7 +38766,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            */
           'supports': function supports(feature, jid) {
             if (_.isNil(jid)) {
-              throw new TypeError('disco.supports: You need to provide an entity JID');
+              throw new TypeError('api.disco.supports: You need to provide an entity JID');
             }
 
             return _converse.api.waitUntil('discoInitialized').then(function () {
@@ -38155,6 +38782,53 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             }).then(function (result) {
               return f.filter(f.isObject, result);
             });
+          },
+
+          /**
+           * Return all the features associated with a disco entity
+           *
+           * @method _converse.api.disco.getFeatures
+           * @param {string} jid The JID of the entity whose features are returned.
+           * @example
+           * const features = await _converse.api.disco.getFeatures('room@conference.example.org');
+           */
+          'getFeatures': function getFeatures(jid) {
+            if (_.isNil(jid)) {
+              throw new TypeError('api.disco.getFeatures: You need to provide an entity JID');
+            }
+
+            return _converse.api.waitUntil('discoInitialized').then(function () {
+              return _converse.api.disco.entities.get(jid, true);
+            }).then(function (entity) {
+              return entity.waitUntilFeaturesDiscovered;
+            }).then(function (entity) {
+              return entity.features;
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          },
+
+          /**
+           * Return all the service discovery extensions fields
+           * associated with an entity.
+           *
+           * See [XEP-0129: Service Discovery Extensions](https://xmpp.org/extensions/xep-0128.html)
+           *
+           * @method _converse.api.disco.getFields
+           * @param {string} jid The JID of the entity whose fields are returned.
+           * @example
+           * const fields = await _converse.api.disco.getFields('room@conference.example.org');
+           */
+          'getFields': function getFields(jid) {
+            if (_.isNil(jid)) {
+              throw new TypeError('api.disco.getFields: You need to provide an entity JID');
+            }
+
+            return _converse.api.waitUntil('discoInitialized').then(function () {
+              return _converse.api.disco.entities.get(jid, true);
+            }).then(function (entity) {
+              return entity.waitUntilFeaturesDiscovered;
+            }).then(function (entity) {
+              return entity.fields;
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
           },
 
           /**
@@ -38925,11 +39599,16 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   var MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
   function getMessageArchiveID(stanza) {
+    // See https://xmpp.org/extensions/xep-0313.html#results
+    //
+    // The result messages MUST contain a <result/> element with an 'id'
+    // attribute that gives the current message's archive UID
     var result = sizzle("result[xmlns=\"".concat(Strophe.NS.MAM, "\"]"), stanza).pop();
 
     if (!_.isUndefined(result)) {
       return result.getAttribute('id');
-    }
+    } // See: https://xmpp.org/extensions/xep-0313.html#archives_id
+
 
     var stanza_id = sizzle("stanza-id[xmlns=\"".concat(Strophe.NS.SID, "\"]"), stanza).pop();
 
@@ -39603,7 +40282,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'click .chat-msg__edit-modal': 'showMessageVersionsModal'
         },
         initialize: function initialize() {
-          this.model.vcard.on('change', this.render, this);
+          if (this.model.vcard) {
+            this.model.vcard.on('change', this.render, this);
+          }
+
           this.model.on('change:correcting', this.onMessageCorrection, this);
           this.model.on('change:message', this.render, this);
           this.model.on('change:progress', this.renderFileUploadProgresBar, this);
@@ -39657,7 +40339,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           var is_me_message = this.isMeCommand(),
               moment_time = moment(this.model.get('time')),
-              role = this.model.vcard.get('role'),
+              role = this.model.vcard ? this.model.vcard.get('role') : null,
               roles = role ? role.split(',') : [];
           var msg = u.stringToElement(tpl_message(_.extend(this.model.toJSON(), {
             '__': __,
@@ -40529,11 +41211,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "awesomplete"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js"), __webpack_require__(/*! utils/muc */ "./src/utils/muc.js"), __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js"), __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html"), __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html"), __webpack_require__(/*! templates/chatroom.html */ "./src/templates/chatroom.html"), __webpack_require__(/*! templates/chatroom_details_modal.html */ "./src/templates/chatroom_details_modal.html"), __webpack_require__(/*! templates/chatroom_disconnect.html */ "./src/templates/chatroom_disconnect.html"), __webpack_require__(/*! templates/chatroom_features.html */ "./src/templates/chatroom_features.html"), __webpack_require__(/*! templates/chatroom_form.html */ "./src/templates/chatroom_form.html"), __webpack_require__(/*! templates/chatroom_head.html */ "./src/templates/chatroom_head.html"), __webpack_require__(/*! templates/chatroom_invite.html */ "./src/templates/chatroom_invite.html"), __webpack_require__(/*! templates/chatroom_nickname_form.html */ "./src/templates/chatroom_nickname_form.html"), __webpack_require__(/*! templates/chatroom_password_form.html */ "./src/templates/chatroom_password_form.html"), __webpack_require__(/*! templates/chatroom_sidebar.html */ "./src/templates/chatroom_sidebar.html"), __webpack_require__(/*! templates/info.html */ "./src/templates/info.html"), __webpack_require__(/*! templates/list_chatrooms_modal.html */ "./src/templates/list_chatrooms_modal.html"), __webpack_require__(/*! templates/occupant.html */ "./src/templates/occupant.html"), __webpack_require__(/*! templates/room_description.html */ "./src/templates/room_description.html"), __webpack_require__(/*! templates/room_item.html */ "./src/templates/room_item.html"), __webpack_require__(/*! templates/room_panel.html */ "./src/templates/room_panel.html"), __webpack_require__(/*! templates/rooms_results.html */ "./src/templates/rooms_results.html"), __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html"), __webpack_require__(/*! awesomplete */ "awesomplete"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, muc_utils, xss, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_details_modal, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
+})(void 0, function (converse, _FormData, muc_utils, xss, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_details_modal, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -40886,13 +41568,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         showRooms: function showRooms(ev) {
           ev.preventDefault();
           var data = new FormData(ev.target);
-          this.model.save('muc_domain', data.get('server'));
+          this.model.save('muc_domain', Strophe.getDomainFromJid(data.get('server')));
           this.updateRoomsList();
         },
         setDomain: function setDomain(ev) {
-          this.model.save({
-            'muc_domain': ev.target.value
-          });
+          this.model.save('muc_domain', Strophe.getDomainFromJid(ev.target.value));
         },
         setNick: function setNick(ev) {
           this.model.save({
@@ -41390,7 +42070,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           var match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
-              args = match[2] && match[2].splitOnce(' ') || [],
+              args = match[2] && match[2].splitOnce(' ').filter(function (s) {
+            return s;
+          }) || [],
               command = match[1].toLowerCase();
 
           switch (command) {
@@ -41433,7 +42115,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               break;
 
             case 'help':
-              this.showHelpMessages(["<strong>/admin</strong>: ".concat(__("Change user's affiliation to admin")), "<strong>/ban</strong>: ".concat(__('Ban user from groupchat')), "<strong>/clear</strong>: ".concat(__('Remove messages')), "<strong>/deop</strong>: ".concat(__('Change user role to participant')), "<strong>/help</strong>: ".concat(__('Show this menu')), "<strong>/kick</strong>: ".concat(__('Kick user from groupchat')), "<strong>/me</strong>: ".concat(__('Write in 3rd person')), "<strong>/member</strong>: ".concat(__('Grant membership to a user')), "<strong>/mute</strong>: ".concat(__("Remove user's ability to post messages")), "<strong>/nick</strong>: ".concat(__('Change your nickname')), "<strong>/op</strong>: ".concat(__('Grant moderator role to user')), "<strong>/owner</strong>: ".concat(__('Grant ownership of this groupchat')), "<strong>/revoke</strong>: ".concat(__("Revoke user's membership")), "<strong>/subject</strong>: ".concat(__('Set groupchat subject')), "<strong>/topic</strong>: ".concat(__('Set groupchat subject (alias for /subject)')), "<strong>/voice</strong>: ".concat(__('Allow muted user to post messages'))]);
+              this.showHelpMessages(["<strong>/admin</strong>: ".concat(__("Change user's affiliation to admin")), "<strong>/ban</strong>: ".concat(__('Ban user from groupchat')), "<strong>/clear</strong>: ".concat(__('Remove messages')), "<strong>/deop</strong>: ".concat(__('Change user role to participant')), "<strong>/help</strong>: ".concat(__('Show this menu')), "<strong>/kick</strong>: ".concat(__('Kick user from groupchat')), "<strong>/me</strong>: ".concat(__('Write in 3rd person')), "<strong>/member</strong>: ".concat(__('Grant membership to a user')), "<strong>/mute</strong>: ".concat(__("Remove user's ability to post messages")), "<strong>/nick</strong>: ".concat(__('Change your nickname')), "<strong>/op</strong>: ".concat(__('Grant moderator role to user')), "<strong>/owner</strong>: ".concat(__('Grant ownership of this groupchat')), "<strong>/register</strong>: ".concat(__("Register a nickname for this room")), "<strong>/revoke</strong>: ".concat(__("Revoke user's membership")), "<strong>/subject</strong>: ".concat(__('Set groupchat subject')), "<strong>/topic</strong>: ".concat(__('Set groupchat subject (alias for /subject)')), "<strong>/voice</strong>: ".concat(__('Allow muted user to post messages'))]);
               break;
 
             case 'kick':
@@ -41462,13 +42144,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                   'nick': args[0]
                 }) || this.model.occupants.findWhere({
                   'jid': args[0]
-                });
-                this.model.setAffiliation('member', [{
+                }),
+                    attrs = {
                   'jid': occupant.get('jid'),
                   'reason': args[1]
-                }]).then(function () {
+                };
+
+                if (_converse.auto_register_muc_nickname) {
+                  attrs['nick'] = occupant.get('nick');
+                }
+
+                this.model.setAffiliation('member', [attrs]).then(function () {
                   return _this5.model.occupants.fetchMembers();
-                }, function (err) {
+                }).catch(function (err) {
                   return _this5.onCommandError(err);
                 });
                 break;
@@ -41508,6 +42196,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               }
 
               this.modifyRole(this.model.get('jid'), args[0], 'moderator', args[1], undefined, this.onCommandError.bind(this));
+              break;
+
+            case 'register':
+              if (args.length > 1) {
+                this.showErrorMessage(__("Error: invalid number of arguments"));
+              } else {
+                this.model.registerNickname().then(function (err_msg) {
+                  if (err_msg) _this5.showErrorMessage(err_msg);
+                });
+              }
+
               break;
 
             case 'revoke':
@@ -41657,7 +42356,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           form_el.addEventListener('submit', function (ev) {
             ev.preventDefault();
 
-            _this6.model.saveConfiguration(ev.target).then(_this6.model.getRoomFeatures.bind(_this6.model));
+            _this6.model.saveConfiguration(ev.target).then(function () {
+              return _this6.model.refreshRoomFeatures();
+            });
 
             _this6.closeForm();
           }, false);
@@ -41711,48 +42412,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * If so, we'll use that, otherwise we render the nickname form.
            */
           this.showSpinner();
-          this.model.checkForReservedNick(this.onNickNameFound.bind(this), this.onNickNameNotFound.bind(this));
+          this.model.checkForReservedNick().then(this.onReservedNickFound.bind(this)).catch(this.onReservedNickNotFound.bind(this));
         },
-        onNickNameFound: function onNickNameFound(iq) {
-          /* We've received an IQ response from the server which
-           * might contain the user's reserved nickname.
-           * If no nickname is found we either render a form for
-           * them to specify one, or we try to join the groupchat with the
-           * node of the user's JID.
-           *
-           * Parameters:
-           *  (XMLElement) iq: The received IQ stanza
-           */
-          var identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
-              nick = identity_el ? identity_el.getAttribute('name') : null;
-
-          if (!nick) {
-            this.onNickNameNotFound();
+        onReservedNickFound: function onReservedNickFound(iq) {
+          if (this.model.get('nick')) {
+            this.join();
           } else {
-            this.join(nick);
+            this.onReservedNickNotFound();
           }
         },
-        onNickNameNotFound: function onNickNameNotFound(message) {
-          var nick = this.getDefaultNickName();
+        onReservedNickNotFound: function onReservedNickNotFound(message) {
+          var nick = this.model.getDefaultNick();
 
           if (nick) {
             this.join(nick);
           } else {
             this.renderNicknameForm(message);
-          }
-        },
-        getDefaultNickName: function getDefaultNickName() {
-          /* The default nickname (used when muc_nickname_from_jid is true)
-           * is the node part of the user's JID.
-           * We put this in a separate method so that it can be
-           * overridden by plugins.
-           */
-          var nick = _converse.xmppstatus.vcard.get('nickname');
-
-          if (nick) {
-            return nick;
-          } else if (_converse.muc_nickname_from_jid) {
-            return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
           }
         },
         onNicknameClash: function onNicknameClash(presence) {
@@ -41767,7 +42442,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (_converse.muc_nickname_from_jid) {
             var nick = presence.getAttribute('from').split('/')[1];
 
-            if (nick === this.getDefaultNickName()) {
+            if (nick === this.model.getDefaultNick()) {
               this.join(nick + '-2');
             } else {
               var del = nick.lastIndexOf("-");
@@ -42463,9 +43138,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       function setMUCDomain(domain, controlboxview) {
         _converse.muc_domain = domain;
-        controlboxview.roomspanel.model.save({
-          'muc_domain': domain
-        });
+        controlboxview.roomspanel.model.save('muc_domain', Strophe.getDomainFromJid(domain));
       }
 
       function setMUCDomainFromDisco(controlboxview) {
@@ -42733,6 +43406,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         allow_muc_invitations: true,
         auto_join_on_invite: false,
         auto_join_rooms: [],
+        auto_register_muc_nickname: false,
         muc_domain: undefined,
         muc_history_max_stanzas: undefined,
         muc_instant_rooms: true,
@@ -42800,10 +43474,20 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         initialize: function initialize() {
           this.constructor.__super__.initialize.apply(this, arguments);
 
+          this.on('change:connection_status', this.onConnectionStatusChanged, this);
           this.occupants = new _converse.ChatRoomOccupants();
           this.occupants.browserStorage = new Backbone.BrowserStorage.session(b64_sha1("converse.occupants-".concat(_converse.bare_jid).concat(this.get('jid'))));
           this.occupants.chatroom = this;
           this.registerHandlers();
+        },
+        onConnectionStatusChanged: async function onConnectionStatusChanged() {
+          if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED && _converse.auto_register_muc_nickname && !this.get('reserved_nick')) {
+            var result = await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'));
+
+            if (result.length) {
+              this.registerNickname();
+            }
+          }
         },
         registerHandlers: function registerHandlers() {
           var _this = this;
@@ -42924,6 +43608,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           this.occupants.reset();
 
+          var disco_entity = _converse.disco_entities.get(this.get('jid'));
+
+          if (disco_entity) {
+            disco_entity.destroy();
+          }
+
           if (_converse.connection.connected) {
             this.sendUnavailablePresence(exit_msg);
           }
@@ -43042,25 +43732,6 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             'type': 'groupchat'
           };
         },
-        getRoomFeatures: function getRoomFeatures() {
-          var _this2 = this;
-
-          /* Fetch the groupchat disco info, parse it and then save it.
-           */
-          return new Promise(function (resolve, reject) {
-            _converse.api.disco.info(_this2.get('jid'), null).then(function (stanza) {
-              _this2.parseRoomFeatures(stanza);
-
-              resolve();
-            }).catch(function (err) {
-              _converse.log("Could not parse the groupchat features", Strophe.LogLevel.WARN);
-
-              _converse.log(err, Strophe.LogLevel.WARN);
-
-              reject(err);
-            });
-          });
-        },
         getRoomJIDAndNick: function getRoomJIDAndNick(nick) {
           /* Utility method to construct the JID for the current user
            * as occupant of the groupchat.
@@ -43160,50 +43831,40 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             'reason': reason
           });
         },
-        parseRoomFeatures: function parseRoomFeatures(iq) {
-          /* Parses an IQ stanza containing the groupchat's features.
-           *
-           * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
-           *
-           *  <identity
-           *      category='conference'
-           *      name='A Dark Cave'
-           *      type='text'/>
-           *  <feature var='http://jabber.org/protocol/muc'/>
-           *  <feature var='muc_passwordprotected'/>
-           *  <feature var='muc_hidden'/>
-           *  <feature var='muc_temporary'/>
-           *  <feature var='muc_open'/>
-           *  <feature var='muc_unmoderated'/>
-           *  <feature var='muc_nonanonymous'/>
-           *  <feature var='urn:xmpp:mam:0'/>
-           */
-          var features = {
-            'features_fetched': moment().format(),
-            'name': iq.querySelector('identity').getAttribute('name')
-          };
+        refreshRoomFeatures: function refreshRoomFeatures() {
+          var entity = _converse.disco_entities.get(this.get('jid'));
 
-          _.each(iq.querySelectorAll('feature'), function (field) {
-            var fieldname = field.getAttribute('var');
+          if (entity) {
+            entity.destroy();
+          }
+
+          return this.getRoomFeatures();
+        },
+        getRoomFeatures: async function getRoomFeatures() {
+          var features = await _converse.api.disco.getFeatures(this.get('jid')),
+              fields = await _converse.api.disco.getFields(this.get('jid')),
+              identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid')),
+              attrs = {
+            'features_fetched': moment().format(),
+            'name': identity && identity.get('name')
+          };
+          features.each(function (feature) {
+            var fieldname = feature.get('var');
 
             if (!fieldname.startsWith('muc_')) {
               if (fieldname === Strophe.NS.MAM) {
-                features.mam_enabled = true;
+                attrs.mam_enabled = true;
               }
 
               return;
             }
 
-            features[fieldname.replace('muc_', '')] = true;
+            attrs[fieldname.replace('muc_', '')] = true;
           });
-
-          var desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
-
-          if (!_.isNull(desc_field)) {
-            features.description = desc_field.textContent;
-          }
-
-          this.save(features);
+          attrs.description = _.get(fields.findWhere({
+            'var': "muc#roominfo_description"
+          }), 'attributes.value');
+          this.save(attrs);
         },
         requestMemberList: function requestMemberList(affiliation) {
           /* Send an IQ stanza to the server, asking it for the
@@ -43239,7 +43900,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            * XXX: Prosody doesn't accept multiple JIDs' affiliations
            * being set in one IQ stanza, so as a workaround we send
            * a separate stanza for each JID.
-           * Related ticket: https://prosody.im/issues/issue/795
+           * Related ticket: https://issues.prosody.im/345
            *
            * Parameters:
            *  (String) affiliation: The affiliation
@@ -43264,7 +43925,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           return Promise.all(promises);
         },
         saveConfiguration: function saveConfiguration(form) {
-          var _this3 = this;
+          var _this2 = this;
 
           /* Submit the groupchat configuration form by sending an IQ
            * stanza to the server.
@@ -43281,11 +43942,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             var inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
                 configArray = _.map(inputs, u.webForm2xForm);
 
-            _this3.sendConfiguration(configArray, resolve, reject);
+            _this2.sendConfiguration(configArray, resolve, reject);
           });
         },
         autoConfigureChatRoom: function autoConfigureChatRoom() {
-          var _this4 = this;
+          var _this3 = this;
 
           /* Automatically configure groupchat based on this model's
            * 'roomconfig' data.
@@ -43294,10 +43955,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            * been received.
            */
           return new Promise(function (resolve, reject) {
-            _this4.fetchRoomConfiguration().then(function (stanza) {
+            _this3.fetchRoomConfiguration().then(function (stanza) {
               var configArray = [],
                   fields = stanza.querySelectorAll('field'),
-                  config = _this4.get('roomconfig');
+                  config = _this3.get('roomconfig');
 
               var count = fields.length;
 
@@ -43327,14 +43988,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
                 configArray.push(field);
 
                 if (! --count) {
-                  _this4.sendConfiguration(configArray, resolve, reject);
+                  _this3.sendConfiguration(configArray, resolve, reject);
                 }
               });
             });
           });
         },
         fetchRoomConfiguration: function fetchRoomConfiguration() {
-          var _this5 = this;
+          var _this4 = this;
 
           /* Send an IQ stanza to fetch the groupchat configuration data.
            * Returns a promise which resolves once the response IQ
@@ -43342,7 +44003,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            */
           return new Promise(function (resolve, reject) {
             _converse.connection.sendIQ($iq({
-              'to': _this5.get('jid'),
+              'to': _this4.get('jid'),
               'type': "get"
             }).c("query", {
               xmlns: Strophe.NS.MUC_OWNER
@@ -43409,7 +44070,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           }
         },
         sendAffiliationIQ: function sendAffiliationIQ(affiliation, member) {
-          var _this6 = this;
+          var _this5 = this;
 
           /* Send an IQ stanza specifying an affiliation change.
            *
@@ -43421,12 +44082,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            */
           return new Promise(function (resolve, reject) {
             var iq = $iq({
-              to: _this6.get('jid'),
+              to: _this5.get('jid'),
               type: "set"
             }).c("query", {
               xmlns: Strophe.NS.MUC_ADMIN
             }).c("item", {
               'affiliation': member.affiliation || affiliation,
+              'nick': member.nick,
               'jid': member.jid
             });
 
@@ -43452,7 +44114,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
         },
-        getJidsWithAffiliations: function getJidsWithAffiliations(affiliations) {
+        getJidsWithAffiliations: async function getJidsWithAffiliations(affiliations) {
+          var _this6 = this;
+
           /* Returns a map of JIDs that have the affiliations
            * as provided.
            */
@@ -43460,12 +44124,15 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             affiliations = [affiliations];
           }
 
-          var promises = _.map(affiliations, _.partial(this.requestMemberList.bind(this)));
-
-          return Promise.all(promises).then(function (iq) {
-            return u.marshallAffiliationIQs(iq);
-          }, function (iq) {
-            return u.marshallAffiliationIQs(iq);
+          var result = await Promise.all(affiliations.map(function (a) {
+            return _this6.requestMemberList(a).then(function (iq) {
+              return u.parseMemberListIQ(iq);
+            }).catch(function (iq) {
+              _converse.log(iq, Strophe.LogLevel.ERROR);
+            });
+          }));
+          return [].concat.apply([], result).filter(function (p) {
+            return p;
           });
         },
         updateMemberLists: function updateMemberLists(members, affiliations, deltaFunc) {
@@ -43494,7 +44161,23 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             return _this7.occupants.fetchMembers();
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
         },
-        checkForReservedNick: function checkForReservedNick(callback, errback) {
+        getDefaultNick: function getDefaultNick() {
+          /* The default nickname (used when muc_nickname_from_jid is true)
+           * is the node part of the user's JID.
+           * We put this in a separate method so that it can be
+           * overridden by plugins.
+           */
+          var nick = _converse.xmppstatus.vcard.get('nickname');
+
+          if (nick) {
+            return nick;
+          } else if (_converse.muc_nickname_from_jid) {
+            return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+          }
+        },
+        checkForReservedNick: function checkForReservedNick() {
+          var _this8 = this;
+
           /* Use service-discovery to ask the XMPP server whether
            * this user has a reserved nickname for this groupchat.
            * If so, we'll use that, otherwise we render the nickname form.
@@ -43503,16 +44186,89 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            *  (Function) callback: Callback upon succesful IQ response
            *  (Function) errback: Callback upon error IQ response
            */
-          _converse.connection.sendIQ($iq({
+          return _converse.api.sendIQ($iq({
             'to': this.get('jid'),
             'from': _converse.connection.jid,
             'type': "get"
           }).c("query", {
             'xmlns': Strophe.NS.DISCO_INFO,
             'node': 'x-roomuser-item'
-          }), callback, errback);
+          })).then(function (iq) {
+            var identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
+                nick = identity_el ? identity_el.getAttribute('name') : null;
 
-          return this;
+            _this8.save({
+              'reserved_nick': nick,
+              'nick': nick
+            }, {
+              'silent': true
+            });
+
+            return iq;
+          });
+        },
+        registerNickname: async function registerNickname() {
+          // See https://xmpp.org/extensions/xep-0045.html#register
+          var nick = this.get('nick'),
+              jid = this.get('jid');
+          var iq, err_msg;
+
+          try {
+            iq = await _converse.api.sendIQ($iq({
+              'to': jid,
+              'from': _converse.connection.jid,
+              'type': 'get'
+            }).c('query', {
+              'xmlns': Strophe.NS.MUC_REGISTER
+            }));
+          } catch (e) {
+            if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              err_msg = __("You're not allowed to register yourself in this groupchat.");
+            } else if (sizzle('registration-required[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              err_msg = __("You're not allowed to register in this groupchat because it's members-only.");
+            }
+
+            _converse.log(e, Strophe.LogLevel.ERROR);
+
+            return err_msg;
+          }
+
+          var required_fields = sizzle('field required', iq).map(function (f) {
+            return f.parentElement;
+          });
+
+          if (required_fields.length > 1 && required_fields[0].getAttribute('var') !== 'muc#register_roomnick') {
+            return _converse.log("Can't register the user register in the groupchat ".concat(jid, " due to the required fields"));
+          }
+
+          try {
+            await _converse.api.sendIQ($iq({
+              'to': jid,
+              'from': _converse.connection.jid,
+              'type': 'set'
+            }).c('query', {
+              'xmlns': Strophe.NS.MUC_REGISTER
+            }).c('x', {
+              'xmlns': Strophe.NS.XFORM,
+              'type': 'submit'
+            }).c('field', {
+              'var': 'FORM_TYPE'
+            }).c('value').t('http://jabber.org/protocol/muc#register').up().up().c('field', {
+              'var': 'muc#register_roomnick'
+            }).c('value').t(nick));
+          } catch (e) {
+            if (sizzle('service-unavailable[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              err_msg = __("Can't register your nickname in this groupchat, it doesn't support registration.");
+            } else if (sizzle('bad-request[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+              err_msg = __("Can't register your nickname in this groupchat, invalid data form supplied.");
+            }
+
+            _converse.log(err_msg);
+
+            _converse.log(e, Strophe.LogLevel.ERROR);
+
+            return err_msg;
+          }
         },
         updateOccupantsOnPresence: function updateOccupantsOnPresence(pres) {
           /* Given a presence stanza, update the occupant model
@@ -43523,7 +44279,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
            */
           var data = this.parsePresence(pres);
 
-          if (data.type === 'error') {
+          if (data.type === 'error' || !data.jid && !data.nick) {
             return true;
           }
 
@@ -43624,11 +44380,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
               room_now_fully_anon = stanza.querySelector("status[code='173']");
 
           if (configuration_changed || logging_enabled || logging_disabled || room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
-            this.getRoomFeatures();
+            this.refreshRoomFeatures();
           }
         },
         onMessage: function onMessage(stanza) {
-          var _this8 = this;
+          var _this9 = this;
 
           /* Handler for all MUC messages sent to this groupchat.
            *
@@ -43669,7 +44425,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             }
 
             this.createMessage(stanza, original_stanza).then(function (msg) {
-              return _this8.incrementUnreadMsgCounter(msg);
+              return _this9.incrementUnreadMsgCounter(msg);
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
           }
 
@@ -43705,6 +44461,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           }
         },
         onOwnPresence: function onOwnPresence(pres) {
+          var _this10 = this;
+
           /* Handles a received presence relating to the current
            * user.
            *
@@ -43725,10 +44483,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
           if (locked_room) {
             if (this.get('auto_configure')) {
-              this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+              this.autoConfigureChatRoom().then(function () {
+                return _this10.refreshRoomFeatures();
+              });
             } else if (_converse.muc_instant_rooms) {
               // Accept default configuration
-              this.saveConfiguration().then(this.getRoomFeatures.bind(this));
+              this.saveConfiguration().then(function () {
+                return _this10.getRoomFeatures();
+              });
             } else {
               this.trigger('configurationNeeded');
               return; // We haven't yet entered the groupchat, so bail here.
@@ -43740,7 +44502,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             // otherwise the features would have been fetched in
             // the "initialize" method already.
             if (this.get('affiliation') === 'owner' && this.get('auto_configure')) {
-              this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+              this.autoConfigureChatRoom().then(function () {
+                return _this10.refreshRoomFeatures();
+              });
             } else {
               this.getRoomFeatures();
             }
@@ -43858,7 +44622,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           }
         },
         fetchMembers: function fetchMembers() {
-          var _this9 = this;
+          var _this11 = this;
 
           this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']).then(function (new_members) {
             var new_jids = new_members.map(function (m) {
@@ -43871,7 +44635,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             }).filter(function (m) {
               return !_.isUndefined(m);
             }),
-                removed_members = _this9.filter(function (m) {
+                removed_members = _this11.filter(function (m) {
               return f.includes(m.get('affiliation'), ['admin', 'member', 'owner']) && !f.includes(m.get('nick'), new_nicks) && !f.includes(m.get('jid'), new_jids);
             });
 
@@ -43889,11 +44653,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
               var occupant;
 
               if (attrs.jid) {
-                occupant = _this9.findOccupant({
+                occupant = _this11.findOccupant({
                   'jid': attrs.jid
                 });
               } else {
-                occupant = _this9.findOccupant({
+                occupant = _this11.findOccupant({
                   'nick': attrs.nick
                 });
               }
@@ -43901,7 +44665,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
               if (occupant) {
                 occupant.save(attrs);
               } else {
-                _this9.create(attrs);
+                _this11.create(attrs);
               }
             });
           }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
@@ -44032,6 +44796,24 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         _converse.chatboxes.each(function (model) {
           if (model.get('type') === _converse.CHATROOMS_TYPE) {
             model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+          }
+        });
+      }
+
+      function fetchRegistrationForm(room_jid, user_jid) {
+        var _this12 = this;
+
+        _converse.api.sendIQ($iq({
+          'from': user_jid,
+          'to': room_jid,
+          'type': 'get'
+        }).c('query', {
+          'xmlns': Strophe.NS.REGISTER
+        })).then(function (iq) {}).catch(function (iq) {
+          if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', iq).length) {
+            _this12.feedback.set('error', __("Error: the groupchat ".concat(_this12.model.getDisplayName(), " does not exist.")));
+          } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]').length) {
+            _this12.feedback.set('error', __("Sorry, you're not allowed to registerd in this groupchat"));
           }
         });
       }
@@ -44447,11 +45229,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         // the message...
 
 
-        var body = sizzle("encrypted[xmlns=\"".concat(Strophe.NS.OMEMO, "\"]"), message).length ? __('OMEMO Message received') : message.querySelector('body').textContent;
+        var body = sizzle("encrypted[xmlns=\"".concat(Strophe.NS.OMEMO, "\"]"), message).length ? __('OMEMO Message received') : _.get(message.querySelector('body'), 'textContent');
+
+        if (!body) {
+          return;
+        }
+
         var n = new Notification(title, {
-          body: body,
-          lang: _converse.locale,
-          icon: _converse.notification_icon
+          'body': body,
+          'lang': _converse.locale,
+          'icon': _converse.notification_icon
         });
         setTimeout(n.close.bind(n), 5000);
       };
@@ -44800,7 +45587,14 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
         encryptMessage: async function encryptMessage(plaintext) {
           // The client MUST use fresh, randomly generated key/IV pairs
           // with AES-128 in Galois/Counter Mode (GCM).
-          var iv = crypto.getRandomValues(new window.Uint8Array(16)),
+          // For GCM a 12 byte IV is strongly suggested as other IV lengths
+          // will require additional calculations. In principle any IV size
+          // can be used as long as the IV doesn't ever repeat. NIST however
+          // suggests that only an IV size of 12 bytes needs to be supported
+          // by implementations.
+          //
+          // https://crypto.stackexchange.com/questions/26783/ciphertext-and-tag-size-and-iv-transmission-with-aes-in-gcm-mode
+          var iv = crypto.getRandomValues(new window.Uint8Array(12)),
               key = await crypto.subtle.generateKey(KEY_ALGO, true, ["encrypt", "decrypt"]),
               algo = {
             'name': 'AES-GCM',
@@ -45945,11 +46739,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /*global define */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! templates/alert.html */ "./src/templates/alert.html"), __webpack_require__(/*! templates/chat_status_modal.html */ "./src/templates/chat_status_modal.html"), __webpack_require__(/*! templates/profile_modal.html */ "./src/templates/profile_modal.html"), __webpack_require__(/*! templates/profile_view.html */ "./src/templates/profile_view.html"), __webpack_require__(/*! templates/status_option.html */ "./src/templates/status_option.html"), __webpack_require__(/*! converse-vcard */ "./src/converse-vcard.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js"), __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js"), __webpack_require__(/*! templates/alert.html */ "./src/templates/alert.html"), __webpack_require__(/*! templates/chat_status_modal.html */ "./src/templates/chat_status_modal.html"), __webpack_require__(/*! templates/profile_modal.html */ "./src/templates/profile_modal.html"), __webpack_require__(/*! templates/profile_view.html */ "./src/templates/profile_view.html"), __webpack_require__(/*! templates/status_option.html */ "./src/templates/status_option.html"), __webpack_require__(/*! converse-vcard */ "./src/converse-vcard.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, bootstrap, tpl_alert, tpl_chat_status_modal, tpl_profile_modal, tpl_profile_view, tpl_status_option) {
+})(void 0, function (converse, bootstrap, _FormData, tpl_alert, tpl_chat_status_modal, tpl_profile_modal, tpl_profile_view, tpl_status_option) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -46233,107 +47027,138 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           __ = _converse.__;
 
       _converse.api.settings.update({
-        'push_app_servers': []
+        'push_app_servers': [],
+        'enable_muc_push': false
       });
 
-      function disablePushAppServer(push_app_server) {
+      async function disablePushAppServer(domain, push_app_server) {
         if (!push_app_server.jid) {
           return;
         }
 
-        Promise.all([_converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)]).then(function (result) {
-          if (!result[0].length && !result[1].length) {
-            return _converse.log("Not disabling push app server \"".concat(push_app_server.jid, "\", no disco support from your server."), Strophe.LogLevel.WARN);
-          }
+        var result = await _converse.api.disco.supports(Strophe.NS.PUSH, domain || _converse.bare_jid);
 
-          var stanza = $iq({
-            'type': 'set'
-          }).c('disable', {
-            'xmlns': Strophe.NS.PUSH,
-            'jid': push_app_server.jid
+        if (!result.length) {
+          return _converse.log("Not disabling push app server \"".concat(push_app_server.jid, "\", no disco support from your server."), Strophe.LogLevel.WARN);
+        }
+
+        var stanza = $iq({
+          'type': 'set'
+        });
+
+        if (domain !== _converse.bare_jid) {
+          stanza.attrs({
+            'to': domain
           });
+        }
 
-          if (push_app_server.node) {
-            stanza.attrs({
-              'node': push_app_server.node
-            });
-          }
+        stanza.c('disable', {
+          'xmlns': Strophe.NS.PUSH,
+          'jid': push_app_server.jid
+        });
 
-          _converse.api.sendIQ(stanza).then(function () {
-            return _converse.session.set('push_enabled', true);
-          }).catch(function (e) {
-            _converse.log("Could not enable push app server for ".concat(push_app_server.jid), Strophe.LogLevel.ERROR);
-
-            _converse.log(e, Strophe.LogLevel.ERROR);
+        if (push_app_server.node) {
+          stanza.attrs({
+            'node': push_app_server.node
           });
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        }
+
+        _converse.api.sendIQ(stanza).catch(function (e) {
+          _converse.log("Could not disable push app server for ".concat(push_app_server.jid), Strophe.LogLevel.ERROR);
+
+          _converse.log(e, Strophe.LogLevel.ERROR);
+        });
       }
 
-      function enablePushAppServer(push_app_server) {
+      async function enablePushAppServer(domain, push_app_server) {
         if (!push_app_server.jid || !push_app_server.node) {
           return;
         }
 
-        _converse.api.disco.getIdentity('pubsub', 'push', push_app_server.jid).then(function (identity) {
-          if (!identity) {
-            return _converse.log("Not enabling push the service \"".concat(push_app_server.jid, "\", it doesn't have the right disco identtiy."), Strophe.LogLevel.WARN);
-          }
+        var identity = await _converse.api.disco.getIdentity('pubsub', 'push', push_app_server.jid);
 
-          return Promise.all([_converse.api.disco.supports(Strophe.NS.PUSH, push_app_server.jid), _converse.api.disco.supports(Strophe.NS.PUSH, _converse.bare_jid)]).then(function (result) {
-            if (!result[0].length && !result[1].length) {
-              return _converse.log("Not enabling push app server \"".concat(push_app_server.jid, "\", no disco support from your server."), Strophe.LogLevel.WARN);
-            }
+        if (!identity) {
+          return _converse.log("Not enabling push the service \"".concat(push_app_server.jid, "\", it doesn't have the right disco identtiy."), Strophe.LogLevel.WARN);
+        }
 
-            var stanza = $iq({
-              'type': 'set'
-            }).c('enable', {
-              'xmlns': Strophe.NS.PUSH,
-              'jid': push_app_server.jid,
-              'node': push_app_server.node
-            });
+        var result = await Promise.all([_converse.api.disco.supports(Strophe.NS.PUSH, push_app_server.jid), _converse.api.disco.supports(Strophe.NS.PUSH, domain)]);
 
-            if (push_app_server.secret) {
-              stanza.c('x', {
-                'xmlns': Strophe.NS.XFORM,
-                'type': 'submit'
-              }).c('field', {
-                'var': 'FORM_TYPE'
-              }).c('value').t("".concat(Strophe.NS.PUBSUB, "#publish-options")).up().up().c('field', {
-                'var': 'secret'
-              }).c('value').t(push_app_server.secret);
-            }
+        if (!result[0].length && !result[1].length) {
+          return _converse.log("Not enabling push app server \"".concat(push_app_server.jid, "\", no disco support from your server."), Strophe.LogLevel.WARN);
+        }
 
-            _converse.api.sendIQ(stanza).then(function () {
-              return _converse.session.save('push_enabled', true);
-            }).catch(function (e) {
-              _converse.log("Could not enable push app server for ".concat(push_app_server.jid), Strophe.LogLevel.ERROR);
+        var stanza = $iq({
+          'type': 'set'
+        });
 
-              _converse.log(e, Strophe.LogLevel.ERROR);
-            });
-          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        if (domain !== _converse.bare_jid) {
+          stanza.attrs({
+            'to': domain
+          });
+        }
+
+        stanza.c('enable', {
+          'xmlns': Strophe.NS.PUSH,
+          'jid': push_app_server.jid,
+          'node': push_app_server.node
+        });
+
+        if (push_app_server.secret) {
+          stanza.c('x', {
+            'xmlns': Strophe.NS.XFORM,
+            'type': 'submit'
+          }).c('field', {
+            'var': 'FORM_TYPE'
+          }).c('value').t("".concat(Strophe.NS.PUBSUB, "#publish-options")).up().up().c('field', {
+            'var': 'secret'
+          }).c('value').t(push_app_server.secret);
+        }
+
+        return _converse.api.sendIQ(stanza);
       }
 
-      function enablePush() {
-        if (_converse.session.get('push_enabled')) {
-          // XXX: this code is still a bit naive. We set push_enabled
-          // to true as soon as the first push app server has been set.
-          //
-          // When enabling or disabling multiple push app servers,
-          // we won't wait until we have confirmation that all have been set.
+      async function enablePush(domain) {
+        domain = domain || _converse.bare_jid;
+        var push_enabled = _converse.session.get('push_enabled') || [];
+
+        if (_.includes(push_enabled, domain)) {
           return;
         }
 
         var enabled_services = _.reject(_converse.push_app_servers, 'disable');
 
-        _.each(enabled_services, enablePushAppServer);
+        try {
+          await Promise.all(_.map(enabled_services, _.partial(enablePushAppServer, domain)));
+        } catch (e) {
+          _converse.log('Could not enable push App Server', Strophe.LogLevel.ERROR);
+
+          if (e) _converse.log(e, Strophe.LogLevel.ERROR);
+        } finally {
+          push_enabled.push(domain);
+        }
 
         var disabled_services = _.filter(_converse.push_app_servers, 'disable');
 
-        _.each(disabled_services, disablePushAppServer);
+        _.each(disabled_services, _.partial(disablePushAppServer, domain));
+
+        _converse.session.save('push_enabled', push_enabled);
       }
 
-      _converse.api.listen.on('statusInitialized', enablePush);
+      _converse.api.listen.on('statusInitialized', function () {
+        return enablePush();
+      });
+
+      function onChatBoxAdded(model) {
+        if (model.get('type') == _converse.CHATROOMS_TYPE) {
+          enablePush(Strophe.getDomainFromJid(model.get('jid')));
+        }
+      }
+
+      if (_converse.enable_muc_push) {
+        _converse.api.listen.on('chatBoxesInitialized', function () {
+          return _converse.chatboxes.on('add', onChatBoxAdded);
+        });
+      }
     }
   });
 });
@@ -46484,7 +47309,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         'allow_registration': true,
         'domain_placeholder': __(" e.g. conversejs.org"),
         // Placeholder text shown in the domain input on the registration form
-        'providers_link': 'https://xmpp.net/directory.php',
+        'providers_link': 'https://compliance.conversations.im/',
         // Link to XMPP providers shown on registration page
         'registration_domain': ''
       });
@@ -46704,8 +47529,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           this.reset({
-            domain: Strophe.getDomainFromJid(domain_name),
-            _registering: true
+            'domain': Strophe.getDomainFromJid(domain_name),
+            '_registering': true
           });
 
           _converse.connection.connect(this.domain, "", this.onConnectStatusChanged.bind(this));
@@ -48186,6 +49011,8 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
             _converse.xmppstatus.save({
               'status': show
+            }, {
+              'silent': true
             });
 
             var status_message = _.propertyOf(presence.querySelector('status'))('textContent');
@@ -48459,11 +49286,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! templates/add_contact_modal.html */ "./src/templates/add_contact_modal.html"), __webpack_require__(/*! templates/group_header.html */ "./src/templates/group_header.html"), __webpack_require__(/*! templates/pending_contact.html */ "./src/templates/pending_contact.html"), __webpack_require__(/*! templates/requesting_contact.html */ "./src/templates/requesting_contact.html"), __webpack_require__(/*! templates/roster.html */ "./src/templates/roster.html"), __webpack_require__(/*! templates/roster_filter.html */ "./src/templates/roster_filter.html"), __webpack_require__(/*! templates/roster_item.html */ "./src/templates/roster_item.html"), __webpack_require__(/*! templates/search_contact.html */ "./src/templates/search_contact.html"), __webpack_require__(/*! awesomplete */ "awesomplete"), __webpack_require__(/*! converse-chatboxes */ "./src/converse-chatboxes.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js"), __webpack_require__(/*! templates/add_contact_modal.html */ "./src/templates/add_contact_modal.html"), __webpack_require__(/*! templates/group_header.html */ "./src/templates/group_header.html"), __webpack_require__(/*! templates/pending_contact.html */ "./src/templates/pending_contact.html"), __webpack_require__(/*! templates/requesting_contact.html */ "./src/templates/requesting_contact.html"), __webpack_require__(/*! templates/roster.html */ "./src/templates/roster.html"), __webpack_require__(/*! templates/roster_filter.html */ "./src/templates/roster_filter.html"), __webpack_require__(/*! templates/roster_item.html */ "./src/templates/roster_item.html"), __webpack_require__(/*! templates/search_contact.html */ "./src/templates/search_contact.html"), __webpack_require__(/*! awesomplete */ "awesomplete"), __webpack_require__(/*! converse-chatboxes */ "./src/converse-chatboxes.js"), __webpack_require__(/*! converse-modal */ "./src/converse-modal.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, tpl_add_contact_modal, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item, tpl_search_contact, Awesomplete) {
+})(void 0, function (converse, _FormData, tpl_add_contact_modal, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item, tpl_search_contact, Awesomplete) {
   "use strict";
 
   var _converse$env = converse.env,
@@ -49977,7 +50804,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /*global define */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! es6-promise */ "es6-promise"), __webpack_require__(/*! jed */ "./node_modules/jed/jed.js"), __webpack_require__(/*! lodash.noconflict */ "lodash.noconflict"), __webpack_require__(/*! moment */ "moment"), __webpack_require__(/*! moment/locale/af */ "./node_modules/moment/locale/af.js"), __webpack_require__(/*! moment/locale/ar */ "./node_modules/moment/locale/ar.js"), __webpack_require__(/*! moment/locale/bg */ "./node_modules/moment/locale/bg.js"), __webpack_require__(/*! moment/locale/ca */ "./node_modules/moment/locale/ca.js"), __webpack_require__(/*! moment/locale/cs */ "./node_modules/moment/locale/cs.js"), __webpack_require__(/*! moment/locale/de */ "./node_modules/moment/locale/de.js"), __webpack_require__(/*! moment/locale/es */ "./node_modules/moment/locale/es.js"), __webpack_require__(/*! moment/locale/eu */ "./node_modules/moment/locale/eu.js"), __webpack_require__(/*! moment/locale/fr */ "./node_modules/moment/locale/fr.js"), __webpack_require__(/*! moment/locale/he */ "./node_modules/moment/locale/he.js"), __webpack_require__(/*! moment/locale/hu */ "./node_modules/moment/locale/hu.js"), __webpack_require__(/*! moment/locale/id */ "./node_modules/moment/locale/id.js"), __webpack_require__(/*! moment/locale/it */ "./node_modules/moment/locale/it.js"), __webpack_require__(/*! moment/locale/ja */ "./node_modules/moment/locale/ja.js"), __webpack_require__(/*! moment/locale/nb */ "./node_modules/moment/locale/nb.js"), __webpack_require__(/*! moment/locale/nl */ "./node_modules/moment/locale/nl.js"), __webpack_require__(/*! moment/locale/pl */ "./node_modules/moment/locale/pl.js"), __webpack_require__(/*! moment/locale/pt-br */ "./node_modules/moment/locale/pt-br.js"), __webpack_require__(/*! moment/locale/ru */ "./node_modules/moment/locale/ru.js"), __webpack_require__(/*! moment/locale/tr */ "./node_modules/moment/locale/tr.js"), __webpack_require__(/*! moment/locale/uk */ "./node_modules/moment/locale/uk.js"), __webpack_require__(/*! moment/locale/zh-cn */ "./node_modules/moment/locale/zh-cn.js"), __webpack_require__(/*! moment/locale/zh-tw */ "./node_modules/moment/locale/zh-tw.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! es6-promise */ "es6-promise"), __webpack_require__(/*! jed */ "./node_modules/jed/jed.js"), __webpack_require__(/*! lodash.noconflict */ "lodash.noconflict"), __webpack_require__(/*! moment */ "moment"), __webpack_require__(/*! moment/locale/af */ "./node_modules/moment/locale/af.js"), __webpack_require__(/*! moment/locale/ar */ "./node_modules/moment/locale/ar.js"), __webpack_require__(/*! moment/locale/bg */ "./node_modules/moment/locale/bg.js"), __webpack_require__(/*! moment/locale/ca */ "./node_modules/moment/locale/ca.js"), __webpack_require__(/*! moment/locale/cs */ "./node_modules/moment/locale/cs.js"), __webpack_require__(/*! moment/locale/de */ "./node_modules/moment/locale/de.js"), __webpack_require__(/*! moment/locale/es */ "./node_modules/moment/locale/es.js"), __webpack_require__(/*! moment/locale/eu */ "./node_modules/moment/locale/eu.js"), __webpack_require__(/*! moment/locale/fr */ "./node_modules/moment/locale/fr.js"), __webpack_require__(/*! moment/locale/he */ "./node_modules/moment/locale/he.js"), __webpack_require__(/*! moment/locale/hi */ "./node_modules/moment/locale/hi.js"), __webpack_require__(/*! moment/locale/hu */ "./node_modules/moment/locale/hu.js"), __webpack_require__(/*! moment/locale/id */ "./node_modules/moment/locale/id.js"), __webpack_require__(/*! moment/locale/it */ "./node_modules/moment/locale/it.js"), __webpack_require__(/*! moment/locale/ja */ "./node_modules/moment/locale/ja.js"), __webpack_require__(/*! moment/locale/nb */ "./node_modules/moment/locale/nb.js"), __webpack_require__(/*! moment/locale/nl */ "./node_modules/moment/locale/nl.js"), __webpack_require__(/*! moment/locale/pl */ "./node_modules/moment/locale/pl.js"), __webpack_require__(/*! moment/locale/pt-br */ "./node_modules/moment/locale/pt-br.js"), __webpack_require__(/*! moment/locale/ro */ "./node_modules/moment/locale/ro.js"), __webpack_require__(/*! moment/locale/ru */ "./node_modules/moment/locale/ru.js"), __webpack_require__(/*! moment/locale/tr */ "./node_modules/moment/locale/tr.js"), __webpack_require__(/*! moment/locale/uk */ "./node_modules/moment/locale/uk.js"), __webpack_require__(/*! moment/locale/zh-cn */ "./node_modules/moment/locale/zh-cn.js"), __webpack_require__(/*! moment/locale/zh-tw */ "./node_modules/moment/locale/zh-tw.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -50357,9 +51184,9 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/audio.html -->\n<audio controls><source src="' +
+__p += '<!-- src/templates/audio.html -->\n<audio controls src="' +
 __e(o.url) +
-'" type="audio/mpeg"></audio>\n<a target="_blank" rel="noopener" href="' +
+'"></audio>\n<a target="_blank" rel="noopener" href="' +
 __e(o.url) +
 '">' +
 __e(o.label_download) +
@@ -51079,7 +51906,7 @@ __p += '\n    </div>\n    <p class="chatroom-description" title="' +
 __e(o.description) +
 '">' +
 __e(o.description) +
-'<p/>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="' +
+'</p>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="' +
 __e(o.info_close) +
 '"></a>\n    ';
  if (o.affiliation == 'owner') { ;
@@ -51875,11 +52702,11 @@ __e(o.__("Password:")) +
 __e(o.__('password')) +
 '">\n                </div>\n                ';
  } ;
-__p += '\n                <div class="form-group form-check">\n                    <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ';
+__p += '\n                <div class="form-group form-check login-trusted">\n                    <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ';
  if (o._converse.config.get('trusted')) { ;
 __p += ' checked="checked" ';
  } ;
-__p += '>\n                    <label for="converse-login-trusted" class="form-check-label">' +
+__p += '>\n                    <label for="converse-login-trusted" class="form-check-label login-trusted__desc">' +
 __e(o.__('This is a trusted device')) +
 '</label>\n                    <i class="fa fa-info-circle" data-toggle="popover"\n                       data-title="Trusted device?"\n                       data-content="' +
 __e(o.__('To improve performance, we cache your data in this browser. Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. It\'s important that you explicitly log out, otherwise not all cached data might be deleted.')) +
@@ -51954,13 +52781,13 @@ __p += '**';
  }; ;
 __p +=
 __e(o.username) +
-'\n                ';
+'</span>\n            ';
 o.roles.forEach(function (role) { ;
 __p += ' <span class="badge badge-secondary">' +
 __e(role) +
 '</span> ';
  }); ;
-__p += '\n            </span>\n            ';
+__p += '\n            ';
  if (!o.is_me_message) { ;
 __p += '<time timestamp="' +
 __e(o.isodate) +
@@ -52260,13 +53087,13 @@ __e(o.__('Save and close')) +
  if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ;
 __p += '\n                        <div class="tab-pane fade" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">\n                            <form class="converse-form fingerprint-removal">\n                                <ul class="list-group fingerprints">\n                                    <li class="list-group-item active">' +
 __e(o.__("This device's OMEMO fingerprint")) +
-'</li>\n                                    <li class="list-group-item">\n                                        ';
- if (o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint) { ;
+'</li>\n                                    <li class="list-group-item">\n                                    ';
+ if (o.view.current_device && o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint) { ;
 __p += '\n                                        <span class="fingerprint">' +
 __e(o.utils.formatFingerprint(o.view.current_device.get('bundle').fingerprint)) +
-'</span>\n                                        ';
+'</span>\n                                    ';
  } else {;
-__p += '\n                                            <span class="spinner fa fa-spinner centered"/>\n                                        ';
+__p += '\n                                        <span class="spinner fa fa-spinner centered"/>\n                                    ';
  } ;
 __p += '\n                                    </li>\n                                </ul>\n                                ';
  if (o.view.other_devices.length) { ;
@@ -53412,9 +54239,9 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/video.html -->\n<video controls><source src="' +
+__p += '<!-- src/templates/video.html -->\n<video controls src="' +
 __e(o.url) +
-'" type="video/mp4"></video>\n<a target="_blank" rel="noopener" href="' +
+'" style="max-height: 50vh"></video>\n<a target="_blank" rel="noopener" href="' +
 __e(o.url) +
 '">' +
 __e(o.label_download) +
@@ -53468,12 +54295,12 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 /*global define, escape, window, Uint8Array */
 (function (root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! es6-promise */ "es6-promise"), __webpack_require__(/*! lodash.noconflict */ "lodash.noconflict"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! strophe */ "strophe"), __webpack_require__(/*! uri */ "./node_modules/urijs/src/URI.js"), __webpack_require__(/*! templates/audio.html */ "./src/templates/audio.html"), __webpack_require__(/*! templates/file.html */ "./src/templates/file.html"), __webpack_require__(/*! templates/image.html */ "./src/templates/image.html"), __webpack_require__(/*! templates/video.html */ "./src/templates/video.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! es6-promise */ "es6-promise"), __webpack_require__(/*! fast-text-encoding */ "./node_modules/fast-text-encoding/text.js"), __webpack_require__(/*! lodash.noconflict */ "lodash.noconflict"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! strophe */ "strophe"), __webpack_require__(/*! uri */ "./node_modules/urijs/src/URI.js"), __webpack_require__(/*! templates/audio.html */ "./src/templates/audio.html"), __webpack_require__(/*! templates/file.html */ "./src/templates/file.html"), __webpack_require__(/*! templates/image.html */ "./src/templates/image.html"), __webpack_require__(/*! templates/video.html */ "./src/templates/video.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else { var Strophe; }
-})(void 0, function (sizzle, Promise, _, Backbone, Strophe, URI, tpl_audio, tpl_file, tpl_image, tpl_video) {
+})(void 0, function (sizzle, Promise, FastTextEncoding, _, Backbone, Strophe, URI, tpl_audio, tpl_file, tpl_image, tpl_video) {
   "use strict";
 
   Strophe = Strophe.Strophe;
@@ -53711,7 +54538,7 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   };
 
   u.renderNewLines = function (text) {
-    return text.replace(/\n\n+/g, '<br><br>').replace(/\n/g, '<br/>');
+    return text.replace(/\n\n+/g, '<br/><br/>').replace(/\n/g, '<br/>');
   };
 
   u.renderImageURLs = function (_converse, obj) {
@@ -53742,28 +54569,29 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
 
   u.renderFileURL = function (_converse, url) {
     var uri = new URI(url),
-        __ = _converse.__,
         filename = uri.filename(),
         lower_filename = filename.toLowerCase();
 
-    if (!_.includes(["https", "http"], uri.protocol().toLowerCase()) || lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') || lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') || lower_filename.endsWith('png') || lower_filename.endsWith('gif') || lower_filename.endsWith('svg')) {
+    if (!_.includes(["https", "http"], uri.protocol().toLowerCase()) || lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') || lower_filename.endsWith('ogg') || lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') || lower_filename.endsWith('png') || lower_filename.endsWith('gif') || lower_filename.endsWith('m4a') || lower_filename.endsWith('webm') || lower_filename.endsWith('svg')) {
       return url;
     }
 
+    var __ = _converse.__;
     return tpl_file({
       'url': url,
-      'label_download': __('Download "%1$s"', uri.filename())
+      'label_download': __('Download file "%1$s"', decodeURI(filename))
     });
   };
 
   u.renderImageURL = function (_converse, url) {
-    var __ = _converse.__,
-        lurl = url.toLowerCase();
+    var lurl = url.toLowerCase();
 
     if (lurl.endsWith('jpg') || lurl.endsWith('jpeg') || lurl.endsWith('png') || lurl.endsWith('gif') || lurl.endsWith('svg')) {
+      var __ = _converse.__,
+          uri = new URI(url);
       return tpl_image({
         'url': url,
-        'label_download': __('Download')
+        'label_download': __('Download image "%1$s"', decodeURI(uri.filename()))
       });
     }
 
@@ -53771,12 +54599,12 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   };
 
   u.renderMovieURL = function (_converse, url) {
-    var __ = _converse.__;
-
-    if (url.endsWith('mp4')) {
+    if (url.endsWith('mp4') || url.endsWith('webm')) {
+      var __ = _converse.__,
+          uri = new URI(url);
       return tpl_video({
         'url': url,
-        'label_download': __('Download video file')
+        'label_download': __('Download video file "%1$s"', decodeURI(uri.filename()))
       });
     }
 
@@ -53784,12 +54612,12 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   };
 
   u.renderAudioURL = function (_converse, url) {
-    var __ = _converse.__;
-
-    if (url.endsWith('mp3')) {
+    if (url.endsWith('mp3') || url.endsWith('m4a') || url.endsWith('ogg')) {
+      var __ = _converse.__,
+          uri = new URI(url);
       return tpl_audio({
         'url': url,
-        'label_download': __('Download audio file')
+        'label_download': __('Download audio file "%1$s"', decodeURI(uri.filename()))
       });
     }
 
@@ -54330,19 +55158,11 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
   };
 
   u.arrayBufferToString = function (ab) {
-    return new Uint8Array(ab).reduce(function (data, byte) {
-      return data + String.fromCharCode(byte);
-    }, '');
+    return new TextDecoder("utf-8").decode(ab);
   };
 
   u.stringToArrayBuffer = function (string) {
-    var len = string.length,
-        bytes = new Uint8Array(len);
-
-    for (var i = 0; i < len; i++) {
-      bytes[i] = string.charCodeAt(i);
-    }
-
+    var bytes = new TextEncoder("utf-8").encode(string);
     return bytes.buffer;
   };
 
@@ -76200,17 +77020,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       return data;
     });
-  };
-
-  u.marshallAffiliationIQs = function marshallAffiliationIQs() {
-    /* Marshall a list of IQ stanzas into a map of JIDs and
-        * affiliations.
-        *
-        * Parameters:
-        *  Any amount of XMLElement objects, representing the IQ
-        *  stanzas.
-        */
-    return _.flatMap(arguments[0], u.parseMemberListIQ);
   };
 });
 

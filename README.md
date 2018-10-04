@@ -1,35 +1,34 @@
-# converse.js
+# Converse
 
 [![XMPP Chat](https://inverse.chat/badge.svg?room=discuss@conference.conversejs.org)](https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org)
 [![Travis](https://api.travis-ci.org/conversejs/converse.js.png?branch=master)](https://travis-ci.org/conversejs/converse.js)
 [![Bountysource bounties](https://img.shields.io/bountysource/team/converse.js/activity.svg?maxAge=2592000)](https://www.bountysource.com/teams/converse.js/issues?tracker_ids=194169)
 [![Translation status](https://hosted.weblate.org/widgets/conversejs/-/svg-badge.svg)](https://hosted.weblate.org/engage/conversejs/?utm_source=widget)
 
-[Converse.js](https://conversejs.org) is a web based [XMPP/Jabber](https://xmpp.org) instant messaging client.
+[Converse](https://conversejs.org) is a web based [XMPP/Jabber](https://xmpp.org) chat client.
 
-It enables you to add chat functionality to your website, independent of
-any specific backend. You will however need an XMPP server to connect
-to, either your own, or a public one.
+You can either use it as a webchat app, or you can integrate it into your own website.
+
+It's 100% client-side JavaScript, HTML and CSS and the only backend required
+is a modern XMPP server.
 
 Please support this project via [Patreon](https://www.patreon.com/jcbrand) or [Liberapay](https://liberapay.com/jcbrand)
 
 ## Demo
 
-Converse.js is hosted and can be used at [https://conversejs.org](https://conversejs.org).
+Converse is hosted and can be used at [https://conversejs.org](https://conversejs.org).
 
 A demo showing anonymous login is available at [https://conversejs.org/demo/anonymous.html](https://conversejs.org/demo/anonymous.html)
 and a demo which shows how you can embed a single chat room into a page is
 avialable at [https://conversejs.org/demo/embedded.html](https://conversejs.org/demo/embedded.html).
 
-### Converse.js: As seen on the conversejs.org website
+### Converse in overlay mode
 
-![Screenshot of Converse](https://opkode.com/img/converse-screenshot.png)
+![Screenshot of Converse](https://opkode.com/img/Screen-Shot-2018-09-19-at-19.15.16.png)
 
-### inVerse: a fullscreen version of converse.js
+## Converse in fullpage mode
 
-Converse.js is also available in a fullscreen version, hosted at [inverse.chat](https://inverse.chat)
-
-![Screenshot of Converse in fullscreen mode](https://opkode.com/img/inverse-screenshot.png)
+![Screenshot of Converse in fullpage mode](https://opkode.com/img/Screen-Shot-2018-09-19-at-19.16.46.png)
 
 ## Documentation
 
@@ -39,22 +38,23 @@ You'll probably want to begin with the [quickstart guide](https://conversejs.org
 which shows you how to use the CDN (content delivery network) to quickly get a demo up and running.
 
 ## Features
-
+-   Available as overlayed chat boxes or as a fullscreen application. See [inverse.chat](https://inverse.chat) for the fullscreen version.
 -   A [plugin architecture](https://conversejs.org/docs/html/plugin_development.html) based on [pluggable.js](https://conversejs.github.io/pluggable.js/)
 -   Single-user and group chats
 -   Contacts and groups
 -   Multi-user chat rooms [XEP 45](https://xmpp.org/extensions/xep-0045.html)
+-   Chatroom bookmarks [XEP 48](https://xmpp.org/extensions/xep-0048.html)
 -   Direct invitations to chat rooms [XEP 249](https://xmpp.org/extensions/xep-0249.html)
 -   vCard support [XEP 54](https://xmpp.org/extensions/xep-0054.html)
 -   Service discovery [XEP 30](https://xmpp.org/extensions/xep-0030.html)
 -   In-band registration [XEP 77](https://xmpp.org/extensions/xep-0077.html)
--   Chat room bookmarks [XEP 48](https://xmpp.org/extensions/xep-0048.html)
 -   Roster item exchange [XEP 144](https://xmpp.org/extensions/tmp/xep-0144-1.1.html)
 -   Chat statuses (online, busy, away, offline)
 -   Custom status messages
--   Desktop notifications
 -   Typing and state notifications [XEP 85](https://xmpp.org/extensions/xep-0085.html)
--   Messages appear in all connnected chat clients [XEP 280](https://xmpp.org/extensions/xep-0280.html)
+-   Desktop notifications
+-   File sharing / HTTP File Upload [XEP 363](https://xmpp.org/extensions/xep-0363.html)
+-   Messages appear in all connnected chat clients / Message Carbons [XEP 280](https://xmpp.org/extensions/xep-0280.html)
 -   Third person "/me" messages [XEP 245](https://xmpp.org/extensions/xep-0245.html)
 -   XMPP Ping [XEP 199](https://xmpp.org/extensions/xep-0199.html)
 -   Server-side archiving of messages [XEP 313](https://xmpp.org/extensions/xep-0313.html)
@@ -62,30 +62,23 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   Client state indication [XEP 352](https://xmpp.org/extensions/xep-0352.html)
 -   Last Message Correction [XEP 308](https://xmpp.org/extensions/xep-0308.html)
 -   Off-the-record encryption
--   Translated into 16 languages
+-   OMEMO encrypted messaging [XEP 384](https://xmpp.org/extensions/xep-0384.html")
+-   Supports anonymous logins, see the [anonymous login demo](https://conversejs.org/demo/anonymous.html).
+-   Translated into 17 languages
 
 ## Integration into other frameworks
 
+-   **[Prosody](https://prosody.im/)**: [mod_conversejs](https://modules.prosody.im/mod_conversejs.html)
+-   **[Openfire](https://www.igniterealtime.org/projects/openfire/index.jsp)**: [inverse.jar](https://www.igniterealtime.org/projects/openfire/plugins.jsp)
 -   **[Ruby on Rails](https://rubyonrails.org)**: [conversejs-rails](https://github.com/mikemarsian/conversejs-rails)
 -   **[Django](https://www.djangoproject.com)**: [django-conversejs](https://pypi.python.org/pypi/django-conversejs) or [django-xmpp](https://github.com/fpytloun/django-xmpp)
--   **[Plone](https://plone.com)**: [collective.converse](https://github.com/collective/collective.converse)
+-   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)
 -   **[Roundcube](https://roundcube.net)**: [roundcube-converse.js-xmpp-plugin](https://github.com/devurandom/roundcube-converse.js-xmpp-plugin)
 -   **[Wordpress](https://wordpress.org)**: [ConverseJS](https://wordpress.org/plugins/conversejs/)
--   **[Patternslib](http://patternslib.com)**: [patterns.converse](https://github.com/jcbrand/patterns.converse)
+-   **[Plone](https://plone.com)**: [collective.converse](https://github.com/collective/collective.converse)
 -   **[Alfresco](https://www.alfresco.com)**: [alfresco-js-chat-share](https://github.com/keensoft/alfresco-js-chat-share)
 -   **[Friendica](https://friendi.ca)**: [converse](https://github.com/friendica/friendica-addons/tree/master/xmpp/converse)
 -   **[Tiki Wiki CMS Groupware](https://tiki.org)**: [built-in optional feature](https://doc.tiki.org/XMPP)
-
-## Screencasts
-
-*Note: These screencasts are already quite old! Converse.js has grown and evolved further since then.*
-
--   [In a static HTML page](https://opkode.com/media/blog/2013/04/02/converse.js-xmpp-instant-messaging-with-javascript).
-    Here we chat to external XMPP accounts on Jabber.org and Gmail.
--   [Integrated into a Plone site](https://opkode.com/media/blog/instant-messaging-for-plone-with-javascript-and-xmpp)
-    via collective.xmpp.chat.
--   [Off-the-record encryption](https://opkode.com/media/blog/2013/11/11/conversejs-otr-support)
-    in Converse 0.7.
 
 ## Tests
 
@@ -103,10 +96,6 @@ Emoji images are courtesy of [Twemoji](https://emojitwo.github.io/).
 
 ## Support
 
-For support queries and discussions, please join the mailing list: <conversejs@librelist.com>
-
-Also take a look at the [mailing list archives](http://librelist.com/browser/conversejs).
-
 Issues can be logged on the [Github issue tracker](https://github.com/conversejs/converse.js/issues).
 
 ## Donations
@@ -118,12 +107,14 @@ Recently we have started accepting donations via [Patreon](https://www.patreon.c
 
 The following people are making recurring donations:
 
-* An anonymous backer on Liberapay
+* [Daniel Gultsch](https://www.patreon.com/user/creators?u=13443518)
+* [Drew Varner](https://www.patreon.com/user/creators?u=8131055)
+* [Krischan](https://www.patreon.com/user/creators?u=337569)
 * [Guus der Kinderen](https://www.patreon.com/user/creators?u=8302585)
 * [Rafael](https://www.patreon.com/user/creators?u=4340078)
 * [Tilman Beitter](https://www.patreon.com/spicewiesel/creators)
 * [mt7479](https://www.patreon.com/user/creators?u=3892290)
-* [roelra](https://www.patreon.com/user/creators?u=5958918)
+* An anonymous backer on Liberapay
 
 Additionally this project is supported by
 

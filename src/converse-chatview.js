@@ -336,7 +336,7 @@
                     this.el.setAttribute('id', this.model.get('box_id'));
                     this.el.innerHTML = tpl_chatbox(
                         _.extend(this.model.toJSON(), {
-                                unread_msgs: __('You have unread messages')
+                                'unread_msgs': __('You have unread messages')
                             }
                         ));
                     this.content = this.el.querySelector('.chat-content');
@@ -754,7 +754,7 @@
                             // when the user writes a message as opposed to when a
                             // message is received.
                             this.model.set('scrolled', false);
-                        } else if (this.model.get('scrolled', true)) {
+                        } else if (this.model.get('scrolled', true) && !u.isOnlyChatStateNotification(message)) {
                             this.showNewMessagesIndicator();
                         }
                     }
@@ -898,7 +898,9 @@
                         } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
                             return this.onEscapePressed(ev);
                         } else if (ev.keyCode === _converse.keycodes.ENTER) {
-                            _.invoke(this.emoji_dropdown, 'toggle');
+                            if (this.emoji_dropdown && u.isVisible(this.emoji_dropdown.el.querySelector('.emoji-picker'))) {
+                                this.emoji_dropdown.toggle();
+                            }
                             return this.onFormSubmitted(ev);
                         } else if (ev.keyCode === _converse.keycodes.UP_ARROW && !ev.target.selectionEnd) {
                             return this.editEarlierMessage();
@@ -1065,6 +1067,7 @@
 
                         const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
                         this.emoji_dropdown = new bootstrap.Dropdown(dropdown_el, true);
+                        this.emoji_dropdown.el = dropdown_el;
                         this.emoji_dropdown.toggle();
                     }
                 },

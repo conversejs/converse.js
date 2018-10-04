@@ -98,11 +98,18 @@
             }, function (done, _converse) {
 
             let view;
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const room_jid = 'coven@chat.shakespeare.lit';
             test_utils.openControlBox();
-            _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'})
+            _converse.api.rooms.open(room_jid, {'nick': 'some1'})
             .then(() => {
-                view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                const last_stanza = _.last(_converse.connection.IQ_stanzas).nodeTree;
+                return test_utils.waitUntil(() => _.get(_.filter(
+                    IQ_stanzas,
+                    iq => iq.nodeTree.querySelector(
+                        `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                    )).pop(), 'nodeTree'));
+            }).then(last_stanza => {
+                view = _converse.chatboxviews.get(room_jid);
                 const IQ_id = last_stanza.getAttribute('id');
                 const features_stanza = $iq({
                         'from': 'coven@chat.shakespeare.lit',
@@ -262,7 +269,7 @@
                         type: 'groupchat'
                     }).c('body').t('romeo: Your attention is required').tree()
                 );
-                return test_utils.waitUntil(() => _converse.rooms_list_view.el.querySelectorAll(".msgs-indicator"));
+                return test_utils.waitUntil(() => _converse.rooms_list_view.el.querySelectorAll(".msgs-indicator").length);
             }).then(() => {
                 spyOn(view.model, 'incrementUnreadMsgCounter').and.callThrough();
                 const indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");

@@ -97,32 +97,32 @@
                     return test_utils.waitUntil(() => sent_stanza);
                 }).then(() => {
                     expect(sent_stanza.toLocaleString()).toBe(
-                        "<iq type='set' from='dummy@localhost/resource' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<pubsub xmlns='http://jabber.org/protocol/pubsub'>"+
-                                "<publish node='storage:bookmarks'>"+
-                                    "<item id='current'>"+
-                                        "<storage xmlns='storage:bookmarks'>"+
-                                            "<conference name='Play&amp;apos;s the Thing' autojoin='true' jid='theplay@conference.shakespeare.lit'>"+
-                                                "<nick>JC</nick>"+
-                                            "</conference>"+
-                                        "</storage>"+
-                                    "</item>"+
-                                "</publish>"+
-                                "<publish-options>"+
-                                    "<x xmlns='jabber:x:data' type='submit'>"+
-                                        "<field var='FORM_TYPE' type='hidden'>"+
-                                            "<value>http://jabber.org/protocol/pubsub#publish-options</value>"+
-                                        "</field>"+
-                                        "<field var='pubsub#persist_items'>"+
-                                            "<value>true</value>"+
-                                        "</field>"+
-                                        "<field var='pubsub#access_model'>"+
-                                            "<value>whitelist</value>"+
-                                        "</field>"+
-                                    "</x>"+
-                                "</publish-options>"+
-                            "</pubsub>"+
-                        "</iq>"
+                        `<iq from="dummy@localhost/resource" id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                            `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                                `<publish node="storage:bookmarks">`+
+                                    `<item id="current">`+
+                                        `<storage xmlns="storage:bookmarks">`+
+                                            `<conference autojoin="true" jid="theplay@conference.shakespeare.lit" name="Play&amp;apos;s the Thing">`+
+                                                `<nick>JC</nick>`+
+                                            `</conference>`+
+                                        `</storage>`+
+                                    `</item>`+
+                                `</publish>`+
+                                `<publish-options>`+
+                                    `<x type="submit" xmlns="jabber:x:data">`+
+                                        `<field type="hidden" var="FORM_TYPE">`+
+                                            `<value>http://jabber.org/protocol/pubsub#publish-options</value>`+
+                                        `</field>`+
+                                        `<field var="pubsub#persist_items">`+
+                                            `<value>true</value>`+
+                                        `</field>`+
+                                        `<field var="pubsub#access_model">`+
+                                            `<value>whitelist</value>`+
+                                        `</field>`+
+                                    `</x>`+
+                                `</publish-options>`+
+                            `</pubsub>`+
+                        `</iq>`
                     );
                     /* Server acknowledges successful storage
                      *
@@ -245,28 +245,28 @@
                     // conferences to bookmark (since we removed the one and
                     // only bookmark).
                     expect(sent_stanza.toLocaleString()).toBe(
-                        "<iq type='set' from='dummy@localhost/resource' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<pubsub xmlns='http://jabber.org/protocol/pubsub'>"+
-                                "<publish node='storage:bookmarks'>"+
-                                    "<item id='current'>"+
-                                        "<storage xmlns='storage:bookmarks'/>"+
-                                    "</item>"+
-                                "</publish>"+
-                                "<publish-options>"+
-                                    "<x xmlns='jabber:x:data' type='submit'>"+
-                                        "<field var='FORM_TYPE' type='hidden'>"+
-                                            "<value>http://jabber.org/protocol/pubsub#publish-options</value>"+
-                                        "</field>"+
-                                        "<field var='pubsub#persist_items'>"+
-                                            "<value>true</value>"+
-                                        "</field>"+
-                                        "<field var='pubsub#access_model'>"+
-                                            "<value>whitelist</value>"+
-                                        "</field>"+
-                                    "</x>"+
-                                "</publish-options>"+
-                            "</pubsub>"+
-                        "</iq>"
+                        `<iq from="dummy@localhost/resource" id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                            `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                                `<publish node="storage:bookmarks">`+
+                                    `<item id="current">`+
+                                        `<storage xmlns="storage:bookmarks"/>`+
+                                    `</item>`+
+                                `</publish>`+
+                                `<publish-options>`+
+                                    `<x type="submit" xmlns="jabber:x:data">`+
+                                        `<field type="hidden" var="FORM_TYPE">`+
+                                            `<value>http://jabber.org/protocol/pubsub#publish-options</value>`+
+                                        `</field>`+
+                                        `<field var="pubsub#persist_items">`+
+                                            `<value>true</value>`+
+                                        `</field>`+
+                                        `<field var="pubsub#access_model">`+
+                                            `<value>whitelist</value>`+
+                                        `</field>`+
+                                    `</x>`+
+                                `</publish-options>`+
+                            `</pubsub>`+
+                        `</iq>`
                     );
                     done();
                 });

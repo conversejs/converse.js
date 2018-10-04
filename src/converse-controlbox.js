@@ -9,6 +9,7 @@
 (function (root, factory) {
     define(["converse-core",
             "bootstrap",
+            "formdata-polyfill",
             "lodash.fp",
             "templates/converse_brand_heading.html",
             "templates/controlbox.html",
@@ -21,6 +22,7 @@
 }(this, function (
             converse,
             bootstrap,
+            _FormData,
             fp,
             tpl_brand_heading,
             tpl_controlbox,
@@ -288,6 +290,7 @@
                     } else {
                         this.loginpanel.render();
                     }
+                    this.loginpanel.initPopovers();
                     return this;
                 },
 
@@ -388,13 +391,6 @@
                     this.model.on('change', this.render, this);
                     this.listenTo(_converse.connfeedback, 'change', this.render);
                     this.render();
-                    _.forEach(this.el.querySelectorAll('[data-title]'), (el) => {
-                        const popover = new bootstrap.Popover(el, {
-                            'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
-                            'dismissible': _converse.view_mode === 'mobile' && true || false,
-                            'container': _converse.chatboxviews.el
-                        })
-                    });
                 },
 
                 toHTML () {
@@ -422,6 +418,16 @@
                                                     __('Username') || __('user@domain'),
                         })
                     );
+                },
+
+                initPopovers () {
+                    _.forEach(this.el.querySelectorAll('[data-title]'), el => {
+                        const popover = new bootstrap.Popover(el, {
+                            'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
+                            'dismissible': _converse.view_mode === 'mobile' && true || false,
+                            'container': this.el.parentElement.parentElement.parentElement
+                        })
+                    });
                 },
 
                 validate () {

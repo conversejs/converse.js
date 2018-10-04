@@ -58,7 +58,9 @@
                 },
 
                 initialize () {
-                    this.model.vcard.on('change', this.render, this);
+                    if (this.model.vcard) {
+                        this.model.vcard.on('change', this.render, this);
+                    }
                     this.model.on('change:correcting', this.onMessageCorrection, this);
                     this.model.on('change:message', this.render, this);
                     this.model.on('change:progress', this.renderFileUploadProgresBar, this);
@@ -105,7 +107,7 @@
                 renderChatMessage () {
                     const is_me_message = this.isMeCommand(),
                           moment_time = moment(this.model.get('time')),
-                          role = this.model.vcard.get('role'),
+                          role = this.model.vcard ? this.model.vcard.get('role') : null,
                           roles = role ? role.split(',') : [];
 
                     const msg = u.stringToElement(tpl_message(

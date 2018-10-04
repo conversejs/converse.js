@@ -74,14 +74,10 @@
                     i++;
                 }
                 expect(_converse.sendCSI).toHaveBeenCalledWith('inactive');
-                expect(sent_stanza.toLocaleString()).toBe(
-                    "<inactive xmlns='urn:xmpp:csi:0'/>"
-                );
+                expect(sent_stanza.toLocaleString()).toBe('<inactive xmlns="urn:xmpp:csi:0"/>');
                 _converse.onUserActivity();
                 expect(_converse.sendCSI).toHaveBeenCalledWith('active');
-                expect(sent_stanza.toLocaleString()).toBe(
-                    "<active xmlns='urn:xmpp:csi:0'/>"
-                );
+                expect(sent_stanza.toLocaleString()).toBe('<active xmlns="urn:xmpp:csi:0"/>');
                 // Reset values
                 _converse.csi_waiting_time = 0;
                 _converse.disco_entities.get(_converse.domain).features['urn:xmpp:csi:0'] = false;

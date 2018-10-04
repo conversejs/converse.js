@@ -12,6 +12,7 @@
         define([
             "sizzle",
             "es6-promise",
+            "fast-text-encoding",
             "lodash.noconflict",
             "backbone",
             "strophe",
@@ -39,6 +40,7 @@
         root.converse_utils = factory(
             root.sizzle,
             root.Promise,
+            null,
             root._,
             root.Backbone,
             Strophe
@@ -47,6 +49,7 @@
 }(this, function (
         sizzle,
         Promise,
+        FastTextEncoding,
         _,
         Backbone,
         Strophe,
@@ -274,7 +277,7 @@
     };
 
     u.renderNewLines = function (text) {
-        return text.replace(/\n\n+/g, '<br><br>').replace(/\n/g, '<br/>');
+        return text.replace(/\n\n+/g, '<br/><br/>').replace(/\n/g, '<br/>');
     };
 
     u.renderImageURLs = function (_converse, obj) {
@@ -307,55 +310,58 @@
 
     u.renderFileURL = function (_converse, url) {
         const uri = new URI(url),
-              { __ } = _converse,
               filename = uri.filename(),
               lower_filename = filename.toLowerCase();
         if (!_.includes(["https", "http"], uri.protocol().toLowerCase()) ||
-            lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') ||
+            lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') || lower_filename.endsWith('ogg') ||
             lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') ||
             lower_filename.endsWith('png') || lower_filename.endsWith('gif') ||
+            lower_filename.endsWith('m4a') || lower_filename.endsWith('webm') ||
             lower_filename.endsWith('svg')) {
 
             return url;
         }
+        const { __ } = _converse;
         return tpl_file({
             'url': url,
-            'label_download': __('Download "%1$s"', uri.filename())
+            'label_download': __('Download file "%1$s"', decodeURI(filename))
         })
     };
 
     u.renderImageURL = function (_converse, url) {
-        const { __ } = _converse,
-              lurl = url.toLowerCase();
-
+        const lurl = url.toLowerCase();
         if (lurl.endsWith('jpg') || lurl.endsWith('jpeg') || lurl.endsWith('png') ||
             lurl.endsWith('gif') || lurl.endsWith('svg')) {
 
+            const { __ } = _converse,
+                  uri = new URI(url);
             return tpl_image({
                 'url': url,
-                'label_download': __('Download')
+                'label_download': __('Download image "%1$s"', decodeURI(uri.filename()))
             })
         }
         return url;
     };
 
     u.renderMovieURL = function (_converse, url) {
-        const { __ } = _converse;
-        if (url.endsWith('mp4')) {
+        if (url.endsWith('mp4') || url.endsWith('webm')) {
+            const { __ } = _converse,
+                  uri = new URI(url);
             return tpl_video({
                 'url': url,
-                'label_download': __('Download video file')
+                'label_download': __('Download video file "%1$s"', decodeURI(uri.filename()))
             })
         }
         return url;
     };
 
     u.renderAudioURL = function (_converse, url) {
-        const { __ } = _converse;
-        if (url.endsWith('mp3')) {
+        if (url.endsWith('mp3') || url.endsWith('m4a') || url.endsWith('ogg')) {
+            const { __ } = _converse,
+                  uri = new URI(url);
             return tpl_audio({
                 'url': url,
-                'label_download': __('Download audio file')
+                'label_download': __('Download audio file "%1$s"', decodeURI(uri.filename()))
             })
         }
         return url;
@@ -471,7 +477,7 @@
 
             el.style.overflow = 'hidden';
 
-            function draw () { 
+            function draw () {
                 height -= original_height/steps;
                 if (height > 0) {
                     el.style.height = height + 'px';
@@ -866,17 +872,12 @@
     };
 
     u.arrayBufferToString = function (ab) {
-        return (new Uint8Array(ab)).reduce((data, byte) => data + String.fromCharCode(byte), '');
+        return new TextDecoder("utf-8").decode(ab);
     };
 
     u.stringToArrayBuffer = function (string) {
-        const len = string.length,
-              bytes = new Uint8Array(len);
-
-        for (let i = 0; i < len; i++) {
-            bytes[i] = string.charCodeAt(i)
-        }
-        return bytes.buffer
+        const bytes = new TextEncoder("utf-8").encode(string);
+        return bytes.buffer;
     };
 
     u.arrayBufferToBase64 = function (ab) {

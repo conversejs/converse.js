@@ -9,6 +9,7 @@
 (function (root, factory) {
     define(["converse-core",
             "bootstrap",
+            "formdata-polyfill",
             "templates/alert.html",
             "templates/chat_status_modal.html",
             "templates/profile_modal.html",
@@ -20,6 +21,7 @@
 }(this, function (
             converse,
             bootstrap,
+            _FormData,
             tpl_alert,
             tpl_chat_status_modal,
             tpl_profile_modal,

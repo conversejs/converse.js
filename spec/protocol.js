@@ -121,11 +121,11 @@
                      */
                     expect(_converse.roster.sendContactAddIQ).toHaveBeenCalled();
                     expect(sent_stanza.toLocaleString()).toBe(
-                        "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<query xmlns='jabber:iq:roster'>"+
-                                "<item jid='contact@example.org' name='contact@example.org'/>"+
-                            "</query>"+
-                        "</iq>"
+                        `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                            `<query xmlns="jabber:iq:roster">`+
+                                `<item jid="contact@example.org" name="contact@example.org"/>`+
+                            `</query>`+
+                        `</iq>`
                     );
                     /* As a result, the user's server (1) MUST initiate a roster push
                      * for the new roster item to all available resources associated
@@ -185,9 +185,9 @@
                 }).then(function () {
                     expect(contact.subscribe).toHaveBeenCalled();
                     expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
-                        "<presence to='contact@example.org' type='subscribe' xmlns='jabber:client'>"+
-                            "<nick xmlns='http://jabber.org/protocol/nick'>Max Mustermann</nick>"+
-                        "</presence>"
+                        `<presence to="contact@example.org" type="subscribe" xmlns="jabber:client">`+
+                            `<nick xmlns="http://jabber.org/protocol/nick">Max Mustermann</nick>`+
+                        `</presence>`
                     );
                     /* As a result, the user's server MUST initiate a second roster
                      * push to all of the user's available resources that have
@@ -254,7 +254,7 @@
                      */
                     expect(contact.ackSubscribe).toHaveBeenCalled();
                     expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
-                        "<presence type='subscribe' to='contact@example.org' xmlns='jabber:client'/>"
+                        `<presence to="contact@example.org" type="subscribe" xmlns="jabber:client"/>`
                     );
 
                     /* The user's server MUST initiate a roster push to all of the user's
@@ -283,7 +283,7 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     // Check that the IQ set was acknowledged.
                     expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
-                        "<iq type='result' id='"+IQ_id+"' from='dummy@localhost/resource' xmlns='jabber:client'/>"
+                        `<iq from="dummy@localhost/resource" id="${IQ_id}" type="result" xmlns="jabber:client"/>`
                     );
                     expect(_converse.roster.updateContact).toHaveBeenCalled();
 
@@ -341,7 +341,7 @@
                      */
                     expect(contact.authorize).toHaveBeenCalled();
                     expect(sent_stanza.toLocaleString()).toBe(
-                        "<presence to='contact@example.org' type='subscribed' xmlns='jabber:client'/>"
+                        `<presence to="contact@example.org" type="subscribed" xmlns="jabber:client"/>`
                     );
 
                     /* As a result, the user's server MUST initiate a
@@ -446,18 +446,18 @@
                  */
                 expect(contact.ackUnsubscribe).toHaveBeenCalled();
                 expect(sent_stanza.toLocaleString()).toBe(
-                    "<presence type='unsubscribe' to='contact@example.org' xmlns='jabber:client'/>"
+                    `<presence to="contact@example.org" type="unsubscribe" xmlns="jabber:client"/>`
                 );
 
                 /* _converse.js will then also automatically remove the
                  * contact from the user's roster.
                  */
                 expect(sent_IQ.toLocaleString()).toBe(
-                    "<iq type='set' xmlns='jabber:client'>"+
-                        "<query xmlns='jabber:iq:roster'>"+
-                            "<item jid='contact@example.org' subscription='remove'/>"+
-                        "</query>"+
-                    "</iq>"
+                    `<iq type="set" xmlns="jabber:client">`+
+                        `<query xmlns="jabber:iq:roster">`+
+                            `<item jid="contact@example.org" subscription="remove"/>`+
+                        `</query>`+
+                    `</iq>`
                 );
                 done();
             }));
@@ -511,11 +511,11 @@
                      * </iq>
                      */
                     expect(sent_IQ.toLocaleString()).toBe(
-                        "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<query xmlns='jabber:iq:roster'>"+
-                                "<item jid='annegreet.gomez@localhost' subscription='remove'/>"+
-                            "</query>"+
-                        "</iq>");
+                        `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                            `<query xmlns="jabber:iq:roster">`+
+                                `<item jid="annegreet.gomez@localhost" subscription="remove"/>`+
+                            `</query>`+
+                        `</iq>`);
 
                     // Receive confirmation from the contact's server
                     // <iq type='result' id='remove1'/>

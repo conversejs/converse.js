@@ -71,11 +71,11 @@
                                 <ul class="list-group fingerprints">
                                     <li class="list-group-item active">{{{o.__("This device's OMEMO fingerprint")}}}</li>
                                     <li class="list-group-item">
-                                        {[ if (o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint) { ]}
+                                    {[ if (o.view.current_device && o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint) { ]}
                                         <span class="fingerprint">{{{o.utils.formatFingerprint(o.view.current_device.get('bundle').fingerprint)}}}</span>
-                                        {[ } else {]}
-                                            <span class="spinner fa fa-spinner centered"/>
-                                        {[ } ]}
+                                    {[ } else {]}
+                                        <span class="spinner fa fa-spinner centered"/>
+                                    {[ } ]}
                                     </li>
                                 </ul>
                                 {[ if (o.view.other_devices.length) { ]}

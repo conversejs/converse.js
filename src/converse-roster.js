@@ -702,7 +702,7 @@
                         // synchronize_availability option set to update,
                         // we'll update ours as well.
                         const show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online';
-                        _converse.xmppstatus.save({'status': show});
+                        _converse.xmppstatus.save({'status': show}, {'silent': true});
 
                         const status_message = _.propertyOf(presence.querySelector('status'))('textContent');
                         if (status_message) {

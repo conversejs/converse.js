@@ -9554,6 +9554,9 @@ body.reset {
   #conversejs.converse-overlayed .chatbox .box-flyout {
     min-width: 250px !important;
     width: 250px; }
+    #conversejs.converse-embedded .chatbox .box-flyout .chat-body,
+    #conversejs.converse-overlayed .chatbox .box-flyout .chat-body {
+      height: calc(100% - 55px); }
 
 #conversejs.converse-overlayed .flyout {
   bottom: 1em; }
@@ -9935,21 +9938,21 @@ body.reset {
   #conversejs.converse-overlayed #controlbox .box-flyout {
     min-width: 250px !important;
     width: 250px; }
+  #conversejs.converse-overlayed #controlbox .login-trusted {
+    white-space: nowrap;
+    font-size: 90%; }
+  #conversejs.converse-overlayed #controlbox #converse-login-trusted {
+    margin-top: 0.5em; }
   #conversejs.converse-overlayed #controlbox:not(.logged-out) .controlbox-head {
     height: 15px; }
+  #conversejs.converse-overlayed #controlbox .brand-heading-container {
+    width: 100%; }
   #conversejs.converse-overlayed #controlbox .controlbox-head {
     display: flex;
     flex-direction: row-reverse;
     flex-wrap: nowrap;
     justify-content: space-between; }
     #conversejs.converse-overlayed #controlbox .controlbox-head .brand-heading {
-      position: relative;
-      width: 100%;
-      min-height: 1px;
-      padding-right: 15px;
-      padding-left: 15px;
-      flex: 0 0 66.6666666667%;
-      max-width: 66.6666666667%;
       color: #666;
       font-size: 2em; }
     #conversejs.converse-overlayed #controlbox .controlbox-head .chatbox-btn {
@@ -10497,10 +10500,9 @@ body.reset {
           #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-header .hide-occupants {
             align-self: flex-end;
             cursor: pointer; }
-          #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .occupants-header .occupants-heading,
-          #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-header .occupants-heading {
-            font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
-            padding: 0.3em 0; }
+        #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .occupants-heading,
+        #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-heading {
+          font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif; }
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .awesomplete ul {
           padding: 0; }
@@ -10630,15 +10632,17 @@ body.reset {
     min-width: 400px !important;
     width: 400px; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatbox-title {
-    flex: 0 0 66.6666666667%;
-    max-width: 66.6666666667%; }
+    flex: 0 0 58.3333333333%;
+    max-width: 58.3333333333%; }
     #conversejs.converse-overlayed .chatbox.chatroom .chatbox-title .chatroom-description {
       font-size: 80%; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatbox-buttons {
-    flex: 0 0 33.3333333333%;
-    max-width: 33.3333333333%; }
+    flex: 0 0 41.6666666667%;
+    max-width: 41.6666666667%; }
+  #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .occupants-heading {
+    padding: 0; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .chatroom-features .feature {
-    font-size: 12px; }
+    font-size: 10px; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .chat-area {
     min-width: 250px; }
   #conversejs.converse-overlayed .chatbox.chatroom .sendXMPPMessage .chat-toolbar li .toolbar-menu {
@@ -10828,7 +10832,8 @@ body.reset {
     white-space: pre-wrap; }
     #conversejs .message.chat-msg .chat-msg__text a {
       word-wrap: break-word;
-      word-break: break-all; }
+      word-break: break-all;
+      display: inline-block; }
     #conversejs .message.chat-msg .chat-msg__text img.emoji {
       height: 1.5em;
       width: 1.5em;
@@ -10865,6 +10870,8 @@ body.reset {
     padding-bottom: 0.25rem;
     display: block; }
     #conversejs .message.chat-msg .chat-msg__heading .chat-msg__author {
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
       font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
       font-size: 115%; }

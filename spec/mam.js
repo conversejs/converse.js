@@ -81,7 +81,7 @@
                 _converse.api.archive.query();
                 var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
-                    "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'><query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'/></iq>");
+                    `<iq id="${IQ_id}" type="set" xmlns="jabber:client"><query queryid="${queryid}" xmlns="urn:xmpp:mam:2"/></iq>`);
                 done();
             }));
 
@@ -103,19 +103,18 @@
                     _converse.api.archive.query({'with':'juliet@capulet.lit'});
                     var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                     expect(sent_stanza.toString()).toBe(
-                        "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
-                                "<x xmlns='jabber:x:data' type='submit'>"+
-                                "<field var='FORM_TYPE' type='hidden'>"+
-                                    "<value>urn:xmpp:mam:2</value>"+
-                                "</field>"+
-                                "<field var='with'>"+
-                                    "<value>juliet@capulet.lit</value>"+
-                                "</field>"+
-                                "</x>"+
-                            "</query>"+
-                        "</iq>"
-                    );
+                        `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                            `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
+                                `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE">`+
+                                    `<value>urn:xmpp:mam:2</value>`+
+                                `</field>`+
+                                `<field var="with">`+
+                                    `<value>juliet@capulet.lit</value>`+
+                                `</field>`+
+                                `</x>`+
+                            `</query>`+
+                        `</iq>`);
                     done();
                 });
             }));
@@ -142,15 +141,15 @@
                     var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
 
                     expect(sent_stanza.toString()).toBe(
-                        "<iq type='set' to='coven@chat.shakespeare.lit' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
-                                "<x xmlns='jabber:x:data' type='submit'>"+
-                                    "<field var='FORM_TYPE' type='hidden'>"+
-                                        "<value>urn:xmpp:mam:2</value>"+
-                                    "</field>"+
-                                "</x>"+
-                            "</query>"+
-                        "</iq>");
+                        `<iq id="${IQ_id}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
+                            `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
+                                `<x type="submit" xmlns="jabber:x:data">`+
+                                    `<field type="hidden" var="FORM_TYPE">`+
+                                        `<value>urn:xmpp:mam:2</value>`+
+                                    `</field>`+
+                                `</x>`+
+                            `</query>`+
+                        `</iq>`);
                     done();
                 });
            }));
@@ -257,21 +256,21 @@
                     });
                     var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                     expect(sent_stanza.toString()).toBe(
-                        "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
-                                "<x xmlns='jabber:x:data' type='submit'>"+
-                                "<field var='FORM_TYPE' type='hidden'>"+
-                                    "<value>urn:xmpp:mam:2</value>"+
-                                "</field>"+
-                                "<field var='start'>"+
-                                    "<value>"+moment(start).format()+"</value>"+
-                                "</field>"+
-                                "<field var='end'>"+
-                                    "<value>"+moment(end).format()+"</value>"+
-                                "</field>"+
-                                "</x>"+
-                            "</query>"+
-                        "</iq>"
+                        `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                            `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
+                                `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE">`+
+                                    `<value>urn:xmpp:mam:2</value>`+
+                                `</field>`+
+                                `<field var="start">`+
+                                    `<value>${moment(start).format()}</value>`+
+                                `</field>`+
+                                `<field var="end">`+
+                                    `<value>${moment(end).format()}</value>`+
+                                `</field>`+
+                                `</x>`+
+                            `</query>`+
+                        `</iq>`
                     );
                     done();
                 });
@@ -315,18 +314,18 @@
                     _converse.api.archive.query({'start': start});
                     var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                     expect(sent_stanza.toString()).toBe(
-                        "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
-                                "<x xmlns='jabber:x:data' type='submit'>"+
-                                "<field var='FORM_TYPE' type='hidden'>"+
-                                    "<value>urn:xmpp:mam:2</value>"+
-                                "</field>"+
-                                "<field var='start'>"+
-                                    "<value>"+moment(start).format()+"</value>"+
-                                "</field>"+
-                                "</x>"+
-                            "</query>"+
-                        "</iq>"
+                        `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                            `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
+                                `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE">`+
+                                    `<value>urn:xmpp:mam:2</value>`+
+                                `</field>`+
+                                `<field var="start">`+
+                                    `<value>${moment(start).format()}</value>`+
+                                `</field>`+
+                                `</x>`+
+                            `</query>`+
+                        `</iq>`
                     );
                     done();
                 });
@@ -352,21 +351,21 @@
                     _converse.api.archive.query({'start': start, 'max':10});
                     var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                     expect(sent_stanza.toString()).toBe(
-                        "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
-                                "<x xmlns='jabber:x:data' type='submit'>"+
-                                    "<field var='FORM_TYPE' type='hidden'>"+
-                                        "<value>urn:xmpp:mam:2</value>"+
-                                    "</field>"+
-                                    "<field var='start'>"+
-                                        "<value>"+moment(start).format()+"</value>"+
-                                    "</field>"+
-                                "</x>"+
-                                "<set xmlns='http://jabber.org/protocol/rsm'>"+
-                                    "<max>10</max>"+
-                                "</set>"+
-                            "</query>"+
-                        "</iq>"
+                        `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                            `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
+                                `<x type="submit" xmlns="jabber:x:data">`+
+                                    `<field type="hidden" var="FORM_TYPE">`+
+                                        `<value>urn:xmpp:mam:2</value>`+
+                                    `</field>`+
+                                    `<field var="start">`+
+                                        `<value>${moment(start).format()}</value>`+
+                                    `</field>`+
+                                `</x>`+
+                                `<set xmlns="http://jabber.org/protocol/rsm">`+
+                                    `<max>10</max>`+
+                                `</set>`+
+                            `</query>`+
+                        `</iq>`
                     );
                     done();
                 });
@@ -395,23 +394,22 @@
                     });
                     var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                     expect(sent_stanza.toString()).toBe(
-                        "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
-                                "<x xmlns='jabber:x:data' type='submit'>"+
-                                    "<field var='FORM_TYPE' type='hidden'>"+
-                                        "<value>urn:xmpp:mam:2</value>"+
-                                    "</field>"+
-                                    "<field var='start'>"+
-                                        "<value>"+moment(start).format()+"</value>"+
-                                    "</field>"+
-                                "</x>"+
-                                "<set xmlns='http://jabber.org/protocol/rsm'>"+
-                                    "<max>10</max>"+
-                                    "<after>09af3-cc343-b409f</after>"+
-                                "</set>"+
-                            "</query>"+
-                        "</iq>"
-                    );
+                        `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                            `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
+                                `<x type="submit" xmlns="jabber:x:data">`+
+                                    `<field type="hidden" var="FORM_TYPE">`+
+                                        `<value>urn:xmpp:mam:2</value>`+
+                                    `</field>`+
+                                    `<field var="start">`+
+                                        `<value>${moment(start).format()}</value>`+
+                                    `</field>`+
+                                `</x>`+
+                                `<set xmlns="http://jabber.org/protocol/rsm">`+
+                                    `<max>10</max>`+
+                                    `<after>09af3-cc343-b409f</after>`+
+                                `</set>`+
+                            `</query>`+
+                        `</iq>`);
                     done();
                 });
            }));
@@ -434,20 +432,19 @@
                     _converse.api.archive.query({'before': '', 'max':10});
                     var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                     expect(sent_stanza.toString()).toBe(
-                        "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
-                                "<x xmlns='jabber:x:data' type='submit'>"+
-                                    "<field var='FORM_TYPE' type='hidden'>"+
-                                        "<value>urn:xmpp:mam:2</value>"+
-                                    "</field>"+
-                                "</x>"+
-                                "<set xmlns='http://jabber.org/protocol/rsm'>"+
-                                    "<max>10</max>"+
-                                    "<before></before>"+
-                                "</set>"+
-                            "</query>"+
-                        "</iq>"
-                    );
+                        `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                            `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
+                                `<x type="submit" xmlns="jabber:x:data">`+
+                                    `<field type="hidden" var="FORM_TYPE">`+
+                                        `<value>urn:xmpp:mam:2</value>`+
+                                    `</field>`+
+                                `</x>`+
+                                `<set xmlns="http://jabber.org/protocol/rsm">`+
+                                    `<max>10</max>`+
+                                    `<before></before>`+
+                                `</set>`+
+                            `</query>`+
+                        `</iq>`);
                     done();
                 });
            }));
@@ -478,25 +475,24 @@
 
                     var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                     expect(sent_stanza.toString()).toBe(
-                        "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<query xmlns='urn:xmpp:mam:2' queryid='"+queryid+"'>"+
-                                "<x xmlns='jabber:x:data' type='submit'>"+
-                                    "<field var='FORM_TYPE' type='hidden'>"+
-                                        "<value>urn:xmpp:mam:2</value>"+
-                                    "</field>"+
-                                    "<field var='with'>"+
-                                        "<value>romeo@montague.lit</value>"+
-                                    "</field>"+
-                                    "<field var='start'>"+
-                                        "<value>"+moment(rsm.start).format()+"</value>"+
-                                    "</field>"+
-                                "</x>"+
-                                "<set xmlns='http://jabber.org/protocol/rsm'>"+
-                                    "<max>10</max>"+
-                                "</set>"+
-                            "</query>"+
-                        "</iq>"
-                    );
+                        `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                            `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
+                                `<x type="submit" xmlns="jabber:x:data">`+
+                                    `<field type="hidden" var="FORM_TYPE">`+
+                                        `<value>urn:xmpp:mam:2</value>`+
+                                    `</field>`+
+                                    `<field var="with">`+
+                                        `<value>romeo@montague.lit</value>`+
+                                    `</field>`+
+                                    `<field var="start">`+
+                                        `<value>${moment(rsm.start).format()}</value>`+
+                                    `</field>`+
+                                `</x>`+
+                                `<set xmlns="http://jabber.org/protocol/rsm">`+
+                                    `<max>10</max>`+
+                                `</set>`+
+                            `</query>`+
+                        `</iq>`);
                     done();
                 });
            }));
@@ -619,10 +615,9 @@
 
                     expect(_converse.connection.sendIQ).toHaveBeenCalled();
                     expect(sent_stanza.toLocaleString()).toBe(
-                        "<iq type='get' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<prefs xmlns='urn:xmpp:mam:2'/>"+
-                        "</iq>"
-                    );
+                        `<iq id="${IQ_id}" type="get" xmlns="jabber:client">`+
+                            `<prefs xmlns="urn:xmpp:mam:2"/>`+
+                        `</iq>`);
 
                     /* Example 20. Server responds with current preferences
                      *
@@ -643,12 +638,12 @@
                     expect(_converse.connection.sendIQ.calls.count()).toBe(2);
 
                     expect(sent_stanza.toString()).toBe(
-                        "<iq type='set' xmlns='jabber:client' id='"+IQ_id+"'>"+
-                            "<prefs xmlns='urn:xmpp:mam:2' default='never'>"+
-                                "<always><jid>romeo@montague.lit</jid></always>"+
-                                "<never><jid>montague@montague.lit</jid></never>"+
-                            "</prefs>"+
-                        "</iq>"
+                        `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                            `<prefs default="never" xmlns="urn:xmpp:mam:2">`+
+                                `<always><jid>romeo@montague.lit</jid></always>`+
+                                `<never><jid>montague@montague.lit</jid></never>`+
+                            `</prefs>`+
+                        `</iq>`
                     );
 
                     expect(feature.get('preference')).toBe(undefined);

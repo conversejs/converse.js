@@ -69,19 +69,9 @@
         dependencies: ["converse-chatboxes", "converse-disco", "converse-controlbox"],
 
         overrides: {
-            // Overrides mentioned here will be picked up by converse.js's
-            // plugin architecture they will replace existing methods on the
-            // relevant objects or classes.
-            //
-            // New functions which don't exist yet can also be added.
-
             tearDown () {
-                const { _converse } = this.__super__,
-                      groupchats = this.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
-
-                _.each(groupchats, function (groupchat) {
-                    u.safeSave(groupchat, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
-                });
+                const groupchats = this.chatboxes.where({'type': this.CHATROOMS_TYPE});
+                _.each(groupchats, gc => u.safeSave(gc, {'connection_status': this.ROOMSTATUS.DISCONNECTED}));
                 this.__super__.tearDown.call(this, arguments);
             },
 
@@ -113,6 +103,7 @@
                 allow_muc_invitations: true,
                 auto_join_on_invite: false,
                 auto_join_rooms: [],
+                auto_register_muc_nickname: false,
                 muc_domain: undefined,
                 muc_history_max_stanzas: undefined,
                 muc_instant_rooms: true,
@@ -184,12 +175,26 @@
 
                 initialize() {
                     this.constructor.__super__.initialize.apply(this, arguments);
+                    this.on('change:connection_status', this.onConnectionStatusChanged, this);
+
                     this.occupants = new _converse.ChatRoomOccupants();
                     this.occupants.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`)
                     );
                     this.occupants.chatroom  = this;
                     this.registerHandlers();
+                },
+
+                async onConnectionStatusChanged () {
+                    if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED &&
+                            _converse.auto_register_muc_nickname &&
+                            !this.get('reserved_nick')) {
+
+                        const result = await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'));
+                        if (result.length) {
+                            this.registerNickname()
+                        }
+                    }
                 },
 
                 registerHandlers () {
@@ -289,6 +294,10 @@
                      */
                     this.occupants.browserStorage._clear();
                     this.occupants.reset();
+                    const disco_entity = _converse.disco_entities.get(this.get('jid'));
+                    if (disco_entity) {
+                        disco_entity.destroy();
+                    }
                     if (_converse.connection.connected) {
                         this.sendUnavailablePresence(exit_msg);
                     }
@@ -388,22 +397,6 @@
                     };
                 },
 
-                getRoomFeatures () {
-                    /* Fetch the groupchat disco info, parse it and then save it.
-                     */
-                    return new Promise((resolve, reject) => {
-                        _converse.api.disco.info(this.get('jid'), null)
-                            .then((stanza) => {
-                                this.parseRoomFeatures(stanza);
-                                resolve()
-                            }).catch((err) => {
-                                _converse.log("Could not parse the groupchat features", Strophe.LogLevel.WARN);
-                                _converse.log(err, Strophe.LogLevel.WARN);
-                                reject(err);
-                            });
-                    });
-                },
-
                 getRoomJIDAndNick (nick) {
                     /* Utility method to construct the JID for the current user
                      * as occupant of the groupchat.
@@ -484,43 +477,34 @@
                     });
                 },
 
-                parseRoomFeatures (iq) {
-                    /* Parses an IQ stanza containing the groupchat's features.
-                     *
-                     * See http://xmpp.org/extensions/xep-0045.html#disco-roominfo
-                     *
-                     *  <identity
-                     *      category='conference'
-                     *      name='A Dark Cave'
-                     *      type='text'/>
-                     *  <feature var='http://jabber.org/protocol/muc'/>
-                     *  <feature var='muc_passwordprotected'/>
-                     *  <feature var='muc_hidden'/>
-                     *  <feature var='muc_temporary'/>
-                     *  <feature var='muc_open'/>
-                     *  <feature var='muc_unmoderated'/>
-                     *  <feature var='muc_nonanonymous'/>
-                     *  <feature var='urn:xmpp:mam:0'/>
-                     */
-                    const features = {
-                        'features_fetched': moment().format(),
-                        'name': iq.querySelector('identity').getAttribute('name')
+                refreshRoomFeatures () {
+                    const entity = _converse.disco_entities.get(this.get('jid'));
+                    if (entity) {
+                        entity.destroy();
                     }
-                    _.each(iq.querySelectorAll('feature'), function (field) {
-                        const fieldname = field.getAttribute('var');
+                    return this.getRoomFeatures();
+                },
+
+                async getRoomFeatures () {
+                    const features = await _converse.api.disco.getFeatures(this.get('jid')),
+                          fields = await _converse.api.disco.getFields(this.get('jid')),
+                          identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid')),
+                          attrs = {
+                              'features_fetched': moment().format(),
+                              'name': identity && identity.get('name')
+                          };
+                    features.each(feature => {
+                        const fieldname = feature.get('var');
                         if (!fieldname.startsWith('muc_')) {
                             if (fieldname === Strophe.NS.MAM) {
-                                features.mam_enabled = true;
+                                attrs.mam_enabled = true;
                             }
                             return;
                         }
-                        features[fieldname.replace('muc_', '')] = true;
+                        attrs[fieldname.replace('muc_', '')] = true;
                     });
-                    const desc_field = iq.querySelector('field[var="muc#roominfo_description"] value');
-                    if (!_.isNull(desc_field)) {
-                        features.description = desc_field.textContent;
-                    }
-                    this.save(features);
+                    attrs.description = _.get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value');
+                    this.save(attrs);
                 },
 
                 requestMemberList (affiliation) {
@@ -553,7 +537,7 @@
                      * XXX: Prosody doesn't accept multiple JIDs' affiliations
                      * being set in one IQ stanza, so as a workaround we send
                      * a separate stanza for each JID.
-                     * Related ticket: https://prosody.im/issues/issue/795
+                     * Related ticket: https://issues.prosody.im/345
                      *
                      * Parameters:
                      *  (String) affiliation: The affiliation
@@ -711,6 +695,7 @@
                             .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
                             .c("item", {
                                 'affiliation': member.affiliation || affiliation,
+                                'nick': member.nick,
                                 'jid': member.jid
                             });
                         if (!_.isUndefined(member.reason)) {
@@ -735,21 +720,21 @@
                     return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
                 },
 
-                getJidsWithAffiliations (affiliations) {
+                async getJidsWithAffiliations (affiliations) {
                     /* Returns a map of JIDs that have the affiliations
                      * as provided.
                      */
                     if (_.isString(affiliations)) {
                         affiliations = [affiliations];
                     }
-                    const promises = _.map(
-                        affiliations,
-                        _.partial(this.requestMemberList.bind(this))
-                    );
-                    return Promise.all(promises).then(
-                        (iq) => u.marshallAffiliationIQs(iq),
-                        (iq) => u.marshallAffiliationIQs(iq)
-                    );
+                    const result = await Promise.all(affiliations.map(a =>
+                        this.requestMemberList(a)
+                            .then(iq => u.parseMemberListIQ(iq))
+                            .catch(iq => {
+                                _converse.log(iq, Strophe.LogLevel.ERROR);
+                            })
+                    ));
+                    return [].concat.apply([], result).filter(p => p);
                 },
 
                 updateMemberLists (members, affiliations, deltaFunc) {
@@ -771,12 +756,26 @@
                      *  to update the list.
                      */
                     this.getJidsWithAffiliations(affiliations)
-                        .then((old_members) => this.setAffiliations(deltaFunc(members, old_members)))
+                        .then(old_members => this.setAffiliations(deltaFunc(members, old_members)))
                         .then(() => this.occupants.fetchMembers())
                         .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
                 },
 
-                checkForReservedNick (callback, errback) {
+                getDefaultNick () {
+                    /* The default nickname (used when muc_nickname_from_jid is true)
+                     * is the node part of the user's JID.
+                     * We put this in a separate method so that it can be
+                     * overridden by plugins.
+                     */
+                    const nick = _converse.xmppstatus.vcard.get('nickname');
+                    if (nick) {
+                        return nick;
+                    } else if (_converse.muc_nickname_from_jid) {
+                        return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+                    }
+                },
+
+                checkForReservedNick () {
                     /* Use service-discovery to ask the XMPP server whether
                      * this user has a reserved nickname for this groupchat.
                      * If so, we'll use that, otherwise we render the nickname form.
@@ -785,7 +784,7 @@
                      *  (Function) callback: Callback upon succesful IQ response
                      *  (Function) errback: Callback upon error IQ response
                      */
-                    _converse.connection.sendIQ(
+                    return _converse.api.sendIQ(
                         $iq({
                             'to': this.get('jid'),
                             'from': _converse.connection.jid,
@@ -793,9 +792,64 @@
                         }).c("query", {
                             'xmlns': Strophe.NS.DISCO_INFO,
                             'node': 'x-roomuser-item'
-                        }),
-                        callback, errback);
-                    return this;
+                        })
+                    ).then(iq => {
+                        const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
+                              nick = identity_el ? identity_el.getAttribute('name') : null;
+                        this.save({
+                            'reserved_nick': nick,
+                            'nick': nick
+                        }, {'silent': true});
+                        return iq;
+                    });
+                },
+
+                async registerNickname () {
+                    // See https://xmpp.org/extensions/xep-0045.html#register
+                    const nick = this.get('nick'),
+                          jid = this.get('jid');
+                    let iq, err_msg;
+                    try {
+                        iq = await _converse.api.sendIQ(
+                            $iq({
+                                'to': jid,
+                                'from': _converse.connection.jid,
+                                'type': 'get'
+                            }).c('query', {'xmlns': Strophe.NS.MUC_REGISTER})
+                        );
+                    } catch (e) {
+                        if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+                            err_msg = __("You're not allowed to register yourself in this groupchat.");
+                        } else if (sizzle('registration-required[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+                            err_msg = __("You're not allowed to register in this groupchat because it's members-only.");
+                        }
+                        _converse.log(e, Strophe.LogLevel.ERROR);
+                        return err_msg;
+                    }
+                    const required_fields = sizzle('field required', iq).map(f => f.parentElement);
+                    if (required_fields.length > 1 && required_fields[0].getAttribute('var') !== 'muc#register_roomnick') {
+                        return _converse.log(`Can't register the user register in the groupchat ${jid} due to the required fields`);
+                    }
+                    try {
+                        await _converse.api.sendIQ($iq({
+                                'to': jid,
+                                'from': _converse.connection.jid,
+                                'type': 'set'
+                            }).c('query', {'xmlns': Strophe.NS.MUC_REGISTER})
+                                .c('x', {'xmlns': Strophe.NS.XFORM, 'type': 'submit'})
+                                    .c('field', {'var': 'FORM_TYPE'}).c('value').t('http://jabber.org/protocol/muc#register').up().up()
+                                    .c('field', {'var': 'muc#register_roomnick'}).c('value').t(nick)
+                        );
+                    } catch (e) {
+                        if (sizzle('service-unavailable[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+                            err_msg = __("Can't register your nickname in this groupchat, it doesn't support registration.");
+                        } else if (sizzle('bad-request[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', e).length) {
+                            err_msg = __("Can't register your nickname in this groupchat, invalid data form supplied.");
+                        }
+                        _converse.log(err_msg);
+                        _converse.log(e, Strophe.LogLevel.ERROR);
+                        return err_msg;
+                    }
                 },
 
                 updateOccupantsOnPresence (pres) {
@@ -806,7 +860,7 @@
                      *  (XMLElement) pres: The presence stanza
                      */
                     const data = this.parsePresence(pres);
-                    if (data.type === 'error') {
+                    if (data.type === 'error' || (!data.jid && !data.nick)) {
                         return true;
                     }
                     const occupant = this.occupants.findOccupant(data);
@@ -894,7 +948,7 @@
 
                     if (configuration_changed || logging_enabled || logging_disabled ||
                             room_no_longer_anon || room_now_semi_anon || room_now_fully_anon) {
-                        this.getRoomFeatures();
+                        this.refreshRoomFeatures();
                     }
                 },
 
@@ -978,10 +1032,10 @@
                     const locked_room = pres.querySelector("status[code='201']");
                     if (locked_room) {
                         if (this.get('auto_configure')) {
-                            this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+                            this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
                         } else if (_converse.muc_instant_rooms) {
                             // Accept default configuration
-                            this.saveConfiguration().then(this.getRoomFeatures.bind(this));
+                            this.saveConfiguration().then(() => this.getRoomFeatures());
                         } else {
                             this.trigger('configurationNeeded');
                             return; // We haven't yet entered the groupchat, so bail here.
@@ -993,7 +1047,7 @@
                         // otherwise the features would have been fetched in
                         // the "initialize" method already.
                         if (this.get('affiliation') === 'owner' && this.get('auto_configure')) {
-                            this.autoConfigureChatRoom().then(this.getRoomFeatures.bind(this));
+                            this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
                         } else {
                             this.getRoomFeatures();
                         }
@@ -1258,6 +1312,25 @@
                     }
                 });
             }
+
+            function fetchRegistrationForm (room_jid, user_jid) {
+                _converse.api.sendIQ(
+                    $iq({
+                        'from': user_jid,
+                        'to': room_jid,
+                        'type': 'get'
+                    }).c('query', {'xmlns': Strophe.NS.REGISTER})
+                ).then(iq => {
+
+                }).catch(iq => {
+                    if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', iq).length) {
+                        this.feedback.set('error', __(`Error: the groupchat ${this.model.getDisplayName()} does not exist.`));
+                    } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]').length) {
+                        this.feedback.set('error', __(`Sorry, you're not allowed to registerd in this groupchat`));
+                    }
+                });
+            }
+
 
             /************************ BEGIN Event Handlers ************************/
             _converse.on('addClientFeatures', () => {

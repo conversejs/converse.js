@@ -1,5 +1,24 @@
 # Changelog
 
+## 4.0.2 (2018-10-02)
+
+- M4A and WEBM files, when sent as XEP-0066 Out of Band Data, are now playable directly in chat
+- Updated French and Spanish translations
+- Two new languages supported, [Hindi](https://hosted.weblate.org/languages/hi/conversejs/) and [Romanian](https://hosted.weblate.org/languages/ro/conversejs/)
+- #1187 UTF-8 characters have the wrong encoding when using OMEMO
+- #1189 Video playback failure
+- #1220 Converse not working in Edge
+- #1225 User profile sometimes not displayed when libsignal-protocol.js is used
+
+## 4.0.1 (2018-09-19)
+
+- Use https://compliance.conversations.im instead of dead link tot st https://xmpp.net
+- New config  setting [auto_register_muc_nickname](https://conversejs.org/docs/html/configuration.html#auto-register-muc-nickname)
+- New config setting [enable_muc_push](https://conversejs.org/docs/html/configuration.html#enable-muc-push)
+- #1182 MUC occupants without nick or JID created
+- #1184 Notification error when message has no body
+- #1201 Emoji picker appears when pressing enter
+
 ## 4.0.0 (2018-09-07)
 
 ## New Features
@@ -25,7 +44,7 @@
   If the device is not trusted, sessionStorage is used and all user data is deleted from the browser cache upon logout.
   If the device is trusted, localStorage is used and user data is cached indefinitely.
 - Initial support for [XEP-0357 Push Notifications](https://xmpp.org/extensions/xep-0357.html), specifically registering an "App Server".
-- Add support for logging in via OAuth (see the [oauth_providers](https://conversejs.org/docs/html/configurations.html#oauth-providers) setting)
+- Add support for logging in via OAuth (see the [oauth_providers](https://conversejs.org/docs/html/configuration.html#oauth-providers) setting)
 
 ### Bugfixes
 
@@ -56,7 +75,7 @@
 
 ## Configuration changes 
 
-- Removed the `storage` configuration setting, use [trusted](https://conversejs.org/docs/html/configurations.html#trusted) instead.
+- Removed the `storage` configuration setting, use [trusted](https://conversejs.org/docs/html/configuration.html#trusted) instead.
 - Removed the `use_vcards` configuration setting, instead VCards are always used.
 - Removed the `xhr_custom_status` and `xhr_custom_status_url` configuration
   settings. If you relied on these settings, you can instead listen for the
@@ -66,8 +85,8 @@
 - `xhr_user_search_url` has to include the `?` character now in favor of more flexibility. See example in the documentation.
 - The data returned from the `xhr_user_search_url` must now include the user's
   `jid` instead of just an `id`.
-- New configuration settings [nickname](https://conversejs.org/docs/html/configurations.html#nickname)
-  and [auto_join_private_chats](https://conversejs.org/docs/html/configurations.html#auto-join-private-chats).
+- New configuration settings [nickname](https://conversejs.org/docs/html/configuration.html#nickname)
+  and [auto_join_private_chats](https://conversejs.org/docs/html/configuration.html#auto-join-private-chats).
 
 ## Architectural changes
 
@@ -128,7 +147,7 @@
 - Listen for new room bookmarks pushed from the user's PEP service.
 - Simplified the [embedded](https://conversejs.org/demo/embedded.html) usecase.
     - No need to manually blacklist or whitelist any plugins.
-    - Relies on the [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode) being set to `'embedded'`.
+    - Relies on the [view_mode](https://conversejs.org/docs/html/configuration.html#view-mode) being set to `'embedded'`.
     - The main `converse.js` build can be used for the embedded usecase.
     - Maintain MUC session upon page reload
 
@@ -137,9 +156,9 @@
 
 ### Configuration settings
 - `auto_reconnect` is now set to `true` by default.
-- New configuration setting [allow_public_bookmarks](https://conversejs.org/docs/html/configurations.html#allow-public-bookmarks)
-- New configuration setting [root](https://conversejs.org/docs/html/configurations.html#root)
-- The [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode) setting now has a new possible value: `embedded`
+- New configuration setting [allow_public_bookmarks](https://conversejs.org/docs/html/configuration.html#allow-public-bookmarks)
+- New configuration setting [root](https://conversejs.org/docs/html/configuration.html#root)
+- The [view_mode](https://conversejs.org/docs/html/configuration.html#view-mode) setting now has a new possible value: `embedded`
 
 ### Translation updates
 - Chinese (Traditional), French, German, Portuguese (Brazil), Russian, Ukrainian
@@ -168,7 +187,7 @@
 
 ### UI/UX changes
 - Add new configuration option
-  [show_message_load_animation](https://conversejs.org/docs/html/configurations.html#show-message-load-animation)
+  [show_message_load_animation](https://conversejs.org/docs/html/configuration.html#show-message-load-animation)
   with a default value of `false`. The message load animations (added in 3.3.0)
   cause slowness and performance issues in Firefox, so they're now disabled by default.
 
@@ -205,7 +224,7 @@
   and private chats with a URL fragment such as `#converse/chat?jid=user@domain`
 - #828 Add routing for the `#converse/login` and `#converse/register` URL
   fragments, which will render the registration and login forms respectively.
-- New configuration setting [view_mode](https://conversejs.org/docs/html/configurations.html#view-mode)
+- New configuration setting [view_mode](https://conversejs.org/docs/html/configuration.html#view-mode)
   This removes the need for separate `inverse.js` and `converse-mobile.js`
   builds. Instead the `converse.js` build is now used with `view_mode` set to
   `fullscreen` and `mobile` respectively.
@@ -243,7 +262,7 @@
 - Converse.js no longer includes all the translations in its build. Instead,
   only the currently relevant translation is requested. This results in a much
   smaller filesize but means that the translations you want to provide need to
-  be available. See the [locales_url](https://conversejs.org/docs/html/configurations.html#locales-url)
+  be available. See the [locales_url](https://conversejs.org/docs/html/configuration.html#locales-url)
   configuration setting for more info.
 - The translation machinery has now been moved to a separate module in `src/i18n.js`.
 - jQuery has been completely removed as a dependency (still used in tests though).
@@ -272,10 +291,10 @@
 
 ### New configuration settings
 * The `visible_toolbar_buttons.emoticons` configuration option is now changed to `visible_toolbar_buttons.emoji`.
-* [use_emojione](https://conversejs.org/docs/html/configurations.html#use-emojione)
+* [use_emojione](https://conversejs.org/docs/html/configuration.html#use-emojione)
   is used to determine whether Emojione should be used to render emojis,
   otherwise rendering falls back to native browser or OS support.
-* [emojione_image_path](https://conversejs.org/docs/html/configurations.html#emojione-image-path)
+* [emojione_image_path](https://conversejs.org/docs/html/configuration.html#emojione-image-path)
   is used to specify from where Emojione will load images for rendering emojis.
 
 ### New events
@@ -329,7 +348,7 @@ More info here: https://github.com/LeaVerou/awesomplete/pull/17082
 
 ### New configuration settings
 - New setting for `converse-bookmarks`:
-  [hide_open_bookmarks](https://conversejs.org/docs/html/configurations.html#hide-open-bookmarks)
+  [hide_open_bookmarks](https://conversejs.org/docs/html/configuration.html#hide-open-bookmarks)
   It is meant to be set to `true` when using `converse-roomslist` so that open
   rooms aren't listed twice (in the rooms list and the bookmarks list).
   [jcbrand]
@@ -383,13 +402,13 @@ More info here: https://github.com/LeaVerou/awesomplete/pull/17082
 - #628 Fixes the bug in displaying chat status during private chat. [saganshul]
 - #628 Changes the message displayed while typing from a different resource of the same user. [smitbose]
 - #675 Time format made configurable.
-   See [time_format](https://conversejs.org/docs/html/configurations.html#time-format)
+   See [time_format](https://conversejs.org/docs/html/configuration.html#time-format)
    [smitbose]
 - #682 Add "Send" button to input box in chat dialog window.
-   See [show_send_button](https://conversejs.org/docs/html/configurations.html#show-send-button)
+   See [show_send_button](https://conversejs.org/docs/html/configuration.html#show-send-button)
    [saganshul]
 - #704 Automatic fetching of registration form when
-   [registration_domain](https://conversejs.org/docs/html/configurations.html#registration-domain)
+   [registration_domain](https://conversejs.org/docs/html/configuration.html#registration-domain)
    is set. [smitbose]
 - #806 The `_converse.listen` API event listeners aren't triggered. [jcbrand]
 - #807 Error: Plugin "converse-dragresize" tried to override HeadlinesBoxView but it's not found. [jcbrand]

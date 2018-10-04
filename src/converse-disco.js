@@ -46,6 +46,12 @@
                     );
                     this.features.on('add', this.onFeatureAdded, this);
 
+                    this.fields = new Backbone.Collection();
+                    this.fields.browserStorage = new Backbone.BrowserStorage.session(
+                        b64_sha1(`converse.fields-${this.get('jid')}`)
+                    );
+                    this.fields.on('add', this.onFieldAdded, this);
+
                     this.identities = new Backbone.Collection();
                     this.identities.browserStorage = new Backbone.BrowserStorage.session(
                         b64_sha1(`converse.identities-${this.get('jid')}`)
@@ -107,6 +113,11 @@
                 onFeatureAdded (feature) {
                     feature.entity = this;
                     _converse.emit('serviceDiscovered', feature);
+                },
+
+                onFieldAdded (field) {
+                    field.entity = this;
+                    _converse.emit('discoExtensionFieldDiscovered', field);
                 },
 
                 fetchFeatures () {
@@ -184,12 +195,22 @@
                     if (stanza.querySelector(`feature[var="${Strophe.NS.DISCO_ITEMS}"]`)) {
                         this.queryForItems();
                     }
-                    _.forEach(stanza.querySelectorAll('feature'), (feature) => {
+                    _.forEach(stanza.querySelectorAll('feature'), feature => {
                         this.features.create({
                             'var': feature.getAttribute('var'),
                             'from': stanza.getAttribute('from')
                         });
                     });
+
+                    // XEP-0128 Service Discovery Extensions
+                    _.forEach(sizzle('x[type="result"][xmlns="jabber:x:data"] field', stanza), field => {
+                        this.fields.create({
+                            'var': field.getAttribute('var'),
+                            'value': _.get(field.querySelector('value'), 'textContent'),
+                            'from': stanza.getAttribute('from')
+                        });
+                    });
+
                     this.waitUntilFeaturesDiscovered.resolve(this);
                     this.trigger('featuresDiscovered');
                 }
@@ -508,40 +529,40 @@
                         }
                     },
 
-                     /**
-                      * Used to determine whether an entity supports a given feature.
-                      *
-                      * @method _converse.api.disco.supports
-                      * @param {string} feature The feature that might be
-                      *     supported. In the XML stanza, this is the `var`
-                      *     attribute of the `<feature>` element. For
-                      *     example: `http://jabber.org/protocol/muc`
-                      * @param {string} jid The JID of the entity
-                      *     (and its associated items) which should be queried
-                      * @returns {promise} A promise which resolves with a list containing
-                      *     _converse.Entity instances representing the entity
-                      *     itself or those items associated with the entity if
-                      *     they support the given feature.
-                      *
-                      * @example
-                      * _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid)
-                      * .then(value => {
-                      *     // `value` is a map with two keys, `supported` and `feature`.
-                      *     if (value.supported) {
-                      *         // The feature is supported
-                      *     } else {
-                      *         // The feature is not supported
-                      *     }
-                      * }).catch(() => {
-                      *     _converse.log(
-                      *         "Error or timeout while checking for feature support",
-                      *         Strophe.LogLevel.ERROR
-                      *     );
-                      * });
-                      */
+                    /**
+                     * Used to determine whether an entity supports a given feature.
+                     *
+                     * @method _converse.api.disco.supports
+                     * @param {string} feature The feature that might be
+                     *     supported. In the XML stanza, this is the `var`
+                     *     attribute of the `<feature>` element. For
+                     *     example: `http://jabber.org/protocol/muc`
+                     * @param {string} jid The JID of the entity
+                     *     (and its associated items) which should be queried
+                     * @returns {promise} A promise which resolves with a list containing
+                     *     _converse.Entity instances representing the entity
+                     *     itself or those items associated with the entity if
+                     *     they support the given feature.
+                     *
+                     * @example
+                     * _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid)
+                     * .then(value => {
+                     *     // `value` is a map with two keys, `supported` and `feature`.
+                     *     if (value.supported) {
+                     *         // The feature is supported
+                     *     } else {
+                     *         // The feature is not supported
+                     *     }
+                     * }).catch(() => {
+                     *     _converse.log(
+                     *         "Error or timeout while checking for feature support",
+                     *         Strophe.LogLevel.ERROR
+                     *     );
+                     * });
+                     */
                     'supports' (feature, jid) {
                         if (_.isNil(jid)) {
-                            throw new TypeError('disco.supports: You need to provide an entity JID');
+                            throw new TypeError('api.disco.supports: You need to provide an entity JID');
                         }
                         return _converse.api.waitUntil('discoInitialized')
                         .then(() => _converse.api.disco.entities.get(jid, true))
@@ -553,6 +574,47 @@
                             );
                             return Promise.all(promises);
                         }).then(result => f.filter(f.isObject, result));
+                    },
+
+                    /**
+                     * Return all the features associated with a disco entity
+                     *
+                     * @method _converse.api.disco.getFeatures
+                     * @param {string} jid The JID of the entity whose features are returned.
+                     * @example
+                     * const features = await _converse.api.disco.getFeatures('room@conference.example.org');
+                     */
+                    'getFeatures' (jid) {
+                        if (_.isNil(jid)) {
+                            throw new TypeError('api.disco.getFeatures: You need to provide an entity JID');
+                        }
+                        return _converse.api.waitUntil('discoInitialized')
+                        .then(() => _converse.api.disco.entities.get(jid, true))
+                        .then(entity => entity.waitUntilFeaturesDiscovered)
+                        .then(entity => entity.features)
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    },
+
+                    /**
+                     * Return all the service discovery extensions fields
+                     * associated with an entity.
+                     *
+                     * See [XEP-0129: Service Discovery Extensions](https://xmpp.org/extensions/xep-0128.html)
+                     *
+                     * @method _converse.api.disco.getFields
+                     * @param {string} jid The JID of the entity whose fields are returned.
+                     * @example
+                     * const fields = await _converse.api.disco.getFields('room@conference.example.org');
+                     */
+                    'getFields' (jid) {
+                        if (_.isNil(jid)) {
+                            throw new TypeError('api.disco.getFields: You need to provide an entity JID');
+                        }
+                        return _converse.api.waitUntil('discoInitialized')
+                        .then(() => _converse.api.disco.entities.get(jid, true))
+                        .then(entity => entity.waitUntilFeaturesDiscovered)
+                        .then(entity => entity.fields)
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     },
 
                     /**

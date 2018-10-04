@@ -7,10 +7,10 @@ Configuration
 =============
 
 The included minified JavaScript and CSS files can be used for demoing or testing, but
-you'll want to configure *Converse* to suit your needs before you deploy it
+you'll want to configure Converse to suit your needs before you deploy it
 on your website.
 
-*Converse* is passed its configuration settings when you call its *initialize* method.
+Converse is passed its configuration settings when you call its *initialize* method.
 
 You'll most likely want to call the *initialize* method in your HTML page. For
 an example of how this is done, please see the bottom of the *./index.html* page.
@@ -18,7 +18,7 @@ an example of how this is done, please see the bottom of the *./index.html* page
 Please refer to the `Configuration settings`_ section below for info on
 all the available configuration settings.
 
-After you have configured *Converse*, you'll have to regenerate the minified
+After you have configured Converse, you'll have to regenerate the minified
 JavaScript file so that it will include the new settings. Please refer to the
 :ref:`minification` section for more info on how to do this.
 
@@ -328,6 +328,16 @@ wiped from memory. This configuration can however still be useful when using
 Converse in desktop apps, for example those based on `CEF <https://bitbucket.org/chromiumembedded/cef>`_
 or `electron <http://electron.atom.io/>`_.
 
+auto_register_muc_nickname
+--------------------------
+
+* Default: ``false``
+
+Determines whether Converse should automatically register a user's nickname
+when they enter a groupchat.
+
+See here fore more details: https://xmpp.org/extensions/xep-0045.html#register
+
 auto_subscribe
 --------------
 
@@ -619,6 +629,21 @@ displaying emojis will be fetched.
 If you've run ``make dev``, then these files are also available in ``./node_modules/twemoji/2/``,
 which means you can avoid the CDN and host them yourself if you wish.
 
+
+enable_muc_push
+---------------
+
+* Default: ``false``
+
+If true, then Converse will try to register
+`XEP-0357 push notification App Server(s) <https://xmpp.org/extensions/xep-0357.html#general-architecture>`_
+for the MUC domain of any newly entered groupchat.
+
+The app servers are specified with the `push_app_servers`_ option.
+
+.. note::
+    Registering a push app server against a MUC domain is not (yet) standardized
+    and this feature should be considered experimental.
 
 expose_rid_and_sid
 ------------------

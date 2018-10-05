@@ -79553,31 +79553,31 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/form_username.html -->\n';
+__p += '<!-- src/templates/form_username.html -->\n<div class="form-group">\n    ';
  if (o.label) { ;
-__p += '\n<label>\n    ' +
+__p += '\n    <label>\n        ' +
 __e(o.label) +
-'\n</label>\n';
+'\n    </label>\n    ';
  } ;
-__p += '\n<div class="input-group">\n    <input name="' +
+__p += '\n    <div class="input-group">\n        <div class="input-group-prepend">\n            <input name="' +
 __e(o.name) +
 '" type="' +
 __e(o.type) +
-'"\n        ';
+'"\n                ';
  if (o.value) { ;
 __p += ' value="' +
 __e(o.value) +
 '" ';
  } ;
-__p += '\n        ';
+__p += '\n                ';
  if (o.required) { ;
 __p += ' class="required" ';
  } ;
-__p += ' />\n    <span title="' +
+__p += ' />\n            <div class="input-group-text col" title="' +
 __e(o.domain) +
 '">' +
 __e(o.domain) +
-'</span>\n</div>\n';
+'</div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 

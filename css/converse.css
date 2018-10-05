@@ -10014,6 +10014,7 @@ body.reset {
   #conversejs.converse-mobile #controlbox .brand-heading-container {
     flex: 0 0 100%;
     max-width: 100%;
+    margin-bottom: 1em;
     text-align: center; }
     #conversejs.converse-fullscreen #controlbox .brand-heading-container .brand-heading,
     #conversejs.converse-mobile #controlbox .brand-heading-container .brand-heading {

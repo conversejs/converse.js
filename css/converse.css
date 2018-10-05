@@ -9637,6 +9637,7 @@ body.reset {
     width: 100%;
     overflow: hidden; }
   #conversejs.converse-fullscreen .chatbox .chat-body {
+    height: calc(100% - 62px);
     background-color: #3AA569;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px; }

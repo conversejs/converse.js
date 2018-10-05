@@ -59261,25 +59261,23 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 __ = _converse.__,
                 body = this.el.querySelector('.chatroom-body');
 
-          _.each(body.children, function (child) {
-            child.classList.add('hidden');
-          }); // Remove any existing forms
-
+          _.each(body.children, child => child.classList.add('hidden'));
 
           _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
 
           body.insertAdjacentHTML('beforeend', tpl_chatroom_bookmark_form({
-            heading: __('Bookmark this groupchat'),
-            label_name: __('The name for this bookmark:'),
-            label_autojoin: __('Would you like this groupchat to be automatically joined upon startup?'),
-            label_nick: __('What should your nickname for this groupchat be?'),
-            default_nick: this.model.get('nick'),
-            label_submit: __('Save'),
-            label_cancel: __('Cancel')
+            'default_nick': this.model.get('nick'),
+            'heading': __('Bookmark this groupchat'),
+            'label_autojoin': __('Would you like this groupchat to be automatically joined upon startup?'),
+            'label_cancel': __('Cancel'),
+            'label_name': __('The name for this bookmark:'),
+            'label_nick': __('What should your nickname for this groupchat be?'),
+            'label_submit': __('Save'),
+            'name': this.model.get('name')
           }));
           const form = body.querySelector('form.chatroom-form');
-          form.addEventListener('submit', this.onBookmarkFormSubmitted.bind(this));
-          form.querySelector('.button-cancel').addEventListener('click', this.closeForm.bind(this));
+          form.addEventListener('submit', ev => this.onBookmarkFormSubmitted(ev));
+          form.querySelector('.button-cancel').addEventListener('click', () => this.closeForm());
         },
 
         onBookmarkFormSubmitted(ev) {
@@ -65651,10 +65649,36 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           },
 
           /**
+           * Refresh the features (and fields and identities) associated with a
+           * disco entity by refetching them from the server
+           *
+           * @method _converse.api.disco.refreshFeatures
+           * @param {string} jid The JID of the entity whose features are refreshed.
+           * @returns {promise} A promise which resolves once the features have been refreshed
+           * @example
+           * await _converse.api.disco.refreshFeatures('room@conference.example.org');
+           */
+          'refreshFeatures'(jid) {
+            if (_.isNil(jid)) {
+              throw new TypeError('api.disco.refreshFeatures: You need to provide an entity JID');
+            }
+
+            return _converse.api.waitUntil('discoInitialized').then(() => _converse.api.disco.entities.get(jid, true)).then(entity => {
+              entity.features.reset();
+              entity.fields.reset();
+              entity.identities.reset();
+              entity.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
+              entity.queryInfo();
+              return entity.waitUntilFeaturesDiscovered();
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          },
+
+          /**
            * Return all the features associated with a disco entity
            *
            * @method _converse.api.disco.getFeatures
            * @param {string} jid The JID of the entity whose features are returned.
+           * @returns {promise} A promise which resolves with the returned features
            * @example
            * const features = await _converse.api.disco.getFeatures('room@conference.example.org');
            */
@@ -69465,13 +69489,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
 
+          _.each(this.el.querySelectorAll('.chatroom-form-container'), u.removeElement);
+
           container_el.insertAdjacentHTML('beforeend', tpl_chatroom_password_form({
-            heading: __('This groupchat requires a password'),
-            label_password: __('Password: '),
-            label_submit: __('Submit')
+            'heading': __('This groupchat requires a password'),
+            'label_password': __('Password: '),
+            'label_submit': __('Submit')
           }));
           this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
-          this.el.querySelector('.chatroom-form').addEventListener('submit', this.submitPassword.bind(this), false);
+          this.el.querySelector('.chatroom-form').addEventListener('submit', ev => this.submitPassword(ev), false);
         },
 
         showDisconnectMessages(msgs) {
@@ -70345,12 +70371,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     dependencies: ["converse-chatboxes", "converse-disco", "converse-controlbox"],
     overrides: {
       tearDown() {
-        const groupchats = this.chatboxes.where({
-          'type': this.CHATROOMS_TYPE
+        const _converse = this.__super__._converse,
+              groupchats = this.chatboxes.where({
+          'type': _converse.CHATROOMS_TYPE
         });
 
         _.each(groupchats, gc => u.safeSave(gc, {
-          'connection_status': this.ROOMSTATUS.DISCONNECTED
+          'connection_status': converse.ROOMSTATUS.DISCONNECTED
         }));
 
         this.__super__.tearDown.call(this, arguments);
@@ -70817,13 +70844,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           });
         },
 
-        refreshRoomFeatures() {
-          const entity = _converse.disco_entities.get(this.get('jid'));
-
-          if (entity) {
-            entity.destroy();
-          }
-
+        async refreshRoomFeatures() {
+          await _converse.api.disco.refreshFeatures(this.get('jid'));
           return this.getRoomFeatures();
         },
 
@@ -78550,7 +78572,9 @@ __p += '<!-- src/templates/chatroom_bookmark_form.html -->\n<div class="chatroom
 __e(o.heading) +
 '</legend>\n        <fieldset class="form-group">\n            <label for="converse_muc_bookmark_name">' +
 __e(o.label_name) +
-'</label>\n            <input class="form-control" type="text" name="name" required="required" id="converse_muc_bookmark_name"/>\n        </fieldset>\n        <fieldset class="form-group">\n            <label for="converse_muc_bookmark_nick">' +
+'</label>\n            <input class="form-control" type="text" value="' +
+__e(o.name) +
+'" name="name" required="required" id="converse_muc_bookmark_name"/>\n        </fieldset>\n        <fieldset class="form-group">\n            <label for="converse_muc_bookmark_nick">' +
 __e(o.label_nick) +
 '</label>\n            <input class="form-control" type="text" name="nick" value="' +
 __e(o.default_nick) +

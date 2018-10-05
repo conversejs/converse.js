@@ -70,8 +70,10 @@
 
         overrides: {
             tearDown () {
-                const groupchats = this.chatboxes.where({'type': this.CHATROOMS_TYPE});
-                _.each(groupchats, gc => u.safeSave(gc, {'connection_status': this.ROOMSTATUS.DISCONNECTED}));
+                const { _converse } = this.__super__,
+                      groupchats = this.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
+
+                _.each(groupchats, gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
                 this.__super__.tearDown.call(this, arguments);
             },
 
@@ -477,11 +479,8 @@
                     });
                 },
 
-                refreshRoomFeatures () {
-                    const entity = _converse.disco_entities.get(this.get('jid'));
-                    if (entity) {
-                        entity.destroy();
-                    }
+                async refreshRoomFeatures () {
+                    await _converse.api.disco.refreshFeatures(this.get('jid'));
                     return this.getRoomFeatures();
                 },
 
@@ -493,6 +492,7 @@
                               'features_fetched': moment().format(),
                               'name': identity && identity.get('name')
                           };
+
                     features.each(feature => {
                         const fieldname = feature.get('var');
                         if (!fieldname.startsWith('muc_')) {

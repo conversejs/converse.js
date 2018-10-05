@@ -137,7 +137,7 @@
 
                 queryInfo () {
                     _converse.api.disco.info(this.get('jid'), null)
-                        .then((stanza) => this.onInfo(stanza))
+                        .then(stanza => this.onInfo(stanza))
                         .catch(iq => {
                             this.waitUntilFeaturesDiscovered.resolve(this);
                             _converse.log(iq, Strophe.LogLevel.ERROR);
@@ -577,10 +577,38 @@
                     },
 
                     /**
+                     * Refresh the features (and fields and identities) associated with a
+                     * disco entity by refetching them from the server
+                     *
+                     * @method _converse.api.disco.refreshFeatures
+                     * @param {string} jid The JID of the entity whose features are refreshed.
+                     * @returns {promise} A promise which resolves once the features have been refreshed
+                     * @example
+                     * await _converse.api.disco.refreshFeatures('room@conference.example.org');
+                     */
+                    'refreshFeatures' (jid) {
+                        if (_.isNil(jid)) {
+                            throw new TypeError('api.disco.refreshFeatures: You need to provide an entity JID');
+                        }
+                        return _converse.api.waitUntil('discoInitialized')
+                            .then(() => _converse.api.disco.entities.get(jid, true))
+                            .then(entity => {
+                                entity.features.reset();
+                                entity.fields.reset();
+                                entity.identities.reset();
+                                entity.waitUntilFeaturesDiscovered = utils.getResolveablePromise()
+                                entity.queryInfo();
+                                return entity.waitUntilFeaturesDiscovered();
+                            })
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    },
+
+                    /**
                      * Return all the features associated with a disco entity
                      *
                      * @method _converse.api.disco.getFeatures
                      * @param {string} jid The JID of the entity whose features are returned.
+                     * @returns {promise} A promise which resolves with the returned features
                      * @example
                      * const features = await _converse.api.disco.getFeatures('room@conference.example.org');
                      */

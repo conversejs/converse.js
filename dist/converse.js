@@ -78398,7 +78398,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/chatarea.html -->\n<div class="chat-area col">\n    <div class="chat-content ';
+__p += '<!-- src/templates/chatarea.html -->\n<div class="chat-area col-md-9 col-8">\n    <div class="chat-content ';
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;

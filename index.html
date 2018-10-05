@@ -19,6 +19,7 @@
     <!-- *********************************************************************** -->
 
     <![if gte IE 11]>
+        <script src="3rdparty/libsignal-protocol.js"></script>
         <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
         <script src="dist/converse.js"></script>
     <![endif]>
@@ -356,7 +357,7 @@
     converse.initialize({
         // Please use this connection manager only for testing purposes
         bosh_service_url: 'https://conversejs.org/http-bind/',
-        show_controlbox_by_default: true,
+        show_controlbox_by_default: true
     });
 </script>
 </html>

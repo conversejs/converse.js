@@ -1305,6 +1305,7 @@
                     const container_el = this.el.querySelector('.chatroom-body');
                     _.each(container_el.children, u.hideElement);
                     _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
+                    _.each(this.el.querySelectorAll('.chatroom-form-container'), u.removeElement);
 
                     container_el.insertAdjacentHTML('beforeend',
                         tpl_chatroom_password_form({

@@ -343,10 +343,7 @@
                 },
 
                 roomStanzaItemToHTMLElement (groupchat) {
-                    const name = Strophe.unescapeNode(
-                        groupchat.getAttribute('name') ||
-                            groupchat.getAttribute('jid')
-                    );
+                    const name = Strophe.unescapeNode(groupchat.getAttribute('name') || groupchat.getAttribute('jid'));
                     const div = document.createElement('div');
                     div.innerHTML = tpl_room_item({
                         'name': Strophe.xmlunescape(name),
@@ -1309,14 +1306,14 @@
 
                     container_el.insertAdjacentHTML('beforeend',
                         tpl_chatroom_password_form({
-                            heading: __('This groupchat requires a password'),
-                            label_password: __('Password: '),
-                            label_submit: __('Submit')
+                            'heading': __('This groupchat requires a password'),
+                            'label_password': __('Password: '),
+                            'label_submit': __('Submit')
                         }));
 
                     this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
-                    this.el.querySelector('.chatroom-form').addEventListener(
-                        'submit', this.submitPassword.bind(this), false);
+                    this.el.querySelector('.chatroom-form')
+                        .addEventListener('submit', ev => this.submitPassword(ev), false);
                 },
 
                 showDisconnectMessages (msgs) {

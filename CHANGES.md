@@ -4,6 +4,7 @@
 
 - Bugfix. Handler not triggered when submitting MUC password form 2nd time
 - Bugfix. MUC features weren't being refreshed when saving the config form
+- #1214 Setting `allow_contact_requests` to `false` has no effect
 - #1222 Adding a bookmark should prefill the room name
 
 ## 4.0.2 (2018-10-02)

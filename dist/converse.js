@@ -77129,6 +77129,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
         render() {
           this.el.innerHTML = tpl_roster({
+            'allow_contact_requests': _converse.allow_contact_requests,
             'heading_contacts': __('Contacts'),
             'title_add_contact': __('Add a contact')
           });
@@ -77305,6 +77306,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
             this.addExistingContact(contact, options);
           } else {
+            if (!_converse.allow_contact_requests) {
+              _converse.log(`Not adding requesting or pending contact ${contact.get('jid')} ` + `because allow_contact_requests is false`, Strophe.LogLevel.DEBUG);
+
+              return;
+            }
+
             if (contact.get('ask') === 'subscribe' || contact.get('subscription') === 'from') {
               this.addContactToGroup(contact, HEADER_PENDING_CONTACTS, options);
             } else if (contact.get('requesting') === true) {
@@ -80065,7 +80072,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/pending_contact.html -->\n';
  if (o.allow_chat_pending_contacts)  { ;
-__p += '\n<a class="open-chat w-100" href="#">\n';
+__p += '<a class="open-chat w-100" href="#">';
  } ;
 __p += '\n<span class="pending-contact-name w-100" title="JID: ' +
 __e(o.jid) +
@@ -80073,7 +80080,7 @@ __e(o.jid) +
 __e(o.display_name) +
 '</span> \n';
  if (o.allow_chat_pending_contacts)  { ;
-__p += '</a>\n';
+__p += '</a>';
  } ;
 __p += '\n<a class="remove-xmpp-contact far fa-trash-alt" title="' +
 __e(o.desc_remove) +
@@ -80694,12 +80701,17 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/roster.html -->\n<div class="d-flex controlbox-padded">\n    <span class="w-100 controlbox-heading">' +
 __e(o.heading_contacts) +
-'</span>\n    <a class="chatbox-btn add-contact fa fa-user-plus" title="' +
+'</span>\n    ';
+ if (o.allow_contact_requests) { ;
+__p += '\n        <a class="chatbox-btn add-contact fa fa-user-plus"\n           title="' +
 __e(o.title_add_contact) +
-'"\n       data-toggle="modal" data-target="#add-contact-modal"></a>\n</div>\n\n<form class="roster-filter-form"></form>\n\n<div class="roster-contacts"></div>\n';
+'"\n           data-toggle="modal"\n           data-target="#add-contact-modal"></a>\n    ';
+ } ;
+__p += '\n</div>\n\n<form class="roster-filter-form"></form>\n\n<div class="roster-contacts"></div>\n';
 return __p
 };
 

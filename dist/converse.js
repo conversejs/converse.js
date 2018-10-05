@@ -80298,7 +80298,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/register_panel.html -->\n<div class="row">\n    <form id="converse-register" class="converse-form">\n        <legend>' +
+__p += '<!-- src/templates/register_panel.html -->\n<div class="row">\n    <form id="converse-register" class="converse-form">\n        <legend class="col-form-label">' +
 __e(o.__("Create your account")) +
 '</legend>\n\n        <div class="form-group">\n            <label>' +
 __e(o.__("Please enter the XMPP provider to register with:")) +
@@ -80343,7 +80343,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/registration_form.html -->\n<legend>' +
+__p += '<!-- src/templates/registration_form.html -->\n<legend class="col-form-label">' +
 __e(o.__("Account Registration:")) +
 ' ' +
 __e(o.domain) +
@@ -80359,7 +80359,11 @@ __p += '\n        <input type="button" class="btn btn-secondary button-cancel" v
 __e(o.__('Choose a different provider')) +
 '"/>\n    ';
  } ;
-__p += '\n</fieldset>\n';
+__p += '\n    <div class="switch-form">\n        <p>' +
+__e( o.__("Already have a chat account?") ) +
+'</p>\n        <p><a class="login-here toggle-register-login" href="#converse/login">' +
+__e(o.__("Log in here")) +
+'</a></p>\n    </div>\n</fieldset>\n';
 return __p
 };
 

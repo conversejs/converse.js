@@ -143,7 +143,7 @@ css/fonts.css:: dev sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/font-awesome.scss $@
 
 css/website.css:: dev sass
-	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/_website.scss $@
+	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/website.scss $@
 
 css/%.min.css:: css/%.css
 	make dev

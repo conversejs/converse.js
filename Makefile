@@ -149,13 +149,17 @@ css/%.min.css:: css/%.css
 	make dev
 	$(CLEANCSS) $< > $@
 
-.PHONY: watch
-watch: dev
+.PHONY: watchcss
+watchcss: dev
 	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass:css
 
 .PHONY: watchjs
 watchjs: dev
 	./node_modules/.bin/npx  webpack --mode=development  --watch
+
+.PHONY: watch
+watch: dev
+	make -j 2 watchjs watchcss
 
 .PHONY: logo
 logo: logo/conversejs-transparent16.png \

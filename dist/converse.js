@@ -78750,7 +78750,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-gavel"></span>' +
 __e( o.__('Moderated') ) +
 ' - <em>' +
-__e( o.__('This groupchat is being moderated') ) +
+__e( o.__('Participants entering this groupchat need to request permission to write') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -78758,7 +78758,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-info-circle"></span>' +
 __e( o.__('Not moderated') ) +
 ' - <em>' +
-__e( o.__('This groupchat is not being moderated') ) +
+__e( o.__('Participants entering this groupchat can write right away') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -78902,7 +78902,7 @@ __e( o.__('Semi-anonymous') ) +
 __p += '\n';
  if (o.moderated) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('This groupchat is being moderated') ) +
+__e( o.__('Participants entering this groupchat need to request permission to write') ) +
 '"><span class="fa fa-gavel"></span>' +
 __e( o.__('Moderated') ) +
 '</li>\n';
@@ -78910,7 +78910,7 @@ __e( o.__('Moderated') ) +
 __p += '\n';
  if (o.unmoderated) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('This groupchat is not being moderated') ) +
+__e( o.__('Participants entering this groupchat can write right away') ) +
 '"><span class="fa fa-info-circle"></span>' +
 __e( o.__('Not moderated') ) +
 '</li>\n';

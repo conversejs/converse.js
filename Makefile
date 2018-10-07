@@ -1,7 +1,7 @@
 # You can set these variables from the command line.
 BABEL			?= node_modules/.bin/babel
-BOOTSTRAP		= ./node_modules/ 
-BOURBON 		= ./node_modules/bourbon/app/assets/stylesheets/ 
+BOOTSTRAP		= ./node_modules/
+BOURBON 		= ./node_modules/bourbon/app/assets/stylesheets/
 BUILDDIR		= ./docs
 BUNDLE		  	?= ./.bundle/bin/bundle
 CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
@@ -11,6 +11,7 @@ HTTPSERVE	   	?= ./node_modules/.bin/http-server
 HTTPSERVE_PORT	?= 8000
 INKSCAPE		?= inkscape
 JSDOC			?=  ./node_modules/.bin/jsdoc
+LERNA			?= ./node_modules/.bin/lerna
 OXIPNG			?= oxipng
 PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
@@ -23,7 +24,7 @@ SPHINXOPTS	  	=
 UGLIFYJS		?= node_modules/.bin/uglifyjs
 
 
-# In the case user wishes to use RVM 
+# In the case user wishes to use RVM
 USE_RVM                 ?= false
 RVM_RUBY_VERSION        ?= 2.4.2
 ifeq ($(USE_RVM),true)
@@ -61,7 +62,7 @@ help:
 ## Miscellaneous
 
 .PHONY: serve
-serve: dev 
+serve: dev
 	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1
 
 .PHONY: serve_bg
@@ -108,8 +109,11 @@ release:
 ########################################################################
 ## Install dependencies
 
-stamp-npm: package.json package-lock.json
-	npm install
+$(LERNA):
+	npm install lerna
+
+stamp-npm: $(LERNA) package.json package-lock.json packages/headless/package.json
+	$(LERNA) bootstrap --hoist
 	touch stamp-npm
 
 stamp-bundler: Gemfile
@@ -186,21 +190,22 @@ BUILDS = dist/converse.js \
 	dist/converse-no-dependencies.js \
 	dist/converse-no-dependencies-es2015.js
 
-dist/converse.js: src webpack.config.js stamp-npm
+dist/converse.js: src webpack.config.js stamp-npm @converse/headless
 	./node_modules/.bin/npx  webpack --mode=development
-dist/converse.min.js: src webpack.config.js stamp-npm
+dist/converse.min.js: src webpack.config.js stamp-npm @converse/headless
 	./node_modules/.bin/npx  webpack --mode=production
-dist/converse-headless.js: src webpack.config.js stamp-npm
+dist/converse-headless.js: src webpack.config.js stamp-npm @converse/headless
 	./node_modules/.bin/npx  webpack --mode=development --type=headless
-dist/converse-headless.min.js: src webpack.config.js stamp-npm
+dist/converse-headless.min.js: src webpack.config.js stamp-npm @converse/headless
 	./node_modules/.bin/npx  webpack --mode=production --type=headless
-dist/converse-no-dependencies.js: src webpack.config.js stamp-npm
+dist/converse-no-dependencies.js: src webpack.config.js stamp-npm @converse/headless
 	./node_modules/.bin/npx  webpack --mode=development --type=nodeps
-dist/converse-no-dependencies.min.js: src webpack.config.js stamp-npm
-	./node_modules/.bin/npx  webpack --mode=production --type=nodeps 
-dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm
+dist/converse-no-dependencies.min.js: src webpack.config.js stamp-npm @converse/headless
+	./node_modules/.bin/npx  webpack --mode=production --type=nodeps
+dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @converse/headless
 	./node_modules/.bin/npx  webpack --mode=development --type=nodeps --lang=es2015
 
+@converse/headless: packages/headless
 
 .PHONY: dist
 dist:: build

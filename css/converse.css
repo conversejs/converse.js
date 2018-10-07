@@ -1160,7 +1160,7 @@ readers do not read off random characters that represent icons */
   content: "\f52b"; }
 
 .fa-dot-circle:before {
-  content: "\f192"; }
+  content: "\f111"; }
 
 .fa-dove:before {
   content: "\f4ba"; }
@@ -9714,9 +9714,9 @@ body.reset {
 #conversejs .xmpp-status .fa-minus-circle,
 #conversejs .roster-contacts .fa-minus-circle {
   color: #E77051; }
-#conversejs .set-xmpp-status .fa-dot-circle-o,
-#conversejs .xmpp-status .fa-dot-circle-o,
-#conversejs .roster-contacts .fa-dot-circle-o {
+#conversejs .set-xmpp-status .fa-dot-circle,
+#conversejs .xmpp-status .fa-dot-circle,
+#conversejs .roster-contacts .fa-dot-circle {
   color: #E7A151; }
 #conversejs .set-xmpp-status .far.fa-circle,
 #conversejs .set-xmpp-status .fa-times-circle,
@@ -10339,8 +10339,8 @@ body.reset {
         color: #89d6ab; }
       #conversejs .items-list .list-item.open .fa-minus-circle {
         color: #f0a794; }
-      #conversejs .items-list .list-item.open .fa-dot-circle-o {
-        color: #f0c594; }
+      #conversejs .items-list .list-item.open .fa-dot-circle {
+        color: #f6dec1; }
       #conversejs .items-list .list-item.open .far .fa-circle,
       #conversejs .items-list .list-item.open .fa-times-circle {
         color: #e6e7e4; }

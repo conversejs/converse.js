@@ -43847,6 +43847,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 return;
             }
             if (_.isBoolean(plugin.enabled) && plugin.enabled || _.isFunction(plugin.enabled) && plugin.enabled(this.plugged) || _.isNil(plugin.enabled)) {
+
                 _.extend(plugin, this.properties);
                 if (plugin.dependencies) {
                     this.loadPluginDependencies(plugin);
@@ -43919,7 +43920,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 });
 
 //# sourceMappingURL=pluggable.js.map
-
 
 /***/ }),
 
@@ -53423,7 +53423,6 @@ Strophe.Websocket.prototype = {
 /******/ })["default"];
 });
 //# sourceMappingURL=strophe.js.map
-
 
 /***/ }),
 

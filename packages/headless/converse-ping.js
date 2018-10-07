@@ -8,12 +8,12 @@
  * as specified in XEP-0199 XMPP Ping.
  */
 (function (root, factory) {
-    define(["converse-core", "strophejs-plugin-ping"], factory);
+    define(["./converse-core", "strophejs-plugin-ping"], factory);
 }(this, function (converse) {
     "use strict";
     // Strophe methods for building stanzas
     const { Strophe, _ } = converse.env;
-    
+
     converse.plugins.add('converse-ping', {
 
         initialize () {

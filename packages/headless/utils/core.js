@@ -11,16 +11,16 @@
     if (typeof define === 'function' && define.amd) {
         define([
             "sizzle",
-            "es6-promise",
-            "fast-text-encoding",
-            "lodash.noconflict",
+            "es6-promise/dist/es6-promise.auto",
+            "fast-text-encoding/text",
+            "../lodash.noconflict",
             "backbone",
             "strophe.js",
-            "uri",
-            "templates/audio.html",
-            "templates/file.html",
-            "templates/image.html",
-            "templates/video.html"
+            "urijs",
+            "../templates/audio.html",
+            "../templates/file.html",
+            "../templates/image.html",
+            "../templates/video.html"
         ], factory);
     } else {
         // Used by the mockups

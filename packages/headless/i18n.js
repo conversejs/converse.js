@@ -10,9 +10,9 @@
 
 (function (root, factory) {
     define([
-        "es6-promise",
+        "es6-promise/dist/es6-promise.auto",
         "jed",
-        "lodash.noconflict",
+        "./lodash.noconflict",
         "moment",
         'moment/locale/af',
         'moment/locale/ar',

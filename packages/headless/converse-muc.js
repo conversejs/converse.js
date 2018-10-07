@@ -6,14 +6,14 @@
 
 (function (root, factory) {
     define([
-            "utils/form",
-            "converse-core",
-            "converse-disco",
-            "backbone.overview",
-            "backbone.orderedlistview",
+            "./utils/form",
+            "./converse-core",
+            "./converse-disco",
+            "backbone.overview/backbone.overview",
+            "backbone.overview/backbone.orderedlistview",
             "backbone.vdomview",
-            "utils/muc",
-            "utils/emoji"
+            "./utils/muc",
+            "./utils/emoji"
     ], factory);
 }(this, function (u, converse) {
     "use strict";

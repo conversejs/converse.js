@@ -8,7 +8,7 @@
 //
 /*global define, escape, Jed */
 (function (root, factory) {
-    define(["converse-core", "utils/core"], factory);
+    define(["../converse-core", "./core"], factory);
 }(this, function (converse, u) {
     "use strict";
 

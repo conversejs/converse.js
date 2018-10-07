@@ -6,10 +6,10 @@
 
 (function (root, factory) {
     define([
-        "converse-core",
+        "./converse-core",
         "filesize",
-        "utils/form",
-        "utils/emoji"
+        "./utils/form",
+        "./utils/emoji"
     ], factory);
 }(this, function (converse, filesize) {
     "use strict";

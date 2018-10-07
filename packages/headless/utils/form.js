@@ -10,17 +10,17 @@
 (function (root, factory) {
     define([
         "sizzle",
-        "lodash.noconflict",
-        "utils/core",
-        "templates/field.html",
-        "templates/select_option.html",
-        "templates/form_select.html",
-        "templates/form_textarea.html",
-        "templates/form_checkbox.html",
-        "templates/form_username.html",
-        "templates/form_input.html",
-        "templates/form_captcha.html",
-        "templates/form_url.html",
+        "../lodash.noconflict",
+        "./core",
+        "../templates/field.html",
+        "../templates/select_option.html",
+        "../templates/form_select.html",
+        "../templates/form_textarea.html",
+        "../templates/form_checkbox.html",
+        "../templates/form_username.html",
+        "../templates/form_input.html",
+        "../templates/form_captcha.html",
+        "../templates/form_url.html",
     ], factory);
 }(this, function (
         sizzle,

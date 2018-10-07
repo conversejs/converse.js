@@ -10,8 +10,8 @@
 
 (function (root, factory) {
     define(["sizzle",
-            "converse-core",
-            "converse-disco",
+            "./converse-core",
+            "./converse-disco",
             "strophejs-plugin-rsm"
     ], factory);
 }(this, function (sizzle, converse) {

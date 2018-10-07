@@ -228,10 +228,6 @@
             .replace(/"/g, "&quot;");
     };
 
-    u.escapeURL = function (url) {
-        return encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-    };
-
     u.prefixMentions = function (message) {
         /* Given a message object, return its text with @ chars
          * inserted before the mentioned nicknames.
@@ -267,12 +263,11 @@
     u.addHyperlinks = function (text) {
         return URI.withinString(text, url => {
             const uri = new URI(url);
-            uri.normalize();
+            url = uri.normalize()._string;
             const pretty_url = uri._parts.urn ? url : uri.readable();
             if (!uri._parts.protocol && !url.startsWith('http://') && !url.startsWith('https://')) {
                 url = 'http://' + url;
             }
-            url = u.escapeHTML(u.escapeURL(url));
             return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
         }, {
             'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi

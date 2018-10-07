@@ -6,16 +6,16 @@
 
 (function (root, factory) {
     define(["sizzle",
-            "es6-promise",
-            "lodash.noconflict",
-            "lodash.fp",
-            "polyfill",
-            "i18n",
-            "utils/core",
+            "es6-promise/dist/es6-promise.auto",
+            "./lodash.noconflict",
+            "./lodash.fp",
+            "./polyfill",
+            "./i18n",
+            "./utils/core",
             "moment",
-            "strophe",
-            "pluggable",
-            "backbone.noconflict",
+            "strophe.js",
+            "pluggable.js/dist/pluggable",
+            "./backbone.noconflict",
             "backbone.nativeview",
             "backbone.browserStorage"
     ], factory);
@@ -59,7 +59,7 @@
         'imports': { '_': _ }
     };
 
-    /** 
+    /**
      * A private, closured object containing the private api (via `_converse.api`)
      * as well as private methods and internal data-structures.
      *
@@ -1231,12 +1231,12 @@
         return init_promise;
     };
 
-    /** 
+    /**
      * ### The private API
      *
      * The private API methods are only accessible via the closured {@link _converse}
      * object, which is only available to plugins.
-     * 
+     *
      * These methods are kept private (i.e. not global) because they may return
      * sensitive data which should be kept off-limits to other 3rd-party scripts
      * that might be running in the page.
@@ -1338,14 +1338,14 @@
              */
             'status': {
                 /** Return the current user's availability status.
-                 * 
+                 *
                  * @method _converse.api.user.status.get
                  * @example _converse.api.user.status.get();
                  */
                 'get' () {
                     return _converse.xmppstatus.get('status');
                 },
-                /** 
+                /**
                  * The user's status can be set to one of the following values:
                  *
                  * @method _converse.api.user.status.set
@@ -1409,7 +1409,7 @@
              *
              * @method _converse.api.settings.update
              * @param {object} settings The configuration settings
-             * @example 
+             * @example
              * _converse.api.settings.update({
              *    'enable_foo': true
              * });
@@ -1467,14 +1467,14 @@
         /**
          * Converse and its plugins emit various events which you can listen to via the
          * {@link _converse.api.listen} namespace.
-         * 
+         *
          * Some of these events are also available as [ES2015 Promises](http://es6-features.org/#PromiseUsage)
          * although not all of them could logically act as promises, since some events
          * might be fired multpile times whereas promises are to be resolved (or
          * rejected) only once.
-         * 
+         *
          * Events which are also promises include:
-         * 
+         *
          * * [cachedRoster](/docs/html/events.html#cachedroster)
          * * [chatBoxesFetched](/docs/html/events.html#chatBoxesFetched)
          * * [pluginsInitialized](/docs/html/events.html#pluginsInitialized)
@@ -1484,7 +1484,7 @@
          * * [rosterInitialized](/docs/html/events.html#rosterInitialized)
          * * [statusInitialized](/docs/html/events.html#statusInitialized)
          * * [roomsPanelRendered](/docs/html/events.html#roomsPanelRendered)
-         * 
+         *
          * The various plugins might also provide promises, and they do this by using the
          * `promises.add` api method.
          *
@@ -1496,14 +1496,14 @@
              * By calling `promises.add`, a new [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
              * is made available for other code or plugins to depend on via the
              * {@link _converse.api.waitUntil} method.
-             * 
+             *
              * Generally, it's the responsibility of the plugin which adds the promise to
              * also resolve it.
-             * 
+             *
              * This is done by calling {@link _converse.api.emit}, which not only resolves the
              * promise, but also emits an event with the same name (which can be listened to
              * via {@link _converse.api.listen}).
-             * 
+             *
              * @method _converse.api.promises.add
              * @param {string|array} [name|names] The name or an array of names for the promise(s) to be added
              * @example _converse.api.promises.add('foo-completed');
@@ -1541,7 +1541,7 @@
 
         /**
          * Converse emits events to which you can subscribe to.
-         * 
+         *
          * The `listen` namespace exposes methods for creating event listeners
          * (aka handlers) for these events.
          *
@@ -1632,7 +1632,7 @@
 
         /**
          * Allows you to send XML stanzas.
-         * 
+         *
          * @method _converse.api.send
          * @example
          * const msg = converse.env.$msg({
@@ -1675,7 +1675,7 @@
     const converse = {
         /**
          * Public API method which initializes Converse.
-         * This method must always be called when using Converse. 
+         * This method must always be called when using Converse.
          *
          * @memberOf converse
          * @method initialize
@@ -1703,7 +1703,7 @@
         /**
          * Exposes methods for adding and removing plugins. You'll need to write a plugin
          * if you want to have access to the private API methods defined further down below.
-         * 
+         *
          * For more information on plugins, read the documentation on [writing a plugin](/docs/html/plugin_development.html).
          *
          * @namespace plugins
@@ -1711,17 +1711,17 @@
          */
         'plugins': {
             /** Registers a new plugin.
-             * 
+             *
              * @method converse.plugins.add
              * @param {string} name The name of the plugin
              * @param {object} plugin The plugin object
              *
              * @example
-             * 
+             *
              *  const plugin = {
              *      initialize: function () {
              *          // Gets called as soon as the plugin has been loaded.
-             * 
+             *
              *          // Inside this method, you have access to the private
              *          // API via `_covnerse.api`.
              *

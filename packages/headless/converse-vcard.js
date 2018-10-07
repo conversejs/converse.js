@@ -5,7 +5,7 @@
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
-    define(["converse-core", "templates/vcard.html"], factory);
+    define(["./converse-core", "./templates/vcard.html"], factory);
 }(this, function (converse, tpl_vcard) {
     "use strict";
     const { Backbone, Promise, Strophe, _, $iq, $build, b64_sha1, moment, sizzle } = converse.env;

@@ -7,7 +7,7 @@
 /* This is a Converse plugin which add support for XEP-0030: Service Discovery */
 
 (function (root, factory) {
-    define(["converse-core", "sizzle"], factory);
+    define(["./converse-core", "sizzle"], factory);
 }(this, function (converse, sizzle) {
 
     const { Backbone, Promise, Strophe, $iq, b64_sha1, utils, _, f } = converse.env;
@@ -508,7 +508,7 @@
                     'entities': {
                         /**
                          * Get the the corresponding `DiscoEntity` instance.
-                         * 
+                         *
                          * @method _converse.api.disco.entities.get
                          * @param {string} jid The Jabber ID of the entity
                          * @param {boolean} [create] Whether the entity should be created if it doesn't exist.
@@ -652,7 +652,7 @@
                      * want to know whether the user's own JID has an identity with
                      * `category='pubsub'` and `type='pep'` as explained in this section of
                      * XEP-0163: https://xmpp.org/extensions/xep-0163.html#support
-                     * 
+                     *
                      * @method _converse.api.disco.getIdentity
                      * @param {string} The identity category.
                      *     In the XML stanza, this is the `category`

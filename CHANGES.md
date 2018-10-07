@@ -16,6 +16,7 @@
 - M4A and WEBM files, when sent as XEP-0066 Out of Band Data, are now playable directly in chat
 - Updated French and Spanish translations
 - Two new languages supported, [Hindi](https://hosted.weblate.org/languages/hi/conversejs/) and [Romanian](https://hosted.weblate.org/languages/ro/conversejs/)
+- #1176 Add config setting [send_chat_state_notifications](https://conversejs.org/docs/html/configuration.html#send-chat-state-notifications)
 - #1187 UTF-8 characters have the wrong encoding when using OMEMO
 - #1189 Video playback failure
 - #1220 Converse not working in Edge

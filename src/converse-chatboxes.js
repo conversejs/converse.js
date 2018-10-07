@@ -37,9 +37,10 @@
             // Refer to docs/source/configuration.rst for explanations of these
             // configuration settings.
             _converse.api.settings.update({
-                'filter_by_resource': false,
                 'auto_join_private_chats': [],
+                'filter_by_resource': false,
                 'forward_messages': false,
+                'send_chat_state_notifications': true
             });
             _converse.api.promises.add([
                 'chatBoxesFetched',
@@ -410,12 +411,14 @@
                      * as taken from the 'chat_state' attribute of the chat box.
                      * See XEP-0085 Chat State Notifications.
                      */
-                    _converse.connection.send(
-                        $msg({'to':this.get('jid'), 'type': 'chat'})
-                            .c(this.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
-                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
-                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
-                    );
+                    if (_converse.send_chat_state_notifications) {
+                        _converse.connection.send(
+                            $msg({'to':this.get('jid'), 'type': 'chat'})
+                                .c(this.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
+                                .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                                .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
+                        );
+                    }
                 },
 
 

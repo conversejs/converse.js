@@ -59889,9 +59889,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // configuration settings.
 
       _converse.api.settings.update({
-        'filter_by_resource': false,
         'auto_join_private_chats': [],
-        'forward_messages': false
+        'filter_by_resource': false,
+        'forward_messages': false,
+        'send_chat_state_notifications': true
       });
 
       _converse.api.promises.add(['chatBoxesFetched', 'chatBoxesInitialized', 'privateChatsAutoJoined']);
@@ -60304,16 +60305,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * as taken from the 'chat_state' attribute of the chat box.
            * See XEP-0085 Chat State Notifications.
            */
-          _converse.connection.send($msg({
-            'to': this.get('jid'),
-            'type': 'chat'
-          }).c(this.get('chat_state'), {
-            'xmlns': Strophe.NS.CHATSTATES
-          }).up().c('no-store', {
-            'xmlns': Strophe.NS.HINTS
-          }).up().c('no-permanent-store', {
-            'xmlns': Strophe.NS.HINTS
-          }));
+          if (_converse.send_chat_state_notifications) {
+            _converse.connection.send($msg({
+              'to': this.get('jid'),
+              'type': 'chat'
+            }).c(this.get('chat_state'), {
+              'xmlns': Strophe.NS.CHATSTATES
+            }).up().c('no-store', {
+              'xmlns': Strophe.NS.HINTS
+            }).up().c('no-permanent-store', {
+              'xmlns': Strophe.NS.HINTS
+            }));
+          }
         },
 
         sendFiles(files) {

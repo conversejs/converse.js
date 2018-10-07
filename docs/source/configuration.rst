@@ -1258,6 +1258,14 @@ Converse render the emojis with [Twemoji](https://twemoji.twitter.com/).
 
 See also `emoji_image_path`_.
 
+send_chat_state_notifications
+-----------------------------
+
+* Default: ``true``
+
+Determines whether chat state notifications (see `XEP-0085 <https://xmpp.org/extensions/xep-0085.html>`_)
+should be sent out or not.
+
 show_only_online_users
 ----------------------
 
@@ -1267,7 +1275,7 @@ If set to ``true``, only online users will be shown in the contacts roster.
 Users with any other status (e.g. away, busy etc.) will not be shown.
 
 show_send_button
-----------------------
+----------------
 
 * Default:  ``false``
 

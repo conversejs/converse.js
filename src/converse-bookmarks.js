@@ -10,8 +10,8 @@
  * in XEP-0048.
  */
 (function (root, factory) {
-    define(["converse-core",
-            "converse-muc",
+    define(["@converse/headless/converse-core",
+            "@converse/headless/converse-muc",
             "templates/chatroom_bookmark_form.html",
             "templates/chatroom_bookmark_toggle.html",
             "templates/bookmark.html",
@@ -42,7 +42,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatboxes", "converse-muc", "converse-muc-views"],
+        dependencies: ["converse-chatboxes", "@converse/headless/converse-muc", "converse-muc-views"],
 
         overrides: {
             // Overrides mentioned here will be picked up by converse.js's

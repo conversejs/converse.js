@@ -7,7 +7,7 @@
 (function (root, factory) {
     define([
             "utils/emoji",
-            "converse-core",
+            "@converse/headless/converse-core",
             "bootstrap",
             "twemoji",
             "xss",
@@ -906,7 +906,7 @@
                         } else if (ev.keyCode === _converse.keycodes.DOWN_ARROW && ev.target.selectionEnd === ev.target.value.length) {
                             return this.editLaterMessage();
                         }
-                    } 
+                    }
                     if (_.includes([
                                 _converse.keycodes.SHIFT,
                                 _converse.keycodes.META,
@@ -1297,11 +1297,11 @@
                       * @method _converse.api.chatviews.get
                       * @returns {ChatBoxView} A [Backbone.View](http://backbonejs.org/#View) instance.
                       *     The chat should already be open, otherwise `undefined` will be returned.
-                      * 
+                      *
                       * @example
                       * // To return a single view, provide the JID of the contact:
                       * _converse.api.chatviews.get('buddy@example.com')
-                      * 
+                      *
                       * @example
                       * // To return an array of views, provide an array of JIDs:
                       * _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])

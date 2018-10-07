@@ -8,7 +8,7 @@
 
 (function (root, factory) {
     define([
-        "converse-core",
+        "@converse/headless/converse-core",
         "templates/toolbar_omemo.html"
     ], factory);
 }(this, function (converse, tpl_toolbar_omemo) {

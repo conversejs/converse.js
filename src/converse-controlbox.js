@@ -7,10 +7,10 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-core",
+    define(["@converse/headless/converse-core",
             "bootstrap",
             "formdata-polyfill",
-            "lodash.fp",
+            "@converse/headless/lodash.fp",
             "templates/converse_brand_heading.html",
             "templates/controlbox.html",
             "templates/controlbox_toggle.html",

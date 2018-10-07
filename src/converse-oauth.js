@@ -7,7 +7,7 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as a module called "myplugin"
-        define(["converse-core", "templates/oauth_providers.html", "hellojs"], factory);
+        define(["@converse/headless/converse-core", "templates/oauth_providers.html", "hellojs"], factory);
     } else {
         // Browser globals. If you're not using a module loader such as require.js,
         // then this line below executes. Make sure that your plugin's <script> tag

@@ -6,7 +6,7 @@
 
 (function (root, factory) {
     define([
-        "converse-core",
+        "@converse/headless/converse-core",
         "formdata-polyfill",
         "utils/muc",
         "xss",

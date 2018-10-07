@@ -7,7 +7,7 @@
 (function (root, factory) {
     define([
         "utils/emoji",
-        "converse-core",
+        "@converse/headless/converse-core",
         "xss",
         "filesize",
         "templates/csn.html",

@@ -17,7 +17,7 @@
  */
 (function (root, factory) {
     define(
-        ["converse-core", "converse-chatview"],
+        ["@converse/headless/converse-core", "converse-chatview"],
         factory);
 }(this, function (converse) {
     "use strict";

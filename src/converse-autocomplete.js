@@ -8,7 +8,7 @@
 // https://leaverou.github.io/awesomplete/
 
 (function (root, factory) {
-    define(["converse-core"], factory);
+    define(["@converse/headless/converse-core"], factory);
 }(this, function (converse) {
 
     const { _, Backbone } = converse.env,

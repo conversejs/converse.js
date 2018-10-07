@@ -1,4 +1,4 @@
-    
+
     define('awesomplete', [], function () { return Awesomplete; });
     define('lodash', [], function () { return _; });
     define('underscore', [], function () { return _; });
@@ -23,7 +23,7 @@
     define('moment/locale/uk', [], function () { return moment; });
     define('moment/moment', [], function () { return moment; });
     define('i18n', [], function () { return; });
-    define('es6-promise', [], function () { return Promise; });
+    define('es6-promise/dist/es6-promise.auto', [], function () { return Promise; });
 
     define('strophe', [], function () {
         return {

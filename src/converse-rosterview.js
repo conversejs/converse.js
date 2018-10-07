@@ -5,7 +5,7 @@
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
-    define(["converse-core",
+    define(["@converse/headless/converse-core",
             "formdata-polyfill",
             "templates/add_contact_modal.html",
             "templates/group_header.html",
@@ -16,11 +16,11 @@
             "templates/roster_item.html",
             "templates/search_contact.html",
             "awesomplete",
-            "converse-chatboxes",
+            "@converse/headless/converse-chatboxes",
             "converse-modal"
     ], factory);
 }(this, function (
-            converse, 
+            converse,
             _FormData,
             tpl_add_contact_modal,
             tpl_group_header,
@@ -679,7 +679,7 @@
 
                 filter (q, type) {
                     /* Filter the group's contacts based on the query "q".
-                     * 
+                     *
                      * If all contacts are filtered out (i.e. hidden), then the
                      * group must be filtered out as well.
                      */
@@ -985,7 +985,7 @@
 
             function initRoster () {
                 /* Create an instance of RosterView once the RosterGroups
-                 * collection has been created (in converse-core.js)
+                 * collection has been created (in @converse/headless/converse-core.js)
                  */
                 if (_converse.authentication === _converse.ANONYMOUS) {
                     return;

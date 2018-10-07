@@ -7,7 +7,7 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-core"], factory);
+    define(["@converse/headless/converse-core"], factory);
 }(this, function (converse) {
     "use strict";
     const { Strophe, _, sizzle } = converse.env,

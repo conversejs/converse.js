@@ -6,9 +6,9 @@
 
 (function (root, factory) {
     define([
-        "converse-core",
+        "@converse/headless/converse-core",
         "templates/chatboxes.html",
-        "converse-chatboxes",
+        "@converse/headless/converse-chatboxes",
         "backbone.overview"
     ], factory);
 }(this, function (converse, tpl_chatboxes) {

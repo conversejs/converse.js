@@ -7,7 +7,7 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define([
-            "converse-core",
+            "@converse/headless/converse-core",
             "templates/alert_modal.html",
             "bootstrap",
             "backbone.vdomview"

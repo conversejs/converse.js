@@ -5,7 +5,7 @@
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
-    define(["converse-core", "converse-muc"], factory);
+    define(["@converse/headless/converse-core", "@converse/headless/converse-muc"], factory);
 }(this, function (converse) {
     "use strict";
     const { Backbone, _ } = converse.env;

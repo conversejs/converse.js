@@ -8,7 +8,7 @@
 
 (function (root, factory) {
     define([
-            "converse-core",
+            "@converse/headless/converse-core",
             "templates/chatbox.html",
             "converse-chatview",
     ], factory);

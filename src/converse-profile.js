@@ -7,7 +7,7 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-core",
+    define(["@converse/headless/converse-core",
             "bootstrap",
             "formdata-polyfill",
             "templates/alert.html",
@@ -15,7 +15,7 @@
             "templates/profile_modal.html",
             "templates/profile_view.html",
             "templates/status_option.html",
-            "converse-vcard",
+            "@converse/headless/converse-vcard",
             "converse-modal"
     ], factory);
 }(this, function (

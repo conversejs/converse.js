@@ -10,8 +10,8 @@
  * rooms in the "Rooms Panel" of the ControlBox.
  */
 (function (root, factory) {
-    define(["converse-core",
-            "converse-muc",
+    define(["@converse/headless/converse-core",
+            "@converse/headless/converse-muc",
             "templates/rooms_list.html",
             "templates/rooms_list_item.html"
         ], factory);
@@ -33,7 +33,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-singleton", "converse-controlbox", "converse-muc", "converse-bookmarks"],
+        dependencies: ["converse-singleton", "converse-controlbox", "@converse/headless/converse-muc", "converse-bookmarks"],
 
         initialize () {
             /* The initialize function gets called as soon as the plugin is

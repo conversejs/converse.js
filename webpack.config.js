@@ -80,25 +80,13 @@ const config = {
             "IPv6":                     path.resolve(__dirname, "node_modules/urijs/src/IPv6"),
             "SecondLevelDomains":       path.resolve(__dirname, "node_modules/urijs/src/SecondLevelDomains"),
             "awesomplete":              path.resolve(__dirname, "node_modules/awesomplete-avoid-xss/awesomplete"),
-            "backbone":                 path.resolve(__dirname, "node_modules/backbone/backbone"),
-            "backbone.browserStorage":  path.resolve(__dirname, "node_modules/backbone.browserStorage/backbone.browserStorage"),
-            "backbone.nativeview":      path.resolve(__dirname, "node_modules/backbone.nativeview/backbone.nativeview"),
-            "backbone.orderedlistview": path.resolve(__dirname, "node_modules/backbone.overview/backbone.orderedlistview"),
-            "backbone.overview":        path.resolve(__dirname, "node_modules/backbone.overview/backbone.overview"),
-            "backbone.vdomview":        path.resolve(__dirname, "node_modules/backbone.vdomview/backbone.vdomview"),
             "bootstrap":                path.resolve(__dirname, "node_modules/bootstrap.native/dist/bootstrap-native-v4"),
             "crypto":                   path.resolve(__dirname, "node_modules/otr/build/dep/crypto"),
-            "es6-promise":              path.resolve(__dirname, "node_modules/es6-promise/dist/es6-promise.auto"),
-            "filesize":                 path.resolve(__dirname, "node_modules/filesize/lib/filesize"),
-            "fast-text-encoding":       path.resolve(__dirname, "node_modules/fast-text-encoding/text"),
             "formdata-polyfill":        path.resolve(__dirname, "node_modules/formdata-polyfill/FormData"),
-            "jed":                      path.resolve(__dirname, "node_modules/jed/jed"),
             "jquery":                   path.resolve(__dirname, "src/jquery-stub"),
-            "lodash":                   path.resolve(__dirname, "node_modules/lodash/lodash"),
-            "lodash.converter":         path.resolve(__dirname, "3rdparty/lodash.fp"),
+            "lodash.converter":         "@converse/core/3rdparty/lodash.fp",
             "pluggable":                path.resolve(__dirname, "node_modules/pluggable.js/dist/pluggable"),
             "punycode":                 path.resolve(__dirname, "node_modules/urijs/src/punycode"),
-            "sizzle":                   path.resolve(__dirname, "node_modules/sizzle/dist/sizzle"),
             "snabbdom":                 path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom"),
             "snabbdom-attributes":      path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-attributes"),
             "snabbdom-class":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-class"),
@@ -109,10 +97,10 @@ const config = {
             "tovnode":                  path.resolve(__dirname, "node_modules/snabbdom/dist/tovnode"),
             "underscore":               path.resolve(__dirname, "src/underscore-shim"),
             "uri":                      path.resolve(__dirname, "node_modules/urijs/src/URI"),
-            "utils/core":               path.resolve(__dirname, "src/utils/core"),
-            "utils/emoji":              path.resolve(__dirname, "src/utils/emoji"),
-            "utils/form":               path.resolve(__dirname, "src/utils/form"),
-            "utils/muc":                path.resolve(__dirname, "src/utils/muc"),
+            "utils/core":               "@converse/headless/utils/core",
+            "utils/emoji":              "@converse/headless/utils/emoji",
+            "utils/form":               "@converse/headless/utils/form",
+            "utils/muc":                "@converse/headless/utils/muc",
             "vdom-parser":              path.resolve(__dirname, "node_modules/vdom-parser/dist"),
             "xss":                      path.resolve(__dirname, "node_modules/xss/dist/xss")
         }
@@ -135,7 +123,7 @@ function parameterize () {
     if (type === 'headless') {
         console.log("Making a headless build");
         extend(config, {
-            entry: path.resolve(__dirname, 'src/headless.js'),
+            entry: "@converse/headless",
             output: {
                 path: path.resolve(__dirname, 'dist'),
                 filename: 'converse-headless.js'

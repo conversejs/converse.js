@@ -7,11 +7,11 @@
 /*global define */
 
 (function (root, factory) {
-    define(["converse-core",
+    define(["@converse/headless/converse-core",
             "templates/inverse_brand_heading.html",
             "converse-chatview",
             "converse-controlbox",
-            "converse-muc",
+            "@converse/headless/converse-muc",
             "converse-singleton"
     ], factory);
 }(this, function (converse, tpl_brand_heading) {

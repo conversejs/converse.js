@@ -7,7 +7,7 @@
 /*global define, window, document */
 
 (function (root, factory) {
-    define(["converse-core",
+    define(["@converse/headless/converse-core",
             "templates/chatbox_minimize.html",
             "templates/toggle_chats.html",
             "templates/trimmed_chat.html",
@@ -39,7 +39,7 @@
          *
          * NB: These plugins need to have already been loaded via require.js.
          */
-        dependencies: ["converse-chatview", "converse-controlbox", "converse-muc", "converse-muc-views", "converse-headline"],
+        dependencies: ["converse-chatview", "converse-controlbox", "@converse/headless/converse-muc", "converse-muc-views", "converse-headline"],
 
         enabled (_converse) {
             return _converse.view_mode == 'overlayed';

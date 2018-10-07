@@ -8,7 +8,7 @@
  * an "App Server" as defined in  XEP-0357
  */
 (function (root, factory) {
-    define(["converse-core"], factory);
+    define(["@converse/headless/converse-core"], factory);
 }(this, function (converse) {
     "use strict";
     const { Strophe, $iq, _ } = converse.env;

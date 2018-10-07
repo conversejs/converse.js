@@ -7,7 +7,7 @@
 /*global define, window, document */
 
 (function (root, factory) {
-    define(["converse-core",
+    define(["@converse/headless/converse-core",
             "templates/dragresize.html",
             "converse-chatview",
             "converse-controlbox"

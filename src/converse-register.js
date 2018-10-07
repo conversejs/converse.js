@@ -11,13 +11,13 @@
  */
 (function (root, factory) {
     define(["utils/form",
-            "converse-core",
-            "templates/form_username.html",
+            "@converse/headless/converse-core",
+            "@converse/headless/templates/form_username.html",
             "templates/register_link.html",
             "templates/register_panel.html",
             "templates/registration_form.html",
             "templates/registration_request.html",
-            "templates/form_input.html",
+            "@converse/headless/templates/form_input.html",
             "templates/spinner.html",
             "converse-controlbox"
     ], factory);

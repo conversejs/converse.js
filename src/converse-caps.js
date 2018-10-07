@@ -5,7 +5,7 @@
 // Licensed under the Mozilla Public License (MPLv2)
 
 (function (root, factory) {
-    define(["converse-core"], factory);
+    define(["@converse/headless/converse-core"], factory);
 }(this, function (converse) {
 
     const { Strophe, $build, _, b64_sha1 } = converse.env;

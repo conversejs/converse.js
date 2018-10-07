@@ -9706,17 +9706,17 @@ body.reset {
         color: #578EA9;
         font-size: 20px;
         margin-right: 0.5em; }
-#conversejs .set-xmpp-status .fa-circle,
-#conversejs .xmpp-status .fa-circle,
-#conversejs .roster-contacts .fa-circle {
+#conversejs .set-xmpp-status .chat-status--online,
+#conversejs .xmpp-status .chat-status--online,
+#conversejs .roster-contacts .chat-status--online {
   color: #3AA569; }
-#conversejs .set-xmpp-status .fa-minus-circle,
-#conversejs .xmpp-status .fa-minus-circle,
-#conversejs .roster-contacts .fa-minus-circle {
+#conversejs .set-xmpp-status .chat-status--busy,
+#conversejs .xmpp-status .chat-status--busy,
+#conversejs .roster-contacts .chat-status--busy {
   color: #E77051; }
-#conversejs .set-xmpp-status .fa-dot-circle-o,
-#conversejs .xmpp-status .fa-dot-circle-o,
-#conversejs .roster-contacts .fa-dot-circle-o {
+#conversejs .set-xmpp-status .chat-status--away,
+#conversejs .xmpp-status .chat-status--away,
+#conversejs .roster-contacts .chat-status--away {
   color: #E7A151; }
 #conversejs .set-xmpp-status .far.fa-circle,
 #conversejs .set-xmpp-status .fa-times-circle,
@@ -10339,8 +10339,8 @@ body.reset {
         color: #89d6ab; }
       #conversejs .items-list .list-item.open .fa-minus-circle {
         color: #f0a794; }
-      #conversejs .items-list .list-item.open .fa-dot-circle-o {
-        color: #f0c594; }
+      #conversejs .items-list .list-item.open .fa-dot-circle {
+        color: #f6dec1; }
       #conversejs .items-list .list-item.open .far .fa-circle,
       #conversejs .items-list .list-item.open .fa-times-circle {
         color: #e6e7e4; }

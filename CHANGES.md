@@ -19,6 +19,7 @@
 - #1193 OMEMO messages without a `<body>` fallback are ignored
 - #1199 Can't get back from to login screen from registration screen
 - #1204 Link encoding issue
+- #1209 Bring color codes of users' status in line with other clients
 - #1214 Setting `allow_contact_requests` to `false` has no effect
 - #1221 Avoid creating a headlines box if we don't have anything to show inside it
 - #1222 Adding a bookmark should prefill the room name

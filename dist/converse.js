@@ -43834,6 +43834,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 return;
             }
             if (_.isBoolean(plugin.enabled) && plugin.enabled || _.isFunction(plugin.enabled) && plugin.enabled(this.plugged) || _.isNil(plugin.enabled)) {
+
                 _.extend(plugin, this.properties);
                 if (plugin.dependencies) {
                     this.loadPluginDependencies(plugin);
@@ -43906,7 +43907,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 });
 
 //# sourceMappingURL=pluggable.js.map
-
 
 /***/ }),
 
@@ -78403,25 +78403,25 @@ __e(o.label_close) +
  if (o.status === 'online') { ;
 __p += ' checked="checked" ';
  } ;
-__p += '\n                                   type="radio" id="radio-online" value="online" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-online">\n                                <span class="fa fa-circle"></span>&nbsp;' +
+__p += '\n                                   type="radio" id="radio-online" value="online" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-online">\n                                <span class="fa fa-circle chat-status chat-status--online"></span>&nbsp;' +
 __e(o.label_online) +
 '</label>\n                        </div>\n                        <div class="custom-control custom-radio">\n                            <input ';
  if (o.status === 'busy') { ;
 __p += ' checked="checked" ';
  } ;
-__p += '\n                                   type="radio" id="radio-busy" value="dnd" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-busy">\n                                <span class="fa fa-minus-circle"></span>&nbsp;' +
+__p += '\n                                   type="radio" id="radio-busy" value="dnd" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-busy">\n                                <span class="fa fa-minus-circle  chat-status chat-status--busy"></span>&nbsp;' +
 __e(o.label_busy) +
 '</label>\n                        </div>\n                        <div class="custom-control custom-radio">\n                            <input ';
  if (o.status === 'away') { ;
 __p += ' checked="checked" ';
  } ;
-__p += '\n                                   type="radio" id="radio-away" value="away" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-away">\n                                <span class="fa fa-dot-circle"></span>&nbsp;' +
+__p += '\n                                   type="radio" id="radio-away" value="away" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-away">\n                                <span class="fa fa-circle chat-status chat-status--away"></span>&nbsp;' +
 __e(o.label_away) +
 '</label>\n                        </div>\n                        <div class="custom-control custom-radio">\n                            <input ';
  if (o.status === 'xa') { ;
 __p += ' checked="checked" ';
  } ;
-__p += '\n                                   type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-xa">\n                                <span class="far fa-circle"></span>&nbsp;' +
+__p += '\n                                   type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-xa">\n                                <span class="far fa-circle chat-status chat-status--xa"></span>&nbsp;' +
 __e(o.label_xa) +
 '</label>\n                        </div>\n                    </div>\n                    <div class="btn-group w-100">\n                        <input name="status_message" type="text" class="form-control" \n                               value="' +
 __e(o.status_message) +
@@ -80340,23 +80340,23 @@ __e(o.chat_status) +
 __e(o.chat_status) +
 '">\n        <span class="\n            ';
  if (o.chat_status === 'online') { ;
-__p += ' fa fa-circle ';
+__p += ' fa fa-circle chat-status chat-status--online';
  } ;
 __p += '\n            ';
  if (o.chat_status === 'dnd') { ;
-__p += ' fa fa-minus-circle ';
+__p += ' fa fa-minus-circle chat-status chat-status--busy ';
  } ;
 __p += '\n            ';
  if (o.chat_status === 'away') { ;
-__p += ' fa fa-dot-circle ';
+__p += ' fa fa-circle chat-status chat-status--away';
  } ;
 __p += '\n            ';
  if (o.chat_status === 'xa') { ;
-__p += ' far fa-circle ';
+__p += ' far fa-circle chat-status chat-status--xa ';
  } ;
 __p += '\n            ';
  if (o.chat_status === 'offline') { ;
-__p += ' fa fa-times-circle ';
+__p += ' fa fa-circle chat-status chat-status--offline';
  } ;
 __p += '"></span> ' +
 __e(o.status_message) +

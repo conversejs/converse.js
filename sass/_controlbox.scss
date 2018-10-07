@@ -23,13 +23,13 @@
     .set-xmpp-status,
     .xmpp-status,
     .roster-contacts {
-        .fa-circle {
+        .chat-status--online {
             color: $green;
         }
-        .fa-minus-circle {
+        .chat-status--busy {
             color: $red
         }
-        .fa-dot-circle-o {
+        .chat-status--away {
             color: $orange,
         }
         .far.fa-circle,

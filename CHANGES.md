@@ -4,6 +4,7 @@
 
 - Bugfix. Handler not triggered when submitting MUC password form 2nd time
 - Bugfix. MUC features weren't being refreshed when saving the config form
+- #1063 URLs in the topic / subject are not clickable
 - #1190 MUC Participants column disappears in certain viewport widths
 - #1199 Can't get back from to login screen from registration screen
 - #1214 Setting `allow_contact_requests` to `false` has no effect

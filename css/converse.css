@@ -10394,6 +10394,9 @@ body.reset {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap; }
+    #conversejs.converse-embedded .chat-head-chatroom .chatroom-description a,
+    #conversejs .chat-head-chatroom .chatroom-description a {
+      color: white; }
   #conversejs.converse-embedded .chat-head-chatroom a.chatbox-btn.fa, #conversejs.converse-embedded .chat-head-chatroom a:visited.chatbox-btn.fa, #conversejs.converse-embedded .chat-head-chatroom a:hover.chatbox-btn.fa, #conversejs.converse-embedded .chat-head-chatroom a:not([href]):not([tabindex]).chatbox-btn.fa,
   #conversejs .chat-head-chatroom a.chatbox-btn.fa,
   #conversejs .chat-head-chatroom a:visited.chatbox-btn.fa,

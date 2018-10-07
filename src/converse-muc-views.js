@@ -694,7 +694,7 @@
                             'info_close': __('Close and leave this groupchat'),
                             'info_configure': __('Configure this groupchat'),
                             'info_details': __('Show more details about this groupchat'),
-                            'description': _.get(this.model.get('subject'), 'text') || ''
+                            'description': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {'whiteList': {}})),
                     }));
                 },
 
@@ -1665,7 +1665,8 @@
                                 'data': '',
                                 'isodate': date,
                                 'extra_classes': 'chat-topic',
-                                'message': subject.text
+                                'message': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {'whiteList': {}})),
+                                'render_message': true
                             }));
                     }
                     this.scrollDown();

@@ -44,6 +44,9 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            a {
+                color: white;
+            }
         }
 
         a, a:visited, a:hover, a:not([href]):not([tabindex]) {

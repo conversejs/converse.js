@@ -7,7 +7,8 @@
             {{{ o.Strophe.getNodeFromJid(o.jid) }}}@{{{ o.Strophe.getDomainFromJid(o.jid) }}}
         {[ } ]}
     </div>
-    <p class="chatroom-description" title="{{{o.description}}}">{{{o.description}}}</p>
+    <!-- Sanitized in converse-muc-views. We want to render links. -->
+    <p class="chatroom-description" title="{{{o.description}}}">{{o.description}}</p>
 </div>
 <div class="chatbox-buttons row no-gutters">
     <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="{{{o.info_close}}}"></a>

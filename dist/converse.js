@@ -68850,7 +68850,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'info_close': __('Close and leave this groupchat'),
             'info_configure': __('Configure this groupchat'),
             'info_details': __('Show more details about this groupchat'),
-            'description': _.get(this.model.get('subject'), 'text') || ''
+            'description': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {
+              'whiteList': {}
+            }))
           }));
         },
 
@@ -69880,7 +69882,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               'data': '',
               'isodate': date,
               'extra_classes': 'chat-topic',
-              'message': subject.text
+              'message': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {
+                'whiteList': {}
+              })),
+              'render_message': true
             }));
           }
 
@@ -78970,10 +78975,10 @@ __e( o.Strophe.getNodeFromJid(o.jid) ) +
 __e( o.Strophe.getDomainFromJid(o.jid) ) +
 '\n        ';
  } ;
-__p += '\n    </div>\n    <p class="chatroom-description" title="' +
+__p += '\n    </div>\n    <!-- Sanitized in converse-muc-views. We want to render links. -->\n    <p class="chatroom-description" title="' +
 __e(o.description) +
 '">' +
-__e(o.description) +
+((__t = (o.description)) == null ? '' : __t) +
 '</p>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="' +
 __e(o.info_close) +
 '"></a>\n    ';
@@ -79670,16 +79675,31 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/info.html -->\n<div class="message chat-info ' +
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- src/templates/info.html -->\n';
+ if (o.render_message) { ;
+__p += '\n    <!-- XXX: Should only ever be rendered if the message text has been sanitized already -->\n    <div class="message chat-info ' +
 __e(o.extra_classes) +
-'"\n     data-isodate="' +
+'"\n        data-isodate="' +
 __e(o.isodate) +
-'"\n     ' +
+'"\n        ' +
+__e(o.data) +
+'>' +
+((__t = (o.message)) == null ? '' : __t) +
+'</div>\n';
+ } else { ;
+__p += '\n    <div class="message chat-info ' +
+__e(o.extra_classes) +
+'"\n        data-isodate="' +
+__e(o.isodate) +
+'"\n        ' +
 __e(o.data) +
 '>' +
 __e(o.message) +
 '</div>\n';
+ } ;
+__p += '\n';
 return __p
 };
 

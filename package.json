@@ -36,6 +36,7 @@
     "@babel/core": "^7.0.0-beta.48",
     "@babel/preset-env": "^7.0.0-beta.48",
     "@babel/preset-es2015": "^7.0.0-beta.49",
+    "@converse/headless": "^4.0.2",
     "@fortawesome/fontawesome-free": "5.3.1",
     "awesomplete-avoid-xss": "^1.1.2",
     "babel-loader": "^8.0.0-beta.3",

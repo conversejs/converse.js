@@ -81605,16 +81605,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   };
 
   u.addHyperlinks = function (text) {
-    return URI.withinString(text, function (url) {
-      var uri = new URI(url);
+    return URI.withinString(text, url => {
+      const uri = new URI(url);
       uri.normalize();
+      const pretty_url = uri._parts.urn ? url : uri.readable();
 
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      if (!uri._parts.protocol && !url.startsWith('http://') && !url.startsWith('https://')) {
         url = 'http://' + url;
       }
 
       url = u.escapeHTML(u.escapeURL(url));
-      return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(uri.readable())}</a>`;
+      return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+    }, {
+      'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
     });
   };
 

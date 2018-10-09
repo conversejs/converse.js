@@ -1326,7 +1326,7 @@
                     if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', iq).length) {
                         this.feedback.set('error', __(`Error: the groupchat ${this.model.getDisplayName()} does not exist.`));
                     } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]').length) {
-                        this.feedback.set('error', __(`Sorry, you're not allowed to registerd in this groupchat`));
+                        this.feedback.set('error', __(`Sorry, you're not allowed to register in this groupchat`));
                     }
                 });
             }

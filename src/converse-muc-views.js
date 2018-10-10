@@ -14,6 +14,7 @@
         "templates/chatarea.html",
         "templates/chatroom.html",
         "templates/chatroom_details_modal.html",
+        "templates/chatroom_destroyed.html",
         "templates/chatroom_disconnect.html",
         "templates/chatroom_features.html",
         "templates/chatroom_form.html",
@@ -42,6 +43,7 @@
     tpl_chatarea,
     tpl_chatroom,
     tpl_chatroom_details_modal,
+    tpl_chatroom_destroyed,
     tpl_chatroom_disconnect,
     tpl_chatroom_features,
     tpl_chatroom_form,
@@ -530,6 +532,7 @@
 
                     this.model.on('change:affiliation', this.renderHeading, this);
                     this.model.on('change:connection_status', this.afterConnected, this);
+                    this.model.on('change:jid', this.renderHeading, this);
                     this.model.on('change:name', this.renderHeading, this);
                     this.model.on('change:subject', this.renderHeading, this);
                     this.model.on('change:subject', this.setChatRoomSubject, this);
@@ -547,7 +550,11 @@
                     this.createOccupantsView();
                     this.render().insertIntoDOM();
                     this.registerHandlers();
+                    this.enterRoom();
+                },
 
+                enterRoom (ev) {
+                    if (ev) { ev.preventDefault(); }
                     if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                         const handler = () => {
                             if (!u.isPersistableModel(this.model)) {
@@ -1316,6 +1323,39 @@
                         .addEventListener('submit', ev => this.submitPassword(ev), false);
                 },
 
+                showDestroyedMessage (error) {
+                    u.hideElement(this.el.querySelector('.chat-area'));
+                    u.hideElement(this.el.querySelector('.occupants'));
+                    _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
+                    const container = this.el.querySelector('.disconnect-container');
+                    const moved_jid = _.get(
+                            sizzle('gone[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', error).pop(),
+                            'textContent'
+                        ).replace(/^xmpp:/, '').replace(/\?join$/, '');
+                    const reason = _.get(
+                            sizzle('text[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', error).pop(),
+                            'textContent'
+                        );
+                    container.innerHTML = tpl_chatroom_destroyed({
+                        '_': _,
+                        '__':__,
+                        'jid': moved_jid,
+                        'reason': reason ? `"${reason}"` : null
+                    });
+
+                    const switch_el = container.querySelector('a.switch-chat');
+                    if (switch_el) {
+                        switch_el.addEventListener('click', ev => {
+                            ev.preventDefault();
+                            this.model.save('jid', moved_jid);
+                            container.innerHTML = '';
+                            this.showSpinner();
+                            this.enterRoom();
+                        });
+                    }
+                    u.showElement(container);
+                },
+
                 showDisconnectMessages (msgs) {
                     if (_.isString(msgs)) {
                         msgs = [msgs];
@@ -1585,6 +1625,8 @@
                             this.showDisconnectMessages(__('You are not allowed to create new groupchats.'));
                         } else if (!_.isNull(error.querySelector('not-acceptable'))) {
                             this.showDisconnectMessages(__("Your nickname doesn't conform to this groupchat's policies."));
+                        } else if (sizzle('gone[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', error).length) {
+                            this.showDestroyedMessage(error);
                         } else if (!_.isNull(error.querySelector('conflict'))) {
                             this.onNicknameClash(presence);
                         } else if (!_.isNull(error.querySelector('item-not-found'))) {

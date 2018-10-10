@@ -117,6 +117,11 @@
                     if (_.includes(from_jid, '@') && !_converse.allow_non_roster_messaging) {
                         return;
                     }
+                    if (_.isNull(message.querySelector('body'))) {
+                        // Avoid creating a chat box if we have nothing to show
+                        // inside it.
+                        return;
+                    }
                     const chatbox = _converse.chatboxes.create({
                         'id': from_jid,
                         'jid': from_jid,

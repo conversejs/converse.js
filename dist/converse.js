@@ -66438,6 +66438,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             return;
           }
 
+          if (_.isNull(message.querySelector('body'))) {
+            // Avoid creating a chat box if we have nothing to show
+            // inside it.
+            return;
+          }
+
           const chatbox = _converse.chatboxes.create({
             'id': from_jid,
             'jid': from_jid,
@@ -71804,7 +71810,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', iq).length) {
             this.feedback.set('error', __(`Error: the groupchat ${this.model.getDisplayName()} does not exist.`));
           } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]').length) {
-            this.feedback.set('error', __(`Sorry, you're not allowed to registerd in this groupchat`));
+            this.feedback.set('error', __(`Sorry, you're not allowed to register in this groupchat`));
           }
         });
       }

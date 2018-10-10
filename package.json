@@ -73,7 +73,6 @@
     "npm": "^5.7.1",
     "pluggable.js": "2.0.0",
     "po2json": "^0.4.4",
-    "protobufjs": "5.0.1",
     "requirejs": "2.3.5",
     "run-headless-chromium": "^0.1.1",
     "sinon": "^2.1.0",

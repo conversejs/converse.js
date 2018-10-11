@@ -540,7 +540,7 @@
                     this.model.on('destroy', this.hide, this);
                     this.model.on('show', this.show, this);
 
-                    this.model.occupants.on('add', this.showJoinNotification, this);
+                    this.model.occupants.on('add', this.onOccupantAdded, this);
                     this.model.occupants.on('remove', this.showLeaveNotification, this);
                     this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
                     this.model.occupants.on('change:role', this.informOfOccupantsRoleChange, this);
@@ -1473,6 +1473,12 @@
                     }
                     if (_.get(notification.messages, 'length')) {
                         this.scrollDown();
+                    }
+                },
+
+                onOccupantAdded (occupant) {
+                    if (occupant.get('show') === 'online') {
+                        this.showJoinNotification(occupant);
                     }
                 },
 

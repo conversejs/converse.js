@@ -6,6 +6,7 @@
 - Bugfix. MUC features weren't being refreshed when saving the config form
 - #1063 URLs in the topic / subject are not clickable
 - #1140 Add support for destroyed chatrooms
+- #1169 Non-joined participants display an unwanted status message
 - #1190 MUC Participants column disappears in certain viewport widths
 - #1199 Can't get back from to login screen from registration screen
 - #1204 Link encoding issue

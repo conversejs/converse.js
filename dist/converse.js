@@ -68681,7 +68681,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.model.on('configurationNeeded', this.getAndRenderConfigurationForm, this);
           this.model.on('destroy', this.hide, this);
           this.model.on('show', this.show, this);
-          this.model.occupants.on('add', this.showJoinNotification, this);
+          this.model.occupants.on('add', this.onOccupantAdded, this);
           this.model.occupants.on('remove', this.showLeaveNotification, this);
           this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
           this.model.occupants.on('change:role', this.informOfOccupantsRoleChange, this);
@@ -69700,8 +69700,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
 
+        onOccupantAdded(occupant) {
+          if (occupant.get('show') === 'online') {
+            this.showJoinNotification(occupant);
+          }
+        },
+
         showJoinOrLeaveNotification(occupant) {
-          if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+          if (_.includes(occupant.get('states'), '303')) {
             return;
           }
 

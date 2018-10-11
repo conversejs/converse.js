@@ -321,6 +321,13 @@
                             font-size: $font-size-tiny;
                         }
                     }
+                    ul {
+                        .occupant {
+                            .occupant-status {
+                                margin-top: 6px;
+                            }
+                        }
+                    }
                 }
                 .chat-area {
                     min-width: $overlayed-chat-width;

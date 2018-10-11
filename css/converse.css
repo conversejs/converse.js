@@ -10648,6 +10648,8 @@ body.reset {
     padding: 0; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .chatroom-features .feature {
     font-size: 10px; }
+  #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants ul .occupant .occupant-status {
+    margin-top: 6px; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .chat-area {
     min-width: 250px; }
   #conversejs.converse-overlayed .chatbox.chatroom .sendXMPPMessage .chat-toolbar li .toolbar-menu {

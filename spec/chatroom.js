@@ -558,7 +558,7 @@
                     expect($chat_content.find('div.chat-info').length).toBe(4);
                     var $msg_el = $chat_content.find('div.chat-info:last');
                     expect($msg_el.html()).toBe("newguy has left and re-entered the groupchat");
-                    expect($msg_el.data('leavejoin')).toBe('"newguy"');
+                    expect($msg_el.data('leavejoin')).toBe('newguy');
 
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
@@ -575,7 +575,7 @@
                     expect($chat_content.find('div.chat-info').length).toBe(4);
                     const msg_el = sizzle('div.chat-info', chat_content).pop();
                     expect(msg_el.textContent).toBe('newguy has left the groupchat');
-                    expect(msg_el.getAttribute('data-leave')).toBe('"newguy"');
+                    expect(msg_el.getAttribute('data-leave')).toBe('newguy');
 
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
@@ -683,6 +683,160 @@
                     expect(chat_content.querySelectorAll('div.chat-info').length).toBe(6);
                     expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("newgirl has entered and left the groupchat");
                     expect(view.model.occupants.length).toBe(4);
+                    done();
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+            }));
+
+            it("combines subsequent join/leave messages when users enter or exit a groupchat",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        function (done, _converse) {
+
+                test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'dummy')
+                .then(() => {
+                    const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    const chat_content = view.el.querySelector('.chat-content');
+
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(1);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("dummy has entered the groupchat");
+                    
+                    let presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fabio">
+                            <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="INI3xjRUioclBTP/aACfWi5m9UY=" hash="sha-1"/>
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(2);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("fabio has entered the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/Dele Olajide">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-39320524" role="participant"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(3);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("Dele Olajide has entered the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/jcbrand">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="owner" jid="jc@opkode.com/converse.js-30645022" role="moderator"/>
+                                <status code="110"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(4);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("jcbrand has entered the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/Dele Olajide">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-39320524" role="none"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(4);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("Dele Olajide has entered and left the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/Dele Olajide">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-74567907" role="participant"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(4);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("Dele Olajide has entered the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fuvuv" xml:lang="en">
+                            <c xmlns="http://jabber.org/protocol/caps" node="http://jabber.pix-art.de" ver="5tOurnuFnp2h50hKafeUyeN4Yl8=" hash="sha-1"/>
+                            <x xmlns="vcard-temp:x:update"/>
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fuvuv@blabber.im/Pix-Art Messenger.8zoB" role="participant"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("fuvuv has entered the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/fuvuv">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fuvuv@blabber.im/Pix-Art Messenger.8zoB" role="none"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("fuvuv has entered and left the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/fabio">
+                            <status>Disconnected: Replaced by new connection</status>
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="none"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
+                        `fabio has entered and left the groupchat. "Disconnected: Replaced by new connection"`);
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fabio">
+                            <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="INI3xjRUioclBTP/aACfWi5m9UY=" hash="sha-1"/>
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
+                        `fabio has entered the groupchat`);
+
+                    // XXX: hack so that we can test leave/enter of occupants
+                    // who were already in the room when we joined.
+                    chat_content.innerHTML = '';
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/fabio">
+                            <status>Disconnected: closed</status>
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="none"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(1);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
+                        `fabio has left the groupchat. "Disconnected: closed"`);
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/Dele Olajide">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-74567907" role="none"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(2);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
+                        `Dele Olajide has left the groupchat`);
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fabio">
+                            <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="INI3xjRUioclBTP/aACfWi5m9UY=" hash="sha-1"/>
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(2);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
+                        `fabio has left and re-entered the groupchat`);
+
                     done();
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));

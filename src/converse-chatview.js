@@ -499,7 +499,7 @@
                     return this;
                 },
 
-                showChatEvent (message, data='') {
+                showChatEvent (message) {
                     const isodate = moment().format();
                     this.content.insertAdjacentHTML(
                         'beforeend',
@@ -507,7 +507,6 @@
                             'extra_classes': 'chat-event',
                             'message': message,
                             'isodate': isodate,
-                            'data': data
                         }));
                     this.insertDayIndicator(this.content.lastElementChild);
                     this.scrollDown();

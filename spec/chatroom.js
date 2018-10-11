@@ -421,14 +421,13 @@
 
                 test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1')
                 .then(() => {
-                    var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                    var $chat_content = $(view.el).find('.chat-content');
-
+                    const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    const $chat_content = $(view.el).find('.chat-content');
                     /* We don't show join/leave messages for existing occupants. We
                      * know about them because we receive their presences before we
                      * receive our own.
                      */
-                    var presence = $pres({
+                    let presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
                             from: 'coven@chat.shakespeare.lit/oldguy'
                         }).c('x', {xmlns: Strophe.NS.MUC_USER})
@@ -609,8 +608,55 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(5);
                     expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered the groupchat");
+
+
+                    // Test a member joining and leaving
+                    presence = $pres({
+                            to: 'dummy@localhost/_converse.js-290918392',
+                            from: 'coven@chat.shakespeare.lit/insider'
+                        }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'member',
+                            'jid': 'insider@localhost/_converse.js-290929789',
+                            'role': 'participant'
+                        });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(6);
+
+                    /*  <presence
+                     *      from='coven@chat.shakespeare.lit/thirdwitch'
+                     *      to='crone1@shakespeare.lit/desktop'
+                     *      type='unavailable'>
+                     *  <status>Disconnected: Replaced by new connection</status>
+                     *  <x xmlns='http://jabber.org/protocol/muc#user'>
+                     *      <item affiliation='member'
+                     *          jid='hag66@shakespeare.lit/pda'
+                     *          role='none'/>
+                     *  </x>
+                     *  </presence>
+                     */
+                    presence = $pres({
+                            to: 'dummy@localhost/_converse.js-29092160',
+                            type: 'unavailable',
+                            from: 'coven@chat.shakespeare.lit/insider'
+                        })
+                        .c('status', 'Disconnected: Replaced by new connection').up()
+                        .c('x', {xmlns: Strophe.NS.MUC_USER})
+                            .c('item', {
+                                'affiliation': 'member',
+                                'jid': 'insider@localhost/_converse.js-290929789',
+                                'role': 'none'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect($chat_content.find('div.chat-info').length).toBe(6);
+                    expect($chat_content.find('div.chat-info:last').html()).toBe(
+                        'insider has entered and left the groupchat. '+
+                        '"Disconnected: Replaced by new connection"');
+
+                    expect(view.model.occupants.length).toBe(5);
+                    expect(view.model.occupants.findWhere({'jid': 'insider@localhost'}).get('show')).toBe('offline');
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("shows a new day indicator if a join/leave message is received on a new day",

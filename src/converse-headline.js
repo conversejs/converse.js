@@ -114,8 +114,14 @@
                 /* Handler method for all incoming messages of type "headline". */
                 const from_jid = message.getAttribute('from');
                 if (utils.isHeadlineMessage(_converse, message)) {
+                    if (_.includes(from_jid, '@') && 
+                            !_converse.api.contacts.get(from_jid) &&
+                            !_converse.allow_non_roster_messaging) {
+                        return;
+                    }
                     if (_.isNull(message.querySelector('body'))) {
-                        // Avoid creating a chat box if we have nothing to show inside it.
+                        // Avoid creating a chat box if we have nothing to show
+                        // inside it.
                         return;
                     }
                     const chatbox = _converse.chatboxes.create({
@@ -127,13 +133,11 @@
                     chatbox.createMessage(message, message);
                     _converse.emit('message', {'chatbox': chatbox, 'stanza': message});
                 }
+                return true;
             }
 
             function registerHeadlineHandler () {
-                _converse.connection.addHandler(message => {
-                    onHeadlineMessage(message);
-                    return true;
-                }, null, 'message');
+                _converse.connection.addHandler(onHeadlineMessage, null, 'message');
             }
             _converse.on('connected', registerHeadlineHandler);
             _converse.on('reconnected', registerHeadlineHandler);

@@ -66434,8 +66434,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         const from_jid = message.getAttribute('from');
 
         if (utils.isHeadlineMessage(_converse, message)) {
+          if (_.includes(from_jid, '@') && !_converse.api.contacts.get(from_jid) && !_converse.allow_non_roster_messaging) {
+            return;
+          }
+
           if (_.isNull(message.querySelector('body'))) {
-            // Avoid creating a chat box if we have nothing to show inside it.
+            // Avoid creating a chat box if we have nothing to show
+            // inside it.
             return;
           }
 
@@ -66453,13 +66458,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             'stanza': message
           });
         }
+
+        return true;
       }
 
       function registerHeadlineHandler() {
-        _converse.connection.addHandler(message => {
-          onHeadlineMessage(message);
-          return true;
-        }, null, 'message');
+        _converse.connection.addHandler(onHeadlineMessage, null, 'message');
       }
 
       _converse.on('connected', registerHeadlineHandler);

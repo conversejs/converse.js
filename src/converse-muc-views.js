@@ -1546,20 +1546,30 @@
                     this.scrollDown();
                 },
 
+                getImmediateJoinNotification (el, nick) {
+                    while (!_.isNil(el)) {
+                        const data = _.get(el, 'dataset', {});
+                        if (!_.includes(_.get(el, 'classList', []), 'chat-info')) {
+                            return;
+                        }
+                        if (moment(el.getAttribute('data-isodate')).isSame(new Date(), "day") &&
+                                (data.join === `"${nick}"` || data.leavejoin === `"${nick}"`)) {
+                            return el;
+                        }
+                        el = el.previousElementSibling;
+                    }
+                },
+
                 showLeaveNotification (occupant) {
                     if (_.includes(occupant.get('states'), '303') || _.includes(occupant.get('states'), '307')) {
                         return;
                     }
                     const nick = occupant.get('nick'),
                           stat = occupant.get('status'),
-                          last_el = this.content.lastElementChild,
-                          data = _.get(last_el, 'dataset', {});
+                          last_join_el = this.getImmediateJoinNotification(this.content.lastElementChild, nick),
+                          data = _.get(last_join_el, 'dataset', {});
 
-                    if (last_el &&
-                            _.includes(_.get(last_el, 'classList', []), 'chat-info') &&
-                            moment(last_el.getAttribute('data-isodate')).isSame(new Date(), "day") &&
-                            (data.join === `"${nick}"` || data.leavejoin === `"${nick}"`)) {
-
+                    if (last_join_el) {
                         let message;
                         if (data.join === `"${nick}"`) {
                             if (_.isNil(stat)) {
@@ -1567,24 +1577,25 @@
                             } else {
                                 message = __('%1$s has entered and left the groupchat. "%2$s"', nick, stat);
                             }
-                            last_el.outerHTML =
+                            let el = this.content.lastElementChild;
+                            el.insertAdjacentElement('afterend', last_join_el);
+                            last_join_el.outerHTML =
                                 tpl_info({
                                     'data': `data-joinleave="${nick}"`,
                                     'isodate': moment().format(),
                                     'extra_classes': 'chat-event',
                                     'message': message
                                 });
-                            const el = this.content.lastElementChild;
+                            el = this.content.lastElementChild;
                             setTimeout(() => u.addClass('fade-out', el), 5000);
                             setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5250);
-
                         } else if (data.leavejoin === `"${nick}"`) {
                             if (_.isNil(stat)) {
                                 message = __('%1$s has left the groupchat', nick);
                             } else {
                                 message = __('%1$s has left the groupchat. "%2$s"', nick, stat);
                             }
-                            last_el.outerHTML =
+                            last_join_el.outerHTML =
                                 tpl_info({
                                     'data': `data-leave="${nick}"`,
                                     'isodate': moment().format(),
@@ -1605,16 +1616,9 @@
                             'extra_classes': 'chat-event',
                             'data': `data-leave="${nick}"`
                         }
-                        if (last_el &&
-                            _.includes(_.get(last_el, 'classList', []), 'chat-info') &&
-                            _.get(last_el, 'dataset', {}).leavejoin === `"${nick}"`) {
-
-                            last_el.outerHTML = tpl_info(data);
-                        } else {
-                            const el = u.stringToElement(tpl_info(data));
-                            this.content.insertAdjacentElement('beforeend', el);
-                            this.insertDayIndicator(el);
-                        }
+                        const el = u.stringToElement(tpl_info(data));
+                        this.content.insertAdjacentElement('beforeend', el);
+                        this.insertDayIndicator(el);
                     }
                     this.scrollDown();
                 },

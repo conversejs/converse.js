@@ -422,7 +422,8 @@
                 test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1')
                 .then(() => {
                     const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                    const $chat_content = $(view.el).find('.chat-content');
+                    const chat_content = view.el.querySelector('.chat-content');
+                    const $chat_content = $(chat_content);
                     /* We don't show join/leave messages for existing occupants. We
                      * know about them because we receive their presences before we
                      * receive our own.
@@ -473,6 +474,15 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(2);
                     expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the groupchat");
+
+                    const msg = $msg({
+                        'from': 'coven@chat.shakespeare.lit/some1',
+                        'id': (new Date()).getTime(),
+                        'to': 'dummy@localhost',
+                        'type': 'groupchat'
+                    }).c('body').t('hello world').tree();
+                    _converse.connection._dataRecv(test_utils.createRequest(msg));
+
 
                     // Add another entrant, otherwise the above message will be
                     // collapsed if "newguy" leaves immediately again
@@ -563,9 +573,9 @@
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect($chat_content.find('div.chat-info').length).toBe(4);
-                    $msg_el = $chat_content.find('div.chat-info:last');
-                    expect($msg_el.html()).toBe('newguy has left the groupchat');
-                    expect($msg_el.data('leave')).toBe('"newguy"');
+                    const msg_el = sizzle('div.chat-info', chat_content).pop();
+                    expect(msg_el.textContent).toBe('newguy has left the groupchat');
+                    expect(msg_el.getAttribute('data-leave')).toBe('"newguy"');
 
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
@@ -648,13 +658,31 @@
                                 'role': 'none'
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content.find('div.chat-info').length).toBe(6);
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(6);
                     expect($chat_content.find('div.chat-info:last').html()).toBe(
                         'insider has entered and left the groupchat. '+
                         '"Disconnected: Replaced by new connection"');
 
                     expect(view.model.occupants.length).toBe(5);
                     expect(view.model.occupants.findWhere({'jid': 'insider@localhost'}).get('show')).toBe('offline');
+
+                    // New girl leaves
+                    presence = $pres({
+                            'to': 'dummy@localhost/_converse.js-29092160',
+                            'type': 'unavailable',
+                            'from': 'coven@chat.shakespeare.lit/newgirl'
+                        })
+                        .c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': 'newgirl@localhost/_converse.js-213098781',
+                            'role': 'none'
+                        });
+
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(6);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("newgirl has entered and left the groupchat");
+                    expect(view.model.occupants.length).toBe(4);
                     done();
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));

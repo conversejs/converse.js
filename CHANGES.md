@@ -2,6 +2,7 @@
 
 ## 4.0.3 (Unreleased)
 
+- Reduce join/leave clutter by removing subsequent ones (without text messages in between)
 - Bugfix. Handler not triggered when submitting MUC password form 2nd time
 - Bugfix. MUC features weren't being refreshed when saving the config form
 - #1063 URLs in the topic / subject are not clickable

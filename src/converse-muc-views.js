@@ -1477,7 +1477,7 @@
                 },
 
                 showJoinOrLeaveNotification (occupant) {
-                    if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+                    if (_.includes(occupant.get('states'), '303')) {
                         return;
                     }
                     if (occupant.get('show') === 'offline') {

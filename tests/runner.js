@@ -27,7 +27,7 @@ var config = {
         "lodash":                   "node_modules/lodash/lodash",
         "lodash.converter":         "3rdparty/lodash.fp",
         "lodash.fp":                "src/lodash.fp",
-        "lodash.noconflict":        "src/lodash.noconflict",
+        "lodash.noconflict":        "node_modules/@converse/headless/lodash.noconflict",
         "message-utils":            "src/utils/message",
         "muc-utils":                "src/utils/muc",
         "pluggable":                "node_modules/pluggable.js/dist/pluggable",

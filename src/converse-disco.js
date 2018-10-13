@@ -598,7 +598,7 @@
                                 entity.identities.reset();
                                 entity.waitUntilFeaturesDiscovered = utils.getResolveablePromise()
                                 entity.queryInfo();
-                                return entity.waitUntilFeaturesDiscovered();
+                                return entity.waitUntilFeaturesDiscovered;
                             })
                             .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     },

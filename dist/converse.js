@@ -65965,7 +65965,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               entity.identities.reset();
               entity.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
               entity.queryInfo();
-              return entity.waitUntilFeaturesDiscovered();
+              return entity.waitUntilFeaturesDiscovered;
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
           },
 

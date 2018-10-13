@@ -509,11 +509,12 @@
                     'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
-                    'click .show-room-details-modal': 'showRoomDetailsModal',
                     'click .hide-occupants': 'hideOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant-nick': 'onOccupantClicked',
+                    'click a.open-chatroom': 'openChatRoomFromURIClicked',
                     'click .send-button': 'onFormSubmitted',
+                    'click .show-room-details-modal': 'showRoomDetailsModal',
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-occupants': 'toggleOccupants',
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
@@ -811,6 +812,11 @@
                      * the chat textarea input.
                      */
                     this.insertIntoTextArea(ev.target.textContent);
+                },
+
+                openChatRoomFromURIClicked (ev) {
+                    ev.preventDefault();
+                    _converse.api.rooms.open(ev.target.href);
                 },
 
                 handleChatStateNotification (message) {

@@ -1275,6 +1275,9 @@
             };
 
             const createChatRoom = function (jid, attrs) {
+                if (jid.startsWith('xmpp:') && jid.endsWith('?join')) {
+                    jid = jid.replace(/^xmpp:/, '').replace(/\?join$/, '');
+                }
                 return getChatRoom(jid, attrs, true);
             };
 

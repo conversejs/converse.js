@@ -411,6 +411,38 @@
 
         describe("A Groupchat", function () {
 
+            it("is opened when an xmpp: URI is clicked inside another groupchat",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                let view;
+                test_utils.createContacts(_converse, 'current');
+                test_utils.waitUntil(() => test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy'))
+                .then(() => {
+                    view = _converse.chatboxviews.get('lounge@localhost');
+                    if (!view.el.querySelectorAll('.chat-area').length) {
+                        view.renderChatArea();
+                    }
+                    expect(_converse.chatboxes.length).toEqual(2);
+                    const message = 'Please go to xmpp:coven@chat.shakespeare.lit?join',
+                          nick = mock.chatroom_names[0],
+                          msg = $msg({
+                            'from': 'lounge@localhost/'+nick,
+                            'id': (new Date()).getTime(),
+                            'to': 'dummy@localhost',
+                            'type': 'groupchat'
+                        }).c('body').t(message).tree();
+
+                    view.model.onMessage(msg);
+                    view.el.querySelector('.chat-msg__text a').click();
+                    return test_utils.waitUntil(() => _converse.chatboxes.length === 3)
+                }).then(() => {
+                    expect(_.includes(_converse.chatboxes.pluck('id'), 'coven@chat.shakespeare.lit')).toBe(true);
+                    done()
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+            }));
+
             it("shows a notification if its not anonymous",
                     mock.initConverseWithPromises(
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},

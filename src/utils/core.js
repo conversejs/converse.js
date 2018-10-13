@@ -262,13 +262,17 @@
 
     u.addHyperlinks = function (text) {
         return URI.withinString(text, url => {
+            let classes = '';
             const uri = new URI(url);
             url = uri.normalize()._string;
             const pretty_url = uri._parts.urn ? url : uri.readable();
             if (!uri._parts.protocol && !url.startsWith('http://') && !url.startsWith('https://')) {
                 url = 'http://' + url;
             }
-            return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+            if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
+                classes += 'open-chatroom';
+            }
+            return `<a target="_blank" rel="noopener" class="${classes}" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
         }, {
             'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
         });

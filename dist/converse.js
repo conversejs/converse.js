@@ -68945,11 +68945,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'click .chatbox-navback': 'showControlBox',
           'click .close-chatbox-button': 'close',
           'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
-          'click .show-room-details-modal': 'showRoomDetailsModal',
           'click .hide-occupants': 'hideOccupants',
           'click .new-msgs-indicator': 'viewUnreadMessages',
           'click .occupant-nick': 'onOccupantClicked',
+          'click a.open-chatroom': 'openChatRoomFromURIClicked',
           'click .send-button': 'onFormSubmitted',
+          'click .show-room-details-modal': 'showRoomDetailsModal',
           'click .toggle-call': 'toggleCall',
           'click .toggle-occupants': 'toggleOccupants',
           'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
@@ -69282,6 +69283,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * the chat textarea input.
            */
           this.insertIntoTextArea(ev.target.textContent);
+        },
+
+        openChatRoomFromURIClicked(ev) {
+          ev.preventDefault();
+
+          _converse.api.rooms.open(ev.target.href);
         },
 
         handleChatStateNotification(message) {
@@ -72164,6 +72171,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       };
 
       const createChatRoom = function createChatRoom(jid, attrs) {
+        if (jid.startsWith('xmpp:') && jid.endsWith('?join')) {
+          jid = jid.replace(/^xmpp:/, '').replace(/\?join$/, '');
+        }
+
         return getChatRoom(jid, attrs, true);
       };
 
@@ -79418,9 +79429,7 @@ __e( o.Strophe.getNodeFromJid(o.jid) ) +
 __e( o.Strophe.getDomainFromJid(o.jid) ) +
 '\n        ';
  } ;
-__p += '\n    </div>\n    <!-- Sanitized in converse-muc-views. We want to render links. -->\n    <p class="chatroom-description" title="' +
-__e(o.description) +
-'">' +
+__p += '\n    </div>\n    <!-- Sanitized in converse-muc-views. We want to render links. -->\n    <p class="chatroom-description">' +
 ((__t = (o.description)) == null ? '' : __t) +
 '</p>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="' +
 __e(o.info_close) +
@@ -82057,6 +82066,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
   u.addHyperlinks = function (text) {
     return URI.withinString(text, url => {
+      let classes = '';
       const uri = new URI(url);
       url = uri.normalize()._string;
       const pretty_url = uri._parts.urn ? url : uri.readable();
@@ -82065,7 +82075,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         url = 'http://' + url;
       }
 
-      return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+      if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
+        classes += 'open-chatroom';
+      }
+
+      return `<a target="_blank" rel="noopener" class="${classes}" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
     }, {
       'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
     });

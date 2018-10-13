@@ -411,6 +411,67 @@
 
         describe("A Groupchat", function () {
 
+            it("shows a notification if its not anonymous",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        function (done, _converse) {
+
+                test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1')
+                .then(() => {
+                    const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    const chat_content = view.el.querySelector('.chat-content');
+                    /* <presence to="dummy@localhost/_converse.js-29092160"
+                     *           from="coven@chat.shakespeare.lit/some1">
+                     *      <x xmlns="http://jabber.org/protocol/muc#user">
+                     *          <item affiliation="owner" jid="dummy@localhost/_converse.js-29092160" role="moderator"/>
+                     *          <status code="110"/>
+                     *          <status code="100"/>
+                     *      </x>
+                     *  </presence></body>
+                     */
+                    let presence = $pres({
+                            to: 'dummy@localhost/resource',
+                            from: 'coven@chat.shakespeare.lit/some1'
+                        }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'owner',
+                            'jid': 'dummy@localhost/_converse.js-29092160',
+                            'role': 'moderator'
+                        }).up()
+                        .c('status', {code: '110'}).up()
+                        .c('status', {code: '100'});
+
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(chat_content.querySelectorAll('.chat-info').length).toBe(2);
+                    expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
+                        .toBe("This groupchat is not anonymous");
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("some1 has entered the groupchat");
+
+                    // Check that we don't show the notification twice
+                    presence = $pres({
+                            to: 'dummy@localhost/resource',
+                            from: 'coven@chat.shakespeare.lit/some1'
+                        }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'owner',
+                            'jid': 'dummy@localhost/_converse.js-29092160',
+                            'role': 'moderator'
+                        }).up()
+                        .c('status', {code: '110'}).up()
+                        .c('status', {code: '100'});
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(chat_content.querySelectorAll('.chat-info').length).toBe(2);
+                    expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
+                        .toBe("This groupchat is not anonymous");
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("some1 has entered the groupchat");
+
+                    done();
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+            }));
+
+
             it("shows join/leave messages when users enter or exit a groupchat",
                     mock.initConverseWithPromises(
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},

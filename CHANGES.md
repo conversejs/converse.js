@@ -4,6 +4,7 @@
 
 - Bugfix. Handler not triggered when submitting MUC password form 2nd time
 - Bugfix. MUC features weren't being refreshed when saving the config form
+- Don't show duplicate notification messages
 - #537 Render `xmpp:` URI as link
 - #1062 Collapse multiple join/leave messages into one
 - #1063 URLs in the topic / subject are not clickable

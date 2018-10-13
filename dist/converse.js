@@ -69899,6 +69899,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return;
         },
 
+        getNotificationWithMessage(message) {
+          let el = this.content.lastElementChild;
+
+          while (!_.isNil(el)) {
+            const data = _.get(el, 'dataset', {});
+
+            if (!_.includes(_.get(el, 'classList', []), 'chat-info')) {
+              return;
+            }
+
+            if (el.textContent === message) {
+              return el;
+            }
+
+            el = el.previousElementSibling;
+          }
+        },
+
         parseXUserElement(x, stanza, is_self) {
           /* Parse the passed-in <x xmlns='http://jabber.org/protocol/muc#user'>
            * element and construct a map containing relevant
@@ -69911,7 +69929,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           const notification = {};
 
-          const messages = _.reject(_.map(statuses, mapper), _.isUndefined);
+          const messages = _.reject(_.reject(_.map(statuses, mapper), _.isUndefined), message => this.getNotificationWithMessage(message));
 
           if (messages.length) {
             notification.messages = messages;

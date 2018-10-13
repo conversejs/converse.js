@@ -312,6 +312,7 @@
 
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.messages.on('rendered', this.scrollDown, this);
+                    this.model.messages.on('edited', (view) => this.markFollowups(view.el));
 
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.remove, this);
@@ -673,7 +674,8 @@
                     if (view.model.get('type') === 'error') {
                         const previous_msg_el = this.content.querySelector(`[data-msgid="${view.model.get('msgid')}"]`);
                         if (previous_msg_el) {
-                            return previous_msg_el.insertAdjacentElement('afterend', view.el);
+                            previous_msg_el.insertAdjacentElement('afterend', view.el);
+                            return this.trigger('messageInserted', view.el);
                         }
                     }
                     const current_msg_date = moment(view.model.get('time')) || moment,
@@ -692,6 +694,7 @@
                         previous_msg_el.insertAdjacentElement('afterend', view.el);
                         this.markFollowups(view.el);
                     }
+                    return this.trigger('messageInserted', view.el);
                 },
 
                 markFollowups (el) {
@@ -731,7 +734,7 @@
                     }
                 },
 
-                showMessage (message) {
+                async showMessage (message) {
                     /* Inserts a chat message into the content area of the chat box.
                      *
                      * Will also insert a new day indicator if the message is on a
@@ -741,6 +744,8 @@
                      *  (Backbone.Model) message: The message object
                      */
                     const view = new _converse.MessageView({'model': message});
+                    await view.render();
+                    
                     this.clearChatStateNotification(message);
                     this.insertMessage(view);
                     this.insertDayIndicator(view.el);

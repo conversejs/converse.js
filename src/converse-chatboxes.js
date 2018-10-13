@@ -297,7 +297,7 @@
                             'message': _converse.chatboxes.getMessageBody(stanza),
                             'references': this.getReferencesFromStanza(stanza),
                             'older_versions': older_versions,
-                            'edited': true
+                            'edited': moment().format()
                         });
                         return true;
                     }
@@ -395,7 +395,7 @@
                         older_versions.push(message.get('message'));
                         message.save({
                             'correcting': false,
-                            'edited': true,
+                            'edited': moment().format(),
                             'message': attrs.message,
                             'older_versions': older_versions,
                             'references': attrs.references

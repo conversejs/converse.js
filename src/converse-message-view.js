@@ -41,8 +41,11 @@
                 { __ } = _converse;
 
 
-            _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
+            _converse.api.settings.update({
+                'show_images_inline': true
+            });
 
+            _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
                 toHTML () {
                     return tpl_message_versions_modal(_.extend(
                         this.model.toJSON(), {
@@ -61,17 +64,11 @@
                     if (this.model.vcard) {
                         this.model.vcard.on('change', this.render, this);
                     }
-                    this.model.on('change:correcting', this.onMessageCorrection, this);
-                    this.model.on('change:message', this.render, this);
-                    this.model.on('change:progress', this.renderFileUploadProgresBar, this);
-                    this.model.on('change:type', this.render, this);
-                    this.model.on('change:upload', this.render, this);
+                    this.model.on('change', this.onChanged, this);
                     this.model.on('destroy', this.remove, this);
-                    this.render();
                 },
 
-                render () {
-                    const is_followup = u.hasClass('chat-msg--followup', this.el);
+                async render () {
                     let msg;
                     if (this.model.isOnlyChatStateNotification()) {
                         this.renderChatStateNotification()
@@ -80,20 +77,32 @@
                     } else if (this.model.get('type') === 'error') {
                         this.renderErrorMessage();
                     } else {
-                        this.renderChatMessage();
-                    }
-                    if (is_followup) {
-                        u.addClass('chat-msg--followup', this.el);
+                        await this.renderChatMessage();
                     }
                     return this.el;
                 },
 
-                onMessageCorrection () {
-                    this.render();
-                    if (!this.model.get('correcting') && this.model.changed.message) {
-                        this.el.addEventListener('animationend', () => u.removeClass('onload', this.el));
-                        u.addClass('onload', this.el);
+                async onChanged (item) {
+                    // Jot down whether it was edited because the `changed`
+                    // attr gets removed when this.render() gets called further
+                    // down.
+                    const edited = item.changed.edited;
+                    if (this.model.changed.progress) {
+                        return this.renderFileUploadProgresBar();
                     }
+                    if (_.filter(['correcting', 'message', 'type', 'upload'],
+                                 prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop)).length) {
+                        await this.render();
+                    }
+                    if (edited) {
+                        this.onMessageEdited();
+                    }
+                },
+
+                onMessageEdited () {
+                    this.el.addEventListener('animationend', () => u.removeClass('onload', this.el));
+                    this.model.collection.trigger('edited', this);
+                    u.addClass('onload', this.el);
                 },
 
                 replaceElement (msg) {
@@ -104,7 +113,7 @@
                     return this.el;
                 },
 
-                renderChatMessage () {
+                async renderChatMessage () {
                     const is_me_message = this.isMeCommand(),
                           moment_time = moment(this.model.get('time')),
                           role = this.model.vcard ? this.model.vcard.get('role') : null,
@@ -148,14 +157,14 @@
                             _.partial(u.addEmoji, _converse, _)
                         )(text);
                     }
-                    u.renderImageURLs(_converse, msg_content).then(() => {
-                        this.model.collection.trigger('rendered');
-                    });
-                    this.replaceElement(msg);
-
-                    if (this.model.get('type') !== 'headline') {
-                        this.renderAvatar();
+                    if (_converse.show_images_inline) {
+                        await u.renderImageURLs(_converse, msg_content);
                     }
+                    if (this.model.get('type') !== 'headline') {
+                        await this.renderAvatar(msg);
+                    }
+                    this.replaceElement(msg);
+                    this.model.collection.trigger('rendered', this);
                 },
 
                 renderErrorMessage () {

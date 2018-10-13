@@ -71,7 +71,7 @@
         'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
     }, console);
 
-    var isImage = function (url) {
+    const isImage = function (url) {
         return new Promise((resolve, reject) => {
             var img = new Image();
             var timer = window.setTimeout(function () {

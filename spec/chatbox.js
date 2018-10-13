@@ -58,61 +58,49 @@
             it("supports the /me command",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                var view;
                 test_utils.createContacts(_converse, 'current');
-                test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp'])
-                .then(() => test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname')), 300)
-                .then(function () {
-                    test_utils.openControlBox();
-                    expect(_converse.chatboxes.length).toEqual(1);
-                    var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var message = '/me is tired';
-                    var msg = $msg({
-                            from: sender_jid,
-                            to: _converse.connection.jid,
-                            type: 'chat',
-                            id: (new Date()).getTime()
-                        }).c('body').t(message).up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                await test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp']);
+                await test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
+                await test_utils.openControlBox();
+                expect(_converse.chatboxes.length).toEqual(1);
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                let message = '/me is tired';
+                const msg = $msg({
+                        from: sender_jid,
+                        to: _converse.connection.jid,
+                        type: 'chat',
+                        id: (new Date()).getTime()
+                    }).c('body').t(message).up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
-                    _converse.chatboxes.onMessage(msg);
-                    view = _converse.chatboxviews.get(sender_jid);
-
-                    test_utils.waitUntil(function () {
-                        return u.isVisible(view.el);
-                    }).then(function () {
-                        expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
-                        expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Max Frankfurter')).toBeTruthy();
-                        expect($(view.el).find('.chat-msg__text').text()).toBe(' is tired');
-
-                        message = '/me is as well';
-                        test_utils.sendMessage(view, message);
-                        expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(2);
-
-                        return test_utils.waitUntil(() => $(view.el).find('.chat-msg__author:last').text().trim() === '**Max Mustermann');
-                    }).then(function () {
-                        expect($(view.el).find('.chat-msg__text:last').text()).toBe(' is as well');
-                        expect($(view.el).find('.chat-msg:last').hasClass('chat-msg--followup')).toBe(false);
-
-                        // Check that /me messages after a normal message don't
-                        // get the 'chat-msg--followup' class.
-                        message = 'This a normal message';
-                        test_utils.sendMessage(view, message);
-                        let message_el = view.el.querySelector('.message:last-child');
-                        expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
-
-                        message = '/me wrote a 3rd person message';
-                        test_utils.sendMessage(view, message);
-                        message_el = view.el.querySelector('.message:last-child');
-                        expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(3);
-                        expect($(view.el).find('.chat-msg__text:last').text()).toBe(' wrote a 3rd person message');
-                        expect($(view.el).find('.chat-msg__author:last').is(':visible')).toBeTruthy();
-                        expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
-                        done();
-                    });
-                });
+                _converse.chatboxes.onMessage(msg);
+                const view = _converse.chatboxviews.get(sender_jid);
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
+                expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Max Frankfurter')).toBeTruthy();
+                expect(view.el.querySelector('.chat-msg__text').textContent).toBe(' is tired');
+                message = '/me is as well';
+                await test_utils.sendMessage(view, message);
+                expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(2);
+                await test_utils.waitUntil(() => $(view.el).find('.chat-msg__author:last').text().trim() === '**Max Mustermann');
+                expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe(' is as well');
+                expect($(view.el).find('.chat-msg:last').hasClass('chat-msg--followup')).toBe(false);
+                // Check that /me messages after a normal message don't
+                // get the 'chat-msg--followup' class.
+                message = 'This a normal message';
+                await test_utils.sendMessage(view, message);
+                let message_el = view.el.querySelector('.message:last-child');
+                expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
+                message = '/me wrote a 3rd person message';
+                await test_utils.sendMessage(view, message);
+                message_el = view.el.querySelector('.message:last-child');
+                expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(3);
+                expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe(' wrote a 3rd person message');
+                expect(u.isVisible(sizzle('.chat-msg__author:last', view.el).pop())).toBeTruthy();
+                expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
+                done();
             }));
 
             it("is created when you click on a roster item", mock.initConverseWithPromises(
@@ -684,7 +672,7 @@
                     it("will be shown if received",
                         mock.initConverseWithPromises(
                             null, ['rosterGroupsFetched'], {},
-                            function (done, _converse) {
+                            async function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
@@ -705,28 +693,27 @@
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         var view = _converse.chatboxviews.get(sender_jid);
                         expect(view).toBeDefined();
+                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-                        test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
-                        .then(function () {
-                            var view = _converse.chatboxviews.get(sender_jid);
-                            // Check that the notification appears inside the chatbox in the DOM
-                            let events = view.el.querySelectorAll('.chat-state-notification');
-                            expect(events.length).toBe(1);
-                            expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
+                        await test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
+                        // Check that the notification appears inside the chatbox in the DOM
+                        let events = view.el.querySelectorAll('.chat-state-notification');
+                        expect(events.length).toBe(1);
+                        expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
 
-                            // Check that it doesn't appear twice
-                            msg = $msg({
-                                    from: sender_jid,
-                                    to: _converse.connection.jid,
-                                    type: 'chat',
-                                    id: (new Date()).getTime()
-                                }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                            _converse.chatboxes.onMessage(msg);
-                            events = view.el.querySelectorAll('.chat-state-notification');
-                            expect(events.length).toBe(1);
-                            expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
-                            done();
-                        })
+                        // Check that it doesn't appear twice
+                        msg = $msg({
+                                from: sender_jid,
+                                to: _converse.connection.jid,
+                                type: 'chat',
+                                id: (new Date()).getTime()
+                            }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                        _converse.chatboxes.onMessage(msg);
+                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        events = view.el.querySelectorAll('.chat-state-notification');
+                        expect(events.length).toBe(1);
+                        expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
+                        done();
                     }));
 
                     it("can be a composing carbon message that this user sent from a different client",
@@ -841,38 +828,32 @@
                     }));
 
                     it("will be shown if received",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                            mock.initConverseWithPromises(
+                                null, ['rosterGroupsFetched'], {},
+                                async function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
                         test_utils.openControlBox();
-                        test_utils.waitUntil(function () {
-                                return $(_converse.rosterview.el).find('.roster-group').length;
-                            }, 300)
-                        .then(function () {
-                            // TODO: only show paused state if the previous state was composing
-                            // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
-                            spyOn(_converse, 'emit');
-                            var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                            // <paused> state
-                            var msg = $msg({
-                                    from: sender_jid,
-                                    to: _converse.connection.jid,
-                                    type: 'chat',
-                                    id: (new Date()).getTime()
-                                }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                            _converse.chatboxes.onMessage(msg);
-                            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                            var view = _converse.chatboxviews.get(sender_jid);
-                            test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
-                            .then(function () {
-                                var view = _converse.chatboxviews.get(sender_jid);
-                                var event = view.el.querySelector('.chat-info.chat-state-notification');
-                                expect(event.textContent).toEqual(mock.cur_names[1] + ' has stopped typing');
-                                done();
-                            });
-                        });
+                        await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+                        // TODO: only show paused state if the previous state was composing
+                        // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
+                        spyOn(_converse, 'emit');
+                        const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        // <paused> state
+                        var msg = $msg({
+                                from: sender_jid,
+                                to: _converse.connection.jid,
+                                type: 'chat',
+                                id: (new Date()).getTime()
+                            }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                        _converse.chatboxes.onMessage(msg);
+                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        const view = _converse.chatboxviews.get(sender_jid);
+                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
+                        var event = view.el.querySelector('.chat-info.chat-state-notification');
+                        expect(event.textContent).toEqual(mock.cur_names[1] + ' has stopped typing');
+                        done();
                     }));
 
                     it("can be a paused carbon message that this user sent from a different client",
@@ -1242,14 +1223,11 @@
             it("is incremented from zero when chatbox was closed after viewing previously received messages and the window is not focused now",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
-
                 // initial state
                 expect(_converse.msg_counter).toBe(0);
-
-                let view;
                 const message = 'This message will always increment the message counter from zero',
                     sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                     msgFactory = function () {
@@ -1267,29 +1245,28 @@
                 // leave converse-chat page
                 _converse.windowState = 'hidden';
                 _converse.chatboxes.onMessage(msgFactory());
-                return test_utils.waitUntil(() => _converse.api.chats.get().length)
-                .then(() => {
-                    expect(_converse.msg_counter).toBe(1);
+                await test_utils.waitUntil(() => _converse.api.chats.get().length)
+                let view = _converse.chatboxviews.get(sender_jid);
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                expect(_converse.msg_counter).toBe(1);
 
-                    // come back to converse-chat page
-                    _converse.saveWindowState(null, 'focus');
-                    view = _converse.chatboxviews.get(sender_jid);
-                    expect(u.isVisible(view.el)).toBeTruthy();
-                    expect(_converse.msg_counter).toBe(0);
+                // come back to converse-chat page
+                _converse.saveWindowState(null, 'focus');
+                expect(u.isVisible(view.el)).toBeTruthy();
+                expect(_converse.msg_counter).toBe(0);
 
-                    // close chatbox and leave converse-chat page again
-                    view.close();
-                    _converse.windowState = 'hidden';
+                // close chatbox and leave converse-chat page again
+                view.close();
+                _converse.windowState = 'hidden';
 
-                    // check that msg_counter is incremented from zero again
-                    _converse.chatboxes.onMessage(msgFactory());
-                    return test_utils.waitUntil(() => _converse.api.chats.get().length)
-                }).then(() => {
-                    view = _converse.chatboxviews.get(sender_jid);
-                    expect(u.isVisible(view.el)).toBeTruthy();
-                    expect(_converse.msg_counter).toBe(1);
-                    done();
-                });
+                // check that msg_counter is incremented from zero again
+                _converse.chatboxes.onMessage(msgFactory());
+                await test_utils.waitUntil(() => _converse.api.chats.get().length)
+                view = _converse.chatboxviews.get(sender_jid);
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                expect(u.isVisible(view.el)).toBeTruthy();
+                expect(_converse.msg_counter).toBe(1);
+                done();
             }));
         });
 

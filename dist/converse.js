@@ -82094,21 +82094,36 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
      */
     const __ = _converse.__;
     const list = obj.textContent.match(URL_REGEX) || [];
-    return Promise.all(_.map(list, url => new Promise((resolve, reject) => isImage(url).then(function (img) {
-      const i = new Image();
-      i.src = img.src;
-      i.addEventListener('load', resolve); // We also resolve for non-images, otherwise the
-      // Promise.all resolves prematurely.
+    return Promise.all(_.map(list, url => new Promise((resolve, reject) => {
+      const uri = new URI(url),
+            filename = uri.filename(),
+            lower_filename = filename.toLowerCase();
 
-      i.addEventListener('error', resolve);
+      if (!_.includes(["https", "http"], uri.protocol().toLowerCase())) {
+        return resolve();
+      }
 
-      _.each(sizzle(`a[href="${url}"]`, obj), a => {
-        a.outerHTML = tpl_image({
-          'url': url,
-          'label_download': __('Download')
-        });
-      });
-    }).catch(resolve))));
+      if (lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') || lower_filename.endsWith('png') || lower_filename.endsWith('gif') || lower_filename.endsWith('svg')) {
+        return isImage(url).then(img => {
+          const i = new Image();
+          i.src = img.src;
+          i.addEventListener('load', resolve); // We also resolve for non-images, otherwise the
+          // Promise.all resolves prematurely.
+
+          i.addEventListener('error', resolve);
+          const __ = _converse.__;
+
+          _.each(sizzle(`a[href="${url}"]`, obj), a => {
+            a.outerHTML = tpl_image({
+              'url': url,
+              'label_download': __('Download')
+            });
+          });
+        }).catch(resolve);
+      } else {
+        return resolve();
+      }
+    })));
   };
 
   u.renderFileURL = function (_converse, url) {

@@ -288,23 +288,37 @@
         const list = obj.textContent.match(URL_REGEX) || [];
         return Promise.all(
             _.map(list, (url) =>
-                new Promise((resolve, reject) =>
-                    isImage(url).then(function (img) {
-                        const i = new Image();
-                        i.src = img.src;
-                        i.addEventListener('load', resolve);
-                        // We also resolve for non-images, otherwise the
-                        // Promise.all resolves prematurely.
-                        i.addEventListener('error', resolve);
+                new Promise((resolve, reject) => {
+                    const uri = new URI(url),
+                        filename = uri.filename(),
+                        lower_filename = filename.toLowerCase();
+                    if (!_.includes(["https", "http"], uri.protocol().toLowerCase())) {
+                        return resolve();
+                    }
+                    if (lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') ||
+                            lower_filename.endsWith('png') || lower_filename.endsWith('gif') ||
+                            lower_filename.endsWith('svg')) {
 
-                        _.each(sizzle(`a[href="${url}"]`, obj), (a) => {
-                            a.outerHTML= tpl_image({
-                                'url': url,
-                                'label_download': __('Download')
-                            })
-                        });
-                    }).catch(resolve)
-                )
+                        return isImage(url).then(img => {
+                            const i = new Image();
+                            i.src = img.src;
+                            i.addEventListener('load', resolve);
+                            // We also resolve for non-images, otherwise the
+                            // Promise.all resolves prematurely.
+                            i.addEventListener('error', resolve);
+
+                            const { __ } = _converse;
+                            _.each(sizzle(`a[href="${url}"]`, obj), (a) => {
+                                a.outerHTML= tpl_image({
+                                    'url': url,
+                                    'label_download': __('Download')
+                                })
+                            });
+                        }).catch(resolve)
+                    } else {
+                        return resolve();
+                    }
+                })
             )
         )
     };

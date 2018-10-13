@@ -262,7 +262,6 @@
 
     u.addHyperlinks = function (text) {
         return URI.withinString(text, url => {
-            let classes = '';
             const uri = new URI(url);
             url = uri.normalize()._string;
             const pretty_url = uri._parts.urn ? url : uri.readable();
@@ -270,9 +269,9 @@
                 url = 'http://' + url;
             }
             if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
-                classes += 'open-chatroom';
+                return `<a target="_blank" rel="noopener" class="open-chatroom" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
             }
-            return `<a target="_blank" rel="noopener" class="${classes}" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+            return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
         }, {
             'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
         });

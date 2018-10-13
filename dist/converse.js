@@ -68948,7 +68948,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           'click .hide-occupants': 'hideOccupants',
           'click .new-msgs-indicator': 'viewUnreadMessages',
           'click .occupant-nick': 'onOccupantClicked',
-          'click a.open-chatroom': 'openChatRoomFromURIClicked',
           'click .send-button': 'onFormSubmitted',
           'click .show-room-details-modal': 'showRoomDetailsModal',
           'click .toggle-call': 'toggleCall',
@@ -69283,12 +69282,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
            * the chat textarea input.
            */
           this.insertIntoTextArea(ev.target.textContent);
-        },
-
-        openChatRoomFromURIClicked(ev) {
-          ev.preventDefault();
-
-          _converse.api.rooms.open(ev.target.href);
         },
 
         handleChatStateNotification(message) {
@@ -70624,6 +70617,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
       _converse.on('chatBoxViewsInitialized', () => {
+        function openChatRoomFromURIClicked(ev) {
+          ev.preventDefault();
+
+          _converse.api.rooms.open(ev.target.href);
+        }
+
+        _converse.chatboxviews.delegate('click', 'a.open-chatroom', openChatRoomFromURIClicked);
+
         const that = _converse.chatboxviews;
 
         _converse.chatboxes.on('add', item => {

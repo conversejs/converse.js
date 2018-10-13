@@ -48,6 +48,8 @@
             &.chat-event {
                 clear: left;
                 font-style: italic;
+                font-size: 90%;
+                padding: 0.17rem 1rem
             }
             &.chat-error {
                 color: $warning-color;

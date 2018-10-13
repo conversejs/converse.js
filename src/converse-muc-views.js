@@ -1498,32 +1498,60 @@
                     }
                 },
 
+                getPreviousJoinOrLeaveNotification (el, nick) {
+                    /* Working backwards, get the first join/leave notification
+                     * from the same user, on the same day and BEFORE any chat
+                     * messages were received.
+                     */
+                    while (!_.isNil(el)) {
+                        const data = _.get(el, 'dataset', {});
+                        if (!_.includes(_.get(el, 'classList', []), 'chat-info')) {
+                            return;
+                        }
+                        if (!moment(el.getAttribute('data-isodate')).isSame(new Date(), "day")) {
+                            el = el.previousElementSibling;
+                            continue;
+                        }
+                        if (data.join === nick ||
+                                data.leave === nick ||
+                                data.leavejoin === nick ||
+                                data.joinleave === nick) {
+                            return el;
+                        }
+                        el = el.previousElementSibling;
+                    }
+                },
+
                 showJoinNotification (occupant) {
                     if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                         return;
                     }
                     const nick = occupant.get('nick'),
                           stat = occupant.get('status'),
-                          last_leave_el = this.getImmediateNotification(this.content.lastElementChild, nick, 'leave');
+                          prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick),
+                          data = _.get(prev_info_el, 'dataset', {});
 
-                    if (_.includes(_.get(last_leave_el, 'classList', []), 'chat-info') &&
-                            _.get(last_leave_el, 'dataset', {}).leave === nick) {
-
-                        let el = this.content.lastElementChild;
-                        el.insertAdjacentElement('afterend', last_leave_el);
-                        last_leave_el.outerHTML =
-                            tpl_info({
-                                'data_name': 'leavejoin',
-                                'data_value': nick,
-                                'isodate': moment().format(),
-                                'extra_classes': 'chat-event',
-                                'message': __('%1$s has left and re-entered the groupchat', nick)
-                            });
-                        el = this.content.lastElementChild;
+                    if (data.leave === nick) {
+                        let message;
+                        if (_.isNil(stat)) {
+                            message = __('%1$s has left and re-entered the groupchat', nick);
+                        } else {
+                            message = __('%1$s has left and re-entered the groupchat. "%2$s"', nick, stat);
+                        }
+                        const data = {
+                            'data_name': 'leavejoin',
+                            'data_value': nick,
+                            'isodate': moment().format(),
+                            'extra_classes': 'chat-event',
+                            'message': message
+                        };
+                        this.content.removeChild(prev_info_el);
+                        this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                        const el = this.content.lastElementChild;
                         setTimeout(() => u.addClass('fade-out', el), 5000);
-                        setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5250);
+                        setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5500);
                     } else {
-                        let  message;
+                        let message;
                         if (_.isNil(stat)) {
                             message = __('%1$s has entered the groupchat', nick);
                         } else {
@@ -1536,40 +1564,15 @@
                             'extra_classes': 'chat-event',
                             'message': message
                         };
-                        if (_.includes(_.get(last_leave_el, 'classList', []), 'chat-info') &&
-                                _.get(last_leave_el, 'dataset', {}).joinleave === nick) {
-
-                            last_leave_el.outerHTML = tpl_info(data);
+                        if (prev_info_el) {
+                            this.content.removeChild(prev_info_el);
+                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
                         } else {
-                            const el = u.stringToElement(tpl_info(data));
-                            this.content.insertAdjacentElement('beforeend', el);
-                            this.insertDayIndicator(el);
+                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                            this.insertDayIndicator(this.content.lastElementChild);
                         }
                     }
                     this.scrollDown();
-                },
-
-                getImmediateNotification (el, nick, type='join') {
-                    while (!_.isNil(el)) {
-                        const data = _.get(el, 'dataset', {});
-                        if (!_.includes(_.get(el, 'classList', []), 'chat-info')) {
-                            return;
-                        }
-                        if (!moment(el.getAttribute('data-isodate')).isSame(new Date(), "day")) {
-                            el = el.previousElementSibling;
-                            continue;
-                        }
-                        if (type === 'join') {
-                            if (data.join === nick || data.leavejoin === nick) {
-                                return el;
-                            }
-                        } else {
-                            if (data.leave === nick || data.joinleave === nick) {
-                                return el;
-                            }
-                        }
-                        el = el.previousElementSibling;
-                    }
                 },
 
                 showLeaveNotification (occupant) {
@@ -1578,45 +1581,28 @@
                     }
                     const nick = occupant.get('nick'),
                           stat = occupant.get('status'),
-                          last_join_el = this.getImmediateNotification(this.content.lastElementChild, nick, 'join'),
-                          data = _.get(last_join_el, 'dataset', {});
+                          prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick),
+                          dataset = _.get(prev_info_el, 'dataset', {});
 
-                    if (last_join_el) {
+                    if (dataset.join === nick) {
                         let message;
-                        if (data.join === nick) {
-                            if (_.isNil(stat)) {
-                                message = __('%1$s has entered and left the groupchat', nick);
-                            } else {
-                                message = __('%1$s has entered and left the groupchat. "%2$s"', nick, stat);
-                            }
-                            let el = this.content.lastElementChild;
-                            el.insertAdjacentElement('afterend', last_join_el);
-                            last_join_el.outerHTML =
-                                tpl_info({
-                                    'data_name': 'joinleave',
-                                    'data_value': nick,
-                                    'isodate': moment().format(),
-                                    'extra_classes': 'chat-event',
-                                    'message': message
-                                });
-                            el = this.content.lastElementChild;
-                            setTimeout(() => u.addClass('fade-out', el), 5000);
-                            setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5250);
-                        } else if (data.leavejoin === nick) {
-                            if (_.isNil(stat)) {
-                                message = __('%1$s has left the groupchat', nick);
-                            } else {
-                                message = __('%1$s has left the groupchat. "%2$s"', nick, stat);
-                            }
-                            last_join_el.outerHTML =
-                                tpl_info({
-                                    'data_name': 'leave',
-                                    'data_value': nick,
-                                    'isodate': moment().format(),
-                                    'extra_classes': 'chat-event',
-                                    'message': message
-                                });
+                        if (_.isNil(stat)) {
+                            message = __('%1$s has entered and left the groupchat', nick);
+                        } else {
+                            message = __('%1$s has entered and left the groupchat. "%2$s"', nick, stat);
                         }
+                        const data = {
+                            'data_name': 'joinleave',
+                            'data_value': nick,
+                            'isodate': moment().format(),
+                            'extra_classes': 'chat-event',
+                            'message': message
+                        };
+                        this.content.removeChild(prev_info_el);
+                        this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                        const el = this.content.lastElementChild;
+                        setTimeout(() => u.addClass('fade-out', el), 5000);
+                        setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5500);
                     } else {
                         let message;
                         if (_.isNil(stat)) {
@@ -1631,9 +1617,13 @@
                             'data_name': 'leave',
                             'data_value': nick
                         }
-                        const el = u.stringToElement(tpl_info(data));
-                        this.content.insertAdjacentElement('beforeend', el);
-                        this.insertDayIndicator(el);
+                        if (prev_info_el) {
+                            this.content.removeChild(prev_info_el);
+                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                        } else {
+                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                            this.insertDayIndicator(this.content.lastElementChild);
+                        }
                     }
                     this.scrollDown();
                 },

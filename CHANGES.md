@@ -2,9 +2,10 @@
 
 ## 4.0.3 (Unreleased)
 
-- Reduce join/leave clutter by removing subsequent ones (without text messages in between)
 - Bugfix. Handler not triggered when submitting MUC password form 2nd time
 - Bugfix. MUC features weren't being refreshed when saving the config form
+- #537 Render `xmpp:` URI as link
+- #1062 Collapse multiple join/leave messages into one
 - #1063 URLs in the topic / subject are not clickable
 - #1140 Add support for destroyed chatrooms
 - #1169 Non-joined participants display an unwanted status message

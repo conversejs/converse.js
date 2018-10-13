@@ -10770,7 +10770,9 @@ body.reset {
     font-style: italic; }
   #conversejs .message.chat-info.chat-event {
     clear: left;
-    font-style: italic; }
+    font-style: italic;
+    font-size: 90%;
+    padding: 0.17rem 1rem; }
   #conversejs .message.chat-info.chat-error {
     color: #D24E2B;
     font-weight: bold; }

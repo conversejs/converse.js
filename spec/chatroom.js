@@ -12,7 +12,8 @@
           Backbone = converse.env.Backbone,
           u = converse.env.utils;
 
-    return describe("Chatrooms", function () {
+    describe("Chatrooms", function () {
+
         describe("The \"rooms\" API", function () {
 
             it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments",
@@ -113,11 +114,7 @@
                 // Mock 'getRoomFeatures', otherwise the room won't be
                 // displayed as it waits first for the features to be returned
                 // (when it's a new room being created).
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(function () {
-                    var deferred = new $.Deferred();
-                    deferred.resolve();
-                    return deferred.promise();
-                });
+                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
 
                 const sent_IQ_els = [];
                 let jid = 'lounge@localhost';
@@ -423,7 +420,6 @@
                 .then(() => {
                     const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                     const chat_content = view.el.querySelector('.chat-content');
-                    const $chat_content = $(chat_content);
                     /* We don't show join/leave messages for existing occupants. We
                      * know about them because we receive their presences before we
                      * receive our own.
@@ -438,7 +434,7 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(0);
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(0);
 
                     /* <presence to="dummy@localhost/_converse.js-29092160"
                      *           from="coven@chat.shakespeare.lit/some1">
@@ -459,7 +455,8 @@
                         }).up()
                         .c('status', {code: '110'});
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content.find('div.chat-info:first').html()).toBe("some1 has entered the groupchat");
+                    expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
+                        .toBe("some1 has entered the groupchat");
 
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
@@ -472,8 +469,9 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(2);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the groupchat");
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("newguy has entered the groupchat");
 
                     const msg = $msg({
                         'from': 'coven@chat.shakespeare.lit/some1',
@@ -482,7 +480,6 @@
                         'type': 'groupchat'
                     }).c('body').t('hello world').tree();
                     _converse.connection._dataRecv(test_utils.createRequest(msg));
-
 
                     // Add another entrant, otherwise the above message will be
                     // collapsed if "newguy" leaves immediately again
@@ -497,8 +494,9 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(3);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe("newgirl has entered the groupchat");
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("newgirl has entered the groupchat");
 
                     // Don't show duplicate join messages
                     presence = $pres({
@@ -511,7 +509,7 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(3);
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
 
                     /*  <presence
                      *      from='coven@chat.shakespeare.lit/thirdwitch'
@@ -538,8 +536,8 @@
                                 'role': 'none'
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content.find('div.chat-info').length).toBe(4);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe(
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(4);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                         'newguy has left the groupchat. '+
                         '"Disconnected: Replaced by new connection"');
 
@@ -555,10 +553,10 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content.find('div.chat-info').length).toBe(4);
-                    var $msg_el = $chat_content.find('div.chat-info:last');
-                    expect($msg_el.html()).toBe("newguy has left and re-entered the groupchat");
-                    expect($msg_el.data('leavejoin')).toBe('newguy');
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(4);
+                    let msg_el = sizzle('div.chat-info:last', chat_content).pop();
+                    expect(msg_el.textContent).toBe("newguy has left and re-entered the groupchat");
+                    expect(msg_el.getAttribute('data-leavejoin')).toBe('newguy');
 
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
@@ -572,8 +570,8 @@
                                 'role': 'none'
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content.find('div.chat-info').length).toBe(4);
-                    const msg_el = sizzle('div.chat-info', chat_content).pop();
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(4);
+                    msg_el = sizzle('div.chat-info', chat_content).pop();
                     expect(msg_el.textContent).toBe('newguy has left the groupchat');
                     expect(msg_el.getAttribute('data-leave')).toBe('newguy');
 
@@ -588,8 +586,9 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(5);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered the groupchat");
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("nomorenicks has entered the groupchat");
 
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-290918392',
@@ -602,8 +601,9 @@
                             'role': 'none'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(5);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered and left the groupchat");
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("nomorenicks has entered and left the groupchat");
 
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
@@ -616,9 +616,9 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(5);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered the groupchat");
-
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("nomorenicks has entered the groupchat");
 
                     // Test a member joining and leaving
                     presence = $pres({
@@ -631,7 +631,7 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(6);
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(6);
 
                     /*  <presence
                      *      from='coven@chat.shakespeare.lit/thirdwitch'
@@ -659,7 +659,7 @@
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(chat_content.querySelectorAll('div.chat-info').length).toBe(6);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe(
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                         'insider has entered and left the groupchat. '+
                         '"Disconnected: Replaced by new connection"');
 
@@ -847,9 +847,8 @@
                     function (done, _converse) {
 
                 test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'dummy').then(function () {
-                    var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                    var chat_content = view.el.querySelector('.chat-content');
-                    var $chat_content = $(chat_content);
+                    const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    const chat_content = view.el.querySelector('.chat-content');
                     var indicator = chat_content.querySelector('.date-separator');
                     expect(indicator).not.toBe(null);
                     expect(indicator.getAttribute('class')).toEqual('message date-separator');
@@ -922,7 +921,7 @@
 
                     expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
-                    expect($(chat_content).find('div.chat-info:last').html()).toBe(
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                         'some1 has left the groupchat. '+
                         '"Disconnected: Replaced by new connection"');
 
@@ -952,12 +951,13 @@
                     let time = chat_content.querySelectorAll('time.separator-text');
                     expect(time.length).toEqual(4);
 
-                    var $indicator = $chat_content.find('.date-separator:eq(3)');
-                    expect($indicator.attr('class')).toEqual('message date-separator');
-                    expect($indicator.data('isodate')).toEqual(moment().startOf('day').format());
-                    expect($indicator.find('time').text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    indicator = sizzle('.date-separator:eq(3)', chat_content).pop();
+                    expect(indicator.getAttribute('class')).toEqual('message date-separator');
+                    expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                    expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect(chat_content.querySelectorAll('div.chat-info').length).toBe(4);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the groupchat");
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("newguy has entered the groupchat");
 
                     jasmine.clock().tick(ONE_DAY_LATER);
 
@@ -990,13 +990,12 @@
                     time = chat_content.querySelectorAll('time.separator-text');
                     expect(time.length).toEqual(6);
 
-                    $indicator = $chat_content.find('.date-separator:eq(5)');
-                    expect($indicator.attr('class')).toEqual('message date-separator');
-                    expect($indicator.data('isodate')).toEqual(moment().startOf('day').format());
-
-                    expect($indicator.find('time').text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    indicator = sizzle('.date-separator:eq(5)', chat_content).pop();
+                    expect(indicator.getAttribute('class')).toEqual('message date-separator');
+                    expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                    expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect(chat_content.querySelectorAll('div.chat-info').length).toBe(5);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe(
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                         'newguy has left the groupchat. '+
                         '"Disconnected: Replaced by new connection"');
                     jasmine.clock().uninstall();
@@ -1018,7 +1017,9 @@
                     return test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 }).then(() => {
                     view = _converse.chatboxviews.get('lounge@localhost');
-                    if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
+                    if (!view.el.querySelectorAll('.chat-area').length) {
+                        view.renderChatArea();
+                    }
                     var message = '/me is tired';
                     var nick = mock.chatroom_names[0],
                         msg = $msg({
@@ -1028,8 +1029,8 @@
                             'type': 'groupchat'
                         }).c('body').t(message).tree();
                     view.model.onMessage(msg);
-                    expect(_.includes($(view.el).find('.chat-msg__author').text(), '**Dyon van de Wege')).toBeTruthy();
-                    expect($(view.el).find('.chat-msg__text').text()).toBe(' is tired');
+                    expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Dyon van de Wege')).toBeTruthy();
+                    expect(view.el.querySelector('.chat-msg__text').textContent).toBe(' is tired');
 
                     message = '/me is as well';
                     msg = $msg({
@@ -1039,8 +1040,8 @@
                         type: 'groupchat'
                     }).c('body').t(message).tree();
                     view.model.onMessage(msg);
-                    expect(_.includes($(view.el).find('.chat-msg__author:last').text(), '**Max Mustermann')).toBeTruthy();
-                    expect($(view.el).find('.chat-msg__text:last').text()).toBe(' is as well');
+                    expect(_.includes(sizzle('.chat-msg__author:last', view.el).pop().textContent, '**Max Mustermann')).toBeTruthy();
+                    expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe(' is as well');
                     done();
                 });
             }));
@@ -1093,10 +1094,10 @@
                         .c('status', {code: '110'});
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.model.saveAffiliationAndRole).toHaveBeenCalled();
-                    expect($(view.el.querySelector('.toggle-chatbox-button')).is(':visible')).toBeTruthy();
+                    expect(u.isVisible(view.el.querySelector('.toggle-chatbox-button'))).toBeTruthy();
                     return test_utils.waitUntil(() => !_.isNull(view.el.querySelector('.configure-chatroom-button')))
                 }).then(() => {
-                    expect($(view.el.querySelector('.configure-chatroom-button')).is(':visible')).toBeTruthy();
+                    expect(u.isVisible(view.el.querySelector('.configure-chatroom-button'))).toBeTruthy();
                     view.el.querySelector('.configure-chatroom-button').click();
 
                     /* Check that an IQ is sent out, asking for the
@@ -1234,37 +1235,37 @@
 
                     return test_utils.waitUntil(() => view.el.querySelectorAll('form.chatroom-form').length)
                 }).then(() => {
-                    expect($(view.el.querySelector('form.chatroom-form')).length).toBe(1);
+                    expect(view.el.querySelectorAll('form.chatroom-form').length).toBe(1);
                     expect(view.el.querySelectorAll('form.chatroom-form fieldset').length).toBe(2);
-                    var $membersonly = $(view.el.querySelector('input[name="muc#roomconfig_membersonly"]'));
-                    expect($membersonly.length).toBe(1);
-                    expect($membersonly.attr('type')).toBe('checkbox');
-                    $membersonly.prop('checked', true);
+                    var membersonly = view.el.querySelectorAll('input[name="muc#roomconfig_membersonly"]');
+                    expect(membersonly.length).toBe(1);
+                    expect(membersonly[0].getAttribute('type')).toBe('checkbox');
+                    membersonly[0].checked = true;
 
-                    var $moderated = $(view.el.querySelector('input[name="muc#roomconfig_moderatedroom"]'));
-                    expect($moderated.length).toBe(1);
-                    expect($moderated.attr('type')).toBe('checkbox');
-                    $moderated.prop('checked', true);
+                    var moderated = view.el.querySelectorAll('input[name="muc#roomconfig_moderatedroom"]');
+                    expect(moderated.length).toBe(1);
+                    expect(moderated[0].getAttribute('type')).toBe('checkbox');
+                    moderated[0].checked = true;
 
-                    var $password = $(view.el.querySelector('input[name="muc#roomconfig_roomsecret"]'));
-                    expect($password.length).toBe(1);
-                    expect($password.attr('type')).toBe('password');
+                    var password = view.el.querySelectorAll('input[name="muc#roomconfig_roomsecret"]');
+                    expect(password.length).toBe(1);
+                    expect(password[0].getAttribute('type')).toBe('password');
 
-                    var $allowpm = $(view.el.querySelector('select[name="muc#roomconfig_allowpm"]'));
-                    expect($allowpm.length).toBe(1);
-                    $allowpm.val('moderators');
+                    var allowpm = view.el.querySelectorAll('select[name="muc#roomconfig_allowpm"]');
+                    expect(allowpm.length).toBe(1);
+                    allowpm[0].value = 'moderators';
 
-                    var $presencebroadcast = $(view.el.querySelector('select[name="muc#roomconfig_presencebroadcast"]'));
-                    expect($presencebroadcast.length).toBe(1);
-                    $presencebroadcast.val(['moderator']);
+                    var presencebroadcast = view.el.querySelectorAll('select[name="muc#roomconfig_presencebroadcast"]');
+                    expect(presencebroadcast.length).toBe(1);
+                    presencebroadcast[0].value = ['moderator'];
 
                     view.el.querySelector('input[type="submit"]').click();
 
-                    var $sent_stanza = $(sent_IQ.toLocaleString());
-                    expect($sent_stanza.find('field[var="muc#roomconfig_membersonly"] value').text()).toBe('1');
-                    expect($sent_stanza.find('field[var="muc#roomconfig_moderatedroom"] value').text()).toBe('1');
-                    expect($sent_stanza.find('field[var="muc#roomconfig_allowpm"] value').text()).toBe('moderators');
-                    expect($sent_stanza.find('field[var="muc#roomconfig_presencebroadcast"] value').text()).toBe('moderator');
+                    const sent_stanza = sent_IQ.nodeTree;
+                    expect(sent_stanza.querySelector('field[var="muc#roomconfig_membersonly"] value').textContent).toBe('1');
+                    expect(sent_stanza.querySelector('field[var="muc#roomconfig_moderatedroom"] value').textContent).toBe('1');
+                    expect(sent_stanza.querySelector('field[var="muc#roomconfig_allowpm"] value').textContent).toBe('moderators');
+                    expect(sent_stanza.querySelector('field[var="muc#roomconfig_presencebroadcast"] value').textContent).toBe('moderator');
                     done();
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
@@ -3645,19 +3646,14 @@
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.add_room_modal;
                 test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
-               .then(function () {
-                    spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(function () {
-                        var deferred = new $.Deferred();
-                        deferred.resolve();
-                        return deferred.promise();
-                    });
+               .then(() => {
+                    spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
                     roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-
                     modal.el.querySelector('input[name="chatroom"]').value = 'lounce@muc.localhost';
                     modal.el.querySelector('form input[type="submit"]').click();
                     return test_utils.waitUntil(() => _converse.chatboxes.length);
                }).then(() => {
-                    expect($('.chatroom:visible').length).toBe(1); // There should now be an open chatroom
+                    expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
                     done();
                 }).catch(_.partial(console.error, _));
             }));
@@ -3681,11 +3677,7 @@
                 const modal = roomspanel.list_rooms_modal;
                 test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
                 .then(() => {
-                    spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(function () {
-                        var deferred = new $.Deferred();
-                        deferred.resolve();
-                        return deferred.promise();
-                    });
+                    spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
                     roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
 
                     // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
@@ -3725,7 +3717,7 @@
                     rooms[4].querySelector('.open-room').click();
                     return test_utils.waitUntil(() => _converse.chatboxes.length > 1);
                 }).then(() => {
-                    expect($('.chatroom:visible').length).toBe(1); // There should now be an open chatroom
+                    expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
                     var view = _converse.chatboxviews.get('inverness@chat.shakespeare.lit');
                     expect(view.el.querySelector('.chat-head-chatroom').textContent.trim()).toBe("Macbeth's Castle");
                     done();
@@ -3805,7 +3797,8 @@
                             view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                             const chat_content = view.el.querySelector('.chat-content');
 
-                            expect($(chat_content).find('div.chat-info:first').html()).toBe("some1 has entered the groupchat");
+                            expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
+                                .toBe("some1 has entered the groupchat");
 
                             let presence = $pres({
                                     to: 'dummy@localhost/_converse.js-29092160',
@@ -3819,7 +3812,8 @@
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
                             expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
-                            expect($(chat_content).find('div.chat-info:last').html()).toBe("newguy has entered the groupchat");
+                            expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                                .toBe("newguy has entered the groupchat");
 
                             presence = $pres({
                                     to: 'dummy@localhost/_converse.js-29092160',
@@ -3833,7 +3827,8 @@
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
                             expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
-                            expect($(chat_content).find('div.chat-info:last').html()).toBe("nomorenicks has entered the groupchat");
+                            expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                                .toBe("nomorenicks has entered the groupchat");
 
                             // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
 
@@ -3955,9 +3950,9 @@
 
                         test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1')
                         .then(() => {
-                            var room_jid = 'coven@chat.shakespeare.lit';
-                            var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                            var $chat_content = $(view.el).find('.chat-content');
+                            const room_jid = 'coven@chat.shakespeare.lit';
+                            const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                            const chat_content = view.el.querySelector('.chat-content');
 
                             /* <presence to="dummy@localhost/_converse.js-29092160"
                             *           from="coven@chat.shakespeare.lit/some1">
@@ -3978,7 +3973,8 @@
                                 }).up()
                                 .c('status', {code: '110'});
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
-                            expect($chat_content.find('div.chat-info:first').html()).toBe("some1 has entered the groupchat");
+                            expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
+                                .toBe("some1 has entered the groupchat");
 
                             presence = $pres({
                                     to: 'dummy@localhost/_converse.js-29092160',
@@ -3991,8 +3987,9 @@
                                     'role': 'participant'
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
-                            expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(2);
-                            expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the groupchat");
+                            expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
+                            expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                                .toBe("newguy has entered the groupchat");
 
                             presence = $pres({
                                     to: 'dummy@localhost/_converse.js-29092160',
@@ -4005,8 +4002,9 @@
                                     'role': 'participant'
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
-                            expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(3);
-                            expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered the groupchat");
+                            expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
+                            expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                                .toBe("nomorenicks has entered the groupchat");
 
                             // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
 

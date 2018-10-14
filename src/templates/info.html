@@ -1,3 +1,8 @@
-<div class="message chat-info {{{o.extra_classes}}}"
-     data-isodate="{{{o.isodate}}}"
-     {{{o.data}}}>{{{o.message}}}</div>
+{[ if (o.render_message) { ]}
+    <!-- XXX: Should only ever be rendered if the message text has been sanitized already -->
+    <div class="message chat-info {{{o.extra_classes}}}"
+        data-isodate="{{{o.isodate}}}" {[ if (o.data_name) { ]} data-{{{o.data_name}}}="{{{o.data_value}}}"{[ } ]}>{{o.message}}</div>
+{[ } else { ]}
+    <div class="message chat-info {{{o.extra_classes}}}"
+        data-isodate="{{{o.isodate}}}" {[ if (o.data_name) { ]} data-{{{o.data_name}}}="{{{o.data_value}}}"{[ } ]}>{{{o.message}}}</div>
+{[ } ]}

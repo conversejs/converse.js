@@ -228,10 +228,6 @@
             .replace(/"/g, "&quot;");
     };
 
-    u.escapeURL = function (url) {
-        return encodeURI(decodeURI(url)).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-    };
-
     u.prefixMentions = function (message) {
         /* Given a message object, return its text with @ chars
          * inserted before the mentioned nicknames.
@@ -265,14 +261,19 @@
     };
 
     u.addHyperlinks = function (text) {
-        return URI.withinString(text, function (url) {
-            var uri = new URI(url);
-            uri.normalize();
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        return URI.withinString(text, url => {
+            const uri = new URI(url);
+            url = uri.normalize()._string;
+            const pretty_url = uri._parts.urn ? url : uri.readable();
+            if (!uri._parts.protocol && !url.startsWith('http://') && !url.startsWith('https://')) {
                 url = 'http://' + url;
             }
-            url = u.escapeHTML(u.escapeURL(url));
-            return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(uri.readable())}</a>`;
+            if (uri._parts.protocol === 'xmpp' && uri._parts.query === 'join') {
+                return `<a target="_blank" rel="noopener" class="open-chatroom" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+            }
+            return `<a target="_blank" rel="noopener" href="${url}">${u.escapeHTML(pretty_url)}</a>`;
+        }, {
+            'start': /\b(?:([a-z][a-z0-9.+-]*:\/\/)|xmpp:|mailto:|www\.)/gi
         });
     };
 
@@ -287,23 +288,37 @@
         const list = obj.textContent.match(URL_REGEX) || [];
         return Promise.all(
             _.map(list, (url) =>
-                new Promise((resolve, reject) =>
-                    isImage(url).then(function (img) {
-                        const i = new Image();
-                        i.src = img.src;
-                        i.addEventListener('load', resolve);
-                        // We also resolve for non-images, otherwise the
-                        // Promise.all resolves prematurely.
-                        i.addEventListener('error', resolve);
+                new Promise((resolve, reject) => {
+                    const uri = new URI(url),
+                        filename = uri.filename(),
+                        lower_filename = filename.toLowerCase();
+                    if (!_.includes(["https", "http"], uri.protocol().toLowerCase())) {
+                        return resolve();
+                    }
+                    if (lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') ||
+                            lower_filename.endsWith('png') || lower_filename.endsWith('gif') ||
+                            lower_filename.endsWith('svg')) {
 
-                        _.each(sizzle(`a[href="${url}"]`, obj), (a) => {
-                            a.outerHTML= tpl_image({
-                                'url': url,
-                                'label_download': __('Download')
-                            })
-                        });
-                    }).catch(resolve)
-                )
+                        return isImage(url).then(img => {
+                            const i = new Image();
+                            i.src = img.src;
+                            i.addEventListener('load', resolve);
+                            // We also resolve for non-images, otherwise the
+                            // Promise.all resolves prematurely.
+                            i.addEventListener('error', resolve);
+
+                            const { __ } = _converse;
+                            _.each(sizzle(`a[href="${url}"]`, obj), (a) => {
+                                a.outerHTML= tpl_image({
+                                    'url': url,
+                                    'label_download': __('Download')
+                                })
+                            });
+                        }).catch(resolve)
+                    } else {
+                        return resolve();
+                    }
+                })
             )
         )
     };

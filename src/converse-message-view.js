@@ -163,8 +163,7 @@
                           msg = u.stringToElement(
                         tpl_info(_.extend(this.model.toJSON(), {
                             'extra_classes': 'chat-error',
-                            'isodate': moment_time.format(),
-                            'data': ''
+                            'isodate': moment_time.format()
                         })));
                     return this.replaceElement(msg);
                 },

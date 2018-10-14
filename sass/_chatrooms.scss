@@ -44,6 +44,9 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            a {
+                color: white;
+            }
         }
 
         a, a:visited, a:hover, a:not([href]):not([tabindex]) {
@@ -316,6 +319,13 @@
                     .chatroom-features {
                         .feature {
                             font-size: $font-size-tiny;
+                        }
+                    }
+                    ul {
+                        .occupant {
+                            .occupant-status {
+                                margin-top: 6px;
+                            }
                         }
                     }
                 }

@@ -937,7 +937,7 @@ msgid "Error: the groupchat "
 msgstr ""
 
 #: dist/converse-no-dependencies.js:44811
-msgid "Sorry, you're not allowed to registerd in this groupchat"
+msgid "Sorry, you're not allowed to register in this groupchat"
 msgstr ""
 
 #. workaround for Prosody which doesn't give type "headline"

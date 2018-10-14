@@ -1,7 +1,11 @@
 <div class="d-flex controlbox-padded">
     <span class="w-100 controlbox-heading">{{{o.heading_contacts}}}</span>
-    <a class="chatbox-btn add-contact fa fa-user-plus" title="{{{o.title_add_contact}}}"
-       data-toggle="modal" data-target="#add-contact-modal"></a>
+    {[ if (o.allow_contact_requests) { ]}
+        <a class="chatbox-btn add-contact fa fa-user-plus"
+           title="{{{o.title_add_contact}}}"
+           data-toggle="modal"
+           data-target="#add-contact-modal"></a>
+    {[ } ]}
 </div>
 
 <form class="roster-filter-form"></form>

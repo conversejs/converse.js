@@ -9637,6 +9637,7 @@ body.reset {
     width: 100%;
     overflow: hidden; }
   #conversejs.converse-fullscreen .chatbox .chat-body {
+    height: calc(100% - 62px);
     background-color: #3AA569;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px; }
@@ -10013,6 +10014,7 @@ body.reset {
   #conversejs.converse-mobile #controlbox .brand-heading-container {
     flex: 0 0 100%;
     max-width: 100%;
+    margin-bottom: 1em;
     text-align: center; }
     #conversejs.converse-fullscreen #controlbox .brand-heading-container .brand-heading,
     #conversejs.converse-mobile #controlbox .brand-heading-container .brand-heading {
@@ -10392,6 +10394,9 @@ body.reset {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap; }
+    #conversejs.converse-embedded .chat-head-chatroom .chatroom-description a,
+    #conversejs .chat-head-chatroom .chatroom-description a {
+      color: white; }
   #conversejs.converse-embedded .chat-head-chatroom a.chatbox-btn.fa, #conversejs.converse-embedded .chat-head-chatroom a:visited.chatbox-btn.fa, #conversejs.converse-embedded .chat-head-chatroom a:hover.chatbox-btn.fa, #conversejs.converse-embedded .chat-head-chatroom a:not([href]):not([tabindex]).chatbox-btn.fa,
   #conversejs .chat-head-chatroom a.chatbox-btn.fa,
   #conversejs .chat-head-chatroom a:visited.chatbox-btn.fa,
@@ -10643,6 +10648,8 @@ body.reset {
     padding: 0; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .chatroom-features .feature {
     font-size: 10px; }
+  #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants ul .occupant .occupant-status {
+    margin-top: 6px; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .chat-area {
     min-width: 250px; }
   #conversejs.converse-overlayed .chatbox.chatroom .sendXMPPMessage .chat-toolbar li .toolbar-menu {
@@ -10756,7 +10763,8 @@ body.reset {
   color: #3AA569;
   font-size: 14px;
   line-height: 14px;
-  padding: 0.35rem 1rem; }
+  font-size: 90%;
+  padding: 0.17rem 1rem; }
   #conversejs .message.chat-info.badge {
     color: white; }
   #conversejs .message.chat-info.chat-state-notification {

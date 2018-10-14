@@ -6,6 +6,7 @@
 @import "bootstrap/scss/type";
 @import "bootstrap/scss/images";
 @import "bootstrap/scss/grid";
+@import "bootstrap/scss/tables";
 @import "bootstrap/scss/forms";
 @import "bootstrap/scss/buttons";
 @import "bootstrap/scss/transitions";
@@ -82,6 +83,15 @@ a:hover, a:focus {
 	a {
 		color: white;
 	}
+}
+
+.pricing-table {
+    p {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        color: darkgrey;
+        font-size: 95%;
+    }
 }
 
 .navbar-brand {
@@ -296,8 +306,8 @@ section {
   transition: all 0.3s ease-in-out;
 }
 .btn-default {
-  border: 1px solid #82B397;
-  color: #82B397;
+  border: 1px solid #89B7CD;
+  color: #89B7CD;
   background-color: transparent;
 }
 .btn-default:hover,
@@ -305,12 +315,13 @@ section {
   border: 1px solid #82B397;
   outline: none;
   color: #211018;
-  background-color: #82B397;
+  background-color: #89B7CD;
 }
 .btn-huge {
   padding: 25px;
   font-size: 26px;
 }
+
 .banner-social-buttons {
     padding-top: 3em;
     a {
@@ -400,7 +411,7 @@ ul.features {
 .sponsors {
     clear: both;
     font-size: 1.4em;
-    padding: 2em 0 6em 0;
+    padding: 0 0 4em 0;
     ul {
         padding: 0;
     }
@@ -417,5 +428,5 @@ ul.features {
 }
 .sponsors-text {
     text-align: left;
-    padding: 0 0 2em 0;
+    padding: 0 0 1em 0;
 }

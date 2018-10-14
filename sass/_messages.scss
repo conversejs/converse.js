@@ -37,7 +37,8 @@
             color: $chat-head-color;
             font-size: $message-font-size;
             line-height: $line-height-small;
-            padding: 0.35rem 1rem;
+            font-size: 90%;
+            padding: 0.17rem 1rem;
 
             &.badge {
                 color: $chat-head-text-color;

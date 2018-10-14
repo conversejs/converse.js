@@ -14,6 +14,7 @@
         "templates/chatarea.html",
         "templates/chatroom.html",
         "templates/chatroom_details_modal.html",
+        "templates/chatroom_destroyed.html",
         "templates/chatroom_disconnect.html",
         "templates/chatroom_features.html",
         "templates/chatroom_form.html",
@@ -42,6 +43,7 @@
     tpl_chatarea,
     tpl_chatroom,
     tpl_chatroom_details_modal,
+    tpl_chatroom_destroyed,
     tpl_chatroom_disconnect,
     tpl_chatroom_features,
     tpl_chatroom_form,
@@ -343,10 +345,7 @@
                 },
 
                 roomStanzaItemToHTMLElement (groupchat) {
-                    const name = Strophe.unescapeNode(
-                        groupchat.getAttribute('name') ||
-                            groupchat.getAttribute('jid')
-                    );
+                    const name = Strophe.unescapeNode(groupchat.getAttribute('name') || groupchat.getAttribute('jid'));
                     const div = document.createElement('div');
                     div.innerHTML = tpl_room_item({
                         'name': Strophe.xmlunescape(name),
@@ -510,11 +509,11 @@
                     'click .chatbox-navback': 'showControlBox',
                     'click .close-chatbox-button': 'close',
                     'click .configure-chatroom-button': 'getAndRenderConfigurationForm',
-                    'click .show-room-details-modal': 'showRoomDetailsModal',
                     'click .hide-occupants': 'hideOccupants',
                     'click .new-msgs-indicator': 'viewUnreadMessages',
                     'click .occupant-nick': 'onOccupantClicked',
                     'click .send-button': 'onFormSubmitted',
+                    'click .show-room-details-modal': 'showRoomDetailsModal',
                     'click .toggle-call': 'toggleCall',
                     'click .toggle-occupants': 'toggleOccupants',
                     'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
@@ -533,6 +532,7 @@
 
                     this.model.on('change:affiliation', this.renderHeading, this);
                     this.model.on('change:connection_status', this.afterConnected, this);
+                    this.model.on('change:jid', this.renderHeading, this);
                     this.model.on('change:name', this.renderHeading, this);
                     this.model.on('change:subject', this.renderHeading, this);
                     this.model.on('change:subject', this.setChatRoomSubject, this);
@@ -540,8 +540,8 @@
                     this.model.on('destroy', this.hide, this);
                     this.model.on('show', this.show, this);
 
-                    this.model.occupants.on('add', this.showJoinNotification, this);
-                    this.model.occupants.on('remove', this.showLeaveNotification, this);
+                    this.model.occupants.on('add', this.onOccupantAdded, this);
+                    this.model.occupants.on('remove', this.onOccupantRemoved, this);
                     this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
                     this.model.occupants.on('change:role', this.informOfOccupantsRoleChange, this);
                     this.model.occupants.on('change:affiliation', this.informOfOccupantsAffiliationChange, this);
@@ -550,7 +550,11 @@
                     this.createOccupantsView();
                     this.render().insertIntoDOM();
                     this.registerHandlers();
+                    this.enterRoom();
+                },
 
+                enterRoom (ev) {
+                    if (ev) { ev.preventDefault(); }
                     if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                         const handler = () => {
                             if (!u.isPersistableModel(this.model)) {
@@ -697,7 +701,7 @@
                             'info_close': __('Close and leave this groupchat'),
                             'info_configure': __('Configure this groupchat'),
                             'info_details': __('Show more details about this groupchat'),
-                            'description': _.get(this.model.get('subject'), 'text') || ''
+                            'description': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {'whiteList': {}})),
                     }));
                 },
 
@@ -1305,17 +1309,51 @@
                     const container_el = this.el.querySelector('.chatroom-body');
                     _.each(container_el.children, u.hideElement);
                     _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
+                    _.each(this.el.querySelectorAll('.chatroom-form-container'), u.removeElement);
 
                     container_el.insertAdjacentHTML('beforeend',
                         tpl_chatroom_password_form({
-                            heading: __('This groupchat requires a password'),
-                            label_password: __('Password: '),
-                            label_submit: __('Submit')
+                            'heading': __('This groupchat requires a password'),
+                            'label_password': __('Password: '),
+                            'label_submit': __('Submit')
                         }));
 
                     this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
-                    this.el.querySelector('.chatroom-form').addEventListener(
-                        'submit', this.submitPassword.bind(this), false);
+                    this.el.querySelector('.chatroom-form')
+                        .addEventListener('submit', ev => this.submitPassword(ev), false);
+                },
+
+                showDestroyedMessage (error) {
+                    u.hideElement(this.el.querySelector('.chat-area'));
+                    u.hideElement(this.el.querySelector('.occupants'));
+                    _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
+                    const container = this.el.querySelector('.disconnect-container');
+                    const moved_jid = _.get(
+                            sizzle('gone[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', error).pop(),
+                            'textContent'
+                        ).replace(/^xmpp:/, '').replace(/\?join$/, '');
+                    const reason = _.get(
+                            sizzle('text[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', error).pop(),
+                            'textContent'
+                        );
+                    container.innerHTML = tpl_chatroom_destroyed({
+                        '_': _,
+                        '__':__,
+                        'jid': moved_jid,
+                        'reason': reason ? `"${reason}"` : null
+                    });
+
+                    const switch_el = container.querySelector('a.switch-chat');
+                    if (switch_el) {
+                        switch_el.addEventListener('click', ev => {
+                            ev.preventDefault();
+                            this.model.save('jid', moved_jid);
+                            container.innerHTML = '';
+                            this.showSpinner();
+                            this.enterRoom();
+                        });
+                    }
+                    u.showElement(container);
                 },
 
                 showDisconnectMessages (msgs) {
@@ -1362,6 +1400,20 @@
                     return;
                 },
 
+                getNotificationWithMessage (message) {
+                    let el = this.content.lastElementChild;
+                    while (!_.isNil(el)) {
+                        const data = _.get(el, 'dataset', {});
+                        if (!_.includes(_.get(el, 'classList', []), 'chat-info')) {
+                            return;
+                        }
+                        if (el.textContent === message) {
+                            return el;
+                        }
+                        el = el.previousElementSibling;
+                    }
+                },
+
                 parseXUserElement (x, stanza, is_self) {
                     /* Parse the passed-in <x xmlns='http://jabber.org/protocol/muc#user'>
                      * element and construct a map containing relevant
@@ -1371,7 +1423,10 @@
                     const statuses = x.querySelectorAll('status');
                     const mapper = _.partial(this.getMessageFromStatus, _, stanza, is_self);
                     const notification = {};
-                    const messages = _.reject(_.map(statuses, mapper), _.isUndefined);
+                    const messages = _.reject(
+                        _.reject(_.map(statuses, mapper), _.isUndefined),
+                        message => this.getNotificationWithMessage(message)
+                    );
                     if (messages.length) {
                         notification.messages = messages;
                     }
@@ -1424,7 +1479,6 @@
                         this.content.insertAdjacentHTML(
                             'beforeend',
                             tpl_info({
-                                'data': '',
                                 'isodate': moment().format(),
                                 'extra_classes': 'chat-event',
                                 'message': message
@@ -1438,8 +1492,20 @@
                     }
                 },
 
+                onOccupantAdded (occupant) {
+                    if (occupant.get('show') === 'online') {
+                        this.showJoinNotification(occupant);
+                    }
+                },
+
+                onOccupantRemoved (occupant) {
+                    if (occupant.get('show') === 'online') {
+                        this.showLeaveNotification(occupant);
+                    }
+                },
+
                 showJoinOrLeaveNotification (occupant) {
-                    if (!occupant.isMember() || _.includes(occupant.get('states'), '303')) {
+                    if (_.includes(occupant.get('states'), '303')) {
                         return;
                     }
                     if (occupant.get('show') === 'offline') {
@@ -1449,48 +1515,78 @@
                     }
                 },
 
+                getPreviousJoinOrLeaveNotification (el, nick) {
+                    /* Working backwards, get the first join/leave notification
+                     * from the same user, on the same day and BEFORE any chat
+                     * messages were received.
+                     */
+                    while (!_.isNil(el)) {
+                        const data = _.get(el, 'dataset', {});
+                        if (!_.includes(_.get(el, 'classList', []), 'chat-info')) {
+                            return;
+                        }
+                        if (!moment(el.getAttribute('data-isodate')).isSame(new Date(), "day")) {
+                            el = el.previousElementSibling;
+                            continue;
+                        }
+                        if (data.join === nick ||
+                                data.leave === nick ||
+                                data.leavejoin === nick ||
+                                data.joinleave === nick) {
+                            return el;
+                        }
+                        el = el.previousElementSibling;
+                    }
+                },
+
                 showJoinNotification (occupant) {
                     if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                         return;
                     }
                     const nick = occupant.get('nick'),
                           stat = occupant.get('status'),
-                          last_el = this.content.lastElementChild;
+                          prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick),
+                          data = _.get(prev_info_el, 'dataset', {});
 
-                    if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
-                        _.get(last_el, 'dataset', {}).leave === `"${nick}"`) {
-
-                        last_el.outerHTML =
-                            tpl_info({
-                                'data': `data-leavejoin="${nick}"`,
-                                'isodate': moment().format(),
-                                'extra_classes': 'chat-event',
-                                'message': __('%1$s has left and re-entered the groupchat', nick)
-                            });
+                    if (data.leave === nick) {
+                        let message;
+                        if (_.isNil(stat)) {
+                            message = __('%1$s has left and re-entered the groupchat', nick);
+                        } else {
+                            message = __('%1$s has left and re-entered the groupchat. "%2$s"', nick, stat);
+                        }
+                        const data = {
+                            'data_name': 'leavejoin',
+                            'data_value': nick,
+                            'isodate': moment().format(),
+                            'extra_classes': 'chat-event',
+                            'message': message
+                        };
+                        this.content.removeChild(prev_info_el);
+                        this.content.insertAdjacentHTML('beforeend', tpl_info(data));
                         const el = this.content.lastElementChild;
                         setTimeout(() => u.addClass('fade-out', el), 5000);
-                        setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5250);
+                        setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5500);
                     } else {
-                        let  message;
+                        let message;
                         if (_.isNil(stat)) {
                             message = __('%1$s has entered the groupchat', nick);
                         } else {
                             message = __('%1$s has entered the groupchat. "%2$s"', nick, stat);
                         }
                         const data = {
-                            'data': `data-join="${nick}"`,
+                            'data_name': 'join',
+                            'data_value': nick,
                             'isodate': moment().format(),
                             'extra_classes': 'chat-event',
                             'message': message
                         };
-                        if (_.includes(_.get(last_el, 'classList', []), 'chat-info') &&
-                            _.get(last_el, 'dataset', {}).joinleave === `"${nick}"`) {
-
-                            last_el.outerHTML = tpl_info(data);
+                        if (prev_info_el) {
+                            this.content.removeChild(prev_info_el);
+                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
                         } else {
-                            const el = u.stringToElement(tpl_info(data));
-                            this.content.insertAdjacentElement('beforeend', el);
-                            this.insertDayIndicator(el);
+                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                            this.insertDayIndicator(this.content.lastElementChild);
                         }
                     }
                     this.scrollDown();
@@ -1502,29 +1598,28 @@
                     }
                     const nick = occupant.get('nick'),
                           stat = occupant.get('status'),
-                          last_el = this.content.lastElementChild;
+                          prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick),
+                          dataset = _.get(prev_info_el, 'dataset', {});
 
-                    if (last_el &&
-                            _.includes(_.get(last_el, 'classList', []), 'chat-info') &&
-                            moment(last_el.getAttribute('data-isodate')).isSame(new Date(), "day") &&
-                            _.get(last_el, 'dataset', {}).join === `"${nick}"`) {
-
+                    if (dataset.join === nick) {
                         let message;
                         if (_.isNil(stat)) {
                             message = __('%1$s has entered and left the groupchat', nick);
                         } else {
                             message = __('%1$s has entered and left the groupchat. "%2$s"', nick, stat);
                         }
-                        last_el.outerHTML =
-                            tpl_info({
-                                'data': `data-joinleave="${nick}"`,
-                                'isodate': moment().format(),
-                                'extra_classes': 'chat-event',
-                                'message': message
-                            });
+                        const data = {
+                            'data_name': 'joinleave',
+                            'data_value': nick,
+                            'isodate': moment().format(),
+                            'extra_classes': 'chat-event',
+                            'message': message
+                        };
+                        this.content.removeChild(prev_info_el);
+                        this.content.insertAdjacentHTML('beforeend', tpl_info(data));
                         const el = this.content.lastElementChild;
                         setTimeout(() => u.addClass('fade-out', el), 5000);
-                        setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5250);
+                        setTimeout(() => el.parentElement && el.parentElement.removeChild(el), 5500);
                     } else {
                         let message;
                         if (_.isNil(stat)) {
@@ -1536,17 +1631,15 @@
                             'message': message,
                             'isodate': moment().format(),
                             'extra_classes': 'chat-event',
-                            'data': `data-leave="${nick}"`
+                            'data_name': 'leave',
+                            'data_value': nick
                         }
-                        if (last_el &&
-                            _.includes(_.get(last_el, 'classList', []), 'chat-info') &&
-                            _.get(last_el, 'dataset', {}).leavejoin === `"${nick}"`) {
-
-                            last_el.outerHTML = tpl_info(data);
+                        if (prev_info_el) {
+                            this.content.removeChild(prev_info_el);
+                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
                         } else {
-                            const el = u.stringToElement(tpl_info(data));
-                            this.content.insertAdjacentElement('beforeend', el);
-                            this.insertDayIndicator(el);
+                            this.content.insertAdjacentHTML('beforeend', tpl_info(data));
+                            this.insertDayIndicator(this.content.lastElementChild);
                         }
                     }
                     this.scrollDown();
@@ -1587,6 +1680,8 @@
                             this.showDisconnectMessages(__('You are not allowed to create new groupchats.'));
                         } else if (!_.isNull(error.querySelector('not-acceptable'))) {
                             this.showDisconnectMessages(__("Your nickname doesn't conform to this groupchat's policies."));
+                        } else if (sizzle('gone[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', error).length) {
+                            this.showDestroyedMessage(error);
                         } else if (!_.isNull(error.querySelector('conflict'))) {
                             this.onNicknameClash(presence);
                         } else if (!_.isNull(error.querySelector('item-not-found'))) {
@@ -1654,7 +1749,6 @@
                     this.content.insertAdjacentHTML(
                         'beforeend',
                         tpl_info({
-                            'data': '',
                             'isodate': date,
                             'extra_classes': 'chat-event',
                             'message': message
@@ -1664,10 +1758,10 @@
                         this.content.insertAdjacentHTML(
                             'beforeend',
                             tpl_info({
-                                'data': '',
                                 'isodate': date,
                                 'extra_classes': 'chat-topic',
-                                'message': subject.text
+                                'message': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {'whiteList': {}})),
+                                'render_message': true
                             }));
                     }
                     this.scrollDown();
@@ -1971,6 +2065,13 @@
 
             /************************ BEGIN Event Handlers ************************/
             _converse.on('chatBoxViewsInitialized', () => {
+
+                function openChatRoomFromURIClicked (ev) {
+                    ev.preventDefault();
+                    _converse.api.rooms.open(ev.target.href);
+                }
+                _converse.chatboxviews.delegate('click', 'a.open-chatroom', openChatRoomFromURIClicked);
+
                 const that = _converse.chatboxviews;
                 _converse.chatboxes.on('add', item => {
                     if (!that.get(item.get('id')) && item.get('type') === _converse.CHATROOMS_TYPE) {

@@ -443,6 +443,7 @@
 
         .brand-heading-container {
             @include make-col(12);
+            margin-bottom: 1em;
             text-align: center;
             .brand-heading {
                 font-size: 150%;

@@ -49,10 +49,10 @@
                         <li class="feature" ><span class="fa fa-user-secret"></span>{{{ o.__('Semi-anonymous') }}} - <em>{{{ o.__('Only moderators can see your XMPP username') }}}</em></li>
                         {[ } ]}
                         {[ if (o.moderated) { ]}
-                        <li class="feature" ><span class="fa fa-gavel"></span>{{{ o.__('Moderated') }}} - <em>{{{ o.__('This groupchat is being moderated') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-gavel"></span>{{{ o.__('Moderated') }}} - <em>{{{ o.__('Participants entering this groupchat need to request permission to write') }}}</em></li>
                         {[ } ]}
                         {[ if (o.unmoderated) { ]}
-                        <li class="feature" ><span class="fa fa-info-circle"></span>{{{ o.__('Not moderated') }}} - <em>{{{ o.__('This groupchat is not being moderated') }}}</em></li>
+                        <li class="feature" ><span class="fa fa-info-circle"></span>{{{ o.__('Not moderated') }}} - <em>{{{ o.__('Participants entering this groupchat can write right away') }}}</em></li>
                         {[ } ]}
                         {[ if (o.mam_enabled) { ]}
                         <li class="feature" ><span class="fa fa-database"></span>{{{ o.__('Message archiving') }}} - <em>{{{ o.__('Messages are archived on the server') }}}</em></li>

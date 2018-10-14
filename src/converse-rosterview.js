@@ -800,6 +800,7 @@
 
                 render () {
                     this.el.innerHTML = tpl_roster({
+                        'allow_contact_requests': _converse.allow_contact_requests,
                         'heading_contacts': __('Contacts'),
                         'title_add_contact': __('Add a contact')
                     });
@@ -952,6 +953,14 @@
                     if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
                         this.addExistingContact(contact, options);
                     } else {
+                        if (!_converse.allow_contact_requests) {
+                            _converse.log(
+                                `Not adding requesting or pending contact ${contact.get('jid')} `+
+                                `because allow_contact_requests is false`,
+                                Strophe.LogLevel.DEBUG
+                            );
+                            return;
+                        }
                         if ((contact.get('ask') === 'subscribe') || (contact.get('subscription') === 'from')) {
                             this.addContactToGroup(contact, HEADER_PENDING_CONTACTS, options);
                         } else if (contact.get('requesting') === true) {

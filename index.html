@@ -19,6 +19,7 @@
     <!-- *********************************************************************** -->
 
     <![if gte IE 11]>
+        <script src="3rdparty/libsignal-protocol.js"></script>
         <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
         <script src="dist/converse.js"></script>
     <![endif]>
@@ -142,7 +143,7 @@
                 </div>
                 <div class="col-lg-6">
                     <section>
-                        <span class="feature-icon page-scroll"><a class="fa fa-check-square-o" href="#features" title="Features"></a></span>
+                        <span class="feature-icon page-scroll"><a class="fa fa-check-square" href="#features" title="Features"></a></span>
                     </section>
                         <header>
                             <h2>Features</h2>
@@ -229,6 +230,9 @@
                        If you'd like to sponsor this project, please visit <a href="https://www.patreon.com/jcbrand" target="_blank" rel="noopener">Patreon</a>,
                        <a href="https://liberapay.com/jcbrand" target="_blank" rel="noopener">Liberapay</a> or
                        <a href="https://opkode.com/contact.html" target="_blank" rel="noopener">contact us</a>.
+                    </p>
+                    <p>Sponsorships of €50 or more will appear on this website and the online
+                       <a href="/docs/html/index.html">Converse documentation</a>.
                     </p>
                 </div>
             </div>
@@ -355,8 +359,7 @@
     */
     converse.initialize({
         // Please use this connection manager only for testing purposes
-        bosh_service_url: 'https://conversejs.org/http-bind/',
-        show_controlbox_by_default: true,
+        bosh_service_url: 'https://conversejs.org/http-bind/'
     });
 </script>
 </html>

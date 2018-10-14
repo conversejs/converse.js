@@ -70,8 +70,10 @@
 
         overrides: {
             tearDown () {
-                const groupchats = this.chatboxes.where({'type': this.CHATROOMS_TYPE});
-                _.each(groupchats, gc => u.safeSave(gc, {'connection_status': this.ROOMSTATUS.DISCONNECTED}));
+                const { _converse } = this.__super__,
+                      groupchats = this.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
+
+                _.each(groupchats, gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
                 this.__super__.tearDown.call(this, arguments);
             },
 
@@ -477,11 +479,8 @@
                     });
                 },
 
-                refreshRoomFeatures () {
-                    const entity = _converse.disco_entities.get(this.get('jid'));
-                    if (entity) {
-                        entity.destroy();
-                    }
+                async refreshRoomFeatures () {
+                    await _converse.api.disco.refreshFeatures(this.get('jid'));
                     return this.getRoomFeatures();
                 },
 
@@ -493,6 +492,7 @@
                               'features_fetched': moment().format(),
                               'name': identity && identity.get('name')
                           };
+
                     features.each(feature => {
                         const fieldname = feature.get('var');
                         if (!fieldname.startsWith('muc_')) {
@@ -1275,6 +1275,9 @@
             };
 
             const createChatRoom = function (jid, attrs) {
+                if (jid.startsWith('xmpp:') && jid.endsWith('?join')) {
+                    jid = jid.replace(/^xmpp:/, '').replace(/\?join$/, '');
+                }
                 return getChatRoom(jid, attrs, true);
             };
 
@@ -1326,7 +1329,7 @@
                     if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', iq).length) {
                         this.feedback.set('error', __(`Error: the groupchat ${this.model.getDisplayName()} does not exist.`));
                     } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]').length) {
-                        this.feedback.set('error', __(`Sorry, you're not allowed to registerd in this groupchat`));
+                        this.feedback.set('error', __(`Sorry, you're not allowed to register in this groupchat`));
                     }
                 });
             }

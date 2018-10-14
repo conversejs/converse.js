@@ -327,7 +327,7 @@
 
         it("updates device lists based on PEP messages",
             mock.initConverseWithPromises(
-                null, ['rosterGroupsFetched'], {},
+                null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current', 1);
@@ -356,6 +356,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 return test_utils.waitUntil(() => _converse.omemo_store);
             }).then(() => {
+                expect(_converse.chatboxes.length).toBe(1);
                 expect(_converse.devicelists.length).toBe(1);
                 const devicelist = _converse.devicelists.get(_converse.bare_jid);
                 expect(devicelist.devices.length).toBe(2);

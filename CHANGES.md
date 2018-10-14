@@ -1,14 +1,33 @@
 # Changelog
 
+## 4.0.3 (Unreleased)
+
+- Bugfix. Handler not triggered when submitting MUC password form 2nd time
+- Bugfix. MUC features weren't being refreshed when saving the config form
+- Don't show duplicate notification messages
+- #537 Render `xmpp:` URI as link
+- #1062 Collapse multiple join/leave messages into one
+- #1063 URLs in the topic / subject are not clickable
+- #1140 Add support for destroyed chatrooms
+- #1169 Non-joined participants display an unwanted status message
+- #1190 MUC Participants column disappears in certain viewport widths
+- #1199 Can't get back from to login screen from registration screen
+- #1204 Link encoding issue
+- #1214 Setting `allow_contact_requests` to `false` has no effect
+- #1221 Avoid creating a headlines box if we don't have anything to show inside it
+- #1222 Adding a bookmark should prefill the room name
+
 ## 4.0.2 (2018-10-02)
 
 - M4A and WEBM files, when sent as XEP-0066 Out of Band Data, are now playable directly in chat
 - Updated French and Spanish translations
 - Two new languages supported, [Hindi](https://hosted.weblate.org/languages/hi/conversejs/) and [Romanian](https://hosted.weblate.org/languages/ro/conversejs/)
+- #1176 Add config setting [send_chat_state_notifications](https://conversejs.org/docs/html/configuration.html#send-chat-state-notifications)
 - #1187 UTF-8 characters have the wrong encoding when using OMEMO
 - #1189 Video playback failure
 - #1220 Converse not working in Edge
 - #1225 User profile sometimes not displayed when libsignal-protocol.js is used
+- #1227 Login form does not work in Epiphany
 
 ## 4.0.1 (2018-09-19)
 
@@ -62,7 +81,7 @@
 - New API method `_converse.api.vcard.update`.
 - The `contactStatusChanged` event has been renamed to `contactPresenceChanged`
   and a event `presenceChanged` is now also triggered on the contact.
-- `_converse.api.chats.open` and `_converse.api.rooms.open` now returns a 
+- `_converse.api.chats.open` and `_converse.api.rooms.open` now returns a
   `Presence` which resolves with the `Backbone.Model` representing the chat
   object.
 
@@ -73,7 +92,7 @@
 - Fontawesome 5 is used for icons.
 - User Avatars are now shown in chat messages.
 
-## Configuration changes 
+## Configuration changes
 
 - Removed the `storage` configuration setting, use [trusted](https://conversejs.org/docs/html/configuration.html#trusted) instead.
 - Removed the `use_vcards` configuration setting, instead VCards are always used.

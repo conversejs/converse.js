@@ -114,7 +114,14 @@
                 /* Handler method for all incoming messages of type "headline". */
                 const from_jid = message.getAttribute('from');
                 if (utils.isHeadlineMessage(_converse, message)) {
-                    if (_.includes(from_jid, '@') && !_converse.allow_non_roster_messaging) {
+                    if (_.includes(from_jid, '@') && 
+                            !_converse.api.contacts.get(from_jid) &&
+                            !_converse.allow_non_roster_messaging) {
+                        return;
+                    }
+                    if (_.isNull(message.querySelector('body'))) {
+                        // Avoid creating a chat box if we have nothing to show
+                        // inside it.
                         return;
                     }
                     const chatbox = _converse.chatboxes.create({

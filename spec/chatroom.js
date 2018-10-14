@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["jquery", "jasmine", "mock", "test-utils" ], factory);
-} (this, function ($, jasmine, mock, test_utils) {
+    define(["jasmine", "mock", "test-utils" ], factory);
+} (this, function (jasmine, mock, test_utils) {
     const _ = converse.env._,
           $pres = converse.env.$pres,
           $iq = converse.env.$iq,
@@ -12,7 +12,8 @@
           Backbone = converse.env.Backbone,
           u = converse.env.utils;
 
-    return describe("Chatrooms", function () {
+    describe("Chatrooms", function () {
+
         describe("The \"rooms\" API", function () {
 
             it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments",
@@ -113,11 +114,7 @@
                 // Mock 'getRoomFeatures', otherwise the room won't be
                 // displayed as it waits first for the features to be returned
                 // (when it's a new room being created).
-                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(function () {
-                    var deferred = new $.Deferred();
-                    deferred.resolve();
-                    return deferred.promise();
-                });
+                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
 
                 const sent_IQ_els = [];
                 let jid = 'lounge@localhost';
@@ -414,6 +411,99 @@
 
         describe("A Groupchat", function () {
 
+            it("is opened when an xmpp: URI is clicked inside another groupchat",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                let view;
+                test_utils.createContacts(_converse, 'current');
+                test_utils.waitUntil(() => test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy'))
+                .then(() => {
+                    view = _converse.chatboxviews.get('lounge@localhost');
+                    if (!view.el.querySelectorAll('.chat-area').length) {
+                        view.renderChatArea();
+                    }
+                    expect(_converse.chatboxes.length).toEqual(2);
+                    const message = 'Please go to xmpp:coven@chat.shakespeare.lit?join',
+                          nick = mock.chatroom_names[0],
+                          msg = $msg({
+                            'from': 'lounge@localhost/'+nick,
+                            'id': (new Date()).getTime(),
+                            'to': 'dummy@localhost',
+                            'type': 'groupchat'
+                        }).c('body').t(message).tree();
+
+                    view.model.onMessage(msg);
+                    view.el.querySelector('.chat-msg__text a').click();
+                    return test_utils.waitUntil(() => _converse.chatboxes.length === 3)
+                }).then(() => {
+                    expect(_.includes(_converse.chatboxes.pluck('id'), 'coven@chat.shakespeare.lit')).toBe(true);
+                    done()
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+            }));
+
+            it("shows a notification if its not anonymous",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        function (done, _converse) {
+
+                test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1')
+                .then(() => {
+                    const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    const chat_content = view.el.querySelector('.chat-content');
+                    /* <presence to="dummy@localhost/_converse.js-29092160"
+                     *           from="coven@chat.shakespeare.lit/some1">
+                     *      <x xmlns="http://jabber.org/protocol/muc#user">
+                     *          <item affiliation="owner" jid="dummy@localhost/_converse.js-29092160" role="moderator"/>
+                     *          <status code="110"/>
+                     *          <status code="100"/>
+                     *      </x>
+                     *  </presence></body>
+                     */
+                    let presence = $pres({
+                            to: 'dummy@localhost/resource',
+                            from: 'coven@chat.shakespeare.lit/some1'
+                        }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'owner',
+                            'jid': 'dummy@localhost/_converse.js-29092160',
+                            'role': 'moderator'
+                        }).up()
+                        .c('status', {code: '110'}).up()
+                        .c('status', {code: '100'});
+
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(chat_content.querySelectorAll('.chat-info').length).toBe(2);
+                    expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
+                        .toBe("This groupchat is not anonymous");
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("some1 has entered the groupchat");
+
+                    // Check that we don't show the notification twice
+                    presence = $pres({
+                            to: 'dummy@localhost/resource',
+                            from: 'coven@chat.shakespeare.lit/some1'
+                        }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'owner',
+                            'jid': 'dummy@localhost/_converse.js-29092160',
+                            'role': 'moderator'
+                        }).up()
+                        .c('status', {code: '110'}).up()
+                        .c('status', {code: '100'});
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(chat_content.querySelectorAll('.chat-info').length).toBe(2);
+                    expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
+                        .toBe("This groupchat is not anonymous");
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("some1 has entered the groupchat");
+
+                    done();
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+            }));
+
+
             it("shows join/leave messages when users enter or exit a groupchat",
                     mock.initConverseWithPromises(
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
@@ -421,14 +511,13 @@
 
                 test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1')
                 .then(() => {
-                    var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                    var $chat_content = $(view.el).find('.chat-content');
-
+                    const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    const chat_content = view.el.querySelector('.chat-content');
                     /* We don't show join/leave messages for existing occupants. We
                      * know about them because we receive their presences before we
                      * receive our own.
                      */
-                    var presence = $pres({
+                    let presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
                             from: 'coven@chat.shakespeare.lit/oldguy'
                         }).c('x', {xmlns: Strophe.NS.MUC_USER})
@@ -438,7 +527,7 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(0);
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(0);
 
                     /* <presence to="dummy@localhost/_converse.js-29092160"
                      *           from="coven@chat.shakespeare.lit/some1">
@@ -459,7 +548,8 @@
                         }).up()
                         .c('status', {code: '110'});
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content.find('div.chat-info:first').html()).toBe("some1 has entered the groupchat");
+                    expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
+                        .toBe("some1 has entered the groupchat");
 
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
@@ -472,8 +562,17 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(2);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the groupchat");
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("newguy has entered the groupchat");
+
+                    const msg = $msg({
+                        'from': 'coven@chat.shakespeare.lit/some1',
+                        'id': (new Date()).getTime(),
+                        'to': 'dummy@localhost',
+                        'type': 'groupchat'
+                    }).c('body').t('hello world').tree();
+                    _converse.connection._dataRecv(test_utils.createRequest(msg));
 
                     // Add another entrant, otherwise the above message will be
                     // collapsed if "newguy" leaves immediately again
@@ -488,8 +587,9 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(3);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe("newgirl has entered the groupchat");
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("newgirl has entered the groupchat");
 
                     // Don't show duplicate join messages
                     presence = $pres({
@@ -502,7 +602,7 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(3);
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
 
                     /*  <presence
                      *      from='coven@chat.shakespeare.lit/thirdwitch'
@@ -529,8 +629,8 @@
                                 'role': 'none'
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content.find('div.chat-info').length).toBe(4);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe(
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(4);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                         'newguy has left the groupchat. '+
                         '"Disconnected: Replaced by new connection"');
 
@@ -546,10 +646,10 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content.find('div.chat-info').length).toBe(4);
-                    var $msg_el = $chat_content.find('div.chat-info:last');
-                    expect($msg_el.html()).toBe("newguy has left and re-entered the groupchat");
-                    expect($msg_el.data('leavejoin')).toBe('"newguy"');
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(4);
+                    let msg_el = sizzle('div.chat-info:last', chat_content).pop();
+                    expect(msg_el.textContent).toBe("newguy has left and re-entered the groupchat");
+                    expect(msg_el.getAttribute('data-leavejoin')).toBe('newguy');
 
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
@@ -563,10 +663,10 @@
                                 'role': 'none'
                             });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content.find('div.chat-info').length).toBe(4);
-                    $msg_el = $chat_content.find('div.chat-info:last');
-                    expect($msg_el.html()).toBe('newguy has left the groupchat');
-                    expect($msg_el.data('leave')).toBe('"newguy"');
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(4);
+                    msg_el = sizzle('div.chat-info', chat_content).pop();
+                    expect(msg_el.textContent).toBe('newguy has left the groupchat');
+                    expect(msg_el.getAttribute('data-leave')).toBe('newguy');
 
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
@@ -579,8 +679,9 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(5);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered the groupchat");
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("nomorenicks has entered the groupchat");
 
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-290918392',
@@ -593,8 +694,9 @@
                             'role': 'none'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(5);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered and left the groupchat");
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("nomorenicks has entered and left the groupchat");
 
                     presence = $pres({
                             to: 'dummy@localhost/_converse.js-29092160',
@@ -607,10 +709,229 @@
                             'role': 'participant'
                         });
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(5);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered the groupchat");
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("nomorenicks has entered the groupchat");
+
+                    // Test a member joining and leaving
+                    presence = $pres({
+                            to: 'dummy@localhost/_converse.js-290918392',
+                            from: 'coven@chat.shakespeare.lit/insider'
+                        }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'member',
+                            'jid': 'insider@localhost/_converse.js-290929789',
+                            'role': 'participant'
+                        });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(6);
+
+                    /*  <presence
+                     *      from='coven@chat.shakespeare.lit/thirdwitch'
+                     *      to='crone1@shakespeare.lit/desktop'
+                     *      type='unavailable'>
+                     *  <status>Disconnected: Replaced by new connection</status>
+                     *  <x xmlns='http://jabber.org/protocol/muc#user'>
+                     *      <item affiliation='member'
+                     *          jid='hag66@shakespeare.lit/pda'
+                     *          role='none'/>
+                     *  </x>
+                     *  </presence>
+                     */
+                    presence = $pres({
+                            to: 'dummy@localhost/_converse.js-29092160',
+                            type: 'unavailable',
+                            from: 'coven@chat.shakespeare.lit/insider'
+                        })
+                        .c('status', 'Disconnected: Replaced by new connection').up()
+                        .c('x', {xmlns: Strophe.NS.MUC_USER})
+                            .c('item', {
+                                'affiliation': 'member',
+                                'jid': 'insider@localhost/_converse.js-290929789',
+                                'role': 'none'
+                            });
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(6);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
+                        'insider has entered and left the groupchat. '+
+                        '"Disconnected: Replaced by new connection"');
+
+                    expect(view.model.occupants.length).toBe(5);
+                    expect(view.model.occupants.findWhere({'jid': 'insider@localhost'}).get('show')).toBe('offline');
+
+                    // New girl leaves
+                    presence = $pres({
+                            'to': 'dummy@localhost/_converse.js-29092160',
+                            'type': 'unavailable',
+                            'from': 'coven@chat.shakespeare.lit/newgirl'
+                        })
+                        .c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': 'newgirl@localhost/_converse.js-213098781',
+                            'role': 'none'
+                        });
+
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(6);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("newgirl has entered and left the groupchat");
+                    expect(view.model.occupants.length).toBe(4);
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+            }));
+
+            it("combines subsequent join/leave messages when users enter or exit a groupchat",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        function (done, _converse) {
+
+                test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'dummy')
+                .then(() => {
+                    const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    const chat_content = view.el.querySelector('.chat-content');
+
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(1);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("dummy has entered the groupchat");
+                    
+                    let presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fabio">
+                            <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="INI3xjRUioclBTP/aACfWi5m9UY=" hash="sha-1"/>
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(2);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("fabio has entered the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/Dele Olajide">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-39320524" role="participant"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(3);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("Dele Olajide has entered the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/jcbrand">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="owner" jid="jc@opkode.com/converse.js-30645022" role="moderator"/>
+                                <status code="110"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(4);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("jcbrand has entered the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/Dele Olajide">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-39320524" role="none"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(4);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("Dele Olajide has entered and left the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/Dele Olajide">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-74567907" role="participant"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(4);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("Dele Olajide has entered the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fuvuv" xml:lang="en">
+                            <c xmlns="http://jabber.org/protocol/caps" node="http://jabber.pix-art.de" ver="5tOurnuFnp2h50hKafeUyeN4Yl8=" hash="sha-1"/>
+                            <x xmlns="vcard-temp:x:update"/>
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fuvuv@blabber.im/Pix-Art Messenger.8zoB" role="participant"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("fuvuv has entered the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/fuvuv">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fuvuv@blabber.im/Pix-Art Messenger.8zoB" role="none"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("fuvuv has entered and left the groupchat");
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/fabio">
+                            <status>Disconnected: Replaced by new connection</status>
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="none"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
+                        `fabio has entered and left the groupchat. "Disconnected: Replaced by new connection"`);
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fabio">
+                            <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="INI3xjRUioclBTP/aACfWi5m9UY=" hash="sha-1"/>
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(5);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
+                        `fabio has entered the groupchat`);
+
+                    // XXX: hack so that we can test leave/enter of occupants
+                    // who were already in the room when we joined.
+                    chat_content.innerHTML = '';
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/fabio">
+                            <status>Disconnected: closed</status>
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="none"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(1);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
+                        `fabio has left the groupchat. "Disconnected: closed"`);
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/Dele Olajide">
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-74567907" role="none"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(2);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
+                        `Dele Olajide has left the groupchat`);
+
+                    presence = Strophe.xmlHtmlNode(
+                        `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fabio">
+                            <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="INI3xjRUioclBTP/aACfWi5m9UY=" hash="sha-1"/>
+                            <x xmlns="http://jabber.org/protocol/muc#user">
+                                <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
+                            </x>
+                        </presence>`).firstElementChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(sizzle('div.chat-info', chat_content).length).toBe(2);
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
+                        `fabio has left and re-entered the groupchat`);
+
+                    done();
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
             it("shows a new day indicator if a join/leave message is received on a new day",
@@ -619,9 +940,8 @@
                     function (done, _converse) {
 
                 test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'dummy').then(function () {
-                    var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                    var chat_content = view.el.querySelector('.chat-content');
-                    var $chat_content = $(chat_content);
+                    const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    const chat_content = view.el.querySelector('.chat-content');
                     var indicator = chat_content.querySelector('.date-separator');
                     expect(indicator).not.toBe(null);
                     expect(indicator.getAttribute('class')).toEqual('message date-separator');
@@ -694,7 +1014,7 @@
 
                     expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
-                    expect($(chat_content).find('div.chat-info:last').html()).toBe(
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                         'some1 has left the groupchat. '+
                         '"Disconnected: Replaced by new connection"');
 
@@ -724,12 +1044,13 @@
                     let time = chat_content.querySelectorAll('time.separator-text');
                     expect(time.length).toEqual(4);
 
-                    var $indicator = $chat_content.find('.date-separator:eq(3)');
-                    expect($indicator.attr('class')).toEqual('message date-separator');
-                    expect($indicator.data('isodate')).toEqual(moment().startOf('day').format());
-                    expect($indicator.find('time').text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    indicator = sizzle('.date-separator:eq(3)', chat_content).pop();
+                    expect(indicator.getAttribute('class')).toEqual('message date-separator');
+                    expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                    expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect(chat_content.querySelectorAll('div.chat-info').length).toBe(4);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the groupchat");
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                        .toBe("newguy has entered the groupchat");
 
                     jasmine.clock().tick(ONE_DAY_LATER);
 
@@ -762,13 +1083,12 @@
                     time = chat_content.querySelectorAll('time.separator-text');
                     expect(time.length).toEqual(6);
 
-                    $indicator = $chat_content.find('.date-separator:eq(5)');
-                    expect($indicator.attr('class')).toEqual('message date-separator');
-                    expect($indicator.data('isodate')).toEqual(moment().startOf('day').format());
-
-                    expect($indicator.find('time').text()).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                    indicator = sizzle('.date-separator:eq(5)', chat_content).pop();
+                    expect(indicator.getAttribute('class')).toEqual('message date-separator');
+                    expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                    expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                     expect(chat_content.querySelectorAll('div.chat-info').length).toBe(5);
-                    expect($chat_content.find('div.chat-info:last').html()).toBe(
+                    expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                         'newguy has left the groupchat. '+
                         '"Disconnected: Replaced by new connection"');
                     jasmine.clock().uninstall();
@@ -790,7 +1110,9 @@
                     return test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 }).then(() => {
                     view = _converse.chatboxviews.get('lounge@localhost');
-                    if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
+                    if (!view.el.querySelectorAll('.chat-area').length) {
+                        view.renderChatArea();
+                    }
                     var message = '/me is tired';
                     var nick = mock.chatroom_names[0],
                         msg = $msg({
@@ -800,8 +1122,8 @@
                             'type': 'groupchat'
                         }).c('body').t(message).tree();
                     view.model.onMessage(msg);
-                    expect(_.includes($(view.el).find('.chat-msg__author').text(), '**Dyon van de Wege')).toBeTruthy();
-                    expect($(view.el).find('.chat-msg__text').text()).toBe(' is tired');
+                    expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Dyon van de Wege')).toBeTruthy();
+                    expect(view.el.querySelector('.chat-msg__text').textContent).toBe(' is tired');
 
                     message = '/me is as well';
                     msg = $msg({
@@ -811,8 +1133,8 @@
                         type: 'groupchat'
                     }).c('body').t(message).tree();
                     view.model.onMessage(msg);
-                    expect(_.includes($(view.el).find('.chat-msg__author:last').text(), '**Max Mustermann')).toBeTruthy();
-                    expect($(view.el).find('.chat-msg__text:last').text()).toBe(' is as well');
+                    expect(_.includes(sizzle('.chat-msg__author:last', view.el).pop().textContent, '**Max Mustermann')).toBeTruthy();
+                    expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe(' is as well');
                     done();
                 });
             }));
@@ -865,10 +1187,10 @@
                         .c('status', {code: '110'});
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(view.model.saveAffiliationAndRole).toHaveBeenCalled();
-                    expect($(view.el.querySelector('.toggle-chatbox-button')).is(':visible')).toBeTruthy();
+                    expect(u.isVisible(view.el.querySelector('.toggle-chatbox-button'))).toBeTruthy();
                     return test_utils.waitUntil(() => !_.isNull(view.el.querySelector('.configure-chatroom-button')))
                 }).then(() => {
-                    expect($(view.el.querySelector('.configure-chatroom-button')).is(':visible')).toBeTruthy();
+                    expect(u.isVisible(view.el.querySelector('.configure-chatroom-button'))).toBeTruthy();
                     view.el.querySelector('.configure-chatroom-button').click();
 
                     /* Check that an IQ is sent out, asking for the
@@ -1006,37 +1328,37 @@
 
                     return test_utils.waitUntil(() => view.el.querySelectorAll('form.chatroom-form').length)
                 }).then(() => {
-                    expect($(view.el.querySelector('form.chatroom-form')).length).toBe(1);
+                    expect(view.el.querySelectorAll('form.chatroom-form').length).toBe(1);
                     expect(view.el.querySelectorAll('form.chatroom-form fieldset').length).toBe(2);
-                    var $membersonly = $(view.el.querySelector('input[name="muc#roomconfig_membersonly"]'));
-                    expect($membersonly.length).toBe(1);
-                    expect($membersonly.attr('type')).toBe('checkbox');
-                    $membersonly.prop('checked', true);
+                    var membersonly = view.el.querySelectorAll('input[name="muc#roomconfig_membersonly"]');
+                    expect(membersonly.length).toBe(1);
+                    expect(membersonly[0].getAttribute('type')).toBe('checkbox');
+                    membersonly[0].checked = true;
 
-                    var $moderated = $(view.el.querySelector('input[name="muc#roomconfig_moderatedroom"]'));
-                    expect($moderated.length).toBe(1);
-                    expect($moderated.attr('type')).toBe('checkbox');
-                    $moderated.prop('checked', true);
+                    var moderated = view.el.querySelectorAll('input[name="muc#roomconfig_moderatedroom"]');
+                    expect(moderated.length).toBe(1);
+                    expect(moderated[0].getAttribute('type')).toBe('checkbox');
+                    moderated[0].checked = true;
 
-                    var $password = $(view.el.querySelector('input[name="muc#roomconfig_roomsecret"]'));
-                    expect($password.length).toBe(1);
-                    expect($password.attr('type')).toBe('password');
+                    var password = view.el.querySelectorAll('input[name="muc#roomconfig_roomsecret"]');
+                    expect(password.length).toBe(1);
+                    expect(password[0].getAttribute('type')).toBe('password');
 
-                    var $allowpm = $(view.el.querySelector('select[name="muc#roomconfig_allowpm"]'));
-                    expect($allowpm.length).toBe(1);
-                    $allowpm.val('moderators');
+                    var allowpm = view.el.querySelectorAll('select[name="muc#roomconfig_allowpm"]');
+                    expect(allowpm.length).toBe(1);
+                    allowpm[0].value = 'moderators';
 
-                    var $presencebroadcast = $(view.el.querySelector('select[name="muc#roomconfig_presencebroadcast"]'));
-                    expect($presencebroadcast.length).toBe(1);
-                    $presencebroadcast.val(['moderator']);
+                    var presencebroadcast = view.el.querySelectorAll('select[name="muc#roomconfig_presencebroadcast"]');
+                    expect(presencebroadcast.length).toBe(1);
+                    presencebroadcast[0].value = ['moderator'];
 
                     view.el.querySelector('input[type="submit"]').click();
 
-                    var $sent_stanza = $(sent_IQ.toLocaleString());
-                    expect($sent_stanza.find('field[var="muc#roomconfig_membersonly"] value').text()).toBe('1');
-                    expect($sent_stanza.find('field[var="muc#roomconfig_moderatedroom"] value').text()).toBe('1');
-                    expect($sent_stanza.find('field[var="muc#roomconfig_allowpm"] value').text()).toBe('moderators');
-                    expect($sent_stanza.find('field[var="muc#roomconfig_presencebroadcast"] value').text()).toBe('moderator');
+                    const sent_stanza = sent_IQ.nodeTree;
+                    expect(sent_stanza.querySelector('field[var="muc#roomconfig_membersonly"] value').textContent).toBe('1');
+                    expect(sent_stanza.querySelector('field[var="muc#roomconfig_moderatedroom"] value').textContent).toBe('1');
+                    expect(sent_stanza.querySelector('field[var="muc#roomconfig_allowpm"] value').textContent).toBe('moderators');
+                    expect(sent_stanza.querySelector('field[var="muc#roomconfig_presencebroadcast"] value').textContent).toBe('moderator');
                     done();
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
@@ -1177,7 +1499,7 @@
                     var view = _converse.chatboxviews.get('lounge@localhost');
                     var occupants = view.el.querySelector('.occupant-list').querySelectorAll('li .occupant-nick');
                     expect(occupants.length).toBe(2);
-                    expect($(occupants).first().text().trim()).toBe("&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;");
+                    expect(occupants[0].textContent.trim()).toBe("&lt;img src=&quot;x&quot; onerror=&quot;alert(123)&quot;/&gt;");
                     done();
                 });
             }));
@@ -1193,10 +1515,10 @@
 
                     var occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
                     expect(occupants.length).toBe(1);
-                    expect($(occupants).first().find('.occupant-nick').text().trim()).toBe("dummy");
-                    expect($(occupants).first().find('.badge').length).toBe(2);
-                    expect($(occupants).first().find('.badge').first().text()).toBe('Owner');
-                    expect($(occupants).first().find('.badge').last().text()).toBe('Moderator');
+                    expect(occupants[0].querySelector('.occupant-nick').textContent.trim()).toBe("dummy");
+                    expect(occupants[0].querySelectorAll('.badge').length).toBe(2);
+                    expect(occupants[0].querySelectorAll('.badge')[0].textContent).toBe('Owner');
+                    expect(sizzle('.badge:last', occupants[0]).pop().textContent).toBe('Moderator');
 
                     var presence = $pres({
                             to:'dummy@localhost/pda',
@@ -1212,13 +1534,13 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     occupants = view.el.querySelectorAll('.occupant-list li');
                     expect(occupants.length).toBe(2);
-                    expect($(occupants).first().find('.occupant-nick').text().trim()).toBe("dummy");
-                    expect($(occupants).last().find('.occupant-nick').text().trim()).toBe("moderatorman");
-                    expect($(occupants).last().find('.badge').length).toBe(2);
-                    expect($(occupants).last().find('.badge').first().text()).toBe('Admin');
-                    expect($(occupants).last().find('.badge').last().text()).toBe('Moderator');
+                    expect(occupants[0].querySelector('.occupant-nick').textContent.trim()).toBe("dummy");
+                    expect(occupants[1].querySelector('.occupant-nick').textContent.trim()).toBe("moderatorman");
+                    expect(occupants[1].querySelectorAll('.badge').length).toBe(2);
+                    expect(occupants[1].querySelectorAll('.badge')[0].textContent).toBe('Admin');
+                    expect(occupants[1].querySelectorAll('.badge')[1].textContent).toBe('Moderator');
 
-                    expect($(occupants).last().attr('title')).toBe(
+                    expect(occupants[1].getAttribute('title')).toBe(
                         contact_jid + ' This user is a moderator. Click to mention moderatorman in your message.'
                     );
 
@@ -1235,12 +1557,46 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
                     occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
-                    expect($(occupants).last().find('.occupant-nick').text().trim()).toBe("visitorwoman");
-                    expect($(occupants).last().find('.badge').length).toBe(1);
-                    expect($(occupants).last().find('.badge').last().text()).toBe('Visitor');
-                    expect($(occupants).last().attr('title')).toBe(
+                    expect(occupants.length).toBe(3);
+                    expect(occupants[2].querySelector('.occupant-nick').textContent.trim()).toBe("visitorwoman");
+                    expect(occupants[2].querySelectorAll('.badge').length).toBe(1);
+                    expect(sizzle('.badge', occupants[2]).pop().textContent).toBe('Visitor');
+                    expect(occupants[2].getAttribute('title')).toBe(
                         contact_jid + ' This user can NOT send messages in this groupchat. Click to mention visitorwoman in your message.'
                     );
+                    done();
+                }).catch(_.partial(console.error, _));
+            }));
+
+            it("properly handles notification that a room has been destroyed",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    function (done, _converse) {
+
+                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost', 'dummy')
+                .then(function () {
+                    const presence = $pres().attrs({
+                        from:'problematic@muc.localhost',
+                        id:'n13mt3l',
+                        to:'dummy@localhost/pda',
+                        type:'error'})
+                    .c('error').attrs({'type':'cancel'})
+                        .c('gone').attrs({'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'})
+                            .t('xmpp:other-room@chat.jabberfr.org?join').up()
+                        .c('text').attrs({'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'})
+                            .t("We didn't like the name").nodeTree;
+
+                    const view = _converse.chatboxviews.get('problematic@muc.localhost');
+                    spyOn(view, 'showErrorMessage').and.callThrough();
+                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                    expect(view.el.querySelector('.chatroom-body .disconnect-msg').textContent)
+                        .toBe('This room no longer exists');
+                    expect(view.el.querySelector('.chatroom-body .destroyed-reason').textContent)
+                        .toBe(`"We didn't like the name"`);
+                    expect(view.el.querySelector('.chatroom-body .moved-label').textContent.trim())
+                        .toBe('The conversation has moved. Click below to enter.');
+                    expect(view.el.querySelector('.chatroom-body .moved-link').textContent.trim())
+                        .toBe(`other-room@chat.jabberfr.org`);
                     done();
                 }).catch(_.partial(console.error, _));
             }));
@@ -1346,7 +1702,7 @@
                     .c('status').attrs({code:'210'}).nodeTree;
 
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    var info_text = $(view.el).find('.chat-content .chat-info:first').text();
+                    const info_text = sizzle('.chat-content .chat-info:first', view.el).pop().textContent;
                     expect(info_text).toBe('Your nickname has been automatically set to thirdwitch');
                     done();
                 });
@@ -1365,7 +1721,6 @@
                 let view;
                 test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy')
                 .then(() => {
-
                     spyOn(_converse, 'emit');
                     spyOn(window, 'prompt').and.callFake(function () {
                         return "Please join!";
@@ -1377,31 +1732,30 @@
                     view.model.set('open', 'true');
 
                     spyOn(view.model, 'directInvite').and.callThrough();
-                    var $input;
-                    $(view.el).find('.chat-area').remove();
-
+                    const chat_area = view.el.querySelector('.chat-area');
+                    chat_area.parentElement.removeChild(chat_area);
                     return test_utils.waitUntil(() => view.el.querySelectorAll('input.invited-contact').length)
                 }).then(function () {
-                    var $input = $(view.el).find('input.invited-contact');
-                    expect($input.attr('placeholder')).toBe('Invite');
-                    $input.val("Felix");
-                    var evt = new Event('input');
-                    $input[0].dispatchEvent(evt);
+                    const input = view.el.querySelector('input.invited-contact');
+                    expect(input.getAttribute('placeholder')).toBe('Invite');
+                    input.value = "Felix";
+                    let evt = new Event('input');
+                    input.dispatchEvent(evt);
 
-                    var sent_stanza;
+                    let sent_stanza;
                     spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
                         sent_stanza = stanza;
                     });
-                    var $hint = $input.siblings('ul').children('li');
-                    expect($input.val()).toBe('Felix');
-                    expect($hint[0].textContent).toBe('Felix Amsel');
-                    expect($hint.length).toBe(1);
+                    const hint = input.nextSibling.firstElementChild;
+                    expect(input.value).toBe('Felix');
+                    expect(hint.textContent).toBe('Felix Amsel');
+                    expect(input.nextSibling.childNodes.length).toBe(1);
 
                     if (typeof(Event) === 'function') {
                         // Not working on PhantomJS
                         evt = new Event('mousedown', {'bubbles': true});
                         evt.button = 0; // For some reason awesomplete wants this
-                        $hint[0].dispatchEvent(evt);
+                        hint.dispatchEvent(evt);
                         expect(window.prompt).toHaveBeenCalled();
                         expect(view.model.directInvite).toHaveBeenCalled();
                         expect(sent_stanza.toLocaleString()).toBe(
@@ -1414,7 +1768,7 @@
                         );
                     }
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
 
             it("can be joined automatically, based upon a received invite",
@@ -1463,7 +1817,9 @@
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
                     spyOn(_converse, 'emit');
                     view = _converse.chatboxviews.get('lounge@localhost');
-                    if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
+                    if (!view.el.querySelectorAll('.chat-area').length) {
+                        view.renderChatArea();
+                    }
                     var nick = mock.chatroom_names[0];
                     view.model.occupants.create({
                         'nick': nick,
@@ -1477,9 +1833,9 @@
                         type: 'groupchat'
                     }).c('body').t(text);
                     view.model.onMessage(message.nodeTree);
-                    var $chat_content = $(view.el).find('.chat-content');
-                    expect($chat_content.find('.chat-msg').length).toBe(1);
-                    expect($chat_content.find('.chat-msg__text').text()).toBe(text);
+                    const chat_content = view.el.querySelector('.chat-content');
+                    expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
+                    expect(chat_content.querySelector('.chat-msg__text').textContent).toBe(text);
                     expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                     done();
                 });
@@ -1493,7 +1849,9 @@
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
                     spyOn(_converse, 'emit');
                     var view = _converse.chatboxviews.get('lounge@localhost');
-                    if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
+                    if (!view.el.querySelectorAll('.chat-area').length) {
+                        view.renderChatArea();
+                    }
                     var text = 'This is a sent message';
                     var textarea = view.el.querySelector('.chat-textarea');
                     textarea.value = text;
@@ -1504,8 +1862,8 @@
                     });
 
                     expect(_converse.emit).toHaveBeenCalledWith('messageSend', text);
-                    var $chat_content = $(view.el).find('.chat-content');
-                    expect($chat_content.find('.chat-msg').length).toBe(1);
+                    const chat_content = view.el.querySelector('.chat-content');
+                    expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
 
                     // Let's check that if we receive the same message again, it's
                     // not shown.
@@ -1516,8 +1874,8 @@
                         id: view.model.messages.at(0).get('msgid')
                     }).c('body').t(text);
                     view.model.onMessage(message.nodeTree);
-                    expect($chat_content.find('.chat-msg').length).toBe(1);
-                    expect($chat_content.find('.chat-msg__text').last().text()).toBe(text);
+                    expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
+                    expect(sizzle('.chat-msg__text:last').pop().textContent).toBe(text);
                     // We don't emit an event if it's our own message
                     expect(_converse.emit.calls.count(), 1);
                     done();
@@ -1557,8 +1915,8 @@
                             }).c('body').t(message).tree());
 
                         // Now check that the message appears inside the chatbox in the DOM
-                        var $chat_content = $(view.el).find('.chat-content');
-                        var msg_txt = $chat_content.find('.chat-msg:last').find('.chat-msg__text').text();
+                        const chat_content = view.el.querySelector('.chat-content');
+                        const msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
                         expect(msg_txt).toEqual(message);
                         expect(view.content.scrollTop).toBe(0);
                         done();
@@ -1572,18 +1930,18 @@
                     function (done, _converse) {
 
                 test_utils.openAndEnterChatRoom(_converse, 'jdev', 'conference.jabber.org', 'jc').then(function () {
-                    var text = 'Jabber/XMPP Development | RFCs and Extensions: http://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
-                    var stanza = Strophe.xmlHtmlNode(
+                    const text = 'Jabber/XMPP Development | RFCs and Extensions: http://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
+                    const stanza = Strophe.xmlHtmlNode(
                         '<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">'+
                         '    <subject>'+text+'</subject>'+
                         '    <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>'+
                         '    <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>'+
                         '</message>').firstChild;
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    var view = _converse.chatboxviews.get('jdev@conference.jabber.org');
-                    var chat_content = view.el.querySelector('.chat-content');
-                    expect($(chat_content).find('.chat-event:last').text()).toBe('Topic set by ralphm');
-                    expect($(chat_content).find('.chat-topic:last').text()).toBe(text);
+                    const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
+                    const chat_content = view.el.querySelector('.chat-content');
+                    expect(sizzle('.chat-event:last').pop().textContent).toBe('Topic set by ralphm');
+                    expect(sizzle('.chat-topic:last').pop().textContent).toBe(text);
                     expect(view.el.querySelector('.chatroom-description').textContent).toBe(text);
                     done();
                 });
@@ -1596,15 +1954,15 @@
 
                 test_utils.openAndEnterChatRoom(_converse, 'jdev', 'conference.jabber.org', 'jc').then(function () {
                     spyOn(window, 'alert');
-                    var subject = '<img src="x" onerror="alert(\'XSS\');"/>';
-                    var view = _converse.chatboxviews.get('jdev@conference.jabber.org');
+                    const subject = '<img src="x" onerror="alert(\'XSS\');"/>';
+                    const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
                     view.model.set({'subject': {
                         'text': subject,
                         'author': 'ralphm'
                     }});
-                    var chat_content = view.el.querySelector('.chat-content');
-                    expect($(chat_content).find('.chat-event:last').text()).toBe('Topic set by ralphm');
-                    expect($(chat_content).find('.chat-topic:last').text()).toBe(subject);
+                    const chat_content = view.el.querySelector('.chat-content');
+                    expect(sizzle('.chat-event:last').pop().textContent).toBe('Topic set by ralphm');
+                    expect(sizzle('.chat-topic:last').pop().textContent).toBe(subject);
                     done();
                 });
             }));
@@ -1649,19 +2007,20 @@
                  *  </x>
                  *  </presence>
                  */
-                var __ = _converse.__;
+                const __ = _converse.__;
                 test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'oldnick').then(function () {
-                    var view = _converse.chatboxviews.get('lounge@localhost');
-                    var $chat_content = $(view.el).find('.chat-content');
+                    const view = _converse.chatboxviews.get('lounge@localhost');
+                    const chat_content = view.el.querySelector('.chat-content');
 
-                    var $occupants = $(view.el.querySelector('.occupant-list'));
-                    expect($occupants.children().length).toBe(1);
-                    expect($occupants.children().first(0).find('.occupant-nick').text().trim()).toBe("oldnick");
+                    let occupants = view.el.querySelector('.occupant-list');
+                    expect(occupants.childNodes.length).toBe(1);
+                    expect(occupants.firstElementChild.querySelector('.occupant-nick').textContent.trim()).toBe("oldnick");
 
-                    expect($chat_content.find('div.chat-info').length).toBe(1);
-                    expect($chat_content.find('div.chat-info:first').html()).toBe("oldnick has entered the groupchat");
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(1);
+                    expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
+                        .toBe("oldnick has entered the groupchat");
 
-                    var presence = $pres().attrs({
+                    let presence = $pres().attrs({
                             from:'lounge@localhost/oldnick',
                             id:'DC352437-C019-40EC-B590-AF29E879AF98',
                             to:'dummy@localhost/pda',
@@ -1678,13 +2037,13 @@
                         .c('status').attrs({code:'110'}).nodeTree;
 
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($chat_content.find('div.chat-info').length).toBe(2);
-                    expect($chat_content.find('div.chat-info').last().html()).toBe(
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
+                    expect(sizzle('div.chat-info:last').pop().textContent).toBe(
                         __(_converse.muc.new_nickname_messages["303"], "newnick")
                     );
 
-                    $occupants = $(view.el.querySelector('.occupant-list'));
-                    expect($occupants.children().length).toBe(1);
+                    occupants = view.el.querySelector('.occupant-list');
+                    expect(occupants.childNodes.length).toBe(1);
 
                     presence = $pres().attrs({
                             from:'lounge@localhost/newnick',
@@ -1704,15 +2063,15 @@
                     // notification for the new nickname. Ideally we'd not have
                     // that, but that's probably not possible without some
                     // significant refactoring.
-                    expect($chat_content.find('div.chat-info').length).toBe(3);
-                    expect($chat_content.find('div.chat-info').get(1).textContent).toBe(
+                    expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
+                    expect(sizzle('div.chat-info', chat_content)[1].textContent).toBe(
                         __(_converse.muc.new_nickname_messages["303"], "newnick")
                     );
-                    $occupants = $(view.el.querySelector('.occupant-list'));
-                    expect($occupants.children().length).toBe(1);
-                    expect($occupants.children().find('.occupant-nick').first(0).text()).toBe("newnick");
+                    occupants = view.el.querySelector('.occupant-list');
+                    expect(occupants.childNodes.length).toBe(1);
+                    expect(sizzle('.occupant-nick:first', occupants).pop().textContent).toBe("newnick");
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
 
             it("queries for the groupchat information before attempting to join the user",
@@ -1853,8 +2212,8 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                var sent_IQ, IQ_id;
-                var sendIQ = _converse.connection.sendIQ;
+                let sent_IQ, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
 
                 test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'some1').then(function () {
                     spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -1863,7 +2222,7 @@
                     });
 
                     // We pretend this is a new room, so no disco info is returned.
-                    var features_stanza = $iq({
+                    const features_stanza = $iq({
                             from: 'coven@chat.shakespeare.lit',
                             'id': IQ_id,
                             'to': 'dummy@localhost/desktop',
@@ -1872,7 +2231,7 @@
                             .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
                     _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
-                    var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                    const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                     /* <message xmlns="jabber:client"
                     *              type="groupchat"
                     *              to="dummy@localhost/_converse.js-27854181"
@@ -1883,7 +2242,7 @@
                     *      </x>
                     *  </message>
                     */
-                    var message = $msg({
+                    const message = $msg({
                             type:'groupchat',
                             to: 'dummy@localhost/_converse.js-27854181',
                             from: 'coven@chat.shakespeare.lit'
@@ -1891,10 +2250,11 @@
                         .c('status', {code: '104'}).up()
                         .c('status', {code: '172'});
                     _converse.connection._dataRecv(test_utils.createRequest(message));
-                    var $chat_body = $(view.el.querySelector('.chatroom-body'));
-                    expect($chat_body.find('.message:last').text()).toBe('This groupchat is now no longer anonymous');
+                    const chat_body = view.el.querySelector('.chatroom-body');
+                    expect(sizzle('.message:last', chat_body).pop().textContent)
+                        .toBe('This groupchat is now no longer anonymous');
                     done();
-                });
+                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
 
             it("informs users if they have been kicked out of the groupchat",
@@ -1937,8 +2297,8 @@
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
                     const view = _converse.chatboxviews.get('lounge@localhost');
-                    expect($(view.el.querySelector('.chat-area')).is(':visible')).toBeFalsy();
-                    expect($(view.el.querySelector('.occupants')).is(':visible')).toBeFalsy();
+                    expect(u.isVisible(view.el.querySelector('.chat-area'))).toBeFalsy();
+                    expect(u.isVisible(view.el.querySelector('.occupants'))).toBeFalsy();
                     const chat_body = view.el.querySelector('.chatroom-body');
                     expect(chat_body.querySelectorAll('.disconnect-msg').length).toBe(3);
                     expect(chat_body.querySelector('.disconnect-msg:first-child').textContent).toBe(
@@ -2883,10 +3243,11 @@
 
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    var $chat_body = $(view.el).find('.chatroom-body');
+                    var chat_body = view.el.querySelector('.chatroom-body');
                     expect(view.renderPasswordForm).toHaveBeenCalled();
-                    expect($chat_body.find('form.chatroom-form').length).toBe(1);
-                    expect($chat_body.find('legend').text()).toBe('This groupchat requires a password');
+                    expect(chat_body.querySelectorAll('form.chatroom-form').length).toBe(1);
+                    expect(chat_body.querySelector('legend').textContent)
+                        .toBe('This groupchat requires a password');
 
                     // Let's submit the form
                     spyOn(view, 'join');
@@ -2964,10 +3325,11 @@
                     var view = _converse.chatboxviews.get('problematic@muc.localhost');
                     spyOn(view, 'showErrorMessage').and.callThrough();
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect($(view.el).find('.chatroom-body form.chatroom-form label:first').text()).toBe('Please choose your nickname');
+                    expect(sizzle('.chatroom-body form.chatroom-form label:first', view.el).pop().textContent)
+                        .toBe('Please choose your nickname');
 
-                    var $input = $(view.el).find('.chatroom-body form.chatroom-form input:first');
-                    $input.val('nicky');
+                    const input = sizzle('.chatroom-body form.chatroom-form input:first', view.el).pop();
+                    input.value = 'nicky';
                     view.el.querySelector('input[type=submit]').click();
                     done();
                 }).catch(_.partial(console.error, _));
@@ -3384,19 +3746,14 @@
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.add_room_modal;
                 test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
-               .then(function () {
-                    spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(function () {
-                        var deferred = new $.Deferred();
-                        deferred.resolve();
-                        return deferred.promise();
-                    });
+               .then(() => {
+                    spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
                     roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-
                     modal.el.querySelector('input[name="chatroom"]').value = 'lounce@muc.localhost';
                     modal.el.querySelector('form input[type="submit"]').click();
                     return test_utils.waitUntil(() => _converse.chatboxes.length);
                }).then(() => {
-                    expect($('.chatroom:visible').length).toBe(1); // There should now be an open chatroom
+                    expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
                     done();
                 }).catch(_.partial(console.error, _));
             }));
@@ -3420,11 +3777,7 @@
                 const modal = roomspanel.list_rooms_modal;
                 test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
                 .then(() => {
-                    spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(function () {
-                        var deferred = new $.Deferred();
-                        deferred.resolve();
-                        return deferred.promise();
-                    });
+                    spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
                     roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
 
                     // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
@@ -3464,7 +3817,7 @@
                     rooms[4].querySelector('.open-room').click();
                     return test_utils.waitUntil(() => _converse.chatboxes.length > 1);
                 }).then(() => {
-                    expect($('.chatroom:visible').length).toBe(1); // There should now be an open chatroom
+                    expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
                     var view = _converse.chatboxviews.get('inverness@chat.shakespeare.lit');
                     expect(view.el.querySelector('.chat-head-chatroom').textContent.trim()).toBe("Macbeth's Castle");
                     done();
@@ -3544,7 +3897,8 @@
                             view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                             const chat_content = view.el.querySelector('.chat-content');
 
-                            expect($(chat_content).find('div.chat-info:first').html()).toBe("some1 has entered the groupchat");
+                            expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
+                                .toBe("some1 has entered the groupchat");
 
                             let presence = $pres({
                                     to: 'dummy@localhost/_converse.js-29092160',
@@ -3558,7 +3912,8 @@
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
                             expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
-                            expect($(chat_content).find('div.chat-info:last').html()).toBe("newguy has entered the groupchat");
+                            expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                                .toBe("newguy has entered the groupchat");
 
                             presence = $pres({
                                     to: 'dummy@localhost/_converse.js-29092160',
@@ -3572,7 +3927,8 @@
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
                             expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
-                            expect($(chat_content).find('div.chat-info:last').html()).toBe("nomorenicks has entered the groupchat");
+                            expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                                .toBe("nomorenicks has entered the groupchat");
 
                             // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
 
@@ -3694,9 +4050,9 @@
 
                         test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1')
                         .then(() => {
-                            var room_jid = 'coven@chat.shakespeare.lit';
-                            var view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                            var $chat_content = $(view.el).find('.chat-content');
+                            const room_jid = 'coven@chat.shakespeare.lit';
+                            const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                            const chat_content = view.el.querySelector('.chat-content');
 
                             /* <presence to="dummy@localhost/_converse.js-29092160"
                             *           from="coven@chat.shakespeare.lit/some1">
@@ -3717,7 +4073,8 @@
                                 }).up()
                                 .c('status', {code: '110'});
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
-                            expect($chat_content.find('div.chat-info:first').html()).toBe("some1 has entered the groupchat");
+                            expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
+                                .toBe("some1 has entered the groupchat");
 
                             presence = $pres({
                                     to: 'dummy@localhost/_converse.js-29092160',
@@ -3730,8 +4087,9 @@
                                     'role': 'participant'
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
-                            expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(2);
-                            expect($chat_content.find('div.chat-info:last').html()).toBe("newguy has entered the groupchat");
+                            expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
+                            expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                                .toBe("newguy has entered the groupchat");
 
                             presence = $pres({
                                     to: 'dummy@localhost/_converse.js-29092160',
@@ -3744,8 +4102,9 @@
                                     'role': 'participant'
                                 });
                             _converse.connection._dataRecv(test_utils.createRequest(presence));
-                            expect($chat_content[0].querySelectorAll('div.chat-info').length).toBe(3);
-                            expect($chat_content.find('div.chat-info:last').html()).toBe("nomorenicks has entered the groupchat");
+                            expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
+                            expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
+                                .toBe("nomorenicks has entered the groupchat");
 
                             // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
 

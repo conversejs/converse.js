@@ -32491,29 +32491,35 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
         renderBookmarkForm: function renderBookmarkForm() {
+          var _this2 = this;
+
           var _converse = this.__super__._converse,
               __ = _converse.__,
               body = this.el.querySelector('.chatroom-body');
 
           _.each(body.children, function (child) {
-            child.classList.add('hidden');
-          }); // Remove any existing forms
-
+            return child.classList.add('hidden');
+          });
 
           _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
 
           body.insertAdjacentHTML('beforeend', tpl_chatroom_bookmark_form({
-            heading: __('Bookmark this groupchat'),
-            label_name: __('The name for this bookmark:'),
-            label_autojoin: __('Would you like this groupchat to be automatically joined upon startup?'),
-            label_nick: __('What should your nickname for this groupchat be?'),
-            default_nick: this.model.get('nick'),
-            label_submit: __('Save'),
-            label_cancel: __('Cancel')
+            'default_nick': this.model.get('nick'),
+            'heading': __('Bookmark this groupchat'),
+            'label_autojoin': __('Would you like this groupchat to be automatically joined upon startup?'),
+            'label_cancel': __('Cancel'),
+            'label_name': __('The name for this bookmark:'),
+            'label_nick': __('What should your nickname for this groupchat be?'),
+            'label_submit': __('Save'),
+            'name': this.model.get('name')
           }));
           var form = body.querySelector('form.chatroom-form');
-          form.addEventListener('submit', this.onBookmarkFormSubmitted.bind(this));
-          form.querySelector('.button-cancel').addEventListener('click', this.closeForm.bind(this));
+          form.addEventListener('submit', function (ev) {
+            return _this2.onBookmarkFormSubmitted(ev);
+          });
+          form.querySelector('.button-cancel').addEventListener('click', function () {
+            return _this2.closeForm();
+          });
         },
         onBookmarkFormSubmitted: function onBookmarkFormSubmitted(ev) {
           ev.preventDefault();
@@ -32655,11 +32661,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return deferred.resolve();
         },
         createBookmark: function createBookmark(options) {
-          var _this2 = this;
+          var _this3 = this;
 
           this.create(options);
           this.sendBookmarkStanza().catch(function (iq) {
-            return _this2.onBookmarkError(iq, options);
+            return _this3.onBookmarkError(iq, options);
           });
         },
         sendBookmarkStanza: function sendBookmarkStanza() {
@@ -32708,7 +32714,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }).destroy();
         },
         fetchBookmarksFromServer: function fetchBookmarksFromServer(deferred) {
-          var _this3 = this;
+          var _this4 = this;
 
           var stanza = $iq({
             'from': _converse.connection.jid,
@@ -32720,9 +32726,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
 
           _converse.api.sendIQ(stanza).then(function (iq) {
-            return _this3.onBookmarksReceived(deferred, iq);
+            return _this4.onBookmarksReceived(deferred, iq);
           }).catch(function (iq) {
-            return _this3.onBookmarksReceivedError(deferred, iq);
+            return _this4.onBookmarksReceivedError(deferred, iq);
           });
         },
         markRoomAsBookmarked: function markRoomAsBookmarked(bookmark) {
@@ -32740,14 +32746,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
         },
         createBookmarksFromStanza: function createBookmarksFromStanza(stanza) {
-          var _this4 = this;
+          var _this5 = this;
 
           var bookmarks = sizzle('items[node="storage:bookmarks"] ' + 'item#current ' + 'storage[xmlns="storage:bookmarks"] ' + 'conference', stanza);
 
           _.forEach(bookmarks, function (bookmark) {
             var jid = bookmark.getAttribute('jid');
 
-            _this4.create({
+            _this5.create({
               'jid': jid,
               'name': bookmark.getAttribute('name') || jid,
               'autojoin': bookmark.getAttribute('autojoin') === 'true',
@@ -38785,10 +38791,38 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           },
 
           /**
+           * Refresh the features (and fields and identities) associated with a
+           * disco entity by refetching them from the server
+           *
+           * @method _converse.api.disco.refreshFeatures
+           * @param {string} jid The JID of the entity whose features are refreshed.
+           * @returns {promise} A promise which resolves once the features have been refreshed
+           * @example
+           * await _converse.api.disco.refreshFeatures('room@conference.example.org');
+           */
+          'refreshFeatures': function refreshFeatures(jid) {
+            if (_.isNil(jid)) {
+              throw new TypeError('api.disco.refreshFeatures: You need to provide an entity JID');
+            }
+
+            return _converse.api.waitUntil('discoInitialized').then(function () {
+              return _converse.api.disco.entities.get(jid, true);
+            }).then(function (entity) {
+              entity.features.reset();
+              entity.fields.reset();
+              entity.identities.reset();
+              entity.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
+              entity.queryInfo();
+              return entity.waitUntilFeaturesDiscovered();
+            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          },
+
+          /**
            * Return all the features associated with a disco entity
            *
            * @method _converse.api.disco.getFeatures
            * @param {string} jid The JID of the entity whose features are returned.
+           * @returns {promise} A promise which resolves with the returned features
            * @example
            * const features = await _converse.api.disco.getFeatures('room@conference.example.org');
            */
@@ -42492,19 +42526,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.join(this.model.get('nick'), password);
         },
         renderPasswordForm: function renderPasswordForm() {
+          var _this7 = this;
+
           var container_el = this.el.querySelector('.chatroom-body');
 
           _.each(container_el.children, u.hideElement);
 
           _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
 
+          _.each(this.el.querySelectorAll('.chatroom-form-container'), u.removeElement);
+
           container_el.insertAdjacentHTML('beforeend', tpl_chatroom_password_form({
-            heading: __('This groupchat requires a password'),
-            label_password: __('Password: '),
-            label_submit: __('Submit')
+            'heading': __('This groupchat requires a password'),
+            'label_password': __('Password: '),
+            'label_submit': __('Submit')
           }));
           this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
-          this.el.querySelector('.chatroom-form').addEventListener('submit', this.submitPassword.bind(this), false);
+          this.el.querySelector('.chatroom-form').addEventListener('submit', function (ev) {
+            return _this7.submitPassword(ev);
+          }, false);
         },
         showDisconnectMessages: function showDisconnectMessages(msgs) {
           if (_.isString(msgs)) {
@@ -42612,7 +42652,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return notification;
         },
         showNotificationsforUser: function showNotificationsforUser(notification) {
-          var _this7 = this;
+          var _this8 = this;
 
           /* Given the notification object generated by
            * parseXUserElement, display any relevant messages and
@@ -42636,7 +42676,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           }
 
           _.each(notification.messages, function (message) {
-            _this7.content.insertAdjacentHTML('beforeend', tpl_info({
+            _this8.content.insertAdjacentHTML('beforeend', tpl_info({
               'data': '',
               'isodate': moment().format(),
               'extra_classes': 'chat-event',
@@ -43360,19 +43400,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
      */
     dependencies: ["converse-chatboxes", "converse-disco", "converse-controlbox"],
     overrides: {
-      // Overrides mentioned here will be picked up by converse.js's
-      // plugin architecture they will replace existing methods on the
-      // relevant objects or classes.
-      //
-      // New functions which don't exist yet can also be added.
       tearDown: function tearDown() {
         var _converse = this.__super__._converse,
             groupchats = this.chatboxes.where({
           'type': _converse.CHATROOMS_TYPE
         });
 
-        _.each(groupchats, function (groupchat) {
-          u.safeSave(groupchat, {
+        _.each(groupchats, function (gc) {
+          return u.safeSave(gc, {
             'connection_status': converse.ROOMSTATUS.DISCONNECTED
           });
         });
@@ -43831,13 +43866,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             'reason': reason
           });
         },
-        refreshRoomFeatures: function refreshRoomFeatures() {
-          var entity = _converse.disco_entities.get(this.get('jid'));
-
-          if (entity) {
-            entity.destroy();
-          }
-
+        refreshRoomFeatures: async function refreshRoomFeatures() {
+          await _converse.api.disco.refreshFeatures(this.get('jid'));
           return this.getRoomFeatures();
         },
         getRoomFeatures: async function getRoomFeatures() {
@@ -46415,7 +46445,6 @@ function _instanceof(left, right) { if (right != null && typeof Symbol !== "unde
       _converse.DeviceLists = Backbone.Collection.extend({
         model: _converse.DeviceList
       });
-      _converse.omemo = {};
 
       function fetchDeviceLists() {
         return new Promise(function (resolve, reject) {
@@ -50108,6 +50137,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
         render: function render() {
           this.el.innerHTML = tpl_roster({
+            'allow_contact_requests': _converse.allow_contact_requests,
             'heading_contacts': __('Contacts'),
             'title_add_contact': __('Add a contact')
           });
@@ -50272,6 +50302,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           if (contact.get('subscription') === 'both' || contact.get('subscription') === 'to') {
             this.addExistingContact(contact, options);
           } else {
+            if (!_converse.allow_contact_requests) {
+              _converse.log("Not adding requesting or pending contact ".concat(contact.get('jid'), " ") + "because allow_contact_requests is false", Strophe.LogLevel.DEBUG);
+
+              return;
+            }
+
             if (contact.get('ask') === 'subscribe' || contact.get('subscription') === 'from') {
               this.addContactToGroup(contact, HEADER_PENDING_CONTACTS, options);
             } else if (contact.get('requesting') === true) {
@@ -51332,7 +51368,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/chatarea.html -->\n<div class="chat-area col">\n    <div class="chat-content ';
+__p += '<!-- src/templates/chatarea.html -->\n<div class="chat-area col-md-9 col-8">\n    <div class="chat-content ';
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;
@@ -51513,7 +51549,9 @@ __p += '<!-- src/templates/chatroom_bookmark_form.html -->\n<div class="chatroom
 __e(o.heading) +
 '</legend>\n        <fieldset class="form-group">\n            <label for="converse_muc_bookmark_name">' +
 __e(o.label_name) +
-'</label>\n            <input class="form-control" type="text" name="name" required="required" id="converse_muc_bookmark_name"/>\n        </fieldset>\n        <fieldset class="form-group">\n            <label for="converse_muc_bookmark_nick">' +
+'</label>\n            <input class="form-control" type="text" value="' +
+__e(o.name) +
+'" name="name" required="required" id="converse_muc_bookmark_name"/>\n        </fieldset>\n        <fieldset class="form-group">\n            <label for="converse_muc_bookmark_nick">' +
 __e(o.label_nick) +
 '</label>\n            <input class="form-control" type="text" name="nick" value="' +
 __e(o.default_nick) +
@@ -52485,31 +52523,31 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/form_username.html -->\n';
+__p += '<!-- src/templates/form_username.html -->\n<div class="form-group">\n    ';
  if (o.label) { ;
-__p += '\n<label>\n    ' +
+__p += '\n    <label>\n        ' +
 __e(o.label) +
-'\n</label>\n';
+'\n    </label>\n    ';
  } ;
-__p += '\n<div class="input-group">\n    <input name="' +
+__p += '\n    <div class="input-group">\n        <div class="input-group-prepend">\n            <input name="' +
 __e(o.name) +
 '" type="' +
 __e(o.type) +
-'"\n        ';
+'"\n                ';
  if (o.value) { ;
 __p += ' value="' +
 __e(o.value) +
 '" ';
  } ;
-__p += '\n        ';
+__p += '\n                ';
  if (o.required) { ;
 __p += ' class="required" ';
  } ;
-__p += ' />\n    <span title="' +
+__p += ' />\n            <div class="input-group-text col" title="' +
 __e(o.domain) +
 '">' +
 __e(o.domain) +
-'</span>\n</div>\n';
+'</div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -53004,7 +53042,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/pending_contact.html -->\n';
  if (o.allow_chat_pending_contacts)  { ;
-__p += '\n<a class="open-chat w-100" href="#">\n';
+__p += '<a class="open-chat w-100" href="#">';
  } ;
 __p += '\n<span class="pending-contact-name w-100" title="JID: ' +
 __e(o.jid) +
@@ -53012,7 +53050,7 @@ __e(o.jid) +
 __e(o.display_name) +
 '</span> \n';
  if (o.allow_chat_pending_contacts)  { ;
-__p += '</a>\n';
+__p += '</a>';
  } ;
 __p += '\n<a class="remove-xmpp-contact far fa-trash-alt" title="' +
 __e(o.desc_remove) +
@@ -53230,7 +53268,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/register_panel.html -->\n<div class="row">\n    <form id="converse-register" class="converse-form">\n        <legend>' +
+__p += '<!-- src/templates/register_panel.html -->\n<div class="row">\n    <form id="converse-register" class="converse-form">\n        <legend class="col-form-label">' +
 __e(o.__("Create your account")) +
 '</legend>\n\n        <div class="form-group">\n            <label>' +
 __e(o.__("Please enter the XMPP provider to register with:")) +
@@ -53275,7 +53313,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/registration_form.html -->\n<legend>' +
+__p += '<!-- src/templates/registration_form.html -->\n<legend class="col-form-label">' +
 __e(o.__("Account Registration:")) +
 ' ' +
 __e(o.domain) +
@@ -53291,7 +53329,11 @@ __p += '\n        <input type="button" class="btn btn-secondary button-cancel" v
 __e(o.__('Choose a different provider')) +
 '"/>\n    ';
  } ;
-__p += '\n</fieldset>\n';
+__p += '\n    <div class="switch-form">\n        <p>' +
+__e( o.__("Already have a chat account?") ) +
+'</p>\n        <p><a class="login-here toggle-register-login" href="#converse/login">' +
+__e(o.__("Log in here")) +
+'</a></p>\n    </div>\n</fieldset>\n';
 return __p
 };
 
@@ -53633,12 +53675,17 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/roster.html -->\n<div class="d-flex controlbox-padded">\n    <span class="w-100 controlbox-heading">' +
 __e(o.heading_contacts) +
-'</span>\n    <a class="chatbox-btn add-contact fa fa-user-plus" title="' +
+'</span>\n    ';
+ if (o.allow_contact_requests) { ;
+__p += '\n        <a class="chatbox-btn add-contact fa fa-user-plus"\n           title="' +
 __e(o.title_add_contact) +
-'"\n       data-toggle="modal" data-target="#add-contact-modal"></a>\n</div>\n\n<form class="roster-filter-form"></form>\n\n<div class="roster-contacts"></div>\n';
+'"\n           data-toggle="modal"\n           data-target="#add-contact-modal"></a>\n    ';
+ } ;
+__p += '\n</div>\n\n<form class="roster-filter-form"></form>\n\n<div class="roster-contacts"></div>\n';
 return __p
 };
 

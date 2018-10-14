@@ -135,36 +135,28 @@
 
                 renderBookmarkForm () {
                     const { _converse } = this.__super__,
-                        { __ } = _converse,
-                        body = this.el.querySelector('.chatroom-body');
+                          { __ } = _converse,
+                          body = this.el.querySelector('.chatroom-body');
 
-                    _.each(body.children, function (child) {
-                        child.classList.add('hidden');
-                    });
-                    // Remove any existing forms
+                    _.each(body.children, child => child.classList.add('hidden'));
                     _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
 
                     body.insertAdjacentHTML(
                         'beforeend',
                         tpl_chatroom_bookmark_form({
-                            heading: __('Bookmark this groupchat'),
-                            label_name: __('The name for this bookmark:'),
-                            label_autojoin: __('Would you like this groupchat to be automatically joined upon startup?'),
-                            label_nick: __('What should your nickname for this groupchat be?'),
-                            default_nick: this.model.get('nick'),
-                            label_submit: __('Save'),
-                            label_cancel: __('Cancel')
+                            'default_nick': this.model.get('nick'),
+                            'heading': __('Bookmark this groupchat'),
+                            'label_autojoin': __('Would you like this groupchat to be automatically joined upon startup?'),
+                            'label_cancel': __('Cancel'),
+                            'label_name': __('The name for this bookmark:'),
+                            'label_nick': __('What should your nickname for this groupchat be?'),
+                            'label_submit': __('Save'),
+                            'name': this.model.get('name')
                         })
                     );
                     const form = body.querySelector('form.chatroom-form');
-                    form.addEventListener(
-                        'submit',
-                        this.onBookmarkFormSubmitted.bind(this)
-                    );
-                    form.querySelector('.button-cancel').addEventListener(
-                        'click',
-                        this.closeForm.bind(this)
-                    );
+                    form.addEventListener('submit', ev =>  this.onBookmarkFormSubmitted(ev));
+                    form.querySelector('.button-cancel').addEventListener('click', () => this.closeForm());
                 },
 
                 onBookmarkFormSubmitted (ev) {

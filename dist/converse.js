@@ -60428,7 +60428,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               // XXX: MUC leakage
               // No need showing delayed or our own CSN messages
               return;
-            } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
+            } else if (!is_csn && !attrs.file && !attrs.plaintext && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
               // TODO: handle <subject> messages (currently being done by ChatRoom)
               return;
             } else {
@@ -60618,13 +60618,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             contact_jid = Strophe.getBareJidFromJid(to_jid);
           } else {
             contact_jid = from_bare_jid;
-          } // Get chat box, but only create a new one when the message has a body.
-
+          }
 
           const attrs = {
-            'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
+            'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname') // Get chat box, but only create a new one when the message has a body.
+
           };
-          const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(stanza.querySelector('body')));
+          const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}`).length > 0;
+          const chatbox = this.getChatBox(contact_jid, attrs, has_body);
 
           if (chatbox && !chatbox.handleMessageCorrection(stanza)) {
             const msgid = stanza.getAttribute('id'),
@@ -63170,6 +63171,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
   Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
   Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
+  Strophe.addNamespace('OMEMO', "eu.siacs.conversations.axolotl");
   Strophe.addNamespace('OUTOFBAND', 'jabber:x:oob');
   Strophe.addNamespace('PUBSUB', 'http://jabber.org/protocol/pubsub');
   Strophe.addNamespace('REGISTER', 'jabber:iq:register');
@@ -72526,7 +72528,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         f = _converse$env.f,
         b64_sha1 = _converse$env.b64_sha1;
   const u = converse.env.utils;
-  Strophe.addNamespace('OMEMO', "eu.siacs.conversations.axolotl");
   Strophe.addNamespace('OMEMO_DEVICELIST', Strophe.NS.OMEMO + ".devicelist");
   Strophe.addNamespace('OMEMO_VERIFICATION', Strophe.NS.OMEMO + ".verification");
   Strophe.addNamespace('OMEMO_WHITELISTED', Strophe.NS.OMEMO + ".whitelisted");

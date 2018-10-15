@@ -182,8 +182,9 @@
                     `</encrypted>`+
                     `<store xmlns="urn:xmpp:hints"/>`+
                 `</message>`);
+
             // Test reception of an encrypted message
-            const obj = await view.model.encryptMessage('This is an encrypted message from the contact')
+            let obj = await view.model.encryptMessage('This is an encrypted message from the contact')
             // XXX: Normally the key will be encrypted via libsignal.
             // However, we're mocking libsignal in the tests, so we include
             // it as plaintext in the message.
@@ -191,7 +192,7 @@
                     'from': contact_jid,
                     'to': _converse.connection.jid,
                     'type': 'chat',
-                    'id': 'qwerty'
+                    'id': _converse.connection.getUniqueId()
                 }).c('body').t('This is a fallback message').up()
                     .c('encrypted', {'xmlns': Strophe.NS.OMEMO})
                         .c('header', {'sid':  '555'})
@@ -200,11 +201,30 @@
                             .up().up()
                         .c('payload').t(obj.payload);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.messages.length > 1);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             expect(view.model.messages.length).toBe(2);
-            const last_msg = view.model.messages.at(1);
             expect(view.el.querySelectorAll('.chat-msg__body')[1].textContent.trim())
                 .toBe('This is an encrypted message from the contact');
+
+            // #1193 Check for a received message without <body> tag
+            obj = await view.model.encryptMessage('Another received encrypted message without fallback')
+            stanza = $msg({
+                    'from': contact_jid,
+                    'to': _converse.connection.jid,
+                    'type': 'chat',
+                    'id': _converse.connection.getUniqueId()
+                }).c('encrypted', {'xmlns': Strophe.NS.OMEMO})
+                    .c('header', {'sid':  '555'})
+                        .c('key', {'rid':  _converse.omemo_store.get('device_id')}).t(u.arrayBufferToBase64(obj.key_and_tag)).up()
+                        .c('iv').t(obj.iv)
+                        .up().up()
+                    .c('payload').t(obj.payload);
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await test_utils.waitUntil(() => view.model.messages.length > 1);
+            expect(view.model.messages.length).toBe(3);
+            expect(view.el.querySelectorAll('.chat-msg__body')[2].textContent.trim())
+                .toBe('Another received encrypted message without fallback');
             done();
         }));
 

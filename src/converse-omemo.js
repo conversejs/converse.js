@@ -16,7 +16,6 @@
     const { Backbone, Promise, Strophe, moment, sizzle, $iq, $msg, _, f, b64_sha1 } = converse.env;
     const u = converse.env.utils;
 
-    Strophe.addNamespace('OMEMO', "eu.siacs.conversations.axolotl");
     Strophe.addNamespace('OMEMO_DEVICELIST', Strophe.NS.OMEMO+".devicelist");
     Strophe.addNamespace('OMEMO_VERIFICATION', Strophe.NS.OMEMO+".verification");
     Strophe.addNamespace('OMEMO_WHITELISTED', Strophe.NS.OMEMO+".whitelisted");

@@ -11,6 +11,7 @@
 - #1140 Add support for destroyed chatrooms
 - #1169 Non-joined participants display an unwanted status message
 - #1190 MUC Participants column disappears in certain viewport widths
+- #1193 OMEMO messages without a `<body>` fallback are ignored
 - #1199 Can't get back from to login screen from registration screen
 - #1204 Link encoding issue
 - #1214 Setting `allow_contact_requests` to `false` has no effect

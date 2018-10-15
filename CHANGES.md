@@ -5,6 +5,7 @@
 - Bugfix. Handler not triggered when submitting MUC password form 2nd time
 - Bugfix. MUC features weren't being refreshed when saving the config form
 - Don't show duplicate notification messages
+- New config setting [show_images_inline](https://conversejs.org/docs/html/configuration.html#show-images-inline)
 - #537 Render `xmpp:` URI as link
 - #1062 Collapse multiple join/leave messages into one
 - #1063 URLs in the topic / subject are not clickable
@@ -17,6 +18,7 @@
 - #1214 Setting `allow_contact_requests` to `false` has no effect
 - #1221 Avoid creating a headlines box if we don't have anything to show inside it
 - #1222 Adding a bookmark should prefill the room name
+- #1228 Converse automatically visits links (to try and determine whether they're images to show inline)
 
 ## 4.0.2 (2018-10-02)
 

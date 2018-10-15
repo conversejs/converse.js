@@ -81839,30 +81839,60 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   };
 
   u.renderFileURL = function (_converse, url) {
-    const uri = new URI(url),
-          filename = uri.filename(),
-          lower_filename = filename.toLowerCase();
+    const uri = new URI(url);
 
-    if (!_.includes(["https", "http"], uri.protocol().toLowerCase()) || lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') || lower_filename.endsWith('ogg') || lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') || lower_filename.endsWith('png') || lower_filename.endsWith('gif') || lower_filename.endsWith('m4a') || lower_filename.endsWith('webm') || lower_filename.endsWith('svg')) {
+    if (u.isImageURL(uri) || u.isVideoURL(uri) || u.isAudioURL(uri)) {
       return url;
     }
 
-    const __ = _converse.__;
+    const __ = _converse.__,
+          filename = uri.filename();
     return tpl_file({
       'url': url,
       'label_download': __('Download file "%1$s"', decodeURI(filename))
     });
   };
 
-  u.isImageURL = function (url) {
-    const uri = new URI(url),
-          filename = uri.filename().toLowerCase();
+  u.isAudioURL = function (url) {
+    if (!(url instanceof URI)) {
+      url = new URI(url);
+    }
 
-    if (!_.includes(["https", "http"], uri.protocol().toLowerCase())) {
+    const filename = url.filename().toLowerCase();
+
+    if (!_.includes(["https", "http"], url.protocol().toLowerCase())) {
       return false;
     }
 
-    return filename.endsWith('jpg') || filename.endsWith('jpeg') || filename.endsWith('png') || filename.endsWith('gif') || filename.endsWith('svg');
+    return filename.endsWith('.ogg') || filename.endsWith('.mp3') || filename.endsWith('.m4a');
+  };
+
+  u.isVideoURL = function (url) {
+    if (!(url instanceof URI)) {
+      url = new URI(url);
+    }
+
+    const filename = url.filename().toLowerCase();
+
+    if (!_.includes(["https", "http"], url.protocol().toLowerCase())) {
+      return false;
+    }
+
+    return filename.endsWith('.mp4') || filename.endsWith('.webm');
+  };
+
+  u.isImageURL = function (url) {
+    if (!(url instanceof URI)) {
+      url = new URI(url);
+    }
+
+    const filename = url.filename().toLowerCase();
+
+    if (!_.includes(["https", "http"], url.protocol().toLowerCase())) {
+      return false;
+    }
+
+    return filename.endsWith('.jpg') || filename.endsWith('.jpeg') || filename.endsWith('.png') || filename.endsWith('.gif') || filename.endsWith('.bmp') || filename.endsWith('.tiff') || filename.endsWith('.svg');
   };
 
   u.renderImageURL = function (_converse, url) {
@@ -81870,9 +81900,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       return u.addHyperlinks(url);
     }
 
-    if (u.isImageURL(url)) {
-      const __ = _converse.__,
-            uri = new URI(url);
+    const uri = new URI(url);
+
+    if (u.isImageURL(uri)) {
+      const __ = _converse.__;
       return tpl_image({
         'url': url,
         'label_download': __('Download image "%1$s"', decodeURI(uri.filename()))
@@ -81883,9 +81914,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   };
 
   u.renderMovieURL = function (_converse, url) {
-    if (url.endsWith('mp4') || url.endsWith('webm')) {
-      const __ = _converse.__,
-            uri = new URI(url);
+    const uri = new URI(url);
+
+    if (u.isVideoURL(uri)) {
+      const __ = _converse.__;
       return tpl_video({
         'url': url,
         'label_download': __('Download video file "%1$s"', decodeURI(uri.filename()))
@@ -81896,9 +81928,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   };
 
   u.renderAudioURL = function (_converse, url) {
-    if (url.endsWith('mp3') || url.endsWith('m4a') || url.endsWith('ogg')) {
-      const __ = _converse.__,
-            uri = new URI(url);
+    const uri = new URI(url);
+
+    if (u.isAudioURL(uri)) {
+      const __ = _converse.__;
       return tpl_audio({
         'url': url,
         'label_download': __('Download audio file "%1$s"', decodeURI(uri.filename()))

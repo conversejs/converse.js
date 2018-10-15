@@ -157,12 +157,12 @@
                             _.partial(u.addEmoji, _converse, _)
                         )(text);
                     }
-                    if (_converse.show_images_inline) {
-                        await u.renderImageURLs(_converse, msg_content);
-                    }
+                    const promises = [];
+                    promises.push(u.renderImageURLs(_converse, msg_content));
                     if (this.model.get('type') !== 'headline') {
-                        await this.renderAvatar(msg);
+                        promises.push(this.renderAvatar(msg));
                     }
+                    await Promise.all(promises);
                     this.replaceElement(msg);
                     this.model.collection.trigger('rendered', this);
                 },

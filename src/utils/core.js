@@ -281,24 +281,18 @@
         return text.replace(/\n\n+/g, '<br/><br/>').replace(/\n/g, '<br/>');
     };
 
-    u.renderImageURLs = function (_converse, obj) {
+    u.renderImageURLs = function (_converse, el) {
         /* Returns a Promise which resolves once all images have been loaded.
          */
+        if (!_converse.show_images_inline) {
+            return Promise.resolve();
+        }
         const { __ } = _converse;
-        const list = obj.textContent.match(URL_REGEX) || [];
+        const list = el.textContent.match(URL_REGEX) || [];
         return Promise.all(
-            _.map(list, (url) =>
+            _.map(list, url =>
                 new Promise((resolve, reject) => {
-                    const uri = new URI(url),
-                        filename = uri.filename(),
-                        lower_filename = filename.toLowerCase();
-                    if (!_.includes(["https", "http"], uri.protocol().toLowerCase())) {
-                        return resolve();
-                    }
-                    if (lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') ||
-                            lower_filename.endsWith('png') || lower_filename.endsWith('gif') ||
-                            lower_filename.endsWith('svg')) {
-
+                    if (u.isImageURL(url)) {
                         return isImage(url).then(img => {
                             const i = new Image();
                             i.src = img.src;
@@ -308,7 +302,7 @@
                             i.addEventListener('error', resolve);
 
                             const { __ } = _converse;
-                            _.each(sizzle(`a[href="${url}"]`, obj), (a) => {
+                            _.each(sizzle(`a[href="${url}"]`, el), (a) => {
                                 a.outerHTML= tpl_image({
                                     'url': url,
                                     'label_download': __('Download')
@@ -343,11 +337,22 @@
         })
     };
 
-    u.renderImageURL = function (_converse, url) {
-        const lurl = url.toLowerCase();
-        if (lurl.endsWith('jpg') || lurl.endsWith('jpeg') || lurl.endsWith('png') ||
-            lurl.endsWith('gif') || lurl.endsWith('svg')) {
+    u.isImageURL = function (url) {
+        const uri = new URI(url),
+              filename = uri.filename().toLowerCase();
+        if (!_.includes(["https", "http"], uri.protocol().toLowerCase())) {
+            return false;
+        }
+        return filename.endsWith('jpg') || filename.endsWith('jpeg') ||
+               filename.endsWith('png') || filename.endsWith('gif') ||
+               filename.endsWith('svg');
+    };
 
+    u.renderImageURL = function (_converse, url) {
+        if (!_converse.show_images_inline) {
+            return u.addHyperlinks(url);
+        }
+        if (u.isImageURL(url)) {
             const { __ } = _converse,
                   uri = new URI(url);
             return tpl_image({

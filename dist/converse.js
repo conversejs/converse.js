@@ -67307,14 +67307,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             msg_content.innerHTML = _.flow(_.partial(u.geoUriToHttp, _, _converse.geouri_replacement), _.partial(u.addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox), u.addHyperlinks, u.renderNewLines, _.partial(u.addEmoji, _converse, _))(text);
           }
 
-          if (_converse.show_images_inline) {
-            await u.renderImageURLs(_converse, msg_content);
-          }
+          const promises = [];
+          promises.push(u.renderImageURLs(_converse, msg_content));
 
           if (this.model.get('type') !== 'headline') {
-            await this.renderAvatar(msg);
+            promises.push(this.renderAvatar(msg));
           }
 
+          await Promise.all(promises);
           this.replaceElement(msg);
           this.model.collection.trigger('rendered', this);
         },
@@ -81805,21 +81805,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return text.replace(/\n\n+/g, '<br/><br/>').replace(/\n/g, '<br/>');
   };
 
-  u.renderImageURLs = function (_converse, obj) {
+  u.renderImageURLs = function (_converse, el) {
     /* Returns a Promise which resolves once all images have been loaded.
      */
+    if (!_converse.show_images_inline) {
+      return Promise.resolve();
+    }
+
     const __ = _converse.__;
-    const list = obj.textContent.match(URL_REGEX) || [];
+    const list = el.textContent.match(URL_REGEX) || [];
     return Promise.all(_.map(list, url => new Promise((resolve, reject) => {
-      const uri = new URI(url),
-            filename = uri.filename(),
-            lower_filename = filename.toLowerCase();
-
-      if (!_.includes(["https", "http"], uri.protocol().toLowerCase())) {
-        return resolve();
-      }
-
-      if (lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') || lower_filename.endsWith('png') || lower_filename.endsWith('gif') || lower_filename.endsWith('svg')) {
+      if (u.isImageURL(url)) {
         return isImage(url).then(img => {
           const i = new Image();
           i.src = img.src;
@@ -81829,7 +81825,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           i.addEventListener('error', resolve);
           const __ = _converse.__;
 
-          _.each(sizzle(`a[href="${url}"]`, obj), a => {
+          _.each(sizzle(`a[href="${url}"]`, el), a => {
             a.outerHTML = tpl_image({
               'url': url,
               'label_download': __('Download')
@@ -81858,10 +81854,23 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     });
   };
 
-  u.renderImageURL = function (_converse, url) {
-    const lurl = url.toLowerCase();
+  u.isImageURL = function (url) {
+    const uri = new URI(url),
+          filename = uri.filename().toLowerCase();
 
-    if (lurl.endsWith('jpg') || lurl.endsWith('jpeg') || lurl.endsWith('png') || lurl.endsWith('gif') || lurl.endsWith('svg')) {
+    if (!_.includes(["https", "http"], uri.protocol().toLowerCase())) {
+      return false;
+    }
+
+    return filename.endsWith('jpg') || filename.endsWith('jpeg') || filename.endsWith('png') || filename.endsWith('gif') || filename.endsWith('svg');
+  };
+
+  u.renderImageURL = function (_converse, url) {
+    if (!_converse.show_images_inline) {
+      return u.addHyperlinks(url);
+    }
+
+    if (u.isImageURL(url)) {
       const __ = _converse.__,
             uri = new URI(url);
       return tpl_image({

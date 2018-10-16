@@ -316,7 +316,6 @@
 
                     this.model.messages.on('add', this.onMessageAdded, this);
                     this.model.messages.on('rendered', this.scrollDown, this);
-                    this.model.messages.on('edited', (view) => this.markFollowups(view.el));
 
                     this.model.on('show', this.show, this);
                     this.model.on('destroy', this.remove, this);

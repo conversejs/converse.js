@@ -103,8 +103,10 @@
                 },
 
                 onMessageEdited () {
+                    if (this.model.get('is_archived')) {
+                        return;
+                    }
                     this.el.addEventListener('animationend', () => u.removeClass('onload', this.el));
-                    this.model.collection.trigger('edited', this);
                     u.addClass('onload', this.el);
                 },
 

@@ -61373,7 +61373,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           this.initDebounced();
           this.model.messages.on('add', this.onMessageAdded, this);
           this.model.messages.on('rendered', this.scrollDown, this);
-          this.model.messages.on('edited', view => this.markFollowups(view.el));
           this.model.on('show', this.show, this);
           this.model.on('destroy', this.remove, this);
           this.model.presence.on('change:show', this.onPresenceChanged, this);
@@ -67279,8 +67278,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         onMessageEdited() {
+          if (this.model.get('is_archived')) {
+            return;
+          }
+
           this.el.addEventListener('animationend', () => u.removeClass('onload', this.el));
-          this.model.collection.trigger('edited', this);
           u.addClass('onload', this.el);
         },
 

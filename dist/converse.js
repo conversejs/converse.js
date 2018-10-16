@@ -67223,7 +67223,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         async render() {
-          let msg;
+          const is_followup = u.hasClass('chat-msg--followup', this.el);
 
           if (this.model.isOnlyChatStateNotification()) {
             this.renderChatStateNotification();
@@ -67233,6 +67233,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
             this.renderErrorMessage();
           } else {
             await this.renderChatMessage();
+          }
+
+          if (is_followup) {
+            u.addClass('chat-msg--followup', this.el);
           }
 
           return this.el;

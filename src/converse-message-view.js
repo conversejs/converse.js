@@ -69,7 +69,7 @@
                 },
 
                 async render () {
-                    let msg;
+                    const is_followup = u.hasClass('chat-msg--followup', this.el);
                     if (this.model.isOnlyChatStateNotification()) {
                         this.renderChatStateNotification()
                     } else if (this.model.get('file') && !this.model.get('oob_url')) {
@@ -78,6 +78,9 @@
                         this.renderErrorMessage();
                     } else {
                         await this.renderChatMessage();
+                    }
+                    if (is_followup) {
+                        u.addClass('chat-msg--followup', this.el);
                     }
                     return this.el;
                 },

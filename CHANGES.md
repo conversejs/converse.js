@@ -7,6 +7,7 @@
 - Don't show duplicate notification messages
 - New config setting [show_images_inline](https://conversejs.org/docs/html/configuration.html#show-images-inline)
 - #537 Render `xmpp:` URI as link
+- #1058 Send an inactive chat state notification when the user switches to another tab 
 - #1062 Collapse multiple join/leave messages into one
 - #1063 URLs in the topic / subject are not clickable
 - #1140 Add support for destroyed chatrooms

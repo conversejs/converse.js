@@ -55,8 +55,8 @@
                     }
                     if (_converse.isSingleton()) {
                         const any_chats_visible = _converse.chatboxes
-                            .filter((cb) => cb.get('id') != 'controlbox')
-                            .filter((cb) => !cb.get('hidden')).length > 0;
+                            .filter(cb => cb.get('id') != 'controlbox')
+                            .filter(cb => !cb.get('hidden')).length > 0;
 
                         if (any_chats_visible) {
                             return !chatbox.get('hidden');

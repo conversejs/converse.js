@@ -91,7 +91,11 @@
 
             function onWindowStateChanged (data) {
                 if (_converse.chatboxviews) {
-                    _converse.chatboxviews.each(view => view.onWindowStateChanged(data.state));
+                    _converse.chatboxviews.each(view => {
+                        if (view.model.get('id') !== 'controlbox') {
+                            view.onWindowStateChanged(data.state);
+                        }
+                    });
                 }
             }
             _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
@@ -1266,8 +1270,17 @@
                 },
 
                 onWindowStateChanged (state) {
-                    if (this.model.get('num_unread', 0) && !this.model.isHidden()) {
-                        this.model.clearUnreadMsgCounter();
+                    if (state === 'visible') {
+                        if (!this.model.isHidden()) {
+                            this.setChatState(_converse.ACTIVE);
+                            if (this.model.get('num_unread', 0)) {
+                                this.model.clearUnreadMsgCounter();
+                            }
+                        }
+                    } else if (state === 'hidden') {
+                        this.setChatState(_converse.INACTIVE, {'silent': true});
+                        this.model.sendChatState();
+                        _converse.connection.flush();
                     }
                 }
             });

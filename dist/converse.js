@@ -73305,53 +73305,52 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           });
         },
 
-        generateBundle() {
+        async generateBundle() {
           /* The first thing that needs to happen if a client wants to
            * start using OMEMO is they need to generate an IdentityKey
            * and a Device ID. The IdentityKey is a Curve25519 [6]
            * public/private Key pair. The Device ID is a randomly
            * generated integer between 1 and 2^31 - 1.
            */
-          const bundle = {};
-          return libsignal.KeyHelper.generateIdentityKeyPair().then(identity_keypair => {
-            const identity_key = u.arrayBufferToBase64(identity_keypair.pubKey),
-                  device_id = generateDeviceID();
-            bundle['identity_key'] = identity_key;
-            bundle['device_id'] = device_id;
-            this.save({
-              'device_id': device_id,
-              'identity_keypair': {
-                'privKey': u.arrayBufferToBase64(identity_keypair.privKey),
-                'pubKey': identity_key
-              },
-              'identity_key': identity_key
-            });
-            return libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0);
-          }).then(signed_prekey => {
-            _converse.omemo_store.storeSignedPreKey(signed_prekey);
-
-            bundle['signed_prekey'] = {
-              'id': signed_prekey.keyId,
-              'public_key': u.arrayBufferToBase64(signed_prekey.keyPair.privKey),
-              'signature': u.arrayBufferToBase64(signed_prekey.signature)
-            };
-            return Promise.all(_.map(_.range(0, _converse.NUM_PREKEYS), id => libsignal.KeyHelper.generatePreKey(id)));
-          }).then(keys => {
-            _.forEach(keys, k => _converse.omemo_store.storePreKey(k.keyId, k.keyPair));
-
-            const devicelist = _converse.devicelists.get(_converse.bare_jid),
-                  device = devicelist.devices.create({
-              'id': bundle.device_id,
-              'jid': _converse.bare_jid
-            }),
-                  marshalled_keys = _.map(keys, k => ({
-              'id': k.keyId,
-              'key': u.arrayBufferToBase64(k.keyPair.pubKey)
-            }));
-
-            bundle['prekeys'] = marshalled_keys;
-            device.save('bundle', bundle);
+          const identity_keypair = await libsignal.KeyHelper.generateIdentityKeyPair();
+          const bundle = {},
+                identity_key = u.arrayBufferToBase64(identity_keypair.pubKey),
+                device_id = generateDeviceID();
+          bundle['identity_key'] = identity_key;
+          bundle['device_id'] = device_id;
+          this.save({
+            'device_id': device_id,
+            'identity_keypair': {
+              'privKey': u.arrayBufferToBase64(identity_keypair.privKey),
+              'pubKey': identity_key
+            },
+            'identity_key': identity_key
           });
+          const signed_prekey = await libsignal.KeyHelper.generateSignedPreKey(identity_keypair, 0);
+
+          _converse.omemo_store.storeSignedPreKey(signed_prekey);
+
+          bundle['signed_prekey'] = {
+            'id': signed_prekey.keyId,
+            'public_key': u.arrayBufferToBase64(signed_prekey.keyPair.privKey),
+            'signature': u.arrayBufferToBase64(signed_prekey.signature)
+          };
+          const keys = await Promise.all(_.map(_.range(0, _converse.NUM_PREKEYS), id => libsignal.KeyHelper.generatePreKey(id)));
+
+          _.forEach(keys, k => _converse.omemo_store.storePreKey(k.keyId, k.keyPair));
+
+          const devicelist = _converse.devicelists.get(_converse.bare_jid),
+                device = devicelist.devices.create({
+            'id': bundle.device_id,
+            'jid': _converse.bare_jid
+          }),
+                marshalled_keys = _.map(keys, k => ({
+            'id': k.keyId,
+            'key': u.arrayBufferToBase64(k.keyPair.pubKey)
+          }));
+
+          bundle['prekeys'] = marshalled_keys;
+          device.save('bundle', bundle);
         },
 
         fetchSession() {
@@ -73439,7 +73438,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
               this.devices.fetch({
                 'success': collection => {
                   if (collection.length === 0) {
-                    this.fetchDevicesFromServer().then(ids => this.publishCurrentDevice(ids)).then(resolve).catch(resolve);
+                    this.fetchDevicesFromServer().then(ids => this.publishCurrentDevice(ids)).finally(resolve);
                   } else {
                     resolve();
                   }
@@ -73451,22 +73450,27 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return this._devices_promise;
         },
 
-        publishCurrentDevice(device_ids) {
+        async publishCurrentDevice(device_ids) {
           if (this.get('jid') !== _converse.bare_jid) {
             // We only publish for ourselves.
-            return Promise.resolve();
+            return;
           }
 
-          return restoreOMEMOSession().then(() => {
-            const device_id = _converse.omemo_store.get('device_id'),
-                  own_device = this.devices.findWhere({
-              'id': device_id
-            });
+          await restoreOMEMOSession();
 
-            if (!_.includes(device_ids, device_id)) {
-              return this.publishDevices();
-            }
-          });
+          let device_id = _converse.omemo_store.get('device_id');
+
+          if (!this.devices.findWhere({
+            'id': device_id
+          })) {
+            // Generate a new bundle if we cannot find our device
+            await _converse.omemo_store.generateBundle();
+            device_id = _converse.omemo_store.get('device_id');
+          }
+
+          if (!_.includes(device_ids, device_id)) {
+            return this.publishDevices();
+          }
         },
 
         fetchDevicesFromServer() {

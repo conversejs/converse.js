@@ -12,6 +12,7 @@
 - #1063 URLs in the topic / subject are not clickable
 - #1140 Add support for destroyed chatrooms
 - #1169 Non-joined participants display an unwanted status message
+- #1185 Added Contact still shown as pending
 - #1190 MUC Participants column disappears in certain viewport widths
 - #1193 OMEMO messages without a `<body>` fallback are ignored
 - #1199 Can't get back from to login screen from registration screen

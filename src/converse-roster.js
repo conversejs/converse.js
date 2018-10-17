@@ -539,7 +539,7 @@
                      */
                     const id = iq.getAttribute('id');
                     const from = iq.getAttribute('from');
-                    if (from && from !== _converse.connection.jid) {
+                    if (from && from !== _converse.bare_jid) {
                         // https://tools.ietf.org/html/rfc6121#page-15
                         // 
                         // A receiving client MUST ignore the stanza unless it has no 'from'

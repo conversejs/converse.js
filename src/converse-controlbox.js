@@ -290,6 +290,8 @@
                     } else {
                         this.loginpanel.render();
                     }
+                    /* ***Add this line to pre-populate the username field*** */
+                    document.getElementById("converse-login-jid").value = _converse.jid;
                     this.loginpanel.initPopovers();
                     return this;
                 },

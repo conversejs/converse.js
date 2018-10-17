@@ -146,7 +146,7 @@
                     return  tpl_add_contact_modal(_.extend(this.model.toJSON(), {
                         '_converse': _converse,
                         'heading_new_contact': __('Add a Contact'),
-                        'label_xmpp_address': __('XMPP Address'),
+                        'label_xmpp_address': __('Mobile number or XMPP Address'),
                         'label_nickname': label_nickname,
                         'contact_placeholder': __('name@example.org'),
                         'label_add': __('Add'),
@@ -208,19 +208,25 @@
                 addContactFromForm (ev) {
                     ev.preventDefault();
                     const data = new FormData(ev.target),
-                          jid = data.get('jid'),
                           name = data.get('name');
-                    if (!jid || _.compact(jid.split('@')).length < 2) {
+                    var jid = data.get('jid');
+                    if (jid && _.compact(jid.split('@')).length === 2) {
+                        ev.target.reset();
+                        _converse.roster.addAndSubscribe(jid, name);
+                        this.model.clear();
+                        this.modal.hide();
+                    } else if (jid && jid.match(/^[0-9]+$/) != null) {
+                        jid = jid + '@' + _converse.default_domain;
+                        ev.target.reset();
+                        _converse.roster.addAndSubscribe(jid, name);
+                        this.model.clear();
+                        this.modal.hide();
+                    } else {
                         // XXX: we have to do this manually, instead of via
                         // toHTML because Awesomplete messes things up and
                         // confuses Snabbdom
                         u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
                         u.addClass('d-block', this.el.querySelector('.invalid-feedback'));
-                    } else {
-                        ev.target.reset();
-                        _converse.roster.addAndSubscribe(jid, name);
-                        this.model.clear();
-                        this.modal.hide();
                     }
                 }
             });

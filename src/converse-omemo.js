@@ -855,8 +855,7 @@
                                     if (collection.length === 0) {
                                         this.fetchDevicesFromServer()
                                             .then(ids => this.publishCurrentDevice(ids))
-                                            .then(resolve)
-                                            .catch(resolve);
+                                            .finally(resolve)
                                     } else {
                                         resolve();
                                     }
@@ -867,20 +866,21 @@
                     return this._devices_promise;
                 },
 
-                publishCurrentDevice (device_ids) {
+                async publishCurrentDevice (device_ids) {
                     if (this.get('jid') !== _converse.bare_jid) {
                         // We only publish for ourselves.
-                        return Promise.resolve();
+                        return
                     }
-                    return restoreOMEMOSession()
-                        .then(() => {
-                            const device_id = _converse.omemo_store.get('device_id'),
-                                  own_device = this.devices.findWhere({'id': device_id});
-
-                            if (!_.includes(device_ids, device_id)) {
-                                return this.publishDevices();
-                            }
-                        });
+                    await restoreOMEMOSession();
+                    let device_id = _converse.omemo_store.get('device_id');
+                    if (!this.devices.findWhere({'id': device_id})) {
+                        // Generate a new bundle if we cannot find our device
+                        await _converse.omemo_store.generateBundle();
+                        device_id = _converse.omemo_store.get('device_id');
+                    }
+                    if (!_.includes(device_ids, device_id)) {
+                        return this.publishDevices();
+                    }
                 },
 
                 fetchDevicesFromServer () {

@@ -447,20 +447,18 @@
                     }
                 },
 
-                renderOMEMOToolbarButton () {
-                    const { _converse } = this.__super__,
-                          { __ } = _converse;
-                    _converse.contactHasOMEMOSupport(this.model.get('jid')).then((support) => {
-                        if (support) {
-                            const icon = this.el.querySelector('.toggle-omemo'),
-                                html = tpl_toolbar_omemo(_.extend(this.model.toJSON(), {'__': __}));
-                            if (icon) {
-                                icon.outerHTML = html;
-                            } else {
-                                this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', html);
-                            }
+                async renderOMEMOToolbarButton () {
+                    const { _converse } = this.__super__, { __ } = _converse;
+                    const support = await _converse.contactHasOMEMOSupport(this.model.get('jid'));
+                    if (support) {
+                        const icon = this.el.querySelector('.toggle-omemo'),
+                              html = tpl_toolbar_omemo(_.extend(this.model.toJSON(), {'__': __}));
+                        if (icon) {
+                            icon.outerHTML = html;
+                        } else {
+                            this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', html);
                         }
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                    }
                 },
 
                 toggleOMEMO (ev) {

@@ -16,34 +16,29 @@ A room (aka groupchat) can be opened with a URL fragment such as `#converse/room
 and a private chat with a URL fragment such as
 `#converse/chat?jid=user@domain`.
 
-Off-the-record encryption
+XEP-0384 OMEMO Encryption
 =========================
 
-Converse supports `Off-the-record (OTR) <https://otr.cypherpunks.ca/>`_
-encrypted messaging.
+Converse supports OMEMO encryption based on the
+`Signal Protocol <https://github.com/signalapp/libsignal-protocol-javascript>`_.
 
-The OTR protocol not only **encrypts your messages**, it provides ways to
-**verify the identity** of the person you are talking to,
-**plausible deniability** and **perfect forward secrecy** by generating
-new encryption keys for each conversation.
+The Signal Protocol is session-oriented. Clients establish a session, which is
+then used for all subsequent encrypt/decrypt operations. There is no need to
+ever tear down a session once one has been established.
 
-In its current state, JavaScript cryptography is fraught with dangers and
-challenges that make it impossible to reach the same standard of security that
-is available with native "desktop" software.
+This means that a session needs to be stored permanently after logging out.
 
-This is due to its runtime malleability, the way it is "installed" (e.g.
-served) and the browser's lack of cryptographic primitives needed to implement
-secure crypto.
+Converse stores this session information in the browser's `localStorage <https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage>`_.
 
-For harsh but fairly valid criticism of JavaScript cryptography, read:
-`JavaScript Cryptography Considered Harmful <http://www.matasano.com/articles/javascript-cryptography/>`_.
+If you've checked the "This is not a trusted device" checkbox when logging in,
+then `sessionStorage <https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage>`_
+is used instead of localStorage and all data is cleared when you log out.
 
-To get an idea on how this applies to OTR support in Converse, please read
-`my thoughts on it <https://opkode.com/media/blog/2013/11/11/conversejs-otr-support>`_.
+For this reason, OMEMO cannot be used when you've indicated that you're using
+an untrusted device. You would in any case not be able to decrypt previously
+received OMEMO messages, due to the Signal Protocol's forward secrecy and the
+fact that you don't have a pre-existing session.
 
-For now, suffice to say that although its useful to have OTR support in
-Converse in order to avoid most eavesdroppers, if you need serious
-communications privacy, then you're much better off using native software.
 
 Notifications
 =============

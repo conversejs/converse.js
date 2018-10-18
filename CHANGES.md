@@ -7,6 +7,7 @@
 - Bugfix. MUC features weren't being refreshed when saving the config form
 - Don't show duplicate notification messages
 - New config setting [show_images_inline](https://conversejs.org/docs/html/configuration.html#show-images-inline)
+- Disable OMEMO when the user has indicated that Converse is running on an untrusted device.
 - #537 Render `xmpp:` URI as link
 - #1058 Send an inactive chat state notification when the user switches to another tab 
 - #1062 Collapse multiple join/leave messages into one

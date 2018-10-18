@@ -72859,11 +72859,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         },
 
         getMessageAttributesFromStanza(stanza, original_stanza) {
-          const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
+          const _converse = this.__super__._converse,
+                encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
+                attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
 
-          const attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
-
-          if (!encrypted) {
+          if (!encrypted || !_converse.config.get('trusted')) {
             return attrs;
           } else {
             return this.getEncryptionAttributesfromStanza(stanza, original_stanza, attrs);
@@ -73641,6 +73641,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
       function initOMEMO() {
+        if (!_converse.config.get('trusted')) {
+          return;
+        }
+
         _converse.devicelists = new _converse.DeviceLists();
 
         const storage = _converse.config.get('storage'),
@@ -80004,7 +80008,7 @@ __p += ' checked="checked" ';
 __p += '>\n                    <label for="converse-login-trusted" class="form-check-label login-trusted__desc">' +
 __e(o.__('This is a trusted device')) +
 '</label>\n                    <i class="fa fa-info-circle" data-toggle="popover"\n                       data-title="Trusted device?"\n                       data-content="' +
-__e(o.__('To improve performance, we cache your data in this browser. Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. It\'s important that you explicitly log out, otherwise not all cached data might be deleted.')) +
+__e(o.__('To improve performance, we cache your data in this browser. Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. It\'s important that you explicitly log out, otherwise not all cached data might be deleted. Please note, when using an untrusted device, OMEMO encryption is be supported.')) +
 '"></i>\n                </div>\n\n                <fieldset class="buttons">\n                    <input class="btn btn-primary" type="submit" value="' +
 __e(o.__('Log in')) +
 '">\n                </fieldset>\n            ';

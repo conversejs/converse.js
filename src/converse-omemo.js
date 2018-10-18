@@ -321,9 +321,11 @@
                 },
 
                 getMessageAttributesFromStanza (stanza, original_stanza) {
-                    const encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop();
-                    const attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
-                    if (!encrypted) {
+                    const { _converse } = this.__super__,
+                          encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
+                          attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+
+                    if (!encrypted || !_converse.config.get('trusted')) {
                         return attrs;
                     } else {
                         return this.getEncryptionAttributesfromStanza(stanza, original_stanza, attrs);
@@ -1010,7 +1012,10 @@
                 return _converse.omemo_store.fetchSession();
             }
 
-            function initOMEMO() {
+            function initOMEMO () {
+                if (!_converse.config.get('trusted')) {
+                    return;
+                }
                 _converse.devicelists = new _converse.DeviceLists();
                 const storage = _converse.config.get('storage'),
                       id = `converse.devicelists-${_converse.bare_jid}`;
@@ -1030,7 +1035,7 @@
                 delete _converse.omemo_store;
             });
             _converse.api.listen.on('connected', registerPEPPushHandler);
-            _converse.api.listen.on('renderToolbar', (view) => view.renderOMEMOToolbarButton());
+            _converse.api.listen.on('renderToolbar', view => view.renderOMEMOToolbarButton());
             _converse.api.listen.on('statusInitialized', initOMEMO);
             _converse.api.listen.on('addClientFeatures',
                 () => _converse.api.disco.own.features.add(`${Strophe.NS.OMEMO_DEVICELIST}+notify`));

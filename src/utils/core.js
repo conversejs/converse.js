@@ -602,6 +602,7 @@
         return attrs['chat_state'] &&
             !attrs['oob_url'] &&
             !attrs['file'] &&
+            !(attrs['is_encrypted'] && attrs['plaintext']) &&
             !attrs['message'];
     };
 

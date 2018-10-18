@@ -682,7 +682,7 @@
                         }
                     }
                     const current_msg_date = moment(view.model.get('time')) || moment,
-                            previous_msg_date = this.getLastMessageDate(current_msg_date);
+                          previous_msg_date = this.getLastMessageDate(current_msg_date);
 
                     if (_.isNull(previous_msg_date)) {
                         this.content.insertAdjacentElement('afterbegin', view.el);

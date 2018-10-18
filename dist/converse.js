@@ -82163,7 +82163,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       attrs = attrs.attributes;
     }
 
-    return attrs['chat_state'] && !attrs['oob_url'] && !attrs['file'] && !attrs['message'];
+    return attrs['chat_state'] && !attrs['oob_url'] && !attrs['file'] && !(attrs['is_encrypted'] && attrs['plaintext']) && !attrs['message'];
   };
 
   u.isHeadlineMessage = function (_converse, message) {

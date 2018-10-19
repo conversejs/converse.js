@@ -39,6 +39,49 @@ an untrusted device. You would in any case not be able to decrypt previously
 received OMEMO messages, due to the Signal Protocol's forward secrecy and the
 fact that you don't have a pre-existing session.
 
+Security considerations for browser-based crypto
+------------------------------------------------
+
+Crypto apps deployed via regular web hosting can be described as relying on
+"host-based" security.
+
+Host-based security services require you to trust the host every time you access
+it, whereas with installable desktop software you trust the host when you
+download/install the software (and whenever it gets updated).
+
+The dynamic nature of "host-based" systems makes it impractical for security
+researchers to do security audits because the hosted code can change at any
+time.
+
+In such a setup you need to fully trust the host that serves you the JavaScript code.
+
+The host that serves the JavaScript code is not necessarily the same host that
+stores and procesess your chat messages. So using OMEMO can still protect your
+messages from snooping on the XMPP server where they're stored encrypted.
+
+In other words, you do have to trust the webserver that hosts Converse for you,
+but you don't necessarily have to trust the XMPP server (if it's on a different host),
+because it never gets hold of your private key.
+
+One way to improve this situation is to host Converse yourself, especially if
+you host it locally on your own machine. If you're not able to do that, then
+at least make sure you use a reputable host that serves files over HTTPS and
+that set `CSP <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy>`_
+headers.
+
+Due to these reasons, it's NOT a good idea to use encrypted messaging with a
+browser-based solution in life-threatening situations.
+
+Security can be increased by using an installable app (like one based on `Electron <https://electronjs.org/>`_)
+with a strict Content Security Policy.
+
+Look out for an Electron based version of Converse coming in the following months.
+
+For further reading on the challenges of web-based crypto, take a look at these
+articles:
+
+* `What's wrong with webcrypto? <https://tonyarcieri.com/whats-wrong-with-webcrypto>`_
+* `Heartbleed and JavaScript crypto <https://tankredhase.com/2014/04/13/heartbleed-and-javascript-crypto/>`_
 
 Notifications
 =============

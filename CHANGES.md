@@ -6,9 +6,9 @@
 - Bugfix. MUC features weren't being refreshed when saving the config form
 - #1190 MUC Participants column disappears in certain viewport widths
 - #1199 Can't get back from to login screen from registration screen
+- #1209 Bring color codes of users' status in line with other clients
 - #1214 Setting `allow_contact_requests` to `false` has no effect
 - #1222 Adding a bookmark should prefill the room name
-- #1209 Bring color codes of users' status in line with other clients
 
 ## 4.0.2 (2018-10-02)
 

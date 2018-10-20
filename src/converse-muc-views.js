@@ -478,6 +478,7 @@
                 initialize () {
                     _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
                     this.model.on('change', this.render, this);
+                    this.model.occupants.on('add', this.render, this);
                     this.model.occupants.on('change', this.render, this);
                 },
 

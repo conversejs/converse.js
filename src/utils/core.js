@@ -71,7 +71,7 @@
         'warn': _.get(console, 'log') ? console.log.bind(console) : _.noop
     }, console);
 
-    var isImage = function (url) {
+    const isImage = function (url) {
         return new Promise((resolve, reject) => {
             var img = new Image();
             var timer = window.setTimeout(function () {
@@ -281,24 +281,18 @@
         return text.replace(/\n\n+/g, '<br/><br/>').replace(/\n/g, '<br/>');
     };
 
-    u.renderImageURLs = function (_converse, obj) {
+    u.renderImageURLs = function (_converse, el) {
         /* Returns a Promise which resolves once all images have been loaded.
          */
+        if (!_converse.show_images_inline) {
+            return Promise.resolve();
+        }
         const { __ } = _converse;
-        const list = obj.textContent.match(URL_REGEX) || [];
+        const list = el.textContent.match(URL_REGEX) || [];
         return Promise.all(
-            _.map(list, (url) =>
+            _.map(list, url =>
                 new Promise((resolve, reject) => {
-                    const uri = new URI(url),
-                        filename = uri.filename(),
-                        lower_filename = filename.toLowerCase();
-                    if (!_.includes(["https", "http"], uri.protocol().toLowerCase())) {
-                        return resolve();
-                    }
-                    if (lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') ||
-                            lower_filename.endsWith('png') || lower_filename.endsWith('gif') ||
-                            lower_filename.endsWith('svg')) {
-
+                    if (u.isImageURL(url)) {
                         return isImage(url).then(img => {
                             const i = new Image();
                             i.src = img.src;
@@ -308,7 +302,7 @@
                             i.addEventListener('error', resolve);
 
                             const { __ } = _converse;
-                            _.each(sizzle(`a[href="${url}"]`, obj), (a) => {
+                            _.each(sizzle(`a[href="${url}"]`, el), (a) => {
                                 a.outerHTML= tpl_image({
                                     'url': url,
                                     'label_download': __('Download')
@@ -324,32 +318,61 @@
     };
 
     u.renderFileURL = function (_converse, url) {
-        const uri = new URI(url),
-              filename = uri.filename(),
-              lower_filename = filename.toLowerCase();
-        if (!_.includes(["https", "http"], uri.protocol().toLowerCase()) ||
-            lower_filename.endsWith('mp3') || lower_filename.endsWith('mp4') || lower_filename.endsWith('ogg') ||
-            lower_filename.endsWith('jpg') || lower_filename.endsWith('jpeg') ||
-            lower_filename.endsWith('png') || lower_filename.endsWith('gif') ||
-            lower_filename.endsWith('m4a') || lower_filename.endsWith('webm') ||
-            lower_filename.endsWith('svg')) {
-
+        const uri = new URI(url);
+        if (u.isImageURL(uri) || u.isVideoURL(uri) || u.isAudioURL(uri)) {
             return url;
         }
-        const { __ } = _converse;
+        const { __ } = _converse,
+              filename = uri.filename();
         return tpl_file({
             'url': url,
             'label_download': __('Download file "%1$s"', decodeURI(filename))
         })
     };
 
-    u.renderImageURL = function (_converse, url) {
-        const lurl = url.toLowerCase();
-        if (lurl.endsWith('jpg') || lurl.endsWith('jpeg') || lurl.endsWith('png') ||
-            lurl.endsWith('gif') || lurl.endsWith('svg')) {
+    u.isAudioURL = function (url) {
+        if (!(url instanceof URI)) {
+            url = new URI(url);
+        }
+        const filename = url.filename().toLowerCase();
+        if (!_.includes(["https", "http"], url.protocol().toLowerCase())) {
+            return false;
+        }
+        return filename.endsWith('.ogg') || filename.endsWith('.mp3') || filename.endsWith('.m4a');
+    }
 
-            const { __ } = _converse,
-                  uri = new URI(url);
+    u.isVideoURL = function (url) {
+        if (!(url instanceof URI)) {
+            url = new URI(url);
+        }
+        const filename = url.filename().toLowerCase();
+        if (!_.includes(["https", "http"], url.protocol().toLowerCase())) {
+            return false;
+        }
+        return filename.endsWith('.mp4') || filename.endsWith('.webm');
+    }
+
+    u.isImageURL = function (url) {
+        if (!(url instanceof URI)) {
+            url = new URI(url);
+        }
+        const filename = url.filename().toLowerCase();
+        if (!_.includes(["https", "http"], url.protocol().toLowerCase())) {
+            return false;
+        }
+        return filename.endsWith('.jpg') || filename.endsWith('.jpeg') ||
+               filename.endsWith('.png') || filename.endsWith('.gif') ||
+               filename.endsWith('.bmp') || filename.endsWith('.tiff') ||
+               filename.endsWith('.svg');
+    };
+
+    u.renderImageURL = function (_converse, url) {
+        if (!_converse.show_images_inline) {
+            return u.addHyperlinks(url);
+        }
+        const uri = new URI(url);
+        if (u.isImageURL(uri)) {
+            const { __ } = _converse;
             return tpl_image({
                 'url': url,
                 'label_download': __('Download image "%1$s"', decodeURI(uri.filename()))
@@ -359,9 +382,9 @@
     };
 
     u.renderMovieURL = function (_converse, url) {
-        if (url.endsWith('mp4') || url.endsWith('webm')) {
-            const { __ } = _converse,
-                  uri = new URI(url);
+        const uri = new URI(url);
+        if (u.isVideoURL(uri)) {
+            const { __ } = _converse;
             return tpl_video({
                 'url': url,
                 'label_download': __('Download video file "%1$s"', decodeURI(uri.filename()))
@@ -371,9 +394,9 @@
     };
 
     u.renderAudioURL = function (_converse, url) {
-        if (url.endsWith('mp3') || url.endsWith('m4a') || url.endsWith('ogg')) {
-            const { __ } = _converse,
-                  uri = new URI(url);
+        const uri = new URI(url);
+        if (u.isAudioURL(uri)) {
+            const { __ } = _converse;
             return tpl_audio({
                 'url': url,
                 'label_download': __('Download audio file "%1$s"', decodeURI(uri.filename()))
@@ -579,6 +602,7 @@
         return attrs['chat_state'] &&
             !attrs['oob_url'] &&
             !attrs['file'] &&
+            !(attrs['is_encrypted'] && attrs['plaintext']) &&
             !attrs['message'];
     };
 

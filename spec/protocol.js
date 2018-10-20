@@ -209,7 +209,7 @@
                      *  </iq>
                      */
                     spyOn(_converse.roster, "updateContact").and.callThrough();
-                    stanza = $iq({'type': 'set', 'from': _converse.connection.jid})
+                    stanza = $iq({'type': 'set', 'from': _converse.bare_jid})
                         .c('query', {'xmlns': 'jabber:iq:roster'})
                         .c('item', {
                             'jid': 'contact@example.org',

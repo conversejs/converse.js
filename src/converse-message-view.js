@@ -41,8 +41,11 @@
                 { __ } = _converse;
 
 
-            _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
+            _converse.api.settings.update({
+                'show_images_inline': true
+            });
 
+            _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
                 toHTML () {
                     return tpl_message_versions_modal(_.extend(
                         this.model.toJSON(), {
@@ -61,18 +64,12 @@
                     if (this.model.vcard) {
                         this.model.vcard.on('change', this.render, this);
                     }
-                    this.model.on('change:correcting', this.onMessageCorrection, this);
-                    this.model.on('change:message', this.render, this);
-                    this.model.on('change:progress', this.renderFileUploadProgresBar, this);
-                    this.model.on('change:type', this.render, this);
-                    this.model.on('change:upload', this.render, this);
+                    this.model.on('change', this.onChanged, this);
                     this.model.on('destroy', this.remove, this);
-                    this.render();
                 },
 
-                render () {
+                async render () {
                     const is_followup = u.hasClass('chat-msg--followup', this.el);
-                    let msg;
                     if (this.model.isOnlyChatStateNotification()) {
                         this.renderChatStateNotification()
                     } else if (this.model.get('file') && !this.model.get('oob_url')) {
@@ -80,7 +77,7 @@
                     } else if (this.model.get('type') === 'error') {
                         this.renderErrorMessage();
                     } else {
-                        this.renderChatMessage();
+                        await this.renderChatMessage();
                     }
                     if (is_followup) {
                         u.addClass('chat-msg--followup', this.el);
@@ -88,12 +85,29 @@
                     return this.el;
                 },
 
-                onMessageCorrection () {
-                    this.render();
-                    if (!this.model.get('correcting') && this.model.changed.message) {
-                        this.el.addEventListener('animationend', () => u.removeClass('onload', this.el));
-                        u.addClass('onload', this.el);
+                async onChanged (item) {
+                    // Jot down whether it was edited because the `changed`
+                    // attr gets removed when this.render() gets called further
+                    // down.
+                    const edited = item.changed.edited;
+                    if (this.model.changed.progress) {
+                        return this.renderFileUploadProgresBar();
                     }
+                    if (_.filter(['correcting', 'message', 'type', 'upload'],
+                                 prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop)).length) {
+                        await this.render();
+                    }
+                    if (edited) {
+                        this.onMessageEdited();
+                    }
+                },
+
+                onMessageEdited () {
+                    if (this.model.get('is_archived')) {
+                        return;
+                    }
+                    this.el.addEventListener('animationend', () => u.removeClass('onload', this.el));
+                    u.addClass('onload', this.el);
                 },
 
                 replaceElement (msg) {
@@ -104,7 +118,7 @@
                     return this.el;
                 },
 
-                renderChatMessage () {
+                async renderChatMessage () {
                     const is_me_message = this.isMeCommand(),
                           moment_time = moment(this.model.get('time')),
                           role = this.model.vcard ? this.model.vcard.get('role') : null,
@@ -148,14 +162,14 @@
                             _.partial(u.addEmoji, _converse, _)
                         )(text);
                     }
-                    u.renderImageURLs(_converse, msg_content).then(() => {
-                        this.model.collection.trigger('rendered');
-                    });
-                    this.replaceElement(msg);
-
+                    const promises = [];
+                    promises.push(u.renderImageURLs(_converse, msg_content));
                     if (this.model.get('type') !== 'headline') {
-                        this.renderAvatar();
+                        promises.push(this.renderAvatar(msg));
                     }
+                    await Promise.all(promises);
+                    this.replaceElement(msg);
+                    this.model.collection.trigger('rendered', this);
                 },
 
                 renderErrorMessage () {

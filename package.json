@@ -40,7 +40,7 @@
     "awesomplete-avoid-xss": "^1.1.2",
     "babel-loader": "^8.0.0-beta.3",
     "backbone": "1.3.3",
-    "backbone.browserStorage": "0.0.3",
+    "backbone.browserStorage": "jcbrand/Backbone.browserStorage#78e4a58f7cee10cad6af4fd5f3213331a396aa5a",
     "backbone.nativeview": "^0.3.3",
     "backbone.overview": "1.0.2",
     "backbone.vdomview": "1.0.1",

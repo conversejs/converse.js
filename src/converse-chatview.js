@@ -91,7 +91,11 @@
 
             function onWindowStateChanged (data) {
                 if (_converse.chatboxviews) {
-                    _converse.chatboxviews.each(view => view.onWindowStateChanged(data.state));
+                    _converse.chatboxviews.each(view => {
+                        if (view.model.get('id') !== 'controlbox') {
+                            view.onWindowStateChanged(data.state);
+                        }
+                    });
                 }
             }
             _converse.api.listen.on('windowStateChanged', onWindowStateChanged);
@@ -673,11 +677,12 @@
                     if (view.model.get('type') === 'error') {
                         const previous_msg_el = this.content.querySelector(`[data-msgid="${view.model.get('msgid')}"]`);
                         if (previous_msg_el) {
-                            return previous_msg_el.insertAdjacentElement('afterend', view.el);
+                            previous_msg_el.insertAdjacentElement('afterend', view.el);
+                            return this.trigger('messageInserted', view.el);
                         }
                     }
                     const current_msg_date = moment(view.model.get('time')) || moment,
-                            previous_msg_date = this.getLastMessageDate(current_msg_date);
+                          previous_msg_date = this.getLastMessageDate(current_msg_date);
 
                     if (_.isNull(previous_msg_date)) {
                         this.content.insertAdjacentElement('afterbegin', view.el);
@@ -692,6 +697,7 @@
                         previous_msg_el.insertAdjacentElement('afterend', view.el);
                         this.markFollowups(view.el);
                     }
+                    return this.trigger('messageInserted', view.el);
                 },
 
                 markFollowups (el) {
@@ -731,7 +737,7 @@
                     }
                 },
 
-                showMessage (message) {
+                async showMessage (message) {
                     /* Inserts a chat message into the content area of the chat box.
                      *
                      * Will also insert a new day indicator if the message is on a
@@ -741,6 +747,8 @@
                      *  (Backbone.Model) message: The message object
                      */
                     const view = new _converse.MessageView({'model': message});
+                    await view.render();
+                    
                     this.clearChatStateNotification(message);
                     this.insertMessage(view);
                     this.insertDayIndicator(view.el);
@@ -1261,8 +1269,17 @@
                 },
 
                 onWindowStateChanged (state) {
-                    if (this.model.get('num_unread', 0) && !this.model.isHidden()) {
-                        this.model.clearUnreadMsgCounter();
+                    if (state === 'visible') {
+                        if (!this.model.isHidden()) {
+                            this.setChatState(_converse.ACTIVE);
+                            if (this.model.get('num_unread', 0)) {
+                                this.model.clearUnreadMsgCounter();
+                            }
+                        }
+                    } else if (state === 'hidden') {
+                        this.setChatState(_converse.INACTIVE, {'silent': true});
+                        this.model.sendChatState();
+                        _converse.connection.flush();
                     }
                 }
             });

@@ -23,35 +23,31 @@ Generating builds
 Creating JavaScript and CSS bundles and distribution files
 ==========================================================
 
-Converse uses `webpack <https://webpack.js.org/>`_ to create single build files containing the core code and
-all of the 3rd party dependencies.
+Converse uses `webpack <https://webpack.js.org/>`_ to create bundles containing the
+core JavaScript code and all of the 3rd party dependencies.
 
-These files are in the `dist <https://github.com/conversejs/converse.js/tree/master/dist>`_ directory.
+Similarly, we use `Sass <http://sass-lang.com/>`_ to generate the CSS bundle
+from ``.scss`` files in the ``sass`` directory.
 
-Before you start changing the core code, you can run ``make watchjs`` in your terminal.
+The generated JavaScript bundles are contained in the `dist <https://github.com/conversejs/converse.js/tree/master/dist>`_ directory
+and the generated CSS bundles in the `css <https://github.com/conversejs/converse.js/tree/master/css>`_ directory.
 
-This command will listen for any changed files and then automatically create a
-new build of ``dist/converse.js``.
+To generate a prticular bundle, for example the minified file ``converse.min.js``, you can run ``make dist/converse.min.js``.
+This is also true for any of the other bundle files.
 
-The CSS files are also generated, from the scss files in the
-`sass <https://github.com/conversejs/converse.js/tree/master/sass>`_ directory.
+To generate all CSS and JavaScript bundles, you can run ``make dist``.
 
-Similarly to ``make watchjs``, you can run ``make watch`` to automatically
-generate the css files in the ``./css/`` directory.
+When you're developing, and constantly changing code, you can run ``make watch``
+to let the bundles be automatically generated as soon as you edit a file.
 
 The Converse repository does not include the minified files in the ``dist`` or
 ``css`` directories. Before deployment, you'll want to generate them yourself.
 
-To do so, run the following:
+To only generate the minified files, you can make them individually.
 
 ::
     make dist/converse.min.js
     make css/converse.min.css
-
-Alternatively, if you want to generate ALL the bundles files (minified and
-unminified), then you can also run::
-
-    make dist
 
 
 Creating custom bundles
@@ -111,8 +107,3 @@ maintaining a roster, chats and messages.
 
 The file `src/headless.js <https://github.com/jcbrand/converse.js/blob/master/src/headless.js>`_
 is used to determine which plugins are included in the build.
-
-.. Note:: Unfortunately it's currently not yet possible to include Multi-user chat (MUC)
-    functionality in the headless build. This is because both the UI and core
-    functionality is still contained in one plugin and would first need to be
-    split up into two parts, with the UI part dropped for this build.

@@ -2,20 +2,27 @@
 
 ## 4.0.3 (Unreleased)
 
+- Bugfix. Converse continuously publishes an empty OMEMO devicelist for itself
 - Bugfix. Handler not triggered when submitting MUC password form 2nd time
 - Bugfix. MUC features weren't being refreshed when saving the config form
 - Don't show duplicate notification messages
+- New config setting [show_images_inline](https://conversejs.org/docs/html/configuration.html#show-images-inline)
+- Disable OMEMO when the user has indicated that Converse is running on an untrusted device.
 - #537 Render `xmpp:` URI as link
+- #1058 Send an inactive chat state notification when the user switches to another tab 
 - #1062 Collapse multiple join/leave messages into one
 - #1063 URLs in the topic / subject are not clickable
 - #1140 Add support for destroyed chatrooms
 - #1169 Non-joined participants display an unwanted status message
+- #1185 Added Contact still shown as pending
 - #1190 MUC Participants column disappears in certain viewport widths
+- #1193 OMEMO messages without a `<body>` fallback are ignored
 - #1199 Can't get back from to login screen from registration screen
 - #1204 Link encoding issue
 - #1214 Setting `allow_contact_requests` to `false` has no effect
 - #1221 Avoid creating a headlines box if we don't have anything to show inside it
 - #1222 Adding a bookmark should prefill the room name
+- #1228 Converse automatically visits links (to try and determine whether they're images to show inline)
 
 ## 4.0.2 (2018-10-02)
 

@@ -297,7 +297,7 @@
                             'message': _converse.chatboxes.getMessageBody(stanza),
                             'references': this.getReferencesFromStanza(stanza),
                             'older_versions': older_versions,
-                            'edited': true
+                            'edited': moment().format()
                         });
                         return true;
                     }
@@ -395,7 +395,7 @@
                         older_versions.push(message.get('message'));
                         message.save({
                             'correcting': false,
-                            'edited': true,
+                            'edited': moment().format(),
                             'message': attrs.message,
                             'older_versions': older_versions,
                             'references': attrs.references
@@ -540,7 +540,7 @@
                             // XXX: MUC leakage
                             // No need showing delayed or our own CSN messages
                             return;
-                        } else if (!is_csn && !attrs.file && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
+                        } else if (!is_csn && !attrs.file && !attrs.plaintext && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
                             // TODO: handle <subject> messages (currently being done by ChatRoom)
                             return;
                         } else {
@@ -721,11 +721,12 @@
                     } else {
                         contact_jid = from_bare_jid;
                     }
-                    // Get chat box, but only create a new one when the message has a body.
                     const attrs = {
                         'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
                     }
-                    const chatbox = this.getChatBox(contact_jid, attrs, !_.isNull(stanza.querySelector('body')));
+                    // Get chat box, but only create a new one when the message has a body.
+                    const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}`).length > 0;
+                    const chatbox = this.getChatBox(contact_jid, attrs, has_body);
                     if (chatbox && !chatbox.handleMessageCorrection(stanza)) {
                         const msgid = stanza.getAttribute('id'),
                               message = msgid && chatbox.messages.findWhere({msgid});

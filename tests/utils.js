@@ -297,13 +297,15 @@
                .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
     }
 
-    utils.sendMessage = function (chatboxview, message) {
-        chatboxview.el.querySelector('.chat-textarea').value = message;
-        chatboxview.keyPressed({
-            target: chatboxview.el.querySelector('textarea.chat-textarea'),
+    utils.sendMessage = function (view, message) {
+        const promise = new Promise((resolve, reject) => view.on('messageInserted', resolve));
+        view.el.querySelector('.chat-textarea').value = message;
+        view.keyPressed({
+            target: view.el.querySelector('textarea.chat-textarea'),
             preventDefault: _.noop,
             keyCode: 13
         });
+        return promise;
     };
     return utils;
 }));

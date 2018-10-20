@@ -1266,6 +1266,13 @@ send_chat_state_notifications
 Determines whether chat state notifications (see `XEP-0085 <https://xmpp.org/extensions/xep-0085.html>`_)
 should be sent out or not.
 
+show_images_inline
+------------------
+
+* Default:  ``true``
+
+If set to false, images won't be rendered in chats, instead only their links will be shown.
+
 show_only_online_users
 ----------------------
 

@@ -173,17 +173,6 @@ function parameterize () {
         const fn = config.output.filename;
         config.output.filename = `${fn.replace(/\.js$/, '')}.min.js`;
     }
-
-    if (lang === 'es2015') {
-        console.log("Making an es2015 build");
-        config.module.rules.forEach((rule) => {
-            if (rule.use.loader === 'babel-loader') {
-                rule.use.options.presets = [
-                    ["@babel/preset-es2015"]
-                ]
-            }
-        });
-    }
 }
 
 parameterize();

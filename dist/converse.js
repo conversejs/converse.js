@@ -43834,7 +43834,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 return;
             }
             if (_.isBoolean(plugin.enabled) && plugin.enabled || _.isFunction(plugin.enabled) && plugin.enabled(this.plugged) || _.isNil(plugin.enabled)) {
-
                 _.extend(plugin, this.properties);
                 if (plugin.dependencies) {
                     this.loadPluginDependencies(plugin);
@@ -43907,6 +43906,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 });
 
 //# sourceMappingURL=pluggable.js.map
+
 
 /***/ }),
 
@@ -76845,13 +76845,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           const show = item.presence.get('show') || 'offline';
 
           if (show === 'online') {
-            status_icon = 'fa fa-circle';
+            status_icon = 'fa fa-circle chat-status chat-status--online';
           } else if (show === 'away') {
-            status_icon = 'fa fa-dot-circle';
+            status_icon = 'fa fa-circle chat-status chat-status--away';
           } else if (show === 'xa') {
-            status_icon = 'far fa-circle';
+            status_icon = 'far fa-circle chat-status';
           } else if (show === 'dnd') {
-            status_icon = 'fa fa-minus-circle';
+            status_icon = 'fa fa-minus-circle chat-status chat-status--busy';
           }
 
           const display_name = item.getDisplayName();

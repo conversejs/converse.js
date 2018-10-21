@@ -477,13 +477,13 @@
                     let status_icon = 'fa fa-times-circle';
                     const show = item.presence.get('show') || 'offline';
                     if (show === 'online') {
-                        status_icon = 'fa fa-circle';
+                        status_icon = 'fa fa-circle chat-status chat-status--online';
                     } else if (show === 'away') {
-                        status_icon = 'fa fa-dot-circle';
+                        status_icon = 'fa fa-circle chat-status chat-status--away';
                     } else if (show === 'xa') {
-                        status_icon = 'far fa-circle';
+                        status_icon = 'far fa-circle chat-status';
                     } else if (show === 'dnd') {
-                        status_icon = 'fa fa-minus-circle';
+                        status_icon = 'fa fa-minus-circle chat-status chat-status--busy';
                     }
                     const display_name = item.getDisplayName();
                     this.el.innerHTML = tpl_roster_item(

@@ -139,9 +139,6 @@ css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/w
 css/converse.css:: dev sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse.scss css/converse.css
 
-css/fonts.css:: dev sass
-	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/font-awesome.scss $@
-
 css/website.css:: dev sass
 	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/website.scss $@
 

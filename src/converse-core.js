@@ -13,7 +13,7 @@
             "i18n",
             "utils/core",
             "moment",
-            "strophe",
+            "strophe.js",
             "pluggable",
             "backbone.noconflict",
             "backbone.nativeview",

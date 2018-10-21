@@ -86,272 +86,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "../Backbone.browserStorage/backbone.browserStorage.js":
-/*!*************************************************************!*\
-  !*** ../Backbone.browserStorage/backbone.browserStorage.js ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * Backbone localStorage and sessionStorage Adapter
- * Version 0.0.3
- *
- * https://github.com/jcbrand/Backbone.browserStorage
- */
-(function (root, factory) {
-  if (true) {
-    module.exports = factory(__webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! underscore */ "./src/underscore-shim.js"));
-  } else {}
-})(void 0, function (Backbone, _) {
-  // A simple module to replace `Backbone.sync` with *browser storage*-based
-  // persistence. Models are given GUIDS, and saved into a JSON object. Simple
-  // as that.
-  // Hold reference to Underscore.js and Backbone.js in the closure in order
-  // to make things work even if they are removed from the global namespace
-  // Generate four random hex digits.
-  function S4() {
-    return ((1 + Math.random()) * 0x10000 | 0).toString(16).substring(1);
-  } // Generate a pseudo-GUID by concatenating random hexadecimal.
-
-
-  function guid() {
-    return S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4();
-  }
-
-  function contains(array, item) {
-    var i = array.length;
-
-    while (i--) if (array[i] === item) return true;
-
-    return false;
-  }
-
-  function extend(obj, props) {
-    for (var key in props) {
-      obj[key] = props[key];
-    }
-
-    return obj;
-  }
-
-  function _browserStorage(name, serializer, type) {
-    var _store;
-
-    if (type === 'local' && !window.localStorage) {
-      throw "Backbone.browserStorage: Environment does not support localStorage.";
-    } else if (type === 'session' && !window.sessionStorage) {
-      throw "Backbone.browserStorage: Environment does not support sessionStorage.";
-    }
-
-    this.name = name;
-    this.serializer = serializer || {
-      serialize: function serialize(item) {
-        return _.isObject(item) ? JSON.stringify(item) : item;
-      },
-      // fix for "illegal access" error on Android when JSON.parse is passed null
-      deserialize: function deserialize(data) {
-        return data && JSON.parse(data);
-      }
-    };
-
-    if (type === 'session') {
-      this.store = window.sessionStorage;
-    } else if (type === 'local') {
-      this.store = window.localStorage;
-    } else {
-      throw "Backbone.browserStorage: No storage type was specified";
-    }
-
-    _store = this.store.getItem(this.name);
-    this.records = _store && _store.split(",") || [];
-  } // Our Store is represented by a single JS object in *localStorage* or *sessionStorage*.
-  // Create it with a meaningful name, like the name you'd give a table.
-
-
-  Backbone.BrowserStorage = {
-    local: function local(name, serializer) {
-      return _browserStorage.bind(this, name, serializer, 'local')();
-    },
-    session: function session(name, serializer) {
-      return _browserStorage.bind(this, name, serializer, 'session')();
-    }
-  }; // The browser's local and session stores will be extended with this obj.
-
-  var _extension = {
-    // Save the current state of the **Store**
-    save: function save() {
-      this.store.setItem(this.name, this.records.join(","));
-    },
-    // Add a model, giving it a (hopefully)-unique GUID, if it doesn't already
-    // have an id of it's own.
-    create: function create(model) {
-      if (!model.id) {
-        model.id = guid();
-        model.set(model.idAttribute, model.id);
-      }
-
-      this.store.setItem(this._itemName(model.id), this.serializer.serialize(model));
-      this.records.push(model.id.toString());
-      this.save();
-      return this.find(model);
-    },
-    // Update a model by replacing its copy in `this.data`.
-    update: function update(model) {
-      this.store.setItem(this._itemName(model.id), this.serializer.serialize(model));
-      var modelId = model.id.toString();
-
-      if (!contains(this.records, modelId)) {
-        this.records.push(modelId);
-        this.save();
-      }
-
-      return this.find(model);
-    },
-    // Retrieve a model from `this.data` by id.
-    find: function find(model) {
-      return this.serializer.deserialize(this.store.getItem(this._itemName(model.id)));
-    },
-    // Return the array of all models currently in storage.
-    findAll: function findAll() {
-      var result = [];
-
-      for (var i = 0, id, data; i < this.records.length; i++) {
-        id = this.records[i];
-        data = this.serializer.deserialize(this.store.getItem(this._itemName(id)));
-        if (data !== null) result.push(data);
-      }
-
-      return result;
-    },
-    // Delete a model from `this.data`, returning it.
-    destroy: function destroy(model) {
-      this.store.removeItem(this._itemName(model.id));
-      var modelId = model.id.toString();
-
-      for (var i = 0, id; i < this.records.length; i++) {
-        if (this.records[i] === modelId) {
-          this.records.splice(i, 1);
-        }
-      }
-
-      this.save();
-      return model;
-    },
-    browserStorage: function browserStorage() {
-      return {
-        session: sessionStorage,
-        local: localStorage
-      };
-    },
-    // Clear browserStorage for specific collection.
-    _clear: function _clear() {
-      var local = this.store,
-          itemRe; // Escape special regex characters in id.
-
-      itemRe = new RegExp("^" + this.name.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") + "-"); // Remove id-tracking item (e.g., "foo").
-
-      local.removeItem(this.name); // Match all data items (e.g., "foo-ID") and remove.
-
-      for (var k in local) {
-        if (itemRe.test(k)) {
-          local.removeItem(k);
-        }
-      }
-
-      this.records.length = 0;
-    },
-    // Size of browserStorage.
-    _storageSize: function _storageSize() {
-      return this.store.length;
-    },
-    _itemName: function _itemName(id) {
-      return this.name + "-" + id;
-    }
-  };
-  extend(Backbone.BrowserStorage.session.prototype, _extension);
-  extend(Backbone.BrowserStorage.local.prototype, _extension); // localSync delegate to the model or collection's
-  // *browserStorage* property, which should be an instance of `Store`.
-  // window.Store.sync and Backbone.localSync is deprecated, use Backbone.BrowserStorage.sync instead
-
-  Backbone.BrowserStorage.sync = Backbone.localSync = function (method, model, options) {
-    var store = model.browserStorage || model.collection.browserStorage;
-    var resp, errorMessage; //If $ is having Deferred - use it.
-
-    var syncDfd = Backbone.$ ? Backbone.$.Deferred && Backbone.$.Deferred() : Backbone.Deferred && Backbone.Deferred();
-
-    try {
-      switch (method) {
-        case "read":
-          resp = model.id !== undefined ? store.find(model) : store.findAll();
-          break;
-
-        case "create":
-          resp = store.create(model);
-          break;
-
-        case "update":
-          resp = store.update(model);
-          break;
-
-        case "delete":
-          resp = store.destroy(model);
-          break;
-      }
-    } catch (error) {
-      if (error.code === 22 && store._storageSize() === 0) errorMessage = "Private browsing is unsupported";else errorMessage = error.message;
-    }
-
-    if (resp) {
-      if (options && options.success) {
-        options.success(resp);
-      }
-
-      if (syncDfd) {
-        syncDfd.resolve(resp);
-      }
-    } else {
-      errorMessage = errorMessage ? errorMessage : "Record Not Found";
-
-      if (options && options.error) {
-        options.error(errorMessage);
-      }
-
-      if (syncDfd) {
-        syncDfd.reject(errorMessage);
-      }
-    } // add compatibility with $.ajax
-    // always execute callback for success and error
-
-
-    if (options && options.complete) options.complete(resp);
-    return syncDfd && syncDfd.promise();
-  };
-
-  Backbone.ajaxSync = Backbone.sync;
-
-  Backbone.getSyncMethod = function (model) {
-    if (model.browserStorage || model.collection && model.collection.browserStorage) {
-      return Backbone.localSync;
-    }
-
-    return Backbone.ajaxSync;
-  }; // Override 'Backbone.sync' to default to localSync,
-  // the original 'Backbone.sync' is still available in 'Backbone.ajaxSync'
-
-
-  Backbone.sync = function (method, model, options) {
-    return Backbone.getSyncMethod(model).apply(this, [method, model, options]);
-  };
-
-  return Backbone.BrowserStorage;
-});
-
-/***/ }),
-
 /***/ "./3rdparty/lodash.fp.js":
 /*!*******************************!*\
   !*** ./3rdparty/lodash.fp.js ***!
@@ -359,12 +93,9 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
 (function webpackUniversalModuleDefinition(root, factory) {
   if (true) module.exports = factory();else {}
-})(void 0, function () {
+})(this, function () {
   return (
     /******/
     function (modules) {
@@ -1987,6 +1718,275 @@ return _;
 
 /*** EXPORTS FROM exports-loader ***/
 module.exports = Awesomplete;
+
+/***/ }),
+
+/***/ "./node_modules/backbone.browserStorage/backbone.browserStorage.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/backbone.browserStorage/backbone.browserStorage.js ***!
+  \*************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Backbone localStorage and sessionStorage Adapter
+ * Version 0.0.3
+ *
+ * https://github.com/jcbrand/Backbone.browserStorage
+ */
+(function (root, factory) {
+  if (true) {
+    module.exports = factory(__webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! underscore */ "./src/underscore-shim.js"));
+  } else {}
+}(this, function(Backbone, _) {
+// A simple module to replace `Backbone.sync` with *browser storage*-based
+// persistence. Models are given GUIDS, and saved into a JSON object. Simple
+// as that.
+
+// Hold reference to Underscore.js and Backbone.js in the closure in order
+// to make things work even if they are removed from the global namespace
+
+// Generate four random hex digits.
+function S4() {
+   return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+}
+
+// Generate a pseudo-GUID by concatenating random hexadecimal.
+function guid() {
+   return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
+function contains(array, item) {
+  var i = array.length;
+  while (i--) if (array[i] === item) return true;
+  return false;
+}
+
+function extend(obj, props) {
+  for (var key in props) { obj[key] = props[key]; }
+  return obj;
+}
+
+function _browserStorage (name, serializer, type) {
+    var _store;
+    if (type === 'local' && !window.localStorage ) {
+        throw "Backbone.browserStorage: Environment does not support localStorage.";
+    } else if (type === 'session' && !window.sessionStorage ) {
+        throw "Backbone.browserStorage: Environment does not support sessionStorage.";
+    }
+    this.name = name;
+    this.serializer = serializer || {
+        serialize: function(item) {
+        return _.isObject(item) ? JSON.stringify(item) : item;
+        },
+        // fix for "illegal access" error on Android when JSON.parse is passed null
+        deserialize: function (data) {
+        return data && JSON.parse(data);
+        }
+    };
+
+    if (type === 'session') {
+        this.store = window.sessionStorage;
+    } else if (type === 'local') {
+        this.store = window.localStorage;
+    } else {
+        throw "Backbone.browserStorage: No storage type was specified";
+    }
+    _store = this.store.getItem(this.name);
+    this.records = (_store && _store.split(",")) || [];
+}
+
+// Our Store is represented by a single JS object in *localStorage* or *sessionStorage*.
+// Create it with a meaningful name, like the name you'd give a table.
+Backbone.BrowserStorage = {
+    local: function (name, serializer) {
+        return _browserStorage.bind(this, name, serializer, 'local')();
+    },
+    session: function (name, serializer) {
+        return _browserStorage.bind(this, name, serializer, 'session')();
+    }
+};
+
+// The browser's local and session stores will be extended with this obj.
+var _extension = {
+
+  // Save the current state of the **Store**
+  save: function() {
+    this.store.setItem(this.name, this.records.join(","));
+  },
+
+  // Add a model, giving it a (hopefully)-unique GUID, if it doesn't already
+  // have an id of it's own.
+  create: function(model) {
+    if (!model.id) {
+      model.id = guid();
+      model.set(model.idAttribute, model.id);
+    }
+    this.store.setItem(this._itemName(model.id), this.serializer.serialize(model));
+    this.records.push(model.id.toString());
+    this.save();
+    return this.find(model);
+  },
+
+  // Update a model by replacing its copy in `this.data`.
+  update: function(model) {
+    this.store.setItem(this._itemName(model.id), this.serializer.serialize(model));
+    var modelId = model.id.toString();
+    if (!contains(this.records, modelId)) {
+      this.records.push(modelId);
+      this.save();
+    }
+    return this.find(model);
+  },
+
+  // Retrieve a model from `this.data` by id.
+  find: function(model) {
+    return this.serializer.deserialize(this.store.getItem(this._itemName(model.id)));
+  },
+
+  // Return the array of all models currently in storage.
+  findAll: function() {
+    var result = [];
+    for (var i = 0, id, data; i < this.records.length; i++) {
+      id = this.records[i];
+      data = this.serializer.deserialize(this.store.getItem(this._itemName(id)));
+      if (data !== null) result.push(data);
+    }
+    return result;
+  },
+
+  // Delete a model from `this.data`, returning it.
+  destroy: function(model) {
+    this.store.removeItem(this._itemName(model.id));
+    var modelId = model.id.toString();
+    for (var i = 0, id; i < this.records.length; i++) {
+      if (this.records[i] === modelId) {
+        this.records.splice(i, 1);
+      }
+    }
+    this.save();
+    return model;
+  },
+
+  browserStorage: function() {
+    return {
+        session: sessionStorage,
+        local: localStorage
+    };
+  },
+
+  // Clear browserStorage for specific collection.
+  _clear: function() {
+    var local = this.store, itemRe;
+
+    // Escape special regex characters in id.
+    itemRe = new RegExp("^" + this.name.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") + "-");
+    
+    // Remove id-tracking item (e.g., "foo").
+    local.removeItem(this.name);
+
+    // Match all data items (e.g., "foo-ID") and remove.
+    for (var k in local) {
+      if (itemRe.test(k)) {
+        local.removeItem(k);
+      }
+    }
+
+    this.records.length = 0;
+  },
+
+  // Size of browserStorage.
+  _storageSize: function() {
+    return this.store.length;
+  },
+
+  _itemName: function(id) {
+    return this.name+"-"+id;
+  }
+
+};
+
+extend(Backbone.BrowserStorage.session.prototype, _extension);
+extend(Backbone.BrowserStorage.local.prototype, _extension);
+
+// localSync delegate to the model or collection's
+// *browserStorage* property, which should be an instance of `Store`.
+// window.Store.sync and Backbone.localSync is deprecated, use Backbone.BrowserStorage.sync instead
+Backbone.BrowserStorage.sync = Backbone.localSync = function(method, model, options) {
+  var store = model.browserStorage || model.collection.browserStorage;
+
+  var resp, errorMessage;
+  //If $ is having Deferred - use it.
+  var syncDfd = Backbone.$ ?
+    (Backbone.$.Deferred && Backbone.$.Deferred()) :
+    (Backbone.Deferred && Backbone.Deferred());
+
+  try {
+
+    switch (method) {
+      case "read":
+        resp = model.id !== undefined ? store.find(model) : store.findAll();
+        break;
+      case "create":
+        resp = store.create(model);
+        break;
+      case "update":
+        resp = store.update(model);
+        break;
+      case "delete":
+        resp = store.destroy(model);
+        break;
+    }
+
+  } catch(error) {
+    if (error.code === 22 && store._storageSize() === 0)
+      errorMessage = "Private browsing is unsupported";
+    else
+      errorMessage = error.message;
+  }
+
+  if (resp) {
+    if (options && options.success) {
+        options.success(resp);
+    }
+    if (syncDfd) {
+        syncDfd.resolve(resp);
+    }
+  } else {
+    errorMessage = errorMessage ? errorMessage : "Record Not Found";
+    if (options && options.error) {
+        options.error(errorMessage);
+    }
+    if (syncDfd) {
+        syncDfd.reject(errorMessage);
+    }
+  }
+
+  // add compatibility with $.ajax
+  // always execute callback for success and error
+  if (options && options.complete) options.complete(resp);
+
+  return syncDfd && syncDfd.promise();
+};
+
+Backbone.ajaxSync = Backbone.sync;
+
+Backbone.getSyncMethod = function(model) {
+  if(model.browserStorage || (model.collection && model.collection.browserStorage)) {
+    return Backbone.localSync;
+  }
+  return Backbone.ajaxSync;
+};
+
+// Override 'Backbone.sync' to default to localSync,
+// the original 'Backbone.sync' is still available in 'Backbone.ajaxSync'
+Backbone.sync = function(method, model, options) {
+  return Backbone.getSyncMethod(model).apply(this, [method, model, options]);
+};
+
+return Backbone.BrowserStorage;
+}));
+
 
 /***/ }),
 
@@ -48550,7 +48550,7 @@ function $pres(attrs) {
 
 var Strophe = {
   /** Constant: VERSION */
-  VERSION: "@VERSION@",
+  VERSION: "1.3.0",
 
   /** Constants: XMPP Namespace Constants
    *  Common namespace constants from the XMPP RFCs and XEPs.
@@ -53437,7 +53437,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
     if (true) {
         // AMD. Register as an anonymous module.
         !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-            __webpack_require__(/*! strophe */ "./node_modules/strophe.js/dist/strophe.js")
+            __webpack_require__(/*! strophe.js */ "./node_modules/strophe.js/dist/strophe.js")
         ], __WEBPACK_AMD_DEFINE_RESULT__ = (function (Strophe) {
             factory(
                 Strophe.Strophe,
@@ -53507,37 +53507,21 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
 
 /***/ }),
 
-/***/ "./node_modules/strophejs-plugin-rsm/strophe.rsm.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/strophejs-plugin-rsm/strophe.rsm.js ***!
-  \**********************************************************/
+/***/ "./node_modules/strophejs-plugin-rsm/lib/strophe.rsm.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/strophejs-plugin-rsm/lib/strophe.rsm.js ***!
+  \**************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// http://xmpp.org/extensions/xep-0059.html
+(function (global, factory) {
+	 true ? factory(__webpack_require__(/*! strophe.js */ "./node_modules/strophe.js/dist/strophe.js")) :
+	undefined;
+}(this, (function (strophe_js) { 'use strict';
 
-(function (root, factory) {
-    if (true) {
-        // AMD. Register as an anonymous module.
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-            __webpack_require__(/*! strophe */ "./node_modules/strophe.js/dist/strophe.js")
-        ], __WEBPACK_AMD_DEFINE_RESULT__ = (function (Strophe) {
-            factory(
-                Strophe.Strophe,
-                Strophe.$build,
-                Strophe.$iq ,
-                Strophe.$msg,
-                Strophe.$pres
-            );
-            return Strophe;
-        }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-    } else {}
-}(this, function (Strophe, $build, $iq, $msg, $pres) {
+strophe_js.Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
 
-Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
-   
-Strophe.RSM = function(options) {
+strophe_js.Strophe.RSM = function(options) {
   this.attribs = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
 
   if (typeof options.xml != 'undefined') {
@@ -53550,9 +53534,9 @@ Strophe.RSM = function(options) {
   }
 };
 
-Strophe.RSM.prototype = {
+strophe_js.Strophe.RSM.prototype = {
   toXML: function() {
-    var xml = $build('set', {xmlns: Strophe.NS.RSM});
+    var xml = strophe_js.$build('set', {xmlns: strophe_js.Strophe.NS.RSM});
     for (var ii = 0; ii < this.attribs.length; ii++) {
       var attrib = this.attribs[ii];
       if (typeof this[attrib] != 'undefined') {
@@ -53563,12 +53547,12 @@ Strophe.RSM.prototype = {
   },
 
   next: function(max) {
-    var newSet = new Strophe.RSM({max: max, after: this.last});
+    var newSet = new strophe_js.Strophe.RSM({max: max, after: this.last});
     return newSet;
   },
 
   previous: function(max) {
-    var newSet = new Strophe.RSM({max: max, before: this.first});
+    var newSet = new strophe_js.Strophe.RSM({max: max, before: this.first});
     return newSet;
   },
 
@@ -53577,7 +53561,7 @@ Strophe.RSM.prototype = {
       var attrib = this.attribs[ii];
       var elem = xmlElement.getElementsByTagName(attrib)[0];
       if (typeof elem != 'undefined' && elem !== null) {
-        this[attrib] = Strophe.getText(elem);
+        this[attrib] = strophe_js.Strophe.getText(elem);
         if (attrib == 'first') {
           this.index = elem.getAttribute('index');
         }
@@ -53585,7 +53569,9 @@ Strophe.RSM.prototype = {
     }
   }
 };
-}));
+
+})));
+//# sourceMappingURL=strophe.rsm.js.map
 
 
 /***/ }),
@@ -58627,10 +58613,7 @@ exports["filterCSS"] = (filterCSS);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-/*global define */
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*global define */
 !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function (Backbone) {
   return Backbone.noConflict();
 }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
@@ -58645,10 +58628,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse.js developers
@@ -58660,7 +58640,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse) {
+})(this, function (converse) {
   const _converse$env = converse.env,
         _ = _converse$env._,
         Backbone = _converse$env.Backbone,
@@ -59099,10 +59079,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
@@ -59119,7 +59096,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, muc, tpl_chatroom_bookmark_form, tpl_chatroom_bookmark_toggle, tpl_bookmark, tpl_bookmarks_list) {
+})(this, function (converse, muc, tpl_chatroom_bookmark_form, tpl_chatroom_bookmark_toggle, tpl_bookmark, tpl_bookmarks_list) {
   const _converse$env = converse.env,
         Backbone = _converse$env.Backbone,
         Promise = _converse$env.Promise,
@@ -59752,10 +59729,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse.js developers
@@ -59765,7 +59739,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse) {
+})(this, function (converse) {
   const _converse$env = converse.env,
         Strophe = _converse$env.Strophe,
         $build = _converse$env.$build,
@@ -59832,10 +59806,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2012-2018, the Converse.js developers
@@ -59845,7 +59816,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, filesize) {
+})(this, function (converse, filesize) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -60895,10 +60866,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2012-2018, the Converse.js developers
@@ -60908,7 +60876,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, tpl_chatboxes) {
+})(this, function (converse, tpl_chatboxes) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -61093,10 +61061,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2012-2018, the Converse.js developers
@@ -61106,7 +61071,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (u, converse, bootstrap, twemoji, xss, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_error_message, tpl_help_message, tpl_info, tpl_new_day, tpl_user_details_modal, tpl_toolbar_fileupload, tpl_spinner, tpl_spoiler_button, tpl_status_message, tpl_toolbar) {
+})(this, function (u, converse, bootstrap, twemoji, xss, tpl_chatbox, tpl_chatbox_head, tpl_chatbox_message_form, tpl_emojis, tpl_error_message, tpl_help_message, tpl_info, tpl_new_day, tpl_user_details_modal, tpl_toolbar_fileupload, tpl_spinner, tpl_spoiler_button, tpl_status_message, tpl_toolbar) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -62481,10 +62446,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
@@ -62497,7 +62459,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, bootstrap, _FormData, fp, tpl_brand_heading, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel) {
+})(this, function (converse, bootstrap, _FormData, fp, tpl_brand_heading, tpl_controlbox, tpl_controlbox_toggle, tpl_login_panel) {
   "use strict";
 
   const CHATBOX_TYPE = 'chatbox';
@@ -63154,20 +63116,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // https://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! es6-promise */ "./node_modules/es6-promise/dist/es6-promise.auto.js"), __webpack_require__(/*! lodash.noconflict */ "./src/lodash.noconflict.js"), __webpack_require__(/*! lodash.fp */ "./src/lodash.fp.js"), __webpack_require__(/*! polyfill */ "./src/polyfill.js"), __webpack_require__(/*! i18n */ "./src/i18n.js"), __webpack_require__(/*! utils/core */ "./src/utils/core.js"), __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"), __webpack_require__(/*! strophe */ "./node_modules/strophe.js/dist/strophe.js"), __webpack_require__(/*! pluggable */ "./node_modules/pluggable.js/dist/pluggable.js"), __webpack_require__(/*! backbone.noconflict */ "./src/backbone.noconflict.js"), __webpack_require__(/*! backbone.nativeview */ "./node_modules/backbone.nativeview/backbone.nativeview.js"), __webpack_require__(/*! backbone.browserStorage */ "../Backbone.browserStorage/backbone.browserStorage.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! es6-promise */ "./node_modules/es6-promise/dist/es6-promise.auto.js"), __webpack_require__(/*! lodash.noconflict */ "./src/lodash.noconflict.js"), __webpack_require__(/*! lodash.fp */ "./src/lodash.fp.js"), __webpack_require__(/*! polyfill */ "./src/polyfill.js"), __webpack_require__(/*! i18n */ "./src/i18n.js"), __webpack_require__(/*! utils/core */ "./src/utils/core.js"), __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"), __webpack_require__(/*! strophe.js */ "./node_modules/strophe.js/dist/strophe.js"), __webpack_require__(/*! pluggable */ "./node_modules/pluggable.js/dist/pluggable.js"), __webpack_require__(/*! backbone.noconflict */ "./src/backbone.noconflict.js"), __webpack_require__(/*! backbone.nativeview */ "./node_modules/backbone.nativeview/backbone.nativeview.js"), __webpack_require__(/*! backbone.browserStorage */ "./node_modules/backbone.browserStorage/backbone.browserStorage.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
+})(this, function (sizzle, Promise, _, f, polyfill, i18n, u, moment, Strophe, pluggable, Backbone) {
   "use strict"; // Strophe globals
 
   const _Strophe = Strophe,
@@ -65019,10 +64978,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse developers
@@ -65034,7 +64990,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, sizzle) {
+})(this, function (converse, sizzle) {
   const _converse$env = converse.env,
         Backbone = _converse$env.Backbone,
         Promise = _converse$env.Promise,
@@ -65775,10 +65731,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
@@ -65791,7 +65744,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, tpl_dragresize) {
+})(this, function (converse, tpl_dragresize) {
   "use strict";
 
   const _ = converse.env._;
@@ -66200,10 +66153,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2012-2018, the Converse.js developers
@@ -66213,7 +66163,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse) {
+})(this, function (converse) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -66260,10 +66210,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // Copyright (c) JC Brand <jc@opkode.com>
@@ -66276,7 +66223,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, tpl_brand_heading) {
+})(this, function (converse, tpl_brand_heading) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -66331,10 +66278,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
@@ -66347,7 +66291,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, tpl_chatbox) {
+})(this, function (converse, tpl_chatbox) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -66507,10 +66451,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
@@ -66520,11 +66461,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*global define */
 // XEP-0059 Result Set Management
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! strophe.rsm */ "./node_modules/strophejs-plugin-rsm/strophe.rsm.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! converse-disco */ "./src/converse-disco.js"), __webpack_require__(/*! strophejs-plugin-rsm */ "./node_modules/strophejs-plugin-rsm/lib/strophe.rsm.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (sizzle, converse) {
+})(this, function (sizzle, converse) {
   "use strict";
 
   const CHATROOMS_TYPE = 'chatroom';
@@ -67184,10 +67125,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // https://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse.js developers
@@ -67197,7 +67135,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (u, converse, xss, filesize, tpl_csn, tpl_file_progress, tpl_info, tpl_message, tpl_message_versions_modal) {
+})(this, function (u, converse, xss, filesize, tpl_csn, tpl_file_progress, tpl_info, tpl_message, tpl_message_versions_modal) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -67460,10 +67398,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
@@ -67476,7 +67411,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, tpl_chatbox_minimize, tpl_toggle_chats, tpl_trimmed_chat, tpl_chats_panel) {
+})(this, function (converse, tpl_chatbox_minimize, tpl_toggle_chats, tpl_trimmed_chat, tpl_chats_panel) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -68078,10 +68013,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2018, the Converse.js developers
@@ -68093,7 +68025,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   }
-})(void 0, function (converse, tpl_alert_modal, bootstrap) {
+})(this, function (converse, tpl_alert_modal, bootstrap) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -68215,10 +68147,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse.js developers
@@ -68228,7 +68157,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, _FormData, muc_utils, xss, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_details_modal, tpl_chatroom_destroyed, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
+})(this, function (converse, _FormData, muc_utils, xss, tpl_add_chatroom_modal, tpl_chatarea, tpl_chatroom, tpl_chatroom_details_modal, tpl_chatroom_destroyed, tpl_chatroom_disconnect, tpl_chatroom_features, tpl_chatroom_form, tpl_chatroom_head, tpl_chatroom_invite, tpl_chatroom_nickname_form, tpl_chatroom_password_form, tpl_chatroom_sidebar, tpl_info, tpl_list_chatrooms_modal, tpl_occupant, tpl_room_description, tpl_room_item, tpl_room_panel, tpl_rooms_results, tpl_spinner, Awesomplete) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -70463,10 +70392,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
 
@@ -70484,7 +70410,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (u, converse) {
+})(this, function (u, converse) {
   "use strict";
 
   const MUC_ROLE_WEIGHTS = {
@@ -72201,10 +72127,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // Copyright (c) 2013-2018, JC Brand <jc@opkode.com>
@@ -72217,7 +72140,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse) {
+})(this, function (converse) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -72523,10 +72446,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse.js developers
@@ -72538,7 +72458,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, tpl_toolbar_omemo) {
+})(this, function (converse, tpl_toolbar_omemo) {
   const _converse$env = converse.env,
         Backbone = _converse$env.Backbone,
         Promise = _converse$env.Promise,
@@ -73693,10 +73613,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // https://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse.js developers
@@ -73706,11 +73623,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
  * as specified in XEP-0199 XMPP Ping.
  */
 (function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! strophe.ping */ "./node_modules/strophejs-plugin-ping/strophe.ping.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"), __webpack_require__(/*! strophejs-plugin-ping */ "./node_modules/strophejs-plugin-ping/strophe.ping.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse) {
+})(this, function (converse) {
   "use strict"; // Strophe methods for building stanzas
 
   const _converse$env = converse.env,
@@ -73828,10 +73745,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // Copyright (c) 2013-2017, Jan-Carel Brand <jc@opkode.com>
@@ -73844,7 +73758,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, bootstrap, _FormData, tpl_alert, tpl_chat_status_modal, tpl_profile_modal, tpl_profile_view, tpl_status_option) {
+})(this, function (converse, bootstrap, _FormData, tpl_alert, tpl_chat_status_modal, tpl_profile_modal, tpl_profile_view, tpl_status_option) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -74105,10 +74019,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // https://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse.js developers
@@ -74122,7 +74033,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse) {
+})(this, function (converse) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -74281,10 +74192,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
@@ -74301,7 +74209,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (utils, converse, tpl_form_username, tpl_register_link, tpl_register_panel, tpl_registration_form, tpl_registration_request, tpl_form_input, tpl_spinner) {
+})(this, function (utils, converse, tpl_form_username, tpl_register_link, tpl_register_panel, tpl_registration_form, tpl_registration_request, tpl_form_input, tpl_spinner) {
   "use strict"; // Strophe methods for building stanzas
 
   const _converse$env = converse.env,
@@ -75035,10 +74943,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
@@ -75055,7 +74960,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
+})(this, function (converse, muc, tpl_rooms_list, tpl_rooms_list_item) {
   const _converse$env = converse.env,
         Backbone = _converse$env.Backbone,
         Promise = _converse$env.Promise,
@@ -75382,10 +75287,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2012-2018, the Converse.js developers
@@ -75395,7 +75297,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse) {
+})(this, function (converse) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -76449,10 +76351,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2012-2018, the Converse.js developers
@@ -76462,7 +76361,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, _FormData, tpl_add_contact_modal, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item, tpl_search_contact, Awesomplete) {
+})(this, function (converse, _FormData, tpl_add_contact_modal, tpl_group_header, tpl_pending_contact, tpl_requesting_contact, tpl_roster, tpl_roster_filter, tpl_roster_item, tpl_search_contact, Awesomplete) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -77548,10 +77447,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2012-2018, the Converse.js developers
@@ -77573,7 +77469,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse) {
+})(this, function (converse) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -77698,10 +77594,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse.js developers
@@ -77711,7 +77604,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, tpl_vcard) {
+})(this, function (converse, tpl_vcard) {
   "use strict";
 
   const _converse$env = converse.env,
@@ -77971,10 +77864,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-/*global define */
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*global define */
 if (true) {
   // The section below determines which plugins will be included in a build
   !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! converse-core */ "./src/converse-core.js"),
@@ -78012,10 +77902,7 @@ if (true) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // This is the internationalization module.
@@ -78030,7 +77917,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (Promise, Jed, _, moment) {
+})(this, function (Promise, Jed, _, moment) {
   'use strict';
 
   function detectLocale(library_check) {
@@ -78178,10 +78065,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-/*global define */
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*global define */
 !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function () {
   return Object;
 }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
@@ -78196,10 +78080,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js"), __webpack_require__(/*! lodash.converter */ "./3rdparty/lodash.fp.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function (_, lodashConverter) {
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js"), __webpack_require__(/*! lodash.converter */ "./3rdparty/lodash.fp.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function (_, lodashConverter) {
   var fp = lodashConverter(_.runInContext());
   return fp;
 }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
@@ -78214,10 +78095,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-/*global define */
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*global define */
 !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function (_) {
   return _.noConflict();
 }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
@@ -78230,10 +78108,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
   !*** ./src/polyfill.js ***!
   \*************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
+/***/ (function(module, exports) {
 
 function CustomEvent(event, params) {
   params = params || {
@@ -81566,10 +81441,7 @@ return __p
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-/*global define */
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*global define */
 !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function (_) {
   return _.noConflict();
 }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
@@ -81584,10 +81456,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // This is the utilities module.
@@ -81599,12 +81468,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*global define, escape, window, Uint8Array */
 (function (root, factory) {
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! es6-promise */ "./node_modules/es6-promise/dist/es6-promise.auto.js"), __webpack_require__(/*! fast-text-encoding */ "./node_modules/fast-text-encoding/text.js"), __webpack_require__(/*! lodash.noconflict */ "./src/lodash.noconflict.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! strophe */ "./node_modules/strophe.js/dist/strophe.js"), __webpack_require__(/*! uri */ "./node_modules/urijs/src/URI.js"), __webpack_require__(/*! templates/audio.html */ "./src/templates/audio.html"), __webpack_require__(/*! templates/file.html */ "./src/templates/file.html"), __webpack_require__(/*! templates/image.html */ "./src/templates/image.html"), __webpack_require__(/*! templates/video.html */ "./src/templates/video.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js"), __webpack_require__(/*! es6-promise */ "./node_modules/es6-promise/dist/es6-promise.auto.js"), __webpack_require__(/*! fast-text-encoding */ "./node_modules/fast-text-encoding/text.js"), __webpack_require__(/*! lodash.noconflict */ "./src/lodash.noconflict.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! strophe.js */ "./node_modules/strophe.js/dist/strophe.js"), __webpack_require__(/*! uri */ "./node_modules/urijs/src/URI.js"), __webpack_require__(/*! templates/audio.html */ "./src/templates/audio.html"), __webpack_require__(/*! templates/file.html */ "./src/templates/file.html"), __webpack_require__(/*! templates/image.html */ "./src/templates/image.html"), __webpack_require__(/*! templates/video.html */ "./src/templates/video.html")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else {}
-})(void 0, function (sizzle, Promise, FastTextEncoding, _, Backbone, Strophe, URI, tpl_audio, tpl_file, tpl_image, tpl_video) {
+})(this, function (sizzle, Promise, FastTextEncoding, _, Backbone, Strophe, URI, tpl_audio, tpl_file, tpl_image, tpl_video) {
   "use strict";
 
   Strophe = Strophe.Strophe;
@@ -82549,15 +82418,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-(function (root, factory) {
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (root, factory) {
   !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! lodash.noconflict */ "./src/lodash.noconflict.js"), __webpack_require__(/*! utils/core */ "./src/utils/core.js"), __webpack_require__(/*! twemoji */ "./node_modules/twemoji/2/esm.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (_, u, twemoji) {
+})(this, function (_, u, twemoji) {
   "use strict";
 
   const emoji_list = {
@@ -104059,10 +103925,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // This is the utilities module.
@@ -104077,7 +103940,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (sizzle, _, u, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha, tpl_form_url) {
+})(this, function (sizzle, _, u, tpl_field, tpl_select_option, tpl_form_select, tpl_form_textarea, tpl_form_checkbox, tpl_form_username, tpl_form_input, tpl_form_captcha, tpl_form_url) {
   "use strict";
 
   var XFORM_TYPE_MAP = {
@@ -104220,10 +104083,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
-
-// Converse.js (A browser based XMPP chat client)
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // This is the utilities module.
@@ -104238,7 +104098,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(void 0, function (converse, u) {
+})(this, function (converse, u) {
   "use strict";
 
   const _converse$env = converse.env,

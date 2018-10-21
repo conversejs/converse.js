@@ -6,7 +6,7 @@ cache:
 addons:
     chrome: stable
 node_js:
- - 6
+ - "9"
 install: make stamp-npm
 before_script: make serve_bg
 script: make check

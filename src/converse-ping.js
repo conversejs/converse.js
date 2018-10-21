@@ -8,7 +8,7 @@
  * as specified in XEP-0199 XMPP Ping.
  */
 (function (root, factory) {
-    define(["converse-core", "strophe.ping"], factory);
+    define(["converse-core", "strophejs-plugin-ping"], factory);
 }(this, function (converse) {
     "use strict";
     // Strophe methods for building stanzas

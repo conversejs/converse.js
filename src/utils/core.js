@@ -15,7 +15,7 @@
             "fast-text-encoding",
             "lodash.noconflict",
             "backbone",
-            "strophe",
+            "strophe.js",
             "uri",
             "templates/audio.html",
             "templates/file.html",

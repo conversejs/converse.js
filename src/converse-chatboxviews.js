@@ -9,6 +9,7 @@
         "@converse/headless/converse-core",
         "templates/chatboxes.html",
         "@converse/headless/converse-chatboxes",
+        "backbone.nativeview",
         "backbone.overview"
     ], factory);
 }(this, function (converse, tpl_chatboxes) {

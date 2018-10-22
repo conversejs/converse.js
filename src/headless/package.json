@@ -24,19 +24,15 @@
   "dependencies": {
     "backbone": "1.3.3",
     "backbone.browserStorage": "0.0.4",
-    "backbone.nativeview": "^0.3.3",
-    "backbone.overview": "^1.0.2",
-    "backbone.vdomview": "^1.0.1",
     "es6-promise": "^4.1.0",
     "filesize": "^3.6.1",
-    "jed": "1.1.1",
     "lodash": "4.17.10",
     "moment": "~> 2.19.3 ",
     "pluggable.js": "2.0.0",
-    "sizzle": "^2.3.3",
-    "strophe.js": "strophe/strophejs#a2692dcfdaf7d591254ac73f3d8584992b6f8da7",
+    "strophe.js": "1.3.0",
     "strophejs-plugin-ping": "0.0.3",
     "strophejs-plugin-rsm": "0.0.2",
+    "twemoji": "^11.0.1",
     "urijs": "^1.19.1"
   }
 }

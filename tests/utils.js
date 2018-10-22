@@ -101,22 +101,17 @@
         return utils.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
     };
 
-    utils.openChatRoomViaModal = function (_converse, jid, nick='') {
+    utils.openChatRoomViaModal = async function (_converse, jid, nick='') {
         // Opens a new chatroom
-        return new Promise(function (resolve, reject) {
-            utils.openControlBox(_converse);
-            const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
-            roomspanel.el.querySelector('.show-add-muc-modal').click();
-            utils.closeControlBox(_converse);
-            const modal = roomspanel.add_room_modal;
-            utils.waitUntil(() => u.isVisible(modal.el), 1000)
-            .then(() => {
-                modal.el.querySelector('input[name="chatroom"]').value = jid;
-                modal.el.querySelector('input[name="nickname"]').value = nick;
-                modal.el.querySelector('form input[type="submit"]').click();
-                resolve();
-            });
-        }).catch(_.partial(console.error, _));
+        utils.openControlBox(_converse);
+        const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+        roomspanel.el.querySelector('.show-add-muc-modal').click();
+        utils.closeControlBox(_converse);
+        const modal = roomspanel.add_room_modal;
+        await utils.waitUntil(() => u.isVisible(modal.el), 1500)
+        modal.el.querySelector('input[name="chatroom"]').value = jid;
+        modal.el.querySelector('input[name="nickname"]').value = nick;
+        modal.el.querySelector('form input[type="submit"]').click();
     };
 
     utils.openChatRoom = function (_converse, room, server, nick) {

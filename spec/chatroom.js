@@ -3197,189 +3197,185 @@
             it("will use the nickname set in the global settings if the user doesn't have a VCard nickname",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'nickname': 'Benedict-Cucumberpatch'},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost')
-                .then(function () {
-                    const view = _converse.chatboxviews.get('problematic@muc.localhost');
-                    expect(view.model.get('nick')).toBe('Benedict-Cucumberpatch');
-                    done();
-                }).catch(_.partial(console.error, _));
+                await test_utils.openChatRoomViaModal(_converse, 'roomy@muc.localhost');
+                const view = _converse.chatboxviews.get('roomy@muc.localhost');
+                expect(view.model.get('nick')).toBe('Benedict-Cucumberpatch');
+                done();
             }));
 
             it("will show an error message if the groupchat requires a password",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost', 'dummy')
-                .then(function () {
-                    var view = _converse.chatboxviews.get('problematic@muc.localhost');
-                    spyOn(view, 'renderPasswordForm').and.callThrough();
+                const groupchat_jid = 'protected';
+                await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'dummy');
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                spyOn(view, 'renderPasswordForm').and.callThrough();
 
-                    var presence = $pres().attrs({
-                        from:'problematic@muc.localhost/dummy',
-                        id:'n13mt3l',
-                        to:'dummy@localhost/pda',
-                        type:'error'})
-                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                    .c('error').attrs({by:'lounge@localhost', type:'auth'})
-                        .c('not-authorized').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'});
+                var presence = $pres().attrs({
+                        'from': `${groupchat_jid}/dummy`,
+                        'id': u.getUniqueId(),
+                        'to': 'dummy@localhost/pda',
+                        'type': 'error'
+                    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                      .c('error').attrs({by:'lounge@localhost', type:'auth'})
+                          .c('not-authorized').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'});
 
-                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    var chat_body = view.el.querySelector('.chatroom-body');
-                    expect(view.renderPasswordForm).toHaveBeenCalled();
-                    expect(chat_body.querySelectorAll('form.chatroom-form').length).toBe(1);
-                    expect(chat_body.querySelector('legend').textContent)
-                        .toBe('This groupchat requires a password');
+                const chat_body = view.el.querySelector('.chatroom-body');
+                expect(view.renderPasswordForm).toHaveBeenCalled();
+                expect(chat_body.querySelectorAll('form.chatroom-form').length).toBe(1);
+                expect(chat_body.querySelector('legend').textContent)
+                    .toBe('This groupchat requires a password');
 
-                    // Let's submit the form
-                    spyOn(view, 'join');
-                    var input_el = view.el.querySelector('[name="password"]');
-                    input_el.value = 'secret';
-                    view.el.querySelector('input[type=submit]').click();
-                    expect(view.join).toHaveBeenCalledWith('dummy', 'secret');
-                    done();
-                }).catch(_.partial(console.error, _));
+                // Let's submit the form
+                spyOn(view, 'join');
+                const input_el = view.el.querySelector('[name="password"]');
+                input_el.value = 'secret';
+                view.el.querySelector('input[type=submit]').click();
+                expect(view.join).toHaveBeenCalledWith('dummy', 'secret');
+                done();
             }));
 
             it("will show an error message if the groupchat is members-only and the user not included",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost', 'dummy')
-                .then(function () {
-                    var presence = $pres().attrs({
-                        from:'problematic@muc.localhost/dummy',
-                        id:'n13mt3l',
-                        to:'dummy@localhost/pda',
-                        type:'error'})
-                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                    .c('error').attrs({by:'lounge@localhost', type:'auth'})
-                        .c('registration-required').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                    var view = _converse.chatboxviews.get('problematic@muc.localhost');
-                    spyOn(view, 'showErrorMessage').and.callThrough();
-                    _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
-                        .toBe('You are not on the member list of this groupchat.');
-                    done();
-                }).catch(_.partial(console.error, _));
+                const groupchat_jid = 'members-only@muc.localhost'
+                await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'dummy');
+                const presence = $pres().attrs({
+                        from: `${groupchat_jid}/dummy`,
+                        id: u.getUniqueId(),
+                        to: 'dummy@localhost/pda',
+                        type: 'error'
+                    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                      .c('error').attrs({by:'lounge@localhost', type:'auth'})
+                          .c('registration-required').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                spyOn(view, 'showErrorMessage').and.callThrough();
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
+                    .toBe('You are not on the member list of this groupchat.');
+                done();
             }));
 
             it("will show an error message if the user has been banned",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost', 'dummy')
-                .then(function () {
-                    var presence = $pres().attrs({
-                        from:'problematic@muc.localhost/dummy',
-                        id:'n13mt3l',
-                        to:'dummy@localhost/pda',
-                        type:'error'})
-                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                    .c('error').attrs({by:'lounge@localhost', type:'auth'})
-                        .c('forbidden').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                    var view = _converse.chatboxviews.get('problematic@muc.localhost');
-                    spyOn(view, 'showErrorMessage').and.callThrough();
-                    _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
-                        .toBe('You have been banned from this groupchat.');
-                    done();
-                }).catch(_.partial(console.error, _));
+                const groupchat_jid = 'off-limits@muc.localhost'
+                await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'dummy');
+                const presence = $pres().attrs({
+                        from: `${groupchat_jid}/dummy`,
+                        id: u.getUniqueId(),
+                        to: 'dummy@localhost/pda',
+                        type: 'error'
+                    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                      .c('error').attrs({by:'lounge@localhost', type:'auth'})
+                          .c('forbidden').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                spyOn(view, 'showErrorMessage').and.callThrough();
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
+                    .toBe('You have been banned from this groupchat.');
+                done();
             }));
 
             it("will render a nickname form if a nickname conflict happens and muc_nickname_from_jid=false",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost', 'dummy')
-                .then(function () {
-                    var presence = $pres().attrs({
-                        from:'problematic@muc.localhost/dummy',
-                        id:'n13mt3l',
-                        to:'dummy@localhost/pda',
-                        type:'error'})
-                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                    .c('error').attrs({by:'lounge@localhost', type:'cancel'})
-                        .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                    var view = _converse.chatboxviews.get('problematic@muc.localhost');
-                    spyOn(view, 'showErrorMessage').and.callThrough();
-                    _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(sizzle('.chatroom-body form.chatroom-form label:first', view.el).pop().textContent)
-                        .toBe('Please choose your nickname');
+                const groupchat_jid = 'conflicted@muc.localhost';
+                await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'dummy');
+                var presence = $pres().attrs({
+                        from: `${groupchat_jid}/dummy`,
+                        id: u.getUniqueId(),
+                        to: 'dummy@localhost/pda',
+                        type: 'error'
+                    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                      .c('error').attrs({by:'lounge@localhost', type:'cancel'})
+                          .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-                    const input = sizzle('.chatroom-body form.chatroom-form input:first', view.el).pop();
-                    input.value = 'nicky';
-                    view.el.querySelector('input[type=submit]').click();
-                    done();
-                }).catch(_.partial(console.error, _));
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                spyOn(view, 'showErrorMessage').and.callThrough();
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(sizzle('.chatroom-body form.chatroom-form label:first', view.el).pop().textContent)
+                    .toBe('Please choose your nickname');
+
+                const input = sizzle('.chatroom-body form.chatroom-form input:first', view.el).pop();
+                input.value = 'nicky';
+                view.el.querySelector('input[type=submit]').click();
+                done();
             }));
 
             it("will automatically choose a new nickname if a nickname conflict happens and muc_nickname_from_jid=true",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost', 'dummy')
-                .then(function () {
-                    /* <presence
-                     *      from='coven@chat.shakespeare.lit/thirdwitch'
-                     *      id='n13mt3l'
-                     *      to='hag66@shakespeare.lit/pda'
-                     *      type='error'>
-                     *  <x xmlns='http://jabber.org/protocol/muc'/>
-                     *  <error by='coven@chat.shakespeare.lit' type='cancel'>
-                     *      <conflict xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
-                     *  </error>
-                     *  </presence>
-                     */
-                    _converse.muc_nickname_from_jid = true;
+                const groupchat_jid = 'conflicting@muc.localhost'
+                await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'dummy');
+                /* <presence
+                 *      from='coven@chat.shakespeare.lit/thirdwitch'
+                 *      id='n13mt3l'
+                 *      to='hag66@shakespeare.lit/pda'
+                 *      type='error'>
+                 *  <x xmlns='http://jabber.org/protocol/muc'/>
+                 *  <error by='coven@chat.shakespeare.lit' type='cancel'>
+                 *      <conflict xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>
+                 *  </error>
+                 *  </presence>
+                 */
+                _converse.muc_nickname_from_jid = true;
 
-                    var attrs = {
-                        from:'problematic@muc.localhost/dummy',
-                        to:'dummy@localhost/pda',
-                        type:'error'
-                    };
-                    attrs.id = new Date().getTime();
-                    var presence = $pres().attrs(attrs)
-                        .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                        .c('error').attrs({by:'problematic@muc.localhost', type:'cancel'})
-                            .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                const attrs = {
+                    'from': `${groupchat_jid}/dummy`,
+                    'id': u.getUniqueId(),
+                    'to': 'dummy@localhost/pda',
+                    'type': 'error'
+                };
+                let presence = $pres().attrs(attrs)
+                    .c('x').attrs({'xmlns':'http://jabber.org/protocol/muc'}).up()
+                    .c('error').attrs({'by': groupchat_jid, 'type':'cancel'})
+                        .c('conflict').attrs({'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-                    var view = _converse.chatboxviews.get('problematic@muc.localhost');
-                    spyOn(view, 'showErrorMessage').and.callThrough();
-                    spyOn(view, 'join').and.callThrough();
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                spyOn(view, 'showErrorMessage').and.callThrough();
+                spyOn(view, 'join').and.callThrough();
 
-                    // Simulate repeatedly that there's already someone in the groupchat
-                    // with that nickname
-                    _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(view.join).toHaveBeenCalledWith('dummy-2');
+                // Simulate repeatedly that there's already someone in the groupchat
+                // with that nickname
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.join).toHaveBeenCalledWith('dummy-2');
 
-                    attrs.from = 'problematic@muc.localhost/dummy-2';
-                    attrs.id = new Date().getTime();
-                    presence = $pres().attrs(attrs)
-                        .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                        .c('error').attrs({by:'problematic@muc.localhost', type:'cancel'})
-                            .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                    _converse.connection._dataRecv(test_utils.createRequest(presence));
+                attrs.from = `${groupchat_jid}/dummy-2`;
+                attrs.id = u.getUniqueId();
+                presence = $pres().attrs(attrs)
+                    .c('x').attrs({'xmlns':'http://jabber.org/protocol/muc'}).up()
+                    .c('error').attrs({'by': groupchat_jid, type:'cancel'})
+                        .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                    expect(view.join).toHaveBeenCalledWith('dummy-3');
+                expect(view.join).toHaveBeenCalledWith('dummy-3');
 
-                    attrs.from = 'problematic@muc.localhost/dummy-3';
-                    attrs.id = new Date().getTime();
-                    presence = $pres().attrs(attrs)
-                        .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                        .c('error').attrs({by:'problematic@muc.localhost', type:'cancel'})
-                            .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                    _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(view.join).toHaveBeenCalledWith('dummy-4');
-                    done();
-                }).catch(_.partial(console.error, _));
+                attrs.from = `${groupchat_jid}/dummy-3`;
+                attrs.id = new Date().getTime();
+                presence = $pres().attrs(attrs)
+                    .c('x').attrs({'xmlns': 'http://jabber.org/protocol/muc'}).up()
+                    .c('error').attrs({'by': groupchat_jid, 'type': 'cancel'})
+                        .c('conflict').attrs({'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.join).toHaveBeenCalledWith('dummy-4');
+                done();
             }));
 
             it("will show an error message if the user is not allowed to have created the groupchat",
@@ -3391,7 +3387,7 @@
                 await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'dummy')
                 var presence = $pres().attrs({
                         from: `${groupchat_jid}/dummy`,
-                        id:'n13mt3l',
+                        id: u.getUniqueId(),
                         to:'dummy@localhost/pda',
                         type:'error'
                     }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
@@ -3412,7 +3408,7 @@
 
                 const groupchat_jid = 'conformist@muc.localhost'
                 await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'dummy');
-                var presence = $pres().attrs({
+                const presence = $pres().attrs({
                         from: `${groupchat_jid}/dummy`,
                         id: u.getUniqueId(),
                         to:'dummy@localhost/pda',
@@ -3421,7 +3417,7 @@
                       .c('error').attrs({by:'lounge@localhost', type:'cancel'})
                           .c('not-acceptable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
 
-                var view = _converse.chatboxviews.get(groupchat_jid);
+                const view = _converse.chatboxviews.get(groupchat_jid);
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)

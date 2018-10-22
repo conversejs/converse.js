@@ -1,9 +1,9 @@
 {
   "name": "@converse/headless",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Converse.js Headless build",
   "author": "cmrd Senya <senya@riseup.net>",
-  "homepage": "https://github.com/jcbrand/converse.js",
+  "homepage": "https://github.com/conversejs/converse.js",
   "license": "MPL-2.0",
   "main": "converse-core.js",
   "files": [
@@ -12,18 +12,18 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jcbrand/converse.js.git"
+    "url": "git+https://github.com/conversejs/converse.js.git"
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
-    "url": "https://github.com/jcbrand/converse.js/issues"
+    "url": "https://github.com/conversejs/converse.js/issues"
   },
   "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
   "dependencies": {
     "backbone": "1.3.3",
-    "backbone.browserStorage": "0.0.3",
+    "backbone.browserStorage": "0.0.4",
     "backbone.nativeview": "^0.3.3",
     "backbone.overview": "^1.0.2",
     "backbone.vdomview": "^1.0.1",
@@ -35,8 +35,8 @@
     "pluggable.js": "2.0.0",
     "sizzle": "^2.3.3",
     "strophe.js": "strophe/strophejs#a2692dcfdaf7d591254ac73f3d8584992b6f8da7",
-    "strophejs-plugin-ping": "0.0.1",
-    "strophejs-plugin-rsm": "0.0.1",
+    "strophejs-plugin-ping": "0.0.3",
+    "strophejs-plugin-rsm": "0.0.2",
     "urijs": "^1.19.1"
   }
 }

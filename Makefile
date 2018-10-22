@@ -25,10 +25,10 @@ UGLIFYJS		?= node_modules/.bin/uglifyjs
 
 
 # In the case user wishes to use RVM
-USE_RVM                 ?= false
-RVM_RUBY_VERSION        ?= 2.4.2
+USE_RVM				 ?= false
+RVM_RUBY_VERSION		?= 2.4.2
 ifeq ($(USE_RVM),true)
-	RVM_USE                 = rvm use $(RVM_RUBY_VERSION)
+	RVM_USE				 = rvm use $(RVM_RUBY_VERSION)
 endif
 
 # Internal variables.
@@ -41,21 +41,23 @@ all: dev dist
 help:
 	@echo "Please use \`make <target>' where <target> is one of the following:"
 	@echo ""
-	@echo " all           A synonym for 'make dev'."
-	@echo " build         Create minified builds of converse.js and all its dependencies."
-	@echo " clean         Remove all NPM and Ruby packages."
-	@echo " css           Generate CSS from the Sass files."
-	@echo " dev           Set up the development environment. To force a fresh start, run 'make clean' first."
-	@echo " html          Make standalone HTML files of the documentation."
-	@echo " po            Generate gettext PO files for each i18n language."
-	@echo " po2json       Generate JSON files from the language PO files."
-	@echo " pot           Generate a gettext POT file to be used for translations."
-	@echo " release       Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
-	@echo " serve         Serve this directory via a webserver on port 8000."
-	@echo " stamp-npm     Install NPM dependencies"
-	@echo " stamp-bundler Install Bundler (Ruby) dependencies"
-	@echo " watch         Tells Sass to watch the .scss files for changes and then automatically update the CSS files."
-	@echo " logo          Generate PNG logos of multiple sizes."
+	@echo " all		   		A synonym for 'make dev'."
+	@echo " build		 	Create minified builds of converse.js and all its dependencies."
+	@echo " clean		 	Remove all NPM and Ruby packages."
+	@echo " check			Run all tests."
+	@echo " css		   		Generate CSS from the Sass files."
+	@echo " dev		   		Set up the development environment. To force a fresh start, run 'make clean' first."
+	@echo " html		  	Make standalone HTML files of the documentation."
+	@echo " po				Generate gettext PO files for each i18n language."
+	@echo " po2json	   		Generate JSON files from the language PO files."
+	@echo " pot		   		Generate a gettext POT file to be used for translations."
+	@echo " release	   		Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
+	@echo " serve		 	Serve this directory via a webserver on port 8000."
+	@echo " serve_bg	  	Same as "serve", but do it in the background
+	@echo " stamp-npm	 	Install NPM dependencies"
+	@echo " stamp-bundler 	Install Bundler (Ruby) dependencies"
+	@echo " watch		 	Tells Sass to watch the .scss files for changes and then automatically update the CSS files."
+	@echo " logo		  	Generate PNG logos of multiple sizes."
 
 
 ########################################################################
@@ -112,7 +114,7 @@ release:
 $(LERNA):
 	npm install lerna
 
-stamp-npm: $(LERNA) package.json package-lock.json packages/headless/package.json
+stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 	$(LERNA) bootstrap --hoist
 	touch stamp-npm
 
@@ -164,15 +166,15 @@ watch: dev
 
 .PHONY: logo
 logo: logo/conversejs-transparent16.png \
-      logo/conversejs-transparent19.png \
-      logo/conversejs-transparent48.png \
-      logo/conversejs-transparent128.png \
-      logo/conversejs-transparent512.png \
-      logo/conversejs-filled16.png \
-      logo/conversejs-filled19.png \
-      logo/conversejs-filled48.png \
-      logo/conversejs-filled128.png \
-      logo/conversejs-filled512.png \
+	  logo/conversejs-transparent19.png \
+	  logo/conversejs-transparent48.png \
+	  logo/conversejs-transparent128.png \
+	  logo/conversejs-transparent512.png \
+	  logo/conversejs-filled16.png \
+	  logo/conversejs-filled19.png \
+	  logo/conversejs-filled48.png \
+	  logo/conversejs-filled128.png \
+	  logo/conversejs-filled512.png \
 
 logo/conversejs-transparent%.png:: logo/conversejs-transparent.svg
 	$(INKSCAPE) -e $@ -w $* $<
@@ -205,7 +207,7 @@ dist/converse-no-dependencies.min.js: src webpack.config.js stamp-npm @converse/
 dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @converse/headless
 	./node_modules/.bin/npx  webpack --mode=development --type=nodeps --lang=es2015
 
-@converse/headless: packages/headless
+@converse/headless: src/headless
 
 .PHONY: dist
 dist:: build

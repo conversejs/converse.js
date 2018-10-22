@@ -109,16 +109,22 @@
                 // XXX Eventually this can be refactored to use Notification's sound
                 // feature, but no browser currently supports it.
                 // https://developer.mozilla.org/en-US/docs/Web/API/notification/sound
-                let audio;
+                let audioOgg, audioMp3, canPlayOgg, canPlayMp3;
                 if (_converse.play_sounds && !_.isUndefined(window.Audio)) {
-                    audio = new Audio(_converse.sounds_path+"msg_received.ogg");
-                    if (audio.canPlayType('audio/ogg')) {
-                        audio.play();
-                    } else {
-                        audio = new Audio(_converse.sounds_path+"msg_received.mp3");
-                        if (audio.canPlayType('audio/mp3')) {
-                            audio.play();
-                        }
+                    audioOgg = new Audio(_converse.sounds_path+"msg_received.ogg");
+                    canPlayOgg = audioOgg.canPlayType('audio/ogg');
+                    audioMp3 = new Audio(_converse.sounds_path+"msg_received.mp3");
+                    canPlayMp3 = audioMp3.canPlayType('audio/mp3');
+
+                    // Prefer 'probably' over 'maybe'.
+                    if ( canPlayOgg === 'probably') {
+                        audioOgg.play();
+                    } else if ( canPlayMp3 === 'probably' ) {
+                        audioMp3.play();
+                    } else if ( canPlayOgg === 'maybe' ) {
+                        audioOgg.play();
+                    } else if ( canPlayMp3 === 'maybe' ) {
+                        audioMp3.play();
                     }
                 }
             };

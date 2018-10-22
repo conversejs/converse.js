@@ -6,6 +6,7 @@
 
 (function (root, factory) {
     define([
+        "./utils/html",
         "utils/emoji",
         "@converse/headless/converse-core",
         "xss",
@@ -17,6 +18,7 @@
         "templates/message_versions_modal.html",
     ], factory);
 }(this, function (
+        html,
         u,
         converse,
         xss,

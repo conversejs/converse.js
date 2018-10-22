@@ -3385,97 +3385,96 @@
             it("will show an error message if the user is not allowed to have created the groupchat",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost', 'dummy')
-                .then(function () {
-                    var presence = $pres().attrs({
-                        from:'problematic@muc.localhost/dummy',
+                const groupchat_jid = 'impermissable@muc.localhost'
+                await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'dummy')
+                var presence = $pres().attrs({
+                        from: `${groupchat_jid}/dummy`,
                         id:'n13mt3l',
                         to:'dummy@localhost/pda',
-                        type:'error'})
-                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                    .c('error').attrs({by:'lounge@localhost', type:'cancel'})
-                        .c('not-allowed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                    var view = _converse.chatboxviews.get('problematic@muc.localhost');
-                    spyOn(view, 'showErrorMessage').and.callThrough();
-                    _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
-                        .toBe('You are not allowed to create new groupchats.');
-                    done();
-                }).catch(_.partial(console.error, _));
+                        type:'error'
+                    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                      .c('error').attrs({by:'lounge@localhost', type:'cancel'})
+                          .c('not-allowed').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                spyOn(view, 'showErrorMessage').and.callThrough();
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
+                    .toBe('You are not allowed to create new groupchats.');
+                done();
             }));
 
-            it("will show an error message if the user's nickname doesn't conform to room policy",
+            it("will show an error message if the user's nickname doesn't conform to groupchat policy",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost', 'dummy')
-                .then(function () {
-                    var presence = $pres().attrs({
-                        from:'problematic@muc.localhost/dummy',
-                        id:'n13mt3l',
+                const groupchat_jid = 'conformist@muc.localhost'
+                await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'dummy');
+                var presence = $pres().attrs({
+                        from: `${groupchat_jid}/dummy`,
+                        id: u.getUniqueId(),
                         to:'dummy@localhost/pda',
-                        type:'error'})
-                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                    .c('error').attrs({by:'lounge@localhost', type:'cancel'})
-                        .c('not-acceptable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                    var view = _converse.chatboxviews.get('problematic@muc.localhost');
-                    spyOn(view, 'showErrorMessage').and.callThrough();
-                    _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
-                        .toBe("Your nickname doesn't conform to this groupchat's policies.");
-                    done();
-                }).catch(_.partial(console.error, _));
+                        type:'error'
+                    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                      .c('error').attrs({by:'lounge@localhost', type:'cancel'})
+                          .c('not-acceptable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+
+                var view = _converse.chatboxviews.get(groupchat_jid);
+                spyOn(view, 'showErrorMessage').and.callThrough();
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
+                    .toBe("Your nickname doesn't conform to this groupchat's policies.");
+                done();
             }));
 
             it("will show an error message if the groupchat doesn't yet exist",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost', 'dummy')
-                .then(function () {
-                    var presence = $pres().attrs({
-                        from:'problematic@muc.localhost/dummy',
-                        id:'n13mt3l',
-                        to:'dummy@localhost/pda',
-                        type:'error'})
-                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                    .c('error').attrs({by:'lounge@localhost', type:'cancel'})
-                        .c('item-not-found').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                    var view = _converse.chatboxviews.get('problematic@muc.localhost');
-                    spyOn(view, 'showErrorMessage').and.callThrough();
-                    _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
-                        .toBe("This groupchat does not (yet) exist.");
-                    done();
-                }).catch(_.partial(console.error, _));
+                const groupchat_jid = 'nonexistent@muc.localhost'
+                await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'dummy');
+                const presence = $pres().attrs({
+                        from: `${groupchat_jid}/dummy`,
+                        id: u.getUniqueId(),
+                        to: 'dummy@localhost/pda',
+                        type:'error'
+                    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                      .c('error').attrs({by:'lounge@localhost', type:'cancel'})
+                          .c('item-not-found').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                spyOn(view, 'showErrorMessage').and.callThrough();
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
+                    .toBe("This groupchat does not (yet) exist.");
+                done();
             }));
 
             it("will show an error message if the groupchat has reached its maximum number of participants",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost', 'dummy')
-                .then(function () {
-                    var presence = $pres().attrs({
-                        from:'problematic@muc.localhost/dummy',
-                            id:'n13mt3l',
-                            to:'dummy@localhost/pda',
-                            type:'error'})
-                    .c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
-                    .c('error').attrs({by:'lounge@localhost', type:'cancel'})
-                        .c('service-unavailable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
-                    var view = _converse.chatboxviews.get('problematic@muc.localhost');
-                    spyOn(view, 'showErrorMessage').and.callThrough();
-                    _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
-                        .toBe("This groupchat has reached its maximum number of participants.");
-                    done();
-                }).catch(_.partial(console.error, _));
+                const groupchat_jid = 'maxed-out@muc.localhost'
+                await test_utils.openChatRoomViaModal(_converse, groupchat_jid, 'dummy')
+                const presence = $pres().attrs({
+                        from: `${groupchat_jid}/dummy`,
+                        id: u.getUniqueId(),
+                        to:'dummy@localhost/pda',
+                        type:'error'
+                    }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc'}).up()
+                      .c('error').attrs({by:'lounge@localhost', type:'cancel'})
+                          .c('service-unavailable').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
+
+                const view = _converse.chatboxviews.get(groupchat_jid);
+                spyOn(view, 'showErrorMessage').and.callThrough();
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.el.querySelector('.chatroom-body .disconnect-container .disconnect-msg:last-child').textContent)
+                    .toBe("This groupchat has reached its maximum number of participants.");
+                done();
             }));
         });
 

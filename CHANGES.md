@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0.3 (Unreleased)
+## 4.0.3 (2018-10-22)
 
 - New translations: Arabic, Basque, Czech, French, German, Hungarian, Japanese, Norwegian Bokmål, Polish, Romanian, Spanish
 - Bugfix. Converse continuously publishes an empty OMEMO devicelist for itself

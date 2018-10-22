@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 17:29+0200\n"
+"POT-Creation-Date: 2018-10-22 11:37+0200\n"
 "PO-Revision-Date: 2018-10-16 10:39+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
@@ -27,96 +27,94 @@ msgstr ""
 "X-Is-Fallback-For: es-ar es-bo es-cl es-co es-cr es-do es-ec es-es es-sv es-"
 "gt es-hn es-mx es-ni es-pa es-py es-pe es-pr es-us es-uy es-ve\n"
 
-#: dist/converse-no-dependencies.js:32421
-#: dist/converse-no-dependencies.js:32506
-#: dist/converse-no-dependencies.js:48032
+#: dist/converse-no-dependencies.js:38568
+#: dist/converse-no-dependencies.js:38654
+#: dist/converse-no-dependencies.js:54501
 msgid "Bookmark this groupchat"
 msgstr "Marcar esta sala"
 
-#: dist/converse-no-dependencies.js:32507
-msgid "The name for this bookmark:"
-msgstr "El nombre para esta marca:"
-
-#: dist/converse-no-dependencies.js:32508
+#: dist/converse-no-dependencies.js:38655
 msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr "¿Te gustaría entrar automáticamente a esta sala al inicio?"
 
-#: dist/converse-no-dependencies.js:32509
-msgid "What should your nickname for this groupchat be?"
-msgstr "¿Cual debería ser tu apodo para esta sala?"
-
-#: dist/converse-no-dependencies.js:32511
-#: dist/converse-no-dependencies.js:42343
-#: dist/converse-no-dependencies.js:46878
-msgid "Save"
-msgstr "Guardar"
-
-#: dist/converse-no-dependencies.js:32512
-#: dist/converse-no-dependencies.js:42344
-#: dist/converse-no-dependencies.js:46874
+#: dist/converse-no-dependencies.js:38656
 #: dist/converse-no-dependencies.js:53313
+#: dist/converse-no-dependencies.js:59900
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: dist/converse-no-dependencies.js:32585
+#: dist/converse-no-dependencies.js:38657
+msgid "The name for this bookmark:"
+msgstr "El nombre para esta marca:"
+
+#: dist/converse-no-dependencies.js:38658
+msgid "What should your nickname for this groupchat be?"
+msgstr "¿Cual debería ser tu apodo para esta sala?"
+
+#: dist/converse-no-dependencies.js:38659
+#: dist/converse-no-dependencies.js:53317
+msgid "Save"
+msgstr "Guardar"
+
+#: dist/converse-no-dependencies.js:38737
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "¿Esta seguro de querer remover la marca \"%1$s\"?"
 
-#: dist/converse-no-dependencies.js:32704
-#: dist/converse-no-dependencies.js:34546
-#: dist/converse-no-dependencies.js:45498
-#: dist/converse-no-dependencies.js:46823
+#: dist/converse-no-dependencies.js:38859
+#: dist/converse-no-dependencies.js:40728
+#: dist/converse-no-dependencies.js:51993
+#: dist/converse-no-dependencies.js:53261
 msgid "Error"
 msgstr "Error"
 
-#: dist/converse-no-dependencies.js:32704
+#: dist/converse-no-dependencies.js:38859
 msgid "Sorry, something went wrong while trying to save your bookmark."
 msgstr "Disculpe, algo salió mal mientras se trataba de guardar su marca."
 
-#: dist/converse-no-dependencies.js:32795
-#: dist/converse-no-dependencies.js:48030
+#: dist/converse-no-dependencies.js:38948
+#: dist/converse-no-dependencies.js:54499
 msgid "Leave this groupchat"
 msgstr "Dejar esta sala"
 
-#: dist/converse-no-dependencies.js:32796
+#: dist/converse-no-dependencies.js:38949
 msgid "Remove this bookmark"
 msgstr "Remover esta marca"
 
-#: dist/converse-no-dependencies.js:32797
-#: dist/converse-no-dependencies.js:48031
+#: dist/converse-no-dependencies.js:38950
+#: dist/converse-no-dependencies.js:54500
 msgid "Unbookmark this groupchat"
 msgstr "Desmarcar esta sala"
 
-#: dist/converse-no-dependencies.js:32798
-#: dist/converse-no-dependencies.js:41505
-#: dist/converse-no-dependencies.js:48033
+#: dist/converse-no-dependencies.js:38951
+#: dist/converse-no-dependencies.js:47878
+#: dist/converse-no-dependencies.js:54502
 msgid "Show more information on this groupchat"
 msgstr "Mostrar más información en esta sala"
 
-#: dist/converse-no-dependencies.js:32801
-#: dist/converse-no-dependencies.js:41504
-#: dist/converse-no-dependencies.js:48035
+#: dist/converse-no-dependencies.js:38954
+#: dist/converse-no-dependencies.js:47877
+#: dist/converse-no-dependencies.js:54504
 msgid "Click to open this groupchat"
 msgstr "Haga click para abrir esta sala"
 
-#: dist/converse-no-dependencies.js:32840
+#: dist/converse-no-dependencies.js:38996
 msgid "Click to toggle the bookmarks list"
 msgstr "Haga clic para alternar la lista de marcas"
 
-#: dist/converse-no-dependencies.js:32841
+#: dist/converse-no-dependencies.js:38997
 msgid "Bookmarks"
 msgstr "Marcas"
 
-#: dist/converse-no-dependencies.js:33260
+#: dist/converse-no-dependencies.js:39416
 msgid "Sorry, could not determine file upload URL."
 msgstr "Lo sentimos, no se pudo determinar la URL de carga de archivos."
 
-#: dist/converse-no-dependencies.js:33268
+#: dist/converse-no-dependencies.js:39424
 msgid "Sorry, could not determine upload URL."
 msgstr "Lo sentimos, no he podido determinar la URL de carga."
 
-#: dist/converse-no-dependencies.js:33303
+#: dist/converse-no-dependencies.js:39458
 #, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
@@ -125,15 +123,15 @@ msgstr ""
 "Lo sentimos, no he podido subir su archivo con éxito. La respuesta de su "
 "servidor: \"%1$s1\""
 
-#: dist/converse-no-dependencies.js:33305
+#: dist/converse-no-dependencies.js:39460
 msgid "Sorry, could not succesfully upload your file."
 msgstr "Lo sentimos, no se podo subir su archivo con éxito."
 
-#: dist/converse-no-dependencies.js:33550
+#: dist/converse-no-dependencies.js:39714
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr "Lo sentimos, parece que su servidor no soporta la carga de archivos."
 
-#: dist/converse-no-dependencies.js:33560
+#: dist/converse-no-dependencies.js:39723
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
@@ -142,248 +140,214 @@ msgstr ""
 "El tamaño de su archivo, %1$s1, excede el máximo permitido por su servidor, "
 "que es %2$s2."
 
-#: dist/converse-no-dependencies.js:33782
+#: dist/converse-no-dependencies.js:39950
 msgid "Sorry, an error occurred:"
 msgstr "Lo sentimos, se ha producido un error:"
 
-#: dist/converse-no-dependencies.js:34460
+#: dist/converse-no-dependencies.js:40642
 msgid "Close this chat box"
 msgstr "Cerrar esta ventana de chat"
 
-#: dist/converse-no-dependencies.js:34537
-#: dist/converse-no-dependencies.js:49809
+#: dist/converse-no-dependencies.js:40719
+#: dist/converse-no-dependencies.js:56331
 msgid "Are you sure you want to remove this contact?"
 msgstr "¿Esta seguro de querer eliminar este contacto?"
 
-#: dist/converse-no-dependencies.js:34546
-#: dist/converse-no-dependencies.js:49817
+#: dist/converse-no-dependencies.js:40728
+#: dist/converse-no-dependencies.js:56338
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
 msgstr ""
 "Disculpe, hubo un error mientras se trataba de remover %1$s como contacto."
 
-#: dist/converse-no-dependencies.js:34600
-#: dist/converse-no-dependencies.js:34640
+#: dist/converse-no-dependencies.js:40786
+#: dist/converse-no-dependencies.js:40828
 msgid "You have unread messages"
 msgstr "Tienes mensajes sin leer"
 
-#: dist/converse-no-dependencies.js:34626
+#: dist/converse-no-dependencies.js:40814
 msgid "Hidden message"
 msgstr "Mensaje oculto"
 
-#: dist/converse-no-dependencies.js:34628
+#: dist/converse-no-dependencies.js:40816
 msgid "Message"
 msgstr "Mensaje"
 
-#: dist/converse-no-dependencies.js:34635
+#: dist/converse-no-dependencies.js:40823
 msgid "Send"
 msgstr "Enviar"
 
-#: dist/converse-no-dependencies.js:34636
+#: dist/converse-no-dependencies.js:40824
 msgid "Optional hint"
 msgstr "Pista opcional"
 
-#: dist/converse-no-dependencies.js:34674
+#: dist/converse-no-dependencies.js:40865
 msgid "Choose a file to send"
 msgstr "Elija un archivo para enviar"
 
-#: dist/converse-no-dependencies.js:34730
-msgid "Click to write as a normal (non-spoiler) message"
-msgstr "Haga click para escribir un mensaje de estatus personalizado"
-
-#: dist/converse-no-dependencies.js:34732
-msgid "Click to write your message as a spoiler"
-msgstr "Haga click para escribir un mensaje de estatus personalizado"
-
-#: dist/converse-no-dependencies.js:34736
-msgid "Clear all messages"
-msgstr "Limpiar todos los mensajes"
-
-#: dist/converse-no-dependencies.js:34737
-msgid "Insert emojis"
-msgstr "Insertar un emoticono"
-
-#: dist/converse-no-dependencies.js:34738
-msgid "Start a call"
-msgstr "Empezar una llamada"
-
-#: dist/converse-no-dependencies.js:35055
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:41258
+#: dist/converse-no-dependencies.js:48513
 msgid "Remove messages"
 msgstr "Eliminar mensajes"
 
-#: dist/converse-no-dependencies.js:35055
+#: dist/converse-no-dependencies.js:41258
 msgid "Write in the third person"
 msgstr "Escribir en tercera persona"
 
-#: dist/converse-no-dependencies.js:35055
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:41258
+#: dist/converse-no-dependencies.js:48513
 msgid "Show this menu"
 msgstr "Mostrar este menú"
 
-#: dist/converse-no-dependencies.js:35276
+#: dist/converse-no-dependencies.js:41488
 msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "¿Está seguro de querer limpiar los mensajes de esta conversación?"
 
-#: dist/converse-no-dependencies.js:35392
+#: dist/converse-no-dependencies.js:41610
 #, fuzzy, javascript-format
 msgid "%1$s has gone offline"
 msgstr "se ha desconectado"
 
-#: dist/converse-no-dependencies.js:35394
-#: dist/converse-no-dependencies.js:40405
+#: dist/converse-no-dependencies.js:41612
+#: dist/converse-no-dependencies.js:46731
 #, fuzzy, javascript-format
 msgid "%1$s has gone away"
 msgstr "se ha marchado"
 
-#: dist/converse-no-dependencies.js:35396
+#: dist/converse-no-dependencies.js:41614
 #, fuzzy, javascript-format
 msgid "%1$s is busy"
 msgstr "está ocupado"
 
-#: dist/converse-no-dependencies.js:35398
+#: dist/converse-no-dependencies.js:41616
 #, fuzzy, javascript-format
 msgid "%1$s is online"
 msgstr "en línea"
 
-#: dist/converse-no-dependencies.js:36027
+#: dist/converse-no-dependencies.js:42290
 msgid "Username"
 msgstr "Nombre de usuario"
 
-#: dist/converse-no-dependencies.js:36027
+#: dist/converse-no-dependencies.js:42290
 msgid "user@domain"
 msgstr "usuario@dominio"
 
-#: dist/converse-no-dependencies.js:36046
-#: dist/converse-no-dependencies.js:49418
+#: dist/converse-no-dependencies.js:42309
+#: dist/converse-no-dependencies.js:55919
 msgid "Please enter a valid XMPP address"
 msgstr "Por favor, introduzca una dirección XMPP válida"
 
-#: dist/converse-no-dependencies.js:36145
+#: dist/converse-no-dependencies.js:42415
 msgid "Chat Contacts"
 msgstr "Contactos"
 
-#: dist/converse-no-dependencies.js:36145
+#: dist/converse-no-dependencies.js:42415
 msgid "Toggle chat"
 msgstr "Alternar chat"
 
-#: dist/converse-no-dependencies.js:36782
-msgid "The connection has dropped, attempting to reconnect."
-msgstr "La conexión se ha perdido, intentando reconectar."
+#: dist/converse-no-dependencies.js:43167
+msgid "The XMPP server did not offer a supported authentication mechanism"
+msgstr "El servidor XMPP no ofreció un mecanismo de autenticación soportado"
 
-#: dist/converse-no-dependencies.js:36882
-msgid "An error occurred while connecting to the chat server."
-msgstr "Ocurrió un error mientras se conectaba al servidor de chat."
-
-#: dist/converse-no-dependencies.js:36889
-msgid "Your Jabber ID and/or password is incorrect. Please try again."
-msgstr ""
-"Tu usuario de Jabber y/o tu contraseña no es correcta. Por favor, inténtelo "
-"de nuevo."
-
-#: dist/converse-no-dependencies.js:36901
+#: dist/converse-no-dependencies.js:43165
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr ""
 "Disculpe, no pudimos conectarnos al servidor XMPP con el dominio:  %1$s"
 
-#: dist/converse-no-dependencies.js:36903
-msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr "El servidor XMPP no ofreció un mecanismo de autenticación soportado"
-
-#: dist/converse-no-dependencies.js:40346
+#: dist/converse-no-dependencies.js:46669
 msgid "Show more"
 msgstr "Mostrar salas"
 
-#: dist/converse-no-dependencies.js:40394
+#: dist/converse-no-dependencies.js:46720
 msgid "Typing from another device"
 msgstr "Escribiendo desde otro dispositivo"
 
-#: dist/converse-no-dependencies.js:40396
+#: dist/converse-no-dependencies.js:46722
 #, fuzzy, javascript-format
 msgid "%1$s is typing"
 msgstr "está escribiendo"
 
-#: dist/converse-no-dependencies.js:40400
+#: dist/converse-no-dependencies.js:46726
 msgid "Stopped typing on the other device"
 msgstr "Paró de escribir en el otro dispositivo"
 
-#: dist/converse-no-dependencies.js:40402
+#: dist/converse-no-dependencies.js:46728
 #, fuzzy, javascript-format
 msgid "%1$s has stopped typing"
 msgstr "ha parado de escribir"
 
-#: dist/converse-no-dependencies.js:40437
+#: dist/converse-no-dependencies.js:46766
 msgid "Unencryptable OMEMO message"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:40655
-#: dist/converse-no-dependencies.js:40698
+#: dist/converse-no-dependencies.js:47001
+#: dist/converse-no-dependencies.js:47047
 msgid "Minimize this chat box"
 msgstr "Minimizar esta caja de chat"
 
-#: dist/converse-no-dependencies.js:40831
+#: dist/converse-no-dependencies.js:47182
 msgid "Click to restore this chat"
 msgstr "Haga click para eliminar este contacto"
 
-#: dist/converse-no-dependencies.js:41020
+#: dist/converse-no-dependencies.js:47387
 msgid "Minimized"
 msgstr "Minimizado"
 
-#: dist/converse-no-dependencies.js:41347
+#: dist/converse-no-dependencies.js:47718
 msgid "This groupchat is not anonymous"
 msgstr "Esta sala no es para usuarios anónimos"
 
-#: dist/converse-no-dependencies.js:41348
+#: dist/converse-no-dependencies.js:47719
 msgid "This groupchat now shows unavailable members"
 msgstr "Esta sala ahora muestra los miembros no disponibles"
 
-#: dist/converse-no-dependencies.js:41349
+#: dist/converse-no-dependencies.js:47720
 msgid "This groupchat does not show unavailable members"
 msgstr "Esta sala no muestra los miembros no disponibles"
 
-#: dist/converse-no-dependencies.js:41350
+#: dist/converse-no-dependencies.js:47721
 msgid "The groupchat configuration has changed"
 msgstr "La configuración del groupchat ha cambiado"
 
-#: dist/converse-no-dependencies.js:41351
+#: dist/converse-no-dependencies.js:47722
 msgid "groupchat logging is now enabled"
 msgstr "el registro del groupchat está ahora habilitado"
 
-#: dist/converse-no-dependencies.js:41352
+#: dist/converse-no-dependencies.js:47723
 msgid "groupchat logging is now disabled"
 msgstr "el registro del groupchat está ahora desactivado"
 
-#: dist/converse-no-dependencies.js:41353
+#: dist/converse-no-dependencies.js:47724
 msgid "This groupchat is now no longer anonymous"
 msgstr "Ahora esta sala ya no es anónima"
 
-#: dist/converse-no-dependencies.js:41354
+#: dist/converse-no-dependencies.js:47725
 msgid "This groupchat is now semi-anonymous"
 msgstr "Esta sala ahora es semi-anónima"
 
-#: dist/converse-no-dependencies.js:41355
+#: dist/converse-no-dependencies.js:47726
 msgid "This groupchat is now fully-anonymous"
 msgstr "Esta sala ahora es completamente anónima"
 
-#: dist/converse-no-dependencies.js:41356
+#: dist/converse-no-dependencies.js:47727
 msgid "A new groupchat has been created"
 msgstr "Una nueva sala ha sido creada"
 
-#: dist/converse-no-dependencies.js:41359
+#: dist/converse-no-dependencies.js:47730
 msgid "You have been banned from this groupchat"
 msgstr "Usted ha sido bloqueado de esta sala"
 
-#: dist/converse-no-dependencies.js:41360
+#: dist/converse-no-dependencies.js:47731
 msgid "You have been kicked from this groupchat"
 msgstr "Usted ha sido expulsado de esta sala"
 
-#: dist/converse-no-dependencies.js:41361
+#: dist/converse-no-dependencies.js:47732
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr "Usted ha sido eliminado de esta sala debido a un cambio de afiliación"
 
-#: dist/converse-no-dependencies.js:41362
+#: dist/converse-no-dependencies.js:47733
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
@@ -391,7 +355,7 @@ msgstr ""
 "Usted ha sido eliminado de esta sala debido a que la sala cambió su "
 "configuración a solo-miembros y usted no es un miembro"
 
-#: dist/converse-no-dependencies.js:41363
+#: dist/converse-no-dependencies.js:47734
 #, fuzzy
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
@@ -410,247 +374,233 @@ msgstr ""
 #. * can then at least tell gettext to scan for it so that these
 #. * strings are picked up by the translation machinery.
 #.
-#: dist/converse-no-dependencies.js:41376
+#: dist/converse-no-dependencies.js:47747
 #, javascript-format
 msgid "%1$s has been banned"
 msgstr "%1$s ha sido expulsado"
 
-#: dist/converse-no-dependencies.js:41377
+#: dist/converse-no-dependencies.js:47748
 #, javascript-format
 msgid "%1$s's nickname has changed"
 msgstr "El apodo de %1$s ha cambiado"
 
-#: dist/converse-no-dependencies.js:41378
+#: dist/converse-no-dependencies.js:47749
 #, javascript-format
 msgid "%1$s has been kicked out"
 msgstr "%1$s ha sido echado"
 
-#: dist/converse-no-dependencies.js:41379
+#: dist/converse-no-dependencies.js:47750
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
 msgstr "%1$s ha sido removido debido a un cambio de afiliación"
 
-#: dist/converse-no-dependencies.js:41380
+#: dist/converse-no-dependencies.js:47751
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
 msgstr "%1$s ha sido removido por no ser un miembro"
 
-#: dist/converse-no-dependencies.js:41383
+#: dist/converse-no-dependencies.js:47754
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
 msgstr "Su apodo ha sido establecido automáticamente como %1$s"
 
-#: dist/converse-no-dependencies.js:41384
+#: dist/converse-no-dependencies.js:47755
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "Su apodo ha sido cambiado a%1$s"
 
-#: dist/converse-no-dependencies.js:41415
+#: dist/converse-no-dependencies.js:47786
 msgid "Description:"
 msgstr "Descripción:"
 
-#: dist/converse-no-dependencies.js:41416
+#: dist/converse-no-dependencies.js:47787
 msgid "Groupchat Address (JID):"
 msgstr "Dirección de la sala (JID):"
 
-#: dist/converse-no-dependencies.js:41417
+#: dist/converse-no-dependencies.js:47788
 msgid "Participants:"
 msgstr "Ocupantes:"
 
-#: dist/converse-no-dependencies.js:41418
+#: dist/converse-no-dependencies.js:47789
 msgid "Features:"
 msgstr "Características:"
 
-#: dist/converse-no-dependencies.js:41419
+#: dist/converse-no-dependencies.js:47790
 msgid "Requires authentication"
 msgstr "Autenticación requerida"
 
-#: dist/converse-no-dependencies.js:41420
-#: dist/converse-no-dependencies.js:51616
-#: dist/converse-no-dependencies.js:51772
+#: dist/converse-no-dependencies.js:47791
+#: dist/converse-no-dependencies.js:58174
+#: dist/converse-no-dependencies.js:58330
 msgid "Hidden"
 msgstr "Oculto"
 
-#: dist/converse-no-dependencies.js:41421
+#: dist/converse-no-dependencies.js:47792
 msgid "Requires an invitation"
 msgstr "Requiere una invitación"
 
-#: dist/converse-no-dependencies.js:41422
-#: dist/converse-no-dependencies.js:51680
-#: dist/converse-no-dependencies.js:51836
+#: dist/converse-no-dependencies.js:47793
+#: dist/converse-no-dependencies.js:58238
+#: dist/converse-no-dependencies.js:58394
 msgid "Moderated"
 msgstr "Moderado"
 
-#: dist/converse-no-dependencies.js:41423
+#: dist/converse-no-dependencies.js:47794
 msgid "Non-anonymous"
 msgstr "No anónimo"
 
-#: dist/converse-no-dependencies.js:41424
-#: dist/converse-no-dependencies.js:51640
-#: dist/converse-no-dependencies.js:51796
+#: dist/converse-no-dependencies.js:47795
+#: dist/converse-no-dependencies.js:58198
+#: dist/converse-no-dependencies.js:58354
 msgid "Open"
 msgstr "Abrir"
 
-#: dist/converse-no-dependencies.js:41425
+#: dist/converse-no-dependencies.js:47796
 msgid "Permanent"
 msgstr "Sala permanente"
 
-#: dist/converse-no-dependencies.js:41426
-#: dist/converse-no-dependencies.js:51624
-#: dist/converse-no-dependencies.js:51780
+#: dist/converse-no-dependencies.js:47797
+#: dist/converse-no-dependencies.js:58182
+#: dist/converse-no-dependencies.js:58338
 msgid "Public"
 msgstr "Pública"
 
-#: dist/converse-no-dependencies.js:41427
-#: dist/converse-no-dependencies.js:51672
-#: dist/converse-no-dependencies.js:51828
+#: dist/converse-no-dependencies.js:47798
+#: dist/converse-no-dependencies.js:58230
+#: dist/converse-no-dependencies.js:58386
 msgid "Semi-anonymous"
 msgstr "Semi anónimo"
 
-#: dist/converse-no-dependencies.js:41428
-#: dist/converse-no-dependencies.js:51656
-#: dist/converse-no-dependencies.js:51812
+#: dist/converse-no-dependencies.js:47799
+#: dist/converse-no-dependencies.js:58214
+#: dist/converse-no-dependencies.js:58370
 msgid "Temporary"
 msgstr "Temporal"
 
-#: dist/converse-no-dependencies.js:41429
+#: dist/converse-no-dependencies.js:47800
 msgid "Unmoderated"
 msgstr "Sin moderar"
 
-#: dist/converse-no-dependencies.js:41465
+#: dist/converse-no-dependencies.js:47836
 msgid "Query for Groupchats"
 msgstr "Buscar una sala"
 
-#: dist/converse-no-dependencies.js:41466
+#: dist/converse-no-dependencies.js:47837
 msgid "Server address"
 msgstr "Dirección del servidor"
 
-#: dist/converse-no-dependencies.js:41467
+#: dist/converse-no-dependencies.js:47838
 msgid "Show groupchats"
 msgstr "Mostrar salas"
 
-#: dist/converse-no-dependencies.js:41468
+#: dist/converse-no-dependencies.js:47839
 msgid "conference.example.org"
 msgstr "conference.example.org"
 
-#: dist/converse-no-dependencies.js:41517
+#: dist/converse-no-dependencies.js:47890
 msgid "No groupchats found"
 msgstr "Ninguna sala encontrada"
 
-#: dist/converse-no-dependencies.js:41534
+#: dist/converse-no-dependencies.js:47908
 msgid "Groupchats found:"
 msgstr "Salas encontradas:"
 
-#: dist/converse-no-dependencies.js:41584
+#: dist/converse-no-dependencies.js:47962
 msgid "Enter a new Groupchat"
 msgstr "Entrar en una nueva sala"
 
-#: dist/converse-no-dependencies.js:41585
+#: dist/converse-no-dependencies.js:47963
 msgid "Groupchat address"
 msgstr "Dirección de la charla grupal"
 
-#: dist/converse-no-dependencies.js:41586
-#: dist/converse-no-dependencies.js:49410
+#: dist/converse-no-dependencies.js:47964
+#: dist/converse-no-dependencies.js:55911
 msgid "Optional nickname"
 msgstr "Apodo opcional"
 
-#: dist/converse-no-dependencies.js:41587
+#: dist/converse-no-dependencies.js:47965
 msgid "name@conference.example.org"
 msgstr "nombre@conferencia.ejemplo.org"
 
-#: dist/converse-no-dependencies.js:41588
+#: dist/converse-no-dependencies.js:47966
 msgid "Join"
 msgstr "Unirse"
 
-#: dist/converse-no-dependencies.js:41636
+#: dist/converse-no-dependencies.js:48018
 #, javascript-format
 msgid "Groupchat info for %1$s"
 msgstr "Información de sala %1$s"
 
-#: dist/converse-no-dependencies.js:41812
+#: dist/converse-no-dependencies.js:48204
 #, fuzzy, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
 msgstr "%1$s ha entrado y abandonado la sala."
 
-#: dist/converse-no-dependencies.js:41814
+#: dist/converse-no-dependencies.js:48206
 #, fuzzy, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
 msgstr "Conceder propiedad de esta sala"
 
-#: dist/converse-no-dependencies.js:41816
+#: dist/converse-no-dependencies.js:48208
 #, fuzzy, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
 msgstr "Usted ha sido bloqueado de esta sala"
 
-#: dist/converse-no-dependencies.js:41820
+#: dist/converse-no-dependencies.js:48212
 #, fuzzy, javascript-format
 msgid "%1$s is no longer a permanent member of this groupchat"
 msgstr "Usted no está en la lista de miembros de esta sala"
 
-#: dist/converse-no-dependencies.js:41824
+#: dist/converse-no-dependencies.js:48216
 #, fuzzy, javascript-format
 msgid "%1$s is now a permanent member of this groupchat"
 msgstr "Usted no está en la lista de miembros de esta sala"
 
-#: dist/converse-no-dependencies.js:41826
+#: dist/converse-no-dependencies.js:48218
 #, fuzzy, javascript-format
 msgid "%1$s has been banned from this groupchat"
 msgstr "Usted ha sido bloqueado de esta sala"
 
-#: dist/converse-no-dependencies.js:41828
-#, fuzzy, javascript-format
-msgid "%1$s is now an "
-msgstr "%1$s es ahora un moderador."
-
-#: dist/converse-no-dependencies.js:41835
+#: dist/converse-no-dependencies.js:48228
 #, fuzzy, javascript-format
 msgid "%1$s is no longer a moderator"
 msgstr "1$s ya no es moderador"
 
-#: dist/converse-no-dependencies.js:41839
+#: dist/converse-no-dependencies.js:48232
 #, fuzzy, javascript-format
 msgid "%1$s has been given a voice again"
 msgstr "A %1$s le han dado una voz otra vez."
 
-#: dist/converse-no-dependencies.js:41843
+#: dist/converse-no-dependencies.js:48236
 #, fuzzy, javascript-format
 msgid "%1$s has been muted"
 msgstr "%1$s ha sido silenciado."
 
-#: dist/converse-no-dependencies.js:41847
+#: dist/converse-no-dependencies.js:48240
 #, fuzzy, javascript-format
 msgid "%1$s is now a moderator"
 msgstr "%1$s es ahora un moderador."
 
-#: dist/converse-no-dependencies.js:41855
+#: dist/converse-no-dependencies.js:48249
 #, fuzzy
 msgid "Close and leave this groupchat"
 msgstr "Cerrar y dejar la sala"
 
-#: dist/converse-no-dependencies.js:41856
+#: dist/converse-no-dependencies.js:48250
 #, fuzzy
 msgid "Configure this groupchat"
 msgstr "Configurar esta sala"
 
-#: dist/converse-no-dependencies.js:41857
+#: dist/converse-no-dependencies.js:48251
 msgid "Show more details about this groupchat"
 msgstr "Mostrar más información sobre esta sala"
 
-#: dist/converse-no-dependencies.js:41897
+#: dist/converse-no-dependencies.js:48297
 #, fuzzy
 msgid "Hide the list of participants"
 msgstr "Ocultar la lista de ocupantes"
 
-#: dist/converse-no-dependencies.js:42013
-msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
-
-#: dist/converse-no-dependencies.js:42025
-msgid ""
-"Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr ""
-
-#: dist/converse-no-dependencies.js:42036
+#: dist/converse-no-dependencies.js:48446
 #, javascript-format
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
@@ -659,12 +609,12 @@ msgstr ""
 "Error: el comando %1$s toma dos argumentos, el apodo del usuario y "
 "opcionalmente una razón."
 
-#: dist/converse-no-dependencies.js:42045
+#: dist/converse-no-dependencies.js:48455
 #, javascript-format
 msgid "Error: couldn't find a groupchat participant \"%1$s\""
 msgstr ""
 
-#: dist/converse-no-dependencies.js:42054
+#: dist/converse-no-dependencies.js:48465
 msgid ""
 "Sorry, an error happened while running the command. Check your browser's "
 "developer console for details."
@@ -672,78 +622,74 @@ msgstr ""
 "Lo sentimos, se ha producido un error al ejecutar el comando. Consulte la "
 "consola del desarrollador de su navegador para obtener más detalles."
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 msgid "Change user's affiliation to admin"
 msgstr "Cambiar la afiliación del usuario a administrador"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 #, fuzzy
 msgid "Ban user from groupchat"
 msgstr "Expulsar usuario de la sala"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 msgid "Change user role to participant"
 msgstr "Cambiar rol de usuario a participante"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 #, fuzzy
 msgid "Kick user from groupchat"
 msgstr "Echar usuario de la sala"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 #, fuzzy
 msgid "Write in 3rd person"
 msgstr "Escribir en tercera persona"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 msgid "Grant membership to a user"
 msgstr "Conceder membresía a un usuario"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 msgid "Remove user's ability to post messages"
 msgstr "Remover la habilidad del usuario para publicar mensajes"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 msgid "Change your nickname"
 msgstr "Cambiar tu apodo"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 msgid "Grant moderator role to user"
 msgstr "Conceder rol de moderador al usuario"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 #, fuzzy
 msgid "Grant ownership of this groupchat"
 msgstr "Conceder propiedad de esta sala"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 #, fuzzy
 msgid "Register a nickname for this room"
 msgstr "El nombre para esta marca:"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 msgid "Revoke user's membership"
 msgstr "Revocar membresía del usuario"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 #, fuzzy
 msgid "Set groupchat subject"
 msgstr "Establecer tema de la sala"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 #, fuzzy
 msgid "Set groupchat subject (alias for /subject)"
 msgstr "Establecer tema de la sala (alias para /subject)"
 
-#: dist/converse-no-dependencies.js:42113
+#: dist/converse-no-dependencies.js:48513
 msgid "Allow muted user to post messages"
 msgstr "Permitir a usuario silenciado publicar mensajes"
 
-#: dist/converse-no-dependencies.js:42198
-msgid "Error: invalid number of arguments"
-msgstr ""
-
-#: dist/converse-no-dependencies.js:42448
+#: dist/converse-no-dependencies.js:48841
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
@@ -751,200 +697,205 @@ msgstr ""
 "El apodo que elegiste está reservado o en uso actualmente, por favor, elige "
 "uno diferente."
 
-#: dist/converse-no-dependencies.js:42474
+#: dist/converse-no-dependencies.js:48869
 msgid "Please choose your nickname"
 msgstr "Por favor, elige un apodo"
 
-#: dist/converse-no-dependencies.js:42475
-#: dist/converse-no-dependencies.js:46786
-#: dist/converse-no-dependencies.js:54098
+#: dist/converse-no-dependencies.js:48870
+#: dist/converse-no-dependencies.js:53228
+#: dist/converse-no-dependencies.js:60690
 msgid "Nickname"
 msgstr "Apodo"
 
-#: dist/converse-no-dependencies.js:42476
+#: dist/converse-no-dependencies.js:48871
 #, fuzzy
 msgid "Enter groupchat"
 msgstr "Entrar en la sala"
 
-#: dist/converse-no-dependencies.js:42497
+#: dist/converse-no-dependencies.js:48896
 #, fuzzy
 msgid "This groupchat requires a password"
 msgstr "Esta sala de chat requiere una contraseña"
 
-#: dist/converse-no-dependencies.js:42498
+#: dist/converse-no-dependencies.js:48897
 msgid "Password: "
 msgstr "Contraseña: "
 
-#: dist/converse-no-dependencies.js:42499
+#: dist/converse-no-dependencies.js:48898
 msgid "Submit"
 msgstr "Enviar"
 
-#: dist/converse-no-dependencies.js:42621
+#: dist/converse-no-dependencies.js:49073
 #, javascript-format
 msgid "This action was done by %1$s."
 msgstr "Esta acción fue hecha por %1$s."
 
-#: dist/converse-no-dependencies.js:42625
-#: dist/converse-no-dependencies.js:42643
+#: dist/converse-no-dependencies.js:49077
+#: dist/converse-no-dependencies.js:49094
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr "La razón dada es: %1$s."
 
-#: dist/converse-no-dependencies.js:42675
+#: dist/converse-no-dependencies.js:49165
 #, fuzzy, javascript-format
 msgid "%1$s has left and re-entered the groupchat"
 msgstr "%1$s se ha ido y volvió a entrar en la sala."
 
-#: dist/converse-no-dependencies.js:42688
+#: dist/converse-no-dependencies.js:49167
+#, fuzzy, javascript-format
+msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
+msgstr "%1$s se ha ido y volvió a entrar en la sala."
+
+#: dist/converse-no-dependencies.js:49186
 #, fuzzy, javascript-format
 msgid "%1$s has entered the groupchat"
 msgstr "%1$s Ha entrado en la sala."
 
-#: dist/converse-no-dependencies.js:42690
+#: dist/converse-no-dependencies.js:49188
 #, fuzzy, javascript-format
 msgid "%1$s has entered the groupchat. \"%2$s\""
 msgstr "%1$s ha entrado en la sala. \"%2$s\""
 
-#: dist/converse-no-dependencies.js:42725
+#: dist/converse-no-dependencies.js:49225
 #, fuzzy, javascript-format
 msgid "%1$s has entered and left the groupchat"
 msgstr "%1$s ha entrado y abandonado la sala."
 
-#: dist/converse-no-dependencies.js:42727
+#: dist/converse-no-dependencies.js:49227
 #, fuzzy, javascript-format
 msgid "%1$s has entered and left the groupchat. \"%2$s\""
 msgstr "%1$s ha entrado y se ha ido de la sala. \"%2$s\""
 
-#: dist/converse-no-dependencies.js:42747
+#: dist/converse-no-dependencies.js:49246
 #, fuzzy, javascript-format
 msgid "%1$s has left the groupchat"
 msgstr "%1$s ha dejado la sala."
 
-#: dist/converse-no-dependencies.js:42749
+#: dist/converse-no-dependencies.js:49248
 #, fuzzy, javascript-format
 msgid "%1$s has left the groupchat. \"%2$s\""
 msgstr "%1$s ha dejado la sala. \"%2$s\""
 
-#: dist/converse-no-dependencies.js:42796
+#: dist/converse-no-dependencies.js:49297
 #, fuzzy
 msgid "You are not on the member list of this groupchat."
 msgstr "Usted no está en la lista de miembros de esta sala"
 
-#: dist/converse-no-dependencies.js:42798
+#: dist/converse-no-dependencies.js:49299
 #, fuzzy
 msgid "You have been banned from this groupchat."
 msgstr "Usted ha sido expulsado de esta sala."
 
-#: dist/converse-no-dependencies.js:42802
+#: dist/converse-no-dependencies.js:49303
 msgid "No nickname was specified."
 msgstr "Ningún apodo fue especificado."
 
-#: dist/converse-no-dependencies.js:42806
+#: dist/converse-no-dependencies.js:49307
 #, fuzzy
 msgid "You are not allowed to create new groupchats."
 msgstr "Usted no está autorizado para crear nuevas salas."
 
-#: dist/converse-no-dependencies.js:42808
+#: dist/converse-no-dependencies.js:49309
 #, fuzzy
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "Su apodo no se ajusta a la política de esta sala."
 
-#: dist/converse-no-dependencies.js:42812
+#: dist/converse-no-dependencies.js:49315
 #, fuzzy
 msgid "This groupchat does not (yet) exist."
 msgstr "Esta sala (aún) no existe"
 
-#: dist/converse-no-dependencies.js:42814
+#: dist/converse-no-dependencies.js:49317
 #, fuzzy
 msgid "This groupchat has reached its maximum number of participants."
 msgstr "Esta sala ha alcanzado su número máximo de ocupantes"
 
-#: dist/converse-no-dependencies.js:42816
+#: dist/converse-no-dependencies.js:49319
 msgid "Remote server not found"
 msgstr "Servidor remoto no encontrado"
 
-#: dist/converse-no-dependencies.js:42821
+#: dist/converse-no-dependencies.js:49324
 #, fuzzy, javascript-format
 msgid "The explanation given is: \"%1$s\"."
 msgstr "La razón dada es: %1$s."
 
-#: dist/converse-no-dependencies.js:42870
+#: dist/converse-no-dependencies.js:49377
 #, fuzzy, javascript-format
 msgid "Topic set by %1$s"
 msgstr "Tema fijado por %1$s a: %2$s"
 
-#: dist/converse-no-dependencies.js:42870
+#: dist/converse-no-dependencies.js:49377
 #, fuzzy, javascript-format
 msgid "Topic cleared by %1$s"
 msgstr "Tema fijado por %1$s a: %2$s"
 
-#: dist/converse-no-dependencies.js:42903
+#: dist/converse-no-dependencies.js:49413
 #, fuzzy
 msgid "Groupchats"
 msgstr "Grupos"
 
-#: dist/converse-no-dependencies.js:42904
+#: dist/converse-no-dependencies.js:49414
 #, fuzzy
 msgid "Add a new groupchat"
 msgstr "Entrar en la sala"
 
-#: dist/converse-no-dependencies.js:42905
+#: dist/converse-no-dependencies.js:49415
 #, fuzzy
 msgid "Query for groupchats"
 msgstr "Expulsar usuario de la sala"
 
-#: dist/converse-no-dependencies.js:42943
+#: dist/converse-no-dependencies.js:49458
 #, javascript-format
 msgid "Click to mention %1$s in your message."
 msgstr "Haga clic para mencionar a %1$s en tu mensaje."
 
-#: dist/converse-no-dependencies.js:42944
+#: dist/converse-no-dependencies.js:49459
 #, fuzzy
 msgid "This user is a moderator."
 msgstr "Este usuario es un moderador"
 
-#: dist/converse-no-dependencies.js:42945
+#: dist/converse-no-dependencies.js:49460
 #, fuzzy
 msgid "This user can send messages in this groupchat."
 msgstr "Este usuario puede enviar mensajes en esta sala"
 
-#: dist/converse-no-dependencies.js:42946
+#: dist/converse-no-dependencies.js:49461
 #, fuzzy
 msgid "This user can NOT send messages in this groupchat."
 msgstr "Este usuario NO puede enviar mensajes en esta"
 
-#: dist/converse-no-dependencies.js:42947
+#: dist/converse-no-dependencies.js:49462
 #, fuzzy
 msgid "Moderator"
 msgstr "Moderado"
 
-#: dist/converse-no-dependencies.js:42948
+#: dist/converse-no-dependencies.js:49463
 msgid "Visitor"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:42949
+#: dist/converse-no-dependencies.js:49464
 msgid "Owner"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:42950
+#: dist/converse-no-dependencies.js:49465
 #, fuzzy
 msgid "Member"
 msgstr "Solo miembros"
 
-#: dist/converse-no-dependencies.js:42951
+#: dist/converse-no-dependencies.js:49466
 msgid "Admin"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:42993
+#: dist/converse-no-dependencies.js:49512
 msgid "Participants"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:43010
-#: dist/converse-no-dependencies.js:43091
+#: dist/converse-no-dependencies.js:49530
+#: dist/converse-no-dependencies.js:49614
 msgid "Invite"
 msgstr "Invitar"
 
-#: dist/converse-no-dependencies.js:43068
+#: dist/converse-no-dependencies.js:49590
 #, fuzzy, javascript-format
 msgid ""
 "You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
@@ -953,38 +904,38 @@ msgstr ""
 "Estas a punto de invitar a%1$s a la sala de chat \"%2$s\". Opcionalmente "
 "puedes incluir un mensaje, explicando la razón de tu invitación."
 
-#: dist/converse-no-dependencies.js:43090
+#: dist/converse-no-dependencies.js:49613
 msgid "Please enter a valid XMPP username"
 msgstr "Por favor, introduzca un nombre de usuario XMPP válido"
 
-#: dist/converse-no-dependencies.js:44221
+#: dist/converse-no-dependencies.js:50733
 #, fuzzy
 msgid "You're not allowed to register yourself in this groupchat."
 msgstr "Usted no está autorizado para crear nuevas salas."
 
-#: dist/converse-no-dependencies.js:44223
+#: dist/converse-no-dependencies.js:50735
 #, fuzzy
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
 msgstr "Usted no está autorizado para crear nuevas salas."
 
-#: dist/converse-no-dependencies.js:44256
+#: dist/converse-no-dependencies.js:50766
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:44258
+#: dist/converse-no-dependencies.js:50768
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:44718
+#: dist/converse-no-dependencies.js:51222
 #, fuzzy, javascript-format
 msgid "%1$s has invited you to join a groupchat: %2$s"
 msgstr "%1$s ha te invitado a ingresar a la sala de chat: %2$s"
 
-#: dist/converse-no-dependencies.js:44720
+#: dist/converse-no-dependencies.js:51224
 #, fuzzy, javascript-format
 msgid ""
 "%1$s has invited you to join a groupchat: %2$s, and left the following "
@@ -993,241 +944,231 @@ msgstr ""
 "%1$s te ha invitado a ingresar a la sala de chat: %2$s, y dejo la siguiente "
 "razón: \"%3$s\""
 
-#: dist/converse-no-dependencies.js:44809
-#, fuzzy
-msgid "Error: the groupchat "
-msgstr "Entrar en la sala"
-
-#: dist/converse-no-dependencies.js:44811
-#, fuzzy
-msgid "Sorry, you're not allowed to registerd in this groupchat"
-msgstr "Usted no está autorizado para crear nuevas salas."
-
 #. workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:45196
-#: dist/converse-no-dependencies.js:45202
+#: dist/converse-no-dependencies.js:51697
+#: dist/converse-no-dependencies.js:51703
 #, javascript-format
 msgid "Notification from %1$s"
 msgstr "Notificación de %1$s"
 
-#: dist/converse-no-dependencies.js:45204
-#: dist/converse-no-dependencies.js:45215
-#: dist/converse-no-dependencies.js:45218
+#: dist/converse-no-dependencies.js:51705
+#: dist/converse-no-dependencies.js:51716
+#: dist/converse-no-dependencies.js:51719
 #, javascript-format
 msgid "%1$s says"
 msgstr "%1$s dice"
 
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
-#: dist/converse-no-dependencies.js:45227
+#: dist/converse-no-dependencies.js:51728
 #, fuzzy
 msgid "OMEMO Message received"
 msgstr "Archivado de mensajes"
 
-#: dist/converse-no-dependencies.js:45254
+#: dist/converse-no-dependencies.js:51755
 msgid "has gone offline"
 msgstr "se ha desconectado"
 
-#: dist/converse-no-dependencies.js:45256
+#: dist/converse-no-dependencies.js:51757
 msgid "has gone away"
 msgstr "se ha marchado"
 
-#: dist/converse-no-dependencies.js:45258
+#: dist/converse-no-dependencies.js:51759
 msgid "is busy"
 msgstr "está ocupado"
 
-#: dist/converse-no-dependencies.js:45260
+#: dist/converse-no-dependencies.js:51761
 msgid "has come online"
 msgstr "se ha conectado"
 
-#: dist/converse-no-dependencies.js:45277
+#: dist/converse-no-dependencies.js:51778
 msgid "wants to be your contact"
 msgstr "quiere ser su contacto"
 
-#: dist/converse-no-dependencies.js:45498
+#: dist/converse-no-dependencies.js:51993
 #, fuzzy
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "Un error ocurrío mientras se guardaba el formulario."
 
-#: dist/converse-no-dependencies.js:45630
+#: dist/converse-no-dependencies.js:52122
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:45781
+#: dist/converse-no-dependencies.js:52263
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:45842
+#: dist/converse-no-dependencies.js:52313
 #, fuzzy
 msgid "Sorry, could not send the message due to an error."
 msgstr "Lo sentimos, no he podido determinar la URL de carga."
 
-#: dist/converse-no-dependencies.js:46780
+#: dist/converse-no-dependencies.js:53222
 msgid "Your avatar image"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:46781
+#: dist/converse-no-dependencies.js:53223
 msgid "Your Profile"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:46782
-#: dist/converse-no-dependencies.js:46872
-#: dist/converse-no-dependencies.js:51702
-#: dist/converse-no-dependencies.js:52869
-#: dist/converse-no-dependencies.js:54072
-#: dist/converse-no-dependencies.js:54192
+#: dist/converse-no-dependencies.js:53224
+#: dist/converse-no-dependencies.js:53311
+#: dist/converse-no-dependencies.js:58260
+#: dist/converse-no-dependencies.js:59452
+#: dist/converse-no-dependencies.js:60664
+#: dist/converse-no-dependencies.js:60784
 msgid "Close"
 msgstr "cerrar"
 
-#: dist/converse-no-dependencies.js:46783
-#: dist/converse-no-dependencies.js:54116
+#: dist/converse-no-dependencies.js:53225
+#: dist/converse-no-dependencies.js:60708
 msgid "Email"
 msgstr "Email"
 
-#: dist/converse-no-dependencies.js:46784
-#: dist/converse-no-dependencies.js:54086
+#: dist/converse-no-dependencies.js:53226
+#: dist/converse-no-dependencies.js:60678
 msgid "Full Name"
 msgstr "Nombre completo"
 
-#: dist/converse-no-dependencies.js:46785
+#: dist/converse-no-dependencies.js:53227
 #, fuzzy
 msgid "XMPP Address (JID)"
 msgstr "Dirección de la sala (JID):"
 
-#: dist/converse-no-dependencies.js:46787
-#: dist/converse-no-dependencies.js:54126
+#: dist/converse-no-dependencies.js:53229
+#: dist/converse-no-dependencies.js:60718
 msgid "Role"
 msgstr "función"
 
-#: dist/converse-no-dependencies.js:46788
+#: dist/converse-no-dependencies.js:53230
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:46789
-#: dist/converse-no-dependencies.js:54106
+#: dist/converse-no-dependencies.js:53231
+#: dist/converse-no-dependencies.js:60698
 msgid "URL"
 msgstr "URL"
 
-#: dist/converse-no-dependencies.js:46823
+#: dist/converse-no-dependencies.js:53261
 #, fuzzy
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "Disculpe, algo salió mal mientras se trataba de guardar su marca."
 
-#: dist/converse-no-dependencies.js:46823
+#: dist/converse-no-dependencies.js:53261
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:46871
-#: dist/converse-no-dependencies.js:49536
+#: dist/converse-no-dependencies.js:53310
+#: dist/converse-no-dependencies.js:56043
 msgid "Away"
 msgstr "Ausente"
 
-#: dist/converse-no-dependencies.js:46873
-#: dist/converse-no-dependencies.js:49535
+#: dist/converse-no-dependencies.js:53312
+#: dist/converse-no-dependencies.js:56042
 msgid "Busy"
 msgstr "Ocupado"
 
-#: dist/converse-no-dependencies.js:46875
+#: dist/converse-no-dependencies.js:53314
 msgid "Custom status"
 msgstr "Personalizar estatus"
 
-#: dist/converse-no-dependencies.js:46876
-#: dist/converse-no-dependencies.js:49538
+#: dist/converse-no-dependencies.js:53315
+#: dist/converse-no-dependencies.js:56045
 msgid "Offline"
 msgstr "Desconectado"
 
-#: dist/converse-no-dependencies.js:46877
-#: dist/converse-no-dependencies.js:49533
+#: dist/converse-no-dependencies.js:53316
+#: dist/converse-no-dependencies.js:56040
 msgid "Online"
 msgstr "En línea"
 
-#: dist/converse-no-dependencies.js:46879
+#: dist/converse-no-dependencies.js:53318
 #, fuzzy
 msgid "Away for long"
 msgstr "ausente por mucho tiempo"
 
-#: dist/converse-no-dependencies.js:46880
+#: dist/converse-no-dependencies.js:53319
 #, fuzzy
 msgid "Change chat status"
 msgstr "Haga click para cambiar su estatus de chat"
 
-#: dist/converse-no-dependencies.js:46881
+#: dist/converse-no-dependencies.js:53320
 #, fuzzy
 msgid "Personal status message"
 msgstr "Mensaje personal"
 
-#: dist/converse-no-dependencies.js:46926
+#: dist/converse-no-dependencies.js:53369
 #, javascript-format
 msgid "I am %1$s"
 msgstr "Estoy %1$s"
 
-#: dist/converse-no-dependencies.js:46929
+#: dist/converse-no-dependencies.js:53372
 msgid "Change settings"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:46930
+#: dist/converse-no-dependencies.js:53373
 msgid "Click to change your chat status"
 msgstr "Haga click para cambiar su estatus de chat"
 
-#: dist/converse-no-dependencies.js:46931
+#: dist/converse-no-dependencies.js:53374
 msgid "Log out"
 msgstr "Desconectarse"
 
-#: dist/converse-no-dependencies.js:46932
+#: dist/converse-no-dependencies.js:53375
 msgid "Your profile"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:46958
+#: dist/converse-no-dependencies.js:53405
 #, fuzzy
 msgid "Are you sure you want to log out?"
 msgstr "¿Esta seguro de querer eliminar este contacto?"
 
-#: dist/converse-no-dependencies.js:46966
-#: dist/converse-no-dependencies.js:46976
+#: dist/converse-no-dependencies.js:53414
+#: dist/converse-no-dependencies.js:53424
 msgid "online"
 msgstr "en línea"
 
-#: dist/converse-no-dependencies.js:46968
+#: dist/converse-no-dependencies.js:53416
 msgid "busy"
 msgstr "ocupado"
 
-#: dist/converse-no-dependencies.js:46970
+#: dist/converse-no-dependencies.js:53418
 msgid "away for long"
 msgstr "ausente por mucho tiempo"
 
-#: dist/converse-no-dependencies.js:46972
+#: dist/converse-no-dependencies.js:53420
 msgid "away"
 msgstr "ausente"
 
-#: dist/converse-no-dependencies.js:46974
+#: dist/converse-no-dependencies.js:53422
 msgid "offline"
 msgstr "desconectado"
 
-#: dist/converse-no-dependencies.js:47307
+#: dist/converse-no-dependencies.js:53755
 msgid " e.g. conversejs.org"
 msgstr " e.g. conversejs.org"
 
-#: dist/converse-no-dependencies.js:47354
+#: dist/converse-no-dependencies.js:53805
 msgid "Fetch registration form"
 msgstr "Recabar forma de registro"
 
-#: dist/converse-no-dependencies.js:47355
+#: dist/converse-no-dependencies.js:53806
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "Consejo: Una lista de proveedores públicos de XMPP está disponilbe"
 
-#: dist/converse-no-dependencies.js:47356
+#: dist/converse-no-dependencies.js:53807
 msgid "here"
 msgstr "Aquí"
 
-#: dist/converse-no-dependencies.js:47404
+#: dist/converse-no-dependencies.js:53855
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "Disculpe, fuimos incapaces de conectarnos con tu proveedor elegido."
 
-#: dist/converse-no-dependencies.js:47420
+#: dist/converse-no-dependencies.js:53871
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -1235,7 +1176,7 @@ msgstr ""
 "Disculpe, el proveedor dado no soporta registro de cuentas en banda. Por "
 "favor, intente con otro proveedor."
 
-#: dist/converse-no-dependencies.js:47444
+#: dist/converse-no-dependencies.js:53896
 #, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
@@ -1244,15 +1185,15 @@ msgstr ""
 "Algo salió mal mientras se establecía conexión con  \"%1$s\". Esta seguro "
 "que existe?"
 
-#: dist/converse-no-dependencies.js:47607
+#: dist/converse-no-dependencies.js:54068
 msgid "Now logging you in"
 msgstr "Ingresando ahora"
 
-#: dist/converse-no-dependencies.js:47611
+#: dist/converse-no-dependencies.js:54072
 msgid "Registered successfully"
 msgstr "Registrado exitosamente"
 
-#: dist/converse-no-dependencies.js:47720
+#: dist/converse-no-dependencies.js:54179
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
@@ -1260,494 +1201,551 @@ msgstr ""
 "El proveedor rechazó tu intento de registro. Por favor, revisa que los "
 "valores que ingresaste sean correctos."
 
-#: dist/converse-no-dependencies.js:48095
+#: dist/converse-no-dependencies.js:54569
 #, fuzzy
 msgid "Click to toggle the list of open groupchats"
 msgstr "Haga clic para alternar la lista de salas"
 
-#: dist/converse-no-dependencies.js:48096
+#: dist/converse-no-dependencies.js:54570
 msgid "Open Groupchats"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:48140
+#: dist/converse-no-dependencies.js:54619
 #, fuzzy, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "¿Esta seguro de querer abandonar la sala \"%1$s\"?"
 
-#: dist/converse-no-dependencies.js:48766
+#: dist/converse-no-dependencies.js:55257
 #, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
 msgstr "Disculpe, hubo un error intentando añadir a %1$s como contacto."
 
-#: dist/converse-no-dependencies.js:48977
+#: dist/converse-no-dependencies.js:55469
 msgid "This client does not allow presence subscriptions"
 msgstr "Este cliente no permite las suscripciones presenciales"
 
-#: dist/converse-no-dependencies.js:49087
+#: dist/converse-no-dependencies.js:55582
 msgid "Click to hide these contacts"
 msgstr "Haga click para ocultar estos contactos"
 
-#: dist/converse-no-dependencies.js:49351
+#: dist/converse-no-dependencies.js:55850
 msgid "This contact is busy"
 msgstr "Este contacto está ocupado"
 
-#: dist/converse-no-dependencies.js:49352
+#: dist/converse-no-dependencies.js:55851
 msgid "This contact is online"
 msgstr "Este contacto está en línea"
 
-#: dist/converse-no-dependencies.js:49353
+#: dist/converse-no-dependencies.js:55852
 msgid "This contact is offline"
 msgstr "Este contacto está desconectado"
 
-#: dist/converse-no-dependencies.js:49354
+#: dist/converse-no-dependencies.js:55853
 msgid "This contact is unavailable"
 msgstr "Este contacto no está disponible"
 
-#: dist/converse-no-dependencies.js:49355
+#: dist/converse-no-dependencies.js:55854
 msgid "This contact is away for an extended period"
 msgstr "Este contacto está ausente por un largo periodo de tiempo"
 
-#: dist/converse-no-dependencies.js:49356
+#: dist/converse-no-dependencies.js:55855
 msgid "This contact is away"
 msgstr "Este contacto está ausente"
 
-#: dist/converse-no-dependencies.js:49359
+#: dist/converse-no-dependencies.js:55858
 msgid "Groups"
 msgstr "Grupos"
 
-#: dist/converse-no-dependencies.js:49361
+#: dist/converse-no-dependencies.js:55860
 msgid "My contacts"
 msgstr "Mis contactos"
 
-#: dist/converse-no-dependencies.js:49363
+#: dist/converse-no-dependencies.js:55862
 msgid "Pending contacts"
 msgstr "Contactos pendientes"
 
-#: dist/converse-no-dependencies.js:49365
+#: dist/converse-no-dependencies.js:55864
 msgid "Contact requests"
 msgstr "Solicitudes de contacto"
 
-#: dist/converse-no-dependencies.js:49367
+#: dist/converse-no-dependencies.js:55866
 msgid "Ungrouped"
 msgstr "Sin grupo"
 
-#: dist/converse-no-dependencies.js:49410
+#: dist/converse-no-dependencies.js:55911
 msgid "Contact name"
 msgstr "Nombre de contacto"
 
-#: dist/converse-no-dependencies.js:49413
+#: dist/converse-no-dependencies.js:55914
 #, fuzzy
 msgid "Add a Contact"
 msgstr "Agregar un contacto"
 
-#: dist/converse-no-dependencies.js:49414
-#: dist/converse-no-dependencies.js:54092
+#: dist/converse-no-dependencies.js:55915
+#: dist/converse-no-dependencies.js:60684
 msgid "XMPP Address"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:49416
+#: dist/converse-no-dependencies.js:55917
 #, fuzzy
 msgid "name@example.org"
 msgstr "p.e. usuario@ejemplo.org"
 
-#: dist/converse-no-dependencies.js:49417
+#: dist/converse-no-dependencies.js:55918
 msgid "Add"
 msgstr "Añadir"
 
-#: dist/converse-no-dependencies.js:49527
+#: dist/converse-no-dependencies.js:56034
 msgid "Filter"
 msgstr "Filtrar"
 
-#: dist/converse-no-dependencies.js:49528
+#: dist/converse-no-dependencies.js:56035
 #, fuzzy
 msgid "Filter by contact name"
 msgstr "Nombre de contacto"
 
-#: dist/converse-no-dependencies.js:49529
+#: dist/converse-no-dependencies.js:56036
 msgid "Filter by group name"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:49530
+#: dist/converse-no-dependencies.js:56037
 msgid "Filter by status"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:49531
+#: dist/converse-no-dependencies.js:56038
 msgid "Any"
 msgstr "Cualquier"
 
-#: dist/converse-no-dependencies.js:49532
+#: dist/converse-no-dependencies.js:56039
 msgid "Unread"
 msgstr "Sin leer"
 
-#: dist/converse-no-dependencies.js:49534
+#: dist/converse-no-dependencies.js:56041
 msgid "Chatty"
 msgstr "Hablador"
 
-#: dist/converse-no-dependencies.js:49537
+#: dist/converse-no-dependencies.js:56044
 msgid "Extended Away"
 msgstr "Extendido"
 
-#: dist/converse-no-dependencies.js:49706
-#: dist/converse-no-dependencies.js:49763
+#: dist/converse-no-dependencies.js:56226
+#: dist/converse-no-dependencies.js:56284
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
 msgstr "Click para eliminar a %1$s como contacto"
 
-#: dist/converse-no-dependencies.js:49715
+#: dist/converse-no-dependencies.js:56234
 #, javascript-format
 msgid "Click to accept the contact request from %1$s"
 msgstr "Haga clic para aceptar la solicitud de contacto de %1$s"
 
-#: dist/converse-no-dependencies.js:49716
+#: dist/converse-no-dependencies.js:56235
 #, javascript-format
 msgid "Click to decline the contact request from %1$s"
 msgstr "Haga clic para rechazar la solicitud de contacto de %1$s"
 
-#: dist/converse-no-dependencies.js:49762
+#: dist/converse-no-dependencies.js:56283
 #, javascript-format
 msgid "Click to chat with %1$s (JID: %2$s)"
 msgstr "Haga clic para conversar con %1$s (JID:%2$s)"
 
-#: dist/converse-no-dependencies.js:49839
+#: dist/converse-no-dependencies.js:56360
 msgid "Are you sure you want to decline this contact request?"
 msgstr "¿Está seguro que quiere rechazar esta solicitud de contacto?"
 
-#: dist/converse-no-dependencies.js:50108
+#: dist/converse-no-dependencies.js:56630
 msgid "Contacts"
 msgstr "Contactos"
 
-#: dist/converse-no-dependencies.js:50109
+#: dist/converse-no-dependencies.js:56631
 msgid "Add a contact"
 msgstr "Agregar un contacto"
 
-#: dist/converse-no-dependencies.js:51568
+#: dist/converse-no-dependencies.js:58093
+#, fuzzy
+msgid "This room no longer exists"
+msgstr "Esta sala no está siendo moderada"
+
+#: dist/converse-no-dependencies.js:58099
+msgid "The conversation has moved. Click below to enter."
+msgstr ""
+
+#: dist/converse-no-dependencies.js:58126
 msgid "Name"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:51572
+#: dist/converse-no-dependencies.js:58130
 #, fuzzy
 msgid "Groupchat address (JID)"
 msgstr "Dirección de la sala (JID):"
 
-#: dist/converse-no-dependencies.js:51576
+#: dist/converse-no-dependencies.js:58134
 #, fuzzy
 msgid "Description"
 msgstr "Descripción:"
 
-#: dist/converse-no-dependencies.js:51582
+#: dist/converse-no-dependencies.js:58140
 msgid "Topic"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:51586
+#: dist/converse-no-dependencies.js:58144
 msgid "Topic author"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:51592
+#: dist/converse-no-dependencies.js:58150
 #, fuzzy
 msgid "Online users"
 msgstr "En línea"
 
-#: dist/converse-no-dependencies.js:51596
-#: dist/converse-no-dependencies.js:51748
+#: dist/converse-no-dependencies.js:58154
+#: dist/converse-no-dependencies.js:58306
 msgid "Features"
 msgstr "Características"
 
-#: dist/converse-no-dependencies.js:51600
-#: dist/converse-no-dependencies.js:51756
+#: dist/converse-no-dependencies.js:58158
+#: dist/converse-no-dependencies.js:58314
 msgid "Password protected"
 msgstr "Protegido con contraseña"
 
-#: dist/converse-no-dependencies.js:51602
-#: dist/converse-no-dependencies.js:51754
+#: dist/converse-no-dependencies.js:58160
+#: dist/converse-no-dependencies.js:58312
 #, fuzzy
 msgid "This groupchat requires a password before entry"
 msgstr "Esta sala de chat requiere una contraseña."
 
-#: dist/converse-no-dependencies.js:51608
+#: dist/converse-no-dependencies.js:58166
 #, fuzzy
 msgid "No password required"
 msgstr "Sin contraseña"
 
-#: dist/converse-no-dependencies.js:51610
-#: dist/converse-no-dependencies.js:51762
+#: dist/converse-no-dependencies.js:58168
+#: dist/converse-no-dependencies.js:58320
 #, fuzzy
 msgid "This groupchat does not require a password upon entry"
 msgstr "Esta sala no requiere contraseña para entrar"
 
-#: dist/converse-no-dependencies.js:51618
-#: dist/converse-no-dependencies.js:51770
+#: dist/converse-no-dependencies.js:58176
+#: dist/converse-no-dependencies.js:58328
 #, fuzzy
 msgid "This groupchat is not publicly searchable"
 msgstr "Esta sala no puede ser buscada publicamente"
 
-#: dist/converse-no-dependencies.js:51626
-#: dist/converse-no-dependencies.js:51778
+#: dist/converse-no-dependencies.js:58184
+#: dist/converse-no-dependencies.js:58336
 #, fuzzy
 msgid "This groupchat is publicly searchable"
 msgstr "Esta sala puede ser buscada publicamente"
 
-#: dist/converse-no-dependencies.js:51632
-#: dist/converse-no-dependencies.js:51788
+#: dist/converse-no-dependencies.js:58190
+#: dist/converse-no-dependencies.js:58346
 msgid "Members only"
 msgstr "Solo miembros"
 
-#: dist/converse-no-dependencies.js:51634
+#: dist/converse-no-dependencies.js:58192
 #, fuzzy
 msgid "This groupchat is restricted to members only"
 msgstr "Esta sala esta restringida solo a miembros"
 
-#: dist/converse-no-dependencies.js:51642
-#: dist/converse-no-dependencies.js:51794
+#: dist/converse-no-dependencies.js:58200
+#: dist/converse-no-dependencies.js:58352
 #, fuzzy
 msgid "Anyone can join this groupchat"
 msgstr "Cualquiera puede ingresar a esta sala"
 
-#: dist/converse-no-dependencies.js:51648
-#: dist/converse-no-dependencies.js:51804
+#: dist/converse-no-dependencies.js:58206
+#: dist/converse-no-dependencies.js:58362
 msgid "Persistent"
 msgstr "Persistente"
 
-#: dist/converse-no-dependencies.js:51650
-#: dist/converse-no-dependencies.js:51802
+#: dist/converse-no-dependencies.js:58208
+#: dist/converse-no-dependencies.js:58360
 #, fuzzy
 msgid "This groupchat persists even if it's unoccupied"
 msgstr "Esta sala persiste incluso si está desocupada"
 
-#: dist/converse-no-dependencies.js:51658
-#: dist/converse-no-dependencies.js:51810
+#: dist/converse-no-dependencies.js:58216
+#: dist/converse-no-dependencies.js:58368
 #, fuzzy
 msgid "This groupchat will disappear once the last person leaves"
 msgstr "Esta sala desaparecerá una vez que la última persona la abandone"
 
-#: dist/converse-no-dependencies.js:51664
-#: dist/converse-no-dependencies.js:51820
+#: dist/converse-no-dependencies.js:58222
+#: dist/converse-no-dependencies.js:58378
 #, fuzzy
 msgid "Not anonymous"
 msgstr "No anónimo"
 
-#: dist/converse-no-dependencies.js:51666
-#: dist/converse-no-dependencies.js:51818
+#: dist/converse-no-dependencies.js:58224
+#: dist/converse-no-dependencies.js:58376
 #, fuzzy
 msgid "All other groupchat participants can see your XMPP username"
 msgstr ""
 "Todos los demás ocupantes de la sala pueden ver tu nombre de usuario XMPP"
 
-#: dist/converse-no-dependencies.js:51674
-#: dist/converse-no-dependencies.js:51826
+#: dist/converse-no-dependencies.js:58232
+#: dist/converse-no-dependencies.js:58384
 msgid "Only moderators can see your XMPP username"
 msgstr "Solo moderadores pueden ver tu nombre de usuario de XMPP"
 
-#: dist/converse-no-dependencies.js:51682
-#: dist/converse-no-dependencies.js:51834
-#, fuzzy
-msgid "This groupchat is being moderated"
-msgstr "Esta sala está siendo moderada"
+#: dist/converse-no-dependencies.js:58240
+#: dist/converse-no-dependencies.js:58392
+msgid ""
+"Participants entering this groupchat need to request permission to write"
+msgstr ""
 
-#: dist/converse-no-dependencies.js:51688
-#: dist/converse-no-dependencies.js:51844
+#: dist/converse-no-dependencies.js:58246
+#: dist/converse-no-dependencies.js:58402
 #, fuzzy
 msgid "Not moderated"
 msgstr "Sin moderar"
 
-#: dist/converse-no-dependencies.js:51690
-#: dist/converse-no-dependencies.js:51842
-#, fuzzy
-msgid "This groupchat is not being moderated"
-msgstr "Esta sala no está siendo moderada"
+#: dist/converse-no-dependencies.js:58248
+#: dist/converse-no-dependencies.js:58400
+msgid "Participants entering this groupchat can write right away"
+msgstr ""
 
-#: dist/converse-no-dependencies.js:51696
-#: dist/converse-no-dependencies.js:51852
+#: dist/converse-no-dependencies.js:58254
+#: dist/converse-no-dependencies.js:58410
 msgid "Message archiving"
 msgstr "Archivado de mensajes"
 
-#: dist/converse-no-dependencies.js:51698
-#: dist/converse-no-dependencies.js:51850
+#: dist/converse-no-dependencies.js:58256
+#: dist/converse-no-dependencies.js:58408
 msgid "Messages are archived on the server"
 msgstr "Los mensajes son archivados en el servidor"
 
-#: dist/converse-no-dependencies.js:51764
+#: dist/converse-no-dependencies.js:58322
 msgid "No password"
 msgstr "Sin contraseña"
 
-#: dist/converse-no-dependencies.js:51786
+#: dist/converse-no-dependencies.js:58344
 #, fuzzy
 msgid "this groupchat is restricted to members only"
 msgstr "Esta sala esta restringida solo a miembros"
 
-#: dist/converse-no-dependencies.js:52691
+#: dist/converse-no-dependencies.js:59274
 #, fuzzy
 msgid "XMPP Username:"
 msgstr "Nombre de usuario XMPP/Jabber"
 
-#: dist/converse-no-dependencies.js:52697
+#: dist/converse-no-dependencies.js:59280
 msgid "Password:"
 msgstr "Contraseña:"
 
-#: dist/converse-no-dependencies.js:52699
+#: dist/converse-no-dependencies.js:59282
 msgid "password"
 msgstr "contraseña"
 
-#: dist/converse-no-dependencies.js:52707
+#: dist/converse-no-dependencies.js:59290
 msgid "This is a trusted device"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:52709
+#: dist/converse-no-dependencies.js:59292
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
 "log out. It's important that you explicitly log out, otherwise not all "
-"cached data might be deleted."
+"cached data might be deleted. Please note, when using an untrusted device, "
+"OMEMO encryption is be supported."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:52711
+#: dist/converse-no-dependencies.js:59294
 #, fuzzy
 msgid "Log in"
 msgstr "Iniciar sesión"
 
-#: dist/converse-no-dependencies.js:52717
+#: dist/converse-no-dependencies.js:59300
 msgid "Click here to log in anonymously"
 msgstr "Haga click aquí para iniciar sesión de forma anónima"
 
-#: dist/converse-no-dependencies.js:52806
+#: dist/converse-no-dependencies.js:59389
 #, fuzzy
 msgid "This message has been edited"
 msgstr "Esta sala está siendo moderada"
 
-#: dist/converse-no-dependencies.js:52832
+#: dist/converse-no-dependencies.js:59415
 #, fuzzy
 msgid "Edit this message"
 msgstr "Ocultar mensaje oculto"
 
-#: dist/converse-no-dependencies.js:52857
+#: dist/converse-no-dependencies.js:59440
 #, fuzzy
 msgid "Message versions"
 msgstr "Archivado de mensajes"
 
-#: dist/converse-no-dependencies.js:53082
+#: dist/converse-no-dependencies.js:59665
 msgid "Save and close"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:53086
+#: dist/converse-no-dependencies.js:59669
 msgid "This device's OMEMO fingerprint"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:53098
+#: dist/converse-no-dependencies.js:59681
 msgid "Select all"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:53100
+#: dist/converse-no-dependencies.js:59683
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:53102
+#: dist/converse-no-dependencies.js:59685
 msgid "Other OMEMO-enabled devices"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:53110
-#: dist/converse-no-dependencies.js:53118
+#: dist/converse-no-dependencies.js:59693
+#: dist/converse-no-dependencies.js:59701
 msgid "Checkbox for selecting the following fingerprint"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:53120
+#: dist/converse-no-dependencies.js:59703
 #, fuzzy
 msgid "Device without a fingerprint"
 msgstr "Verificar con identificadores"
 
-#: dist/converse-no-dependencies.js:53126
+#: dist/converse-no-dependencies.js:59709
 msgid "Remove checked devices and close"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:53208
+#: dist/converse-no-dependencies.js:59791
 msgid "Don't have a chat account?"
 msgstr "¿No tiene usted una cuenta de chat?"
 
-#: dist/converse-no-dependencies.js:53210
+#: dist/converse-no-dependencies.js:59793
 msgid "Create an account"
 msgstr "Crear una cuenta"
 
-#: dist/converse-no-dependencies.js:53231
+#: dist/converse-no-dependencies.js:59814
 msgid "Create your account"
 msgstr "Crea tu cuenta"
 
-#: dist/converse-no-dependencies.js:53233
+#: dist/converse-no-dependencies.js:59816
 msgid "Please enter the XMPP provider to register with:"
 msgstr "Por favor, ingrese el proveedor de XMPP para registrarse con:"
 
-#: dist/converse-no-dependencies.js:53253
+#: dist/converse-no-dependencies.js:59836
+#: dist/converse-no-dependencies.js:59875
 msgid "Already have a chat account?"
 msgstr "¿Ya tiene usted una cuenta de chat?"
 
-#: dist/converse-no-dependencies.js:53255
+#: dist/converse-no-dependencies.js:59838
+#: dist/converse-no-dependencies.js:59877
 msgid "Log in here"
 msgstr "Ingrese aquí"
 
-#: dist/converse-no-dependencies.js:53276
+#: dist/converse-no-dependencies.js:59859
 msgid "Account Registration:"
 msgstr "Registro de cuenta:"
 
-#: dist/converse-no-dependencies.js:53284
+#: dist/converse-no-dependencies.js:59867
 msgid "Register"
 msgstr "Registrar"
 
-#: dist/converse-no-dependencies.js:53288
+#: dist/converse-no-dependencies.js:59871
 msgid "Choose a different provider"
 msgstr "Elige un proveedor diferente"
 
-#: dist/converse-no-dependencies.js:53309
+#: dist/converse-no-dependencies.js:59896
 msgid "Hold tight, we're fetching the registration form…"
 msgstr "Espera, estamos recabando la forma de registro…"
 
-#: dist/converse-no-dependencies.js:54024
+#: dist/converse-no-dependencies.js:60616
 msgid "Messages are being sent in plaintext"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:54076
+#: dist/converse-no-dependencies.js:60668
 msgid "The User's Profile Image"
 msgstr "Imagen de perfil del usuario"
 
-#: dist/converse-no-dependencies.js:54134
+#: dist/converse-no-dependencies.js:60726
 msgid "OMEMO Fingerprints"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:54158
+#: dist/converse-no-dependencies.js:60750
 msgid "Trusted"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:54172
+#: dist/converse-no-dependencies.js:60764
 msgid "Untrusted"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:54186
+#: dist/converse-no-dependencies.js:60778
 msgid "Remove as contact"
 msgstr "Quitar como contacto"
 
-#: dist/converse-no-dependencies.js:54190
+#: dist/converse-no-dependencies.js:60782
 msgid "Refresh"
 msgstr "Actualizar"
 
-#: dist/converse-no-dependencies.js:54559
+#: dist/converse-no-dependencies.js:61136
 msgid "Download"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:54579
+#: dist/converse-no-dependencies.js:61157
 #, javascript-format
 msgid "Download file \"%1$s\""
 msgstr ""
 
-#: dist/converse-no-dependencies.js:54591
+#: dist/converse-no-dependencies.js:61214
 #, javascript-format
 msgid "Download image \"%1$s\""
 msgstr ""
 
-#: dist/converse-no-dependencies.js:54604
+#: dist/converse-no-dependencies.js:61228
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr ""
 
-#: dist/converse-no-dependencies.js:54617
+#: dist/converse-no-dependencies.js:61242
 #, javascript-format
 msgid "Download audio file \"%1$s\""
 msgstr ""
+
+#~ msgid "Click to write as a normal (non-spoiler) message"
+#~ msgstr "Haga click para escribir un mensaje de estatus personalizado"
+
+#~ msgid "Click to write your message as a spoiler"
+#~ msgstr "Haga click para escribir un mensaje de estatus personalizado"
+
+#~ msgid "Clear all messages"
+#~ msgstr "Limpiar todos los mensajes"
+
+#~ msgid "Insert emojis"
+#~ msgstr "Insertar un emoticono"
+
+#~ msgid "Start a call"
+#~ msgstr "Empezar una llamada"
+
+#~ msgid "The connection has dropped, attempting to reconnect."
+#~ msgstr "La conexión se ha perdido, intentando reconectar."
+
+#~ msgid "An error occurred while connecting to the chat server."
+#~ msgstr "Ocurrió un error mientras se conectaba al servidor de chat."
+
+#~ msgid "Your Jabber ID and/or password is incorrect. Please try again."
+#~ msgstr ""
+#~ "Tu usuario de Jabber y/o tu contraseña no es correcta. Por favor, "
+#~ "inténtelo de nuevo."
+
+#, fuzzy
+#~ msgid "%1$s is now an "
+#~ msgstr "%1$s es ahora un moderador."
+
+#, fuzzy
+#~ msgid "Error: the groupchat "
+#~ msgstr "Entrar en la sala"
+
+#, fuzzy
+#~ msgid "Sorry, you're not allowed to registerd in this groupchat"
+#~ msgstr "Usted no está autorizado para crear nuevas salas."
+
+#, fuzzy
+#~ msgid "This groupchat is being moderated"
+#~ msgstr "Esta sala está siendo moderada"
+
+#, fuzzy
+#~ msgid "This groupchat is not being moderated"
+#~ msgstr "Esta sala no está siendo moderada"
 
 #~ msgid "Jabber ID"
 #~ msgstr "Usuario Jabber"
@@ -1791,9 +1789,6 @@ msgstr ""
 
 #~ msgid "This room is being moderated"
 #~ msgstr "Esta sala está siendo moderada"
-
-#~ msgid "This room is not being moderated"
-#~ msgstr "Esta sala no está siendo moderada"
 
 #~ msgid "Show rooms"
 #~ msgstr "Mostrar salas"

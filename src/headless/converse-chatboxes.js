@@ -346,10 +346,10 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             sendMessageStanza (stanza) {
-                _converse.connection.send(stanza);
+                _converse.api.send(stanza);
                 if (_converse.forward_messages) {
                     // Forward the message, so that other connected resources are also aware of it.
-                    _converse.connection.send(
+                    _converse.api.send(
                         $msg({
                             'to': _converse.bare_jid,
                             'type': this.get('message_type'),
@@ -407,7 +407,7 @@ converse.plugins.add('converse-chatboxes', {
                  * See XEP-0085 Chat State Notifications.
                  */
                 if (_converse.send_chat_state_notifications) {
-                    _converse.connection.send(
+                    _converse.api.send(
                         $msg({'to':this.get('jid'), 'type': 'chat'})
                             .c(this.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
                             .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()

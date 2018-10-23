@@ -949,7 +949,7 @@ converse.plugins.add('converse-muc-views', {
                         if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
                             break;
                         }
-                        _converse.connection.send($pres({
+                        _converse.api.send($pres({
                             from: _converse.connection.jid,
                             to: this.model.getRoomJIDAndNick(match[2]),
                             id: _converse.connection.getUniqueId()
@@ -999,7 +999,7 @@ converse.plugins.add('converse-muc-views', {
                     case 'topic':
                     case 'subject':
                         // TODO: should be done via API call to _converse.api.rooms
-                        _converse.connection.send(
+                        _converse.api.send(
                             $msg({
                                 to: this.model.get('jid'),
                                 from: _converse.connection.jid,

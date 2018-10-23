@@ -278,7 +278,7 @@ converse.plugins.add('converse-muc', {
                     stanza.cnode(Strophe.xmlElement("password", [], password));
                 }
                 this.save('connection_status', converse.ROOMSTATUS.CONNECTING);
-                _converse.connection.send(stanza);
+                _converse.api.send(stanza);
                 return this;
             },
 
@@ -426,7 +426,7 @@ converse.plugins.add('converse-muc', {
                     // <gone/> is not applicable within MUC context
                     return;
                 }
-                _converse.connection.send(
+                _converse.api.send(
                     $msg({'to':this.get('jid'), 'type': 'groupchat'})
                         .c(chat_state, {'xmlns': Strophe.NS.CHATSTATES}).up()
                         .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
@@ -462,12 +462,12 @@ converse.plugins.add('converse-muc', {
                 if (this.get('password')) { attrs.password = this.get('password'); }
 
                 const invitation = $msg({
-                    from: _converse.connection.jid,
-                    to: recipient,
-                    id: _converse.connection.getUniqueId()
+                    'from': _converse.connection.jid,
+                    'to': recipient,
+                    'id': _converse.connection.getUniqueId()
                 }).c('x', attrs);
-                _converse.connection.send(invitation);
-                _converse.emit('roomInviteSent', {
+                _converse.api.send(invitation);
+                _converse.api.emit('roomInviteSent', {
                     'room': this,
                     'recipient': recipient,
                     'reason': reason

@@ -70089,6 +70089,7 @@ if (true) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+/*global module, exports, _ */
 (function webpackUniversalModuleDefinition(root, factory) {
   if (true) module.exports = factory();else {}
 })(this, function () {
@@ -70178,11 +70179,7 @@ if (true) {
 
       return __webpack_require__(0);
       /******/
-    }(
-    /************************************************************************/
-
-    /******/
-    [
+    }([
     /* 0 */
 
     /***/
@@ -70205,7 +70202,7 @@ if (true) {
       if (typeof _ == 'function' && typeof _.runInContext == 'function') {
         // XXX: Customization in order to be able to run both _ and fp in the
         // non-AMD usecase.
-        fp = browserConvert(_.runInContext());
+        window.fp = browserConvert(_.runInContext());
       }
 
       module.exports = browserConvert;
@@ -70382,7 +70379,7 @@ if (true) {
           name = undefined;
         }
 
-        if (func == null) {
+        if (func === null) {
           throw new TypeError();
         }
 
@@ -70588,11 +70585,11 @@ if (true) {
               result = clone(Object(object)),
               nested = result;
 
-          while (nested != null && ++index < length) {
+          while (nested !== null && ++index < length) {
             var key = path[index],
                 value = nested[key];
 
-            if (value != null) {
+            if (value !== null) {
               nested[path[index]] = clone(index == lastIndex ? value : Object(value));
             }
 
@@ -71081,12 +71078,14 @@ if (true) {
             result = {};
 
         for (var key in object) {
-          var value = object[key];
+          if (Object.prototype.hasOwnProperty.call(object, key)) {
+            var value = object[key];
 
-          if (hasOwnProperty.call(result, value)) {
-            result[value].push(key);
-          } else {
-            result[value] = [key];
+            if (hasOwnProperty.call(result, value)) {
+              result[value].push(key);
+            } else {
+              result[value] = [key];
+            }
           }
         }
 
@@ -71190,8 +71189,6 @@ if (true) {
     ])
   );
 });
-
-;
 
 /***/ }),
 

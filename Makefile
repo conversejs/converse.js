@@ -157,12 +157,16 @@ watchcss: dev
 	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass:css
 
 .PHONY: watchjs
-watchjs: dev
+watchjs: dev dist/converse-headless.js
 	./node_modules/.bin/npx  webpack --mode=development  --watch
+
+.PHONY: watchjsheadless
+watchjsheadless: dev
+	./node_modules/.bin/npx  webpack --mode=development  --watch --type=headless
 
 .PHONY: watch
 watch: dev
-	make -j 2 watchjs watchcss
+	make -j 3 watchcss  watchjsheadless watchjs 
 
 .PHONY: logo
 logo: logo/conversejs-transparent16.png \

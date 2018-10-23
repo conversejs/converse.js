@@ -112,6 +112,8 @@
         modal.el.querySelector('input[name="chatroom"]').value = jid;
         modal.el.querySelector('input[name="nickname"]').value = nick;
         modal.el.querySelector('form input[type="submit"]').click();
+        await utils.waitUntil(() => _converse.chatboxviews.get(jid), 1000);
+        return _converse.chatboxviews.get(jid);
     };
 
     utils.openChatRoom = function (_converse, room, server, nick) {

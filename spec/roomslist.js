@@ -12,46 +12,41 @@
     describe("A list of open rooms", function () {
 
         it("is shown in the \"Rooms\" panel", mock.initConverseWithPromises(
-            null, ['rosterGroupsFetched', 'chatBoxesFetched'],
-            { allow_bookmarks: false // Makes testing easier, otherwise we
-                                     // have to mock stanza traffic.
-            },
-            function (done, _converse) {
-                test_utils.openControlBox();
-                const controlbox = _converse.chatboxviews.get('controlbox');
-                let list = controlbox.el.querySelector('div.rooms-list-container');
-                expect(_.includes(list.classList, 'hidden')).toBeTruthy();
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'],
+                { allow_bookmarks: false // Makes testing easier, otherwise we
+                                        // have to mock stanza traffic.
+                }, async function (done, _converse) {
 
-                let room_els;
+            test_utils.openControlBox();
+            const controlbox = _converse.chatboxviews.get('controlbox');
+            let list = controlbox.el.querySelector('div.rooms-list-container');
+            expect(_.includes(list.classList, 'hidden')).toBeTruthy();
 
-                test_utils.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC')
-                .then(() => {
-                    expect(_.isUndefined(_converse.rooms_list_view)).toBeFalsy();
-                    room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                    expect(room_els.length).toBe(1);
-                    expect(room_els[0].innerText).toBe('room@conference.shakespeare.lit');
-                    return test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                }).then(() => {
-                    room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                    expect(room_els.length).toBe(2);
+            await test_utils.openChatRoom(_converse, 'room', 'conference.shakespeare.lit', 'JC');
+            expect(_.isUndefined(_converse.rooms_list_view)).toBeFalsy();
+            let room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(1);
+            expect(room_els[0].innerText).toBe('room@conference.shakespeare.lit');
+            await test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+            room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(2);
 
-                    var view = _converse.chatboxviews.get('room@conference.shakespeare.lit');
-                    view.close();
-                    room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                    expect(room_els.length).toBe(1);
-                    expect(room_els[0].innerText).toBe('lounge@localhost');
-                    list = controlbox.el.querySelector('div.rooms-list-container');
-                    expect(_.includes(list.classList, 'hidden')).toBeFalsy();
+            let view = _converse.chatboxviews.get('room@conference.shakespeare.lit');
+            view.close();
+            room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(1);
+            expect(room_els[0].innerText).toBe('lounge@localhost');
+            list = controlbox.el.querySelector('div.rooms-list-container');
+            expect(_.includes(list.classList, 'hidden')).toBeFalsy();
 
-                    view = _converse.chatboxviews.get('lounge@localhost');
-                    view.close();
-                    room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                    expect(room_els.length).toBe(0);
+            view = _converse.chatboxviews.get('lounge@localhost');
+            view.close();
+            room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(0);
 
-                    list = controlbox.el.querySelector('div.rooms-list-container');
-                    expect(_.includes(list.classList, 'hidden')).toBeTruthy();
-                    done();
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            list = controlbox.el.querySelector('div.rooms-list-container');
+            expect(_.includes(list.classList, 'hidden')).toBeTruthy();
+            done();
             }
         ));
     });

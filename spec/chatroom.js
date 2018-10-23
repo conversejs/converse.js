@@ -1555,34 +1555,32 @@
             it("properly handles notification that a room has been destroyed",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost', 'dummy')
-                .then(function () {
-                    const presence = $pres().attrs({
-                        from:'problematic@muc.localhost',
-                        id:'n13mt3l',
-                        to:'dummy@localhost/pda',
-                        type:'error'})
-                    .c('error').attrs({'type':'cancel'})
-                        .c('gone').attrs({'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'})
-                            .t('xmpp:other-room@chat.jabberfr.org?join').up()
-                        .c('text').attrs({'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'})
-                            .t("We didn't like the name").nodeTree;
+                await test_utils.openChatRoomViaModal(_converse, 'problematic@muc.localhost', 'dummy')
+                const presence = $pres().attrs({
+                    from:'problematic@muc.localhost',
+                    id:'n13mt3l',
+                    to:'dummy@localhost/pda',
+                    type:'error'})
+                .c('error').attrs({'type':'cancel'})
+                    .c('gone').attrs({'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'})
+                        .t('xmpp:other-room@chat.jabberfr.org?join').up()
+                    .c('text').attrs({'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'})
+                        .t("We didn't like the name").nodeTree;
 
-                    const view = _converse.chatboxviews.get('problematic@muc.localhost');
-                    spyOn(view, 'showErrorMessage').and.callThrough();
-                    _converse.connection._dataRecv(test_utils.createRequest(presence));
-                    expect(view.el.querySelector('.chatroom-body .disconnect-msg').textContent)
-                        .toBe('This room no longer exists');
-                    expect(view.el.querySelector('.chatroom-body .destroyed-reason').textContent)
-                        .toBe(`"We didn't like the name"`);
-                    expect(view.el.querySelector('.chatroom-body .moved-label').textContent.trim())
-                        .toBe('The conversation has moved. Click below to enter.');
-                    expect(view.el.querySelector('.chatroom-body .moved-link').textContent.trim())
-                        .toBe(`other-room@chat.jabberfr.org`);
-                    done();
-                }).catch(_.partial(console.error, _));
+                const view = _converse.chatboxviews.get('problematic@muc.localhost');
+                spyOn(view, 'showErrorMessage').and.callThrough();
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.el.querySelector('.chatroom-body .disconnect-msg').textContent)
+                    .toBe('This room no longer exists');
+                expect(view.el.querySelector('.chatroom-body .destroyed-reason').textContent)
+                    .toBe(`"We didn't like the name"`);
+                expect(view.el.querySelector('.chatroom-body .moved-label').textContent.trim())
+                    .toBe('The conversation has moved. Click below to enter.');
+                expect(view.el.querySelector('.chatroom-body .moved-link').textContent.trim())
+                    .toBe(`other-room@chat.jabberfr.org`);
+                done();
             }));
 
             it("will use the user's reserved nickname, if it exists",

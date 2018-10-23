@@ -102,22 +102,27 @@ converse.plugins.add('converse-notification', {
                 _converse.isMessageToHiddenChat(message);
         };
 
+
         _converse.playSoundNotification = function () {
             /* Plays a sound to notify that a new message was recieved.
              */
             // XXX Eventually this can be refactored to use Notification's sound
             // feature, but no browser currently supports it.
             // https://developer.mozilla.org/en-US/docs/Web/API/notification/sound
-            let audio;
             if (_converse.play_sounds && !_.isUndefined(window.Audio)) {
-                audio = new Audio(_converse.sounds_path+"msg_received.ogg");
-                if (audio.canPlayType('audio/ogg')) {
-                    audio.play();
-                } else {
-                    audio = new Audio(_converse.sounds_path+"msg_received.mp3");
-                    if (audio.canPlayType('audio/mp3')) {
-                        audio.play();
-                    }
+                const audioOgg = new Audio(_converse.sounds_path+"msg_received.ogg");
+                const canPlayOgg = audioOgg.canPlayType('audio/ogg');
+                if (canPlayOgg === 'probably') {
+                    return audioOgg.play();                 
+                }
+                const audioMp3 = new Audio(_converse.sounds_path+"msg_received.mp3");
+                const canPlayMp3 = audioMp3.canPlayType('audio/mp3');           
+                if (canPlayMp3 === 'probably') {
+                    audioMp3.play();
+                } else if (canPlayOgg === 'maybe') {
+                    audioOgg.play();
+                } else if (canPlayMp3 === 'maybe') {
+                    audioMp3.play();
                 }
             }
         };

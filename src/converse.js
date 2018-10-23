@@ -14,14 +14,13 @@ import "converse-push";            // XEP-0357 Push Notifications
 import "converse-headline";        // Support for headline messages
 import "@converse/headless/converse-mam";             // XEP-0313 Message Archive Management
 import "converse-minimize";        // Allows chat boxes to be minimized
-import "@converse/headless/converse-muc";             // XEP-0045 Multi-user chat
 import "converse-muc-views";       // Views related to MUC
 import "converse-notification";    // HTML5 Notifications
 import "converse-omemo";
 import "@converse/headless/converse-ping";            // XEP-0199 XMPP Ping
 import "converse-register";        // XEP-0077 In-band registration
 import "converse-roomslist";       // Show currently open chat rooms
-import "converse-roster";
+import "converse-rosterview";
 import "@converse/headless/converse-vcard";           // XEP-0054 VCard-temp
 /* END: Removable components */
 

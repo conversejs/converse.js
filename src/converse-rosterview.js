@@ -4,6 +4,7 @@
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
+import "@converse/headless/converse-roster";
 import "@converse/headless/converse-chatboxes";
 import "converse-modal";
 import Awesomplete from "awesomplete";

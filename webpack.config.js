@@ -123,7 +123,7 @@ function parameterize () {
     if (type === 'headless') {
         console.log("Making a headless build");
         extend(config, {
-            entry: "@converse/headless",
+            entry: "@converse/headless/headless.js",
             output: {
                 path: path.resolve(__dirname, 'dist'),
                 filename: 'converse-headless.js'

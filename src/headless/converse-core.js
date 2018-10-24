@@ -1641,6 +1641,7 @@ _converse.api = {
      */
     'send' (stanza) {
         _converse.connection.send(stanza);
+        _converse.emit('send', stanza); 
     },
 
     /**
@@ -1653,6 +1654,7 @@ _converse.api = {
     'sendIQ' (stanza) {
         return new Promise((resolve, reject) => {
             _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+            _converse.emit('send', stanza); 
         });
     }
 };

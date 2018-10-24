@@ -617,7 +617,7 @@ module.exports = Awesomplete;
 
 /**
  * Backbone localStorage and sessionStorage Adapter
- * Version 0.0.3
+ * Version 0.0.4
  *
  * https://github.com/jcbrand/Backbone.browserStorage
  */
@@ -73249,6 +73249,8 @@ _converse.api = {
    */
   'send'(stanza) {
     _converse.connection.send(stanza);
+
+    _converse.emit('send', stanza);
   },
 
   /**
@@ -73261,6 +73263,8 @@ _converse.api = {
   'sendIQ'(stanza) {
     return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2___default.a((resolve, reject) => {
       _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+
+      _converse.emit('send', stanza);
     });
   }
 

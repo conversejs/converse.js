@@ -39,8 +39,6 @@
     "@fortawesome/fontawesome-free": "5.3.1",
     "awesomplete-avoid-xss": "^1.1.2",
     "babel-loader": "^8.0.0",
-    "backbone": "1.3.3",
-    "backbone.browserStorage": "jcbrand/Backbone.browserStorage#03bfa13f68b71f97be361840adc5a5064f57b47e",
     "backbone.nativeview": "^0.3.3",
     "backbone.overview": "^1.0.2",
     "backbone.vdomview": "^1.0.1",

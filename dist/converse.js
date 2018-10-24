@@ -664,11 +664,11 @@ function _browserStorage (name, serializer, type) {
     this.name = name;
     this.serializer = serializer || {
         serialize: function(item) {
-        return _.isObject(item) ? JSON.stringify(item) : item;
+            return _.isObject(item) ? JSON.stringify(item) : item;
         },
         // fix for "illegal access" error on Android when JSON.parse is passed null
         deserialize: function (data) {
-        return data && JSON.parse(data);
+            return data && JSON.parse(data);
         }
     };
 
@@ -704,10 +704,10 @@ var _extension = {
 
   // Add a model, giving it a (hopefully)-unique GUID, if it doesn't already
   // have an id of it's own.
-  create: function(model) {
+  create: function(model, options) {
     if (!model.id) {
       model.id = guid();
-      model.set(model.idAttribute, model.id);
+      model.set(model.idAttribute, model.id, options);
     }
     this.store.setItem(this._itemName(model.id), this.serializer.serialize(model));
     this.records.push(model.id.toString());
@@ -815,13 +815,13 @@ Backbone.BrowserStorage.sync = Backbone.localSync = function(method, model, opti
         resp = model.id !== undefined ? store.find(model) : store.findAll();
         break;
       case "create":
-        resp = store.create(model);
+        resp = store.create(model, options);
         break;
       case "update":
-        resp = store.update(model);
+        resp = store.update(model, options);
         break;
       case "delete":
-        resp = store.destroy(model);
+        resp = store.destroy(model, options);
         break;
     }
 
@@ -834,7 +834,7 @@ Backbone.BrowserStorage.sync = Backbone.localSync = function(method, model, opti
 
   if (resp) {
     if (options && options.success) {
-        options.success(resp);
+        options.success(resp, options);
     }
     if (syncDfd) {
         syncDfd.resolve(resp);
@@ -59267,6 +59267,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
               prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
               next_msg_date = next_msg_el.getAttribute('data-isodate');
 
+        if (_.isNull(prev_msg_date) && _.isNull(next_msg_date)) {
+          return;
+        }
+
         if (_.isNull(prev_msg_date) || moment(next_msg_date).isAfter(prev_msg_date, 'day')) {
           const day_date = moment(next_msg_date).startOf('day');
           next_msg_el.insertAdjacentHTML('beforeBegin', templates_new_day_html__WEBPACK_IMPORTED_MODULE_13___default()({
@@ -59461,6 +59465,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           'model': message
         });
         await view.render();
+
+        if (!view.el.innerHTML) {
+          return _converse.log("showMessage: message's view element is empty", Strophe.LogLevel.ERROR);
+        }
+
         this.clearChatStateNotification(message);
         this.insertMessage(view);
         this.insertDayIndicator(view.el);
@@ -61611,6 +61620,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         if (this.model.isOnlyChatStateNotification()) {
           this.renderChatStateNotification();
         } else if (this.model.get('file') && !this.model.get('oob_url')) {
+          if (!this.model.file) {
+            _converse.log("Attempted to render a file upload message with no file data");
+
+            return this.el;
+          }
+
           this.renderFileUploadProgresBar();
         } else if (this.model.get('type') === 'error') {
           this.renderErrorMessage();
@@ -61751,7 +61766,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       renderFileUploadProgresBar() {
         const msg = utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_file_progress_html__WEBPACK_IMPORTED_MODULE_4___default()(_.extend(this.model.toJSON(), {
-          'filesize': filesize__WEBPACK_IMPORTED_MODULE_1___default()(this.model.get('file').size)
+          'filesize': filesize__WEBPACK_IMPORTED_MODULE_1___default()(this.model.file.size)
         })));
         this.replaceElement(msg);
         this.renderAvatar();
@@ -63644,7 +63659,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
               break;
             }
 
-            _converse.connection.send($pres({
+            _converse.api.send($pres({
               from: _converse.connection.jid,
               to: this.model.getRoomJIDAndNick(match[2]),
               id: _converse.connection.getUniqueId()
@@ -63696,7 +63711,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           case 'topic':
           case 'subject':
             // TODO: should be done via API call to _converse.api.rooms
-            _converse.connection.send($msg({
+            _converse.api.send($msg({
               to: this.model.get('jid'),
               from: _converse.connection.jid,
               type: "groupchat"
@@ -70508,10 +70523,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
         if (this.get('file')) {
           this.on('change:put', this.uploadFile, this);
-
-          if (!_.includes([_converse.SUCCESS, _converse.FAILURE], this.get('upload'))) {
-            this.getRequestSlotURL();
-          }
         }
 
         if (this.isOnlyChatStateNotification()) {
@@ -70594,21 +70605,21 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          *
          * https://xmpp.org/extensions/xep-0363.html#request
          */
-        const file = this.get('file');
-        return new Promise((resolve, reject) => {
-          const iq = _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env.$iq({
-            'from': _converse.jid,
-            'to': this.get('slot_request_url'),
-            'type': 'get'
-          }).c('request', {
-            'xmlns': Strophe.NS.HTTPUPLOAD,
-            'filename': file.name,
-            'size': file.size,
-            'content-type': file.type
-          });
+        if (_.isNil(this.file)) {
+          return Promise.reject(new Error("file is undefined"));
+        }
 
-          _converse.connection.sendIQ(iq, resolve, reject);
+        const iq = _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env.$iq({
+          'from': _converse.jid,
+          'to': this.get('slot_request_url'),
+          'type': 'get'
+        }).c('request', {
+          'xmlns': Strophe.NS.HTTPUPLOAD,
+          'filename': this.file.name,
+          'size': this.file.size,
+          'content-type': this.file.type
         });
+        return _converse.api.sendIQ(iq);
       },
 
       getRequestSlotURL() {
@@ -70832,11 +70843,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       },
 
       sendMessageStanza(stanza) {
-        _converse.connection.send(stanza);
+        _converse.api.send(stanza);
 
         if (_converse.forward_messages) {
           // Forward the message, so that other connected resources are also aware of it.
-          _converse.connection.send($msg({
+          _converse.api.send($msg({
             'to': _converse.bare_jid,
             'type': this.get('message_type')
           }).c('forwarded', {
@@ -70894,7 +70905,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          * See XEP-0085 Chat State Notifications.
          */
         if (_converse.send_chat_state_notifications) {
-          _converse.connection.send($msg({
+          _converse.api.send($msg({
             'to': this.get('jid'),
             'type': 'chat'
           }).c(this.get('chat_state'), {
@@ -70907,41 +70918,45 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
       },
 
-      sendFiles(files) {
-        _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then(result => {
-          const item = result.pop(),
-                data = item.dataforms.where({
-            'FORM_TYPE': {
-              'value': Strophe.NS.HTTPUPLOAD,
-              'type': "hidden"
-            }
-          }).pop(),
-                max_file_size = window.parseInt(_.get(data, 'attributes.max-file-size.value')),
-                slot_request_url = _.get(item, 'id');
+      async sendFiles(files) {
+        const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain),
+              item = result.pop(),
+              data = item.dataforms.where({
+          'FORM_TYPE': {
+            'value': Strophe.NS.HTTPUPLOAD,
+            'type': "hidden"
+          }
+        }).pop(),
+              max_file_size = window.parseInt(_.get(data, 'attributes.max-file-size.value')),
+              slot_request_url = _.get(item, 'id');
 
-          if (!slot_request_url) {
-            this.messages.create({
-              'message': __("Sorry, looks like file upload is not supported by your server."),
+        if (!slot_request_url) {
+          this.messages.create({
+            'message': __("Sorry, looks like file upload is not supported by your server."),
+            'type': 'error'
+          });
+          return;
+        }
+
+        _.each(files, file => {
+          if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
+            return this.messages.create({
+              'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.', file.name, filesize__WEBPACK_IMPORTED_MODULE_3___default()(max_file_size)),
               'type': 'error'
             });
-            return;
+          } else {
+            const message = this.messages.create(_.extend(this.getOutgoingMessageAttributes(), {
+              'file': file,
+              'progress': 0,
+              'slot_request_url': slot_request_url
+            }), {
+              'silent': true
+            });
+            message.file = file;
+            this.messages.trigger('add', message);
+            message.getRequestSlotURL();
           }
-
-          _.each(files, file => {
-            if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
-              return this.messages.create({
-                'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.', file.name, filesize__WEBPACK_IMPORTED_MODULE_3___default()(max_file_size)),
-                'type': 'error'
-              });
-            } else {
-              this.messages.create(_.extend(this.getOutgoingMessageAttributes(), {
-                'file': file,
-                'progress': 0,
-                'slot_request_url': slot_request_url
-              }));
-            }
-          });
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        });
       },
 
       getReferencesFromStanza(stanza) {
@@ -71911,7 +71926,7 @@ _converse.initialize = function (settings, callback) {
 
     /* Send out a Chat Status Notification (XEP-0352) */
     // XXX if (converse.features[Strophe.NS.CSI] || true) {
-    _converse.connection.send(Object(strophe_js__WEBPACK_IMPORTED_MODULE_0__["$build"])(stat, {
+    _converse.api.send(Object(strophe_js__WEBPACK_IMPORTED_MODULE_0__["$build"])(stat, {
       xmlns: strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].NS.CSI
     }));
 
@@ -72019,7 +72034,7 @@ _converse.initialize = function (settings, callback) {
       pres.c("status").t(message);
     }
 
-    _converse.connection.send(pres);
+    _converse.api.send(pres);
   };
 
   this.reconnect = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.debounce(function () {
@@ -72480,7 +72495,7 @@ _converse.initialize = function (settings, callback) {
     },
 
     sendPresence(type, status_message) {
-      _converse.connection.send(this.constructPresence(type, status_message));
+      _converse.api.send(this.constructPresence(type, status_message));
     }
 
   });
@@ -73759,7 +73774,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         }).up();
       });
 
-      _converse.connection.send(iqresult.tree());
+      _converse.api.send(iqresult.tree());
 
       return true;
     }
@@ -75124,7 +75139,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
         this.save('connection_status', _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.CONNECTING);
 
-        _converse.connection.send(stanza);
+        _converse.api.send(stanza);
 
         return this;
       },
@@ -75306,7 +75321,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           return;
         }
 
-        _converse.connection.send($msg({
+        _converse.api.send($msg({
           'to': this.get('jid'),
           'type': 'groupchat'
         }).c(chat_state, {
@@ -75356,14 +75371,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }
 
         const invitation = $msg({
-          from: _converse.connection.jid,
-          to: recipient,
-          id: _converse.connection.getUniqueId()
+          'from': _converse.connection.jid,
+          'to': recipient,
+          'id': _converse.connection.getUniqueId()
         }).c('x', attrs);
 
-        _converse.connection.send(invitation);
+        _converse.api.send(invitation);
 
-        _converse.emit('roomInviteSent', {
+        _converse.api.emit('roomInviteSent', {
           'room': this,
           'recipient': recipient,
           'reason': reason
@@ -76972,7 +76987,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           }).t(nick).up();
         }
 
-        _converse.connection.send(pres);
+        _converse.api.send(pres);
 
         this.save('ask', "subscribe"); // ask === 'subscribe' Means we have asked to subscribe to them.
 
@@ -76985,7 +77000,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         * state notification by sending a presence stanza of type
         * "subscribe" to the contact
         */
-        _converse.connection.send($pres({
+        _converse.api.send($pres({
           'type': 'subscribe',
           'to': this.get('jid')
         }));
@@ -77000,7 +77015,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         *  Parameters:
         *    (String) jid - The Jabber ID of the user who is unsubscribing
         */
-        _converse.connection.send($pres({
+        _converse.api.send($pres({
           'type': 'unsubscribe',
           'to': this.get('jid')
         }));
@@ -77033,7 +77048,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           pres.c("status").t(message);
         }
 
-        _converse.connection.send(pres);
+        _converse.api.send(pres);
 
         return this;
       },
@@ -77290,7 +77305,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           return;
         }
 
-        _converse.connection.send($iq({
+        _converse.api.send($iq({
           type: 'result',
           id,
           from: _converse.connection.jid

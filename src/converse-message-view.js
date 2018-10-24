@@ -60,6 +60,10 @@ converse.plugins.add('converse-message-view', {
                 if (this.model.isOnlyChatStateNotification()) {
                     this.renderChatStateNotification()
                 } else if (this.model.get('file') && !this.model.get('oob_url')) {
+                    if (!this.model.file) {
+                        _converse.log("Attempted to render a file upload message with no file data");
+                        return this.el;
+                    }
                     this.renderFileUploadProgresBar();
                 } else if (this.model.get('type') === 'error') {
                     this.renderErrorMessage();
@@ -204,7 +208,7 @@ converse.plugins.add('converse-message-view', {
             renderFileUploadProgresBar () {
                 const msg = u.stringToElement(tpl_file_progress(
                     _.extend(this.model.toJSON(), {
-                        'filesize': filesize(this.model.get('file').size),
+                        'filesize': filesize(this.model.file.size),
                     })));
                 this.replaceElement(msg);
                 this.renderAvatar();

@@ -229,7 +229,7 @@ converse.plugins.add('converse-minimize', {
                 );
             },
 
-            trimChats (newchat) {
+            async trimChats (newchat) {
                 /* This method is called when a newly created chat box will
                  * be shown.
                  *
@@ -250,35 +250,34 @@ converse.plugins.add('converse-minimize', {
                     // fullscreen. In this case we don't trim.
                     return;
                 }
-                _converse.api.waitUntil('minimizedChatsInitialized').then(() => {
-                    const minimized_el = _.get(_converse.minimized_chats, 'el'),
-                          new_id = newchat ? newchat.model.get('id') : null;
+                await _converse.api.waitUntil('minimizedChatsInitialized');
+                const minimized_el = _.get(_converse.minimized_chats, 'el'),
+                      new_id = newchat ? newchat.model.get('id') : null;
 
-                    if (minimized_el) {
-                        const minimized_width = _.includes(this.model.pluck('minimized'), true) ?
-                            u.getOuterWidth(minimized_el, true) : 0;
+                if (minimized_el) {
+                    const minimized_width = _.includes(this.model.pluck('minimized'), true) ?
+                        u.getOuterWidth(minimized_el, true) : 0;
 
-                        const boxes_width = _.reduce(
-                            this.xget(new_id),
-                            (memo, view) => memo + this.getChatBoxWidth(view),
-                            newchat ? u.getOuterWidth(newchat.el, true) : 0
-                        );
-                        if ((minimized_width + boxes_width) > body_width) {
-                            const oldest_chat = this.getOldestMaximizedChat([new_id]);
-                            if (oldest_chat) {
-                                // We hide the chat immediately, because waiting
-                                // for the event to fire (and letting the
-                                // ChatBoxView hide it then) causes race
-                                // conditions.
-                                const view = this.get(oldest_chat.get('id'));
-                                if (view) {
-                                    view.hide();
-                                }
-                                oldest_chat.minimize();
+                    const boxes_width = _.reduce(
+                        this.xget(new_id),
+                        (memo, view) => memo + this.getChatBoxWidth(view),
+                        newchat ? u.getOuterWidth(newchat.el, true) : 0
+                    );
+                    if ((minimized_width + boxes_width) > body_width) {
+                        const oldest_chat = this.getOldestMaximizedChat([new_id]);
+                        if (oldest_chat) {
+                            // We hide the chat immediately, because waiting
+                            // for the event to fire (and letting the
+                            // ChatBoxView hide it then) causes race
+                            // conditions.
+                            const view = this.get(oldest_chat.get('id'));
+                            if (view) {
+                                view.hide();
                             }
+                            oldest_chat.minimize();
                         }
                     }
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                }
             },
 
             getOldestMaximizedChat (exclude_ids) {
@@ -300,7 +299,7 @@ converse.plugins.add('converse-minimize', {
     },
 
 
-    initialize () {
+    async initialize () {
         /* The initialize function gets called as soon as the plugin is
          * loaded by Converse.js's plugin machinery.
          */
@@ -510,16 +509,12 @@ converse.plugins.add('converse-minimize', {
             }
         });
 
-        Promise.all([
-            _converse.api.waitUntil('connectionInitialized'),
-            _converse.api.waitUntil('chatBoxViewsInitialized')
-        ]).then(() => {
-            _converse.minimized_chats = new _converse.MinimizedChats({
-                model: _converse.chatboxes
-            });
-            _converse.emit('minimizedChatsInitialized');
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-
+        await _converse.api.waitUntil('connectionInitialized');
+        await _converse.api.waitUntil('chatBoxViewsInitialized');
+        _converse.minimized_chats = new _converse.MinimizedChats({
+            model: _converse.chatboxes
+        });
+        _converse.emit('minimizedChatsInitialized');
 
         _converse.on('registeredGlobalEventHandlers', function () {
             window.addEventListener("resize", _.debounce(function (ev) {

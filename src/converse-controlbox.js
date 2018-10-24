@@ -154,7 +154,7 @@ converse.plugins.add('converse-controlbox', {
         }
     },
 
-    initialize () {
+    async initialize () {
         /* The initialize function gets called as soon as the plugin is
          * loaded by converse.js's plugin machinery.
          */
@@ -238,14 +238,13 @@ converse.plugins.add('converse-controlbox', {
                 }
             },
 
-            insertRoster () {
+            async insertRoster () {
                 if (_converse.authentication === _converse.ANONYMOUS) {
                     return;
                 }
                 /* Place the rosterview inside the "Contacts" panel. */
-                _converse.api.waitUntil('rosterViewInitialized')
-                    .then(() => this.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                await _converse.api.waitUntil('rosterViewInitialized');
+                this.controlbox_pane.el.insertAdjacentElement('beforeEnd', _converse.rosterview.el);
             },
 
              createBrandHeadingHTML () {
@@ -506,11 +505,10 @@ converse.plugins.add('converse-controlbox', {
                 'href': "#"
             },
 
-            initialize () {
+            async initialize () {
                 _converse.chatboxviews.insertRowColumn(this.render().el);
-                _converse.api.waitUntil('initialized')
-                    .then(this.render.bind(this))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                await _converse.api.waitUntil('initialized');
+                this.render.bind(this);
             },
 
             render () {
@@ -589,10 +587,11 @@ converse.plugins.add('converse-controlbox', {
             }
         });
 
-        Promise.all([
+        await Promise.all([
             _converse.api.waitUntil('connectionInitialized'),
             _converse.api.waitUntil('chatBoxViewsInitialized')
-        ]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        ]);
+        _converse.addControlBox();
 
         _converse.on('chatBoxesFetched', () => {
             const controlbox = _converse.chatboxes.get('controlbox') || _converse.addControlBox();

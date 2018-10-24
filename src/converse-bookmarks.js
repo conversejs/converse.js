@@ -69,15 +69,14 @@ converse.plugins.add('converse-bookmarks', {
                 close_button.insertAdjacentHTML('afterend', bookmark_button);
             },
 
-            renderHeading () {
+            async renderHeading () {
                 this.__super__.renderHeading.apply(this, arguments);
                 const { _converse } = this.__super__;
                 if (_converse.allow_bookmarks) {
-                    _converse.checkBookmarksSupport().then((supported) => {
-                        if (supported) {
-                            this.renderBookmarkToggle();
-                        }
-                    }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    const supported = await _converse.checkBookmarksSupport();
+                    if (supported) {
+                        this.renderBookmarkToggle();
+                    }
                 }
             },
 
@@ -529,21 +528,19 @@ converse.plugins.add('converse-bookmarks', {
             }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }
 
-        const initBookmarks = function () {
+        const initBookmarks = async function () {
             if (!_converse.allow_bookmarks) {
                 return;
             }
-            _converse.checkBookmarksSupport().then((supported) => {
-                if (supported) {
-                    _converse.bookmarks = new _converse.Bookmarks();
-                    _converse.bookmarksview = new _converse.BookmarksView({'model': _converse.bookmarks});
-                    _converse.bookmarks.fetchBookmarks()
-                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
-                        .then(() => _converse.emit('bookmarksInitialized'));
-                } else {
-                    _converse.emit('bookmarksInitialized');
-                }
-            });
+            const supported = await _converse.checkBookmarksSupport();
+            if (supported) {
+                _converse.bookmarks = new _converse.Bookmarks();
+                _converse.bookmarksview = new _converse.BookmarksView({'model': _converse.bookmarks});
+                await _converse.bookmarks.fetchBookmarks();
+                _converse.emit('bookmarksInitialized');
+            } else {
+                _converse.emit('bookmarksInitialized');
+            }
         }
 
         u.onMultipleEvents([

@@ -148,27 +148,29 @@ converse.plugins.add('converse-chatboxes', {
                 });
             },
 
-            getRequestSlotURL () {
-                this.sendSlotRequestStanza().then((stanza) => {
-                    const slot = stanza.querySelector('slot');
-                    if (slot) {
-                        this.save({
-                            'get':  slot.querySelector('get').getAttribute('url'),
-                            'put': slot.querySelector('put').getAttribute('url'),
-                        });
-                    } else {
-                        return this.save({
-                            'type': 'error',
-                            'message': __("Sorry, could not determine file upload URL.")
-                        });
-                    }
-                }).catch((e) => {
+            async getRequestSlotURL () {
+                let stanza;
+                try {
+                    stanza = await this.sendSlotRequestStanza();
+                } catch (e) {
                     _converse.log(e, Strophe.LogLevel.ERROR);
                     return this.save({
                         'type': 'error',
                         'message': __("Sorry, could not determine upload URL.")
                     });
-                });
+                }
+                const slot = stanza.querySelector('slot');
+                if (slot) {
+                    this.save({
+                        'get':  slot.querySelector('get').getAttribute('url'),
+                        'put': slot.querySelector('put').getAttribute('url'),
+                    });
+                } else {
+                    return this.save({
+                        'type': 'error',
+                        'message': __("Sorry, could not determine file upload URL.")
+                    });
+                }
             },
 
             uploadFile () {
@@ -417,39 +419,38 @@ converse.plugins.add('converse-chatboxes', {
             },
 
 
-            sendFiles (files) {
-                _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then((result) => {
-                    const item = result.pop(),
-                          data = item.dataforms.where({'FORM_TYPE': {'value': Strophe.NS.HTTPUPLOAD, 'type': "hidden"}}).pop(),
-                          max_file_size = window.parseInt(_.get(data, 'attributes.max-file-size.value')),
-                          slot_request_url = _.get(item, 'id');
+            async sendFiles (files) {
+                const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
+                const item = result.pop(),
+                      data = item.dataforms.where({'FORM_TYPE': {'value': Strophe.NS.HTTPUPLOAD, 'type': "hidden"}}).pop(),
+                      max_file_size = window.parseInt(_.get(data, 'attributes.max-file-size.value')),
+                      slot_request_url = _.get(item, 'id');
 
-                    if (!slot_request_url) {
-                        this.messages.create({
-                            'message': __("Sorry, looks like file upload is not supported by your server."),
+                if (!slot_request_url) {
+                    this.messages.create({
+                        'message': __("Sorry, looks like file upload is not supported by your server."),
+                        'type': 'error',
+                    });
+                    return;
+                }
+                _.each(files, (file) => {
+                    if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
+                        return this.messages.create({
+                            'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
+                                file.name, filesize(max_file_size)),
                             'type': 'error',
                         });
-                        return;
+                    } else {
+                        this.messages.create(
+                            _.extend(
+                                this.getOutgoingMessageAttributes(), {
+                                'file': file,
+                                'progress': 0,
+                                'slot_request_url': slot_request_url
+                            })
+                        );
                     }
-                    _.each(files, (file) => {
-                        if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
-                            return this.messages.create({
-                                'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
-                                    file.name, filesize(max_file_size)),
-                                'type': 'error',
-                            });
-                        } else {
-                            this.messages.create(
-                                _.extend(
-                                    this.getOutgoingMessageAttributes(), {
-                                    'file': file,
-                                    'progress': 0,
-                                    'slot_request_url': slot_request_url
-                                })
-                            );
-                        }
-                    });
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                });
             },
 
             getReferencesFromStanza (stanza) {
@@ -653,7 +654,7 @@ converse.plugins.add('converse-chatboxes', {
                 }
             },
 
-            onMessage (stanza) {
+            async onMessage (stanza) {
                 /* Handler method for all incoming single-user chat "message"
                  * stanzas.
                  *
@@ -727,9 +728,8 @@ converse.plugins.add('converse-chatboxes', {
                           message = msgid && chatbox.messages.findWhere({msgid});
                     if (!message) {
                         // Only create the message when we're sure it's not a duplicate
-                        chatbox.createMessage(stanza, original_stanza)
-                            .then(msg => chatbox.incrementUnreadMsgCounter(msg))
-                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        const msg = await chatbox.createMessage(stanza, original_stanza);
+                        chatbox.incrementUnreadMsgCounter(msg);
                     }
                 }
                 _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});

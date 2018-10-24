@@ -248,18 +248,18 @@ converse.plugins.add('converse-muc-views', {
                 }));
         }
 
-        function toggleRoomInfo (ev) {
+        async function toggleRoomInfo (ev) {
             /* Show/hide extra information about a groupchat in a listing. */
             const parent_el = u.ancestor(ev.target, '.room-item'),
                     div_el = parent_el.querySelector('div.room-info');
             if (div_el) {
-                u.slideIn(div_el).then(u.removeElement)
+                await u.slideIn(div_el);
+                u.removeElement();
                 parent_el.querySelector('a.room-info').classList.remove('selected');
             } else {
                 parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
-                _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null)
-                    .then((stanza) => insertRoomInfo(parent_el, stanza))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                const stanza = await _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null);
+                insertRoomInfo(parent_el, stanza);
             }
         }
 
@@ -1144,7 +1144,7 @@ converse.plugins.add('converse-muc-views', {
                 this.renderAfterTransition();
             },
 
-            getAndRenderConfigurationForm (ev) {
+            async getAndRenderConfigurationForm (ev) {
                 /* Start the process of configuring a groupchat, either by
                  * rendering a configuration form, or by auto-configuring
                  * based on the "roomconfig" data stored on the
@@ -1160,9 +1160,8 @@ converse.plugins.add('converse-muc-views', {
                  *      the settings.
                  */
                 this.showSpinner();
-                this.model.fetchRoomConfiguration()
-                    .then(this.renderConfigurationForm.bind(this))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                await this.model.fetchRoomConfiguration();
+                this.renderConfigurationForm();
             },
 
             submitNickname (ev) {

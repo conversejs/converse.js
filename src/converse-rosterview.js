@@ -680,15 +680,14 @@ converse.plugins.add('converse-rosterview', {
                 this.filterOutContacts(this.getFilterMatches(q, type));
             },
 
-            toggle (ev) {
+            async toggle (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 const icon_el = ev.target.querySelector('.fa');
                 if (_.includes(icon_el.classList, "fa-caret-down")) {
                     this.model.save({state: _converse.CLOSED});
-                    this.collapse().then(() => {
-                        icon_el.classList.remove("fa-caret-down");
-                        icon_el.classList.add("fa-caret-right");
-                    });
+                    await this.collapse();
+                    icon_el.classList.remove("fa-caret-down");
+                    icon_el.classList.add("fa-caret-right");
                 } else {
                     icon_el.classList.remove("fa-caret-right");
                     icon_el.classList.add("fa-caret-down");

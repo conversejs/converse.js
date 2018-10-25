@@ -10,6 +10,7 @@ import "converse-modal";
 import * as twemoji from "twemoji";
 import bootstrap from "bootstrap";
 import converse from "@converse/headless/converse-core";
+import tpl_alert from "templates/alert.html";
 import tpl_chatbox from "templates/chatbox.html";
 import tpl_chatbox_head from "templates/chatbox_head.html";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
@@ -233,7 +234,18 @@ converse.plugins.add('converse-chatview', {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 const refresh_icon = this.el.querySelector('.fa-refresh');
                 u.addClass('fa-spin', refresh_icon);
-                await _converse.api.vcard.update(this.model.contact.vcard, true);
+                try {
+                    await _converse.api.vcard.update(this.model.contact.vcard, true);
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.FATAL);
+                    this.el.querySelector('.modal-body').insertAdjacentHTML(
+                        'afterBegin',
+                        tpl_alert({
+                            'type': 'alert-danger',
+                            'message': __('Sorry, something went wrong while trying to refresh')
+                        })
+                    );
+                }
                 u.removeClass('fa-spin', refresh_icon);
             },
 

@@ -56,7 +56,7 @@ help:
 	@echo " serve_bg        Same as \"serve\", but do it in the background"
 	@echo " stamp-npm       Install NPM dependencies"
 	@echo " stamp-bundler   Install Bundler (Ruby) dependencies"
-	@echo " watch           Tells Sass to watch the .scss files for changes and then automatically update the CSS files."
+	@echo " watch           Watch for changes on JS and scss files and automatically update the generated files."
 	@echo " logo            Generate PNG logos of multiple sizes."
 
 

@@ -53,7 +53,7 @@ help:
 	@echo " pot		   		Generate a gettext POT file to be used for translations."
 	@echo " release	   		Prepare a new release of converse.js. E.g. make release VERSION=0.9.5"
 	@echo " serve		 	Serve this directory via a webserver on port 8000."
-	@echo " serve_bg	  	Same as "serve", but do it in the background
+	@echo " serve_bg	  	Same as \"serve\", but do it in the background"
 	@echo " stamp-npm	 	Install NPM dependencies"
 	@echo " stamp-bundler 	Install Bundler (Ruby) dependencies"
 	@echo " watch		 	Tells Sass to watch the .scss files for changes and then automatically update the CSS files."

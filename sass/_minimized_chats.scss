@@ -2,23 +2,23 @@
     #minimized-chats {
         order: 100;
 
-        width: $minimized-chats-width;
+        width: var(--minimized-chats-width);
         margin-bottom: 0;
-        border-top-left-radius: $chatbox-border-radius;
-        border-top-right-radius: $chatbox-border-radius;
-        color: $inverse-link-color;
-        margin-right: $chat-gutter;
+        border-top-left-radius: var(--chatbox-border-radius);
+        border-top-right-radius: var(--chatbox-border-radius);
+        color: var(--inverse-link-color);
+        margin-right: var(--chat-gutter);
         padding: 0;
 
         .badge {
             bottom: 8px;
-            border: 1px solid $gray-color;
+            border: 1px solid var(--overlayed-badge-color);
         }
 
         #toggle-minimized-chats {
-            border-top-left-radius: $chatbox-border-radius;
-            border-top-right-radius: $chatbox-border-radius;
-            background-color: $link-color;
+            border-top-left-radius: var(--chatbox-border-radius);
+            border-top-right-radius: var(--chatbox-border-radius);
+            background-color: var(--link-color);
             padding: 1em 0 0 0;
             text-align: center;
             color: white;
@@ -31,7 +31,7 @@
 
         a.restore-chat {
             padding: 1px 0 1px 5px;
-            color: $chat-head-text-color;
+            color: var(--chat-head-text-color);
             line-height: 15px;
             display: block;
             overflow: hidden;
@@ -43,17 +43,17 @@
         }
 
         a.restore-chat:visited {
-            color: $chat-head-text-color;
+            color: var(--chat-head-text-color);
         }
 
         .minimized-chats-flyout {
             flex-direction: column-reverse;
             bottom: 42px;
-            width: $minimized-chats-width;
+            width: var(--minimized-chats-width);
 
             .chat-head {
                 padding: 0.3em;
-                border-radius: $chatbox-border-radius;
+                border-radius: var(--chatbox-border-radius);
                 height: 35px;
                 margin-bottom: 0.2em;
                 box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
@@ -68,8 +68,8 @@
             font-weight: bold;
             background-color: white;
             border: 1px solid;
-            text-shadow: 1px 1px 0 $text-shadow-color;
-            color: $warning-color;
+            text-shadow: 1px 1px 0 var(--text-shadow-color);
+            color: var(--warning-color);
             border-radius: 5px;
             padding: 2px 4px;
             font-size: 16px;

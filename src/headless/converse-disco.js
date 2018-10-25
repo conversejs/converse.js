@@ -568,7 +568,8 @@ converse.plugins.add('converse-disco', {
                         entity.items.map(item => item.hasFeature(feature)),
                         entity.hasFeature(feature)
                     );
-                    return Promise.all(promises);
+                    const result = await Promise.all(promises);
+                    return f.filter(f.isObject, result);
                 },
 
                 /**

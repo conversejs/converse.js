@@ -617,7 +617,7 @@ module.exports = Awesomplete;
 
 /**
  * Backbone localStorage and sessionStorage Adapter
- * Version 0.0.3
+ * Version 0.0.4
  *
  * https://github.com/jcbrand/Backbone.browserStorage
  */
@@ -664,11 +664,11 @@ function _browserStorage (name, serializer, type) {
     this.name = name;
     this.serializer = serializer || {
         serialize: function(item) {
-        return _.isObject(item) ? JSON.stringify(item) : item;
+            return _.isObject(item) ? JSON.stringify(item) : item;
         },
         // fix for "illegal access" error on Android when JSON.parse is passed null
         deserialize: function (data) {
-        return data && JSON.parse(data);
+            return data && JSON.parse(data);
         }
     };
 
@@ -704,10 +704,10 @@ var _extension = {
 
   // Add a model, giving it a (hopefully)-unique GUID, if it doesn't already
   // have an id of it's own.
-  create: function(model) {
+  create: function(model, options) {
     if (!model.id) {
       model.id = guid();
-      model.set(model.idAttribute, model.id);
+      model.set(model.idAttribute, model.id, options);
     }
     this.store.setItem(this._itemName(model.id), this.serializer.serialize(model));
     this.records.push(model.id.toString());
@@ -815,13 +815,13 @@ Backbone.BrowserStorage.sync = Backbone.localSync = function(method, model, opti
         resp = model.id !== undefined ? store.find(model) : store.findAll();
         break;
       case "create":
-        resp = store.create(model);
+        resp = store.create(model, options);
         break;
       case "update":
-        resp = store.update(model);
+        resp = store.update(model, options);
         break;
       case "delete":
-        resp = store.destroy(model);
+        resp = store.destroy(model, options);
         break;
     }
 
@@ -834,7 +834,7 @@ Backbone.BrowserStorage.sync = Backbone.localSync = function(method, model, opti
 
   if (resp) {
     if (options && options.success) {
-        options.success(resp);
+        options.success(resp, options);
     }
     if (syncDfd) {
         syncDfd.resolve(resp);
@@ -59267,6 +59267,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
               prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
               next_msg_date = next_msg_el.getAttribute('data-isodate');
 
+        if (_.isNull(prev_msg_date) && _.isNull(next_msg_date)) {
+          return;
+        }
+
         if (_.isNull(prev_msg_date) || moment(next_msg_date).isAfter(prev_msg_date, 'day')) {
           const day_date = moment(next_msg_date).startOf('day');
           next_msg_el.insertAdjacentHTML('beforeBegin', templates_new_day_html__WEBPACK_IMPORTED_MODULE_13___default()({
@@ -59462,6 +59466,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         });
         await view.render();
         this.clearChatStateNotification(message);
+
+        if (!view.el.innerHTML) {
+          // An "inactive" CSN message (for example) will have an
+          // empty body. No need to then continue.
+          return _converse.log("Not inserting a message with empty element", Strophe.LogLevel.INFO);
+        }
+
         this.insertMessage(view);
         this.insertDayIndicator(view.el);
         this.setScrollPosition(view.el);
@@ -61611,6 +61622,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         if (this.model.isOnlyChatStateNotification()) {
           this.renderChatStateNotification();
         } else if (this.model.get('file') && !this.model.get('oob_url')) {
+          if (!this.model.file) {
+            _converse.log("Attempted to render a file upload message with no file data");
+
+            return this.el;
+          }
+
           this.renderFileUploadProgresBar();
         } else if (this.model.get('type') === 'error') {
           this.renderErrorMessage();
@@ -61751,7 +61768,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       renderFileUploadProgresBar() {
         const msg = utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_file_progress_html__WEBPACK_IMPORTED_MODULE_4___default()(_.extend(this.model.toJSON(), {
-          'filesize': filesize__WEBPACK_IMPORTED_MODULE_1___default()(this.model.get('file').size)
+          'filesize': filesize__WEBPACK_IMPORTED_MODULE_1___default()(this.model.file.size)
         })));
         this.replaceElement(msg);
         this.renderAvatar();
@@ -63011,13 +63028,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       updateRoomsList() {
         /* Send an IQ stanza to the server asking for all groupchats
          */
-        _converse.connection.sendIQ($iq({
+        const iq = $iq({
           'to': this.model.get('muc_domain'),
           'from': _converse.connection.jid,
           'type': "get"
         }).c("query", {
           xmlns: Strophe.NS.DISCO_ITEMS
-        }), this.onRoomsFound.bind(this), this.informNoRoomsFound.bind(this), 5000);
+        });
+
+        _converse.api.sendIQ(iq).then(iq => this.onRoomsFound(iq)).catch(iq => this.informNoRoomsFound());
       },
 
       showRooms(ev) {
@@ -63495,7 +63514,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           iq.c("reason", reason);
         }
 
-        return _converse.connection.sendIQ(iq, onSuccess, onError);
+        return _converse.api.sendIQ(iq).then(onSuccess).catch(onError);
       },
 
       verifyRoles(roles) {
@@ -63644,7 +63663,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
               break;
             }
 
-            _converse.connection.send($pres({
+            _converse.api.send($pres({
               from: _converse.connection.jid,
               to: this.model.getRoomJIDAndNick(match[2]),
               id: _converse.connection.getUniqueId()
@@ -63696,7 +63715,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           case 'topic':
           case 'subject':
             // TODO: should be done via API call to _converse.api.rooms
-            _converse.connection.send($msg({
+            _converse.api.send($msg({
               to: this.model.get('jid'),
               from: _converse.connection.jid,
               type: "groupchat"
@@ -70508,10 +70527,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
         if (this.get('file')) {
           this.on('change:put', this.uploadFile, this);
-
-          if (!_.includes([_converse.SUCCESS, _converse.FAILURE], this.get('upload'))) {
-            this.getRequestSlotURL();
-          }
         }
 
         if (this.isOnlyChatStateNotification()) {
@@ -70594,21 +70609,21 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          *
          * https://xmpp.org/extensions/xep-0363.html#request
          */
-        const file = this.get('file');
-        return new Promise((resolve, reject) => {
-          const iq = _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env.$iq({
-            'from': _converse.jid,
-            'to': this.get('slot_request_url'),
-            'type': 'get'
-          }).c('request', {
-            'xmlns': Strophe.NS.HTTPUPLOAD,
-            'filename': file.name,
-            'size': file.size,
-            'content-type': file.type
-          });
+        if (_.isNil(this.file)) {
+          return Promise.reject(new Error("file is undefined"));
+        }
 
-          _converse.connection.sendIQ(iq, resolve, reject);
+        const iq = _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env.$iq({
+          'from': _converse.jid,
+          'to': this.get('slot_request_url'),
+          'type': 'get'
+        }).c('request', {
+          'xmlns': Strophe.NS.HTTPUPLOAD,
+          'filename': this.file.name,
+          'size': this.file.size,
+          'content-type': this.file.type
         });
+        return _converse.api.sendIQ(iq);
       },
 
       getRequestSlotURL() {
@@ -70832,11 +70847,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       },
 
       sendMessageStanza(stanza) {
-        _converse.connection.send(stanza);
+        _converse.api.send(stanza);
 
         if (_converse.forward_messages) {
           // Forward the message, so that other connected resources are also aware of it.
-          _converse.connection.send($msg({
+          _converse.api.send($msg({
             'to': _converse.bare_jid,
             'type': this.get('message_type')
           }).c('forwarded', {
@@ -70894,7 +70909,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          * See XEP-0085 Chat State Notifications.
          */
         if (_converse.send_chat_state_notifications) {
-          _converse.connection.send($msg({
+          _converse.api.send($msg({
             'to': this.get('jid'),
             'type': 'chat'
           }).c(this.get('chat_state'), {
@@ -70907,41 +70922,45 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
       },
 
-      sendFiles(files) {
-        _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then(result => {
-          const item = result.pop(),
-                data = item.dataforms.where({
-            'FORM_TYPE': {
-              'value': Strophe.NS.HTTPUPLOAD,
-              'type': "hidden"
-            }
-          }).pop(),
-                max_file_size = window.parseInt(_.get(data, 'attributes.max-file-size.value')),
-                slot_request_url = _.get(item, 'id');
+      async sendFiles(files) {
+        const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain),
+              item = result.pop(),
+              data = item.dataforms.where({
+          'FORM_TYPE': {
+            'value': Strophe.NS.HTTPUPLOAD,
+            'type': "hidden"
+          }
+        }).pop(),
+              max_file_size = window.parseInt(_.get(data, 'attributes.max-file-size.value')),
+              slot_request_url = _.get(item, 'id');
 
-          if (!slot_request_url) {
-            this.messages.create({
-              'message': __("Sorry, looks like file upload is not supported by your server."),
+        if (!slot_request_url) {
+          this.messages.create({
+            'message': __("Sorry, looks like file upload is not supported by your server."),
+            'type': 'error'
+          });
+          return;
+        }
+
+        _.each(files, file => {
+          if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
+            return this.messages.create({
+              'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.', file.name, filesize__WEBPACK_IMPORTED_MODULE_3___default()(max_file_size)),
               'type': 'error'
             });
-            return;
+          } else {
+            const message = this.messages.create(_.extend(this.getOutgoingMessageAttributes(), {
+              'file': file,
+              'progress': 0,
+              'slot_request_url': slot_request_url
+            }), {
+              'silent': true
+            });
+            message.file = file;
+            this.messages.trigger('add', message);
+            message.getRequestSlotURL();
           }
-
-          _.each(files, file => {
-            if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
-              return this.messages.create({
-                'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.', file.name, filesize__WEBPACK_IMPORTED_MODULE_3___default()(max_file_size)),
-                'type': 'error'
-              });
-            } else {
-              this.messages.create(_.extend(this.getOutgoingMessageAttributes(), {
-                'file': file,
-                'progress': 0,
-                'slot_request_url': slot_request_url
-              }));
-            }
-          });
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        });
       },
 
       getReferencesFromStanza(stanza) {
@@ -71911,7 +71930,7 @@ _converse.initialize = function (settings, callback) {
 
     /* Send out a Chat Status Notification (XEP-0352) */
     // XXX if (converse.features[Strophe.NS.CSI] || true) {
-    _converse.connection.send(Object(strophe_js__WEBPACK_IMPORTED_MODULE_0__["$build"])(stat, {
+    _converse.api.send(Object(strophe_js__WEBPACK_IMPORTED_MODULE_0__["$build"])(stat, {
       xmlns: strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].NS.CSI
     }));
 
@@ -72019,7 +72038,7 @@ _converse.initialize = function (settings, callback) {
       pres.c("status").t(message);
     }
 
-    _converse.connection.send(pres);
+    _converse.api.send(pres);
   };
 
   this.reconnect = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.debounce(function () {
@@ -72480,7 +72499,7 @@ _converse.initialize = function (settings, callback) {
     },
 
     sendPresence(type, status_message) {
-      _converse.connection.send(this.constructPresence(type, status_message));
+      _converse.api.send(this.constructPresence(type, status_message));
     }
 
   });
@@ -73234,6 +73253,8 @@ _converse.api = {
    */
   'send'(stanza) {
     _converse.connection.send(stanza);
+
+    _converse.emit('send', stanza);
   },
 
   /**
@@ -73243,9 +73264,11 @@ _converse.api = {
    * @returns {Promise} A promise which resolves when we receive a `result` stanza
    * or is rejected when we receive an `error` stanza.
    */
-  'sendIQ'(stanza) {
+  'sendIQ'(stanza, timeout) {
     return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2___default.a((resolve, reject) => {
-      _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+      _converse.connection.sendIQ(stanza, resolve, reject, timeout || _converse.IQ_TIMEOUT);
+
+      _converse.emit('send', stanza);
     });
   }
 
@@ -73759,7 +73782,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         }).up();
       });
 
-      _converse.connection.send(iqresult.tree());
+      _converse.api.send(iqresult.tree());
 
       return true;
     }
@@ -74274,7 +74297,7 @@ function queryForArchivedMessages(_converse, options, callback, errback) {
     return true;
   }, Strophe.NS.MAM);
 
-  _converse.connection.sendIQ(stanza, function (iq) {
+  _converse.api.sendIQ(stanza, _converse.message_archiving_timeout).then(iq => {
     _converse.connection.deleteHandler(message_handler);
 
     if (_.isFunction(callback)) {
@@ -74291,13 +74314,15 @@ function queryForArchivedMessages(_converse, options, callback, errback) {
 
       callback(messages, rsm);
     }
-  }, function () {
+  }).catch(e => {
     _converse.connection.deleteHandler(message_handler);
 
     if (_.isFunction(errback)) {
       errback.apply(this, arguments);
     }
-  }, _converse.message_archiving_timeout);
+
+    return;
+  });
 }
 
 _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam', {
@@ -74535,7 +74560,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
 
     });
 
-    _converse.onMAMError = function (model, iq) {
+    _converse.onMAMError = function (iq) {
       if (iq.querySelectorAll('feature-not-implemented').length) {
         _converse.log("Message Archive Management (XEP-0313) not supported by this server", Strophe.LogLevel.WARN);
       } else {
@@ -74567,20 +74592,16 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
           'default': _converse.message_archiving
         });
 
-        _.each(preference.children, function (child) {
-          stanza.cnode(child).up();
-        });
+        _.each(preference.children, child => stanza.cnode(child).up()); // XXX: Strictly speaking, the server should respond with the updated prefs
+        // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
+        // but Prosody doesn't do this, so we don't rely on it.
 
-        _converse.connection.sendIQ(stanza, _.partial(function (feature, iq) {
-          // XXX: Strictly speaking, the server should respond with the updated prefs
-          // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
-          // but Prosody doesn't do this, so we don't rely on it.
-          feature.save({
-            'preferences': {
-              'default': _converse.message_archiving
-            }
-          });
-        }, feature), _converse.onMAMError);
+
+        _converse.api.sendIQ(stanza).then(() => feature.save({
+          'preferences': {
+            'default': _converse.message_archiving
+          }
+        })).catch(_converse.onMAMError);
       } else {
         feature.save({
           'preferences': {
@@ -74598,11 +74619,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
       if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== _converse.message_archiving && // eslint-disable-line dot-notation
       !_.isUndefined(_converse.message_archiving)) {
         // Ask the server for archiving preferences
-        _converse.connection.sendIQ($iq({
+        _converse.api.sendIQ($iq({
           'type': 'get'
         }).c('prefs', {
           'xmlns': Strophe.NS.MAM
-        }), _.partial(_converse.onMAMPreferences, feature), _.partial(_converse.onMAMError, feature));
+        })).then(_.partial(_converse.onMAMPreferences, feature)).catch(_converse.onMAMError);
       }
     });
 
@@ -75124,7 +75145,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
         this.save('connection_status', _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.CONNECTING);
 
-        _converse.connection.send(stanza);
+        _converse.api.send(stanza);
 
         return this;
       },
@@ -75306,7 +75327,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           return;
         }
 
-        _converse.connection.send($msg({
+        _converse.api.send($msg({
           'to': this.get('jid'),
           'type': 'groupchat'
         }).c(chat_state, {
@@ -75356,14 +75377,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }
 
         const invitation = $msg({
-          from: _converse.connection.jid,
-          to: recipient,
-          id: _converse.connection.getUniqueId()
+          'from': _converse.connection.jid,
+          'to': recipient,
+          'id': _converse.connection.getUniqueId()
         }).c('x', attrs);
 
-        _converse.connection.send(invitation);
+        _converse.api.send(invitation);
 
-        _converse.emit('roomInviteSent', {
+        _converse.api.emit('roomInviteSent', {
           'room': this,
           'recipient': recipient,
           'reason': reason
@@ -75531,14 +75552,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          * Returns a promise which resolves once the response IQ
          * has been received.
          */
-        return new Promise((resolve, reject) => {
-          _converse.connection.sendIQ($iq({
-            'to': this.get('jid'),
-            'type': "get"
-          }).c("query", {
-            xmlns: Strophe.NS.MUC_OWNER
-          }), resolve, reject);
-        });
+        return _converse.api.sendIQ($iq({
+          'to': this.get('jid'),
+          'type': "get"
+        }).c("query", {
+          xmlns: Strophe.NS.MUC_OWNER
+        }));
       },
 
       sendConfiguration(config, callback, errback) {
@@ -75571,7 +75590,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
         callback = _.isUndefined(callback) ? _.noop : _.partial(callback, iq.nodeTree);
         errback = _.isUndefined(errback) ? _.noop : _.partial(errback, iq.nodeTree);
-        return _converse.connection.sendIQ(iq, callback, errback);
+        return _converse.api.sendIQ(iq).then(callback).catch(errback);
       },
 
       saveAffiliationAndRole(pres) {
@@ -75611,24 +75630,22 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          *  (Object) member: Map containing the member's jid and
          *      optionally a reason and affiliation.
          */
-        return new Promise((resolve, reject) => {
-          const iq = $iq({
-            to: this.get('jid'),
-            type: "set"
-          }).c("query", {
-            xmlns: Strophe.NS.MUC_ADMIN
-          }).c("item", {
-            'affiliation': member.affiliation || affiliation,
-            'nick': member.nick,
-            'jid': member.jid
-          });
-
-          if (!_.isUndefined(member.reason)) {
-            iq.c("reason", member.reason);
-          }
-
-          _converse.connection.sendIQ(iq, resolve, reject);
+        const iq = $iq({
+          to: this.get('jid'),
+          type: "set"
+        }).c("query", {
+          xmlns: Strophe.NS.MUC_ADMIN
+        }).c("item", {
+          'affiliation': member.affiliation || affiliation,
+          'nick': member.nick,
+          'jid': member.jid
         });
+
+        if (!_.isUndefined(member.reason)) {
+          iq.c("reason", member.reason);
+        }
+
+        return _converse.api.sendIQ(iq);
       },
 
       setAffiliations(members) {
@@ -76972,7 +76989,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           }).t(nick).up();
         }
 
-        _converse.connection.send(pres);
+        _converse.api.send(pres);
 
         this.save('ask', "subscribe"); // ask === 'subscribe' Means we have asked to subscribe to them.
 
@@ -76985,7 +77002,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         * state notification by sending a presence stanza of type
         * "subscribe" to the contact
         */
-        _converse.connection.send($pres({
+        _converse.api.send($pres({
           'type': 'subscribe',
           'to': this.get('jid')
         }));
@@ -77000,7 +77017,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         *  Parameters:
         *    (String) jid - The Jabber ID of the user who is unsubscribing
         */
-        _converse.connection.send($pres({
+        _converse.api.send($pres({
           'type': 'unsubscribe',
           'to': this.get('jid')
         }));
@@ -77033,7 +77050,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           pres.c("status").t(message);
         }
 
-        _converse.connection.send(pres);
+        _converse.api.send(pres);
 
         return this;
       },
@@ -77052,7 +77069,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           subscription: "remove"
         });
 
-        _converse.connection.sendIQ(iq, callback, errback);
+        _converse.api.sendIQ(iq).then(callback).catch(errback);
 
         return this;
       }
@@ -77176,7 +77193,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         this.addContactToRoster(jid, name, groups, attributes).then(handler, handler);
       },
 
-      sendContactAddIQ(jid, name, groups, callback, errback) {
+      sendContactAddIQ(jid, name, groups) {
         /*  Send an IQ stanza to the XMPP server to add a new roster contact.
          *
          *  Parameters:
@@ -77188,22 +77205,20 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          */
         name = _.isEmpty(name) ? jid : name;
         const iq = $iq({
-          type: 'set'
+          'type': 'set'
         }).c('query', {
-          xmlns: Strophe.NS.ROSTER
+          'xmlns': Strophe.NS.ROSTER
         }).c('item', {
           jid,
           name
         });
 
-        _.each(groups, function (group) {
-          iq.c('group').t(group).up();
-        });
+        _.each(groups, group => iq.c('group').t(group).up());
 
-        _converse.connection.sendIQ(iq, callback, errback);
+        _converse.api.sendIQ(iq);
       },
 
-      addContactToRoster(jid, name, groups, attributes) {
+      async addContactToRoster(jid, name, groups, attributes) {
         /* Adds a RosterContact instance to _converse.roster and
          * registers the contact on the XMPP server.
          * Returns a promise which is resolved once the XMPP server has
@@ -77215,27 +77230,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          *    (Array of Strings) groups - Any roster groups the user might belong to
          *    (Object) attributes - Any additional attributes to be stored on the user's model.
          */
-        return new Promise((resolve, reject) => {
-          groups = groups || [];
-          this.sendContactAddIQ(jid, name, groups, () => {
-            const contact = this.create(_.assignIn({
-              'ask': undefined,
-              'nickname': name,
-              groups,
-              jid,
-              'requesting': false,
-              'subscription': 'none'
-            }, attributes), {
-              sort: false
-            });
-            resolve(contact);
-          }, function (err) {
-            alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
+        groups = groups || [];
 
-            _converse.log(err, Strophe.LogLevel.ERROR);
+        try {
+          await this.sendContactAddIQ(jid, name, groups);
+        } catch (e) {
+          _converse.log(e, Strophe.LogLevel.ERROR);
 
-            resolve(err);
-          });
+          alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
+          return e;
+        }
+
+        return this.create(_.assignIn({
+          'ask': undefined,
+          'nickname': name,
+          groups,
+          jid,
+          'requesting': false,
+          'subscription': 'none'
+        }, attributes), {
+          'sort': false
         });
       },
 
@@ -77290,7 +77304,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           return;
         }
 
-        _converse.connection.send($iq({
+        _converse.api.send($iq({
           type: 'result',
           id,
           from: _converse.connection.jid
@@ -77325,34 +77339,32 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
       },
 
-      fetchFromServer() {
+      async fetchFromServer() {
         /* Fetch the roster from the XMPP server */
-        return new Promise((resolve, reject) => {
-          const iq = $iq({
-            'type': 'get',
-            'id': _converse.connection.getUniqueId('roster')
-          }).c('query', {
-            xmlns: Strophe.NS.ROSTER
-          });
-
-          if (this.rosterVersioningSupported()) {
-            iq.attrs({
-              'ver': this.data.get('version')
-            });
-          }
-
-          const callback = _.flow(this.onReceivedFromServer.bind(this), resolve);
-
-          const errback = function errback(iq) {
-            const errmsg = "Error while trying to fetch roster from the server";
-
-            _converse.log(errmsg, Strophe.LogLevel.ERROR);
-
-            reject(new Error(errmsg));
-          };
-
-          return _converse.connection.sendIQ(iq, callback, errback);
+        const stanza = $iq({
+          'type': 'get',
+          'id': _converse.connection.getUniqueId('roster')
+        }).c('query', {
+          xmlns: Strophe.NS.ROSTER
         });
+
+        if (this.rosterVersioningSupported()) {
+          stanza.attrs({
+            'ver': this.data.get('version')
+          });
+        }
+
+        let iq;
+
+        try {
+          iq = await _converse.api.sendIQ(stanza);
+        } catch (e) {
+          _converse.log(e, Strophe.LogLevel.ERROR);
+
+          return _converse.log("Error while trying to fetch roster from the server", Strophe.LogLevel.ERROR);
+        }
+
+        return this.onReceivedFromServer(iq);
       },
 
       onReceivedFromServer(iq) {
@@ -77813,7 +77825,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
 
     });
 
-    function onVCardData(jid, iq, callback) {
+    async function onVCardData(jid, iq) {
       const vcard = iq.querySelector('vCard');
       let result = {};
 
@@ -77834,23 +77846,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
 
       if (result.image) {
         const buffer = u.base64ToArrayBuffer(result['image']);
-        crypto.subtle.digest('SHA-1', buffer).then(ab => {
-          result['image_hash'] = u.arrayBufferToHex(ab);
-          if (callback) callback(result);
-        });
-      } else {
-        if (callback) callback(result);
+        const ab = await crypto.subtle.digest('SHA-1', buffer);
+        result['image_hash'] = u.arrayBufferToHex(ab);
       }
-    }
 
-    function onVCardError(jid, iq, errback) {
-      if (errback) {
-        errback({
-          'stanza': iq,
-          'jid': jid,
-          'vcard_error': moment().format()
-        });
-      }
+      return result;
     }
 
     function createStanza(type, jid, vcard_el) {
@@ -77881,7 +77881,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
       return _converse.api.sendIQ(createStanza("set", jid, vcard_el));
     }
 
-    function getVCard(_converse, jid) {
+    async function getVCard(_converse, jid) {
       /* Request the VCard of another user. Returns a promise.
        *
        * Parameters:
@@ -77889,9 +77889,19 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
        *      is being requested.
        */
       const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
-      return new Promise((resolve, reject) => {
-        _converse.connection.sendIQ(createStanza("get", to), _.partial(onVCardData, jid, _, resolve), _.partial(onVCardError, jid, _, resolve), _converse.IQ_TIMEOUT);
-      });
+      let iq;
+
+      try {
+        iq = await _converse.api.sendIQ(createStanza("get", to));
+      } catch (iq) {
+        return {
+          'stanza': iq,
+          'jid': jid,
+          'vcard_error': moment().format()
+        };
+      }
+
+      return onVCardData(jid, iq);
     }
     /* Event handlers */
 

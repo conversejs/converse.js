@@ -1,14 +1,16 @@
 (function (root, factory) {
     define(["jquery", "jasmine", "mock", "test-utils"], factory);
 } (this, function ($, jasmine, mock, test_utils) {
-    var _ = converse.env._;
-    var Strophe = converse.env.Strophe;
-    var $pres = converse.env.$pres;
-    var $msg = converse.env.$msg;
-    var $iq = converse.env.$iq;
-    var u = converse.env.utils;
+    const $iq = converse.env.$iq;
+    const $msg = converse.env.$msg;
+    const $pres = converse.env.$pres;
+    const Strophe = converse.env.Strophe;
+    const _ = converse.env._;
+    const sizzle = converse.env.sizzle;
+    const u = converse.env.utils;
 
-    var checkHeaderToggling = function (group) {
+
+    const checkHeaderToggling = function (group) {
         var $group = $(group);
         var toggle = group.querySelector('a.group-toggle');
         expect(u.isVisible($group[0])).toBeTruthy();
@@ -38,57 +40,58 @@
         it("supports roster versioning",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
-                function (done, _converse) {
+                async function (done, _converse) {
 
             const IQ_stanzas = _converse.connection.IQ_stanzas;
-            test_utils.waitUntil(
+            let node = await test_utils.waitUntil(
                 () => _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop()
-            ).then(node => {
-                let stanza = node.nodeTree;
-                expect(_converse.roster.data.get('version')).toBeUndefined();
-                expect(node.toLocaleString()).toBe(
-                    `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
-                        `<query xmlns="jabber:iq:roster"/>`+
-                    `</iq>`);
-                let result = $iq({
-                    'to': _converse.connection.jid,
-                    'type': 'result',
-                    'id': stanza.getAttribute('id')
-                }).c('query', {
-                    'xmlns': 'jabber:iq:roster',
-                    'ver': 'ver7'
-                }).c('item', {'jid': 'nurse@example.com'}).up()
-                  .c('item', {'jid': 'romeo@example.com'})
-                _converse.connection._dataRecv(test_utils.createRequest(result));
-                expect(_converse.roster.data.get('version')).toBe('ver7');
-                expect(_converse.roster.models.length).toBe(2);
+            );
+            let stanza = node.nodeTree;
+            expect(_converse.roster.data.get('version')).toBeUndefined();
+            expect(node.toLocaleString()).toBe(
+                `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
+                    `<query xmlns="jabber:iq:roster"/>`+
+                `</iq>`);
+            let result = $iq({
+                'to': _converse.connection.jid,
+                'type': 'result',
+                'id': stanza.getAttribute('id')
+            }).c('query', {
+                'xmlns': 'jabber:iq:roster',
+                'ver': 'ver7'
+            }).c('item', {'jid': 'nurse@example.com'}).up()
+              .c('item', {'jid': 'romeo@example.com'})
+            _converse.connection._dataRecv(test_utils.createRequest(result));
 
-                _converse.roster.fetchFromServer();
-                node = _converse.connection.IQ_stanzas.pop();
-                stanza = node.nodeTree;
-                expect(node.toLocaleString()).toBe(
-                    `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
-                        `<query ver="ver7" xmlns="jabber:iq:roster"/>`+
-                    `</iq>`);
+            await test_utils.waitUntil(() => _converse.roster.models.length > 1);
+            expect(_converse.roster.data.get('version')).toBe('ver7');
+            expect(_converse.roster.models.length).toBe(2);
 
-                result = $iq({
-                    'to': _converse.connection.jid,
-                    'type': 'result',
-                    'id': stanza.getAttribute('id')
-                });
-                _converse.connection._dataRecv(test_utils.createRequest(result));
+            _converse.roster.fetchFromServer();
+            node = _converse.connection.IQ_stanzas.pop();
+            stanza = node.nodeTree;
+            expect(node.toLocaleString()).toBe(
+                `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
+                    `<query ver="ver7" xmlns="jabber:iq:roster"/>`+
+                `</iq>`);
 
-                const roster_push = $iq({
-                    'to': _converse.connection.jid,
-                    'type': 'set',
-                }).c('query', {'xmlns': 'jabber:iq:roster', 'ver': 'ver34'})
-                    .c('item', {'jid': 'romeo@example.com', 'subscription': 'remove'});
-                _converse.connection._dataRecv(test_utils.createRequest(roster_push));
-                expect(_converse.roster.data.get('version')).toBe('ver34');
-                expect(_converse.roster.models.length).toBe(1);
-                expect(_converse.roster.at(0).get('jid')).toBe('nurse@example.com');
-                done();
+            result = $iq({
+                'to': _converse.connection.jid,
+                'type': 'result',
+                'id': stanza.getAttribute('id')
             });
+            _converse.connection._dataRecv(test_utils.createRequest(result));
+
+            const roster_push = $iq({
+                'to': _converse.connection.jid,
+                'type': 'set',
+            }).c('query', {'xmlns': 'jabber:iq:roster', 'ver': 'ver34'})
+                .c('item', {'jid': 'romeo@example.com', 'subscription': 'remove'});
+            _converse.connection._dataRecv(test_utils.createRequest(roster_push));
+            expect(_converse.roster.data.get('version')).toBe('ver34');
+            expect(_converse.roster.models.length).toBe(1);
+            expect(_converse.roster.at(0).get('jid')).toBe('nurse@example.com');
+            done();
         }));
 
         describe("The live filter", function () {
@@ -549,17 +552,15 @@
             it("can be collapsed under their own header", 
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _addContacts(_converse);
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group:visible li').length;
-                }, 500).then(function () {
-                    checkHeaderToggling.apply(
-                        _converse,
-                        [_converse.rosterview.get('Pending contacts').el]
-                    ).then(done);
-                });
+                await test_utils.waitUntil(() => $(_converse.rosterview.el).find('.roster-group:visible li').length, 1000);
+                await checkHeaderToggling.apply(
+                    _converse,
+                    [_converse.rosterview.get('Pending contacts').el]
+                );
+                done();
             }));
 
             it("can be added to the roster",
@@ -662,10 +663,10 @@
             it("do not have a header if there aren't any", 
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.openControlBox();
-                var name = mock.pend_names[0];
+                const name = mock.pend_names[0];
                 _converse.roster.create({
                     jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
                     subscription: 'none',
@@ -676,17 +677,18 @@
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
                     if (typeof callback === "function") { return callback(); }
                 });
-                test_utils.waitUntil(function () {
+                await test_utils.waitUntil(function () {
                     var $pending_contacts = $(_converse.rosterview.get('Pending contacts').el);
                     return $pending_contacts.is(':visible') && $pending_contacts.find('li:visible').length;
-                }, 700).then(function () {
-                    $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')")
-                        .parent().siblings('.remove-xmpp-contact')[0].click();
-                    expect(window.confirm).toHaveBeenCalled();
-                    expect(_converse.connection.sendIQ).toHaveBeenCalled();
-                    expect(u.isVisible(_converse.rosterview.get('Pending contacts').el)).toEqual(false);
-                    done();
-                });
+                }, 700)
+                            
+                $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')")
+                    .parent().siblings('.remove-xmpp-contact')[0].click();
+                expect(window.confirm).toHaveBeenCalled();
+                expect(_converse.connection.sendIQ).toHaveBeenCalled();
+
+                await test_utils.waitUntil(() => !u.isVisible(_converse.rosterview.get('Pending contacts').el));
+                done();
             }));
 
             it("is shown when a new private message is received",
@@ -822,42 +824,39 @@
             it("can be removed by the user", 
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                var sent_IQ;
                 _addContacts(_converse);
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('li').length;
-                }, 500).then(function () {
-                    var name = mock.cur_names[0];
-                    var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var contact = _converse.roster.get(jid);
-                    spyOn(window, 'confirm').and.returnValue(true);
-                    spyOn(contact, 'removeFromRoster').and.callThrough();
+                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('li').length);
+                const name = mock.cur_names[0];
+                const jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                const contact = _converse.roster.get(jid);
+                spyOn(window, 'confirm').and.returnValue(true);
+                spyOn(contact, 'removeFromRoster').and.callThrough();
 
-                    var sendIQ = _converse.connection.sendIQ;
-                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                        sent_IQ = iq;
-                        callback();
-                    });
-                    $(_converse.rosterview.el).find(".open-chat:contains('"+name+"')")
-                        .parent().find('.remove-xmpp-contact')[0].click();
-
-                    expect(window.confirm).toHaveBeenCalled();
-                    expect(sent_IQ.toLocaleString()).toBe(
-                        `<iq type="set" xmlns="jabber:client">`+
-                            `<query xmlns="jabber:iq:roster"><item jid="max.frankfurter@localhost" subscription="remove"/></query>`+
-                        `</iq>`);
-                    expect(contact.removeFromRoster).toHaveBeenCalled();
-                    expect($(_converse.rosterview.el).find(".open-chat:contains('"+name+"')").length).toEqual(0);
-                    done();
+                const sendIQ = _converse.connection.sendIQ;
+                let sent_IQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    callback();
                 });
+                $(_converse.rosterview.el).find(".open-chat:contains('"+name+"')")
+                    .parent().find('.remove-xmpp-contact')[0].click();
+
+                expect(window.confirm).toHaveBeenCalled();
+                expect(sent_IQ.toLocaleString()).toBe(
+                    `<iq type="set" xmlns="jabber:client">`+
+                        `<query xmlns="jabber:iq:roster"><item jid="max.frankfurter@localhost" subscription="remove"/></query>`+
+                    `</iq>`);
+                expect(contact.removeFromRoster).toHaveBeenCalled();
+                await test_utils.waitUntil(() => $(_converse.rosterview.el).find(".open-chat:contains('"+name+"')").length === 0);
+                done();
             }));
 
             it("do not have a header if there aren't any", 
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.openControlBox();
                 var name = mock.cur_names[0];
@@ -868,24 +867,20 @@
                     ask: null,
                     fullname: name
                 });
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group:visible li').length;
-                }, 700).then(function () {
-                    spyOn(window, 'confirm').and.returnValue(true);
-                    spyOn(contact, 'removeFromRoster').and.callThrough();
-                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
-                        if (typeof callback === "function") { return callback(); }
-                    });
-
-                    expect($(_converse.rosterview.el).find('.roster-group').css('display')).toEqual('block');
-                    $(_converse.rosterview.el).find(".open-chat:contains('"+name+"')")
-                        .parent().find('.remove-xmpp-contact')[0].click();
-                    expect(window.confirm).toHaveBeenCalled();
-                    expect(_converse.connection.sendIQ).toHaveBeenCalled();
-                    expect(contact.removeFromRoster).toHaveBeenCalled();
-                    expect($(_converse.rosterview.el).find('.roster-group').length).toEqual(0);
-                    done();
+                await test_utils.waitUntil(() => $(_converse.rosterview.el).find('.roster-group:visible li').length, 1000);
+                spyOn(window, 'confirm').and.returnValue(true);
+                spyOn(contact, 'removeFromRoster').and.callThrough();
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
+                    if (typeof callback === "function") { return callback(); }
                 });
+                expect($(_converse.rosterview.el).find('.roster-group').css('display')).toEqual('block');
+                $(_converse.rosterview.el).find(".open-chat:contains('"+name+"')")
+                    .parent().find('.remove-xmpp-contact')[0].click();
+                expect(window.confirm).toHaveBeenCalled();
+                expect(_converse.connection.sendIQ).toHaveBeenCalled();
+                expect(contact.removeFromRoster).toHaveBeenCalled();
+                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length === 0);
+                done();
             }));
 
             it("can change their status to online and be sorted alphabetically", 

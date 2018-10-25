@@ -68,10 +68,6 @@ converse.plugins.add('converse-chatboxes', {
                 this.setVCard();
                 if (this.get('file')) {
                     this.on('change:put', this.uploadFile, this);
-
-                    if (!_.includes([_converse.SUCCESS, _converse.FAILURE], this.get('upload'))) {
-                        this.getRequestSlotURL();
-                    }
                 }
                 if (this.isOnlyChatStateNotification()) {
                     window.setTimeout(this.destroy.bind(this), 20000);
@@ -132,20 +128,20 @@ converse.plugins.add('converse-chatboxes', {
                  *
                  * https://xmpp.org/extensions/xep-0363.html#request
                  */
-                const file = this.get('file');
-                return new Promise((resolve, reject) => {
-                    const iq = converse.env.$iq({
-                        'from': _converse.jid,
-                        'to': this.get('slot_request_url'),
-                        'type': 'get'
-                    }).c('request', {
-                        'xmlns': Strophe.NS.HTTPUPLOAD,
-                        'filename': file.name,
-                        'size': file.size,
-                        'content-type': file.type
-                    })
-                    _converse.connection.sendIQ(iq, resolve, reject);
-                });
+                if (_.isNil(this.file)) {
+                    return Promise.reject(new Error("file is undefined"));
+                }
+                const iq = converse.env.$iq({
+                    'from': _converse.jid,
+                    'to': this.get('slot_request_url'),
+                    'type': 'get'
+                }).c('request', {
+                    'xmlns': Strophe.NS.HTTPUPLOAD,
+                    'filename': this.file.name,
+                    'size': this.file.size,
+                    'content-type': this.file.type
+                })
+                return _converse.api.sendIQ(iq);
             },
 
             async getRequestSlotURL () {
@@ -420,8 +416,8 @@ converse.plugins.add('converse-chatboxes', {
 
 
             async sendFiles (files) {
-                const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
-                const item = result.pop(),
+                const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain),
+                      item = result.pop(),
                       data = item.dataforms.where({'FORM_TYPE': {'value': Strophe.NS.HTTPUPLOAD, 'type': "hidden"}}).pop(),
                       max_file_size = window.parseInt(_.get(data, 'attributes.max-file-size.value')),
                       slot_request_url = _.get(item, 'id');
@@ -429,7 +425,7 @@ converse.plugins.add('converse-chatboxes', {
                 if (!slot_request_url) {
                     this.messages.create({
                         'message': __("Sorry, looks like file upload is not supported by your server."),
-                        'type': 'error',
+                        'type': 'error'
                     });
                     return;
                 }
@@ -438,17 +434,20 @@ converse.plugins.add('converse-chatboxes', {
                         return this.messages.create({
                             'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
                                 file.name, filesize(max_file_size)),
-                            'type': 'error',
+                            'type': 'error'
                         });
                     } else {
-                        this.messages.create(
+                        const message = this.messages.create(
                             _.extend(
                                 this.getOutgoingMessageAttributes(), {
                                 'file': file,
                                 'progress': 0,
                                 'slot_request_url': slot_request_url
-                            })
+                            }), {'silent': true}
                         );
+                        message.file = file;
+                        this.messages.trigger('add', message);
+                        message.getRequestSlotURL();
                     }
                 });
             },

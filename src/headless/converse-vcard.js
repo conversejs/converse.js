@@ -56,7 +56,7 @@ converse.plugins.add('converse-vcard', {
         });
 
 
-        function onVCardData (jid, iq, callback) {
+        async function onVCardData (jid, iq) {
             const vcard = iq.querySelector('vCard');
             let result = {};
             if (!_.isNull(vcard)) {
@@ -75,24 +75,10 @@ converse.plugins.add('converse-vcard', {
             }
             if (result.image) {
                 const buffer = u.base64ToArrayBuffer(result['image']);
-                crypto.subtle.digest('SHA-1', buffer)
-                .then(ab => {
-                    result['image_hash'] = u.arrayBufferToHex(ab);
-                    if (callback) callback(result);
-                });
-            } else {
-                if (callback) callback(result);
+                const ab = await crypto.subtle.digest('SHA-1', buffer);
+                result['image_hash'] = u.arrayBufferToHex(ab);
             }
-        }
-
-        function onVCardError (jid, iq, errback) {
-            if (errback) {
-                errback({
-                    'stanza': iq,
-                    'jid': jid,
-                    'vcard_error': moment().format()
-                });
-            }
+            return result;
         }
 
         function createStanza (type, jid, vcard_el) {
@@ -113,7 +99,7 @@ converse.plugins.add('converse-vcard', {
             return _converse.api.sendIQ(createStanza("set", jid, vcard_el));
         }
 
-        function getVCard (_converse, jid) {
+        async function getVCard (_converse, jid) {
             /* Request the VCard of another user. Returns a promise.
              *
              * Parameters:
@@ -121,14 +107,17 @@ converse.plugins.add('converse-vcard', {
              *      is being requested.
              */
             const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
-            return new Promise((resolve, reject) => {
-                _converse.connection.sendIQ(
-                    createStanza("get", to),
-                    _.partial(onVCardData, jid, _, resolve),
-                    _.partial(onVCardError, jid, _, resolve),
-                    _converse.IQ_TIMEOUT
-                );
-            });
+            let iq;
+            try {
+                iq = await _converse.api.sendIQ(createStanza("get", to))
+            } catch (iq) {
+                return {
+                    'stanza': iq,
+                    'jid': jid,
+                    'vcard_error': moment().format()
+                }
+            }
+            return onVCardData(jid, iq);
         }
 
         /* Event handlers */

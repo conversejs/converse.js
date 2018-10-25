@@ -533,6 +533,9 @@ converse.plugins.add('converse-chatview', {
                       prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
                       next_msg_date = next_msg_el.getAttribute('data-isodate');
 
+                if (_.isNull(prev_msg_date) && _.isNull(next_msg_date)) {
+                    return;
+                }
                 if (_.isNull(prev_msg_date) || moment(next_msg_date).isAfter(prev_msg_date, 'day')) {
                     const day_date = moment(next_msg_date).startOf('day');
                     next_msg_el.insertAdjacentHTML('beforeBegin',
@@ -722,8 +725,15 @@ converse.plugins.add('converse-chatview', {
                  */
                 const view = new _converse.MessageView({'model': message});
                 await view.render();
-                
                 this.clearChatStateNotification(message);
+                if (!view.el.innerHTML) {
+                    // An "inactive" CSN message (for example) will have an
+                    // empty body. No need to then continue.
+                    return _converse.log(
+                        "Not inserting a message with empty element",
+                        Strophe.LogLevel.INFO
+                    );
+                }
                 this.insertMessage(view);
                 this.insertDayIndicator(view.el);
                 this.setScrollPosition(view.el);

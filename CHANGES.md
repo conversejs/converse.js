@@ -1,10 +1,11 @@
 # Changelog
 
-## 4.1.0 (Unreleased)
+## 4.0.4 (Unreleased)
 
 - Use [Lerna](https://lernajs.io/) to create the @converse/headless package
 - Use ES2015 modules instead of UMD.
-- #1257: Prefer 'probably' over 'maybe' when evaluating audio play support.
+- #1257 Prefer 'probably' over 'maybe' when evaluating audio play support.
+- #1261 File upload not working
 
 ## 4.0.3 (2018-10-22)
 

@@ -329,7 +329,7 @@ converse.plugins.add('converse-roster', {
                 const iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
-                _converse.connection.sendIQ(iq, callback, errback);
+                _converse.api.sendIQ(iq).then(callback).catch(errback);
                 return this;
             }
         });
@@ -451,7 +451,7 @@ converse.plugins.add('converse-roster', {
                 this.addContactToRoster(jid, name, groups, attributes).then(handler, handler);
             },
 
-            sendContactAddIQ (jid, name, groups, callback, errback) {
+            sendContactAddIQ (jid, name, groups) {
                 /*  Send an IQ stanza to the XMPP server to add a new roster contact.
                  *
                  *  Parameters:
@@ -462,14 +462,14 @@ converse.plugins.add('converse-roster', {
                  *    (Function) errback - A function to call if an error occurred
                  */
                 name = _.isEmpty(name)? jid: name;
-                const iq = $iq({type: 'set'})
-                    .c('query', {xmlns: Strophe.NS.ROSTER})
+                const iq = $iq({'type': 'set'})
+                    .c('query', {'xmlns': Strophe.NS.ROSTER})
                     .c('item', { jid, name });
-                _.each(groups, function (group) { iq.c('group').t(group).up(); });
-                _converse.connection.sendIQ(iq, callback, errback);
+                _.each(groups, group => iq.c('group').t(group).up());
+                _converse.api.sendIQ(iq);
             },
 
-            addContactToRoster (jid, name, groups, attributes) {
+            async addContactToRoster (jid, name, groups, attributes) {
                 /* Adds a RosterContact instance to _converse.roster and
                  * registers the contact on the XMPP server.
                  * Returns a promise which is resolved once the XMPP server has
@@ -481,27 +481,22 @@ converse.plugins.add('converse-roster', {
                  *    (Array of Strings) groups - Any roster groups the user might belong to
                  *    (Object) attributes - Any additional attributes to be stored on the user's model.
                  */
-                return new Promise((resolve, reject) => {
-                    groups = groups || [];
-                    this.sendContactAddIQ(jid, name, groups,
-                        () => {
-                            const contact = this.create(_.assignIn({
-                                'ask': undefined,
-                                'nickname': name,
-                                groups,
-                                jid,
-                                'requesting': false,
-                                'subscription': 'none'
-                            }, attributes), {sort: false});
-                            resolve(contact);
-                        },
-                        function (err) {
-                            alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
-                            _converse.log(err, Strophe.LogLevel.ERROR);
-                            resolve(err);
-                        }
-                    );
-                });
+                groups = groups || [];
+                try {
+                    await this.sendContactAddIQ(jid, name, groups);
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
+                    return e;
+                }
+                return this.create(_.assignIn({
+                    'ask': undefined,
+                    'nickname': name,
+                    groups,
+                    jid,
+                    'requesting': false,
+                    'subscription': 'none'
+                }, attributes), {'sort': false});
             },
 
             subscribeBack (bare_jid, presence) {
@@ -570,24 +565,26 @@ converse.plugins.add('converse-roster', {
                 return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
             },
 
-            fetchFromServer () {
+            async fetchFromServer () {
                 /* Fetch the roster from the XMPP server */
-                return new Promise((resolve, reject) => {
-                    const iq = $iq({
-                        'type': 'get',
-                        'id': _converse.connection.getUniqueId('roster')
-                    }).c('query', {xmlns: Strophe.NS.ROSTER});
-                    if (this.rosterVersioningSupported()) {
-                        iq.attrs({'ver': this.data.get('version')});
-                    }
-                    const callback = _.flow(this.onReceivedFromServer.bind(this), resolve);
-                    const errback = function (iq) {
-                        const errmsg = "Error while trying to fetch roster from the server";
-                        _converse.log(errmsg, Strophe.LogLevel.ERROR);
-                        reject(new Error(errmsg));
-                    }
-                    return _converse.connection.sendIQ(iq, callback, errback);
-                });
+                const stanza = $iq({
+                    'type': 'get',
+                    'id': _converse.connection.getUniqueId('roster')
+                }).c('query', {xmlns: Strophe.NS.ROSTER});
+                if (this.rosterVersioningSupported()) {
+                    stanza.attrs({'ver': this.data.get('version')});
+                }
+                let iq;
+                try {
+                    iq = await _converse.api.sendIQ(stanza);
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    return _converse.log(
+                        "Error while trying to fetch roster from the server",
+                        Strophe.LogLevel.ERROR
+                    );
+                }
+                return this.onReceivedFromServer(iq);
             },
 
             onReceivedFromServer (iq) {
@@ -646,7 +643,7 @@ converse.plugins.add('converse-roster', {
 
             createRequestingContact (presence) {
                 const bare_jid = Strophe.getBareJidFromJid(presence.getAttribute('from')),
-                    nickname = _.get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
+                      nickname = _.get(sizzle(`nick[xmlns="${Strophe.NS.NICK}"]`, presence).pop(), 'textContent', null);
                 const user_data = {
                     'jid': bare_jid,
                     'subscription': 'none',

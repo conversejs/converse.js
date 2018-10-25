@@ -3737,9 +3737,9 @@
             }));
 
             it("contains a link to a modal which can list groupchats publically available on the server",
-                    mock.initConverseWithPromises(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        function (done, _converse) {
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
 
                 var sendIQ = _converse.connection.sendIQ;
                 var sent_stanza, IQ_id;
@@ -3753,53 +3753,49 @@
                 roomspanel.el.querySelector('.show-list-muc-modal').click();
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.list_rooms_modal;
-                test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
-                .then(() => {
-                    spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
-                    roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
 
-                    // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
-                    expect(modal.el.querySelectorAll('.available-chatrooms li').length).toBe(0);
+                // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
+                expect(modal.el.querySelectorAll('.available-chatrooms li').length).toBe(0);
 
-                    const input = modal.el.querySelector('input[name="server"]').value = 'chat.shakespear.lit';
-                    modal.el.querySelector('input[type="submit"]').click();
-                    return test_utils.waitUntil(() => _converse.chatboxes.length);
-                }).then(() => {
-                    expect(sent_stanza.toLocaleString()).toBe(
-                        `<iq from="dummy@localhost/resource" id="${IQ_id}" to="chat.shakespear.lit" type="get" xmlns="jabber:client">`+
-                            `<query xmlns="http://jabber.org/protocol/disco#items"/>`+
-                        `</iq>`
-                    );
+                const input = modal.el.querySelector('input[name="server"]').value = 'chat.shakespear.lit';
+                modal.el.querySelector('input[type="submit"]').click();
+                await test_utils.waitUntil(() => _converse.chatboxes.length);
+                expect(sent_stanza.toLocaleString()).toBe(
+                    `<iq from="dummy@localhost/resource" id="${IQ_id}" to="chat.shakespear.lit" type="get" xmlns="jabber:client">`+
+                        `<query xmlns="http://jabber.org/protocol/disco#items"/>`+
+                    `</iq>`
+                );
 
-                    var iq = $iq({
-                        from:'muc.localhost',
-                        to:'dummy@localhost/pda',
-                        id: IQ_id,
-                        type:'result'
-                    }).c('query')
-                    .c('item', { jid:'heath@chat.shakespeare.lit', name:'A Lonely Heath'}).up()
-                    .c('item', { jid:'coven@chat.shakespeare.lit', name:'A Dark Cave'}).up()
-                    .c('item', { jid:'forres@chat.shakespeare.lit', name:'The Palace'}).up()
-                    .c('item', { jid:'inverness@chat.shakespeare.lit', name:'Macbeth&apos;s Castle'}).nodeTree;
-                    _converse.connection._dataRecv(test_utils.createRequest(iq));
+                const iq = $iq({
+                    from:'muc.localhost',
+                    to:'dummy@localhost/pda',
+                    id: IQ_id,
+                    type:'result'
+                }).c('query')
+                .c('item', { jid:'heath@chat.shakespeare.lit', name:'A Lonely Heath'}).up()
+                .c('item', { jid:'coven@chat.shakespeare.lit', name:'A Dark Cave'}).up()
+                .c('item', { jid:'forres@chat.shakespeare.lit', name:'The Palace'}).up()
+                .c('item', { jid:'inverness@chat.shakespeare.lit', name:'Macbeth&apos;s Castle'}).nodeTree;
+                _converse.connection._dataRecv(test_utils.createRequest(iq));
 
-                    expect(modal.el.querySelectorAll('.available-chatrooms li').length).toBe(5);
+                await test_utils.waitUntil(() => modal.el.querySelectorAll('.available-chatrooms li').length === 5);
 
-                    const rooms = modal.el.querySelectorAll('.available-chatrooms li');
-                    expect(rooms[0].textContent.trim()).toBe("Groupchats found:");
-                    expect(rooms[1].textContent.trim()).toBe("A Lonely Heath");
-                    expect(rooms[2].textContent.trim()).toBe("A Dark Cave");
-                    expect(rooms[3].textContent.trim()).toBe("The Palace");
-                    expect(rooms[4].textContent.trim()).toBe("Macbeth's Castle");
+                const rooms = modal.el.querySelectorAll('.available-chatrooms li');
+                expect(rooms[0].textContent.trim()).toBe("Groupchats found:");
+                expect(rooms[1].textContent.trim()).toBe("A Lonely Heath");
+                expect(rooms[2].textContent.trim()).toBe("A Dark Cave");
+                expect(rooms[3].textContent.trim()).toBe("The Palace");
+                expect(rooms[4].textContent.trim()).toBe("Macbeth's Castle");
 
-                    rooms[4].querySelector('.open-room').click();
-                    return test_utils.waitUntil(() => _converse.chatboxes.length > 1);
-                }).then(() => {
-                    expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
-                    var view = _converse.chatboxviews.get('inverness@chat.shakespeare.lit');
-                    expect(view.el.querySelector('.chat-head-chatroom').textContent.trim()).toBe("Macbeth's Castle");
-                    done();
-                }).catch(_.partial(console.error, _));
+                rooms[4].querySelector('.open-room').click();
+                await test_utils.waitUntil(() => _converse.chatboxes.length > 1);
+                expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
+                var view = _converse.chatboxviews.get('inverness@chat.shakespeare.lit');
+                expect(view.el.querySelector('.chat-head-chatroom').textContent.trim()).toBe("Macbeth's Castle");
+                done();
             }));
 
             it("shows the number of unread mentions received",

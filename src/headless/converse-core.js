@@ -1641,6 +1641,7 @@ _converse.api = {
      */
     'send' (stanza) {
         _converse.connection.send(stanza);
+        _converse.emit('send', stanza); 
     },
 
     /**
@@ -1650,9 +1651,10 @@ _converse.api = {
      * @returns {Promise} A promise which resolves when we receive a `result` stanza
      * or is rejected when we receive an `error` stanza.
      */
-    'sendIQ' (stanza) {
+    'sendIQ' (stanza, timeout) {
         return new Promise((resolve, reject) => {
-            _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+            _converse.connection.sendIQ(stanza, resolve, reject, timeout || _converse.IQ_TIMEOUT);
+            _converse.emit('send', stanza); 
         });
     }
 };

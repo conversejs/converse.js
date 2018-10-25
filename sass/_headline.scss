@@ -2,14 +2,14 @@
     .chatbox.headlines {
         .chat-head {
             &.chat-head-chatbox {
-                background-color: $headline-head-color;
+                background-color: var(--headline-head-color);
             }
         }
         .chat-body {
-            background-color: $headline-head-color;
-            border-radius: $chatbox-border-radius;
+            background-color: var(--headline-head-color);
+            border-radius: var(--chatbox-border-radius);
             .chat-message {
-                color: $dark-orange;
+                color: var(--headline-message-color);
             }
         }
         .chat-content {
@@ -21,16 +21,16 @@
 #conversejs.converse-fullscreen {
     .chatbox.headlines {
         .box-flyout {
-            background-color: $headline-head-color;
+            background-color: var(--headline-head-color);
         }
         .chat-head {
             &.chat-head-chatbox {
-                background-color: $headline-head-color;
+                background-color: var(--headline-head-color);
             }
         }
         .flyout {
-            border: $flyout-padding solid $headline-head-color;
-            border-top: 0.8em solid $headline-head-color;
+            border: var(--flyout-padding) solid var(--headline-head-color);
+            border-top: 0.8em solid var(--headline-head-color);
         }
     }
 }

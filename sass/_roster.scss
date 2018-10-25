@@ -3,7 +3,7 @@
     width: 100%;
     position: relative;
     margin: 0;
-    height: $roster-height;
+    height: var(--roster-height);
     padding: 0;
     overflow: hidden;
     // XXX: FIXME
@@ -37,10 +37,10 @@
         .roster-filter {
             width: 100%;
             margin: 0.2em;
-            font-size: calc(#{$font-size} - 2px);
+            font-size: calc(var(--font-size) - 2px);
         }
         .state-type {
-            font-size: calc(#{$font-size} - 2px);
+            font-size: calc(var(--font-size) - 2px);
             width: 100%;
         }
     }
@@ -54,17 +54,17 @@
 
         .roster-group {
             border: none;
-            color: $text-color;
+            color: var(--text-color);
             font-weight: normal;
-            text-shadow: 0 1px 0 $text-shadow-color;
+            text-shadow: 0 1px 0 var(--text-shadow-color);
             margin: 0.75em 0 0.75em 0;
 
             .group-toggle {
                 &:hover {
-                    color: $dark-gray-color;
+                    color: var(--roster-group-toggle-hover-color);
                 }
-                font-family: $heading-font; 
-                color: $text-color;
+                font-family: var(--heading-font);
+                color: var(--text-color);
                 display: block;
                 width: 100%;
                 padding-top: 0;
@@ -74,7 +74,7 @@
             li {
                 &.requesting-xmpp-contact {
                     a {
-                        line-height: $line-height;
+                        line-height: var(--line-height);
                         &.far, &.fas, &.fa {
                             width: 1.5em;
                         }
@@ -96,11 +96,11 @@
 
                     .msgs-indicator {
                         color: white;
-                        background-color: $chat-head-color;
+                        background-color: var(--chat-head-color);
                         opacity: 1;
                         border-radius: 10%;
                         padding: 0.2em;
-                        font-size: $font-size-small;
+                        font-size: var(--font-size-small);
                     }
 
                     .contact-name {
@@ -123,7 +123,7 @@
                     }
                 }
                 &.current-xmpp-contact span {
-                    font-size: $font-size;
+                    font-size: var(--font-size);
                     float: left;
                     margin-right: 0.5em;
                 }
@@ -141,7 +141,7 @@
                     margin-left: 5px;
                 }
                 &:hover {
-                    background-color: lighten($controlbox-head-color, 45%);
+                    background-color: var(--controlbox-head-color-lighten-45-percent);
                     .remove-xmpp-contact {
                         display: inline-block;
                     }
@@ -151,7 +151,7 @@
     }
     span {
         &.pending-contact-name {
-            line-height: $line-height;
+            line-height: var(--line-height);
             width: 100%;
         }
     }

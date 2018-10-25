@@ -99,9 +99,8 @@ function queryForArchivedMessages (_converse, options, callback, errback) {
         return true;
     }, Strophe.NS.MAM);
 
-    _converse.connection.sendIQ(
-        stanza,
-        function (iq) {
+    _converse.api.sendIQ(stanza, _converse.message_archiving_timeout)
+        .then(iq => {
             _converse.connection.deleteHandler(message_handler);
             if (_.isFunction(callback)) {
                 const set = iq.querySelector('set');
@@ -112,13 +111,13 @@ function queryForArchivedMessages (_converse, options, callback, errback) {
                 }
                 callback(messages, rsm);
             }
-        },
-        function () {
+        }).catch(e => {
             _converse.connection.deleteHandler(message_handler);
-            if (_.isFunction(errback)) { errback.apply(this, arguments); }
-        },
-        _converse.message_archiving_timeout
-    );
+            if (_.isFunction(errback)) {
+                errback.apply(this, arguments);
+            }
+            return;
+        });
 }
 
 
@@ -333,7 +332,7 @@ converse.plugins.add('converse-mam', {
             message_archiving_timeout: 8000, // Time (in milliseconds) to wait before aborting MAM request
         });
 
-        _converse.onMAMError = function (model, iq) {
+        _converse.onMAMError = function (iq) {
             if (iq.querySelectorAll('feature-not-implemented').length) {
                 _converse.log(
                     "Message Archive Management (XEP-0313) not supported by this server",
@@ -365,17 +364,14 @@ converse.plugins.add('converse-mam', {
                         'xmlns':Strophe.NS.MAM,
                         'default':_converse.message_archiving
                     });
-                _.each(preference.children, function (child) {
-                    stanza.cnode(child).up();
-                });
-                _converse.connection.sendIQ(stanza, _.partial(function (feature, iq) {
-                        // XXX: Strictly speaking, the server should respond with the updated prefs
-                        // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
-                        // but Prosody doesn't do this, so we don't rely on it.
-                        feature.save({'preferences': {'default':_converse.message_archiving}});
-                    }, feature),
-                    _converse.onMAMError
-                );
+                _.each(preference.children, child => stanza.cnode(child).up());
+
+                // XXX: Strictly speaking, the server should respond with the updated prefs
+                // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
+                // but Prosody doesn't do this, so we don't rely on it.
+                _converse.api.sendIQ(stanza)
+                    .then(() => feature.save({'preferences': {'default':_converse.message_archiving}}))
+                    .catch(_converse.onMAMError);
             } else {
                 feature.save({'preferences': {'default':_converse.message_archiving}});
             }
@@ -388,11 +384,9 @@ converse.plugins.add('converse-mam', {
                     prefs['default'] !== _converse.message_archiving && // eslint-disable-line dot-notation
                     !_.isUndefined(_converse.message_archiving) ) {
                 // Ask the server for archiving preferences
-                _converse.connection.sendIQ(
-                    $iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}),
-                    _.partial(_converse.onMAMPreferences, feature),
-                    _.partial(_converse.onMAMError, feature)
-                );
+                _converse.api.sendIQ($iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}))
+                    .then(_.partial(_converse.onMAMPreferences, feature))
+                    .catch(_converse.onMAMError);
             }
         });
 

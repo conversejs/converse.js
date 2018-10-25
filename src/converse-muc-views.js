@@ -367,16 +367,14 @@ converse.plugins.add('converse-muc-views', {
             updateRoomsList () {
                 /* Send an IQ stanza to the server asking for all groupchats
                  */
-                _converse.connection.sendIQ(
-                    $iq({
-                        'to': this.model.get('muc_domain'),
-                        'from': _converse.connection.jid,
-                        'type': "get"
-                    }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS}),
-                    this.onRoomsFound.bind(this),
-                    this.informNoRoomsFound.bind(this),
-                    5000
-                );
+                const iq = $iq({
+                    'to': this.model.get('muc_domain'),
+                    'from': _converse.connection.jid,
+                    'type': "get"
+                }).c("query", {xmlns: Strophe.NS.DISCO_ITEMS});
+                _converse.api.sendIQ(iq)
+                    .then(iq => this.onRoomsFound(iq))
+                    .catch(iq => this.informNoRoomsFound())
             },
 
             showRooms (ev) {
@@ -805,7 +803,7 @@ converse.plugins.add('converse-muc-views', {
                 const item = $build("item", {nick, role});
                 const iq = $iq({to: groupchat, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
                 if (reason !== null) { iq.c("reason", reason); }
-                return _converse.connection.sendIQ(iq, onSuccess, onError);
+                return _converse.api.sendIQ(iq).then(onSuccess).catch(onError);
             },
 
             verifyRoles (roles) {

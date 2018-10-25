@@ -63028,13 +63028,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       updateRoomsList() {
         /* Send an IQ stanza to the server asking for all groupchats
          */
-        _converse.connection.sendIQ($iq({
+        const iq = $iq({
           'to': this.model.get('muc_domain'),
           'from': _converse.connection.jid,
           'type': "get"
         }).c("query", {
           xmlns: Strophe.NS.DISCO_ITEMS
-        }), this.onRoomsFound.bind(this), this.informNoRoomsFound.bind(this), 5000);
+        });
+
+        _converse.api.sendIQ(iq).then(iq => this.onRoomsFound(iq)).catch(iq => this.informNoRoomsFound());
       },
 
       showRooms(ev) {
@@ -63512,7 +63514,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           iq.c("reason", reason);
         }
 
-        return _converse.connection.sendIQ(iq, onSuccess, onError);
+        return _converse.api.sendIQ(iq).then(onSuccess).catch(onError);
       },
 
       verifyRoles(roles) {
@@ -73262,9 +73264,9 @@ _converse.api = {
    * @returns {Promise} A promise which resolves when we receive a `result` stanza
    * or is rejected when we receive an `error` stanza.
    */
-  'sendIQ'(stanza) {
+  'sendIQ'(stanza, timeout) {
     return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2___default.a((resolve, reject) => {
-      _converse.connection.sendIQ(stanza, resolve, reject, _converse.IQ_TIMEOUT);
+      _converse.connection.sendIQ(stanza, resolve, reject, timeout || _converse.IQ_TIMEOUT);
 
       _converse.emit('send', stanza);
     });
@@ -74295,7 +74297,7 @@ function queryForArchivedMessages(_converse, options, callback, errback) {
     return true;
   }, Strophe.NS.MAM);
 
-  _converse.connection.sendIQ(stanza, function (iq) {
+  _converse.api.sendIQ(stanza, _converse.message_archiving_timeout).then(iq => {
     _converse.connection.deleteHandler(message_handler);
 
     if (_.isFunction(callback)) {
@@ -74312,13 +74314,15 @@ function queryForArchivedMessages(_converse, options, callback, errback) {
 
       callback(messages, rsm);
     }
-  }, function () {
+  }).catch(e => {
     _converse.connection.deleteHandler(message_handler);
 
     if (_.isFunction(errback)) {
       errback.apply(this, arguments);
     }
-  }, _converse.message_archiving_timeout);
+
+    return;
+  });
 }
 
 _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam', {
@@ -74556,7 +74560,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
 
     });
 
-    _converse.onMAMError = function (model, iq) {
+    _converse.onMAMError = function (iq) {
       if (iq.querySelectorAll('feature-not-implemented').length) {
         _converse.log("Message Archive Management (XEP-0313) not supported by this server", Strophe.LogLevel.WARN);
       } else {
@@ -74588,20 +74592,16 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
           'default': _converse.message_archiving
         });
 
-        _.each(preference.children, function (child) {
-          stanza.cnode(child).up();
-        });
+        _.each(preference.children, child => stanza.cnode(child).up()); // XXX: Strictly speaking, the server should respond with the updated prefs
+        // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
+        // but Prosody doesn't do this, so we don't rely on it.
 
-        _converse.connection.sendIQ(stanza, _.partial(function (feature, iq) {
-          // XXX: Strictly speaking, the server should respond with the updated prefs
-          // (see example 18: https://xmpp.org/extensions/xep-0313.html#config)
-          // but Prosody doesn't do this, so we don't rely on it.
-          feature.save({
-            'preferences': {
-              'default': _converse.message_archiving
-            }
-          });
-        }, feature), _converse.onMAMError);
+
+        _converse.api.sendIQ(stanza).then(() => feature.save({
+          'preferences': {
+            'default': _converse.message_archiving
+          }
+        })).catch(_converse.onMAMError);
       } else {
         feature.save({
           'preferences': {
@@ -74619,11 +74619,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
       if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== _converse.message_archiving && // eslint-disable-line dot-notation
       !_.isUndefined(_converse.message_archiving)) {
         // Ask the server for archiving preferences
-        _converse.connection.sendIQ($iq({
+        _converse.api.sendIQ($iq({
           'type': 'get'
         }).c('prefs', {
           'xmlns': Strophe.NS.MAM
-        }), _.partial(_converse.onMAMPreferences, feature), _.partial(_converse.onMAMError, feature));
+        })).then(_.partial(_converse.onMAMPreferences, feature)).catch(_converse.onMAMError);
       }
     });
 
@@ -75552,14 +75552,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          * Returns a promise which resolves once the response IQ
          * has been received.
          */
-        return new Promise((resolve, reject) => {
-          _converse.connection.sendIQ($iq({
-            'to': this.get('jid'),
-            'type': "get"
-          }).c("query", {
-            xmlns: Strophe.NS.MUC_OWNER
-          }), resolve, reject);
-        });
+        return _converse.api.sendIQ($iq({
+          'to': this.get('jid'),
+          'type': "get"
+        }).c("query", {
+          xmlns: Strophe.NS.MUC_OWNER
+        }));
       },
 
       sendConfiguration(config, callback, errback) {
@@ -75592,7 +75590,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
         callback = _.isUndefined(callback) ? _.noop : _.partial(callback, iq.nodeTree);
         errback = _.isUndefined(errback) ? _.noop : _.partial(errback, iq.nodeTree);
-        return _converse.connection.sendIQ(iq, callback, errback);
+        return _converse.api.sendIQ(iq).then(callback).catch(errback);
       },
 
       saveAffiliationAndRole(pres) {
@@ -75632,24 +75630,22 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          *  (Object) member: Map containing the member's jid and
          *      optionally a reason and affiliation.
          */
-        return new Promise((resolve, reject) => {
-          const iq = $iq({
-            to: this.get('jid'),
-            type: "set"
-          }).c("query", {
-            xmlns: Strophe.NS.MUC_ADMIN
-          }).c("item", {
-            'affiliation': member.affiliation || affiliation,
-            'nick': member.nick,
-            'jid': member.jid
-          });
-
-          if (!_.isUndefined(member.reason)) {
-            iq.c("reason", member.reason);
-          }
-
-          _converse.connection.sendIQ(iq, resolve, reject);
+        const iq = $iq({
+          to: this.get('jid'),
+          type: "set"
+        }).c("query", {
+          xmlns: Strophe.NS.MUC_ADMIN
+        }).c("item", {
+          'affiliation': member.affiliation || affiliation,
+          'nick': member.nick,
+          'jid': member.jid
         });
+
+        if (!_.isUndefined(member.reason)) {
+          iq.c("reason", member.reason);
+        }
+
+        return _converse.api.sendIQ(iq);
       },
 
       setAffiliations(members) {
@@ -77073,7 +77069,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           subscription: "remove"
         });
 
-        _converse.connection.sendIQ(iq, callback, errback);
+        _converse.api.sendIQ(iq).then(callback).catch(errback);
 
         return this;
       }
@@ -77197,7 +77193,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         this.addContactToRoster(jid, name, groups, attributes).then(handler, handler);
       },
 
-      sendContactAddIQ(jid, name, groups, callback, errback) {
+      sendContactAddIQ(jid, name, groups) {
         /*  Send an IQ stanza to the XMPP server to add a new roster contact.
          *
          *  Parameters:
@@ -77209,22 +77205,20 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          */
         name = _.isEmpty(name) ? jid : name;
         const iq = $iq({
-          type: 'set'
+          'type': 'set'
         }).c('query', {
-          xmlns: Strophe.NS.ROSTER
+          'xmlns': Strophe.NS.ROSTER
         }).c('item', {
           jid,
           name
         });
 
-        _.each(groups, function (group) {
-          iq.c('group').t(group).up();
-        });
+        _.each(groups, group => iq.c('group').t(group).up());
 
-        _converse.connection.sendIQ(iq, callback, errback);
+        _converse.api.sendIQ(iq);
       },
 
-      addContactToRoster(jid, name, groups, attributes) {
+      async addContactToRoster(jid, name, groups, attributes) {
         /* Adds a RosterContact instance to _converse.roster and
          * registers the contact on the XMPP server.
          * Returns a promise which is resolved once the XMPP server has
@@ -77236,27 +77230,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          *    (Array of Strings) groups - Any roster groups the user might belong to
          *    (Object) attributes - Any additional attributes to be stored on the user's model.
          */
-        return new Promise((resolve, reject) => {
-          groups = groups || [];
-          this.sendContactAddIQ(jid, name, groups, () => {
-            const contact = this.create(_.assignIn({
-              'ask': undefined,
-              'nickname': name,
-              groups,
-              jid,
-              'requesting': false,
-              'subscription': 'none'
-            }, attributes), {
-              sort: false
-            });
-            resolve(contact);
-          }, function (err) {
-            alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
+        groups = groups || [];
 
-            _converse.log(err, Strophe.LogLevel.ERROR);
+        try {
+          await this.sendContactAddIQ(jid, name, groups);
+        } catch (e) {
+          _converse.log(e, Strophe.LogLevel.ERROR);
 
-            resolve(err);
-          });
+          alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
+          return e;
+        }
+
+        return this.create(_.assignIn({
+          'ask': undefined,
+          'nickname': name,
+          groups,
+          jid,
+          'requesting': false,
+          'subscription': 'none'
+        }, attributes), {
+          'sort': false
         });
       },
 
@@ -77346,34 +77339,32 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
       },
 
-      fetchFromServer() {
+      async fetchFromServer() {
         /* Fetch the roster from the XMPP server */
-        return new Promise((resolve, reject) => {
-          const iq = $iq({
-            'type': 'get',
-            'id': _converse.connection.getUniqueId('roster')
-          }).c('query', {
-            xmlns: Strophe.NS.ROSTER
-          });
-
-          if (this.rosterVersioningSupported()) {
-            iq.attrs({
-              'ver': this.data.get('version')
-            });
-          }
-
-          const callback = _.flow(this.onReceivedFromServer.bind(this), resolve);
-
-          const errback = function errback(iq) {
-            const errmsg = "Error while trying to fetch roster from the server";
-
-            _converse.log(errmsg, Strophe.LogLevel.ERROR);
-
-            reject(new Error(errmsg));
-          };
-
-          return _converse.connection.sendIQ(iq, callback, errback);
+        const stanza = $iq({
+          'type': 'get',
+          'id': _converse.connection.getUniqueId('roster')
+        }).c('query', {
+          xmlns: Strophe.NS.ROSTER
         });
+
+        if (this.rosterVersioningSupported()) {
+          stanza.attrs({
+            'ver': this.data.get('version')
+          });
+        }
+
+        let iq;
+
+        try {
+          iq = await _converse.api.sendIQ(stanza);
+        } catch (e) {
+          _converse.log(e, Strophe.LogLevel.ERROR);
+
+          return _converse.log("Error while trying to fetch roster from the server", Strophe.LogLevel.ERROR);
+        }
+
+        return this.onReceivedFromServer(iq);
       },
 
       onReceivedFromServer(iq) {
@@ -77834,7 +77825,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
 
     });
 
-    function onVCardData(jid, iq, callback) {
+    async function onVCardData(jid, iq) {
       const vcard = iq.querySelector('vCard');
       let result = {};
 
@@ -77855,23 +77846,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
 
       if (result.image) {
         const buffer = u.base64ToArrayBuffer(result['image']);
-        crypto.subtle.digest('SHA-1', buffer).then(ab => {
-          result['image_hash'] = u.arrayBufferToHex(ab);
-          if (callback) callback(result);
-        });
-      } else {
-        if (callback) callback(result);
+        const ab = await crypto.subtle.digest('SHA-1', buffer);
+        result['image_hash'] = u.arrayBufferToHex(ab);
       }
-    }
 
-    function onVCardError(jid, iq, errback) {
-      if (errback) {
-        errback({
-          'stanza': iq,
-          'jid': jid,
-          'vcard_error': moment().format()
-        });
-      }
+      return result;
     }
 
     function createStanza(type, jid, vcard_el) {
@@ -77902,7 +77881,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
       return _converse.api.sendIQ(createStanza("set", jid, vcard_el));
     }
 
-    function getVCard(_converse, jid) {
+    async function getVCard(_converse, jid) {
       /* Request the VCard of another user. Returns a promise.
        *
        * Parameters:
@@ -77910,9 +77889,19 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
        *      is being requested.
        */
       const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
-      return new Promise((resolve, reject) => {
-        _converse.connection.sendIQ(createStanza("get", to), _.partial(onVCardData, jid, _, resolve), _.partial(onVCardError, jid, _, resolve), _converse.IQ_TIMEOUT);
-      });
+      let iq;
+
+      try {
+        iq = await _converse.api.sendIQ(createStanza("get", to));
+      } catch (iq) {
+        return {
+          'stanza': iq,
+          'jid': jid,
+          'vcard_error': moment().format()
+        };
+      }
+
+      return onVCardData(jid, iq);
     }
     /* Event handlers */
 

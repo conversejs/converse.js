@@ -620,16 +620,10 @@ converse.plugins.add('converse-muc', {
                  * Returns a promise which resolves once the response IQ
                  * has been received.
                  */
-                return new Promise((resolve, reject) => {
-                    _converse.connection.sendIQ(
-                        $iq({
-                            'to': this.get('jid'),
-                            'type': "get"
-                        }).c("query", {xmlns: Strophe.NS.MUC_OWNER}),
-                        resolve,
-                        reject
-                    );
-                });
+                return _converse.api.sendIQ(
+                    $iq({'to': this.get('jid'), 'type': "get"})
+                     .c("query", {xmlns: Strophe.NS.MUC_OWNER})
+                );
             },
 
             sendConfiguration (config, callback, errback) {
@@ -652,7 +646,7 @@ converse.plugins.add('converse-muc', {
                 _.each(config || [], function (node) { iq.cnode(node).up(); });
                 callback = _.isUndefined(callback) ? _.noop : _.partial(callback, iq.nodeTree);
                 errback = _.isUndefined(errback) ? _.noop : _.partial(errback, iq.nodeTree);
-                return _converse.connection.sendIQ(iq, callback, errback);
+                return _converse.api.sendIQ(iq).then(callback).catch(errback);
             },
 
             saveAffiliationAndRole (pres) {
@@ -685,19 +679,17 @@ converse.plugins.add('converse-muc', {
                  *  (Object) member: Map containing the member's jid and
                  *      optionally a reason and affiliation.
                  */
-                return new Promise((resolve, reject) => {
-                    const iq = $iq({to: this.get('jid'), type: "set"})
-                        .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
-                        .c("item", {
-                            'affiliation': member.affiliation || affiliation,
-                            'nick': member.nick,
-                            'jid': member.jid
-                        });
-                    if (!_.isUndefined(member.reason)) {
-                        iq.c("reason", member.reason);
-                    }
-                    _converse.connection.sendIQ(iq, resolve, reject);
-                });
+                const iq = $iq({to: this.get('jid'), type: "set"})
+                    .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
+                    .c("item", {
+                        'affiliation': member.affiliation || affiliation,
+                        'nick': member.nick,
+                        'jid': member.jid
+                    });
+                if (!_.isUndefined(member.reason)) {
+                    iq.c("reason", member.reason);
+                }
+                return _converse.api.sendIQ(iq);
             },
 
             setAffiliations (members) {

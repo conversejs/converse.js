@@ -59465,12 +59465,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           'model': message
         });
         await view.render();
+        this.clearChatStateNotification(message);
 
         if (!view.el.innerHTML) {
-          return _converse.log("showMessage: message's view element is empty", Strophe.LogLevel.ERROR);
+          // An "inactive" CSN message (for example) will have an
+          // empty body. No need to then continue.
+          return _converse.log("Not inserting a message with empty element", Strophe.LogLevel.INFO);
         }
 
-        this.clearChatStateNotification(message);
         this.insertMessage(view);
         this.insertDayIndicator(view.el);
         this.setScrollPosition(view.el);

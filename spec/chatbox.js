@@ -1020,47 +1020,41 @@
                     it("will clear any other chat status notifications",
                         mock.initConverseWithPromises(
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                            function (done, _converse) {
+                            async function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
                         _converse.emit('rosterContactsFetched');
                         test_utils.openControlBox();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        let view;
-
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse, 'emit');
-                        test_utils.openChatBoxFor(_converse, sender_jid)
-                        .then(() => {
-                            view = _converse.chatboxviews.get(sender_jid);
-                            expect(view.el.querySelectorAll('.chat-event').length).toBe(0);
-                            // Insert <composing> message, to also check that
-                            // text messages are inserted correctly with
-                            // temporary chat events in the chat contents.
-                            const msg = $msg({
-                                    'to': _converse.bare_jid,
-                                    'xmlns': 'jabber:client',
-                                    'from': sender_jid,
-                                    'type': 'chat'})
-                                .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
-                                .tree();
-                            _converse.chatboxes.onMessage(msg);
-                            return test_utils.waitUntil(() => view.model.messages.length);
-                        }).then(() => {
-                            expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(1);
-                            const msg = $msg({
-                                    from: sender_jid,
-                                    to: _converse.connection.jid,
-                                    type: 'chat',
-                                    id: (new Date()).getTime()
-                                }).c('body').c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                            _converse.chatboxes.onMessage(msg);
-                            return test_utils.waitUntil(() => (view.model.messages.length > 1));
-                        }).then(() => {
-                            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                            expect($(view.el).find('.chat-state-notification').length).toBe(0);
-                            done();
-                        });
+                        await test_utils.openChatBoxFor(_converse, sender_jid);
+                        const view = _converse.chatboxviews.get(sender_jid);
+                        expect(view.el.querySelectorAll('.chat-event').length).toBe(0);
+                        // Insert <composing> message, to also check that
+                        // text messages are inserted correctly with
+                        // temporary chat events in the chat contents.
+                        let msg = $msg({
+                                'to': _converse.bare_jid,
+                                'xmlns': 'jabber:client',
+                                'from': sender_jid,
+                                'type': 'chat'})
+                            .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
+                            .tree();
+                        _converse.chatboxes.onMessage(msg);
+                        await test_utils.waitUntil(() => view.model.messages.length);
+                        expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(1);
+                        msg = $msg({
+                                from: sender_jid,
+                                to: _converse.connection.jid,
+                                type: 'chat',
+                                id: (new Date()).getTime()
+                            }).c('body').c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                        _converse.chatboxes.onMessage(msg);
+                        await test_utils.waitUntil(() => (view.model.messages.length > 1));
+                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(0);
+                        done();
                     }));
                 });
 

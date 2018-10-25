@@ -248,18 +248,18 @@ converse.plugins.add('converse-muc-views', {
                 }));
         }
 
-        async function toggleRoomInfo (ev) {
+        function toggleRoomInfo (ev) {
             /* Show/hide extra information about a groupchat in a listing. */
             const parent_el = u.ancestor(ev.target, '.room-item'),
                     div_el = parent_el.querySelector('div.room-info');
             if (div_el) {
-                await u.slideIn(div_el);
-                u.removeElement();
+                u.slideIn(div_el).then(u.removeElement)
                 parent_el.querySelector('a.room-info').classList.remove('selected');
             } else {
                 parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
-                const stanza = await _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null);
-                insertRoomInfo(parent_el, stanza);
+                _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null)
+                    .then(stanza => insertRoomInfo(parent_el, stanza))
+                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             }
         }
 
@@ -1142,7 +1142,7 @@ converse.plugins.add('converse-muc-views', {
                 this.renderAfterTransition();
             },
 
-            async getAndRenderConfigurationForm (ev) {
+            getAndRenderConfigurationForm (ev) {
                 /* Start the process of configuring a groupchat, either by
                  * rendering a configuration form, or by auto-configuring
                  * based on the "roomconfig" data stored on the
@@ -1158,8 +1158,9 @@ converse.plugins.add('converse-muc-views', {
                  *      the settings.
                  */
                 this.showSpinner();
-                await this.model.fetchRoomConfiguration();
-                this.renderConfigurationForm();
+                this.model.fetchRoomConfiguration()
+                    .then(iq => this.renderConfigurationForm(iq))
+                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             },
 
             submitNickname (ev) {

@@ -517,15 +517,12 @@ converse.plugins.add('converse-bookmarks', {
             }
         });
 
-        _converse.checkBookmarksSupport = function () {
-            return new Promise((resolve, reject) => {
-                Promise.all([
-                    _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid),
-                    _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid)
-                ]).then((args) => {
-                    resolve(args[0] && (args[1].length || _converse.allow_public_bookmarks));
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        _converse.checkBookmarksSupport = async function () {
+            const args = await Promise.all([
+                _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid),
+                _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid)
+            ]);
+            return args[0] && (args[1].length || _converse.allow_public_bookmarks);
         }
 
         const initBookmarks = async function () {
@@ -537,10 +534,8 @@ converse.plugins.add('converse-bookmarks', {
                 _converse.bookmarks = new _converse.Bookmarks();
                 _converse.bookmarksview = new _converse.BookmarksView({'model': _converse.bookmarks});
                 await _converse.bookmarks.fetchBookmarks();
-                _converse.emit('bookmarksInitialized');
-            } else {
-                _converse.emit('bookmarksInitialized');
             }
+            _converse.emit('bookmarksInitialized');
         }
 
         u.onMultipleEvents([

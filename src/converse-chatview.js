@@ -408,8 +408,8 @@ converse.plugins.add('converse-chatview', {
                 if (_.isEmpty(resources)) {
                     return;
                 }
-                const results = await Promise.all(_.map(_.keys(resources), (resource) =>
-                    _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)
+                const results = await Promise.all(_.map(_.keys(resources),
+                    resource => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)
                 ));
                 if (_.filter(results, 'length').length) {
                     const html = tpl_spoiler_button(this.model.toJSON());

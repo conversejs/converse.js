@@ -3,7 +3,7 @@
         display: none;
     }
     .flyout {
-        border-radius: $chatbox-border-radius;
+        border-radius: var(--chatbox-border-radius);
         position: absolute;
 
         @media screen and (max-height: $mobile-landscape-height) {
@@ -25,7 +25,7 @@
         border-radius: 25%;
         border: none;
         cursor: pointer;
-        font-size: $chatbox-button-size;
+        font-size: var(--chatbox-button-size);
         margin: 0 0.2em;
         padding: 0 0 0 0.5em;
         text-decoration: none;
@@ -45,7 +45,7 @@
         position: relative;
 
         &.chat-head-chatbox {
-            background-color: $chat-head-color;
+            background-color: var(--chat-head-color);
         }
 
         .avatar {
@@ -67,7 +67,7 @@
         }
 
         .user-custom-message {
-            color: lighten($chat-head-color, 50%);
+            color: var(--chat-head-color-lighten-50-percent);
             font-size: 75%;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -84,8 +84,8 @@
                     color: white;
                     &.button-on:before {
                         padding: 0.2em;
-                        background-color: $chat-head-text-color;
-                        color: $chat-head-color;
+                        background-color: var(--chat-head-text-color);
+                        color: var(--chat-head-color);
                     }
                 }
             }
@@ -102,15 +102,15 @@
             }
             &.button-on:before {
                 border-radius: 5%;
-                background-color: $chat-head-text-color;
-                color: $chat-head-color;
+                background-color: var(--chat-head-text-color);
+                color: var(--chat-head-color);
             }
         }
     }
 
     .chatbox {
         text-align: left;
-        margin: 0 $chat-gutter;
+        margin: 0 var(--chat-gutter);
 
         img {
             &.emoji {
@@ -123,44 +123,44 @@
 
         @media screen and (max-height: $mobile-landscape-height) {
             margin: 0;
-            width: $mobile-chat-width;
+            width: var(--mobile-chat-width);
         }
         @media screen and (max-width: $mobile-portrait-length) {
             margin: 0;
-            width: $mobile-chat-width;
+            width: var(--mobile-chat-width);
         }
 
         .box-flyout {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            background-color: $chat-head-color;
+            background-color: var(--chat-head-color);
             box-shadow: 1px 3px 5px 3px rgba(0, 0, 0, 0.4);
             z-index: 1;
             overflow-y: hidden;
             width: 100%;
 
             @media screen and (max-height: $mobile-landscape-height) {
-                height: $mobile-chat-height;
-                width: $mobile-chat-width;
+                height: var(--mobile-chat-height);
+                width: var(--mobile-chat-width);
                 height: 100vh;
             }
             @media screen and (max-width: $mobile-portrait-length) {
-                height: $mobile-chat-height;
-                width: $mobile-chat-width;
+                height: var(--mobile-chat-height);
+                width: var(--mobile-chat-width);
                 height: 100vh;
             }
         }
         .chat-title {
-            font-family: $heading-font;
+            font-family: var(--heading-font);
             color: white;
             display: block;
-            line-height: $line-height-large;
+            line-height: var(--line-height-large);
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             a {
-                color: $chat-head-text-color;
+                color: var(--chat-head-text-color);
                 width: 100%;
             }
         }
@@ -169,9 +169,9 @@
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
-            background-color: $chat-head-color;
-            border-bottom-left-radius: $chatbox-border-radius;
-            border-bottom-right-radius: $chatbox-border-radius;
+            background-color: var(--chat-head-color);
+            border-bottom-left-radius: var(--chatbox-border-radius);
+            border-bottom-right-radius: var(--chatbox-border-radius);
 
             @media screen and (max-height: $mobile-landscape-height) {
                 border-bottom-left-radius: 0;
@@ -183,8 +183,8 @@
             }
             border-top: 0;
             p {
-                color: $text-color;
-                font-size: $message-font-size;
+                color: var(--text-color);
+                font-size: var(--message-font-size);
                 margin: 0;
                 padding: 5px;
             }
@@ -193,8 +193,8 @@
             position: relative;
             width: 100%;
             cursor: pointer;
-            background-color: $chat-head-color;
-            color: $light-background-color;
+            background-color: var(--chat-head-color);
+            color: var(--light-background-color);
             padding: 0.5em;
             font-size: 0.9em;
             text-align: center;
@@ -204,8 +204,8 @@
         }
         .chat-content {
             height: 100%;
-            font-size: $message-font-size;
-            color: $text-color;
+            font-size: var(--message-font-size);
+            color: var(--text-color);
             overflow-y: auto;
             border: 0;
             background-color: #ffffff;
@@ -220,11 +220,11 @@
             }
         }
         .chat-content-sendbutton {
-            height: calc(100% - #{$chat-textarea-height + $send-button-height + 2*$send-button-margin});
+            height: calc(100% - (var(--chat-textarea-height) + var(--send-button-height) + 2 * var(--send-button-margin)));
         }
 
         .dropdown { /* status dropdown styles */
-            background-color: $light-background-color;
+            background-color: var(--light-background-color);
             dd {
                 margin: 0;
                 padding: 0;
@@ -235,7 +235,7 @@
         .sendXMPPMessage {
             -moz-background-clip: padding;
             -webkit-background-clip: padding-box;
-            @include border-bottom-radius($chatbox-border-radius);
+            border-bottom-radius: var(--chatbox-border-radius);
             background-clip: padding-box;
             background-color: white;
             border: 0;
@@ -259,33 +259,33 @@
             }
 
             .chat-textarea {
-                color: $chat-textarea-color;
+                color: var(--chat-textarea-color);
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
-                @include border-bottom-radius($chatbox-border-radius);
+                border-bottom-radius: var(--chatbox-border-radius);
                 padding: 0.5em;
                 width: 100%;
                 border: none;
-                min-height: $chat-textarea-height;
+                min-height: var(--chat-textarea-height);
                 margin-bottom: -4px; // Not clear why this is necessar :(
                 resize: none;
                 &.spoiler {
                     height: 42px;
                 }
                 &.correcting {
-                    background-color: lighten($chat-head-color, 50%);
+                    background-color: var(--chat-head-color-lighten-50-percent);
                 }
             }
 
             .send-button {
                 position: absolute;
-                left: $send-button-margin;
-                @include calc(width, '100% - #{2*$send-button-margin}');
-                background-color: $chat-head-color;
-                color: $inverse-link-color;
+                left: var(--send-button-margin);
+                width: calc(100% - 2 * var(--send-button-margin));
+                background-color: var(--chat-head-color);
+                color: var(--inverse-link-color);
                 font-size: 80%;
-                height: $send-button-height;
-                bottom: -$send-button-height - $send-button-margin;
+                height: var(--send-button-height);
+                bottom: calc(-var(--send-button-height) - var(--send-button-margin));
 
             }
             .chat-toolbar {
@@ -293,21 +293,21 @@
                 margin: 0;
                 padding: 0.25em;
                 display: block;
-                border-top: 4px solid $chat-head-color;
+                border-top: 4px solid var(--chat-head-color);
                 background-color: white;
-                color: $chat-head-color;
+                color: var(--chat-head-color);
                 .fa, .fa:hover,
                 .far, .far:hover,
                 .fas, .fas:hover {
-                    color: $chat-head-color;
-                    font-size: $font-size-large;
+                    color: var(--chat-head-color);
+                    font-size: var(--font-size-large);
                 }
                 .unencrypted a,
                 .unencrypted {
-                    color: $text-color;
+                    color: var(--text-color);
                     .toolbar-menu {
                         a {
-                            color: $link-color;
+                            color: var(--link-color);
                         }
                     }
                 }
@@ -353,7 +353,7 @@
                         }
 
                         a {
-                            color: $link-color;
+                            color: var(--link-color);
                         }
                         .emoji-picker-container {
                             background: white;
@@ -372,13 +372,13 @@
                                 &.insert-emoji {
                                     padding: 0.2em;
                                     &.picked {
-                                        background-color: $highlight-color;
+                                        background-color: var(--highlight-color);
                                     }
                                     &:hover {
-                                        background-color: $highlight-color;
+                                        background-color: var(--highlight-color);
                                     }
                                     a {
-                                        font-size: $font-size-huge;
+                                        font-size: var(--font-size-huge);
                                         &:hover {
                                             color: #8f2831;
                                         }
@@ -406,9 +406,9 @@
                             .emoji-skintone-picker {
                                 li {
                                     padding: 0.25em;
-                                    font-size: $font-size-huge;
+                                    font-size: var(--font-size-huge);
                                     &:hover {
-                                        background-color: $highlight-color;
+                                        background-color: var(--highlight-color);
                                     }
                                 }
                             }
@@ -419,7 +419,7 @@
                             z-index: 99;
                             li {
                                 &:hover {
-                                    background-color: $highlight-color;
+                                    background-color: var(--highlight-color);
                                 }
                                 display: block;
                                 padding: 7px;
@@ -465,15 +465,15 @@
 
 #conversejs.converse-embedded {
     .chat-textarea {
-        max-height: $fullpage-max-chat-textarea-height;
+        max-height: var(--fullpage-max-chat-textarea-height);
     }
 }
 
 #conversejs.converse-embedded,
 #conversejs.converse-overlayed {
     .chat-head {
-        border-top-left-radius: $chatbox-border-radius;
-        border-top-right-radius: $chatbox-border-radius;
+        border-top-left-radius: var(--chatbox-border-radius);
+        border-top-right-radius: var(--chatbox-border-radius);
         @media screen and (max-height: $mobile-landscape-height) {
             border-top-left-radius: 0;
             border-top-right-radius: 0;
@@ -491,19 +491,19 @@
     }
 
     .emoji-picker {
-        height: $embedded-emoji-picker-height;
+        height: var(--embedded-emoji-picker-height);
     }
     
     .chatbox {
-        min-width: $overlayed-chat-width !important;
-        width: $overlayed-chat-width;
+        min-width: var(--overlayed-chat-width) !important;
+        width: var(--overlayed-chat-width);
 
         .box-flyout {
-            min-width: $overlayed-chat-width !important;
-            width: $overlayed-chat-width;
+            min-width: var(--overlayed-chat-width) !important;
+            width: var(--overlayed-chat-width);
 
             .chat-body {
-                height: calc(100% - #{$overlayed-chat-head-height});
+                height: calc(100% - var(--overlayed-chat-head-height));
             }
         }
     }
@@ -511,20 +511,20 @@
 
 #conversejs.converse-overlayed  {
     .flyout {
-        bottom: $overlayed-chatbox-hover-height;
+        bottom: var(--overlayed-chatbox-hover-height);
     }
     .box-flyout {
-        height: $overlayed-chat-height;
-        min-height: $overlayed-chat-height/2;
+        height: var(--overlayed-chat-height);
+        min-height: calc(var(--overlayed-chat-height) / 2);
     }
     .chat-head {
-        height: $overlayed-chat-head-height;
+        height: var(--overlayed-chat-head-height);
     }
     .chat-textarea {
-        max-height: $overlayed-max-chat-textarea-height;
+        max-height: var(--overlayed-max-chat-textarea-height);
     }
     .emoji-picker {
-        height: $overlayed-emoji-picker-height;
+        height: var(--overlayed-emoji-picker-height);
     }
     .chatbox {
         .sendXMPPMessage {
@@ -574,22 +574,22 @@
 #conversejs.converse-fullscreen  {
     .flyout {
         border-radius: 0;
-        border-top: 0.8em solid $chat-head-color;
-        border: $flyout-padding solid $chat-head-color;
+        border-top: 0.8em solid var(--chat-head-color);
+        border: var(--flyout-padding) solid var(--chat-head-color);
         bottom: 0;
     }
     .chatbox-btn {
-        font-size: $fullpage-chatbox-button-size;
+        font-size: var(--fullpage-chatbox-button-size);
         margin: 0 0.3em;
     }
     .chat-head {
-        height: $fullpage-chat-head-height;
-        font-size: $font-size-huge;
+        height: var(--fullpage-chat-head-height);
+        font-size: var(--font-size-huge);
         padding: 0;
         .user-custom-message {
             font-size: 70%;
             height: auto;
-            line-height: $line-height;
+            line-height: var(--line-height);
         }
         .chatbox-title {
             @include make-col(10);
@@ -599,10 +599,10 @@
         }
     }
     .chat-textarea {
-        max-height: $fullpage-max-chat-textarea-height;
+        max-height: var(--fullpage-max-chat-textarea-height);
     }
     .emoji-picker {
-        height: $fullpage-emoji-picker-height;
+        height: var(--fullpage-emoji-picker-height);
     }
 
     .chatbox {
@@ -622,26 +622,26 @@
         }
 
         .box-flyout {
-            background-color: $chat-head-color;
+            background-color: var(--chat-head-color);
             box-shadow: none;
-            height: $fullpage-chat-height;
-            min-height: $fullpage-chat-height/2;
-            width: $fullpage-chat-width;
+            height: var(--fullpage-chat-height);
+            min-height: calc(var(--fullpage-chat-height) / 2);
+            width: var(--fullpage-chat-width);
             overflow: hidden;
         }
         .chat-body {
-            height: calc(100% - #{$fullpage-chat-head-height});
-            background-color: $chat-head-color;
-            border-top-left-radius: $chatbox-border-radius;
-            border-top-right-radius: $chatbox-border-radius;
+            height: calc(100% - var(--fullpage-chat-head-height));
+            background-color: var(--chat-head-color);
+            border-top-left-radius: var(--chatbox-border-radius);
+            border-top-right-radius: var(--chatbox-border-radius);
         }
         .chat-content {
-            border-top-left-radius: $chatbox-border-radius;
-            border-top-right-radius: $chatbox-border-radius;
+            border-top-left-radius: var(--chatbox-border-radius);
+            border-top-right-radius: var(--chatbox-border-radius);
         }
         .chat-title {
-            font-size: $font-size-huge;
-            line-height: $line-height-huge;
+            font-size: var(--font-size-huge);
+            line-height: var(--line-height-huge);
         }
         .sendXMPPMessage {
             ul {

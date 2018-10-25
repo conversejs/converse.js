@@ -17,7 +17,7 @@
     .awesomplete {
         position: relative;
         mark {
-            background: $lightest-red;
+            background: var(--completion-light-color);
         }
 
         > input {
@@ -115,19 +115,19 @@
     
     .suggestion-box > ul > li[aria-selected="true"],
     div.awesomplete > ul > li[aria-selected="true"] {
-        background: $dark-red;
-        color: $inverse-link-color;
+        background: var(--completion-dark-color);
+        color: var(--inverse-link-color);
     }
     
     .suggestion-box li:hover mark,
     div.awesomplete li:hover mark {
-        background: $lightest-red;
-        color: $inverse-link-color;
+        background: var(--completion-light-color);
+        color: var(--inverse-link-color);
     }
     
     .suggestion-box li[aria-selected="true"] mark,
     div.awesomplete li[aria-selected="true"] mark {
-        background: $red;
+        background: var(--completion-normal-color);
         color: inherit;
     }
 }

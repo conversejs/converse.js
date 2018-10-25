@@ -14,7 +14,7 @@
             z-index: 0;
 
             .separator {
-                border: 0.5px solid $chat-head-color;
+                border: 0.5px solid var(--chat-head-color);
                 margin: 0 1em;
                 position: relative;
                 top: 1em;
@@ -24,7 +24,7 @@
             .separator-text {
                 background: white;
                 bottom: 1px; // Offset needed due to .separator border size
-                color: $message-text-color;
+                color: var(--message-text-color);
                 display: inline-block;
                 line-height: 2em;
                 padding: 0 1em;
@@ -34,14 +34,14 @@
         }
 
         &.chat-info {
-            color: $chat-head-color;
-            font-size: $message-font-size;
-            line-height: $line-height-small;
+            color: var(--chat-head-color);
+            font-size: var(--message-font-size);
+            line-height: var(--line-height-small);
             font-size: 90%;
             padding: 0.17rem 1rem;
 
             &.badge {
-                color: $chat-head-text-color;
+                color: var(--chat-head-text-color);
             }
             &.chat-state-notification {
                 font-style: italic;
@@ -51,7 +51,7 @@
                 font-style: italic;
             }
             &.chat-error {
-                color: $warning-color;
+                color: var(--warning-color);
                 font-weight: bold;
             }
         }
@@ -86,10 +86,10 @@
             }
             &.correcting {
                 &.groupchat  {
-                    background-color: lighten($chatroom-head-color, 30%);
+                    background-color: var(--chatroom-head-color-lighten-30-percent);
                 }
                 &:not(.groupchat) {
-                    background-color: lighten($chat-head-color, 50%);
+                    background-color: var(--chat-head-color-lighten-50-percent);
                 }
             }
 
@@ -148,7 +148,7 @@
 
             .chat-msg__text {
                 padding: 0;
-                color: $message-text-color;
+                color: var(--message-text-color);
                 width: 100%;
                 white-space: pre-wrap;
                 a {
@@ -182,8 +182,8 @@
 
             .chat-msg__actions {
                 .chat-msg__action {
-                    height: $message-font-size;
-                    font-size: $message-font-size;
+                    height: var(--message-font-size);
+                    font-size: var(--message-font-size);
                     padding: 0;
                     border: none;
                     opacity: 0;
@@ -213,16 +213,16 @@
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;
-                    font-family: $heading-font; 
+                    font-family: var(--heading-font);
                     font-size: 115%;
                     .badge {
                         font-size: 80%;
-                        font-family: $normal_font;
+                        font-family: var(--normal_font);
                     }
                 }
                 .chat-msg__time {
                     padding-left: 0.25em;
-                    color: lighten($text-color, 15%);
+                    color: var(--text-color-lighten-15-percent);
                 }
             }
             &.chat-msg--action {
@@ -240,7 +240,7 @@
                     width: auto;
                 }
                 .chat-msg__author {
-                    font-size: $message-font-size;
+                    font-size: var(--message-font-size);
                 }
                 .chat-msg__time {
                     margin-left: 0;
@@ -265,7 +265,7 @@
             -webkit-animation: colorchange-chatmessage-muc 1s;
         }
         .separator {
-            border: 0.5px solid $chatroom-head-color;
+            border: 0.5px solid var(--chatroom-head-color);
         }
     }
 }

@@ -653,7 +653,7 @@ converse.plugins.add('converse-chatboxes', {
                 }
             },
 
-            async onMessage (stanza) {
+            onMessage (stanza) {
                 /* Handler method for all incoming single-user chat "message"
                  * stanzas.
                  *
@@ -727,8 +727,9 @@ converse.plugins.add('converse-chatboxes', {
                           message = msgid && chatbox.messages.findWhere({msgid});
                     if (!message) {
                         // Only create the message when we're sure it's not a duplicate
-                        const msg = await chatbox.createMessage(stanza, original_stanza);
-                        chatbox.incrementUnreadMsgCounter(msg);
+                        chatbox.createMessage(stanza, original_stanza)
+                            .then(msg => chatbox.incrementUnreadMsgCounter(msg))
+                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     }
                 }
                 _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});

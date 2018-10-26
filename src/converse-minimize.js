@@ -299,7 +299,7 @@ converse.plugins.add('converse-minimize', {
     },
 
 
-    async initialize () {
+    initialize () {
         /* The initialize function gets called as soon as the plugin is
          * loaded by Converse.js's plugin machinery.
          */
@@ -509,12 +509,16 @@ converse.plugins.add('converse-minimize', {
             }
         });
 
-        await _converse.api.waitUntil('connectionInitialized');
-        await _converse.api.waitUntil('chatBoxViewsInitialized');
-        _converse.minimized_chats = new _converse.MinimizedChats({
-            model: _converse.chatboxes
-        });
-        _converse.emit('minimizedChatsInitialized');
+        Promise.all([
+            _converse.api.waitUntil('connectionInitialized'),
+            _converse.api.waitUntil('chatBoxViewsInitialized')
+        ]).then(() => {
+            _converse.minimized_chats = new _converse.MinimizedChats({
+                model: _converse.chatboxes
+            });
+            _converse.emit('minimizedChatsInitialized');
+        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+
 
         _converse.on('registeredGlobalEventHandlers', function () {
             window.addEventListener("resize", _.debounce(function (ev) {

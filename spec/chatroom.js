@@ -2329,35 +2329,34 @@
             }));
 
             it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
-                    mock.initConverseWithPromises(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        function (done, _converse) {
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
 
-                test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy')
-                .then(() => {
-                    const view = _converse.chatboxviews.get('lounge@localhost'),
-                          trimmed_chatboxes = _converse.minimized_chats;
+                await test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                const view = _converse.chatboxviews.get('lounge@localhost'),
+                      trimmed_chatboxes = _converse.minimized_chats;
 
-                    spyOn(view, 'minimize').and.callThrough();
-                    spyOn(view, 'maximize').and.callThrough();
-                    spyOn(_converse, 'emit');
-                    view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
-                    view.el.querySelector('.toggle-chatbox-button').click();
+                spyOn(view, 'minimize').and.callThrough();
+                spyOn(view, 'maximize').and.callThrough();
+                spyOn(_converse, 'emit');
+                view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                view.el.querySelector('.toggle-chatbox-button').click();
 
-                    expect(view.minimize).toHaveBeenCalled();
-                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
-                    expect(u.isVisible(view.el)).toBeFalsy();
-                    expect(view.model.get('minimized')).toBeTruthy();
-                    expect(view.minimize).toHaveBeenCalled();
-                    var trimmedview = trimmed_chatboxes.get(view.model.get('id'));
-                    trimmedview.el.querySelector("a.restore-chat").click();
-                    expect(view.maximize).toHaveBeenCalled();
-                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
-                    expect(view.model.get('minimized')).toBeFalsy();
-                    expect(_converse.emit.calls.count(), 3);
-                    done();
+                expect(view.minimize).toHaveBeenCalled();
+                expect(_converse.emit).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
+                expect(u.isVisible(view.el)).toBeFalsy();
+                expect(view.model.get('minimized')).toBeTruthy();
+                expect(view.minimize).toHaveBeenCalled();
+                await test_utils.waitUntil(() => trimmed_chatboxes.get(view.model.get('id')));
+                const trimmedview = trimmed_chatboxes.get(view.model.get('id'));
+                trimmedview.el.querySelector("a.restore-chat").click();
+                expect(view.maximize).toHaveBeenCalled();
+                expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
+                expect(view.model.get('minimized')).toBeFalsy();
+                expect(_converse.emit.calls.count(), 3);
+                done();
 
-                });
             }));
 
             it("can be closed again by clicking a DOM element with class 'close-chatbox-button'",

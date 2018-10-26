@@ -101,10 +101,17 @@ To generate this bundle, you can run:
 Headless build
 --------------
 
-There is also the option of making a headless build of Converse.
+Converse also has a special build called the `headless build`.
 
-This is a build without any UI code but still containing the core functionality of
-maintaining a roster, chats and messages.
+You can generate it by running ``make dist/converse-headless.js``
 
-The file `src/headless.js <https://github.com/jcbrand/converse.js/blob/master/src/headless.js>`_
+The headless build is a bundle of all the non-UI parts of Converse, and its aim
+is to provide you with an XMPP library (and application) on which you can build
+your own UI.
+
+It's also installable as `@converse/headless <https://www.npmjs.com/package/@converse/headless>`_.
+
+The main distribution of Converse relies on the headless build.
+
+The file `src/headless/headless.js <https://github.com/jcbrand/converse.js/blob/master/src/headless/headless.js>`_
 is used to determine which plugins are included in the build.

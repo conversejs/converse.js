@@ -9569,12 +9569,15 @@ body.reset {
   max-height: 200px; }
 #conversejs.converse-overlayed .emoji-picker {
   height: 100px; }
-#conversejs.converse-overlayed .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu {
+#conversejs.converse-overlayed .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu {
   min-width: 235px; }
-  #conversejs.converse-overlayed .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar {
+  #conversejs.converse-overlayed .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar {
     width: 100%; }
-    #conversejs.converse-overlayed .chatbox form.sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .emoji-category {
+    #conversejs.converse-overlayed .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .emoji-category {
       float: left; }
+#conversejs.converse-overlayed .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker ul {
+  flex-wrap: wrap;
+  justify-content: flex-start; }
 
 @media (max-width: 767.98px) {
   #conversejs.converse-overlayed > .row {

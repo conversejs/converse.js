@@ -208,7 +208,8 @@ converse.plugins.add('converse-message-view', {
             renderFileUploadProgresBar () {
                 const msg = u.stringToElement(tpl_file_progress(
                     _.extend(this.model.toJSON(), {
-                        'filesize': filesize(this.model.file.size),
+                        'filename': this.model.file.name,
+                        'filesize': filesize(this.model.file.size)
                     })));
                 this.replaceElement(msg);
                 this.renderAvatar();

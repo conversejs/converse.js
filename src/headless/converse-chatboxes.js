@@ -206,8 +206,8 @@ converse.plugins.add('converse-chatboxes', {
                     });
                 };
                 xhr.open('PUT', this.get('put'), true);
-                xhr.setRequestHeader("Content-type", this.get('file').type);
-                xhr.send(this.get('file'));
+                xhr.setRequestHeader("Content-type", this.file.type);
+                xhr.send(this.file);
             }
         });
 
@@ -331,8 +331,9 @@ converse.plugins.add('converse-chatboxes', {
                     }
                     stanza.c('reference', attrs).up();
                 });
-                if (message.get('file')) {
-                    stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('message')).up();
+
+                if (message.get('oob_url')) {
+                    stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('oob_url')).up();
                 }
                 if (message.get('edited')) {
                     stanza.c('replace', {
@@ -440,7 +441,7 @@ converse.plugins.add('converse-chatboxes', {
                         const message = this.messages.create(
                             _.extend(
                                 this.getOutgoingMessageAttributes(), {
-                                'file': file,
+                                'file': true,
                                 'progress': 0,
                                 'slot_request_url': slot_request_url
                             }), {'silent': true}

@@ -57833,17 +57833,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         close_button.insertAdjacentHTML('afterend', bookmark_button);
       },
 
-      renderHeading() {
+      async renderHeading() {
         this.__super__.renderHeading.apply(this, arguments);
 
         const _converse = this.__super__._converse;
 
         if (_converse.allow_bookmarks) {
-          _converse.checkBookmarksSupport().then(supported => {
-            if (supported) {
-              this.renderBookmarkToggle();
-            }
-          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          const supported = await _converse.checkBookmarksSupport();
+
+          if (supported) {
+            this.renderBookmarkToggle();
+          }
         }
       },
 
@@ -58343,31 +58343,27 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     });
 
-    _converse.checkBookmarksSupport = function () {
-      return new Promise((resolve, reject) => {
-        Promise.all([_converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid), _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid)]).then(args => {
-          resolve(args[0] && (args[1].length || _converse.allow_public_bookmarks));
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-      }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+    _converse.checkBookmarksSupport = async function () {
+      const args = await Promise.all([_converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid), _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid)]);
+      return args[0] && (args[1].length || _converse.allow_public_bookmarks);
     };
 
-    const initBookmarks = function initBookmarks() {
+    const initBookmarks = async function initBookmarks() {
       if (!_converse.allow_bookmarks) {
         return;
       }
 
-      _converse.checkBookmarksSupport().then(supported => {
-        if (supported) {
-          _converse.bookmarks = new _converse.Bookmarks();
-          _converse.bookmarksview = new _converse.BookmarksView({
-            'model': _converse.bookmarks
-          });
+      const supported = await _converse.checkBookmarksSupport();
 
-          _converse.bookmarks.fetchBookmarks().catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL)).then(() => _converse.emit('bookmarksInitialized'));
-        } else {
-          _converse.emit('bookmarksInitialized');
-        }
-      });
+      if (supported) {
+        _converse.bookmarks = new _converse.Bookmarks();
+        _converse.bookmarksview = new _converse.BookmarksView({
+          'model': _converse.bookmarks
+        });
+        await _converse.bookmarks.fetchBookmarks();
+      }
+
+      _converse.emit('bookmarksInitialized');
     };
 
     u.onMultipleEvents([{
@@ -58693,42 +58689,45 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
-/* harmony import */ var templates_chatbox_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/chatbox.html */ "./src/templates/chatbox.html");
-/* harmony import */ var templates_chatbox_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_chatbox_html__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var templates_chatbox_head_html__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! templates/chatbox_head.html */ "./src/templates/chatbox_head.html");
-/* harmony import */ var templates_chatbox_head_html__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(templates_chatbox_head_html__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var templates_chatbox_message_form_html__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! templates/chatbox_message_form.html */ "./src/templates/chatbox_message_form.html");
-/* harmony import */ var templates_chatbox_message_form_html__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(templates_chatbox_message_form_html__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var templates_emojis_html__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! templates/emojis.html */ "./src/templates/emojis.html");
-/* harmony import */ var templates_emojis_html__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(templates_emojis_html__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var templates_error_message_html__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! templates/error_message.html */ "./src/templates/error_message.html");
-/* harmony import */ var templates_error_message_html__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(templates_error_message_html__WEBPACK_IMPORTED_MODULE_10__);
-/* harmony import */ var templates_help_message_html__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! templates/help_message.html */ "./src/templates/help_message.html");
-/* harmony import */ var templates_help_message_html__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(templates_help_message_html__WEBPACK_IMPORTED_MODULE_11__);
-/* harmony import */ var templates_info_html__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! templates/info.html */ "./src/templates/info.html");
-/* harmony import */ var templates_info_html__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(templates_info_html__WEBPACK_IMPORTED_MODULE_12__);
-/* harmony import */ var templates_new_day_html__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! templates/new_day.html */ "./src/templates/new_day.html");
-/* harmony import */ var templates_new_day_html__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(templates_new_day_html__WEBPACK_IMPORTED_MODULE_13__);
-/* harmony import */ var templates_spinner_html__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html");
-/* harmony import */ var templates_spinner_html__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(templates_spinner_html__WEBPACK_IMPORTED_MODULE_14__);
-/* harmony import */ var templates_spoiler_button_html__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! templates/spoiler_button.html */ "./src/templates/spoiler_button.html");
-/* harmony import */ var templates_spoiler_button_html__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(templates_spoiler_button_html__WEBPACK_IMPORTED_MODULE_15__);
-/* harmony import */ var templates_status_message_html__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! templates/status_message.html */ "./src/templates/status_message.html");
-/* harmony import */ var templates_status_message_html__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(templates_status_message_html__WEBPACK_IMPORTED_MODULE_16__);
-/* harmony import */ var templates_toolbar_html__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! templates/toolbar.html */ "./src/templates/toolbar.html");
-/* harmony import */ var templates_toolbar_html__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(templates_toolbar_html__WEBPACK_IMPORTED_MODULE_17__);
-/* harmony import */ var templates_toolbar_fileupload_html__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! templates/toolbar_fileupload.html */ "./src/templates/toolbar_fileupload.html");
-/* harmony import */ var templates_toolbar_fileupload_html__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(templates_toolbar_fileupload_html__WEBPACK_IMPORTED_MODULE_18__);
-/* harmony import */ var templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! templates/user_details_modal.html */ "./src/templates/user_details_modal.html");
-/* harmony import */ var templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_19__);
-/* harmony import */ var utils_emoji__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! utils/emoji */ "./src/headless/utils/emoji.js");
-/* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js");
-/* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(xss__WEBPACK_IMPORTED_MODULE_21__);
+/* harmony import */ var templates_alert_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/alert.html */ "./src/templates/alert.html");
+/* harmony import */ var templates_alert_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_alert_html__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var templates_chatbox_html__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! templates/chatbox.html */ "./src/templates/chatbox.html");
+/* harmony import */ var templates_chatbox_html__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(templates_chatbox_html__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var templates_chatbox_head_html__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! templates/chatbox_head.html */ "./src/templates/chatbox_head.html");
+/* harmony import */ var templates_chatbox_head_html__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(templates_chatbox_head_html__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var templates_chatbox_message_form_html__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! templates/chatbox_message_form.html */ "./src/templates/chatbox_message_form.html");
+/* harmony import */ var templates_chatbox_message_form_html__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(templates_chatbox_message_form_html__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var templates_emojis_html__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! templates/emojis.html */ "./src/templates/emojis.html");
+/* harmony import */ var templates_emojis_html__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(templates_emojis_html__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var templates_error_message_html__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! templates/error_message.html */ "./src/templates/error_message.html");
+/* harmony import */ var templates_error_message_html__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(templates_error_message_html__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var templates_help_message_html__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! templates/help_message.html */ "./src/templates/help_message.html");
+/* harmony import */ var templates_help_message_html__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(templates_help_message_html__WEBPACK_IMPORTED_MODULE_12__);
+/* harmony import */ var templates_info_html__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! templates/info.html */ "./src/templates/info.html");
+/* harmony import */ var templates_info_html__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(templates_info_html__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var templates_new_day_html__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! templates/new_day.html */ "./src/templates/new_day.html");
+/* harmony import */ var templates_new_day_html__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(templates_new_day_html__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony import */ var templates_spinner_html__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html");
+/* harmony import */ var templates_spinner_html__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(templates_spinner_html__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var templates_spoiler_button_html__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! templates/spoiler_button.html */ "./src/templates/spoiler_button.html");
+/* harmony import */ var templates_spoiler_button_html__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(templates_spoiler_button_html__WEBPACK_IMPORTED_MODULE_16__);
+/* harmony import */ var templates_status_message_html__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! templates/status_message.html */ "./src/templates/status_message.html");
+/* harmony import */ var templates_status_message_html__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(templates_status_message_html__WEBPACK_IMPORTED_MODULE_17__);
+/* harmony import */ var templates_toolbar_html__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! templates/toolbar.html */ "./src/templates/toolbar.html");
+/* harmony import */ var templates_toolbar_html__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(templates_toolbar_html__WEBPACK_IMPORTED_MODULE_18__);
+/* harmony import */ var templates_toolbar_fileupload_html__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! templates/toolbar_fileupload.html */ "./src/templates/toolbar_fileupload.html");
+/* harmony import */ var templates_toolbar_fileupload_html__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(templates_toolbar_fileupload_html__WEBPACK_IMPORTED_MODULE_19__);
+/* harmony import */ var templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! templates/user_details_modal.html */ "./src/templates/user_details_modal.html");
+/* harmony import */ var templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_20__);
+/* harmony import */ var utils_emoji__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! utils/emoji */ "./src/headless/utils/emoji.js");
+/* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js");
+/* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(xss__WEBPACK_IMPORTED_MODULE_22__);
 // Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
+
 
 
 
@@ -58829,11 +58828,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       toHTML() {
-        return templates_emojis_html__WEBPACK_IMPORTED_MODULE_9___default()(_.extend(this.model.toJSON(), {
+        return templates_emojis_html__WEBPACK_IMPORTED_MODULE_10___default()(_.extend(this.model.toJSON(), {
           '_': _,
-          'transform': utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].getEmojiRenderer(_converse),
-          'emojis_by_category': utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].getEmojisByCategory(_converse),
-          'toned_emojis': utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].getTonedEmojis(_converse),
+          'transform': utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getEmojiRenderer(_converse),
+          'emojis_by_category': utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getEmojisByCategory(_converse),
+          'toned_emojis': utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getTonedEmojis(_converse),
           'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
           'shouldBeHidden': this.shouldBeHidden
         }));
@@ -58893,7 +58892,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       render() {
-        this.el.innerHTML = templates_chatbox_head_html__WEBPACK_IMPORTED_MODULE_7___default()(_.extend(this.model.vcard.toJSON(), this.model.toJSON(), {
+        this.el.innerHTML = templates_chatbox_head_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.vcard.toJSON(), this.model.toJSON(), {
           '_converse': _converse,
           'info_close': __('Close this chat box')
         }));
@@ -58929,7 +58928,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       toHTML() {
-        return templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_19___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+        return templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_20___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
           '_': _,
           '__': __,
           'view': this,
@@ -58937,7 +58936,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           'allow_contact_removal': _converse.allow_contact_removal,
           'display_name': this.model.getDisplayName(),
           'is_roster_contact': !_.isUndefined(this.model.contact),
-          'utils': utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"]
+          'utils': utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"]
         }));
       },
 
@@ -58952,15 +58951,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
       },
 
-      refreshContact(ev) {
+      async refreshContact(ev) {
         if (ev && ev.preventDefault) {
           ev.preventDefault();
         }
 
         const refresh_icon = this.el.querySelector('.fa-refresh');
-        utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].addClass('fa-spin', refresh_icon);
+        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('fa-spin', refresh_icon);
 
-        _converse.api.vcard.update(this.model.contact.vcard, true).then(() => utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].removeClass('fa-spin', refresh_icon)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        try {
+          await _converse.api.vcard.update(this.model.contact.vcard, true);
+        } catch (e) {
+          _converse.log(e, Strophe.LogLevel.FATAL);
+
+          this.el.querySelector('.modal-body').insertAdjacentHTML('afterBegin', templates_alert_html__WEBPACK_IMPORTED_MODULE_6___default()({
+            'type': 'alert-danger',
+            'message': __('Sorry, something went wrong while trying to refresh')
+          }));
+        }
+
+        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('fa-spin', refresh_icon);
       },
 
       removeContact(ev) {
@@ -59038,7 +59048,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       render() {
         // XXX: Is this still needed?
         this.el.setAttribute('id', this.model.get('box_id'));
-        this.el.innerHTML = templates_chatbox_html__WEBPACK_IMPORTED_MODULE_6___default()(_.extend(this.model.toJSON(), {
+        this.el.innerHTML = templates_chatbox_html__WEBPACK_IMPORTED_MODULE_7___default()(_.extend(this.model.toJSON(), {
           'unread_msgs': __('You have unread messages')
         }));
         this.content = this.el.querySelector('.chat-content');
@@ -59052,7 +59062,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           return this;
         }
 
-        toolbar = toolbar || templates_toolbar_html__WEBPACK_IMPORTED_MODULE_17___default.a;
+        toolbar = toolbar || templates_toolbar_html__WEBPACK_IMPORTED_MODULE_18___default.a;
         options = _.assign(this.model.toJSON(), this.getToolbarOptions(options || {}));
         this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
         this.addSpoilerButton(options);
@@ -59073,7 +59083,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         const form_container = this.el.querySelector('.message-form-container');
-        form_container.innerHTML = templates_chatbox_message_form_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.toJSON(), {
+        form_container.innerHTML = templates_chatbox_message_form_html__WEBPACK_IMPORTED_MODULE_9___default()(_.extend(this.model.toJSON(), {
           'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
           'label_message': placeholder,
           'label_send': __('Send'),
@@ -59114,17 +59124,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.model.sendFiles(evt.target.files);
       },
 
-      addFileUploadButton(options) {
-        _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then(result => {
-          if (result.length) {
-            this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', templates_toolbar_fileupload_html__WEBPACK_IMPORTED_MODULE_18___default()({
-              'tooltip_upload_file': __('Choose a file to send')
-            }));
-          }
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+      async addFileUploadButton(options) {
+        const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
+
+        if (result.length) {
+          this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', templates_toolbar_fileupload_html__WEBPACK_IMPORTED_MODULE_19___default()({
+            'tooltip_upload_file': __('Choose a file to send')
+          }));
+        }
       },
 
-      addSpoilerButton(options) {
+      async addSpoilerButton(options) {
         /* Asynchronously adds a button for writing spoiler
          * messages, based on whether the contact's client supports
          * it.
@@ -59140,17 +59150,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           return;
         }
 
-        Promise.all(_.map(_.keys(resources), resource => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`))).then(results => {
-          if (_.filter(results, 'length').length) {
-            const html = templates_spoiler_button_html__WEBPACK_IMPORTED_MODULE_15___default()(this.model.toJSON());
+        const results = await Promise.all(_.map(_.keys(resources), resource => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)));
 
-            if (_converse.visible_toolbar_buttons.emoji) {
-              this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
-            } else {
-              this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
-            }
+        if (_.filter(results, 'length').length) {
+          const html = templates_spoiler_button_html__WEBPACK_IMPORTED_MODULE_16___default()(this.model.toJSON());
+
+          if (_converse.visible_toolbar_buttons.emoji) {
+            this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
+          } else {
+            this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
           }
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        }
       },
 
       insertHeading() {
@@ -59218,7 +59228,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       showChatEvent(message) {
         const isodate = moment().format();
-        this.content.insertAdjacentHTML('beforeend', templates_info_html__WEBPACK_IMPORTED_MODULE_12___default()({
+        this.content.insertAdjacentHTML('beforeend', templates_info_html__WEBPACK_IMPORTED_MODULE_13___default()({
           'extra_classes': 'chat-event',
           'message': message,
           'isodate': isodate
@@ -59229,7 +59239,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       showErrorMessage(message) {
-        this.content.insertAdjacentHTML('beforeend', templates_error_message_html__WEBPACK_IMPORTED_MODULE_10___default()({
+        this.content.insertAdjacentHTML('beforeend', templates_error_message_html__WEBPACK_IMPORTED_MODULE_11___default()({
           'message': message,
           'isodate': moment().format()
         }));
@@ -59239,10 +59249,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       addSpinner(append = false) {
         if (_.isNull(this.el.querySelector('.spinner'))) {
           if (append) {
-            this.content.insertAdjacentHTML('beforeend', templates_spinner_html__WEBPACK_IMPORTED_MODULE_14___default()());
+            this.content.insertAdjacentHTML('beforeend', templates_spinner_html__WEBPACK_IMPORTED_MODULE_15___default()());
             this.scrollDown();
           } else {
-            this.content.insertAdjacentHTML('afterbegin', templates_spinner_html__WEBPACK_IMPORTED_MODULE_14___default()());
+            this.content.insertAdjacentHTML('afterbegin', templates_spinner_html__WEBPACK_IMPORTED_MODULE_15___default()());
           }
         }
       },
@@ -59263,7 +59273,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          *      This element must have a "data-isodate" attribute
          *      which specifies its creation date.
          */
-        const prev_msg_el = utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].getPreviousElement(next_msg_el, ".message:not(.chat-state-notification)"),
+        const prev_msg_el = utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getPreviousElement(next_msg_el, ".message:not(.chat-state-notification)"),
               prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
               next_msg_date = next_msg_el.getAttribute('data-isodate');
 
@@ -59273,7 +59283,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         if (_.isNull(prev_msg_date) || moment(next_msg_date).isAfter(prev_msg_date, 'day')) {
           const day_date = moment(next_msg_date).startOf('day');
-          next_msg_el.insertAdjacentHTML('beforeBegin', templates_new_day_html__WEBPACK_IMPORTED_MODULE_13___default()({
+          next_msg_el.insertAdjacentHTML('beforeBegin', templates_new_day_html__WEBPACK_IMPORTED_MODULE_14___default()({
             'isodate': day_date.format(),
             'datestring': day_date.format("dddd MMM Do YYYY")
           }));
@@ -59287,14 +59297,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          *  (Object) cutoff: Moment Date cutoff date. The last
          *      message received cutoff this date will be returned.
          */
-        const first_msg = utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].getFirstChildElement(this.content, '.message:not(.chat-state-notification)'),
+        const first_msg = utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getFirstChildElement(this.content, '.message:not(.chat-state-notification)'),
               oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
 
         if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
           return null;
         }
 
-        const last_msg = utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].getLastChildElement(this.content, '.message:not(.chat-state-notification)'),
+        const last_msg = utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getLastChildElement(this.content, '.message:not(.chat-state-notification)'),
               most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
 
         if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
@@ -59331,7 +59341,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          * up when using infinite scroll).
          */
         if (this.model.get('scrolled')) {
-          const next_msg_el = utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].getNextElement(message_el, ".chat-msg");
+          const next_msg_el = utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getNextElement(message_el, ".chat-msg");
 
           if (next_msg_el) {
             // The currently received message is not new, there
@@ -59350,10 +59360,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       showHelpMessages(msgs, type, spinner) {
         _.each(msgs, msg => {
-          this.content.insertAdjacentHTML('beforeend', templates_help_message_html__WEBPACK_IMPORTED_MODULE_11___default()({
+          this.content.insertAdjacentHTML('beforeend', templates_help_message_html__WEBPACK_IMPORTED_MODULE_12___default()({
             'isodate': moment().format(),
             'type': type,
-            'message': xss__WEBPACK_IMPORTED_MODULE_21___default.a.filterXSS(msg, {
+            'message': xss__WEBPACK_IMPORTED_MODULE_22___default.a.filterXSS(msg, {
               'whiteList': {
                 'strong': []
               }
@@ -59372,14 +59382,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       clearChatStateNotification(message, isodate) {
         if (isodate) {
-          _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"][data-isodate="${isodate}"]`, this.content), utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].removeElement);
+          _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"][data-isodate="${isodate}"]`, this.content), utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeElement);
         } else {
-          _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content), utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].removeElement);
+          _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content), utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeElement);
         }
       },
 
       shouldShowOnTextMessage() {
-        return !utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].isVisible(this.el);
+        return !utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.el);
       },
 
       insertMessage(view) {
@@ -59406,7 +59416,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         } else {
           const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date}"]:last`, this.content).pop();
 
-          if (view.model.get('type') === 'error' && utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].hasClass('chat-error', previous_msg_el) && previous_msg_el.textContent === view.model.get('message')) {
+          if (view.model.get('type') === 'error' && utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-error', previous_msg_el) && previous_msg_el.textContent === view.model.get('message')) {
             // We don't show a duplicate error message
             return;
           }
@@ -59437,18 +59447,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
               date = moment(el.getAttribute('data-isodate')),
               next_el = el.nextElementSibling;
 
-        if (!utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].hasClass('chat-msg--action', el) && !utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].hasClass('chat-msg--action', previous_el) && previous_el.getAttribute('data-from') === from && date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) && el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')) {
-          utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].addClass('chat-msg--followup', el);
+        if (!utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-msg--action', el) && !utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-msg--action', previous_el) && previous_el.getAttribute('data-from') === from && date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) && el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')) {
+          utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('chat-msg--followup', el);
         }
 
         if (!next_el) {
           return;
         }
 
-        if (!utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].hasClass('chat-msg--action', 'el') && next_el.getAttribute('data-from') === from && moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) && el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {
-          utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].addClass('chat-msg--followup', next_el);
+        if (!utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-msg--action', 'el') && next_el.getAttribute('data-from') === from && moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) && el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {
+          utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('chat-msg--followup', next_el);
         } else {
-          utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].removeClass('chat-msg--followup', next_el);
+          utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('chat-msg--followup', next_el);
         }
       },
 
@@ -59477,14 +59487,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.insertDayIndicator(view.el);
         this.setScrollPosition(view.el);
 
-        if (utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].isNewMessage(message)) {
+        if (utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isNewMessage(message)) {
           if (message.get('sender') === 'me') {
             // We remove the "scrolled" flag so that the chat area
             // gets scrolled down. We always want to scroll down
             // when the user writes a message as opposed to when a
             // message is received.
             this.model.set('scrolled', false);
-          } else if (this.model.get('scrolled', true) && !utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].isOnlyChatStateNotification(message)) {
+          } else if (this.model.get('scrolled', true) && !utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isOnlyChatStateNotification(message)) {
             this.showNewMessagesIndicator();
           }
         }
@@ -59594,7 +59604,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         textarea.value = '';
-        utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].removeClass('correcting', textarea);
+        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea);
         textarea.focus(); // Trigger input event, so that the textarea resizes
 
         const event = document.createEvent('Event');
@@ -59626,7 +59636,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
             return this.onEscapePressed(ev);
           } else if (ev.keyCode === _converse.keycodes.ENTER) {
-            if (this.emoji_dropdown && utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].isVisible(this.emoji_dropdown.el.querySelector('.emoji-picker'))) {
+            if (this.emoji_dropdown && utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.emoji_dropdown.el.querySelector('.emoji-picker'))) {
               this.emoji_dropdown.toggle();
             }
 
@@ -59671,7 +59681,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         ev.preventDefault();
         const idx = this.model.messages.findLastIndex('correcting'),
               currently_correcting = idx >= 0 ? this.model.messages.at(idx) : null,
-              message_el = utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].ancestor(ev.target, '.chat-msg'),
+              message_el = utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].ancestor(ev.target, '.chat-msg'),
               message = this.model.messages.findWhere({
           'msgid': message_el.getAttribute('data-msgid')
         });
@@ -59682,7 +59692,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           }
 
           message.save('correcting', true);
-          this.insertIntoTextArea(utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].prefixMentions(message), true, true);
+          this.insertIntoTextArea(utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].prefixMentions(message), true, true);
         } else {
           message.save('correcting', false);
           this.insertIntoTextArea('', true, false);
@@ -59768,9 +59778,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         const textarea = this.el.querySelector('.chat-textarea');
 
         if (correcting) {
-          utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].addClass('correcting', textarea);
+          utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('correcting', textarea);
         } else {
-          utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].removeClass('correcting', textarea);
+          utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea);
         }
 
         if (replace) {
@@ -59787,7 +59797,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           textarea.value = existing + value + ' ';
         }
 
-        utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].putCurserAtEnd(textarea);
+        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].putCurserAtEnd(textarea);
       },
 
       createEmojiPicker() {
@@ -59850,7 +59860,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         const toggle_el = ev.target,
               icon_el = toggle_el.firstElementChild;
-        utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].slideToggleElement(toggle_el.parentElement.parentElement.querySelector('.spoiler'));
+        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].slideToggleElement(toggle_el.parentElement.parentElement.querySelector('.spoiler'));
 
         if (toggle_el.getAttribute("data-toggle-state") == "closed") {
           toggle_el.textContent = 'Show less';
@@ -59872,7 +59882,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
               fullname = this.model.getDisplayName();
         let text;
 
-        if (utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].isVisible(this.el)) {
+        if (utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.el)) {
           if (show === 'offline') {
             text = __('%1$s has gone offline', fullname);
           } else if (show === 'away') {
@@ -59884,7 +59894,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           }
 
           if (text) {
-            this.content.insertAdjacentHTML('beforeend', templates_status_message_html__WEBPACK_IMPORTED_MODULE_16___default()({
+            this.content.insertAdjacentHTML('beforeend', templates_status_message_html__WEBPACK_IMPORTED_MODULE_17___default()({
               'message': text,
               'isodate': moment().format()
             }));
@@ -59961,16 +59971,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       _show(f) {
         /* Inner show method that gets debounced */
-        if (utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].isVisible(this.el)) {
+        if (utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.el)) {
           this.focus();
           return;
         }
 
-        utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].fadeIn(this.el, _.bind(this.afterShown, this));
+        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].fadeIn(this.el, _.bind(this.afterShown, this));
       },
 
       showNewMessagesIndicator() {
-        utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].showElement(this.el.querySelector('.new-msgs-indicator'));
+        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].showElement(this.el.querySelector('.new-msgs-indicator'));
       },
 
       hideNewMessagesIndicator() {
@@ -60000,7 +60010,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           this.onScrolledDown();
         }
 
-        utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].safeSave(this.model, {
+        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].safeSave(this.model, {
           'scrolled': scrolled,
           'top_visible_message': null
         });
@@ -60020,7 +60030,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           return;
         }
 
-        if (utils_emoji__WEBPACK_IMPORTED_MODULE_20__["default"].isVisible(this.content) && !this.model.get('scrolled')) {
+        if (utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.content) && !this.model.get('scrolled')) {
           this.content.scrollTop = this.content.scrollHeight;
         }
       },
@@ -62102,7 +62112,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         !view.model.get('minimized') && !view.model.get('closed') && u.isVisible(view.el));
       },
 
-      trimChats(newchat) {
+      async trimChats(newchat) {
         /* This method is called when a newly created chat box will
          * be shown.
          *
@@ -62125,34 +62135,34 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
           return;
         }
 
-        _converse.api.waitUntil('minimizedChatsInitialized').then(() => {
-          const minimized_el = _.get(_converse.minimized_chats, 'el'),
-                new_id = newchat ? newchat.model.get('id') : null;
+        await _converse.api.waitUntil('minimizedChatsInitialized');
 
-          if (minimized_el) {
-            const minimized_width = _.includes(this.model.pluck('minimized'), true) ? u.getOuterWidth(minimized_el, true) : 0;
+        const minimized_el = _.get(_converse.minimized_chats, 'el'),
+              new_id = newchat ? newchat.model.get('id') : null;
 
-            const boxes_width = _.reduce(this.xget(new_id), (memo, view) => memo + this.getChatBoxWidth(view), newchat ? u.getOuterWidth(newchat.el, true) : 0);
+        if (minimized_el) {
+          const minimized_width = _.includes(this.model.pluck('minimized'), true) ? u.getOuterWidth(minimized_el, true) : 0;
 
-            if (minimized_width + boxes_width > body_width) {
-              const oldest_chat = this.getOldestMaximizedChat([new_id]);
+          const boxes_width = _.reduce(this.xget(new_id), (memo, view) => memo + this.getChatBoxWidth(view), newchat ? u.getOuterWidth(newchat.el, true) : 0);
 
-              if (oldest_chat) {
-                // We hide the chat immediately, because waiting
-                // for the event to fire (and letting the
-                // ChatBoxView hide it then) causes race
-                // conditions.
-                const view = this.get(oldest_chat.get('id'));
+          if (minimized_width + boxes_width > body_width) {
+            const oldest_chat = this.getOldestMaximizedChat([new_id]);
 
-                if (view) {
-                  view.hide();
-                }
+            if (oldest_chat) {
+              // We hide the chat immediately, because waiting
+              // for the event to fire (and letting the
+              // ChatBoxView hide it then) causes race
+              // conditions.
+              const view = this.get(oldest_chat.get('id'));
 
-                oldest_chat.minimize();
+              if (view) {
+                view.hide();
               }
+
+              oldest_chat.minimize();
             }
           }
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        }
       },
 
       getOldestMaximizedChat(exclude_ids) {
@@ -63874,7 +63884,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
          *      the settings.
          */
         this.showSpinner();
-        this.model.fetchRoomConfiguration().then(this.renderConfigurationForm.bind(this)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        this.model.fetchRoomConfiguration().then(iq => this.renderConfigurationForm(iq)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
       },
 
       submitNickname(ev) {
@@ -66411,16 +66421,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
-/* harmony import */ var templates_alert_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/alert.html */ "./src/templates/alert.html");
-/* harmony import */ var templates_alert_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_alert_html__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/chat_status_modal.html */ "./src/templates/chat_status_modal.html");
-/* harmony import */ var templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! templates/profile_modal.html */ "./src/templates/profile_modal.html");
-/* harmony import */ var templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var templates_profile_view_html__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! templates/profile_view.html */ "./src/templates/profile_view.html");
-/* harmony import */ var templates_profile_view_html__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(templates_profile_view_html__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var templates_status_option_html__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! templates/status_option.html */ "./src/templates/status_option.html");
-/* harmony import */ var templates_status_option_html__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(templates_status_option_html__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/chat_status_modal.html */ "./src/templates/chat_status_modal.html");
+/* harmony import */ var templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/profile_modal.html */ "./src/templates/profile_modal.html");
+/* harmony import */ var templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var templates_profile_view_html__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! templates/profile_view.html */ "./src/templates/profile_view.html");
+/* harmony import */ var templates_profile_view_html__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(templates_profile_view_html__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var templates_status_option_html__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! templates/status_option.html */ "./src/templates/status_option.html");
+/* harmony import */ var templates_status_option_html__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(templates_status_option_html__WEBPACK_IMPORTED_MODULE_8__);
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -66429,7 +66437,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /*global define */
-
 
 
 
@@ -66472,7 +66479,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       },
 
       toHTML() {
-        return templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_7___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+        return templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_6___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
           '_': _,
           '__': __,
           '_converse': _converse,
@@ -66563,7 +66570,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       },
 
       toHTML() {
-        return templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_6___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+        return templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
           'label_away': __('Away'),
           'label_close': __('Close'),
           'label_busy': __('Busy'),
@@ -66620,7 +66627,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
 
       toHTML() {
         const chat_status = this.model.get('status') || 'offline';
-        return templates_profile_view_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+        return templates_profile_view_html__WEBPACK_IMPORTED_MODULE_7___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
           '__': __,
           'fullname': this.model.vcard.get('fullname') || _converse.bare_jid,
           'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
@@ -68743,7 +68750,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.filterOutContacts(this.getFilterMatches(q, type));
       },
 
-      toggle(ev) {
+      async toggle(ev) {
         if (ev && ev.preventDefault) {
           ev.preventDefault();
         }
@@ -68754,10 +68761,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           this.model.save({
             state: _converse.CLOSED
           });
-          this.collapse().then(() => {
-            icon_el.classList.remove("fa-caret-down");
-            icon_el.classList.add("fa-caret-right");
-          });
+          await this.collapse();
+          icon_el.classList.remove("fa-caret-down");
+          icon_el.classList.add("fa-caret-right");
         } else {
           icon_el.classList.remove("fa-caret-right");
           icon_el.classList.add("fa-caret-down");
@@ -70626,29 +70632,33 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return _converse.api.sendIQ(iq);
       },
 
-      getRequestSlotURL() {
-        this.sendSlotRequestStanza().then(stanza => {
-          const slot = stanza.querySelector('slot');
+      async getRequestSlotURL() {
+        let stanza;
 
-          if (slot) {
-            this.save({
-              'get': slot.querySelector('get').getAttribute('url'),
-              'put': slot.querySelector('put').getAttribute('url')
-            });
-          } else {
-            return this.save({
-              'type': 'error',
-              'message': __("Sorry, could not determine file upload URL.")
-            });
-          }
-        }).catch(e => {
+        try {
+          stanza = await this.sendSlotRequestStanza();
+        } catch (e) {
           _converse.log(e, Strophe.LogLevel.ERROR);
 
           return this.save({
             'type': 'error',
             'message': __("Sorry, could not determine upload URL.")
           });
-        });
+        }
+
+        const slot = stanza.querySelector('slot');
+
+        if (slot) {
+          this.save({
+            'get': slot.querySelector('get').getAttribute('url'),
+            'put': slot.querySelector('put').getAttribute('url')
+          });
+        } else {
+          return this.save({
+            'type': 'error',
+            'message': __("Sorry, could not determine file upload URL.")
+          });
+        }
       },
 
       uploadFile() {
@@ -73569,7 +73579,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         });
       },
 
-      queryForItems() {
+      async queryForItems() {
         if (_.isEmpty(this.identities.where({
           'category': 'server'
         }))) {
@@ -73578,7 +73588,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
           return;
         }
 
-        _converse.api.disco.items(this.get('jid')).then(stanza => this.onDiscoItems(stanza));
+        const stanza = await _converse.api.disco.items(this.get('jid'));
+        this.onDiscoItems(stanza);
       },
 
       onInfo(stanza) {
@@ -73690,25 +73701,24 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       _converse.emit('streamFeaturesAdded');
     }
 
-    function initializeDisco() {
+    async function initializeDisco() {
       addClientFeatures();
 
       _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
 
       _converse.disco_entities = new _converse.DiscoEntities();
       _converse.disco_entities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.disco-entities-${_converse.bare_jid}`));
+      const collection = await _converse.disco_entities.fetchEntities();
 
-      _converse.disco_entities.fetchEntities().then(collection => {
-        if (collection.length === 0 || !collection.get(_converse.domain)) {
-          // If we don't have an entity for our own XMPP server,
-          // create one.
-          _converse.disco_entities.create({
-            'jid': _converse.domain
-          });
-        }
+      if (collection.length === 0 || !collection.get(_converse.domain)) {
+        // If we don't have an entity for our own XMPP server,
+        // create one.
+        _converse.disco_entities.create({
+          'jid': _converse.domain
+        });
+      }
 
-        _converse.emit('discoInitialized');
-      }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+      _converse.emit('discoInitialized');
     }
 
     _converse.api.listen.on('sessionInitialized', initStreamFeatures);
@@ -73984,21 +73994,21 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
            * @param {boolean} [create] Whether the entity should be created if it doesn't exist.
            * @example _converse.api.disco.entities.get(jid);
            */
-          'get'(jid, create = false) {
-            return _converse.api.waitUntil('discoInitialized').then(() => {
-              if (_.isNil(jid)) {
-                return _converse.disco_entities;
-              }
+          async 'get'(jid, create = false) {
+            await _converse.api.waitUntil('discoInitialized');
 
-              const entity = _converse.disco_entities.get(jid);
+            if (_.isNil(jid)) {
+              return _converse.disco_entities;
+            }
 
-              if (entity || !create) {
-                return entity;
-              }
+            const entity = _converse.disco_entities.get(jid);
 
-              return _converse.disco_entities.create({
-                'jid': jid
-              });
+            if (entity || !create) {
+              return entity;
+            }
+
+            return _converse.disco_entities.create({
+              'jid': jid
             });
           }
 
@@ -74035,16 +74045,19 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
          *     );
          * });
          */
-        'supports'(feature, jid) {
+        async 'supports'(feature, jid) {
           if (_.isNil(jid)) {
             throw new TypeError('api.disco.supports: You need to provide an entity JID');
           }
 
-          return _converse.api.waitUntil('discoInitialized').then(() => _converse.api.disco.entities.get(jid, true)).then(entity => entity.waitUntilFeaturesDiscovered).then(entity => {
-            const promises = _.concat(entity.items.map(item => item.hasFeature(feature)), entity.hasFeature(feature));
+          await _converse.api.waitUntil('discoInitialized');
+          let entity = await _converse.api.disco.entities.get(jid, true);
+          entity = await entity.waitUntilFeaturesDiscovered;
 
-            return Promise.all(promises);
-          }).then(result => f.filter(f.isObject, result));
+          const promises = _.concat(entity.items.map(item => item.hasFeature(feature)), entity.hasFeature(feature));
+
+          const result = await Promise.all(promises);
+          return f.filter(f.isObject, result);
         },
 
         /**
@@ -74057,19 +74070,19 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
          * @example
          * await _converse.api.disco.refreshFeatures('room@conference.example.org');
          */
-        'refreshFeatures'(jid) {
+        async 'refreshFeatures'(jid) {
           if (_.isNil(jid)) {
             throw new TypeError('api.disco.refreshFeatures: You need to provide an entity JID');
           }
 
-          return _converse.api.waitUntil('discoInitialized').then(() => _converse.api.disco.entities.get(jid, true)).then(entity => {
-            entity.features.reset();
-            entity.fields.reset();
-            entity.identities.reset();
-            entity.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
-            entity.queryInfo();
-            return entity.waitUntilFeaturesDiscovered;
-          }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          await _converse.api.waitUntil('discoInitialized');
+          const entity = await _converse.api.disco.entities.get(jid, true);
+          entity.features.reset();
+          entity.fields.reset();
+          entity.identities.reset();
+          entity.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
+          entity.queryInfo();
+          return entity.waitUntilFeaturesDiscovered;
         },
 
         /**
@@ -74081,12 +74094,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
          * @example
          * const features = await _converse.api.disco.getFeatures('room@conference.example.org');
          */
-        'getFeatures'(jid) {
+        async 'getFeatures'(jid) {
           if (_.isNil(jid)) {
             throw new TypeError('api.disco.getFeatures: You need to provide an entity JID');
           }
 
-          return _converse.api.waitUntil('discoInitialized').then(() => _converse.api.disco.entities.get(jid, true)).then(entity => entity.waitUntilFeaturesDiscovered).then(entity => entity.features).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          await _converse.api.waitUntil('discoInitialized');
+          let entity = await _converse.api.disco.entities.get(jid, true);
+          entity = await entity.waitUntilFeaturesDiscovered;
+          return entity.features;
         },
 
         /**
@@ -74100,12 +74116,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
          * @example
          * const fields = await _converse.api.disco.getFields('room@conference.example.org');
          */
-        'getFields'(jid) {
+        async 'getFields'(jid) {
           if (_.isNil(jid)) {
             throw new TypeError('api.disco.getFields: You need to provide an entity JID');
           }
 
-          return _converse.api.waitUntil('discoInitialized').then(() => _converse.api.disco.entities.get(jid, true)).then(entity => entity.waitUntilFeaturesDiscovered).then(entity => entity.fields).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          await _converse.api.waitUntil('discoInitialized');
+          let entity = await _converse.api.disco.entities.get(jid, true);
+          entity = await entity.waitUntilFeaturesDiscovered;
+          return entity.fields;
         },
 
         /**
@@ -74139,8 +74158,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
          *     }
          * ).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
          */
-        'getIdentity'(category, type, jid) {
-          return _converse.api.disco.entities.get(jid, true).then(e => e.getIdentity(category, type));
+        async 'getIdentity'(category, type, jid) {
+          const e = await _converse.api.disco.entities.get(jid, true);
+          return e.getIdentity(category, type);
         }
 
       }
@@ -74968,20 +74988,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
     _converse.api.promises.add(['roomsAutoJoined']);
 
-    function openRoom(jid) {
+    async function openRoom(jid) {
       if (!_utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isValidMUCJID(jid)) {
         return _converse.log(`Invalid JID "${jid}" provided in URL fragment`, Strophe.LogLevel.WARN);
       }
 
-      const promises = [_converse.api.waitUntil('roomsAutoJoined')];
+      await _converse.api.waitUntil('roomsAutoJoined');
 
       if (_converse.allow_bookmarks) {
-        promises.push(_converse.api.waitUntil('bookmarksInitialized'));
+        await _converse.api.waitUntil('bookmarksInitialized');
       }
 
-      Promise.all(promises).then(() => {
-        _converse.api.rooms.open(jid);
-      });
+      _converse.api.rooms.open(jid);
     }
 
     _converse.router.route('converse/room?jid=:jid', openRoom);
@@ -75714,7 +75732,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }
       },
 
-      checkForReservedNick() {
+      async checkForReservedNick() {
         /* Use service-discovery to ask the XMPP server whether
          * this user has a reserved nickname for this groupchat.
          * If so, we'll use that, otherwise we render the nickname form.
@@ -75723,24 +75741,23 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          *  (Function) callback: Callback upon succesful IQ response
          *  (Function) errback: Callback upon error IQ response
          */
-        return _converse.api.sendIQ($iq({
+        const iq = await _converse.api.sendIQ($iq({
           'to': this.get('jid'),
           'from': _converse.connection.jid,
           'type': "get"
         }).c("query", {
           'xmlns': Strophe.NS.DISCO_INFO,
           'node': 'x-roomuser-item'
-        })).then(iq => {
-          const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
-                nick = identity_el ? identity_el.getAttribute('name') : null;
-          this.save({
-            'reserved_nick': nick,
-            'nick': nick
-          }, {
-            'silent': true
-          });
-          return iq;
+        }));
+        const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
+              nick = identity_el ? identity_el.getAttribute('name') : null;
+        this.save({
+          'reserved_nick': nick,
+          'nick': nick
+        }, {
+          'silent': true
         });
+        return iq;
       },
 
       async registerNickname() {
@@ -75922,7 +75939,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }
       },
 
-      onMessage(stanza) {
+      async onMessage(stanza) {
         /* Handler for all MUC messages sent to this groupchat.
          *
          * Parameters:
@@ -75961,7 +75978,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
             });
           }
 
-          this.createMessage(stanza, original_stanza).then(msg => this.incrementUnreadMsgCounter(msg)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+          const msg = await this.createMessage(stanza, original_stanza);
+          this.incrementUnreadMsgCounter(msg);
         }
 
         if (sender !== this.get('nick')) {
@@ -76157,44 +76175,43 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }
       },
 
-      fetchMembers() {
-        this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']).then(new_members => {
-          const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m)),
-                new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m)),
-                removed_members = this.filter(m => {
-            return f.includes(m.get('affiliation'), ['admin', 'member', 'owner']) && !f.includes(m.get('nick'), new_nicks) && !f.includes(m.get('jid'), new_jids);
-          });
+      async fetchMembers() {
+        const new_members = await this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']);
+        const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m)),
+              new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m)),
+              removed_members = this.filter(m => {
+          return f.includes(m.get('affiliation'), ['admin', 'member', 'owner']) && !f.includes(m.get('nick'), new_nicks) && !f.includes(m.get('jid'), new_jids);
+        });
 
-          _.each(removed_members, occupant => {
-            if (occupant.get('jid') === _converse.bare_jid) {
-              return;
-            }
+        _.each(removed_members, occupant => {
+          if (occupant.get('jid') === _converse.bare_jid) {
+            return;
+          }
 
-            if (occupant.get('show') === 'offline') {
-              occupant.destroy();
-            }
-          });
+          if (occupant.get('show') === 'offline') {
+            occupant.destroy();
+          }
+        });
 
-          _.each(new_members, attrs => {
-            let occupant;
+        _.each(new_members, attrs => {
+          let occupant;
 
-            if (attrs.jid) {
-              occupant = this.findOccupant({
-                'jid': attrs.jid
-              });
-            } else {
-              occupant = this.findOccupant({
-                'nick': attrs.nick
-              });
-            }
+          if (attrs.jid) {
+            occupant = this.findOccupant({
+              'jid': attrs.jid
+            });
+          } else {
+            occupant = this.findOccupant({
+              'nick': attrs.nick
+            });
+          }
 
-            if (occupant) {
-              occupant.save(attrs);
-            } else {
-              this.create(attrs);
-            }
-          });
-        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+          if (occupant) {
+            occupant.save(attrs);
+          } else {
+            this.create(attrs);
+          }
+        });
       },
 
       findOccupant(data) {
@@ -78702,15 +78719,6 @@ u.replaceCurrentWord = function (input, new_value) {
 
   input.value = value.slice(0, cursor - current_word.length) + `${new_value} ` + value.slice(cursor);
   input.selectionEnd = cursor - current_word.length + new_value.length + 1;
-};
-
-u.isVisible = function (el) {
-  if (u.hasClass('hidden', el)) {
-    return false;
-  } // XXX: Taken from jQuery's "visible" implementation
-
-
-  return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
 };
 
 u.triggerEvent = function (el, name, type = "Event", bubbles = true, cancelable = true) {
@@ -100598,9 +100606,9 @@ module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/alert.html -->\n<div class="alert ' +
 __e(o.type) +
-'" role="alert">' +
+'" role="alert"><p>' +
 __e(o.message) +
-'</div>\n';
+'</p></div>\n';
 return __p
 };
 
@@ -104275,6 +104283,15 @@ function afterAnimationEnds(el, callback) {
     callback();
   }
 }
+
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].isVisible = function (el) {
+  if (_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].hasClass('hidden', el)) {
+    return false;
+  } // XXX: Taken from jQuery's "visible" implementation
+
+
+  return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
+};
 
 _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].fadeIn = function (el, callback) {
   if (_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(el)) {

@@ -11,7 +11,6 @@ import "converse-modal";
 import _FormData from "formdata-polyfill";
 import bootstrap from "bootstrap";
 import converse from "@converse/headless/converse-core";
-import tpl_alert from "templates/alert.html";
 import tpl_chat_status_modal from "templates/chat_status_modal.html";
 import tpl_profile_modal from "templates/profile_modal.html";
 import tpl_profile_view from "templates/profile_view.html";

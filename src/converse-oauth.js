@@ -106,17 +106,16 @@ converse.plugins.add("converse-oauth", {
                     }));
             },
 
-            fetchOAuthProfileDataAndLogin () {
-                this.oauth_service.api('me').then((profile) => {
-                    const response = this.oauth_service.getAuthResponse();
-                    _converse.api.user.login({
-                        'jid': `${profile.name}@${this.provider.get('host')}`,
-                        'password': response.access_token
-                    });
+            async fetchOAuthProfileDataAndLogin () {
+                const profile = await this.oauth_service.api('me');
+                const response = this.oauth_service.getAuthResponse();
+                _converse.api.user.login({
+                    'jid': `${profile.name}@${this.provider.get('host')}`,
+                    'password': response.access_token
                 });
             },
 
-            oauthLogin (ev) {
+            async oauthLogin (ev) {
                 ev.preventDefault();
                 const id = ev.target.getAttribute('data-id');
                 this.provider = _converse.oauth_providers.get(id);
@@ -128,10 +127,8 @@ converse.plugins.add("converse-oauth", {
                     'redirect_uri': '/redirect.html'
                 });
 
-                this.oauth_service.login().then(
-                    () => this.fetchOAuthProfileDataAndLogin(),
-                    (error) => _converse.log(error.error_message, Strophe.LogLevel.ERROR)
-                );
+                await this.oauth_service.login();
+                this.fetchOAuthProfileDataAndLogin();
             }
         });
     }

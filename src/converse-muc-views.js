@@ -258,7 +258,7 @@ converse.plugins.add('converse-muc-views', {
             } else {
                 parent_el.insertAdjacentHTML('beforeend', tpl_spinner());
                 _converse.api.disco.info(ev.target.getAttribute('data-room-jid'), null)
-                    .then((stanza) => insertRoomInfo(parent_el, stanza))
+                    .then(stanza => insertRoomInfo(parent_el, stanza))
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             }
         }
@@ -1159,7 +1159,7 @@ converse.plugins.add('converse-muc-views', {
                  */
                 this.showSpinner();
                 this.model.fetchRoomConfiguration()
-                    .then(this.renderConfigurationForm.bind(this))
+                    .then(iq => this.renderConfigurationForm(iq))
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             },
 

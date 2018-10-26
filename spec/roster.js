@@ -10,28 +10,21 @@
     const u = converse.env.utils;
 
 
-    const checkHeaderToggling = function (group) {
-        var $group = $(group);
+    const checkHeaderToggling = async function (group) {
         var toggle = group.querySelector('a.group-toggle');
-        expect(u.isVisible($group[0])).toBeTruthy();
-        expect($group.find('ul.collapsed').length).toBe(0);
+        expect(u.isVisible(group)).toBeTruthy();
+        expect(group.querySelectorAll('ul.collapsed').length).toBe(0);
         expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeFalsy();
         expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeTruthy();
         toggle.click();
 
-        return test_utils.waitUntil(function () {
-            return $group.find('ul.collapsed').length === 1;
-        }, 500).then(function () {
-            expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeTruthy();
-            expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeFalsy();
-            toggle.click();
-            return test_utils.waitUntil(function () {
-                return $group.find('li').length === $group.find('li:visible').length
-            }, 500);
-        }).then(function () {
-            expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeFalsy();
-            expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeTruthy();
-        });
+        await test_utils.waitUntil(() => group.querySelectorAll('ul.collapsed').length === 1);
+        expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeTruthy();
+        expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeFalsy();
+        toggle.click();
+        await test_utils.waitUntil(() => group.querySelectorAll('li').length === $(group).find('li:visible').length);
+        expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeFalsy();
+        expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeTruthy();
     };
 
 
@@ -501,7 +494,7 @@
             it("remembers whether it is closed or opened",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _converse.roster_groups = true;
                 test_utils.openControlBox();
@@ -524,20 +517,14 @@
                         });
                     }
                 });
-                var view = _converse.rosterview.get('colleagues');
-                var $toggle = $(view.el).find('a.group-toggle');
+                const view = _converse.rosterview.get('colleagues');
+                const toggle = view.el.querySelector('a.group-toggle');
                 expect(view.model.get('state')).toBe('opened');
-                $toggle[0].click();
-                return test_utils.waitUntil(function () {
-                    return view.model.get('state') === 'closed';
-                }, 500).then(function () {
-                    $toggle[0].click();
-                    return test_utils.waitUntil(function () {
-                        return view.model.get('state') === 'opened';
-                    }, 500)
-                }).then(function () {
-                    done();
-                });
+                toggle.click();
+                await test_utils.waitUntil(() => view.model.get('state') === 'closed');
+                toggle.click();
+                await test_utils.waitUntil(() => view.model.get('state') === 'opened');
+                done();
             }));
         });
 

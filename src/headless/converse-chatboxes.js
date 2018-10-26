@@ -144,27 +144,29 @@ converse.plugins.add('converse-chatboxes', {
                 return _converse.api.sendIQ(iq);
             },
 
-            getRequestSlotURL () {
-                this.sendSlotRequestStanza().then((stanza) => {
-                    const slot = stanza.querySelector('slot');
-                    if (slot) {
-                        this.save({
-                            'get':  slot.querySelector('get').getAttribute('url'),
-                            'put': slot.querySelector('put').getAttribute('url'),
-                        });
-                    } else {
-                        return this.save({
-                            'type': 'error',
-                            'message': __("Sorry, could not determine file upload URL.")
-                        });
-                    }
-                }).catch((e) => {
+            async getRequestSlotURL () {
+                let stanza;
+                try {
+                    stanza = await this.sendSlotRequestStanza();
+                } catch (e) {
                     _converse.log(e, Strophe.LogLevel.ERROR);
                     return this.save({
                         'type': 'error',
                         'message': __("Sorry, could not determine upload URL.")
                     });
-                });
+                }
+                const slot = stanza.querySelector('slot');
+                if (slot) {
+                    this.save({
+                        'get':  slot.querySelector('get').getAttribute('url'),
+                        'put': slot.querySelector('put').getAttribute('url'),
+                    });
+                } else {
+                    return this.save({
+                        'type': 'error',
+                        'message': __("Sorry, could not determine file upload URL.")
+                    });
+                }
             },
 
             uploadFile () {

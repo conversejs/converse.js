@@ -109,20 +109,18 @@ converse.plugins.add('converse-muc', {
         _converse.api.promises.add(['roomsAutoJoined']);
 
 
-        function openRoom (jid) {
+        async function openRoom (jid) {
             if (!u.isValidMUCJID(jid)) {
                 return _converse.log(
                     `Invalid JID "${jid}" provided in URL fragment`,
                     Strophe.LogLevel.WARN
                 );
             }
-            const promises = [_converse.api.waitUntil('roomsAutoJoined')]
+            await _converse.api.waitUntil('roomsAutoJoined');
             if (_converse.allow_bookmarks) {
-                promises.push( _converse.api.waitUntil('bookmarksInitialized'));
+                await _converse.api.waitUntil('bookmarksInitialized');
             }
-            Promise.all(promises).then(() => {
-                _converse.api.rooms.open(jid);
-            });
+            _converse.api.rooms.open(jid);
         }
         _converse.router.route('converse/room?jid=:jid', openRoom);
 
@@ -762,7 +760,7 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            checkForReservedNick () {
+            async checkForReservedNick () {
                 /* Use service-discovery to ask the XMPP server whether
                  * this user has a reserved nickname for this groupchat.
                  * If so, we'll use that, otherwise we render the nickname form.
@@ -771,7 +769,7 @@ converse.plugins.add('converse-muc', {
                  *  (Function) callback: Callback upon succesful IQ response
                  *  (Function) errback: Callback upon error IQ response
                  */
-                return _converse.api.sendIQ(
+                const iq = await _converse.api.sendIQ(
                     $iq({
                         'to': this.get('jid'),
                         'from': _converse.connection.jid,
@@ -780,15 +778,14 @@ converse.plugins.add('converse-muc', {
                         'xmlns': Strophe.NS.DISCO_INFO,
                         'node': 'x-roomuser-item'
                     })
-                ).then(iq => {
-                    const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
-                          nick = identity_el ? identity_el.getAttribute('name') : null;
-                    this.save({
-                        'reserved_nick': nick,
-                        'nick': nick
-                    }, {'silent': true});
-                    return iq;
-                });
+                );
+                const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
+                      nick = identity_el ? identity_el.getAttribute('name') : null;
+                this.save({
+                    'reserved_nick': nick,
+                    'nick': nick
+                }, {'silent': true});
+                return iq;
             },
 
             async registerNickname () {
@@ -939,7 +936,7 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            onMessage (stanza) {
+            async onMessage (stanza) {
                 /* Handler for all MUC messages sent to this groupchat.
                  *
                  * Parameters:
@@ -968,9 +965,8 @@ converse.plugins.add('converse-muc', {
                         const subject = _.propertyOf(subject_el)('textContent') || '';
                         u.safeSave(this, {'subject': {'author': sender, 'text': subject}});
                     }
-                    this.createMessage(stanza, original_stanza)
-                        .then(msg => this.incrementUnreadMsgCounter(msg))
-                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                    const msg = await this.createMessage(stanza, original_stanza);
+                    this.incrementUnreadMsgCounter(msg);
                 }
                 if (sender !== this.get('nick')) {
                     // We only emit an event if it's not our own message
@@ -1141,37 +1137,35 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            fetchMembers () {
-                this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin'])
-                .then(new_members => {
-                    const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m)),
-                          new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m)),
-                          removed_members = this.filter(m => {
-                              return f.includes(m.get('affiliation'), ['admin', 'member', 'owner']) &&
-                                  !f.includes(m.get('nick'), new_nicks) &&
-                                    !f.includes(m.get('jid'), new_jids);
-                          });
+            async fetchMembers () {
+                const new_members = await this.chatroom.getJidsWithAffiliations(['member', 'owner', 'admin']);
+                const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m)),
+                      new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m)),
+                      removed_members = this.filter(m => {
+                          return f.includes(m.get('affiliation'), ['admin', 'member', 'owner']) &&
+                              !f.includes(m.get('nick'), new_nicks) &&
+                                !f.includes(m.get('jid'), new_jids);
+                      });
 
-                    _.each(removed_members, (occupant) => {
-                        if (occupant.get('jid') === _converse.bare_jid) { return; }
-                        if (occupant.get('show') === 'offline') {
-                            occupant.destroy();
-                        }
-                    });
-                    _.each(new_members, (attrs) => {
-                        let occupant;
-                        if (attrs.jid) {
-                            occupant = this.findOccupant({'jid': attrs.jid});
-                        } else {
-                            occupant = this.findOccupant({'nick': attrs.nick});
-                        }
-                        if (occupant) {
-                            occupant.save(attrs);
-                        } else {
-                            this.create(attrs);
-                        }
-                    });
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                _.each(removed_members, (occupant) => {
+                    if (occupant.get('jid') === _converse.bare_jid) { return; }
+                    if (occupant.get('show') === 'offline') {
+                        occupant.destroy();
+                    }
+                });
+                _.each(new_members, (attrs) => {
+                    let occupant;
+                    if (attrs.jid) {
+                        occupant = this.findOccupant({'jid': attrs.jid});
+                    } else {
+                        occupant = this.findOccupant({'nick': attrs.nick});
+                    }
+                    if (occupant) {
+                        occupant.save(attrs);
+                    } else {
+                        this.create(attrs);
+                    }
+                });
             },
 
             findOccupant (data) {

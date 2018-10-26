@@ -10,6 +10,7 @@ import "converse-modal";
 import * as twemoji from "twemoji";
 import bootstrap from "bootstrap";
 import converse from "@converse/headless/converse-core";
+import tpl_alert from "templates/alert.html";
 import tpl_chatbox from "templates/chatbox.html";
 import tpl_chatbox_head from "templates/chatbox_head.html";
 import tpl_chatbox_message_form from "templates/chatbox_message_form.html";
@@ -229,13 +230,23 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            refreshContact (ev) {
+            async refreshContact (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 const refresh_icon = this.el.querySelector('.fa-refresh');
                 u.addClass('fa-spin', refresh_icon);
-                _converse.api.vcard.update(this.model.contact.vcard, true)
-                    .then(() => u.removeClass('fa-spin', refresh_icon))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                try {
+                    await _converse.api.vcard.update(this.model.contact.vcard, true);
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.FATAL);
+                    this.el.querySelector('.modal-body').insertAdjacentHTML(
+                        'afterBegin',
+                        tpl_alert({
+                            'type': 'alert-danger',
+                            'message': __('Sorry, something went wrong while trying to refresh')
+                        })
+                    );
+                }
+                u.removeClass('fa-spin', refresh_icon);
             },
 
             removeContact (ev) {
@@ -387,17 +398,16 @@ converse.plugins.add('converse-chatview', {
                 this.model.sendFiles(evt.target.files);
             },
 
-            addFileUploadButton (options) {
-                _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then((result) => {
-                    if (result.length) {
-                        this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
-                            'beforeend',
-                            tpl_toolbar_fileupload({'tooltip_upload_file': __('Choose a file to send')}));
-                    }
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            async addFileUploadButton (options) {
+                const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
+                if (result.length) {
+                    this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
+                        'beforeend',
+                        tpl_toolbar_fileupload({'tooltip_upload_file': __('Choose a file to send')}));
+                }
             },
 
-            addSpoilerButton (options) {
+            async addSpoilerButton (options) {
                 /* Asynchronously adds a button for writing spoiler
                  * messages, based on whether the contact's client supports
                  * it.
@@ -410,18 +420,17 @@ converse.plugins.add('converse-chatview', {
                 if (_.isEmpty(resources)) {
                     return;
                 }
-                Promise.all(_.map(_.keys(resources), (resource) =>
-                    _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)
-                )).then((results) => {
-                    if (_.filter(results, 'length').length) {
-                        const html = tpl_spoiler_button(this.model.toJSON());
-                        if (_converse.visible_toolbar_buttons.emoji) {
-                            this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
-                        } else {
-                            this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
-                        }
+                const results = await Promise.all(_.map(_.keys(resources),
+                    resource => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)
+                ));
+                if (_.filter(results, 'length').length) {
+                    const html = tpl_spoiler_button(this.model.toJSON());
+                    if (_converse.visible_toolbar_buttons.emoji) {
+                        this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);
+                    } else {
+                        this.el.querySelector('.chat-toolbar').insertAdjacentHTML('afterBegin', html);
                     }
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                }
             },
 
             insertHeading () {

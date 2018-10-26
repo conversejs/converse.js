@@ -71,36 +71,13 @@ _.extend(_converse, Backbone.Events);
 
 // Core plugins are whitelisted automatically
 _converse.core_plugins = [
-    'converse-autocomplete',
-    'converse-bookmarks',
-    'converse-caps',
     'converse-chatboxes',
-    'converse-chatboxviews',
-    'converse-chatview',
-    'converse-controlbox',
     'converse-core',
     'converse-disco',
-    'converse-dragresize',
-    'converse-embedded',
-    'converse-fullscreen',
-    'converse-headline',
     'converse-mam',
-    'converse-message-view',
-    'converse-minimize',
-    'converse-modal',
     'converse-muc',
-    'converse-muc-views',
-    'converse-notification',
-    'converse-omemo',
     'converse-ping',
-    'converse-profile',
-    'converse-push',
-    'converse-register',
-    'converse-roomslist',
     'converse-roster',
-    'converse-rosterview',
-    'converse-singleton',
-    'converse-spoilers',
     'converse-vcard'
 ];
 

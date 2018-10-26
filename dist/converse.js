@@ -69328,6 +69328,19 @@ __webpack_require__.r(__webpack_exports__);
 /* END: Removable components */
 
 
+const WHITELISTED_PLUGINS = ['converse-autocomplete', 'converse-bookmarks', 'converse-caps', 'converse-chatboxviews', 'converse-chatview', 'converse-controlbox', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc-views', 'converse-notification', 'converse-oauth', 'converse-omemo', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton'];
+const initialize = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_20__["default"].initialize;
+
+_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_20__["default"].initialize = function (settings, callback) {
+  if (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_20__["default"].env._.isArray(settings.whitelisted_plugins)) {
+    settings.whitelisted_plugins = settings.whitelisted_plugins.concat(WHITELISTED_PLUGINS);
+  } else {
+    settings.whitelisted_plugins = WHITELISTED_PLUGINS;
+  }
+
+  return initialize(settings, callback);
+};
+
 /* harmony default export */ __webpack_exports__["default"] = (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_20__["default"]);
 
 /***/ }),
@@ -71624,7 +71637,7 @@ const _converse = {
 _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.extend(_converse, _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Events); // Core plugins are whitelisted automatically
 
 
-_converse.core_plugins = ['converse-autocomplete', 'converse-bookmarks', 'converse-caps', 'converse-chatboxes', 'converse-chatboxviews', 'converse-chatview', 'converse-controlbox', 'converse-core', 'converse-disco', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc', 'converse-muc-views', 'converse-notification', 'converse-omemo', 'converse-ping', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-roster', 'converse-rosterview', 'converse-singleton', 'converse-spoilers', 'converse-vcard']; // Setting wait to 59 instead of 60 to avoid timing conflicts with the
+_converse.core_plugins = ['converse-chatboxes', 'converse-core', 'converse-disco', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-roster', 'converse-vcard']; // Setting wait to 59 instead of 60 to avoid timing conflicts with the
 // webserver, which is often also set to 60 and might therefore sometimes
 // return a 504 error page instead of passing through to the BOSH proxy.
 

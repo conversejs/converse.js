@@ -25,4 +25,42 @@ import "@converse/headless/converse-vcard";           // XEP-0054 VCard-temp
 /* END: Removable components */
 
 import converse from "@converse/headless/converse-core";
+
+const WHITELISTED_PLUGINS = [
+    'converse-autocomplete',
+    'converse-bookmarks',
+    'converse-caps',
+    'converse-chatboxviews',
+    'converse-chatview',
+    'converse-controlbox',
+    'converse-dragresize',
+    'converse-embedded',
+    'converse-fullscreen',
+    'converse-headline',
+    'converse-message-view',
+    'converse-minimize',
+    'converse-modal',
+    'converse-muc-views',
+    'converse-notification',
+    'converse-oauth',
+    'converse-omemo',
+    'converse-profile',
+    'converse-push',
+    'converse-register',
+    'converse-roomslist',
+    'converse-rosterview',
+    'converse-singleton'
+];
+
+const initialize = converse.initialize;
+
+converse.initialize = function (settings, callback) {
+    if (converse.env._.isArray(settings.whitelisted_plugins)) {
+        settings.whitelisted_plugins = settings.whitelisted_plugins.concat(WHITELISTED_PLUGINS);
+    } else {
+        settings.whitelisted_plugins = WHITELISTED_PLUGINS;
+    }
+    return initialize(settings, callback);
+}
+
 export default converse;

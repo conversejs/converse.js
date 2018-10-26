@@ -57870,6 +57870,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       onBookmarked() {
+        const _converse = this.__super__._converse,
+              __ = _converse.__;
         const icon = this.el.querySelector('.toggle-bookmark');
 
         if (_.isNull(icon)) {
@@ -57878,8 +57880,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         if (this.model.get('bookmarked')) {
           icon.classList.add('button-on');
+          icon.title = __('Unbookmark this groupchat');
         } else {
           icon.classList.remove('button-on');
+          icon.title = __('Bookmark this groupchat');
         }
       },
 
@@ -61778,6 +61782,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       renderFileUploadProgresBar() {
         const msg = utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_file_progress_html__WEBPACK_IMPORTED_MODULE_4___default()(_.extend(this.model.toJSON(), {
+          'filename': this.model.file.name,
           'filesize': filesize__WEBPACK_IMPORTED_MODULE_1___default()(this.model.file.size)
         })));
         this.replaceElement(msg);
@@ -70703,8 +70708,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         };
 
         xhr.open('PUT', this.get('put'), true);
-        xhr.setRequestHeader("Content-type", this.get('file').type);
-        xhr.send(this.get('file'));
+        xhr.setRequestHeader("Content-type", this.file.type);
+        xhr.send(this.file);
       }
 
     });
@@ -70840,10 +70845,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           stanza.c('reference', attrs).up();
         });
 
-        if (message.get('file')) {
+        if (message.get('oob_url')) {
           stanza.c('x', {
             'xmlns': Strophe.NS.OUTOFBAND
-          }).c('url').t(message.get('message')).up();
+          }).c('url').t(message.get('oob_url')).up();
         }
 
         if (message.get('edited')) {
@@ -70960,7 +70965,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             });
           } else {
             const message = this.messages.create(_.extend(this.getOutgoingMessageAttributes(), {
-              'file': file,
+              'file': true,
               'progress': 0,
               'slot_request_url': slot_request_url
             }), {
@@ -101740,7 +101745,7 @@ __e(o.time) +
 '" data-msgid="' +
 __e(o.msgid) +
 '">\n    <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>\n    <div class="chat-msg__content">\n        <span class="chat-msg__text">Uploading file: <strong>' +
-__e(o.file.name) +
+__e(o.filename) +
 '</strong>, ' +
 __e(o.filesize) +
 '</span>\n        <progress value="' +

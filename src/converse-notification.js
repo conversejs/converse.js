@@ -113,10 +113,10 @@ converse.plugins.add('converse-notification', {
                 const audioOgg = new Audio(_converse.sounds_path+"msg_received.ogg");
                 const canPlayOgg = audioOgg.canPlayType('audio/ogg');
                 if (canPlayOgg === 'probably') {
-                    return audioOgg.play();                 
+                    return audioOgg.play();
                 }
                 const audioMp3 = new Audio(_converse.sounds_path+"msg_received.mp3");
-                const canPlayMp3 = audioMp3.canPlayType('audio/mp3');           
+                const canPlayMp3 = audioMp3.canPlayType('audio/mp3');
                 if (canPlayMp3 === 'probably') {
                     audioMp3.play();
                 } else if (canPlayOgg === 'maybe') {

@@ -98,14 +98,19 @@ converse.plugins.add('converse-bookmarks', {
             },
 
             onBookmarked () {
+                const { _converse } = this.__super__,
+                      { __ } = _converse;
+
                 const icon = this.el.querySelector('.toggle-bookmark');
                 if (_.isNull(icon)) {
                     return;
                 }
                 if (this.model.get('bookmarked')) {
                     icon.classList.add('button-on');
+                    icon.title = __('Unbookmark this groupchat');
                 } else {
                     icon.classList.remove('button-on');
+                    icon.title = __('Bookmark this groupchat');
                 }
             },
 

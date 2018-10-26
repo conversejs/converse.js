@@ -9,8 +9,8 @@ Quickstart
 Getting a demo up and running
 =============================
 
-Use the content delivery network
---------------------------------
+Option 1: Use the content delivery network
+------------------------------------------
 
 Converse has a `CDN <https://en.wikipedia.org/wiki/Content_delivery_network>`_, provided by `KeyCDN <http://keycdn.com/>`_,
 which hosts its JavaScript and CSS files.
@@ -41,6 +41,25 @@ via the *script* and *link* tags:
     CDN, it's generally better to load a specific version (preferably the
     latest one), to avoid breakage when new backwards-incompatible versions are
     released.
+
+
+Option 2: Building the files yourself
+-------------------------------------
+
+Instead of using the CDN, you can also create your own builds and host them
+yourself.
+
+Have a look at the :ref:`creating_builds` section on how to create your own
+builds.
+
+Long story short, you should be able to do it by running `make dist`, but you
+might need to install some development libraries on your system first
+(e.g. gcc, libffi-dev and ruby-dev).
+
+Besides including the ``converse.min.js`` and ``converse.min.css`` files,
+you'll also need to make sure that the ``webfonts`` directory is available in
+the same location as ``converse.min.css``.
+
 
 Initializing Converse
 ---------------------

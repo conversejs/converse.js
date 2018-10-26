@@ -63440,13 +63440,21 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         if (this.model.get('hidden_occupants')) {
           u.removeClass('fa-angle-double-right', icon_el);
           u.addClass('fa-angle-double-left', icon_el);
-          u.addClass('full', this.el.querySelector('.chat-area'));
+          const chat_area = this.el.querySelector('.chat-area');
+          u.removeClass('col-md-9', chat_area);
+          u.removeClass('col-8', chat_area);
+          u.addClass('full', chat_area);
+          u.addClass('col-12', chat_area);
           u.hideElement(this.el.querySelector('.occupants'));
         } else {
+          const chat_area = this.el.querySelector('.chat-area');
           u.addClass('fa-angle-double-right', icon_el);
           u.removeClass('fa-angle-double-left', icon_el);
-          u.removeClass('full', this.el.querySelector('.chat-area'));
           u.removeClass('hidden', this.el.querySelector('.occupants'));
+          u.removeClass('full', chat_area);
+          u.removeClass('col-12', chat_area);
+          u.addClass('col-md-9', chat_area);
+          u.addClass('col-8', chat_area);
         }
 
         this.occupantsview.setOccupantsHeight();
@@ -103495,7 +103503,13 @@ __e(o.label_start_call) +
  } ;
 __p += '\n';
  if (o.show_occupants_toggle)  { ;
-__p += '\n<li class="toggle-occupants fa fa-angle-double-right" title="' +
+__p += '\n<li class="toggle-occupants fa ';
+ if (o.hidden_occupants)  { ;
+__p += ' fa-angle-double-left ';
+ } else { ;
+__p += ' fa-angle-double-right ';
+ } ;
+__p += '"\n    title="' +
 __e(o.label_hide_occupants) +
 '"></li>\n';
  } ;

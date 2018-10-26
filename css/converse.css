@@ -10699,12 +10699,9 @@ body.reset {
       #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .chat-area .chat-content,
       #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .chat-area .chat-content {
         border-top-left-radius: 4px; }
-      #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .chat-area.full,
-      #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .chat-area.full {
+      #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .chat-area.full .new-msgs-indicator,
+      #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .chat-area.full .new-msgs-indicator {
         max-width: 100%; }
-        #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .chat-area.full .new-msgs-indicator,
-        #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .chat-area.full .new-msgs-indicator {
-          max-width: 100%; }
     #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .occupants,
     #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .occupants {
       border-top-right-radius: 4px;

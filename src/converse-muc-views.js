@@ -735,13 +735,21 @@ converse.plugins.add('converse-muc-views', {
                 if (this.model.get('hidden_occupants')) {
                     u.removeClass('fa-angle-double-right', icon_el);
                     u.addClass('fa-angle-double-left', icon_el);
-                    u.addClass('full', this.el.querySelector('.chat-area'));
+                    const chat_area = this.el.querySelector('.chat-area');
+                    u.removeClass('col-md-9', chat_area);
+                    u.removeClass('col-8', chat_area);
+                    u.addClass('full', chat_area);
+                    u.addClass('col-12', chat_area);
                     u.hideElement(this.el.querySelector('.occupants'));
                 } else {
+                    const chat_area = this.el.querySelector('.chat-area');
                     u.addClass('fa-angle-double-right', icon_el);
                     u.removeClass('fa-angle-double-left', icon_el);
-                    u.removeClass('full', this.el.querySelector('.chat-area'));
                     u.removeClass('hidden', this.el.querySelector('.occupants'));
+                    u.removeClass('full', chat_area);
+                    u.removeClass('col-12', chat_area);
+                    u.addClass('col-md-9', chat_area);
+                    u.addClass('col-8', chat_area);
                 }
                 this.occupantsview.setOccupantsHeight();
             },

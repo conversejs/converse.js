@@ -7,6 +7,7 @@
 - #1257 Prefer 'probably' over 'maybe' when evaluating audio play support.
 - #1261 File upload not working
 - #1252 Correctly reflect the state in bookmark icon title.
+- #1272 Hiding MUC occupants leaves a blank space
 
 ## 4.0.3 (2018-10-22)
 

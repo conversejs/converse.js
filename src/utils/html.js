@@ -500,6 +500,15 @@ function afterAnimationEnds (el, callback) {
     }
 }
 
+u.isVisible = function (el) {
+    if (u.hasClass('hidden', el)) {
+        return false;
+    }
+    // XXX: Taken from jQuery's "visible" implementation
+    return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
+};
+
+
 u.fadeIn = function (el, callback) {
     if (_.isNil(el)) {
         logger.warn("Undefined or null element passed into fadeIn");

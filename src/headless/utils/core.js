@@ -333,14 +333,6 @@ u.replaceCurrentWord = function (input, new_value) {
     input.selectionEnd = cursor - current_word.length + new_value.length + 1;
 };
 
-u.isVisible = function (el) {
-    if (u.hasClass('hidden', el)) {
-        return false;
-    }
-    // XXX: Taken from jQuery's "visible" implementation
-    return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
-};
-
 u.triggerEvent = function (el, name, type="Event", bubbles=true, cancelable=true) {
     const evt = document.createEvent(type);
     evt.initEvent(name, bubbles, cancelable);

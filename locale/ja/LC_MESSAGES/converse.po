@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-22 11:37+0200\n"
+"POT-Creation-Date: 2018-10-27 23:09+0200\n"
 "PO-Revision-Date: 2018-10-22 09:20+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
@@ -19,321 +19,285 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 3.3-dev\n"
 
-#: dist/converse-no-dependencies.js:38568
-#: dist/converse-no-dependencies.js:38654
-#: dist/converse-no-dependencies.js:54501
+#: dist/converse-no-dependencies.js:39929
+#: dist/converse-no-dependencies.js:39986
+#: dist/converse-no-dependencies.js:40019
+#: dist/converse-no-dependencies.js:49900
 msgid "Bookmark this groupchat"
 msgstr "この談話室をブックマーク"
 
-#: dist/converse-no-dependencies.js:38655
+#: dist/converse-no-dependencies.js:39983
+#: dist/converse-no-dependencies.js:40315
+#: dist/converse-no-dependencies.js:49899
+msgid "Unbookmark this groupchat"
+msgstr "この談話室をブックマークからはずす"
+
+#: dist/converse-no-dependencies.js:40020
 msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr "起動時にこの談話室に自動的に入りますか ?"
 
-#: dist/converse-no-dependencies.js:38656
-#: dist/converse-no-dependencies.js:53313
-#: dist/converse-no-dependencies.js:59900
+#: dist/converse-no-dependencies.js:40021
+#: dist/converse-no-dependencies.js:48694
+#: dist/converse-no-dependencies.js:84940
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: dist/converse-no-dependencies.js:38657
+#: dist/converse-no-dependencies.js:40022
 msgid "The name for this bookmark:"
 msgstr "このブックマークの名前:"
 
-#: dist/converse-no-dependencies.js:38658
+#: dist/converse-no-dependencies.js:40023
 msgid "What should your nickname for this groupchat be?"
 msgstr "この談話室でのあなたのニックネームは何にしますか ?"
 
-#: dist/converse-no-dependencies.js:38659
-#: dist/converse-no-dependencies.js:53317
+#: dist/converse-no-dependencies.js:40024
+#: dist/converse-no-dependencies.js:48698
 msgid "Save"
 msgstr "保存"
 
-#: dist/converse-no-dependencies.js:38737
+#: dist/converse-no-dependencies.js:40102
 #, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
 msgstr "ほんとうにこのブックマーク \"%1$s\" を削除してもいいですか ?"
 
-#: dist/converse-no-dependencies.js:38859
-#: dist/converse-no-dependencies.js:40728
-#: dist/converse-no-dependencies.js:51993
-#: dist/converse-no-dependencies.js:53261
+#: dist/converse-no-dependencies.js:40224
+#: dist/converse-no-dependencies.js:41098
+#: dist/converse-no-dependencies.js:47489
+#: dist/converse-no-dependencies.js:48642
 msgid "Error"
 msgstr "エラー"
 
-#: dist/converse-no-dependencies.js:38859
+#: dist/converse-no-dependencies.js:40224
 msgid "Sorry, something went wrong while trying to save your bookmark."
 msgstr "ブックマークの保存に失敗しました。"
 
-#: dist/converse-no-dependencies.js:38948
-#: dist/converse-no-dependencies.js:54499
+#: dist/converse-no-dependencies.js:40313
+#: dist/converse-no-dependencies.js:49898
 msgid "Leave this groupchat"
 msgstr "談話室から退出"
 
-#: dist/converse-no-dependencies.js:38949
+#: dist/converse-no-dependencies.js:40314
 msgid "Remove this bookmark"
 msgstr "このブックマークを削除"
 
-#: dist/converse-no-dependencies.js:38950
-#: dist/converse-no-dependencies.js:54500
-msgid "Unbookmark this groupchat"
-msgstr "この談話室をブックマークからはずす"
-
-#: dist/converse-no-dependencies.js:38951
-#: dist/converse-no-dependencies.js:47878
-#: dist/converse-no-dependencies.js:54502
+#: dist/converse-no-dependencies.js:40316
+#: dist/converse-no-dependencies.js:45096
+#: dist/converse-no-dependencies.js:49901
 msgid "Show more information on this groupchat"
 msgstr "この談話室についての詳細を見る"
 
-#: dist/converse-no-dependencies.js:38954
-#: dist/converse-no-dependencies.js:47877
-#: dist/converse-no-dependencies.js:54504
+#: dist/converse-no-dependencies.js:40319
+#: dist/converse-no-dependencies.js:45095
+#: dist/converse-no-dependencies.js:49903
 msgid "Click to open this groupchat"
 msgstr "クリックしてこの談話室を開く"
 
-#: dist/converse-no-dependencies.js:38996
+#: dist/converse-no-dependencies.js:40361
 msgid "Click to toggle the bookmarks list"
 msgstr "クリックしてブックマーク一覧を開閉"
 
-#: dist/converse-no-dependencies.js:38997
+#: dist/converse-no-dependencies.js:40362
 msgid "Bookmarks"
 msgstr "ブックマーク"
 
-#: dist/converse-no-dependencies.js:39416
-msgid "Sorry, could not determine file upload URL."
-msgstr "ファイルアップロードの URL を確定できませんでした。"
-
-#: dist/converse-no-dependencies.js:39424
-msgid "Sorry, could not determine upload URL."
-msgstr "アップロードの URL を確定できませんでした。"
-
-#: dist/converse-no-dependencies.js:39458
-#, javascript-format
-msgid ""
-"Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
-"\""
-msgstr "ファイルのアップロードに失敗しました。サーバーの応答: \"%1$s\""
-
-#: dist/converse-no-dependencies.js:39460
-msgid "Sorry, could not succesfully upload your file."
-msgstr "ファイルのアップロードに失敗しました。"
-
-#: dist/converse-no-dependencies.js:39714
-msgid "Sorry, looks like file upload is not supported by your server."
-msgstr "サーバーはファイルアップロードに対応していないようです。"
-
-#: dist/converse-no-dependencies.js:39723
-#, javascript-format
-msgid ""
-"The size of your file, %1$s, exceeds the maximum allowed by your server, "
-"which is %2$s."
-msgstr "ファイルのサイズ %1$s は、サーバーの制限値 %2$s を超えています。"
-
-#: dist/converse-no-dependencies.js:39950
-msgid "Sorry, an error occurred:"
-msgstr "エラーが起こりました:"
-
-#: dist/converse-no-dependencies.js:40642
+#: dist/converse-no-dependencies.js:41001
 msgid "Close this chat box"
 msgstr "このチャットを閉じる"
 
-#: dist/converse-no-dependencies.js:40719
-#: dist/converse-no-dependencies.js:56331
+#: dist/converse-no-dependencies.js:41073
+#, fuzzy
+msgid "Sorry, something went wrong while trying to refresh"
+msgstr "ブックマークの保存に失敗しました。"
+
+#: dist/converse-no-dependencies.js:41089
+#: dist/converse-no-dependencies.js:50697
 msgid "Are you sure you want to remove this contact?"
 msgstr "ほんとうにこの相手先を削除しますか ?"
 
-#: dist/converse-no-dependencies.js:40728
-#: dist/converse-no-dependencies.js:56338
+#: dist/converse-no-dependencies.js:41098
+#: dist/converse-no-dependencies.js:50704
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
 msgstr "%1$s を相手先から削除しようとする際にエラーが起こりました。"
 
-#: dist/converse-no-dependencies.js:40786
-#: dist/converse-no-dependencies.js:40828
+#: dist/converse-no-dependencies.js:41156
+#: dist/converse-no-dependencies.js:41198
 msgid "You have unread messages"
 msgstr "未読のメッセージがあります"
 
-#: dist/converse-no-dependencies.js:40814
+#: dist/converse-no-dependencies.js:41184
 msgid "Hidden message"
 msgstr "私信"
 
-#: dist/converse-no-dependencies.js:40816
+#: dist/converse-no-dependencies.js:41186
 msgid "Message"
 msgstr "メッセージ"
 
-#: dist/converse-no-dependencies.js:40823
+#: dist/converse-no-dependencies.js:41193
 msgid "Send"
 msgstr "送信"
 
-#: dist/converse-no-dependencies.js:40824
+#: dist/converse-no-dependencies.js:41194
 msgid "Optional hint"
 msgstr "その他のヒント"
 
-#: dist/converse-no-dependencies.js:40865
+#: dist/converse-no-dependencies.js:41236
 msgid "Choose a file to send"
 msgstr "送信するファイルを選択"
 
-#: dist/converse-no-dependencies.js:41258
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:41639
+#: dist/converse-no-dependencies.js:45745
 msgid "Remove messages"
 msgstr "メッセージを削除"
 
-#: dist/converse-no-dependencies.js:41258
+#: dist/converse-no-dependencies.js:41639
 msgid "Write in the third person"
 msgstr "三人称で書く"
 
-#: dist/converse-no-dependencies.js:41258
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:41639
+#: dist/converse-no-dependencies.js:45745
 msgid "Show this menu"
 msgstr "このメニューを表示"
 
-#: dist/converse-no-dependencies.js:41488
+#: dist/converse-no-dependencies.js:41869
 msgid "Are you sure you want to clear the messages from this conversation?"
 msgstr "ほんとうにこのチャット欄のメッセージを消去しますか ?"
 
-#: dist/converse-no-dependencies.js:41610
+#: dist/converse-no-dependencies.js:41991
 #, javascript-format
 msgid "%1$s has gone offline"
 msgstr "%1$s はオフラインです"
 
-#: dist/converse-no-dependencies.js:41612
-#: dist/converse-no-dependencies.js:46731
+#: dist/converse-no-dependencies.js:41993
+#: dist/converse-no-dependencies.js:43870
 #, javascript-format
 msgid "%1$s has gone away"
 msgstr "%1$s は離席中"
 
-#: dist/converse-no-dependencies.js:41614
+#: dist/converse-no-dependencies.js:41995
 #, javascript-format
 msgid "%1$s is busy"
 msgstr "%1$s は取り込み中です"
 
-#: dist/converse-no-dependencies.js:41616
+#: dist/converse-no-dependencies.js:41997
 #, javascript-format
 msgid "%1$s is online"
 msgstr "%1$s は在席しています"
 
-#: dist/converse-no-dependencies.js:42290
+#: dist/converse-no-dependencies.js:42692
 msgid "Username"
 msgstr "ユーザー名"
 
-#: dist/converse-no-dependencies.js:42290
+#: dist/converse-no-dependencies.js:42692
 msgid "user@domain"
 msgstr "user@domain"
 
-#: dist/converse-no-dependencies.js:42309
-#: dist/converse-no-dependencies.js:55919
+#: dist/converse-no-dependencies.js:42711
+#: dist/converse-no-dependencies.js:50285
 msgid "Please enter a valid XMPP address"
 msgstr "正しい XMPP アドレスを入力してください"
 
-#: dist/converse-no-dependencies.js:42415
+#: dist/converse-no-dependencies.js:42817
 msgid "Chat Contacts"
 msgstr "相手先"
 
-#: dist/converse-no-dependencies.js:42415
+#: dist/converse-no-dependencies.js:42817
 msgid "Toggle chat"
 msgstr "チャットを切替"
 
-#: dist/converse-no-dependencies.js:43167
-msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr "XMPP サーバーは対応している認証形式を提示しませんでした"
-
-#: dist/converse-no-dependencies.js:43165
-#, javascript-format
-msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr "次のドメインの XMPP ホストに接続できませんでした: %1$s"
-
-#: dist/converse-no-dependencies.js:46669
+#: dist/converse-no-dependencies.js:43808
 msgid "Show more"
 msgstr "もっと見る"
 
-#: dist/converse-no-dependencies.js:46720
+#: dist/converse-no-dependencies.js:43859
 msgid "Typing from another device"
 msgstr "別のデバイスで入力中"
 
-#: dist/converse-no-dependencies.js:46722
+#: dist/converse-no-dependencies.js:43861
 #, javascript-format
 msgid "%1$s is typing"
 msgstr "%1$s は入力中"
 
-#: dist/converse-no-dependencies.js:46726
+#: dist/converse-no-dependencies.js:43865
 msgid "Stopped typing on the other device"
 msgstr "別のデバイスでの入力を中断"
 
-#: dist/converse-no-dependencies.js:46728
+#: dist/converse-no-dependencies.js:43867
 #, javascript-format
 msgid "%1$s has stopped typing"
 msgstr "%1$s は入力を中断しました"
 
-#: dist/converse-no-dependencies.js:46766
+#: dist/converse-no-dependencies.js:43906
 msgid "Unencryptable OMEMO message"
 msgstr "復号可能な OMEMO メッセージ"
 
-#: dist/converse-no-dependencies.js:47001
-#: dist/converse-no-dependencies.js:47047
+#: dist/converse-no-dependencies.js:44146
+#: dist/converse-no-dependencies.js:44192
 msgid "Minimize this chat box"
 msgstr "このチャットを最小化"
 
-#: dist/converse-no-dependencies.js:47182
+#: dist/converse-no-dependencies.js:44327
 msgid "Click to restore this chat"
 msgstr "クリックしてこのチャットを復元"
 
-#: dist/converse-no-dependencies.js:47387
+#: dist/converse-no-dependencies.js:44532
 msgid "Minimized"
 msgstr "最小化"
 
-#: dist/converse-no-dependencies.js:47718
+#: dist/converse-no-dependencies.js:44936
 msgid "This groupchat is not anonymous"
 msgstr "この談話室は非匿名です"
 
-#: dist/converse-no-dependencies.js:47719
+#: dist/converse-no-dependencies.js:44937
 msgid "This groupchat now shows unavailable members"
 msgstr "この談話室はメンバー以外にも見えます"
 
-#: dist/converse-no-dependencies.js:47720
+#: dist/converse-no-dependencies.js:44938
 msgid "This groupchat does not show unavailable members"
 msgstr "この談話室はメンバー以外には見えません"
 
-#: dist/converse-no-dependencies.js:47721
+#: dist/converse-no-dependencies.js:44939
 msgid "The groupchat configuration has changed"
 msgstr "談話室の設定が変更されました"
 
-#: dist/converse-no-dependencies.js:47722
+#: dist/converse-no-dependencies.js:44940
 msgid "groupchat logging is now enabled"
 msgstr "談話室の記録を取りはじめます"
 
-#: dist/converse-no-dependencies.js:47723
+#: dist/converse-no-dependencies.js:44941
 msgid "groupchat logging is now disabled"
 msgstr "談話室の記録を止めます"
 
-#: dist/converse-no-dependencies.js:47724
+#: dist/converse-no-dependencies.js:44942
 msgid "This groupchat is now no longer anonymous"
 msgstr "この談話室は匿名ではなくなりました"
 
-#: dist/converse-no-dependencies.js:47725
+#: dist/converse-no-dependencies.js:44943
 msgid "This groupchat is now semi-anonymous"
 msgstr "この談話室は半匿名です"
 
-#: dist/converse-no-dependencies.js:47726
+#: dist/converse-no-dependencies.js:44944
 msgid "This groupchat is now fully-anonymous"
 msgstr "この談話室は匿名です"
 
-#: dist/converse-no-dependencies.js:47727
+#: dist/converse-no-dependencies.js:44945
 msgid "A new groupchat has been created"
 msgstr "新しい談話室が作成されました"
 
-#: dist/converse-no-dependencies.js:47730
+#: dist/converse-no-dependencies.js:44948
 msgid "You have been banned from this groupchat"
 msgstr "この談話室から締め出されました"
 
-#: dist/converse-no-dependencies.js:47731
+#: dist/converse-no-dependencies.js:44949
 msgid "You have been kicked from this groupchat"
 msgstr "この談話室から蹴り出されました"
 
-#: dist/converse-no-dependencies.js:47732
+#: dist/converse-no-dependencies.js:44950
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr "分掌の変更のため、この談話室から削除されました"
 
-#: dist/converse-no-dependencies.js:47733
+#: dist/converse-no-dependencies.js:44951
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
@@ -341,7 +305,7 @@ msgstr ""
 "談話室がメンバー制に変更されました。メンバーではないため、この談話室から削除"
 "されました"
 
-#: dist/converse-no-dependencies.js:47734
+#: dist/converse-no-dependencies.js:44952
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
@@ -357,230 +321,244 @@ msgstr "サーバーがシャットダウンするため、この談話室から
 #. * can then at least tell gettext to scan for it so that these
 #. * strings are picked up by the translation machinery.
 #.
-#: dist/converse-no-dependencies.js:47747
+#: dist/converse-no-dependencies.js:44965
 #, javascript-format
 msgid "%1$s has been banned"
 msgstr "%1$s を締め出しました"
 
-#: dist/converse-no-dependencies.js:47748
+#: dist/converse-no-dependencies.js:44966
 #, javascript-format
 msgid "%1$s's nickname has changed"
 msgstr "%1$s のニックネームは変更されました"
 
-#: dist/converse-no-dependencies.js:47749
+#: dist/converse-no-dependencies.js:44967
 #, javascript-format
 msgid "%1$s has been kicked out"
 msgstr "%1$s を蹴り出しました"
 
-#: dist/converse-no-dependencies.js:47750
+#: dist/converse-no-dependencies.js:44968
 #, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
 msgstr "分掌の変更のため、%1$s を削除しました"
 
-#: dist/converse-no-dependencies.js:47751
+#: dist/converse-no-dependencies.js:44969
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
 msgstr "メンバーでなくなったため、%1$s を削除しました"
 
-#: dist/converse-no-dependencies.js:47754
+#: dist/converse-no-dependencies.js:44972
 #, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
 msgstr "ニックネームは自動的に %1$s に設定されました"
 
-#: dist/converse-no-dependencies.js:47755
+#: dist/converse-no-dependencies.js:44973
 #, javascript-format
 msgid "Your nickname has been changed to %1$s"
 msgstr "ニックネームを %1$s に変更しました"
 
-#: dist/converse-no-dependencies.js:47786
+#: dist/converse-no-dependencies.js:45004
 msgid "Description:"
 msgstr "説明:"
 
-#: dist/converse-no-dependencies.js:47787
+#: dist/converse-no-dependencies.js:45005
 msgid "Groupchat Address (JID):"
 msgstr "談話室のアドレス (JID):"
 
-#: dist/converse-no-dependencies.js:47788
+#: dist/converse-no-dependencies.js:45006
 msgid "Participants:"
 msgstr "入室者:"
 
-#: dist/converse-no-dependencies.js:47789
+#: dist/converse-no-dependencies.js:45007
 msgid "Features:"
 msgstr "特徴:"
 
-#: dist/converse-no-dependencies.js:47790
+#: dist/converse-no-dependencies.js:45008
 msgid "Requires authentication"
 msgstr "認証の要求"
 
-#: dist/converse-no-dependencies.js:47791
-#: dist/converse-no-dependencies.js:58174
-#: dist/converse-no-dependencies.js:58330
+#: dist/converse-no-dependencies.js:45009
+#: dist/converse-no-dependencies.js:83247
+#: dist/converse-no-dependencies.js:83403
 msgid "Hidden"
 msgstr "非公開談話室"
 
-#: dist/converse-no-dependencies.js:47792
+#: dist/converse-no-dependencies.js:45010
 msgid "Requires an invitation"
 msgstr "招待の要求"
 
-#: dist/converse-no-dependencies.js:47793
-#: dist/converse-no-dependencies.js:58238
-#: dist/converse-no-dependencies.js:58394
+#: dist/converse-no-dependencies.js:45011
+#: dist/converse-no-dependencies.js:83311
+#: dist/converse-no-dependencies.js:83467
 msgid "Moderated"
 msgstr "発言制限談話室"
 
-#: dist/converse-no-dependencies.js:47794
+#: dist/converse-no-dependencies.js:45012
 msgid "Non-anonymous"
 msgstr "非匿名談話室"
 
-#: dist/converse-no-dependencies.js:47795
-#: dist/converse-no-dependencies.js:58198
-#: dist/converse-no-dependencies.js:58354
+#: dist/converse-no-dependencies.js:45013
+#: dist/converse-no-dependencies.js:83271
+#: dist/converse-no-dependencies.js:83427
 msgid "Open"
 msgstr "開放"
 
-#: dist/converse-no-dependencies.js:47796
+#: dist/converse-no-dependencies.js:45014
 msgid "Permanent"
 msgstr "常設"
 
-#: dist/converse-no-dependencies.js:47797
-#: dist/converse-no-dependencies.js:58182
-#: dist/converse-no-dependencies.js:58338
+#: dist/converse-no-dependencies.js:45015
+#: dist/converse-no-dependencies.js:83255
+#: dist/converse-no-dependencies.js:83411
 msgid "Public"
 msgstr "公開談話室"
 
-#: dist/converse-no-dependencies.js:47798
-#: dist/converse-no-dependencies.js:58230
-#: dist/converse-no-dependencies.js:58386
+#: dist/converse-no-dependencies.js:45016
+#: dist/converse-no-dependencies.js:83303
+#: dist/converse-no-dependencies.js:83459
 msgid "Semi-anonymous"
 msgstr "半匿名談話室"
 
-#: dist/converse-no-dependencies.js:47799
-#: dist/converse-no-dependencies.js:58214
-#: dist/converse-no-dependencies.js:58370
+#: dist/converse-no-dependencies.js:45017
+#: dist/converse-no-dependencies.js:83287
+#: dist/converse-no-dependencies.js:83443
 msgid "Temporary"
 msgstr "臨時"
 
-#: dist/converse-no-dependencies.js:47800
+#: dist/converse-no-dependencies.js:45018
 msgid "Unmoderated"
 msgstr "発言制限なし談話室"
 
-#: dist/converse-no-dependencies.js:47836
+#: dist/converse-no-dependencies.js:45054
 msgid "Query for Groupchats"
 msgstr "談話室へのクエリ"
 
-#: dist/converse-no-dependencies.js:47837
+#: dist/converse-no-dependencies.js:45055
 msgid "Server address"
 msgstr "サーバーアドレス"
 
-#: dist/converse-no-dependencies.js:47838
+#: dist/converse-no-dependencies.js:45056
 msgid "Show groupchats"
 msgstr "談話室を表示"
 
-#: dist/converse-no-dependencies.js:47839
+#: dist/converse-no-dependencies.js:45057
 msgid "conference.example.org"
 msgstr "conference@example.org"
 
-#: dist/converse-no-dependencies.js:47890
+#: dist/converse-no-dependencies.js:45108
 msgid "No groupchats found"
 msgstr "談話室が見つかりません"
 
-#: dist/converse-no-dependencies.js:47908
+#: dist/converse-no-dependencies.js:45126
 msgid "Groupchats found:"
 msgstr "談話室が見つかりました:"
 
-#: dist/converse-no-dependencies.js:47962
+#: dist/converse-no-dependencies.js:45182
 msgid "Enter a new Groupchat"
 msgstr "新しい談話室に入る"
 
-#: dist/converse-no-dependencies.js:47963
+#: dist/converse-no-dependencies.js:45183
 msgid "Groupchat address"
 msgstr "談話室のアドレス"
 
-#: dist/converse-no-dependencies.js:47964
-#: dist/converse-no-dependencies.js:55911
+#: dist/converse-no-dependencies.js:45184
+#: dist/converse-no-dependencies.js:50277
 msgid "Optional nickname"
 msgstr "ニックネーム(任意)"
 
-#: dist/converse-no-dependencies.js:47965
+#: dist/converse-no-dependencies.js:45185
 msgid "name@conference.example.org"
 msgstr "name@conference.example.org"
 
-#: dist/converse-no-dependencies.js:47966
+#: dist/converse-no-dependencies.js:45186
 msgid "Join"
 msgstr "入室する"
 
-#: dist/converse-no-dependencies.js:48018
+#: dist/converse-no-dependencies.js:45238
 #, javascript-format
 msgid "Groupchat info for %1$s"
 msgstr "%1$s の談話室情報"
 
-#: dist/converse-no-dependencies.js:48204
+#: dist/converse-no-dependencies.js:45424
 #, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
 msgstr "%1$s はこの談話室の管理人ではなくなりました"
 
-#: dist/converse-no-dependencies.js:48206
+#: dist/converse-no-dependencies.js:45426
 #, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
 msgstr "%1$s はこの談話室の主宰者ではなくなりました"
 
-#: dist/converse-no-dependencies.js:48208
+#: dist/converse-no-dependencies.js:45428
 #, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
 msgstr "%1$s はこの談話室から締め出されました"
 
-#: dist/converse-no-dependencies.js:48212
+#: dist/converse-no-dependencies.js:45432
 #, javascript-format
 msgid "%1$s is no longer a permanent member of this groupchat"
 msgstr "%1$s はこの談話室のメンバーではなくなりました"
 
-#: dist/converse-no-dependencies.js:48216
+#: dist/converse-no-dependencies.js:45436
 #, javascript-format
 msgid "%1$s is now a permanent member of this groupchat"
 msgstr "%1$s はこの談話室のメンバーになりました"
 
-#: dist/converse-no-dependencies.js:48218
+#: dist/converse-no-dependencies.js:45438
 #, javascript-format
 msgid "%1$s has been banned from this groupchat"
 msgstr "%1$s はこの談話室から締め出されました"
 
-#: dist/converse-no-dependencies.js:48228
+#: dist/converse-no-dependencies.js:45440
+#, fuzzy, javascript-format
+msgid "%1$s is now an %2$s of this groupchat"
+msgstr "%1$s はこの談話室の管理人ではなくなりました"
+
+#: dist/converse-no-dependencies.js:45452
 #, javascript-format
 msgid "%1$s is no longer a moderator"
 msgstr "%1$s は司会者ではなくなりました"
 
-#: dist/converse-no-dependencies.js:48232
+#: dist/converse-no-dependencies.js:45456
 #, javascript-format
 msgid "%1$s has been given a voice again"
 msgstr "%1$s は再び発言権を得ました"
 
-#: dist/converse-no-dependencies.js:48236
+#: dist/converse-no-dependencies.js:45460
 #, javascript-format
 msgid "%1$s has been muted"
 msgstr "%1$s は発言権を失いました"
 
-#: dist/converse-no-dependencies.js:48240
+#: dist/converse-no-dependencies.js:45464
 #, javascript-format
 msgid "%1$s is now a moderator"
 msgstr "%1$s は司会者になりました"
 
-#: dist/converse-no-dependencies.js:48249
+#: dist/converse-no-dependencies.js:45473
 msgid "Close and leave this groupchat"
 msgstr "閉じて談話室から退出する"
 
-#: dist/converse-no-dependencies.js:48250
+#: dist/converse-no-dependencies.js:45474
 msgid "Configure this groupchat"
 msgstr "この談話室を調整する"
 
-#: dist/converse-no-dependencies.js:48251
+#: dist/converse-no-dependencies.js:45475
 msgid "Show more details about this groupchat"
 msgstr "この談話室についての詳細を見る"
 
-#: dist/converse-no-dependencies.js:48297
+#: dist/converse-no-dependencies.js:45521
 msgid "Hide the list of participants"
 msgstr "入室者の一覧を隠す"
 
-#: dist/converse-no-dependencies.js:48446
+#: dist/converse-no-dependencies.js:45653
+msgid "Forbidden: you do not have the necessary role in order to do that."
+msgstr "禁止: この操作に必要な役にありません。"
+
+#: dist/converse-no-dependencies.js:45666
+msgid ""
+"Forbidden: you do not have the necessary affiliation in order to do that."
+msgstr "禁止: この操作に必要な分掌にありません。"
+
+#: dist/converse-no-dependencies.js:45678
 #, javascript-format
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
@@ -589,12 +567,12 @@ msgstr ""
 "エラー: コマンド \"%1$s\" は2つの引数をとります。ユーザーのニックネームと、理"
 "由(これは任意)です。"
 
-#: dist/converse-no-dependencies.js:48455
+#: dist/converse-no-dependencies.js:45687
 #, javascript-format
 msgid "Error: couldn't find a groupchat participant \"%1$s\""
 msgstr "エラー: 談話室の参加者 \"%1$s\" は見つかりませんでした"
 
-#: dist/converse-no-dependencies.js:48465
+#: dist/converse-no-dependencies.js:45697
 msgid ""
 "Sorry, an error happened while running the command. Check your browser's "
 "developer console for details."
@@ -602,67 +580,71 @@ msgstr ""
 "コマンドの実行中にエラーが起こりました。詳細はブラウザの開発者コンソールを確"
 "認してください。"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Change user's affiliation to admin"
 msgstr "ユーザーの分掌を管理人に変更"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Ban user from groupchat"
 msgstr "ユーザーを談話室から締め出す"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Change user role to participant"
 msgstr "ユーザーの役を参加者に変更"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Kick user from groupchat"
 msgstr "ユーザーを談話室から蹴り出す"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Write in 3rd person"
 msgstr "第三者に書く"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Grant membership to a user"
 msgstr "ユーザーにメンバー権を与える"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Remove user's ability to post messages"
 msgstr "ユーザーを、メッセージを書き込めないようにする"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Change your nickname"
 msgstr "ニックネームを変更"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Grant moderator role to user"
 msgstr "ユーザーに司会者の役を与える"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Grant ownership of this groupchat"
 msgstr "この談話室の主宰者にする"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Register a nickname for this room"
 msgstr "この談話室のニックネームを登録"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Revoke user's membership"
 msgstr "ユーザーのメンバー権を剥奪する"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Set groupchat subject"
 msgstr "談話室の題を設定"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Set groupchat subject (alias for /subject)"
 msgstr "談話室の題を設定 (コマンド /subject )"
 
-#: dist/converse-no-dependencies.js:48513
+#: dist/converse-no-dependencies.js:45745
 msgid "Allow muted user to post messages"
 msgstr "発言権のないユーザーにメッセージの書き込みを許可する"
 
-#: dist/converse-no-dependencies.js:48841
+#: dist/converse-no-dependencies.js:45822
+msgid "Error: invalid number of arguments"
+msgstr "エラー: 引数の数が違います"
+
+#: dist/converse-no-dependencies.js:46073
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
@@ -670,189 +652,189 @@ msgstr ""
 "そのニックネームは予約されているか既に使われています。別のものを選んでくださ"
 "い。"
 
-#: dist/converse-no-dependencies.js:48869
+#: dist/converse-no-dependencies.js:46101
 msgid "Please choose your nickname"
 msgstr "ニックネームを選んでください"
 
-#: dist/converse-no-dependencies.js:48870
-#: dist/converse-no-dependencies.js:53228
-#: dist/converse-no-dependencies.js:60690
+#: dist/converse-no-dependencies.js:46102
+#: dist/converse-no-dependencies.js:48609
+#: dist/converse-no-dependencies.js:85736
 msgid "Nickname"
 msgstr "ニックネーム"
 
-#: dist/converse-no-dependencies.js:48871
+#: dist/converse-no-dependencies.js:46103
 msgid "Enter groupchat"
 msgstr "談話室に入る"
 
-#: dist/converse-no-dependencies.js:48896
+#: dist/converse-no-dependencies.js:46128
 msgid "This groupchat requires a password"
 msgstr "この談話室にはパスワードが必要です"
 
-#: dist/converse-no-dependencies.js:48897
+#: dist/converse-no-dependencies.js:46129
 msgid "Password: "
 msgstr "パスワード: "
 
-#: dist/converse-no-dependencies.js:48898
+#: dist/converse-no-dependencies.js:46130
 msgid "Submit"
 msgstr "送信"
 
-#: dist/converse-no-dependencies.js:49073
+#: dist/converse-no-dependencies.js:46305
 #, javascript-format
 msgid "This action was done by %1$s."
 msgstr "これは %1$s によって実行されました。"
 
-#: dist/converse-no-dependencies.js:49077
-#: dist/converse-no-dependencies.js:49094
+#: dist/converse-no-dependencies.js:46309
+#: dist/converse-no-dependencies.js:46326
 #, javascript-format
 msgid "The reason given is: \"%1$s\"."
 msgstr "理由は次のとおり: \"%1$s\""
 
-#: dist/converse-no-dependencies.js:49165
+#: dist/converse-no-dependencies.js:46397
 #, javascript-format
 msgid "%1$s has left and re-entered the groupchat"
 msgstr "%1$s はこの談話室を退出して再入室しました"
 
-#: dist/converse-no-dependencies.js:49167
+#: dist/converse-no-dependencies.js:46399
 #, fuzzy, javascript-format
 msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
 msgstr "%1$s はこの談話室を退出して再入室しました"
 
-#: dist/converse-no-dependencies.js:49186
+#: dist/converse-no-dependencies.js:46418
 #, javascript-format
 msgid "%1$s has entered the groupchat"
 msgstr "%1$s は入室しました"
 
-#: dist/converse-no-dependencies.js:49188
+#: dist/converse-no-dependencies.js:46420
 #, javascript-format
 msgid "%1$s has entered the groupchat. \"%2$s\""
 msgstr "%1$sは入室しました。\"%2$s\""
 
-#: dist/converse-no-dependencies.js:49225
+#: dist/converse-no-dependencies.js:46457
 #, javascript-format
 msgid "%1$s has entered and left the groupchat"
 msgstr "%1$s はこの談話室に入り退出しました"
 
-#: dist/converse-no-dependencies.js:49227
+#: dist/converse-no-dependencies.js:46459
 #, javascript-format
 msgid "%1$s has entered and left the groupchat. \"%2$s\""
 msgstr "%1$s はこの談話室に入り退出しました。\"%2$s\""
 
-#: dist/converse-no-dependencies.js:49246
+#: dist/converse-no-dependencies.js:46478
 #, javascript-format
 msgid "%1$s has left the groupchat"
 msgstr "%1$s はこの談話室を退出しました"
 
-#: dist/converse-no-dependencies.js:49248
+#: dist/converse-no-dependencies.js:46480
 #, javascript-format
 msgid "%1$s has left the groupchat. \"%2$s\""
 msgstr "%1$s はこの談話室を退出しました。\"%2$s\""
 
-#: dist/converse-no-dependencies.js:49297
+#: dist/converse-no-dependencies.js:46529
 msgid "You are not on the member list of this groupchat."
 msgstr "この談話室のメンバー一覧にありません。"
 
-#: dist/converse-no-dependencies.js:49299
+#: dist/converse-no-dependencies.js:46531
 msgid "You have been banned from this groupchat."
 msgstr "この談話室から締め出されました。"
 
-#: dist/converse-no-dependencies.js:49303
+#: dist/converse-no-dependencies.js:46535
 msgid "No nickname was specified."
 msgstr "ニックネームがありません。"
 
-#: dist/converse-no-dependencies.js:49307
+#: dist/converse-no-dependencies.js:46539
 msgid "You are not allowed to create new groupchats."
 msgstr "新しい談話室を作成する権限がありません。"
 
-#: dist/converse-no-dependencies.js:49309
+#: dist/converse-no-dependencies.js:46541
 msgid "Your nickname doesn't conform to this groupchat's policies."
 msgstr "ニックネームがこの談話室のポリシーに従っていません。"
 
-#: dist/converse-no-dependencies.js:49315
+#: dist/converse-no-dependencies.js:46547
 msgid "This groupchat does not (yet) exist."
 msgstr "この談話室は(まだ)存在しません。"
 
-#: dist/converse-no-dependencies.js:49317
+#: dist/converse-no-dependencies.js:46549
 msgid "This groupchat has reached its maximum number of participants."
 msgstr "この談話室は入室者数の上限に達しています。"
 
-#: dist/converse-no-dependencies.js:49319
+#: dist/converse-no-dependencies.js:46551
 msgid "Remote server not found"
 msgstr "サーバーが見つかりません"
 
-#: dist/converse-no-dependencies.js:49324
+#: dist/converse-no-dependencies.js:46556
 #, javascript-format
 msgid "The explanation given is: \"%1$s\"."
 msgstr "理由は次のとおり: \"%1$s\""
 
-#: dist/converse-no-dependencies.js:49377
+#: dist/converse-no-dependencies.js:46609
 #, javascript-format
 msgid "Topic set by %1$s"
 msgstr "%1$s が題を設定しました"
 
-#: dist/converse-no-dependencies.js:49377
+#: dist/converse-no-dependencies.js:46609
 #, javascript-format
 msgid "Topic cleared by %1$s"
 msgstr "%1$s が題を設定しました"
 
-#: dist/converse-no-dependencies.js:49413
+#: dist/converse-no-dependencies.js:46645
 msgid "Groupchats"
 msgstr "グループチャット"
 
-#: dist/converse-no-dependencies.js:49414
+#: dist/converse-no-dependencies.js:46646
 msgid "Add a new groupchat"
 msgstr "新しい談話室を追加する"
 
-#: dist/converse-no-dependencies.js:49415
+#: dist/converse-no-dependencies.js:46647
 msgid "Query for groupchats"
 msgstr "談話室へのクエリ"
 
-#: dist/converse-no-dependencies.js:49458
+#: dist/converse-no-dependencies.js:46690
 #, javascript-format
 msgid "Click to mention %1$s in your message."
 msgstr "クリックして、メッセージで %1$s に言及します。"
 
-#: dist/converse-no-dependencies.js:49459
+#: dist/converse-no-dependencies.js:46691
 msgid "This user is a moderator."
 msgstr "このユーザーは司会者です。"
 
-#: dist/converse-no-dependencies.js:49460
+#: dist/converse-no-dependencies.js:46692
 msgid "This user can send messages in this groupchat."
 msgstr "このユーザーはこの談話室で発言できます。"
 
-#: dist/converse-no-dependencies.js:49461
+#: dist/converse-no-dependencies.js:46693
 msgid "This user can NOT send messages in this groupchat."
 msgstr "このユーザーはこの談話室で発言できません。"
 
-#: dist/converse-no-dependencies.js:49462
+#: dist/converse-no-dependencies.js:46694
 msgid "Moderator"
 msgstr "発言制限"
 
-#: dist/converse-no-dependencies.js:49463
+#: dist/converse-no-dependencies.js:46695
 msgid "Visitor"
 msgstr "傍聴者"
 
-#: dist/converse-no-dependencies.js:49464
+#: dist/converse-no-dependencies.js:46696
 msgid "Owner"
 msgstr "主宰者"
 
-#: dist/converse-no-dependencies.js:49465
+#: dist/converse-no-dependencies.js:46697
 msgid "Member"
 msgstr "メンバー"
 
-#: dist/converse-no-dependencies.js:49466
+#: dist/converse-no-dependencies.js:46698
 msgid "Admin"
 msgstr "管理者"
 
-#: dist/converse-no-dependencies.js:49512
+#: dist/converse-no-dependencies.js:46744
 msgid "Participants"
 msgstr "参加者"
 
-#: dist/converse-no-dependencies.js:49530
-#: dist/converse-no-dependencies.js:49614
+#: dist/converse-no-dependencies.js:46762
+#: dist/converse-no-dependencies.js:46846
 msgid "Invite"
 msgstr "招待"
 
-#: dist/converse-no-dependencies.js:49590
+#: dist/converse-no-dependencies.js:46822
 #, javascript-format
 msgid ""
 "You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
@@ -861,95 +843,59 @@ msgstr ""
 "%1$s を談話室 \"%2$s\" に招待しようとしています。招待の理由や説明を付けてもか"
 "まいません。"
 
-#: dist/converse-no-dependencies.js:49613
+#: dist/converse-no-dependencies.js:46845
 msgid "Please enter a valid XMPP username"
 msgstr "正しい XMPP ユーザー名を入力してください"
 
-#: dist/converse-no-dependencies.js:50733
-msgid "You're not allowed to register yourself in this groupchat."
-msgstr "この談話室に自分自身を登録することはできません。"
-
-#: dist/converse-no-dependencies.js:50735
-msgid ""
-"You're not allowed to register in this groupchat because it's members-only."
-msgstr "この談話室はメンバー制のため、登録する権限がありません。"
-
-#: dist/converse-no-dependencies.js:50766
-msgid ""
-"Can't register your nickname in this groupchat, it doesn't support "
-"registration."
-msgstr ""
-"登録に対応していないため、この談話室にニックネームを登録することはできませ"
-"ん。"
-
-#: dist/converse-no-dependencies.js:50768
-msgid ""
-"Can't register your nickname in this groupchat, invalid data form supplied."
-msgstr ""
-"データの形が正しくないため、この談話室にニックネームを登録することができませ"
-"ん。"
-
-#: dist/converse-no-dependencies.js:51222
-#, javascript-format
-msgid "%1$s has invited you to join a groupchat: %2$s"
-msgstr "%1$s があなたを談話室 %2$s へ招待しています"
-
-#: dist/converse-no-dependencies.js:51224
-#, javascript-format
-msgid ""
-"%1$s has invited you to join a groupchat: %2$s, and left the following "
-"reason: \"%3$s\""
-msgstr "%1$s があなたを談話室%2$s へ招待しています。案内: \"%3$s\""
-
 #. workaround for Prosody which doesn't give type "headline"
-#: dist/converse-no-dependencies.js:51697
-#: dist/converse-no-dependencies.js:51703
+#: dist/converse-no-dependencies.js:47193
+#: dist/converse-no-dependencies.js:47199
 #, javascript-format
 msgid "Notification from %1$s"
 msgstr "%1$s からの通知"
 
-#: dist/converse-no-dependencies.js:51705
-#: dist/converse-no-dependencies.js:51716
-#: dist/converse-no-dependencies.js:51719
+#: dist/converse-no-dependencies.js:47201
+#: dist/converse-no-dependencies.js:47212
+#: dist/converse-no-dependencies.js:47215
 #, javascript-format
 msgid "%1$s says"
 msgstr "%1$s 曰く"
 
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
-#: dist/converse-no-dependencies.js:51728
+#: dist/converse-no-dependencies.js:47224
 msgid "OMEMO Message received"
 msgstr "OMEMO メッセージを受信"
 
-#: dist/converse-no-dependencies.js:51755
+#: dist/converse-no-dependencies.js:47251
 msgid "has gone offline"
 msgstr "はオフラインです"
 
-#: dist/converse-no-dependencies.js:51757
+#: dist/converse-no-dependencies.js:47253
 msgid "has gone away"
 msgstr "は離席中"
 
-#: dist/converse-no-dependencies.js:51759
+#: dist/converse-no-dependencies.js:47255
 msgid "is busy"
 msgstr "は取り込み中です"
 
-#: dist/converse-no-dependencies.js:51761
+#: dist/converse-no-dependencies.js:47257
 msgid "has come online"
 msgstr "は在席になりました"
 
-#: dist/converse-no-dependencies.js:51778
+#: dist/converse-no-dependencies.js:47274
 msgid "wants to be your contact"
 msgstr "はあなたの相手先になりたがっています"
 
-#: dist/converse-no-dependencies.js:51993
+#: dist/converse-no-dependencies.js:47489
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "デバイスを切断する際にエラーが発生しました。"
 
-#: dist/converse-no-dependencies.js:52122
+#: dist/converse-no-dependencies.js:47618
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr "エラーのため、受信した OMEMO メッセージを復号できませんでした。"
 
-#: dist/converse-no-dependencies.js:52263
+#: dist/converse-no-dependencies.js:47759
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
@@ -957,47 +903,47 @@ msgstr ""
 "これは OMEMO メッセージで、クライアントが対応していないようです。詳細は "
 "https://conversations.im/omemo を参照してください。"
 
-#: dist/converse-no-dependencies.js:52313
+#: dist/converse-no-dependencies.js:47809
 msgid "Sorry, could not send the message due to an error."
 msgstr "エラーのため、メッセージを送信できませんでした。"
 
-#: dist/converse-no-dependencies.js:53222
+#: dist/converse-no-dependencies.js:48603
 msgid "Your avatar image"
 msgstr "アバター画像"
 
-#: dist/converse-no-dependencies.js:53223
+#: dist/converse-no-dependencies.js:48604
 msgid "Your Profile"
 msgstr "プロフィール"
 
-#: dist/converse-no-dependencies.js:53224
-#: dist/converse-no-dependencies.js:53311
-#: dist/converse-no-dependencies.js:58260
-#: dist/converse-no-dependencies.js:59452
-#: dist/converse-no-dependencies.js:60664
-#: dist/converse-no-dependencies.js:60784
+#: dist/converse-no-dependencies.js:48605
+#: dist/converse-no-dependencies.js:48692
+#: dist/converse-no-dependencies.js:83333
+#: dist/converse-no-dependencies.js:84492
+#: dist/converse-no-dependencies.js:85710
+#: dist/converse-no-dependencies.js:85830
 msgid "Close"
 msgstr "閉じる"
 
-#: dist/converse-no-dependencies.js:53225
-#: dist/converse-no-dependencies.js:60708
+#: dist/converse-no-dependencies.js:48606
+#: dist/converse-no-dependencies.js:85754
 msgid "Email"
 msgstr "Eメール"
 
-#: dist/converse-no-dependencies.js:53226
-#: dist/converse-no-dependencies.js:60678
+#: dist/converse-no-dependencies.js:48607
+#: dist/converse-no-dependencies.js:85724
 msgid "Full Name"
 msgstr "名前(フルネーム)"
 
-#: dist/converse-no-dependencies.js:53227
+#: dist/converse-no-dependencies.js:48608
 msgid "XMPP Address (JID)"
 msgstr "XMPP アドレス (JID)"
 
-#: dist/converse-no-dependencies.js:53229
-#: dist/converse-no-dependencies.js:60718
+#: dist/converse-no-dependencies.js:48610
+#: dist/converse-no-dependencies.js:85764
 msgid "Role"
 msgstr "役"
 
-#: dist/converse-no-dependencies.js:53230
+#: dist/converse-no-dependencies.js:48611
 msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
@@ -1005,122 +951,122 @@ msgstr ""
 "複数の役はコンマで区切ってください。役はメッセージの名前の次の行に表示されま"
 "す。"
 
-#: dist/converse-no-dependencies.js:53231
-#: dist/converse-no-dependencies.js:60698
+#: dist/converse-no-dependencies.js:48612
+#: dist/converse-no-dependencies.js:85744
 msgid "URL"
 msgstr "URL"
 
-#: dist/converse-no-dependencies.js:53261
+#: dist/converse-no-dependencies.js:48642
 msgid "Sorry, an error happened while trying to save your profile data."
 msgstr "プロフィールの保存中にエラーが起きました。"
 
-#: dist/converse-no-dependencies.js:53261
+#: dist/converse-no-dependencies.js:48642
 msgid "You can check your browser's developer console for any error output."
 msgstr "エラー出力はブラウザの開発者コンソールで確認できます。"
 
-#: dist/converse-no-dependencies.js:53310
-#: dist/converse-no-dependencies.js:56043
+#: dist/converse-no-dependencies.js:48691
+#: dist/converse-no-dependencies.js:50409
 msgid "Away"
 msgstr "離席中"
 
-#: dist/converse-no-dependencies.js:53312
-#: dist/converse-no-dependencies.js:56042
+#: dist/converse-no-dependencies.js:48693
+#: dist/converse-no-dependencies.js:50408
 msgid "Busy"
 msgstr "取り込み中"
 
-#: dist/converse-no-dependencies.js:53314
+#: dist/converse-no-dependencies.js:48695
 msgid "Custom status"
 msgstr "独自の在席状況"
 
-#: dist/converse-no-dependencies.js:53315
-#: dist/converse-no-dependencies.js:56045
+#: dist/converse-no-dependencies.js:48696
+#: dist/converse-no-dependencies.js:50411
 msgid "Offline"
 msgstr "オフライン"
 
-#: dist/converse-no-dependencies.js:53316
-#: dist/converse-no-dependencies.js:56040
+#: dist/converse-no-dependencies.js:48697
+#: dist/converse-no-dependencies.js:50406
 msgid "Online"
 msgstr "オンライン"
 
-#: dist/converse-no-dependencies.js:53318
+#: dist/converse-no-dependencies.js:48699
 msgid "Away for long"
 msgstr "不在"
 
-#: dist/converse-no-dependencies.js:53319
+#: dist/converse-no-dependencies.js:48700
 msgid "Change chat status"
 msgstr "在席状況を変更"
 
-#: dist/converse-no-dependencies.js:53320
+#: dist/converse-no-dependencies.js:48701
 msgid "Personal status message"
 msgstr "個別の在席状況メッセージ"
 
-#: dist/converse-no-dependencies.js:53369
+#: dist/converse-no-dependencies.js:48750
 #, javascript-format
 msgid "I am %1$s"
 msgstr "私はいま %1$s"
 
-#: dist/converse-no-dependencies.js:53372
+#: dist/converse-no-dependencies.js:48753
 msgid "Change settings"
 msgstr "設定を変更"
 
-#: dist/converse-no-dependencies.js:53373
+#: dist/converse-no-dependencies.js:48754
 msgid "Click to change your chat status"
 msgstr "クリックして、在席状況を変更"
 
-#: dist/converse-no-dependencies.js:53374
+#: dist/converse-no-dependencies.js:48755
 msgid "Log out"
 msgstr "ログアウト"
 
-#: dist/converse-no-dependencies.js:53375
+#: dist/converse-no-dependencies.js:48756
 msgid "Your profile"
 msgstr "プロフィール"
 
-#: dist/converse-no-dependencies.js:53405
+#: dist/converse-no-dependencies.js:48786
 msgid "Are you sure you want to log out?"
 msgstr "ほんとうにログアウトしますか ?"
 
-#: dist/converse-no-dependencies.js:53414
-#: dist/converse-no-dependencies.js:53424
+#: dist/converse-no-dependencies.js:48795
+#: dist/converse-no-dependencies.js:48805
 msgid "online"
 msgstr "在席"
 
-#: dist/converse-no-dependencies.js:53416
+#: dist/converse-no-dependencies.js:48797
 msgid "busy"
 msgstr "取り込み中"
 
-#: dist/converse-no-dependencies.js:53418
+#: dist/converse-no-dependencies.js:48799
 msgid "away for long"
 msgstr "不在"
 
-#: dist/converse-no-dependencies.js:53420
+#: dist/converse-no-dependencies.js:48801
 msgid "away"
 msgstr "離席中"
 
-#: dist/converse-no-dependencies.js:53422
+#: dist/converse-no-dependencies.js:48803
 msgid "offline"
 msgstr "オフライン"
 
-#: dist/converse-no-dependencies.js:53755
+#: dist/converse-no-dependencies.js:49152
 msgid " e.g. conversejs.org"
 msgstr " 例: conversejs.org"
 
-#: dist/converse-no-dependencies.js:53805
+#: dist/converse-no-dependencies.js:49202
 msgid "Fetch registration form"
 msgstr "入力欄を取り寄せ"
 
-#: dist/converse-no-dependencies.js:53806
+#: dist/converse-no-dependencies.js:49203
 msgid "Tip: A list of public XMPP providers is available"
 msgstr "ヒント: 公開 XMPP プロバイダーの一覧です"
 
-#: dist/converse-no-dependencies.js:53807
+#: dist/converse-no-dependencies.js:49204
 msgid "here"
 msgstr "ここ"
 
-#: dist/converse-no-dependencies.js:53855
+#: dist/converse-no-dependencies.js:49252
 msgid "Sorry, we're unable to connect to your chosen provider."
 msgstr "そのプロバイダーに接続できませんでした。"
 
-#: dist/converse-no-dependencies.js:53871
+#: dist/converse-no-dependencies.js:49268
 msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
@@ -1128,7 +1074,7 @@ msgstr ""
 "このプロバイダーはバンド内アカウント登録に対応していません。別のプロバイダー"
 "で試してください。"
 
-#: dist/converse-no-dependencies.js:53896
+#: dist/converse-no-dependencies.js:49293
 #, javascript-format
 msgid ""
 "Something went wrong while establishing a connection with \"%1$s\". Are you "
@@ -1137,496 +1083,585 @@ msgstr ""
 "\"%1$s\" との接続確立の際にエラーが起こりました。ほんとうにそれは存在していま"
 "すか ?"
 
-#: dist/converse-no-dependencies.js:54068
+#: dist/converse-no-dependencies.js:49465
 msgid "Now logging you in"
 msgstr "ログインしています"
 
-#: dist/converse-no-dependencies.js:54072
+#: dist/converse-no-dependencies.js:49469
 msgid "Registered successfully"
 msgstr "登録に成功しました"
 
-#: dist/converse-no-dependencies.js:54179
+#: dist/converse-no-dependencies.js:49576
 msgid ""
 "The provider rejected your registration attempt. Please check the values you "
 "entered for correctness."
 msgstr "プロバイダーは登録を拒否しました。入力内容が正しいか確認してください。"
 
-#: dist/converse-no-dependencies.js:54569
+#: dist/converse-no-dependencies.js:49968
 msgid "Click to toggle the list of open groupchats"
 msgstr "クリックして談話室一覧を開閉"
 
-#: dist/converse-no-dependencies.js:54570
+#: dist/converse-no-dependencies.js:49969
 msgid "Open Groupchats"
 msgstr "グループチャットを開く"
 
-#: dist/converse-no-dependencies.js:54619
+#: dist/converse-no-dependencies.js:50018
 #, javascript-format
 msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "ほんとうにこの談話室 \"%1$s\" から退出しますか ?"
 
-#: dist/converse-no-dependencies.js:55257
-#, javascript-format
-msgid "Sorry, there was an error while trying to add %1$s as a contact."
-msgstr "%1$s を相手先として追加しようとする際にエラーが起こりました。"
-
-#: dist/converse-no-dependencies.js:55469
-msgid "This client does not allow presence subscriptions"
-msgstr "このクライアントは在籍状況の申込を許可していません"
-
-#: dist/converse-no-dependencies.js:55582
-msgid "Click to hide these contacts"
-msgstr "クリックしてこの相手先を隠す"
-
-#: dist/converse-no-dependencies.js:55850
+#: dist/converse-no-dependencies.js:50216
 msgid "This contact is busy"
 msgstr "この相手先は取り込み中です"
 
-#: dist/converse-no-dependencies.js:55851
+#: dist/converse-no-dependencies.js:50217
 msgid "This contact is online"
 msgstr "この相手先は在席しています"
 
-#: dist/converse-no-dependencies.js:55852
+#: dist/converse-no-dependencies.js:50218
 msgid "This contact is offline"
 msgstr "この相手先はオフラインです"
 
-#: dist/converse-no-dependencies.js:55853
+#: dist/converse-no-dependencies.js:50219
 msgid "This contact is unavailable"
 msgstr "この相手先は不通です"
 
-#: dist/converse-no-dependencies.js:55854
+#: dist/converse-no-dependencies.js:50220
 msgid "This contact is away for an extended period"
 msgstr "この相手先は不在です"
 
-#: dist/converse-no-dependencies.js:55855
+#: dist/converse-no-dependencies.js:50221
 msgid "This contact is away"
 msgstr "この相手先は離席中です"
 
-#: dist/converse-no-dependencies.js:55858
+#: dist/converse-no-dependencies.js:50224
 msgid "Groups"
 msgstr "グループ"
 
-#: dist/converse-no-dependencies.js:55860
+#: dist/converse-no-dependencies.js:50226
 msgid "My contacts"
 msgstr "相手先一覧"
 
-#: dist/converse-no-dependencies.js:55862
+#: dist/converse-no-dependencies.js:50228
 msgid "Pending contacts"
 msgstr "保留中の相手先"
 
-#: dist/converse-no-dependencies.js:55864
+#: dist/converse-no-dependencies.js:50230
 msgid "Contact requests"
 msgstr "会話に呼び出し"
 
-#: dist/converse-no-dependencies.js:55866
+#: dist/converse-no-dependencies.js:50232
 msgid "Ungrouped"
 msgstr "未整理"
 
-#: dist/converse-no-dependencies.js:55911
+#: dist/converse-no-dependencies.js:50277
 msgid "Contact name"
 msgstr "名前"
 
-#: dist/converse-no-dependencies.js:55914
+#: dist/converse-no-dependencies.js:50280
 msgid "Add a Contact"
 msgstr "相手先を追加"
 
-#: dist/converse-no-dependencies.js:55915
-#: dist/converse-no-dependencies.js:60684
+#: dist/converse-no-dependencies.js:50281
+#: dist/converse-no-dependencies.js:85730
 msgid "XMPP Address"
 msgstr "XMPP アドレス"
 
-#: dist/converse-no-dependencies.js:55917
+#: dist/converse-no-dependencies.js:50283
 msgid "name@example.org"
 msgstr "name@example.org"
 
-#: dist/converse-no-dependencies.js:55918
+#: dist/converse-no-dependencies.js:50284
 msgid "Add"
 msgstr "追加"
 
-#: dist/converse-no-dependencies.js:56034
+#: dist/converse-no-dependencies.js:50400
 msgid "Filter"
 msgstr "絞り込み"
 
-#: dist/converse-no-dependencies.js:56035
+#: dist/converse-no-dependencies.js:50401
 msgid "Filter by contact name"
 msgstr "相手先名で絞り込み"
 
-#: dist/converse-no-dependencies.js:56036
+#: dist/converse-no-dependencies.js:50402
 msgid "Filter by group name"
 msgstr "グループ名で絞り込み"
 
-#: dist/converse-no-dependencies.js:56037
+#: dist/converse-no-dependencies.js:50403
 msgid "Filter by status"
 msgstr "在席状況で絞り込み"
 
-#: dist/converse-no-dependencies.js:56038
+#: dist/converse-no-dependencies.js:50404
 msgid "Any"
 msgstr "すべて"
 
-#: dist/converse-no-dependencies.js:56039
+#: dist/converse-no-dependencies.js:50405
 msgid "Unread"
 msgstr "未読"
 
-#: dist/converse-no-dependencies.js:56041
+#: dist/converse-no-dependencies.js:50407
 msgid "Chatty"
 msgstr "チャット可"
 
-#: dist/converse-no-dependencies.js:56044
+#: dist/converse-no-dependencies.js:50410
 msgid "Extended Away"
 msgstr "長期不在"
 
-#: dist/converse-no-dependencies.js:56226
-#: dist/converse-no-dependencies.js:56284
+#: dist/converse-no-dependencies.js:50592
+#: dist/converse-no-dependencies.js:50650
 #, javascript-format
 msgid "Click to remove %1$s as a contact"
 msgstr "クリックして %1$s を相手先から削除"
 
-#: dist/converse-no-dependencies.js:56234
+#: dist/converse-no-dependencies.js:50600
 #, javascript-format
 msgid "Click to accept the contact request from %1$s"
 msgstr "クリックして %1$s からの申込を受諾"
 
-#: dist/converse-no-dependencies.js:56235
+#: dist/converse-no-dependencies.js:50601
 #, javascript-format
 msgid "Click to decline the contact request from %1$s"
 msgstr "クリックして %1$s からの申込を拒否"
 
-#: dist/converse-no-dependencies.js:56283
+#: dist/converse-no-dependencies.js:50649
 #, javascript-format
 msgid "Click to chat with %1$s (JID: %2$s)"
 msgstr "クリックして %1$s (JID: %2$s) とチャット"
 
-#: dist/converse-no-dependencies.js:56360
+#: dist/converse-no-dependencies.js:50726
 msgid "Are you sure you want to decline this contact request?"
 msgstr "ほんとうにこの申込を拒否しますか ?"
 
-#: dist/converse-no-dependencies.js:56630
+#: dist/converse-no-dependencies.js:50995
 msgid "Contacts"
 msgstr "相手先"
 
-#: dist/converse-no-dependencies.js:56631
+#: dist/converse-no-dependencies.js:50996
 msgid "Add a contact"
 msgstr "相手先を追加"
 
-#: dist/converse-no-dependencies.js:58093
+#: dist/converse-no-dependencies.js:52775
+msgid "Sorry, could not determine upload URL."
+msgstr "アップロードの URL を確定できませんでした。"
+
+#: dist/converse-no-dependencies.js:52789
+msgid "Sorry, could not determine file upload URL."
+msgstr "ファイルアップロードの URL を確定できませんでした。"
+
+#: dist/converse-no-dependencies.js:52823
+#, javascript-format
+msgid ""
+"Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
+"\""
+msgstr "ファイルのアップロードに失敗しました。サーバーの応答: \"%1$s\""
+
+#: dist/converse-no-dependencies.js:52825
+msgid "Sorry, could not succesfully upload your file."
+msgstr "ファイルのアップロードに失敗しました。"
+
+#: dist/converse-no-dependencies.js:53079
+msgid "Sorry, looks like file upload is not supported by your server."
+msgstr "サーバーはファイルアップロードに対応していないようです。"
+
+#: dist/converse-no-dependencies.js:53088
+#, javascript-format
+msgid ""
+"The size of your file, %1$s, exceeds the maximum allowed by your server, "
+"which is %2$s."
+msgstr "ファイルのサイズ %1$s は、サーバーの制限値 %2$s を超えています。"
+
+#: dist/converse-no-dependencies.js:53319
+msgid "Sorry, an error occurred:"
+msgstr "エラーが起こりました:"
+
+#: dist/converse-no-dependencies.js:54310
+msgid "The XMPP server did not offer a supported authentication mechanism"
+msgstr "XMPP サーバーは対応している認証形式を提示しませんでした"
+
+#: dist/converse-no-dependencies.js:54308
+#, javascript-format
+msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
+msgstr "次のドメインの XMPP ホストに接続できませんでした: %1$s"
+
+#: dist/converse-no-dependencies.js:57909
+msgid "You're not allowed to register yourself in this groupchat."
+msgstr "この談話室に自分自身を登録することはできません。"
+
+#: dist/converse-no-dependencies.js:57911
+msgid ""
+"You're not allowed to register in this groupchat because it's members-only."
+msgstr "この談話室はメンバー制のため、登録する権限がありません。"
+
+#: dist/converse-no-dependencies.js:57942
+msgid ""
+"Can't register your nickname in this groupchat, it doesn't support "
+"registration."
+msgstr ""
+"登録に対応していないため、この談話室にニックネームを登録することはできませ"
+"ん。"
+
+#: dist/converse-no-dependencies.js:57944
+msgid ""
+"Can't register your nickname in this groupchat, invalid data form supplied."
+msgstr ""
+"データの形が正しくないため、この談話室にニックネームを登録することができませ"
+"ん。"
+
+#: dist/converse-no-dependencies.js:58398
+#, javascript-format
+msgid "%1$s has invited you to join a groupchat: %2$s"
+msgstr "%1$s があなたを談話室 %2$s へ招待しています"
+
+#: dist/converse-no-dependencies.js:58400
+#, javascript-format
+msgid ""
+"%1$s has invited you to join a groupchat: %2$s, and left the following "
+"reason: \"%3$s\""
+msgstr "%1$s があなたを談話室%2$s へ招待しています。案内: \"%3$s\""
+
+#: dist/converse-no-dependencies.js:58491
+#, fuzzy, javascript-format
+msgid "Error: the groupchat %1$s does not exist."
+msgstr "この談話室は(まだ)存在しません。"
+
+#: dist/converse-no-dependencies.js:58493
+#, fuzzy
+msgid "Sorry, you're not allowed to register in this groupchat"
+msgstr "新しい談話室に登録する権限がありません"
+
+#: dist/converse-no-dependencies.js:59387
+#, javascript-format
+msgid "Sorry, there was an error while trying to add %1$s as a contact."
+msgstr "%1$s を相手先として追加しようとする際にエラーが起こりました。"
+
+#: dist/converse-no-dependencies.js:59604
+msgid "This client does not allow presence subscriptions"
+msgstr "このクライアントは在籍状況の申込を許可していません"
+
+#: dist/converse-no-dependencies.js:59717
+msgid "Click to hide these contacts"
+msgstr "クリックしてこの相手先を隠す"
+
+#: dist/converse-no-dependencies.js:83166
 #, fuzzy
 msgid "This room no longer exists"
 msgstr "この談話室は誰でも発言できます"
 
-#: dist/converse-no-dependencies.js:58099
+#: dist/converse-no-dependencies.js:83172
 msgid "The conversation has moved. Click below to enter."
 msgstr ""
 
-#: dist/converse-no-dependencies.js:58126
+#: dist/converse-no-dependencies.js:83199
 msgid "Name"
 msgstr "名前"
 
-#: dist/converse-no-dependencies.js:58130
+#: dist/converse-no-dependencies.js:83203
 msgid "Groupchat address (JID)"
 msgstr "談話室のアドレス (JID)"
 
-#: dist/converse-no-dependencies.js:58134
+#: dist/converse-no-dependencies.js:83207
 msgid "Description"
 msgstr "説明"
 
-#: dist/converse-no-dependencies.js:58140
+#: dist/converse-no-dependencies.js:83213
 msgid "Topic"
 msgstr "題"
 
-#: dist/converse-no-dependencies.js:58144
+#: dist/converse-no-dependencies.js:83217
 msgid "Topic author"
 msgstr "題の設定者"
 
-#: dist/converse-no-dependencies.js:58150
+#: dist/converse-no-dependencies.js:83223
 msgid "Online users"
 msgstr "オンラインユーザー"
 
-#: dist/converse-no-dependencies.js:58154
-#: dist/converse-no-dependencies.js:58306
+#: dist/converse-no-dependencies.js:83227
+#: dist/converse-no-dependencies.js:83379
 msgid "Features"
 msgstr "主要点"
 
-#: dist/converse-no-dependencies.js:58158
-#: dist/converse-no-dependencies.js:58314
+#: dist/converse-no-dependencies.js:83231
+#: dist/converse-no-dependencies.js:83387
 msgid "Password protected"
 msgstr "パスワード制"
 
-#: dist/converse-no-dependencies.js:58160
-#: dist/converse-no-dependencies.js:58312
+#: dist/converse-no-dependencies.js:83233
+#: dist/converse-no-dependencies.js:83385
 msgid "This groupchat requires a password before entry"
 msgstr "この談話室に入るにはパスワードが必要です"
 
-#: dist/converse-no-dependencies.js:58166
+#: dist/converse-no-dependencies.js:83239
 msgid "No password required"
 msgstr "パスワード不要"
 
-#: dist/converse-no-dependencies.js:58168
-#: dist/converse-no-dependencies.js:58320
+#: dist/converse-no-dependencies.js:83241
+#: dist/converse-no-dependencies.js:83393
 msgid "This groupchat does not require a password upon entry"
 msgstr "この談話室に入るにはパスワードは不要です"
 
-#: dist/converse-no-dependencies.js:58176
-#: dist/converse-no-dependencies.js:58328
+#: dist/converse-no-dependencies.js:83249
+#: dist/converse-no-dependencies.js:83401
 msgid "This groupchat is not publicly searchable"
 msgstr "この談話室は公に検索されません"
 
-#: dist/converse-no-dependencies.js:58184
-#: dist/converse-no-dependencies.js:58336
+#: dist/converse-no-dependencies.js:83257
+#: dist/converse-no-dependencies.js:83409
 msgid "This groupchat is publicly searchable"
 msgstr "この談話室は公に検索されます"
 
-#: dist/converse-no-dependencies.js:58190
-#: dist/converse-no-dependencies.js:58346
+#: dist/converse-no-dependencies.js:83263
+#: dist/converse-no-dependencies.js:83419
 msgid "Members only"
 msgstr "メンバー制"
 
-#: dist/converse-no-dependencies.js:58192
+#: dist/converse-no-dependencies.js:83265
 msgid "This groupchat is restricted to members only"
 msgstr "この談話室はメンバーのみ入室できます"
 
-#: dist/converse-no-dependencies.js:58200
-#: dist/converse-no-dependencies.js:58352
+#: dist/converse-no-dependencies.js:83273
+#: dist/converse-no-dependencies.js:83425
 msgid "Anyone can join this groupchat"
 msgstr "誰でもこの談話室に参加できます"
 
-#: dist/converse-no-dependencies.js:58206
-#: dist/converse-no-dependencies.js:58362
+#: dist/converse-no-dependencies.js:83279
+#: dist/converse-no-dependencies.js:83435
 msgid "Persistent"
 msgstr "常設"
 
-#: dist/converse-no-dependencies.js:58208
-#: dist/converse-no-dependencies.js:58360
+#: dist/converse-no-dependencies.js:83281
+#: dist/converse-no-dependencies.js:83433
 msgid "This groupchat persists even if it's unoccupied"
 msgstr "この談話室は誰もいなくなっても存続します"
 
-#: dist/converse-no-dependencies.js:58216
-#: dist/converse-no-dependencies.js:58368
+#: dist/converse-no-dependencies.js:83289
+#: dist/converse-no-dependencies.js:83441
 msgid "This groupchat will disappear once the last person leaves"
 msgstr "この談話室は最後の在室者が退出すると消滅します"
 
-#: dist/converse-no-dependencies.js:58222
-#: dist/converse-no-dependencies.js:58378
+#: dist/converse-no-dependencies.js:83295
+#: dist/converse-no-dependencies.js:83451
 msgid "Not anonymous"
 msgstr "非匿名"
 
-#: dist/converse-no-dependencies.js:58224
-#: dist/converse-no-dependencies.js:58376
+#: dist/converse-no-dependencies.js:83297
+#: dist/converse-no-dependencies.js:83449
 msgid "All other groupchat participants can see your XMPP username"
 msgstr "すべての入室者が相互の XMPP ユーザー名を見ることができます"
 
-#: dist/converse-no-dependencies.js:58232
-#: dist/converse-no-dependencies.js:58384
+#: dist/converse-no-dependencies.js:83305
+#: dist/converse-no-dependencies.js:83457
 msgid "Only moderators can see your XMPP username"
 msgstr "司会者のみが XMPP ユーザー名を見ることができます"
 
-#: dist/converse-no-dependencies.js:58240
-#: dist/converse-no-dependencies.js:58392
+#: dist/converse-no-dependencies.js:83313
+#: dist/converse-no-dependencies.js:83465
 msgid ""
 "Participants entering this groupchat need to request permission to write"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:58246
-#: dist/converse-no-dependencies.js:58402
+#: dist/converse-no-dependencies.js:83319
+#: dist/converse-no-dependencies.js:83475
 msgid "Not moderated"
 msgstr "発言制限なし"
 
-#: dist/converse-no-dependencies.js:58248
-#: dist/converse-no-dependencies.js:58400
+#: dist/converse-no-dependencies.js:83321
+#: dist/converse-no-dependencies.js:83473
 msgid "Participants entering this groupchat can write right away"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:58254
-#: dist/converse-no-dependencies.js:58410
+#: dist/converse-no-dependencies.js:83327
+#: dist/converse-no-dependencies.js:83483
 msgid "Message archiving"
 msgstr "記録保管"
 
-#: dist/converse-no-dependencies.js:58256
-#: dist/converse-no-dependencies.js:58408
+#: dist/converse-no-dependencies.js:83329
+#: dist/converse-no-dependencies.js:83481
 msgid "Messages are archived on the server"
 msgstr "メッセージはサーバ上に保管されます"
 
-#: dist/converse-no-dependencies.js:58322
+#: dist/converse-no-dependencies.js:83395
 msgid "No password"
 msgstr "パスワードなし"
 
-#: dist/converse-no-dependencies.js:58344
+#: dist/converse-no-dependencies.js:83417
 msgid "this groupchat is restricted to members only"
 msgstr "この談話室はメンバーのみ入室できます"
 
-#: dist/converse-no-dependencies.js:59274
+#: dist/converse-no-dependencies.js:84314
 msgid "XMPP Username:"
 msgstr "XMPP ユーザー名:"
 
-#: dist/converse-no-dependencies.js:59280
+#: dist/converse-no-dependencies.js:84320
 msgid "Password:"
 msgstr "パスワード:"
 
-#: dist/converse-no-dependencies.js:59282
+#: dist/converse-no-dependencies.js:84322
 msgid "password"
 msgstr "パスワード"
 
-#: dist/converse-no-dependencies.js:59290
+#: dist/converse-no-dependencies.js:84330
 msgid "This is a trusted device"
 msgstr "これは信頼できるデバイスです"
 
-#: dist/converse-no-dependencies.js:59292
+#: dist/converse-no-dependencies.js:84332
 #, fuzzy
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
 "log out. It's important that you explicitly log out, otherwise not all "
 "cached data might be deleted. Please note, when using an untrusted device, "
-"OMEMO encryption is be supported."
+"OMEMO encryption is NOT available."
 msgstr ""
 "性能改善のため、このブラウザーにデータをキャッシュします。共用コンピューター"
 "の場合や、ログアウト時にデータを消去したい場合は、この欄のチェックをはずして"
 "ください。確実にログアウトしないと、キャッシュデータが残る可能性があります。"
 
-#: dist/converse-no-dependencies.js:59294
+#: dist/converse-no-dependencies.js:84334
 msgid "Log in"
 msgstr "ログイン"
 
-#: dist/converse-no-dependencies.js:59300
+#: dist/converse-no-dependencies.js:84340
 msgid "Click here to log in anonymously"
 msgstr "クリックして、匿名としてログイン"
 
-#: dist/converse-no-dependencies.js:59389
+#: dist/converse-no-dependencies.js:84429
 msgid "This message has been edited"
 msgstr "メッセージは編集されています"
 
-#: dist/converse-no-dependencies.js:59415
+#: dist/converse-no-dependencies.js:84455
 msgid "Edit this message"
 msgstr "メッセージを編集"
 
-#: dist/converse-no-dependencies.js:59440
+#: dist/converse-no-dependencies.js:84480
 msgid "Message versions"
 msgstr "メッセージのバージョン"
 
-#: dist/converse-no-dependencies.js:59665
+#: dist/converse-no-dependencies.js:84705
 msgid "Save and close"
 msgstr "保存して閉じる"
 
-#: dist/converse-no-dependencies.js:59669
+#: dist/converse-no-dependencies.js:84709
 msgid "This device's OMEMO fingerprint"
 msgstr "このデバイスの OMEMO 指紋"
 
-#: dist/converse-no-dependencies.js:59681
+#: dist/converse-no-dependencies.js:84721
 msgid "Select all"
 msgstr "すべてを選択"
 
-#: dist/converse-no-dependencies.js:59683
+#: dist/converse-no-dependencies.js:84723
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr "他の OMEMO デバイスをすべて選択するためのチェックボックス"
 
-#: dist/converse-no-dependencies.js:59685
+#: dist/converse-no-dependencies.js:84725
 msgid "Other OMEMO-enabled devices"
 msgstr "OMEMO を利用可能な他のデバイス"
 
-#: dist/converse-no-dependencies.js:59693
-#: dist/converse-no-dependencies.js:59701
+#: dist/converse-no-dependencies.js:84733
+#: dist/converse-no-dependencies.js:84741
 msgid "Checkbox for selecting the following fingerprint"
 msgstr "次の指紋を選択するためのチェックボックス"
 
-#: dist/converse-no-dependencies.js:59703
+#: dist/converse-no-dependencies.js:84743
 msgid "Device without a fingerprint"
 msgstr "指紋のないデバイス"
 
-#: dist/converse-no-dependencies.js:59709
+#: dist/converse-no-dependencies.js:84749
 msgid "Remove checked devices and close"
 msgstr "選択したデバイスを削除して閉じる"
 
-#: dist/converse-no-dependencies.js:59791
+#: dist/converse-no-dependencies.js:84831
 msgid "Don't have a chat account?"
 msgstr "アカウントを持っていませんか ?"
 
-#: dist/converse-no-dependencies.js:59793
+#: dist/converse-no-dependencies.js:84833
 msgid "Create an account"
 msgstr "アカウントを作成"
 
-#: dist/converse-no-dependencies.js:59814
+#: dist/converse-no-dependencies.js:84854
 msgid "Create your account"
 msgstr "アカウントを作成します"
 
-#: dist/converse-no-dependencies.js:59816
+#: dist/converse-no-dependencies.js:84856
 msgid "Please enter the XMPP provider to register with:"
 msgstr "登録する XMPP プロバイダーを入力してください:"
 
-#: dist/converse-no-dependencies.js:59836
-#: dist/converse-no-dependencies.js:59875
+#: dist/converse-no-dependencies.js:84876
+#: dist/converse-no-dependencies.js:84915
 msgid "Already have a chat account?"
 msgstr "アカウントを既に持っていますか ?"
 
-#: dist/converse-no-dependencies.js:59838
-#: dist/converse-no-dependencies.js:59877
+#: dist/converse-no-dependencies.js:84878
+#: dist/converse-no-dependencies.js:84917
 msgid "Log in here"
 msgstr "ここでログインしてください"
 
-#: dist/converse-no-dependencies.js:59859
+#: dist/converse-no-dependencies.js:84899
 msgid "Account Registration:"
 msgstr "アカウントの登録:"
 
-#: dist/converse-no-dependencies.js:59867
+#: dist/converse-no-dependencies.js:84907
 msgid "Register"
 msgstr "登録"
 
-#: dist/converse-no-dependencies.js:59871
+#: dist/converse-no-dependencies.js:84911
 msgid "Choose a different provider"
 msgstr "別のプロバイダーを選択"
 
-#: dist/converse-no-dependencies.js:59896
+#: dist/converse-no-dependencies.js:84936
 msgid "Hold tight, we're fetching the registration form…"
 msgstr "ただいま入力欄を取り寄せています…"
 
-#: dist/converse-no-dependencies.js:60616
+#: dist/converse-no-dependencies.js:85662
 msgid "Messages are being sent in plaintext"
 msgstr "メッセージは平文のまま送られます"
 
-#: dist/converse-no-dependencies.js:60668
+#: dist/converse-no-dependencies.js:85714
 msgid "The User's Profile Image"
 msgstr "ユーザーのプロフィール画像"
 
-#: dist/converse-no-dependencies.js:60726
+#: dist/converse-no-dependencies.js:85772
 msgid "OMEMO Fingerprints"
 msgstr "OMEMO 指紋"
 
-#: dist/converse-no-dependencies.js:60750
+#: dist/converse-no-dependencies.js:85796
 msgid "Trusted"
 msgstr "信用できる"
 
-#: dist/converse-no-dependencies.js:60764
+#: dist/converse-no-dependencies.js:85810
 msgid "Untrusted"
 msgstr "信用できない"
 
-#: dist/converse-no-dependencies.js:60778
+#: dist/converse-no-dependencies.js:85824
 msgid "Remove as contact"
 msgstr "相手先を削除"
 
-#: dist/converse-no-dependencies.js:60782
+#: dist/converse-no-dependencies.js:85828
 msgid "Refresh"
 msgstr "再読込"
 
-#: dist/converse-no-dependencies.js:61136
-msgid "Download"
-msgstr "ダウンロード"
+#: dist/converse-no-dependencies.js:86039
+#, javascript-format
+msgid "Download audio file \"%1$s\""
+msgstr "ダウンロード音声ファイル \"%1$s\""
 
-#: dist/converse-no-dependencies.js:61157
+#: dist/converse-no-dependencies.js:86057
 #, javascript-format
 msgid "Download file \"%1$s\""
 msgstr "ダウンロードファイル \"%1$s\""
 
-#: dist/converse-no-dependencies.js:61214
+#: dist/converse-no-dependencies.js:86072
 #, javascript-format
 msgid "Download image \"%1$s\""
 msgstr "ダウンロード画像 \"%1$s\""
 
-#: dist/converse-no-dependencies.js:61228
+#: dist/converse-no-dependencies.js:86102
+msgid "Download"
+msgstr "ダウンロード"
+
+#: dist/converse-no-dependencies.js:86119
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "ダウンロード動画 \"%1$s\""
-
-#: dist/converse-no-dependencies.js:61242
-#, javascript-format
-msgid "Download audio file \"%1$s\""
-msgstr "ダウンロード音声ファイル \"%1$s\""
 
 #~ msgid "Click to write as a normal (non-spoiler) message"
 #~ msgstr "クリックして、普通(ネタバレなし)のメッセージとして書き込む"
@@ -1657,21 +1692,8 @@ msgstr "ダウンロード音声ファイル \"%1$s\""
 #~ msgid "%1$s is now an "
 #~ msgstr "%1$s は "
 
-#~ msgid "Forbidden: you do not have the necessary role in order to do that."
-#~ msgstr "禁止: この操作に必要な役にありません。"
-
-#~ msgid ""
-#~ "Forbidden: you do not have the necessary affiliation in order to do that."
-#~ msgstr "禁止: この操作に必要な分掌にありません。"
-
-#~ msgid "Error: invalid number of arguments"
-#~ msgstr "エラー: 引数の数が違います"
-
 #~ msgid "Error: the groupchat "
 #~ msgstr "エラー: 談話室 "
-
-#~ msgid "Sorry, you're not allowed to registerd in this groupchat"
-#~ msgstr "新しい談話室に登録する権限がありません"
 
 #~ msgid "This groupchat is being moderated"
 #~ msgstr "この談話室は権限のある者のみが発言できます"

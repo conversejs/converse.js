@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-22 11:37+0200\n"
-"PO-Revision-Date: 2018-10-04 07:28+0000\n"
+"PO-Revision-Date: 2018-10-25 07:32+0000\n"
 "Last-Translator: Szilágyi Gyula <gyula.n7@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/hu/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.2-dev\n"
+"X-Generator: Weblate 3.3-dev\n"
 "domain: converse\n"
 "lang: hu\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -721,9 +721,9 @@ msgid "%1$s has left and re-entered the groupchat"
 msgstr "%1$s elhagyta, majd újra belépett a konferenciába"
 
 #: dist/converse-no-dependencies.js:49167
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
-msgstr "%1$s elhagyta, majd újra belépett a konferenciába"
+msgstr "%1$s elhagyta, majd újra belépett a konferenciába. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:49186
 #, javascript-format
@@ -1319,13 +1319,12 @@ msgid "Add a contact"
 msgstr "Új névjegy felvétele"
 
 #: dist/converse-no-dependencies.js:58093
-#, fuzzy
 msgid "This room no longer exists"
-msgstr "Ez a szoba nem moderált"
+msgstr "Ez a szoba nem létezik többé"
 
 #: dist/converse-no-dependencies.js:58099
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "A beszélgetés elköltözött. Kattintson az alábbi gombra, hogy belépjen."
 
 #: dist/converse-no-dependencies.js:58126
 msgid "Name"
@@ -1433,7 +1432,7 @@ msgstr "Csak a moderátorok láthatják az Ön XMPP felhasználónevét"
 #: dist/converse-no-dependencies.js:58392
 msgid ""
 "Participants entering this groupchat need to request permission to write"
-msgstr ""
+msgstr "A belépő résztvevőknek engedélyt kell kérni, hogy írhassanak"
 
 #: dist/converse-no-dependencies.js:58246
 #: dist/converse-no-dependencies.js:58402
@@ -1443,7 +1442,7 @@ msgstr "Moderálatlan"
 #: dist/converse-no-dependencies.js:58248
 #: dist/converse-no-dependencies.js:58400
 msgid "Participants entering this groupchat can write right away"
-msgstr ""
+msgstr "A belépő résztvevők egyből írhatnak is ide"
 
 #: dist/converse-no-dependencies.js:58254
 #: dist/converse-no-dependencies.js:58410
@@ -1480,7 +1479,6 @@ msgid "This is a trusted device"
 msgstr "Ez egy megbízható eszköz"
 
 #: dist/converse-no-dependencies.js:59292
-#, fuzzy
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1491,7 +1489,9 @@ msgstr ""
 "A teljesítmény javítása érdekében a böngészőben tároljuk az adatokat. "
 "Törölje a jelölőnégyzetet, ha ez nyilvános számítógép vagy ha törölni "
 "kívánja adatait, amikor kijelentkezik. Fontos, hogy kifejezetten "
-"jelentkezzen ki, mert előfordulhat, hogy nem az összes tárolt adat törlődik."
+"jelentkezzen ki, mert előfordulhat, hogy nem az összes tárolt adat törlődik. "
+"Kérjük, vegye figyelembe, ha nem megbízható eszközt használ, hogy az OMEMO "
+"titkosítás támogatott."
 
 #: dist/converse-no-dependencies.js:59294
 msgid "Log in"

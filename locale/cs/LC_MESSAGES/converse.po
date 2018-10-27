@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-22 11:37+0200\n"
-"PO-Revision-Date: 2018-10-04 16:24+0000\n"
+"PO-Revision-Date: 2018-10-25 13:33+0000\n"
 "Last-Translator: Lorem Ipsum <aditoo@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
 "translations/cs/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 3.2-dev\n"
+"X-Generator: Weblate 3.3-dev\n"
 
 #: dist/converse-no-dependencies.js:38568
 #: dist/converse-no-dependencies.js:38654
@@ -720,9 +720,9 @@ msgid "%1$s has left and re-entered the groupchat"
 msgstr "%1$s odešel/la a znova vstoupil/a do skupinového chatu"
 
 #: dist/converse-no-dependencies.js:49167
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
-msgstr "%1$s odešel/la a znova vstoupil/a do skupinového chatu"
+msgstr "%1$s odešel/la a znova vstoupil/a do skupinového chatu. „%2$s“"
 
 #: dist/converse-no-dependencies.js:49186
 #, javascript-format
@@ -1325,13 +1325,12 @@ msgid "Add a contact"
 msgstr "Přidat kontakt"
 
 #: dist/converse-no-dependencies.js:58093
-#, fuzzy
 msgid "This room no longer exists"
-msgstr "Tento skupinový chat (ještě) neexistuje."
+msgstr "Tato místnost již neexistuje"
 
 #: dist/converse-no-dependencies.js:58099
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "Konverzace se přesunula. Kliknutím níže do ní vstoupíte."
 
 #: dist/converse-no-dependencies.js:58126
 msgid "Name"
@@ -1442,6 +1441,8 @@ msgstr "Pouze moderátoři mohou vidět vaše XMPP uživatelské jméno"
 msgid ""
 "Participants entering this groupchat need to request permission to write"
 msgstr ""
+"Účastníci vstupující do tohoto skupinového chatu si musí vyžádat povolení "
+"psát"
 
 #: dist/converse-no-dependencies.js:58246
 #: dist/converse-no-dependencies.js:58402
@@ -1451,7 +1452,7 @@ msgstr "Není moderován"
 #: dist/converse-no-dependencies.js:58248
 #: dist/converse-no-dependencies.js:58400
 msgid "Participants entering this groupchat can write right away"
-msgstr ""
+msgstr "Účastníci vstupující do tohoto skupinového chatu mohou psát ihned"
 
 #: dist/converse-no-dependencies.js:58254
 #: dist/converse-no-dependencies.js:58410
@@ -1488,7 +1489,6 @@ msgid "This is a trusted device"
 msgstr "Tohle je důvěryhodné zařízení"
 
 #: dist/converse-no-dependencies.js:59292
-#, fuzzy
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1499,7 +1499,8 @@ msgstr ""
 "K vylepšení výkonu ukládáme vaše data do mezipaměti tohoto prohlížeče. Je-li "
 "tohle veřejný počítač, nebo chcete-li, aby byla vaše data po odhlášení "
 "smazána, odškrtněte toto pole. Je důležité, abyste se výslovně odhlásil/a, "
-"jinak nemusí být smazána všechna data v mezipaměti."
+"jinak nemusí být smazána všechna data v mezipaměti. Mějte prosím na vědomí, "
+"že pokud používáte nedůvěryhodné zařízení, není podporováno šifrování OMEMO."
 
 #: dist/converse-no-dependencies.js:59294
 msgid "Log in"

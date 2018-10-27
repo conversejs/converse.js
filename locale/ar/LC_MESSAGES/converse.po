@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-22 11:37+0200\n"
-"PO-Revision-Date: 2018-10-03 16:21+0000\n"
+"PO-Revision-Date: 2018-10-23 10:22+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 3.2-dev\n"
+"X-Generator: Weblate 3.3-dev\n"
 
 #: dist/converse-no-dependencies.js:38568
 #: dist/converse-no-dependencies.js:38654
@@ -266,7 +266,7 @@ msgstr "%1$s توقّفَ عن الكتابة"
 
 #: dist/converse-no-dependencies.js:46766
 msgid "Unencryptable OMEMO message"
-msgstr ""
+msgstr "رسالة أوميمو غير مشفّرة"
 
 #: dist/converse-no-dependencies.js:47001
 #: dist/converse-no-dependencies.js:47047
@@ -772,7 +772,7 @@ msgstr "لقد بلغ فريق المحادثة الحالي الحد الأقص
 
 #: dist/converse-no-dependencies.js:49319
 msgid "Remote server not found"
-msgstr ""
+msgstr "لم يتم العثور على الخادم عن بُعد"
 
 #: dist/converse-no-dependencies.js:49324
 #, javascript-format
@@ -824,11 +824,11 @@ msgstr "المشرف"
 
 #: dist/converse-no-dependencies.js:49463
 msgid "Visitor"
-msgstr ""
+msgstr "زائر"
 
 #: dist/converse-no-dependencies.js:49464
 msgid "Owner"
-msgstr ""
+msgstr "مالك"
 
 #: dist/converse-no-dependencies.js:49465
 msgid "Member"
@@ -836,11 +836,11 @@ msgstr "عضو"
 
 #: dist/converse-no-dependencies.js:49466
 msgid "Admin"
-msgstr ""
+msgstr "المدير"
 
 #: dist/converse-no-dependencies.js:49512
 msgid "Participants"
-msgstr ""
+msgstr "المشاركون"
 
 #: dist/converse-no-dependencies.js:49530
 #: dist/converse-no-dependencies.js:49614
@@ -947,11 +947,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:52313
 msgid "Sorry, could not send the message due to an error."
-msgstr ""
+msgstr "المعذرة، لا يمكن إرسال الرسالة بسبب خطأ."
 
 #: dist/converse-no-dependencies.js:53222
 msgid "Your avatar image"
-msgstr ""
+msgstr "صورتك الرمزية"
 
 #: dist/converse-no-dependencies.js:53223
 msgid "Your Profile"
@@ -1140,7 +1140,7 @@ msgstr "أنقر لفتح قائمة فِرَق المحادثة"
 
 #: dist/converse-no-dependencies.js:54570
 msgid "Open Groupchats"
-msgstr ""
+msgstr "فتح فِرق الدردشات الجماعية"
 
 #: dist/converse-no-dependencies.js:54619
 #, javascript-format
@@ -1255,7 +1255,7 @@ msgstr "كثيرة الدردشة"
 
 #: dist/converse-no-dependencies.js:56044
 msgid "Extended Away"
-msgstr ""
+msgstr "تمديد فترة الغياب"
 
 #: dist/converse-no-dependencies.js:56226
 #: dist/converse-no-dependencies.js:56284
@@ -1301,7 +1301,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:58126
 msgid "Name"
-msgstr ""
+msgstr "الإسم"
 
 #: dist/converse-no-dependencies.js:58130
 msgid "Groupchat address (JID)"
@@ -1313,11 +1313,11 @@ msgstr "الوصف"
 
 #: dist/converse-no-dependencies.js:58140
 msgid "Topic"
-msgstr ""
+msgstr "الموضوع"
 
 #: dist/converse-no-dependencies.js:58144
 msgid "Topic author"
-msgstr ""
+msgstr "كاتب الموضوع"
 
 #: dist/converse-no-dependencies.js:58150
 msgid "Online users"
@@ -1498,7 +1498,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:59685
 msgid "Other OMEMO-enabled devices"
-msgstr ""
+msgstr "الأجهزة الأخرى التي تدعم أوميمو"
 
 #: dist/converse-no-dependencies.js:59693
 #: dist/converse-no-dependencies.js:59701
@@ -1511,7 +1511,7 @@ msgstr "الجهاز مِن دون بصمة"
 
 #: dist/converse-no-dependencies.js:59709
 msgid "Remove checked devices and close"
-msgstr ""
+msgstr "أزالة الأجهزة التي تم اختيارها ثم إغلاق"
 
 #: dist/converse-no-dependencies.js:59791
 msgid "Don't have a chat account?"
@@ -1557,7 +1557,7 @@ msgstr "تحلى بالصبر، جارٍ جلب استمارة التسجيل �
 
 #: dist/converse-no-dependencies.js:60616
 msgid "Messages are being sent in plaintext"
-msgstr ""
+msgstr "يتم إرسال الرسائل كنص عادي صاف"
 
 #: dist/converse-no-dependencies.js:60668
 msgid "The User's Profile Image"

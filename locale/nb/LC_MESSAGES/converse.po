@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-22 11:37+0200\n"
-"PO-Revision-Date: 2018-10-03 16:32+0000\n"
+"PO-Revision-Date: 2018-10-24 12:34+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.2-dev\n"
+"X-Generator: Weblate 3.3-dev\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -1382,7 +1382,7 @@ msgstr "Dette rommet er ikke moderert"
 
 #: dist/converse-no-dependencies.js:58099
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "Samtalen har flyttet. Ta del i den ved å klikke nedenfor."
 
 #: dist/converse-no-dependencies.js:58126
 #, fuzzy
@@ -1506,6 +1506,7 @@ msgstr "Bare moderatorer kan se ditt XMPP-brukernavn"
 msgid ""
 "Participants entering this groupchat need to request permission to write"
 msgstr ""
+"Deltagere som tar del i denne gruppesludringen må forespørre skrivetilgang"
 
 #: dist/converse-no-dependencies.js:58246
 #: dist/converse-no-dependencies.js:58402
@@ -1516,7 +1517,7 @@ msgstr "Umoderert"
 #: dist/converse-no-dependencies.js:58248
 #: dist/converse-no-dependencies.js:58400
 msgid "Participants entering this groupchat can write right away"
-msgstr ""
+msgstr "Deltagere som tar del i denne gruppesludringen kan skrive umiddelbart"
 
 #: dist/converse-no-dependencies.js:58254
 #: dist/converse-no-dependencies.js:58410

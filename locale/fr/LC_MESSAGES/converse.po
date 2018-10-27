@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-22 11:37+0200\n"
-"PO-Revision-Date: 2018-10-03 18:26+0000\n"
-"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
+"PO-Revision-Date: 2018-10-23 10:29+0000\n"
+"Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.2-dev\n"
+"X-Generator: Weblate 3.3-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -140,7 +140,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:39950
 msgid "Sorry, an error occurred:"
-msgstr "Désolé, une erreur s’est produite :"
+msgstr "Désolé, une erreur s’est produite :"
 
 #: dist/converse-no-dependencies.js:40642
 msgid "Close this chat box"
@@ -281,7 +281,7 @@ msgstr "%1$s a arrêté d’écrire"
 
 #: dist/converse-no-dependencies.js:46766
 msgid "Unencryptable OMEMO message"
-msgstr ""
+msgstr "Message OMEMO non chiffrable"
 
 #: dist/converse-no-dependencies.js:47001
 #: dist/converse-no-dependencies.js:47047
@@ -416,11 +416,11 @@ msgstr "Description :"
 
 #: dist/converse-no-dependencies.js:47787
 msgid "Groupchat Address (JID):"
-msgstr "Adresse du salon (JID) :"
+msgstr "Adresse du groupe de discussion (JID) :"
 
 #: dist/converse-no-dependencies.js:47788
 msgid "Participants:"
-msgstr "Participants :"
+msgstr "Participants :"
 
 #: dist/converse-no-dependencies.js:47789
 msgid "Features:"
@@ -504,7 +504,7 @@ msgstr "Aucun salon trouvé"
 
 #: dist/converse-no-dependencies.js:47908
 msgid "Groupchats found:"
-msgstr "Salons trouvés :"
+msgstr "Groupes de discussion trouvés :"
 
 #: dist/converse-no-dependencies.js:47962
 msgid "Enter a new Groupchat"
@@ -662,9 +662,8 @@ msgid "Grant ownership of this groupchat"
 msgstr "Accorder la propriété à ce salon"
 
 #: dist/converse-no-dependencies.js:48513
-#, fuzzy
 msgid "Register a nickname for this room"
-msgstr "Nom de ce marque-page :"
+msgstr "Enregistrer un pseudo pour ce salon"
 
 #: dist/converse-no-dependencies.js:48513
 msgid "Revoke user's membership"
@@ -1343,13 +1342,12 @@ msgid "Add a contact"
 msgstr "Ajouter un contact"
 
 #: dist/converse-no-dependencies.js:58093
-#, fuzzy
 msgid "This room no longer exists"
-msgstr "Ce salon n’existe pas (pour l’instant)."
+msgstr "Ce salon n'existe plus"
 
 #: dist/converse-no-dependencies.js:58099
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "la conversation a déménagé.Cliquez ci-dessous pour entrer."
 
 #: dist/converse-no-dependencies.js:58126
 msgid "Name"

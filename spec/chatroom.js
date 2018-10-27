@@ -930,6 +930,70 @@
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
             }));
 
+            it("role-change messages that follow a MUC leave are left out",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                // See https://github.com/conversejs/converse.js/issues/1259
+
+                await test_utils.openAndEnterChatRoom(_converse, 'conversations', 'conference.siacs.eu', 'dummy');
+
+                const presence = $pres({
+                        to: 'dummy@localhost/resource',
+                        from: 'conversations@conference.siacs.eu/Guus'
+                    }).c('x', {
+                        'xmlns': Strophe.NS.MUC_USER
+                    }).c('item', {
+                        'affiliation': 'none',
+                        'jid': 'Guus@localhost/xxx',
+                        'role': 'visitor'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                const view = _converse.chatboxviews.get('conversations@conference.siacs.eu');
+                const msg = $msg({
+                        'from': 'conversations@conference.siacs.eu/dummy',
+                        'id': (new Date()).getTime(),
+                        'to': 'dummy@localhost',
+                        'type': 'groupchat'
+                    }).c('body').t('Some message').tree();
+
+                view.model.onMessage(msg);
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+
+                let stanza = Strophe.xmlHtmlNode(
+                    `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="conversations@conference.siacs.eu/Guus">
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <item affiliation="none" role="none"/>
+                        </x>
+                    </presence>`
+                ).firstElementChild;
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                stanza = Strophe.xmlHtmlNode(
+                    `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="conversations@conference.siacs.eu/Guus">
+                        <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="ISg6+9AoK1/cwhbNEDviSvjdPzI=" hash="sha-1"/>
+                        <x xmlns="vcard-temp:x:update">
+                            <photo>bf987c486c51fbc05a6a4a9f20dd19b5efba3758</photo>
+                        </x>
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <item affiliation="none" role="visitor"/>
+                        </x>
+                    </presence>`
+                ).firstElementChild;
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                const chat_content = view.el.querySelector('.chat-content');
+                const messages = chat_content.querySelectorAll('div.chat-info');
+                expect(messages.length).toBe(3);
+                expect(messages[0].textContent).toBe('dummy has entered the groupchat');
+                expect(messages[1].textContent).toBe('Guus has entered the groupchat');
+                expect(messages[2].textContent).toBe('Guus has left and re-entered the groupchat');
+                done();
+            }));
+
+
             it("shows a new day indicator if a join/leave message is received on a new day",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},

@@ -4,9 +4,10 @@
 
 - Use [Lerna](https://lernajs.io/) to create the @converse/headless package
 - Use ES2015 modules instead of UMD.
-- #1257 Prefer 'probably' over 'maybe' when evaluating audio play support.
-- #1261 File upload not working
 - #1252 Correctly reflect the state in bookmark icon title.
+- #1257 Prefer 'probably' over 'maybe' when evaluating audio play support.
+- #1259 Don't inform of affiliation change after user leaves MUC
+- #1261 File upload not working
 - #1272 Hiding MUC occupants leaves a blank space
 
 ## 4.0.3 (2018-10-22)

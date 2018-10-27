@@ -63342,6 +63342,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       },
 
       informOfOccupantsRoleChange(occupant, changed) {
+        if (changed === "none") {
+          return;
+        }
+
         const previous_role = occupant._previousAttributes.role;
 
         if (previous_role === 'moderator') {

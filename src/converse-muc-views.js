@@ -645,6 +645,9 @@ converse.plugins.add('converse-muc-views', {
             },
 
             informOfOccupantsRoleChange (occupant, changed) {
+                if (changed === "none") {
+                    return;
+                }
                 const previous_role = occupant._previousAttributes.role;
                 if (previous_role === 'moderator') {
                     this.showChatEvent(__("%1$s is no longer a moderator", occupant.get('nick')))

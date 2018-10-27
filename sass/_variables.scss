@@ -32,6 +32,7 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     --save-button-color: #3AA569; // $green
 
     --chat-textarea-color: #666;
+    --chat-textarea-background-color: white;
     --chat-textarea-height: 60px;
 
     --send-button-height: 27px;
@@ -45,6 +46,10 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     --chat-head-color: #3AA569; // $green
     --chat-head-color-lighten-50-percent: #e7f7ee; // lighten($green, 50%)
     --chat-head-text-color: white;
+    --chat-correcting-color: var(--chat-head-color-lighten-50-percent);
+
+    --chat-topic-display: block;
+    --chat-info-display: block;
 
     --highlight-color: #DCF9F6;
 
@@ -71,6 +76,9 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     --controlbox-width: 250px;
     --controlbox-head-color: #578EA9; // $light-blue
     --controlbox-head-color-lighten-45-percent: #eff4f7; // lighten($light-blue, 45%)
+    --controlbox-pane-background-color: white;
+    --controlbox-heading-color: inherit;
+    --controlbox-heading-font-weight: normal;
 
     --chat-gutter: 0.5em;
     --minimized-chats-width: 130px;
@@ -83,11 +91,22 @@ $font-path: "webfonts/icomoon/fonts/" !default;
 
     --normal-font: "Helvetica", "Arial", sans-serif;
     --heading-font: futura, 'Century Gothic', 'URW Gothic L', Verdana, sans-serif;
+    --heading-display: block;
+    --heading-color: white;
 
     --chatroom-head-color: #E77051; // $red
     --chatroom-head-color-lighten-25-percent: #f6ccc1; // lighten($red, 25%)
-    --chatroom-head-color-lighten-30-percent: #fadfd7; // lighten($red, 30%)
+    --chatroom-head-button-color: var(--chatroom-head-color);
+    --chatroom-head-title-font-weight: normal;
+    --chatroom-head-title-padding-right: 0px;
+    --chatroom-head-description-color: var(--chatroom-head-color-lighten-25-percent);
+    --chatroom-head-description-link-color: white;
+    --chatroom-head-description-display: block;
+    --chatroom-head-description-border-left: 0px;
+    --chatroom-head-description-padding-left: 0px;
+    --chatroom-head-border-bottom: 0px;
     --chatroom-width: 400px;
+    --chatroom-correcting-color: #fadfd7; // lighten($red, 30%)
 
     --headline-head-color: #E7A151; // $orange
     --headline-message-color: #D2842B; // $dark-orange
@@ -102,6 +121,12 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     --font-size-huge: 20px;
 
     --message-font-size: var(--font-size);
+    --separator-text-color: var(--message-text-color);
+    --chat-separator-border-bottom: 2px solid var(--chat-head-color);
+    --chatroom-separator-border-bottom: 2px solid var(--chatroom-head-color);
+
+    --message-input-border-top: 4px solid var(--chatroom-head-color);
+    --message-input-color: var(--chatroom-head-color);
 
     --line-height-small: 14px;
     --line-height: 16px;
@@ -109,8 +134,17 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     --line-height-huge: 27px;
 
     --occupants-padding: 1em;
+    --occupants-background-color: white;
+    --occupants-max-width: inherit;
+    --occupants-border-left: 1px solid var(--text-color);
+    --occupants-border-bottom: 1px solid lightgrey;
+    --occupants-features-display: block;
 
     --embedded-emoji-picker-height: 200px;
+
+    --avatar-border-radius: 10%;
+    --avatar-border: 1px solid lightgrey;
+    --avatar-background-color: white;
 
     --fullpage-chat-head-height: 62px;
     --fullpage-chat-height: 100vh;
@@ -128,8 +162,70 @@ $font-path: "webfonts/icomoon/fonts/" !default;
 
     --list-toggle-color: #585B51; // $dark-gray-color
     --list-toggle-hover-color: #818479; // $gray-color
+    --list-toggle-font-weight: normal;
     --list-item-action-color: #e3eef3; // lighten($lightest-blue, 25%)
+    --list-item-link-color: inherit;
+    --list-item-link-hover-color: var(--dark-link-color);
+    --list-item-open-color: var(--controlbox-head-color);
+    --list-item-open-hover-color: var(--controlbox-head-color);
     --list-circle-color: #89d6ab; // lighten($green, 25%)
     --list-minus-circle-color: #f0a794; // lighten($red, 15%)
     --list-dot-circle-color: #f6dec1; // lighten($orange, 25%)
+}
+
+#conversejs.theme-dark {
+    --avatar-border-radius: 100%;
+    --avatar-border: 0px;
+    --avatar-background-color: none;
+
+    --controlbox-pane-background-color: #333;
+    --controlbox-heading-color: #777;
+    --controlbox-heading-font-weight: bold;
+
+    --chat-topic-display: none;
+    --chat-info-display: none;
+    --chat-textarea-background-color: #F6F6F6;
+    --chat-correcting-color: #FFFFC0;
+    --chat-head-text-color: #999;
+
+    --chatbox-border-radius: 0px;
+
+    --heading-display: inline;
+    --heading-color: #4F545C;
+
+    --chatroom-head-color: white;
+    --chatroom-head-color-lighten-25-percent: blue;
+    --chatroom-head-button-color: #999;
+    --chatroom-head-title-font-weight: bold;
+    --chatroom-head-title-padding-right: 12px;
+    --chatroom-head-description-color: black;
+    --chatroom-head-description-link-color: #00b3f4;
+    --chatroom-head-description-display: inline;
+    --chatroom-head-description-border-left: 1px solid #DDD;
+    --chatroom-head-description-padding-left: 12px;
+    --chatroom-head-border-bottom: 1px solid #EEE;
+    --chatroom-correcting-color: #FFFFC0;
+
+    --occupants-background-color: #F3F3F3;
+    /* TODO: find a way to allow that and reflow the chat-area properly.
+     * --occupants-max-width: 240px; */
+    --occupants-border-left: 0px;
+    --occupants-border-bottom: 0px;
+    --occupants-features-display: none;
+
+    --separator-text-color: #AAA;
+    --chat-separator-border-bottom: 1px solid #AAA;
+    --chatroom-separator-border-bottom: 1px solid #AAA;
+
+    --message-input-border-top: 1px solid #CCC;
+    --message-input-color: #CCC;
+
+    --fullpage-chat-head-height: 40px;
+    --fullpage-chatbox-button-size: 24px;
+
+    --list-toggle-font-weight: bold;
+    --list-item-link-color: #F1F1F1;
+    --list-item-link-hover-color: #DDD;
+    --list-item-open-color: #444;
+    --list-item-open-hover-color: #444;
 }

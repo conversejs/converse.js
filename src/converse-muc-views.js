@@ -640,7 +640,7 @@ converse.plugins.add('converse-muc-views', {
                 } else if (current_affiliation === 'outcast') {
                     this.showChatEvent(__("%1$s has been banned from this groupchat", occupant.get('nick')))
                 } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
-                    this.showChatEvent(__(`%1$s is now an ${current_affiliation} of this groupchat`, occupant.get('nick')))
+                    this.showChatEvent(__('%1$s is now an %2$s of this groupchat', occupant.get('nick'), current_affiliation))
                 }
             },
 
@@ -820,7 +820,7 @@ converse.plugins.add('converse-muc-views', {
             verifyRoles (roles) {
                 const me = this.model.occupants.findWhere({'jid': _converse.bare_jid});
                 if (!_.includes(roles, me.get('role'))) {
-                    this.showErrorMessage(__(`Forbidden: you do not have the necessary role in order to do that.`))
+                    this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'))
                     return false;
                 }
                 return true;
@@ -829,7 +829,7 @@ converse.plugins.add('converse-muc-views', {
             verifyAffiliations (affiliations) {
                 const me = this.model.occupants.findWhere({'jid': _converse.bare_jid});
                 if (!_.includes(affiliations, me.get('affiliation'))) {
-                    this.showErrorMessage(__(`Forbidden: you do not have the necessary affiliation in order to do that.`))
+                    this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'))
                     return false;
                 }
                 return true;
@@ -986,7 +986,7 @@ converse.plugins.add('converse-muc-views', {
                         break;
                     case 'register':
                         if (args.length > 1) {
-                            this.showErrorMessage(__(`Error: invalid number of arguments`))
+                            this.showErrorMessage(__('Error: invalid number of arguments'))
                         } else {
                             this.model.registerNickname().then(err_msg => {
                                 if (err_msg) this.showErrorMessage(err_msg)

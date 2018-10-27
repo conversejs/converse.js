@@ -1308,9 +1308,9 @@ converse.plugins.add('converse-muc', {
 
             }).catch(iq => {
                 if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', iq).length) {
-                    this.feedback.set('error', __(`Error: the groupchat ${this.model.getDisplayName()} does not exist.`));
+                    this.feedback.set('error', __('Error: the groupchat %1$s does not exist.', this.model.getDisplayName()));
                 } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]').length) {
-                    this.feedback.set('error', __(`Sorry, you're not allowed to register in this groupchat`));
+                    this.feedback.set('error', __("Sorry, you're not allowed to register in this groupchat"));
                 }
             });
         }

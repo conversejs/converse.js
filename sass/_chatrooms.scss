@@ -34,9 +34,11 @@
 
     .chat-head-chatroom {
         background-color: var(--chatroom-head-color);
+        border-bottom: var(--chatroom-head-border-bottom);
 
         .chatroom-description {
-            color: var(--chatroom-head-color-lighten-25-percent);
+            color: var(--chatroom-head-description-color);
+            display: var(--chatroom-head-description-display);
             font-size: var(--font-size);
             font-size: 70%;
             margin-top: 3px;
@@ -44,8 +46,10 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            border-left: var(--chatroom-head-description-border-left);
+            padding-left: var(--chatroom-head-description-padding-left);
             a {
-                color: white;
+                color: var(--chatroom-head-description-link-color);
             }
         }
 
@@ -54,7 +58,7 @@
                 &.fa {
                     color: var(--chat-head-text-color);
                     &.button-on:before {
-                        color: var(--chatroom-head-color);
+                        color: var(--chatroom-head-button-color);
                     }
                 }
             }
@@ -62,10 +66,13 @@
 
         .chatbox-btn {
             &.button-on:before {
-                color: var(--chatroom-head-color);
+                color: var(--chatroom-head-button-color);
             }
         }
         .chat-title {
+            display: var(--heading-display);
+            font-weight: var(--chatroom-head-title-font-weight);
+            padding-right: var(--chatroom-head-title-padding-right);
             .chatroom-jid {
                 font-size: var(--font-size-small);
             }
@@ -109,10 +116,12 @@
                     flex-direction: row;
                 }
                 .chat-topic {
+                    display: var(--chat-topic-display);
                     font-weight: bold;
                     color: var(--chatroom-head-color);
                 }
                 .chat-info {
+                    display: var(--chat-info-display);
                     color: var(--chatroom-head-color);
                     line-height: normal;
                     &.badge {
@@ -144,10 +153,11 @@
                     overflow-x: hidden;
                     overflow-y: hidden;
                     vertical-align: top;
-                    background-color: white;
-                    border-left: 1px solid var(--text-color);
+                    background-color: var(--occupants-background-color);
+                    border-left: var(--occupants-border-left);
                     border-bottom-right-radius: var(--chatbox-border-radius);
                     padding: 0.5em;
+                    max-width: var(--occupants-max-width);
 
                     .occupants-header {
                         display: flex;
@@ -159,6 +169,9 @@
                     }
                     .occupants-heading {
                         font-family: var(--heading-font);
+                    }
+                    .chatroom-features {
+                        display: var(--occupants-features-display);
                     }
                     .awesomplete {
                         ul {
@@ -179,7 +192,7 @@
                             overflow-y: auto;
                             flex-basis: 0;
                             flex-grow: 1;
-                            border-bottom: 1px solid lightgrey;
+                            border-bottom: var(--occupants-border-bottom);
                         }
                         li {
                             cursor: default;
@@ -269,7 +282,7 @@
                         margin: 0 0.5em;
                     }
                     .button-primary {
-                        background-color: var(--chatroom-head-color);
+                        background-color: var(--chatroom-head-button-color);
                     }
                 }
             }
@@ -278,22 +291,22 @@
         .sendXMPPMessage {
             .chat-toolbar {
                 background-color: white;
-                border-top: 4px solid var(--chatroom-head-color);
-                color: var(--chatroom-head-color);
+                border-top: var(--message-input-border-top);
+                color: var(--message-input-color);
                 .fas, .fas:hover,
                 .far, .far:hover,
                 .fa, .fa:hover {
-                    color: var(--chatroom-head-color);
+                    color: var(--message-input-color);
                 }
             }
             .chat-textarea {
                 border-bottom-right-radius: 0;
                 &.correcting {
-                    background-color: var(--chatroom-head-color-lighten-30-percent);
+                    background-color: var(--chatroom-correcting-color);
                 }
             }
             .send-button {
-                background-color: var(--chatroom-head-color);
+                background-color: var(--message-input-color);
             }
         }
 

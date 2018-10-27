@@ -447,9 +447,9 @@ body.reset {
     }
 
     .avatar {
-        border-radius: 10%;
-        border: 1px solid lightgrey;
-        background: white;
+        border-radius: var(--avatar-border-radius);
+        border: var(--avatar-border);
+        background-color: var(--avatar-background-color);
     }
 
     .activated {

@@ -152,13 +152,17 @@
             }
         }
         .chat-title {
+            display: var(--heading-display);
             font-family: var(--heading-font);
-            color: white;
+            color: var(--heading-color);
             display: block;
             line-height: var(--line-height-large);
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            &.groupchat {
+                padding-right: var(--chatroom-head-title-padding-right);
+            }
             a {
                 color: var(--chat-head-text-color);
                 width: 100%;
@@ -260,6 +264,7 @@
 
             .chat-textarea {
                 color: var(--chat-textarea-color);
+                background-color: var(--chat-textarea-background-color);
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
                 border-bottom-radius: var(--chatbox-border-radius);
@@ -273,7 +278,7 @@
                     height: 42px;
                 }
                 &.correcting {
-                    background-color: var(--chat-head-color-lighten-50-percent);
+                    background-color: var(--chat-correcting-color);
                 }
             }
 

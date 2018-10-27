@@ -215,6 +215,8 @@
 
             .controlbox-heading {
                 font-family: var(--heading-font);
+                color: var(--controlbox-heading-color);
+                font-weight: var(--controlbox-heading-font-weight);
                 padding: 0;
                 margin: 0.75em 0;
                 font-size: 1.1em;
@@ -282,7 +284,7 @@
         .controlbox-panes {
             height: 100%;
             overflow-y: auto;
-            background-color: white;
+            background-color: var(--controlbox-pane-background-color);
         }
 
         .controlbox-subtitle {
@@ -292,7 +294,7 @@
         }
 
         .controlbox-pane {
-            background-color: white;
+            background-color: var(--controlbox-pane-background-color);
             border: 0;
             font-size: var(--font-size);
             left: 0;

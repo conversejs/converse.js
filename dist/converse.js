@@ -102473,39 +102473,39 @@ __p += '>\n    <div class="row no-gutters">\n        <div class="col-auto">\n   
 __e(o.show) +
 ' circle" title="' +
 __e(o.hint_show) +
-'"></div>\n        </div>\n        <div class="col">\n            <span class="occupant-nick">' +
+'"></div>\n        </div>\n        <div class="col occupant-nick-badge">\n            <span class="occupant-nick">' +
 __e(o.nick || o.jid) +
-'</span>\n            ';
+'</span>\n            <span class="occupant-badges">\n                ';
  if (o.affiliation === "owner") { ;
-__p += '\n                <span class="badge badge-danger">' +
+__p += '\n                    <span class="badge badge-danger">' +
 __e(o.label_owner) +
-'</span>\n            ';
+'</span>\n                ';
  } ;
-__p += '\n            ';
+__p += '\n                ';
  if (o.affiliation === "admin") { ;
-__p += '\n                <span class="badge badge-info">' +
+__p += '\n                    <span class="badge badge-info">' +
 __e(o.label_admin) +
-'</span>\n            ';
+'</span>\n                ';
  } ;
-__p += '\n            ';
+__p += '\n                ';
  if (o.affiliation === "member") { ;
-__p += '\n                <span class="badge badge-info">' +
+__p += '\n                    <span class="badge badge-info">' +
 __e(o.label_member) +
-'</span>\n            ';
+'</span>\n                ';
  } ;
-__p += '\n\n            ';
+__p += '\n\n                ';
  if (o.role === "moderator") { ;
-__p += '\n                <span class="badge badge-info">' +
+__p += '\n                    <span class="badge badge-info">' +
 __e(o.label_moderator) +
-'</span>\n            ';
+'</span>\n                ';
  } ;
-__p += '\n            ';
+__p += '\n                ';
  if (o.role === "visitor") { ;
-__p += '\n                <span class="badge badge-secondary">' +
+__p += '\n                    <span class="badge badge-secondary">' +
 __e(o.label_visitor) +
-'</span>\n            ';
+'</span>\n                ';
  } ;
-__p += '\n        </div>\n    </div>\n</li>\n';
+__p += '\n            </span>\n        </div>\n    </div>\n</li>\n';
 return __p
 };
 

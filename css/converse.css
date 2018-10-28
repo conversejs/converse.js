@@ -11289,6 +11289,20 @@ body.reset {
             #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants ul li.occupant,
             #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant {
               cursor: pointer; }
+              #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-nick-badge,
+              #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-nick-badge {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap; }
+                #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-nick-badge .occupant-badges,
+                #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-nick-badge .occupant-badges {
+                  display: flex;
+                  justify-content: flex-end;
+                  flex-wrap: wrap;
+                  flex-direction: row; }
+                  #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-nick-badge .occupant-badges span,
+                  #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant .occupant-nick-badge .occupant-badges span {
+                    margin-right: 0.25rem; }
               #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants ul li.occupant div.row.no-gutters,
               #conversejs .chatroom .box-flyout .chatroom-body .occupants ul li.occupant div.row.no-gutters {
                 flex-wrap: nowrap;
@@ -11378,6 +11392,8 @@ body.reset {
 #conversejs.converse-overlayed .chatbox.chatroom {
   min-width: 400px !important;
   width: 400px; }
+  #conversejs.converse-overlayed .chatbox.chatroom .chatroom-features {
+    display: none !important; }
   #conversejs.converse-overlayed .chatbox.chatroom .box-flyout {
     min-width: 400px !important;
     width: 400px; }
@@ -11393,6 +11409,8 @@ body.reset {
     padding: 0; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .chatroom-features .feature {
     font-size: 10px; }
+  #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants ul .occupant .occupant-nick-badge .occupant-badges {
+    display: none; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants ul .occupant .occupant-status {
     margin-top: 6px; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .chat-area {

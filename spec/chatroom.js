@@ -1555,14 +1555,14 @@
 
             it("indicates moderators and visitors by means of a special css class and tooltip",
                 mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched'], {'view_mode': 'fullscreen'},
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                var view = _converse.chatboxviews.get('lounge@localhost');
-                var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const view = _converse.chatboxviews.get('lounge@localhost');
+                let contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
 
-                var occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
+                let occupants = view.el.querySelector('.occupant-list').querySelectorAll('li');
                 expect(occupants.length).toBe(1);
                 expect(occupants[0].querySelector('.occupant-nick').textContent.trim()).toBe("dummy");
                 expect(occupants[0].querySelectorAll('.badge').length).toBe(2);
@@ -2200,7 +2200,7 @@
 
             it("updates the shown features when the groupchat configuration has changed",
                 mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched'], {},
+                    null, ['rosterGroupsFetched'], {'view_mode': 'fullscreen'},
                     function (done, _converse) {
 
                 var sent_IQ, IQ_id;

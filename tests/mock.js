@@ -149,15 +149,19 @@
     function initConverse (settings, spies, promises) {
         window.localStorage.clear();
         window.sessionStorage.clear();
+        const el = document.querySelector('#conversejs');
+        if (el) {
+            el.parentElement.removeChild(el);
+        }
 
-        var connection = mock.mock_connection();
+        const connection = mock.mock_connection();
         if (!_.isUndefined(spies)) {
             _.forEach(spies, function (method) {
                 spyOn(connection, method);
             });
         }
 
-        var _converse = converse.initialize(_.extend({
+        const _converse = converse.initialize(_.extend({
             'i18n': 'en',
             'auto_subscribe': false,
             'play_sounds': false,
@@ -216,8 +220,8 @@
 
     mock.initConverseWithPromises = function (spies, promise_names, settings, func) {
         return function (done) {
-            var _converse = initConverse(settings, spies);
-            var promises = _.map(promise_names, _converse.api.waitUntil);
+            const _converse = initConverse(settings, spies);
+            const promises = _.map(promise_names, _converse.api.waitUntil);
             Promise.all(promises)
                 .then(_.partial(func, done, _converse))
                 .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));

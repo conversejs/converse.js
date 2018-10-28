@@ -139,7 +139,7 @@ css/%.min.css:: css/%.css
 
 .PHONY: watchcss
 watchcss: dev
-	$(SASS) --watch --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass:css
+	$(SASS) --watch --include-path $(BOURBON) --include-path $(BOOTSTRAP) -o ./css/ ./sass/
 
 .PHONY: watchjs
 watchjs: dev dist/converse-headless.js
@@ -151,7 +151,7 @@ watchjsheadless: dev
 
 .PHONY: watch
 watch: dev
-	make -j 3 watchcss  watchjsheadless watchjs 
+	make -j 3 watchcss  watchjsheadless watchjs
 
 .PHONY: logo
 logo: logo/conversejs-transparent16.png \

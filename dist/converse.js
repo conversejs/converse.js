@@ -58492,13 +58492,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var backbone_overview__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone.overview */ "./node_modules/backbone.overview/backbone.overview.js");
 /* harmony import */ var backbone_overview__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone_overview__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
-/* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html");
-/* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var templates_avatar_svg__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! templates/avatar.svg */ "./src/templates/avatar.svg");
+/* harmony import */ var templates_avatar_svg__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(templates_avatar_svg__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html");
+/* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5__);
 // Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
+
 
 
 
@@ -58519,27 +58522,12 @@ const AvatarMixin = {
     }
 
     const image_type = this.model.vcard.get('image_type'),
-          image = this.model.vcard.get('image'),
-          img_src = "data:" + image_type + ";base64," + image,
-          img = new Image();
-    return new Promise((resolve, reject) => {
-      img.onload = () => {
-        const ctx = canvas_el.getContext('2d'),
-              ratio = img.width / img.height;
-        ctx.clearRect(0, 0, canvas_el.width, canvas_el.height);
-
-        if (ratio < 1) {
-          const scaled_img_with = canvas_el.width * ratio,
-                x = Math.floor((canvas_el.width - scaled_img_with) / 2);
-          ctx.drawImage(img, x, 0, scaled_img_with, canvas_el.height);
-        } else {
-          ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height * ratio);
-        }
-
-        resolve();
-      };
-
-      img.src = img_src;
+          image = this.model.vcard.get('image');
+    canvas_el.outerHTML = templates_avatar_svg__WEBPACK_IMPORTED_MODULE_4___default()({
+      'classes': canvas_el.getAttribute('class'),
+      'width': canvas_el.width,
+      'height': canvas_el.height,
+      'image': "data:" + image_type + ";base64," + image
     });
   }
 
@@ -58618,11 +58606,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
 
       render() {
         try {
-          this.el.innerHTML = templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_4___default()();
+          this.el.innerHTML = templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5___default()();
         } catch (e) {
           this._ensureElement();
 
-          this.el.innerHTML = templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_4___default()();
+          this.el.innerHTML = templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5___default()();
         }
 
         this.row_el = this.el.querySelector('.row');
@@ -61766,14 +61754,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           msg_content.innerHTML = _.flow(_.partial(utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].geoUriToHttp, _, _converse.geouri_replacement), _.partial(utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox), utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addHyperlinks, utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderNewLines, _.partial(utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addEmoji, _converse, _))(text);
         }
 
-        const promises = [];
-        promises.push(utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderImageURLs(_converse, msg_content));
+        const promise = utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderImageURLs(_converse, msg_content);
 
         if (this.model.get('type') !== 'headline') {
-          promises.push(this.renderAvatar(msg));
+          this.renderAvatar(msg);
         }
 
-        await Promise.all(promises);
+        await promise;
         this.replaceElement(msg);
         this.model.collection.trigger('rendered', this);
       },
@@ -100974,6 +100961,34 @@ return __p
 
 /***/ }),
 
+/***/ "./src/templates/avatar.svg":
+/*!**********************************!*\
+  !*** ./src/templates/avatar.svg ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
+module.exports = function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<!-- src/templates/avatar.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="' +
+__e(o.classes) +
+'" width="' +
+__e(o.width) +
+'" height="' +
+__e(o.height) +
+'">\n    <image width="' +
+__e(o.width) +
+'" height="' +
+__e(o.height) +
+'" preserveAspectRatio="xMidYMid meet" xlink:href="' +
+__e(o.image) +
+'"/>\n</svg>\n';
+return __p
+};
+
+/***/ }),
+
 /***/ "./src/templates/bookmark.html":
 /*!*************************************!*\
   !*** ./src/templates/bookmark.html ***!
@@ -102892,7 +102907,7 @@ __e(o.image) +
  } ;
 __p += '\n                                        ';
  if (!o.image) { ;
-__p += '\n                                            <canvas class="avatar" height="100px" width="100px"/>\n                                        ';
+__p += '\n                                            <canvas class="avatar" height="100px" width="100px"></canvas>\n                                        ';
  } ;
 __p += '\n                                    </a>\n                                    <input class="hidden" name="image" type="file">\n                                </div>\n                                <div class="col">\n                                    <div class="form-group">\n                                        <label class="col-form-label">' +
 __e(o.label_jid) +
@@ -102989,7 +103004,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/profile_view.html -->\n<div class="userinfo controlbox-padded">\n<div class="controlbox-section profile d-flex">\n    <a class="show-profile" href="#">\n        <canvas alt="o.__(\'Your avatar\')" class="avatar align-self-center" height="40" width="40"></canvas>\n    </a>\n    <span class="username w-100 align-self-center">' +
+__p += '<!-- src/templates/profile_view.html -->\n<div class="userinfo controlbox-padded">\n<div class="controlbox-section profile d-flex">\n    <a class="show-profile" href="#">\n        <canvas class="avatar align-self-center" height="40" width="40"></canvas>\n    </a>\n    <span class="username w-100 align-self-center">' +
 __e(o.fullname) +
 '</span>\n    <a class="controlbox-heading__btn show-client-info fa fa-info-circle align-self-center" title="' +
 __e(o.info_details) +

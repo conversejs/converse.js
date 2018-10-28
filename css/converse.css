@@ -9631,7 +9631,7 @@ body.reset {
   #conversejs div, #conversejs span, #conversejs h1, #conversejs h2, #conversejs h3, #conversejs h4, #conversejs h5, #conversejs h6, #conversejs p, #conversejs blockquote,
   #conversejs pre, #conversejs a, #conversejs em, #conversejs img, #conversejs strong, #conversejs dl, #conversejs dt, #conversejs dd, #conversejs ol, #conversejs ul, #conversejs li,
   #conversejs fieldset, #conversejs form, #conversejs legend, #conversejs table, #conversejs caption, #conversejs tbody,
-  #conversejs tfoot, #conversejs thead, #conversejs tr, #conversejs th, #conversejs td, #conversejs article, #conversejs aside, #conversejs canvas, #conversejs details,
+  #conversejs tfoot, #conversejs thead, #conversejs tr, #conversejs th, #conversejs td, #conversejs article, #conversejs aside, #conversejs details,
   #conversejs embed, #conversejs figure, #conversejs figcaption, #conversejs footer, #conversejs header, #conversejs hgroup, #conversejs menu,
   #conversejs nav, #conversejs output, #conversejs ruby, #conversejs section, #conversejs summary, #conversejs time, #conversejs mark, #conversejs audio, #conversejs video {
     margin: 0;
@@ -9669,7 +9669,7 @@ body.reset {
       color: var(--subdued-color); }
       #conversejs a.fa:hover, #conversejs a.far:hover, #conversejs a.fas:hover, #conversejs a:visited.fa:hover, #conversejs a:visited.far:hover, #conversejs a:visited.fas:hover, #conversejs a:not([href]):not([tabindex]).fa:hover, #conversejs a:not([href]):not([tabindex]).far:hover, #conversejs a:not([href]):not([tabindex]).fas:hover {
         color: var(--gray-color); }
-  #conversejs canvas {
+  #conversejs svg {
     border-radius: var(--chatbox-border-radius); }
   #conversejs .fa, #conversejs .far, #conversejs .fas {
     color: var(--subdued-color); }

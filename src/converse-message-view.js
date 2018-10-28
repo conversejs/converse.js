@@ -155,12 +155,11 @@ converse.plugins.add('converse-message-view', {
                         _.partial(u.addEmoji, _converse, _)
                     )(text);
                 }
-                const promises = [];
-                promises.push(u.renderImageURLs(_converse, msg_content));
+                const promise = u.renderImageURLs(_converse, msg_content);
                 if (this.model.get('type') !== 'headline') {
-                    promises.push(this.renderAvatar(msg));
+                    this.renderAvatar(msg);
                 }
-                await Promise.all(promises);
+                await promise;
                 this.replaceElement(msg);
                 this.model.collection.trigger('rendered', this);
             },

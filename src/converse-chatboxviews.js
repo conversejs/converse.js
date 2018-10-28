@@ -8,6 +8,7 @@ import "@converse/headless/converse-chatboxes";
 import "backbone.nativeview";
 import "backbone.overview";
 import converse from "@converse/headless/converse-core";
+import tpl_avatar from "templates/avatar.svg";
 import tpl_chatboxes from "templates/chatboxes.html";
 
 const { Backbone, _, utils } = converse.env;
@@ -22,25 +23,13 @@ const AvatarMixin = {
             return;
         }
         const image_type = this.model.vcard.get('image_type'),
-                image = this.model.vcard.get('image'),
-                img_src = "data:" + image_type + ";base64," + image,
-                img = new Image();
+                image = this.model.vcard.get('image');
 
-        return new Promise((resolve, reject) => {
-            img.onload = () => {
-                const ctx = canvas_el.getContext('2d'),
-                        ratio = img.width / img.height;
-                ctx.clearRect(0, 0, canvas_el.width, canvas_el.height);
-                if (ratio < 1) {
-                    const scaled_img_with = canvas_el.width*ratio,
-                            x = Math.floor((canvas_el.width-scaled_img_with)/2);
-                    ctx.drawImage(img, x, 0, scaled_img_with, canvas_el.height);
-                } else {
-                    ctx.drawImage(img, 0, 0, canvas_el.width, canvas_el.height*ratio);
-                }
-                resolve();
-            };
-            img.src = img_src;
+        canvas_el.outerHTML = tpl_avatar({
+            'classes': canvas_el.getAttribute('class'),
+            'width': canvas_el.width,
+            'height': canvas_el.height,
+            'image': "data:" + image_type + ";base64," + image,
         });
     },
 };

@@ -36,7 +36,7 @@ const config = {
             use: "exports-loader?filterXSS,filterCSS"
         },
         {
-            test: /\.html$/,
+            test: /\.(html|svg)$/,
             exclude: /node_modules/,
             use: [{
                 loader: 'lodash-template-webpack-loader',

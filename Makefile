@@ -3,7 +3,6 @@ BABEL			?= node_modules/.bin/babel
 BOOTSTRAP		= ./node_modules/
 BOURBON 		= ./node_modules/bourbon/app/assets/stylesheets/
 BUILDDIR		= ./docs
-BUNDLE		  	?= ./.bundle/bin/bundle
 CHROMIUM		?= ./node_modules/.bin/run-headless-chromium
 CLEANCSS		?= ./node_modules/clean-css-cli/bin/cleancss --skip-rebase
 ESLINT		  	?= ./node_modules/.bin/eslint
@@ -17,19 +16,12 @@ PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
 RJS				?= ./node_modules/.bin/r.js
 WEBPACK 		?= ./node_modules/.bin/npx
-SASS			?= ./.bundle/bin/sass
+SASS			?= ./node_modules/.bin/node-sass
 SED				?= sed
 SPHINXBUILD	 	?= ./bin/sphinx-build
 SPHINXOPTS	  	=
 UGLIFYJS		?= node_modules/.bin/uglifyjs
 
-
-# In the case user wishes to use RVM
-USE_RVM				 ?= false
-RVM_RUBY_VERSION		?= 2.4.2
-ifeq ($(USE_RVM),true)
-	RVM_USE				 = rvm use $(RVM_RUBY_VERSION)
-endif
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
@@ -43,7 +35,7 @@ help:
 	@echo ""
 	@echo " all             A synonym for 'make dev'."
 	@echo " build           Create minified builds of converse.js and all its dependencies."
-	@echo " clean           Remove all NPM and Ruby packages."
+	@echo " clean           Remove all NPM packages."
 	@echo " check           Run all tests."
 	@echo " css             Generate CSS from the Sass files."
 	@echo " dev             Set up the development environment. To force a fresh start, run 'make clean' first."
@@ -55,7 +47,6 @@ help:
 	@echo " serve           Serve this directory via a webserver on port 8000."
 	@echo " serve_bg        Same as \"serve\", but do it in the background"
 	@echo " stamp-npm       Install NPM dependencies"
-	@echo " stamp-bundler   Install Bundler (Ruby) dependencies"
 	@echo " watch           Watch for changes on JS and scss files and automatically update the generated files."
 	@echo " logo            Generate PNG logos of multiple sizes."
 
@@ -118,23 +109,16 @@ stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 	$(LERNA) bootstrap --hoist
 	touch stamp-npm
 
-stamp-bundler: Gemfile
-	mkdir -p .bundle
-	$(RVM_USE)
-	gem install --user bundler --bindir .bundle/bin
-	$(BUNDLE) install --path .bundle --binstubs .bundle/bin
-	touch stamp-bundler
-
 .PHONY: clean
 clean:
-	rm -rf node_modules .bundle stamp-npm stamp-bundler
+	rm -rf node_modules stamp-npm
 	rm dist/*.min.js
 	rm css/website.min.css
 	rm css/converse.min.css
 	rm css/*.map
 
 .PHONY: dev
-dev: stamp-bundler stamp-npm
+dev: stamp-npm
 
 ########################################################################
 ## Builds
@@ -143,10 +127,10 @@ dev: stamp-bundler stamp-npm
 css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/fonts.css
 
 css/converse.css:: dev sass
-	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/converse.scss css/converse.css
+	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/converse.scss css/converse.css
 
 css/website.css:: dev sass
-	$(SASS) -I $(BOURBON) -I $(BOOTSTRAP) sass/website.scss $@
+	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
 
 css/%.min.css:: css/%.css
 	make dev
@@ -154,7 +138,7 @@ css/%.min.css:: css/%.css
 
 .PHONY: watchcss
 watchcss: dev
-	$(SASS) --watch -I $(BOURBON) -I $(BOOTSTRAP) sass:css
+	$(SASS) --watch --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass:css
 
 .PHONY: watchjs
 watchjs: dev dist/converse-headless.js

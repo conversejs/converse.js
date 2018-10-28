@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-27 23:09+0200\n"
 "PO-Revision-Date: 2018-10-28 22:14+0000\n"
-"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
+"Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -115,8 +115,8 @@ msgstr "Fermer cette fenêtre de discussion"
 #, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
 msgstr ""
-"Désolé, quelque chose s’est mal passé pendant la sauvegarde de ce marque-"
-"page."
+"Désolé, quelque chose s’est mal passé mal lors de la tentative de "
+"réactualisation"
 
 #: dist/converse-no-dependencies.js:41089
 #: dist/converse-no-dependencies.js:50697
@@ -379,7 +379,7 @@ msgstr "Adresse du groupe de discussion (JID) :"
 
 #: dist/converse-no-dependencies.js:45006
 msgid "Participants:"
-msgstr "Participants :"
+msgstr "Participants :"
 
 #: dist/converse-no-dependencies.js:45007
 msgid "Features:"
@@ -524,7 +524,7 @@ msgstr "%1$s a été banni de ce salon"
 #: dist/converse-no-dependencies.js:45440
 #, fuzzy, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s n’est plus un administrateur de ce salon"
+msgstr "%1$s est devenu %2$s de ce salon"
 
 #: dist/converse-no-dependencies.js:45452
 #, javascript-format
@@ -590,7 +590,7 @@ msgid ""
 "Sorry, an error happened while running the command. Check your browser's "
 "developer console for details."
 msgstr ""
-"Désolé, une erreur s'est produite lors de l'exécution de la commande. "
+"Désolé, une erreur s’est produite lors de l’exécution de la commande. "
 "Vérifiez la console de développement de votre navigateur pour plus de "
 "détails."
 
@@ -1298,7 +1298,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:53319
 msgid "Sorry, an error occurred:"
-msgstr "Désolé, une erreur s’est produite :"
+msgstr "Désolé, une erreur s’est produite :"
 
 #: dist/converse-no-dependencies.js:54310
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -1379,7 +1379,7 @@ msgstr "Cliquez pour cacher ces contacts"
 
 #: dist/converse-no-dependencies.js:83166
 msgid "This room no longer exists"
-msgstr "Ce salon n'existe plus"
+msgstr "Ce salon n’existe plus"
 
 #: dist/converse-no-dependencies.js:83172
 msgid "The conversation has moved. Click below to enter."
@@ -1465,7 +1465,7 @@ msgstr "Persistant"
 #: dist/converse-no-dependencies.js:83281
 #: dist/converse-no-dependencies.js:83433
 msgid "This groupchat persists even if it's unoccupied"
-msgstr "Ce salon persiste même s'il est inoccupé"
+msgstr "Ce salon persiste même s’il est inoccupé"
 
 #: dist/converse-no-dependencies.js:83289
 #: dist/converse-no-dependencies.js:83441
@@ -1527,11 +1527,11 @@ msgstr "ce salon est restreint aux membres uniquement"
 
 #: dist/converse-no-dependencies.js:84314
 msgid "XMPP Username:"
-msgstr "Nom d’utilisateur XMPP :"
+msgstr "Nom d’utilisateur XMPP :"
 
 #: dist/converse-no-dependencies.js:84320
 msgid "Password:"
-msgstr "Mot de passe :"
+msgstr "Mot de passe :"
 
 #: dist/converse-no-dependencies.js:84322
 msgid "password"
@@ -1602,7 +1602,7 @@ msgstr "Autres clients ayant activé le chiffrement OMEMO"
 #: dist/converse-no-dependencies.js:84733
 #: dist/converse-no-dependencies.js:84741
 msgid "Checkbox for selecting the following fingerprint"
-msgstr "Case à cocher pour sélectionner l'empreinte OMEMO suivante"
+msgstr "Case à cocher pour sélectionner l’empreinte OMEMO suivante"
 
 #: dist/converse-no-dependencies.js:84743
 msgid "Device without a fingerprint"

@@ -63337,6 +63337,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         } else if (current_affiliation === 'outcast') {
           this.showChatEvent(__("%1$s has been banned from this groupchat", occupant.get('nick')));
         } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
+          // For example: AppleJack is now an (admin|owner) of this groupchat
           this.showChatEvent(__('%1$s is now an %2$s of this groupchat', occupant.get('nick'), current_affiliation));
         }
       },

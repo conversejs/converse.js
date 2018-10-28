@@ -11,6 +11,7 @@
   font-weight: normal;
   src: url("webfonts/fa-brands-400.eot");
   src: url("webfonts/fa-brands-400.eot?#iefix") format("embedded-opentype"), url("webfonts/fa-brands-400.woff2") format("woff2"), url("webfonts/fa-brands-400.woff") format("woff"), url("webfonts/fa-brands-400.ttf") format("truetype"), url("webfonts/fa-brands-400.svg#fontawesome") format("svg"); }
+
 @font-face {
   font-family: 'ConverseFontAwesomeRegular';
   font-style: normal;
@@ -19,12 +20,14 @@
   src: url("webfonts/fa-regular-400.eot?#iefix") format("embedded-opentype"), url("webfonts/fa-regular-400.woff2") format("woff2"), url("webfonts/fa-regular-400.woff") format("woff"), url("webfonts/fa-regular-400.ttf") format("truetype"), url("webfonts/fa-regular-400.svg#fontawesome") format("svg");
   font-weight: normal;
   font-style: normal; }
+
 @font-face {
   font-family: 'ConverseFontAwesomeSolid';
   font-style: normal;
   font-weight: 900;
   src: url("webfonts/fa-solid-900.eot");
   src: url("webfonts/fa-solid-900.eot?#iefix") format("embedded-opentype"), url("webfonts/fa-solid-900.woff2") format("woff2"), url("webfonts/fa-solid-900.woff") format("woff"), url("webfonts/fa-solid-900.ttf") format("truetype"), url("webfonts/fa-solid-900.svg#fontawesome") format("svg"); }
+
 .far {
   font-family: 'ConverseFontAwesomeRegular' !important;
   font-weight: 400; }
@@ -58,7 +61,7 @@
   line-height: 1; }
 
 .fa-lg {
-  font-size: 1.3333333333em;
+  font-size: 1.33333em;
   line-height: 0.75em;
   vertical-align: -.0667em; }
 
@@ -133,6 +136,7 @@
 .fal.fa-pull-left,
 .fab.fa-pull-left {
   margin-right: .3em; }
+
 .fa.fa-pull-right,
 .fas.fa-pull-right,
 .far.fa-pull-right,
@@ -151,6 +155,7 @@
     transform: rotate(0deg); }
   100% {
     transform: rotate(360deg); } }
+
 .fa-rotate-90 {
   -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=1)";
   transform: rotate(90deg); }
@@ -3833,10 +3838,12 @@ readers do not read off random characters that represent icons */
   --breakpoint-xl: 1200px;
   --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
 #conversejs *,
 #conversejs *::before,
 #conversejs *::after {
   box-sizing: border-box; }
+
 #conversejs html {
   font-family: sans-serif;
   line-height: 1.15;
@@ -3844,10 +3851,13 @@ readers do not read off random characters that represent icons */
   -ms-text-size-adjust: 100%;
   -ms-overflow-style: scrollbar;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
+
 @-ms-viewport {
   width: device-width; }
+
 #conversejs article, #conversejs aside, #conversejs dialog, #conversejs figcaption, #conversejs figure, #conversejs footer, #conversejs header, #conversejs hgroup, #conversejs main, #conversejs nav, #conversejs section {
   display: block; }
+
 #conversejs body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -3857,62 +3867,80 @@ readers do not read off random characters that represent icons */
   color: #212529;
   text-align: left;
   background-color: #fff; }
+
 #conversejs [tabindex="-1"]:focus {
   outline: 0 !important; }
+
 #conversejs hr {
   box-sizing: content-box;
   height: 0;
   overflow: visible; }
+
 #conversejs h1, #conversejs h2, #conversejs h3, #conversejs h4, #conversejs h5, #conversejs h6 {
   margin-top: 0;
   margin-bottom: 0.5rem; }
+
 #conversejs p {
   margin-top: 0;
   margin-bottom: 1rem; }
+
 #conversejs abbr[title],
 #conversejs abbr[data-original-title] {
   text-decoration: underline;
   text-decoration: underline dotted;
   cursor: help;
   border-bottom: 0; }
+
 #conversejs address {
   margin-bottom: 1rem;
   font-style: normal;
   line-height: inherit; }
+
 #conversejs ol,
 #conversejs ul,
 #conversejs dl {
   margin-top: 0;
   margin-bottom: 1rem; }
+
 #conversejs ol ol,
 #conversejs ul ul,
 #conversejs ol ul,
 #conversejs ul ol {
   margin-bottom: 0; }
+
 #conversejs dt {
   font-weight: 700; }
+
 #conversejs dd {
   margin-bottom: .5rem;
   margin-left: 0; }
+
 #conversejs blockquote {
   margin: 0 0 1rem; }
+
 #conversejs dfn {
   font-style: italic; }
+
 #conversejs b,
 #conversejs strong {
   font-weight: bolder; }
+
 #conversejs small {
   font-size: 80%; }
+
 #conversejs sub,
 #conversejs sup {
   position: relative;
   font-size: 75%;
   line-height: 0;
   vertical-align: baseline; }
+
 #conversejs sub {
   bottom: -.25em; }
+
 #conversejs sup {
   top: -.5em; }
+
 #conversejs a {
   color: #578EA9;
   text-decoration: none;
@@ -3921,6 +3949,7 @@ readers do not read off random characters that represent icons */
   #conversejs a:hover {
     color: #3d6477;
     text-decoration: underline; }
+
 #conversejs a:not([href]):not([tabindex]) {
   color: inherit;
   text-decoration: none; }
@@ -3929,42 +3958,54 @@ readers do not read off random characters that represent icons */
     text-decoration: none; }
   #conversejs a:not([href]):not([tabindex]):focus {
     outline: 0; }
+
 #conversejs pre,
 #conversejs code,
 #conversejs kbd,
 #conversejs samp {
   font-family: monospace, monospace;
   font-size: 1em; }
+
 #conversejs pre {
   margin-top: 0;
   margin-bottom: 1rem;
   overflow: auto;
   -ms-overflow-style: scrollbar; }
+
 #conversejs figure {
   margin: 0 0 1rem; }
+
 #conversejs img {
   vertical-align: middle;
   border-style: none; }
+
 #conversejs svg:not(:root) {
   overflow: hidden; }
+
 #conversejs table {
   border-collapse: collapse; }
+
 #conversejs caption {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
   color: #6c757d;
   text-align: left;
   caption-side: bottom; }
+
 #conversejs th {
   text-align: inherit; }
+
 #conversejs label {
   display: inline-block;
   margin-bottom: .5rem; }
+
 #conversejs button {
   border-radius: 0; }
+
 #conversejs button:focus {
   outline: 1px dotted;
   outline: 5px auto -webkit-focus-ring-color; }
+
 #conversejs input,
 #conversejs button,
 #conversejs select,
@@ -3974,40 +4015,49 @@ readers do not read off random characters that represent icons */
   font-family: inherit;
   font-size: inherit;
   line-height: inherit; }
+
 #conversejs button,
 #conversejs input {
   overflow: visible; }
+
 #conversejs button,
 #conversejs select {
   text-transform: none; }
+
 #conversejs button,
 #conversejs html [type="button"],
 #conversejs [type="reset"],
 #conversejs [type="submit"] {
   -webkit-appearance: button; }
+
 #conversejs button::-moz-focus-inner,
 #conversejs [type="button"]::-moz-focus-inner,
 #conversejs [type="reset"]::-moz-focus-inner,
 #conversejs [type="submit"]::-moz-focus-inner {
   padding: 0;
   border-style: none; }
+
 #conversejs input[type="radio"],
 #conversejs input[type="checkbox"] {
   box-sizing: border-box;
   padding: 0; }
+
 #conversejs input[type="date"],
 #conversejs input[type="time"],
 #conversejs input[type="datetime-local"],
 #conversejs input[type="month"] {
   -webkit-appearance: listbox; }
+
 #conversejs textarea {
   overflow: auto;
   resize: vertical; }
+
 #conversejs fieldset {
   min-width: 0;
   padding: 0;
   margin: 0;
   border: 0; }
+
 #conversejs legend {
   display: block;
   width: 100%;
@@ -4018,29 +4068,39 @@ readers do not read off random characters that represent icons */
   line-height: inherit;
   color: inherit;
   white-space: normal; }
+
 #conversejs progress {
   vertical-align: baseline; }
+
 #conversejs [type="number"]::-webkit-inner-spin-button,
 #conversejs [type="number"]::-webkit-outer-spin-button {
   height: auto; }
+
 #conversejs [type="search"] {
   outline-offset: -2px;
   -webkit-appearance: none; }
+
 #conversejs [type="search"]::-webkit-search-cancel-button,
 #conversejs [type="search"]::-webkit-search-decoration {
   -webkit-appearance: none; }
+
 #conversejs ::-webkit-file-upload-button {
   font: inherit;
   -webkit-appearance: button; }
+
 #conversejs output {
   display: inline-block; }
+
 #conversejs summary {
   display: list-item;
   cursor: pointer; }
+
 #conversejs template {
   display: none; }
+
 #conversejs [hidden] {
   display: none !important; }
+
 #conversejs h1, #conversejs h2, #conversejs h3, #conversejs h4, #conversejs h5, #conversejs h6,
 #conversejs .h1, #conversejs .h2, #conversejs .h3, #conversejs .h4, #conversejs .h5, #conversejs .h6 {
   margin-bottom: 0.5rem;
@@ -4048,75 +4108,97 @@ readers do not read off random characters that represent icons */
   font-weight: 500;
   line-height: 1.2;
   color: inherit; }
+
 #conversejs h1, #conversejs .h1 {
   font-size: 2.5rem; }
+
 #conversejs h2, #conversejs .h2 {
   font-size: 2rem; }
+
 #conversejs h3, #conversejs .h3 {
   font-size: 1.75rem; }
+
 #conversejs h4, #conversejs .h4 {
   font-size: 1.5rem; }
+
 #conversejs h5, #conversejs .h5 {
   font-size: 1.25rem; }
+
 #conversejs h6, #conversejs .h6 {
   font-size: 1rem; }
+
 #conversejs .lead {
   font-size: 1.25rem;
   font-weight: 300; }
+
 #conversejs .display-1 {
   font-size: 6rem;
   font-weight: 300;
   line-height: 1.2; }
+
 #conversejs .display-2 {
   font-size: 5.5rem;
   font-weight: 300;
   line-height: 1.2; }
+
 #conversejs .display-3 {
   font-size: 4.5rem;
   font-weight: 300;
   line-height: 1.2; }
+
 #conversejs .display-4 {
   font-size: 3.5rem;
   font-weight: 300;
   line-height: 1.2; }
+
 #conversejs hr {
   margin-top: 1rem;
   margin-bottom: 1rem;
   border: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.1); }
+
 #conversejs small,
 #conversejs .small {
   font-size: 80%;
   font-weight: 400; }
+
 #conversejs mark,
 #conversejs .mark {
   padding: 0.2em;
   background-color: #fcf8e3; }
+
 #conversejs .list-unstyled {
   padding-left: 0;
   list-style: none; }
+
 #conversejs .list-inline {
   padding-left: 0;
   list-style: none; }
+
 #conversejs .list-inline-item {
   display: inline-block; }
   #conversejs .list-inline-item:not(:last-child) {
     margin-right: 0.5rem; }
+
 #conversejs .initialism {
   font-size: 90%;
   text-transform: uppercase; }
+
 #conversejs .blockquote {
   margin-bottom: 1rem;
   font-size: 1.25rem; }
+
 #conversejs .blockquote-footer {
   display: block;
   font-size: 80%;
   color: #6c757d; }
   #conversejs .blockquote-footer::before {
     content: "\2014 \00A0"; }
+
 #conversejs .img-fluid {
   max-width: 100%;
   height: auto; }
+
 #conversejs .img-thumbnail {
   padding: 0.25rem;
   background-color: #fff;
@@ -4124,14 +4206,18 @@ readers do not read off random characters that represent icons */
   border-radius: 0.25rem;
   max-width: 100%;
   height: auto; }
+
 #conversejs .figure {
   display: inline-block; }
+
 #conversejs .figure-img {
   margin-bottom: 0.5rem;
   line-height: 1; }
+
 #conversejs .figure-caption {
   font-size: 90%;
   color: #6c757d; }
+
 #conversejs .container {
   width: 100%;
   padding-right: 15px;
@@ -4150,17 +4236,20 @@ readers do not read off random characters that represent icons */
   @media (min-width: 1200px) {
     #conversejs .container {
       max-width: 1140px; } }
+
 #conversejs .container-fluid {
   width: 100%;
   padding-right: 15px;
   padding-left: 15px;
   margin-right: auto;
   margin-left: auto; }
+
 #conversejs .row {
   display: flex;
   flex-wrap: wrap;
   margin-right: -15px;
   margin-left: -15px; }
+
 #conversejs .no-gutters {
   margin-right: 0;
   margin-left: 0; }
@@ -4168,6 +4257,7 @@ readers do not read off random characters that represent icons */
   #conversejs .no-gutters > [class*="col-"] {
     padding-right: 0;
     padding-left: 0; }
+
 #conversejs .col-1, #conversejs .col-2, #conversejs .col-3, #conversejs .col-4, #conversejs .col-5, #conversejs .col-6, #conversejs .col-7, #conversejs .col-8, #conversejs .col-9, #conversejs .col-10, #conversejs .col-11, #conversejs .col-12, #conversejs .col,
 #conversejs .col-auto, #conversejs .col-sm-1, #conversejs .col-sm-2, #conversejs .col-sm-3, #conversejs .col-sm-4, #conversejs .col-sm-5, #conversejs .col-sm-6, #conversejs .col-sm-7, #conversejs .col-sm-8, #conversejs .col-sm-9, #conversejs .col-sm-10, #conversejs .col-sm-11, #conversejs .col-sm-12, #conversejs .col-sm,
 #conversejs .col-sm-auto, #conversejs .col-md-1, #conversejs .col-md-2, #conversejs .col-md-3, #conversejs .col-md-4, #conversejs .col-md-5, #conversejs .col-md-6, #conversejs .col-md-7, #conversejs .col-md-8, #conversejs .col-md-9, #conversejs .col-md-10, #conversejs .col-md-11, #conversejs .col-md-12, #conversejs .col-md,
@@ -4179,102 +4269,143 @@ readers do not read off random characters that represent icons */
   min-height: 1px;
   padding-right: 15px;
   padding-left: 15px; }
+
 #conversejs .col {
   flex-basis: 0;
   flex-grow: 1;
   max-width: 100%; }
+
 #conversejs .col-auto {
   flex: 0 0 auto;
   width: auto;
   max-width: none; }
+
 #conversejs .col-1 {
-  flex: 0 0 8.3333333333%;
-  max-width: 8.3333333333%; }
+  flex: 0 0 8.33333%;
+  max-width: 8.33333%; }
+
 #conversejs .col-2 {
-  flex: 0 0 16.6666666667%;
-  max-width: 16.6666666667%; }
+  flex: 0 0 16.66667%;
+  max-width: 16.66667%; }
+
 #conversejs .col-3 {
   flex: 0 0 25%;
   max-width: 25%; }
+
 #conversejs .col-4 {
-  flex: 0 0 33.3333333333%;
-  max-width: 33.3333333333%; }
+  flex: 0 0 33.33333%;
+  max-width: 33.33333%; }
+
 #conversejs .col-5 {
-  flex: 0 0 41.6666666667%;
-  max-width: 41.6666666667%; }
+  flex: 0 0 41.66667%;
+  max-width: 41.66667%; }
+
 #conversejs .col-6 {
   flex: 0 0 50%;
   max-width: 50%; }
+
 #conversejs .col-7 {
-  flex: 0 0 58.3333333333%;
-  max-width: 58.3333333333%; }
+  flex: 0 0 58.33333%;
+  max-width: 58.33333%; }
+
 #conversejs .col-8 {
-  flex: 0 0 66.6666666667%;
-  max-width: 66.6666666667%; }
+  flex: 0 0 66.66667%;
+  max-width: 66.66667%; }
+
 #conversejs .col-9 {
   flex: 0 0 75%;
   max-width: 75%; }
+
 #conversejs .col-10 {
-  flex: 0 0 83.3333333333%;
-  max-width: 83.3333333333%; }
+  flex: 0 0 83.33333%;
+  max-width: 83.33333%; }
+
 #conversejs .col-11 {
-  flex: 0 0 91.6666666667%;
-  max-width: 91.6666666667%; }
+  flex: 0 0 91.66667%;
+  max-width: 91.66667%; }
+
 #conversejs .col-12 {
   flex: 0 0 100%;
   max-width: 100%; }
+
 #conversejs .order-first {
   order: -1; }
+
 #conversejs .order-last {
   order: 13; }
+
 #conversejs .order-0 {
   order: 0; }
+
 #conversejs .order-1 {
   order: 1; }
+
 #conversejs .order-2 {
   order: 2; }
+
 #conversejs .order-3 {
   order: 3; }
+
 #conversejs .order-4 {
   order: 4; }
+
 #conversejs .order-5 {
   order: 5; }
+
 #conversejs .order-6 {
   order: 6; }
+
 #conversejs .order-7 {
   order: 7; }
+
 #conversejs .order-8 {
   order: 8; }
+
 #conversejs .order-9 {
   order: 9; }
+
 #conversejs .order-10 {
   order: 10; }
+
 #conversejs .order-11 {
   order: 11; }
+
 #conversejs .order-12 {
   order: 12; }
+
 #conversejs .offset-1 {
-  margin-left: 8.3333333333%; }
+  margin-left: 8.33333%; }
+
 #conversejs .offset-2 {
-  margin-left: 16.6666666667%; }
+  margin-left: 16.66667%; }
+
 #conversejs .offset-3 {
   margin-left: 25%; }
+
 #conversejs .offset-4 {
-  margin-left: 33.3333333333%; }
+  margin-left: 33.33333%; }
+
 #conversejs .offset-5 {
-  margin-left: 41.6666666667%; }
+  margin-left: 41.66667%; }
+
 #conversejs .offset-6 {
   margin-left: 50%; }
+
 #conversejs .offset-7 {
-  margin-left: 58.3333333333%; }
+  margin-left: 58.33333%; }
+
 #conversejs .offset-8 {
-  margin-left: 66.6666666667%; }
+  margin-left: 66.66667%; }
+
 #conversejs .offset-9 {
   margin-left: 75%; }
+
 #conversejs .offset-10 {
-  margin-left: 83.3333333333%; }
+  margin-left: 83.33333%; }
+
 #conversejs .offset-11 {
-  margin-left: 91.6666666667%; }
+  margin-left: 91.66667%; }
+
 @media (min-width: 576px) {
   #conversejs .col-sm {
     flex-basis: 0;
@@ -4285,38 +4416,38 @@ readers do not read off random characters that represent icons */
     width: auto;
     max-width: none; }
   #conversejs .col-sm-1 {
-    flex: 0 0 8.3333333333%;
-    max-width: 8.3333333333%; }
+    flex: 0 0 8.33333%;
+    max-width: 8.33333%; }
   #conversejs .col-sm-2 {
-    flex: 0 0 16.6666666667%;
-    max-width: 16.6666666667%; }
+    flex: 0 0 16.66667%;
+    max-width: 16.66667%; }
   #conversejs .col-sm-3 {
     flex: 0 0 25%;
     max-width: 25%; }
   #conversejs .col-sm-4 {
-    flex: 0 0 33.3333333333%;
-    max-width: 33.3333333333%; }
+    flex: 0 0 33.33333%;
+    max-width: 33.33333%; }
   #conversejs .col-sm-5 {
-    flex: 0 0 41.6666666667%;
-    max-width: 41.6666666667%; }
+    flex: 0 0 41.66667%;
+    max-width: 41.66667%; }
   #conversejs .col-sm-6 {
     flex: 0 0 50%;
     max-width: 50%; }
   #conversejs .col-sm-7 {
-    flex: 0 0 58.3333333333%;
-    max-width: 58.3333333333%; }
+    flex: 0 0 58.33333%;
+    max-width: 58.33333%; }
   #conversejs .col-sm-8 {
-    flex: 0 0 66.6666666667%;
-    max-width: 66.6666666667%; }
+    flex: 0 0 66.66667%;
+    max-width: 66.66667%; }
   #conversejs .col-sm-9 {
     flex: 0 0 75%;
     max-width: 75%; }
   #conversejs .col-sm-10 {
-    flex: 0 0 83.3333333333%;
-    max-width: 83.3333333333%; }
+    flex: 0 0 83.33333%;
+    max-width: 83.33333%; }
   #conversejs .col-sm-11 {
-    flex: 0 0 91.6666666667%;
-    max-width: 91.6666666667%; }
+    flex: 0 0 91.66667%;
+    max-width: 91.66667%; }
   #conversejs .col-sm-12 {
     flex: 0 0 100%;
     max-width: 100%; }
@@ -4353,27 +4484,28 @@ readers do not read off random characters that represent icons */
   #conversejs .offset-sm-0 {
     margin-left: 0; }
   #conversejs .offset-sm-1 {
-    margin-left: 8.3333333333%; }
+    margin-left: 8.33333%; }
   #conversejs .offset-sm-2 {
-    margin-left: 16.6666666667%; }
+    margin-left: 16.66667%; }
   #conversejs .offset-sm-3 {
     margin-left: 25%; }
   #conversejs .offset-sm-4 {
-    margin-left: 33.3333333333%; }
+    margin-left: 33.33333%; }
   #conversejs .offset-sm-5 {
-    margin-left: 41.6666666667%; }
+    margin-left: 41.66667%; }
   #conversejs .offset-sm-6 {
     margin-left: 50%; }
   #conversejs .offset-sm-7 {
-    margin-left: 58.3333333333%; }
+    margin-left: 58.33333%; }
   #conversejs .offset-sm-8 {
-    margin-left: 66.6666666667%; }
+    margin-left: 66.66667%; }
   #conversejs .offset-sm-9 {
     margin-left: 75%; }
   #conversejs .offset-sm-10 {
-    margin-left: 83.3333333333%; }
+    margin-left: 83.33333%; }
   #conversejs .offset-sm-11 {
-    margin-left: 91.6666666667%; } }
+    margin-left: 91.66667%; } }
+
 @media (min-width: 768px) {
   #conversejs .col-md {
     flex-basis: 0;
@@ -4384,38 +4516,38 @@ readers do not read off random characters that represent icons */
     width: auto;
     max-width: none; }
   #conversejs .col-md-1 {
-    flex: 0 0 8.3333333333%;
-    max-width: 8.3333333333%; }
+    flex: 0 0 8.33333%;
+    max-width: 8.33333%; }
   #conversejs .col-md-2 {
-    flex: 0 0 16.6666666667%;
-    max-width: 16.6666666667%; }
+    flex: 0 0 16.66667%;
+    max-width: 16.66667%; }
   #conversejs .col-md-3 {
     flex: 0 0 25%;
     max-width: 25%; }
   #conversejs .col-md-4 {
-    flex: 0 0 33.3333333333%;
-    max-width: 33.3333333333%; }
+    flex: 0 0 33.33333%;
+    max-width: 33.33333%; }
   #conversejs .col-md-5 {
-    flex: 0 0 41.6666666667%;
-    max-width: 41.6666666667%; }
+    flex: 0 0 41.66667%;
+    max-width: 41.66667%; }
   #conversejs .col-md-6 {
     flex: 0 0 50%;
     max-width: 50%; }
   #conversejs .col-md-7 {
-    flex: 0 0 58.3333333333%;
-    max-width: 58.3333333333%; }
+    flex: 0 0 58.33333%;
+    max-width: 58.33333%; }
   #conversejs .col-md-8 {
-    flex: 0 0 66.6666666667%;
-    max-width: 66.6666666667%; }
+    flex: 0 0 66.66667%;
+    max-width: 66.66667%; }
   #conversejs .col-md-9 {
     flex: 0 0 75%;
     max-width: 75%; }
   #conversejs .col-md-10 {
-    flex: 0 0 83.3333333333%;
-    max-width: 83.3333333333%; }
+    flex: 0 0 83.33333%;
+    max-width: 83.33333%; }
   #conversejs .col-md-11 {
-    flex: 0 0 91.6666666667%;
-    max-width: 91.6666666667%; }
+    flex: 0 0 91.66667%;
+    max-width: 91.66667%; }
   #conversejs .col-md-12 {
     flex: 0 0 100%;
     max-width: 100%; }
@@ -4452,27 +4584,28 @@ readers do not read off random characters that represent icons */
   #conversejs .offset-md-0 {
     margin-left: 0; }
   #conversejs .offset-md-1 {
-    margin-left: 8.3333333333%; }
+    margin-left: 8.33333%; }
   #conversejs .offset-md-2 {
-    margin-left: 16.6666666667%; }
+    margin-left: 16.66667%; }
   #conversejs .offset-md-3 {
     margin-left: 25%; }
   #conversejs .offset-md-4 {
-    margin-left: 33.3333333333%; }
+    margin-left: 33.33333%; }
   #conversejs .offset-md-5 {
-    margin-left: 41.6666666667%; }
+    margin-left: 41.66667%; }
   #conversejs .offset-md-6 {
     margin-left: 50%; }
   #conversejs .offset-md-7 {
-    margin-left: 58.3333333333%; }
+    margin-left: 58.33333%; }
   #conversejs .offset-md-8 {
-    margin-left: 66.6666666667%; }
+    margin-left: 66.66667%; }
   #conversejs .offset-md-9 {
     margin-left: 75%; }
   #conversejs .offset-md-10 {
-    margin-left: 83.3333333333%; }
+    margin-left: 83.33333%; }
   #conversejs .offset-md-11 {
-    margin-left: 91.6666666667%; } }
+    margin-left: 91.66667%; } }
+
 @media (min-width: 992px) {
   #conversejs .col-lg {
     flex-basis: 0;
@@ -4483,38 +4616,38 @@ readers do not read off random characters that represent icons */
     width: auto;
     max-width: none; }
   #conversejs .col-lg-1 {
-    flex: 0 0 8.3333333333%;
-    max-width: 8.3333333333%; }
+    flex: 0 0 8.33333%;
+    max-width: 8.33333%; }
   #conversejs .col-lg-2 {
-    flex: 0 0 16.6666666667%;
-    max-width: 16.6666666667%; }
+    flex: 0 0 16.66667%;
+    max-width: 16.66667%; }
   #conversejs .col-lg-3 {
     flex: 0 0 25%;
     max-width: 25%; }
   #conversejs .col-lg-4 {
-    flex: 0 0 33.3333333333%;
-    max-width: 33.3333333333%; }
+    flex: 0 0 33.33333%;
+    max-width: 33.33333%; }
   #conversejs .col-lg-5 {
-    flex: 0 0 41.6666666667%;
-    max-width: 41.6666666667%; }
+    flex: 0 0 41.66667%;
+    max-width: 41.66667%; }
   #conversejs .col-lg-6 {
     flex: 0 0 50%;
     max-width: 50%; }
   #conversejs .col-lg-7 {
-    flex: 0 0 58.3333333333%;
-    max-width: 58.3333333333%; }
+    flex: 0 0 58.33333%;
+    max-width: 58.33333%; }
   #conversejs .col-lg-8 {
-    flex: 0 0 66.6666666667%;
-    max-width: 66.6666666667%; }
+    flex: 0 0 66.66667%;
+    max-width: 66.66667%; }
   #conversejs .col-lg-9 {
     flex: 0 0 75%;
     max-width: 75%; }
   #conversejs .col-lg-10 {
-    flex: 0 0 83.3333333333%;
-    max-width: 83.3333333333%; }
+    flex: 0 0 83.33333%;
+    max-width: 83.33333%; }
   #conversejs .col-lg-11 {
-    flex: 0 0 91.6666666667%;
-    max-width: 91.6666666667%; }
+    flex: 0 0 91.66667%;
+    max-width: 91.66667%; }
   #conversejs .col-lg-12 {
     flex: 0 0 100%;
     max-width: 100%; }
@@ -4551,27 +4684,28 @@ readers do not read off random characters that represent icons */
   #conversejs .offset-lg-0 {
     margin-left: 0; }
   #conversejs .offset-lg-1 {
-    margin-left: 8.3333333333%; }
+    margin-left: 8.33333%; }
   #conversejs .offset-lg-2 {
-    margin-left: 16.6666666667%; }
+    margin-left: 16.66667%; }
   #conversejs .offset-lg-3 {
     margin-left: 25%; }
   #conversejs .offset-lg-4 {
-    margin-left: 33.3333333333%; }
+    margin-left: 33.33333%; }
   #conversejs .offset-lg-5 {
-    margin-left: 41.6666666667%; }
+    margin-left: 41.66667%; }
   #conversejs .offset-lg-6 {
     margin-left: 50%; }
   #conversejs .offset-lg-7 {
-    margin-left: 58.3333333333%; }
+    margin-left: 58.33333%; }
   #conversejs .offset-lg-8 {
-    margin-left: 66.6666666667%; }
+    margin-left: 66.66667%; }
   #conversejs .offset-lg-9 {
     margin-left: 75%; }
   #conversejs .offset-lg-10 {
-    margin-left: 83.3333333333%; }
+    margin-left: 83.33333%; }
   #conversejs .offset-lg-11 {
-    margin-left: 91.6666666667%; } }
+    margin-left: 91.66667%; } }
+
 @media (min-width: 1200px) {
   #conversejs .col-xl {
     flex-basis: 0;
@@ -4582,38 +4716,38 @@ readers do not read off random characters that represent icons */
     width: auto;
     max-width: none; }
   #conversejs .col-xl-1 {
-    flex: 0 0 8.3333333333%;
-    max-width: 8.3333333333%; }
+    flex: 0 0 8.33333%;
+    max-width: 8.33333%; }
   #conversejs .col-xl-2 {
-    flex: 0 0 16.6666666667%;
-    max-width: 16.6666666667%; }
+    flex: 0 0 16.66667%;
+    max-width: 16.66667%; }
   #conversejs .col-xl-3 {
     flex: 0 0 25%;
     max-width: 25%; }
   #conversejs .col-xl-4 {
-    flex: 0 0 33.3333333333%;
-    max-width: 33.3333333333%; }
+    flex: 0 0 33.33333%;
+    max-width: 33.33333%; }
   #conversejs .col-xl-5 {
-    flex: 0 0 41.6666666667%;
-    max-width: 41.6666666667%; }
+    flex: 0 0 41.66667%;
+    max-width: 41.66667%; }
   #conversejs .col-xl-6 {
     flex: 0 0 50%;
     max-width: 50%; }
   #conversejs .col-xl-7 {
-    flex: 0 0 58.3333333333%;
-    max-width: 58.3333333333%; }
+    flex: 0 0 58.33333%;
+    max-width: 58.33333%; }
   #conversejs .col-xl-8 {
-    flex: 0 0 66.6666666667%;
-    max-width: 66.6666666667%; }
+    flex: 0 0 66.66667%;
+    max-width: 66.66667%; }
   #conversejs .col-xl-9 {
     flex: 0 0 75%;
     max-width: 75%; }
   #conversejs .col-xl-10 {
-    flex: 0 0 83.3333333333%;
-    max-width: 83.3333333333%; }
+    flex: 0 0 83.33333%;
+    max-width: 83.33333%; }
   #conversejs .col-xl-11 {
-    flex: 0 0 91.6666666667%;
-    max-width: 91.6666666667%; }
+    flex: 0 0 91.66667%;
+    max-width: 91.66667%; }
   #conversejs .col-xl-12 {
     flex: 0 0 100%;
     max-width: 100%; }
@@ -4650,27 +4784,28 @@ readers do not read off random characters that represent icons */
   #conversejs .offset-xl-0 {
     margin-left: 0; }
   #conversejs .offset-xl-1 {
-    margin-left: 8.3333333333%; }
+    margin-left: 8.33333%; }
   #conversejs .offset-xl-2 {
-    margin-left: 16.6666666667%; }
+    margin-left: 16.66667%; }
   #conversejs .offset-xl-3 {
     margin-left: 25%; }
   #conversejs .offset-xl-4 {
-    margin-left: 33.3333333333%; }
+    margin-left: 33.33333%; }
   #conversejs .offset-xl-5 {
-    margin-left: 41.6666666667%; }
+    margin-left: 41.66667%; }
   #conversejs .offset-xl-6 {
     margin-left: 50%; }
   #conversejs .offset-xl-7 {
-    margin-left: 58.3333333333%; }
+    margin-left: 58.33333%; }
   #conversejs .offset-xl-8 {
-    margin-left: 66.6666666667%; }
+    margin-left: 66.66667%; }
   #conversejs .offset-xl-9 {
     margin-left: 75%; }
   #conversejs .offset-xl-10 {
-    margin-left: 83.3333333333%; }
+    margin-left: 83.33333%; }
   #conversejs .offset-xl-11 {
-    margin-left: 91.6666666667%; } }
+    margin-left: 91.66667%; } }
+
 #conversejs .form-control {
   display: block;
   width: 100%;
@@ -4698,31 +4833,38 @@ readers do not read off random characters that represent icons */
   #conversejs .form-control:disabled, #conversejs .form-control[readonly] {
     background-color: #e9ecef;
     opacity: 1; }
+
 #conversejs select.form-control:not([size]):not([multiple]) {
   height: calc(2.25rem + 2px); }
+
 #conversejs select.form-control:focus::-ms-value {
   color: #495057;
   background-color: #fff; }
+
 #conversejs .form-control-file,
 #conversejs .form-control-range {
   display: block;
   width: 100%; }
+
 #conversejs .col-form-label {
   padding-top: calc(0.375rem + 1px);
   padding-bottom: calc(0.375rem + 1px);
   margin-bottom: 0;
   font-size: inherit;
   line-height: 1.5; }
+
 #conversejs .col-form-label-lg {
   padding-top: calc(0.5rem + 1px);
   padding-bottom: calc(0.5rem + 1px);
   font-size: 1.25rem;
   line-height: 1.5; }
+
 #conversejs .col-form-label-sm {
   padding-top: calc(0.25rem + 1px);
   padding-bottom: calc(0.25rem + 1px);
   font-size: 0.875rem;
   line-height: 1.5; }
+
 #conversejs .form-control-plaintext {
   display: block;
   width: 100%;
@@ -4744,6 +4886,7 @@ readers do not read off random characters that represent icons */
   #conversejs .input-group-lg > .input-group-append > .form-control-plaintext.btn {
     padding-right: 0;
     padding-left: 0; }
+
 #conversejs .form-control-sm, #conversejs .input-group-sm > .form-control,
 #conversejs .input-group-sm > .input-group-prepend > .input-group-text,
 #conversejs .input-group-sm > .input-group-append > .input-group-text,
@@ -4753,12 +4896,14 @@ readers do not read off random characters that represent icons */
   font-size: 0.875rem;
   line-height: 1.5;
   border-radius: 0.2rem; }
+
 #conversejs select.form-control-sm:not([size]):not([multiple]), #conversejs .input-group-sm > select.form-control:not([size]):not([multiple]),
 #conversejs .input-group-sm > .input-group-prepend > select.input-group-text:not([size]):not([multiple]),
 #conversejs .input-group-sm > .input-group-append > select.input-group-text:not([size]):not([multiple]),
 #conversejs .input-group-sm > .input-group-prepend > select.btn:not([size]):not([multiple]),
 #conversejs .input-group-sm > .input-group-append > select.btn:not([size]):not([multiple]) {
   height: calc(1.8125rem + 2px); }
+
 #conversejs .form-control-lg, #conversejs .input-group-lg > .form-control,
 #conversejs .input-group-lg > .input-group-prepend > .input-group-text,
 #conversejs .input-group-lg > .input-group-append > .input-group-text,
@@ -4768,17 +4913,21 @@ readers do not read off random characters that represent icons */
   font-size: 1.25rem;
   line-height: 1.5;
   border-radius: 0.3rem; }
+
 #conversejs select.form-control-lg:not([size]):not([multiple]), #conversejs .input-group-lg > select.form-control:not([size]):not([multiple]),
 #conversejs .input-group-lg > .input-group-prepend > select.input-group-text:not([size]):not([multiple]),
 #conversejs .input-group-lg > .input-group-append > select.input-group-text:not([size]):not([multiple]),
 #conversejs .input-group-lg > .input-group-prepend > select.btn:not([size]):not([multiple]),
 #conversejs .input-group-lg > .input-group-append > select.btn:not([size]):not([multiple]) {
   height: calc(2.875rem + 2px); }
+
 #conversejs .form-group {
   margin-bottom: 1rem; }
+
 #conversejs .form-text {
   display: block;
   margin-top: 0.25rem; }
+
 #conversejs .form-row {
   display: flex;
   flex-wrap: wrap;
@@ -4788,18 +4937,22 @@ readers do not read off random characters that represent icons */
   #conversejs .form-row > [class*="col-"] {
     padding-right: 5px;
     padding-left: 5px; }
+
 #conversejs .form-check {
   position: relative;
   display: block;
   padding-left: 1.25rem; }
+
 #conversejs .form-check-input {
   position: absolute;
   margin-top: 0.3rem;
   margin-left: -1.25rem; }
   #conversejs .form-check-input:disabled ~ .form-check-label {
     color: #6c757d; }
+
 #conversejs .form-check-label {
   margin-bottom: 0; }
+
 #conversejs .form-check-inline {
   display: inline-flex;
   align-items: center;
@@ -4810,12 +4963,14 @@ readers do not read off random characters that represent icons */
     margin-top: 0;
     margin-right: 0.3125rem;
     margin-left: 0; }
+
 #conversejs .valid-feedback {
   display: none;
   width: 100%;
   margin-top: 0.25rem;
   font-size: 80%;
   color: #3AA569; }
+
 #conversejs .valid-tooltip {
   position: absolute;
   top: 100%;
@@ -4829,57 +4984,70 @@ readers do not read off random characters that represent icons */
   color: #fff;
   background-color: rgba(58, 165, 105, 0.8);
   border-radius: .2rem; }
-.was-validated #conversejs .form-control:valid, #conversejs .form-control.is-valid,
-.was-validated #conversejs .custom-select:valid,
+
+.was-validated #conversejs .form-control:valid, #conversejs .form-control.is-valid, .was-validated
+#conversejs .custom-select:valid,
 #conversejs .custom-select.is-valid {
   border-color: #3AA569; }
-  .was-validated #conversejs .form-control:valid:focus, #conversejs .form-control.is-valid:focus,
-  .was-validated #conversejs .custom-select:valid:focus,
+  .was-validated #conversejs .form-control:valid:focus, #conversejs .form-control.is-valid:focus, .was-validated
+  #conversejs .custom-select:valid:focus,
   #conversejs .custom-select.is-valid:focus {
     border-color: #3AA569;
     box-shadow: 0 0 0 0.2rem rgba(58, 165, 105, 0.25); }
   .was-validated #conversejs .form-control:valid ~ .valid-feedback,
   .was-validated #conversejs .form-control:valid ~ .valid-tooltip, #conversejs .form-control.is-valid ~ .valid-feedback,
-  #conversejs .form-control.is-valid ~ .valid-tooltip,
-  .was-validated #conversejs .custom-select:valid ~ .valid-feedback,
-  .was-validated #conversejs .custom-select:valid ~ .valid-tooltip,
+  #conversejs .form-control.is-valid ~ .valid-tooltip, .was-validated
+  #conversejs .custom-select:valid ~ .valid-feedback,
+  .was-validated
+  #conversejs .custom-select:valid ~ .valid-tooltip,
   #conversejs .custom-select.is-valid ~ .valid-feedback,
   #conversejs .custom-select.is-valid ~ .valid-tooltip {
     display: block; }
+
 .was-validated #conversejs .form-check-input:valid ~ .form-check-label, #conversejs .form-check-input.is-valid ~ .form-check-label {
   color: #3AA569; }
+
 .was-validated #conversejs .form-check-input:valid ~ .valid-feedback,
 .was-validated #conversejs .form-check-input:valid ~ .valid-tooltip, #conversejs .form-check-input.is-valid ~ .valid-feedback,
 #conversejs .form-check-input.is-valid ~ .valid-tooltip {
   display: block; }
+
 .was-validated #conversejs .custom-control-input:valid ~ .custom-control-label, #conversejs .custom-control-input.is-valid ~ .custom-control-label {
   color: #3AA569; }
   .was-validated #conversejs .custom-control-input:valid ~ .custom-control-label::before, #conversejs .custom-control-input.is-valid ~ .custom-control-label::before {
     background-color: #89d6ab; }
+
 .was-validated #conversejs .custom-control-input:valid ~ .valid-feedback,
 .was-validated #conversejs .custom-control-input:valid ~ .valid-tooltip, #conversejs .custom-control-input.is-valid ~ .valid-feedback,
 #conversejs .custom-control-input.is-valid ~ .valid-tooltip {
   display: block; }
+
 .was-validated #conversejs .custom-control-input:valid:checked ~ .custom-control-label::before, #conversejs .custom-control-input.is-valid:checked ~ .custom-control-label::before {
   background-color: #50c282; }
+
 .was-validated #conversejs .custom-control-input:valid:focus ~ .custom-control-label::before, #conversejs .custom-control-input.is-valid:focus ~ .custom-control-label::before {
   box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(58, 165, 105, 0.25); }
+
 .was-validated #conversejs .custom-file-input:valid ~ .custom-file-label, #conversejs .custom-file-input.is-valid ~ .custom-file-label {
   border-color: #3AA569; }
   .was-validated #conversejs .custom-file-input:valid ~ .custom-file-label::before, #conversejs .custom-file-input.is-valid ~ .custom-file-label::before {
     border-color: inherit; }
+
 .was-validated #conversejs .custom-file-input:valid ~ .valid-feedback,
 .was-validated #conversejs .custom-file-input:valid ~ .valid-tooltip, #conversejs .custom-file-input.is-valid ~ .valid-feedback,
 #conversejs .custom-file-input.is-valid ~ .valid-tooltip {
   display: block; }
+
 .was-validated #conversejs .custom-file-input:valid:focus ~ .custom-file-label, #conversejs .custom-file-input.is-valid:focus ~ .custom-file-label {
   box-shadow: 0 0 0 0.2rem rgba(58, 165, 105, 0.25); }
+
 #conversejs .invalid-feedback {
   display: none;
   width: 100%;
   margin-top: 0.25rem;
   font-size: 80%;
   color: #E77051; }
+
 #conversejs .invalid-tooltip {
   position: absolute;
   top: 100%;
@@ -4893,51 +5061,63 @@ readers do not read off random characters that represent icons */
   color: #fff;
   background-color: rgba(231, 112, 81, 0.8);
   border-radius: .2rem; }
-.was-validated #conversejs .form-control:invalid, #conversejs .form-control.is-invalid,
-.was-validated #conversejs .custom-select:invalid,
+
+.was-validated #conversejs .form-control:invalid, #conversejs .form-control.is-invalid, .was-validated
+#conversejs .custom-select:invalid,
 #conversejs .custom-select.is-invalid {
   border-color: #E77051; }
-  .was-validated #conversejs .form-control:invalid:focus, #conversejs .form-control.is-invalid:focus,
-  .was-validated #conversejs .custom-select:invalid:focus,
+  .was-validated #conversejs .form-control:invalid:focus, #conversejs .form-control.is-invalid:focus, .was-validated
+  #conversejs .custom-select:invalid:focus,
   #conversejs .custom-select.is-invalid:focus {
     border-color: #E77051;
     box-shadow: 0 0 0 0.2rem rgba(231, 112, 81, 0.25); }
   .was-validated #conversejs .form-control:invalid ~ .invalid-feedback,
   .was-validated #conversejs .form-control:invalid ~ .invalid-tooltip, #conversejs .form-control.is-invalid ~ .invalid-feedback,
-  #conversejs .form-control.is-invalid ~ .invalid-tooltip,
-  .was-validated #conversejs .custom-select:invalid ~ .invalid-feedback,
-  .was-validated #conversejs .custom-select:invalid ~ .invalid-tooltip,
+  #conversejs .form-control.is-invalid ~ .invalid-tooltip, .was-validated
+  #conversejs .custom-select:invalid ~ .invalid-feedback,
+  .was-validated
+  #conversejs .custom-select:invalid ~ .invalid-tooltip,
   #conversejs .custom-select.is-invalid ~ .invalid-feedback,
   #conversejs .custom-select.is-invalid ~ .invalid-tooltip {
     display: block; }
+
 .was-validated #conversejs .form-check-input:invalid ~ .form-check-label, #conversejs .form-check-input.is-invalid ~ .form-check-label {
   color: #E77051; }
+
 .was-validated #conversejs .form-check-input:invalid ~ .invalid-feedback,
 .was-validated #conversejs .form-check-input:invalid ~ .invalid-tooltip, #conversejs .form-check-input.is-invalid ~ .invalid-feedback,
 #conversejs .form-check-input.is-invalid ~ .invalid-tooltip {
   display: block; }
+
 .was-validated #conversejs .custom-control-input:invalid ~ .custom-control-label, #conversejs .custom-control-input.is-invalid ~ .custom-control-label {
   color: #E77051; }
   .was-validated #conversejs .custom-control-input:invalid ~ .custom-control-label::before, #conversejs .custom-control-input.is-invalid ~ .custom-control-label::before {
     background-color: #f6ccc1; }
+
 .was-validated #conversejs .custom-control-input:invalid ~ .invalid-feedback,
 .was-validated #conversejs .custom-control-input:invalid ~ .invalid-tooltip, #conversejs .custom-control-input.is-invalid ~ .invalid-feedback,
 #conversejs .custom-control-input.is-invalid ~ .invalid-tooltip {
   display: block; }
+
 .was-validated #conversejs .custom-control-input:invalid:checked ~ .custom-control-label::before, #conversejs .custom-control-input.is-invalid:checked ~ .custom-control-label::before {
   background-color: #ed957e; }
+
 .was-validated #conversejs .custom-control-input:invalid:focus ~ .custom-control-label::before, #conversejs .custom-control-input.is-invalid:focus ~ .custom-control-label::before {
   box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(231, 112, 81, 0.25); }
+
 .was-validated #conversejs .custom-file-input:invalid ~ .custom-file-label, #conversejs .custom-file-input.is-invalid ~ .custom-file-label {
   border-color: #E77051; }
   .was-validated #conversejs .custom-file-input:invalid ~ .custom-file-label::before, #conversejs .custom-file-input.is-invalid ~ .custom-file-label::before {
     border-color: inherit; }
+
 .was-validated #conversejs .custom-file-input:invalid ~ .invalid-feedback,
 .was-validated #conversejs .custom-file-input:invalid ~ .invalid-tooltip, #conversejs .custom-file-input.is-invalid ~ .invalid-feedback,
 #conversejs .custom-file-input.is-invalid ~ .invalid-tooltip {
   display: block; }
+
 .was-validated #conversejs .custom-file-input:invalid:focus ~ .custom-file-label, #conversejs .custom-file-input.is-invalid:focus ~ .custom-file-label {
   box-shadow: 0 0 0 0.2rem rgba(231, 112, 81, 0.25); }
+
 #conversejs .form-inline {
   display: flex;
   flex-flow: row wrap;
@@ -4980,6 +5160,7 @@ readers do not read off random characters that represent icons */
       justify-content: center; }
     #conversejs .form-inline .custom-control-label {
       margin-bottom: 0; } }
+
 #conversejs .btn {
   display: inline-block;
   font-weight: 400;
@@ -5004,9 +5185,11 @@ readers do not read off random characters that represent icons */
     cursor: pointer; }
   #conversejs .btn:not(:disabled):not(.disabled):active, #conversejs .btn:not(:disabled):not(.disabled).active {
     background-image: none; }
+
 #conversejs a.btn.disabled,
 #conversejs fieldset:disabled a.btn {
   pointer-events: none; }
+
 #conversejs .btn-primary {
   color: #fff;
   background-color: #387592;
@@ -5021,12 +5204,15 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #387592;
     border-color: #387592; }
-  #conversejs .btn-primary:not(:disabled):not(.disabled):active, #conversejs .btn-primary:not(:disabled):not(.disabled).active, .show > #conversejs .btn-primary.dropdown-toggle {
+  #conversejs .btn-primary:not(:disabled):not(.disabled):active, #conversejs .btn-primary:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-primary.dropdown-toggle {
     color: #fff;
     background-color: #2a576d;
     border-color: #265064; }
-    #conversejs .btn-primary:not(:disabled):not(.disabled):active:focus, #conversejs .btn-primary:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-primary.dropdown-toggle:focus {
+    #conversejs .btn-primary:not(:disabled):not(.disabled):active:focus, #conversejs .btn-primary:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-primary.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(56, 117, 146, 0.5); }
+
 #conversejs .btn-secondary {
   color: #fff;
   background-color: #6c757d;
@@ -5041,12 +5227,15 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #6c757d;
     border-color: #6c757d; }
-  #conversejs .btn-secondary:not(:disabled):not(.disabled):active, #conversejs .btn-secondary:not(:disabled):not(.disabled).active, .show > #conversejs .btn-secondary.dropdown-toggle {
+  #conversejs .btn-secondary:not(:disabled):not(.disabled):active, #conversejs .btn-secondary:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-secondary.dropdown-toggle {
     color: #fff;
     background-color: #545b62;
     border-color: #4e555b; }
-    #conversejs .btn-secondary:not(:disabled):not(.disabled):active:focus, #conversejs .btn-secondary:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-secondary.dropdown-toggle:focus {
+    #conversejs .btn-secondary:not(:disabled):not(.disabled):active:focus, #conversejs .btn-secondary:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-secondary.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.5); }
+
 #conversejs .btn-success {
   color: #fff;
   background-color: #3AA569;
@@ -5061,12 +5250,15 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #3AA569;
     border-color: #3AA569; }
-  #conversejs .btn-success:not(:disabled):not(.disabled):active, #conversejs .btn-success:not(:disabled):not(.disabled).active, .show > #conversejs .btn-success.dropdown-toggle {
+  #conversejs .btn-success:not(:disabled):not(.disabled):active, #conversejs .btn-success:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-success.dropdown-toggle {
     color: #fff;
     background-color: #2d7f51;
     border-color: #29764b; }
-    #conversejs .btn-success:not(:disabled):not(.disabled):active:focus, #conversejs .btn-success:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-success.dropdown-toggle:focus {
+    #conversejs .btn-success:not(:disabled):not(.disabled):active:focus, #conversejs .btn-success:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-success.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(58, 165, 105, 0.5); }
+
 #conversejs .btn-info {
   color: #fff;
   background-color: #3AA569;
@@ -5081,12 +5273,15 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #3AA569;
     border-color: #3AA569; }
-  #conversejs .btn-info:not(:disabled):not(.disabled):active, #conversejs .btn-info:not(:disabled):not(.disabled).active, .show > #conversejs .btn-info.dropdown-toggle {
+  #conversejs .btn-info:not(:disabled):not(.disabled):active, #conversejs .btn-info:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-info.dropdown-toggle {
     color: #fff;
     background-color: #2d7f51;
     border-color: #29764b; }
-    #conversejs .btn-info:not(:disabled):not(.disabled):active:focus, #conversejs .btn-info:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-info.dropdown-toggle:focus {
+    #conversejs .btn-info:not(:disabled):not(.disabled):active:focus, #conversejs .btn-info:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-info.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(58, 165, 105, 0.5); }
+
 #conversejs .btn-warning {
   color: #212529;
   background-color: #ffc107;
@@ -5101,12 +5296,15 @@ readers do not read off random characters that represent icons */
     color: #212529;
     background-color: #ffc107;
     border-color: #ffc107; }
-  #conversejs .btn-warning:not(:disabled):not(.disabled):active, #conversejs .btn-warning:not(:disabled):not(.disabled).active, .show > #conversejs .btn-warning.dropdown-toggle {
+  #conversejs .btn-warning:not(:disabled):not(.disabled):active, #conversejs .btn-warning:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-warning.dropdown-toggle {
     color: #212529;
     background-color: #d39e00;
     border-color: #c69500; }
-    #conversejs .btn-warning:not(:disabled):not(.disabled):active:focus, #conversejs .btn-warning:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-warning.dropdown-toggle:focus {
+    #conversejs .btn-warning:not(:disabled):not(.disabled):active:focus, #conversejs .btn-warning:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-warning.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.5); }
+
 #conversejs .btn-danger {
   color: #fff;
   background-color: #E77051;
@@ -5121,12 +5319,15 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #E77051;
     border-color: #E77051; }
-  #conversejs .btn-danger:not(:disabled):not(.disabled):active, #conversejs .btn-danger:not(:disabled):not(.disabled).active, .show > #conversejs .btn-danger.dropdown-toggle {
+  #conversejs .btn-danger:not(:disabled):not(.disabled):active, #conversejs .btn-danger:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-danger.dropdown-toggle {
     color: #fff;
     background-color: #e14b24;
     border-color: #da451e; }
-    #conversejs .btn-danger:not(:disabled):not(.disabled):active:focus, #conversejs .btn-danger:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-danger.dropdown-toggle:focus {
+    #conversejs .btn-danger:not(:disabled):not(.disabled):active:focus, #conversejs .btn-danger:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-danger.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(231, 112, 81, 0.5); }
+
 #conversejs .btn-light {
   color: #212529;
   background-color: #f8f9fa;
@@ -5141,12 +5342,15 @@ readers do not read off random characters that represent icons */
     color: #212529;
     background-color: #f8f9fa;
     border-color: #f8f9fa; }
-  #conversejs .btn-light:not(:disabled):not(.disabled):active, #conversejs .btn-light:not(:disabled):not(.disabled).active, .show > #conversejs .btn-light.dropdown-toggle {
+  #conversejs .btn-light:not(:disabled):not(.disabled):active, #conversejs .btn-light:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-light.dropdown-toggle {
     color: #212529;
     background-color: #dae0e5;
     border-color: #d3d9df; }
-    #conversejs .btn-light:not(:disabled):not(.disabled):active:focus, #conversejs .btn-light:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-light.dropdown-toggle:focus {
+    #conversejs .btn-light:not(:disabled):not(.disabled):active:focus, #conversejs .btn-light:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-light.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(248, 249, 250, 0.5); }
+
 #conversejs .btn-dark {
   color: #fff;
   background-color: #343a40;
@@ -5161,12 +5365,15 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #343a40;
     border-color: #343a40; }
-  #conversejs .btn-dark:not(:disabled):not(.disabled):active, #conversejs .btn-dark:not(:disabled):not(.disabled).active, .show > #conversejs .btn-dark.dropdown-toggle {
+  #conversejs .btn-dark:not(:disabled):not(.disabled):active, #conversejs .btn-dark:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-dark.dropdown-toggle {
     color: #fff;
     background-color: #1d2124;
     border-color: #171a1d; }
-    #conversejs .btn-dark:not(:disabled):not(.disabled):active:focus, #conversejs .btn-dark:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-dark.dropdown-toggle:focus {
+    #conversejs .btn-dark:not(:disabled):not(.disabled):active:focus, #conversejs .btn-dark:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-dark.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.5); }
+
 #conversejs .btn-outline-primary {
   color: #387592;
   background-color: transparent;
@@ -5181,12 +5388,15 @@ readers do not read off random characters that represent icons */
   #conversejs .btn-outline-primary.disabled, #conversejs .btn-outline-primary:disabled {
     color: #387592;
     background-color: transparent; }
-  #conversejs .btn-outline-primary:not(:disabled):not(.disabled):active, #conversejs .btn-outline-primary:not(:disabled):not(.disabled).active, .show > #conversejs .btn-outline-primary.dropdown-toggle {
+  #conversejs .btn-outline-primary:not(:disabled):not(.disabled):active, #conversejs .btn-outline-primary:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-outline-primary.dropdown-toggle {
     color: #fff;
     background-color: #387592;
     border-color: #387592; }
-    #conversejs .btn-outline-primary:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-primary:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-outline-primary.dropdown-toggle:focus {
+    #conversejs .btn-outline-primary:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-primary:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-outline-primary.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(56, 117, 146, 0.5); }
+
 #conversejs .btn-outline-secondary {
   color: #6c757d;
   background-color: transparent;
@@ -5201,12 +5411,15 @@ readers do not read off random characters that represent icons */
   #conversejs .btn-outline-secondary.disabled, #conversejs .btn-outline-secondary:disabled {
     color: #6c757d;
     background-color: transparent; }
-  #conversejs .btn-outline-secondary:not(:disabled):not(.disabled):active, #conversejs .btn-outline-secondary:not(:disabled):not(.disabled).active, .show > #conversejs .btn-outline-secondary.dropdown-toggle {
+  #conversejs .btn-outline-secondary:not(:disabled):not(.disabled):active, #conversejs .btn-outline-secondary:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-outline-secondary.dropdown-toggle {
     color: #fff;
     background-color: #6c757d;
     border-color: #6c757d; }
-    #conversejs .btn-outline-secondary:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-secondary:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-outline-secondary.dropdown-toggle:focus {
+    #conversejs .btn-outline-secondary:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-secondary:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-outline-secondary.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.5); }
+
 #conversejs .btn-outline-success {
   color: #3AA569;
   background-color: transparent;
@@ -5221,12 +5434,15 @@ readers do not read off random characters that represent icons */
   #conversejs .btn-outline-success.disabled, #conversejs .btn-outline-success:disabled {
     color: #3AA569;
     background-color: transparent; }
-  #conversejs .btn-outline-success:not(:disabled):not(.disabled):active, #conversejs .btn-outline-success:not(:disabled):not(.disabled).active, .show > #conversejs .btn-outline-success.dropdown-toggle {
+  #conversejs .btn-outline-success:not(:disabled):not(.disabled):active, #conversejs .btn-outline-success:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-outline-success.dropdown-toggle {
     color: #fff;
     background-color: #3AA569;
     border-color: #3AA569; }
-    #conversejs .btn-outline-success:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-success:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-outline-success.dropdown-toggle:focus {
+    #conversejs .btn-outline-success:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-success:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-outline-success.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(58, 165, 105, 0.5); }
+
 #conversejs .btn-outline-info {
   color: #3AA569;
   background-color: transparent;
@@ -5241,12 +5457,15 @@ readers do not read off random characters that represent icons */
   #conversejs .btn-outline-info.disabled, #conversejs .btn-outline-info:disabled {
     color: #3AA569;
     background-color: transparent; }
-  #conversejs .btn-outline-info:not(:disabled):not(.disabled):active, #conversejs .btn-outline-info:not(:disabled):not(.disabled).active, .show > #conversejs .btn-outline-info.dropdown-toggle {
+  #conversejs .btn-outline-info:not(:disabled):not(.disabled):active, #conversejs .btn-outline-info:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-outline-info.dropdown-toggle {
     color: #fff;
     background-color: #3AA569;
     border-color: #3AA569; }
-    #conversejs .btn-outline-info:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-info:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-outline-info.dropdown-toggle:focus {
+    #conversejs .btn-outline-info:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-info:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-outline-info.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(58, 165, 105, 0.5); }
+
 #conversejs .btn-outline-warning {
   color: #ffc107;
   background-color: transparent;
@@ -5261,12 +5480,15 @@ readers do not read off random characters that represent icons */
   #conversejs .btn-outline-warning.disabled, #conversejs .btn-outline-warning:disabled {
     color: #ffc107;
     background-color: transparent; }
-  #conversejs .btn-outline-warning:not(:disabled):not(.disabled):active, #conversejs .btn-outline-warning:not(:disabled):not(.disabled).active, .show > #conversejs .btn-outline-warning.dropdown-toggle {
+  #conversejs .btn-outline-warning:not(:disabled):not(.disabled):active, #conversejs .btn-outline-warning:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-outline-warning.dropdown-toggle {
     color: #212529;
     background-color: #ffc107;
     border-color: #ffc107; }
-    #conversejs .btn-outline-warning:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-warning:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-outline-warning.dropdown-toggle:focus {
+    #conversejs .btn-outline-warning:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-warning:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-outline-warning.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.5); }
+
 #conversejs .btn-outline-danger {
   color: #E77051;
   background-color: transparent;
@@ -5281,12 +5503,15 @@ readers do not read off random characters that represent icons */
   #conversejs .btn-outline-danger.disabled, #conversejs .btn-outline-danger:disabled {
     color: #E77051;
     background-color: transparent; }
-  #conversejs .btn-outline-danger:not(:disabled):not(.disabled):active, #conversejs .btn-outline-danger:not(:disabled):not(.disabled).active, .show > #conversejs .btn-outline-danger.dropdown-toggle {
+  #conversejs .btn-outline-danger:not(:disabled):not(.disabled):active, #conversejs .btn-outline-danger:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-outline-danger.dropdown-toggle {
     color: #fff;
     background-color: #E77051;
     border-color: #E77051; }
-    #conversejs .btn-outline-danger:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-danger:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-outline-danger.dropdown-toggle:focus {
+    #conversejs .btn-outline-danger:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-danger:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-outline-danger.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(231, 112, 81, 0.5); }
+
 #conversejs .btn-outline-light {
   color: #f8f9fa;
   background-color: transparent;
@@ -5301,12 +5526,15 @@ readers do not read off random characters that represent icons */
   #conversejs .btn-outline-light.disabled, #conversejs .btn-outline-light:disabled {
     color: #f8f9fa;
     background-color: transparent; }
-  #conversejs .btn-outline-light:not(:disabled):not(.disabled):active, #conversejs .btn-outline-light:not(:disabled):not(.disabled).active, .show > #conversejs .btn-outline-light.dropdown-toggle {
+  #conversejs .btn-outline-light:not(:disabled):not(.disabled):active, #conversejs .btn-outline-light:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-outline-light.dropdown-toggle {
     color: #212529;
     background-color: #f8f9fa;
     border-color: #f8f9fa; }
-    #conversejs .btn-outline-light:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-light:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-outline-light.dropdown-toggle:focus {
+    #conversejs .btn-outline-light:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-light:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-outline-light.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(248, 249, 250, 0.5); }
+
 #conversejs .btn-outline-dark {
   color: #343a40;
   background-color: transparent;
@@ -5321,12 +5549,15 @@ readers do not read off random characters that represent icons */
   #conversejs .btn-outline-dark.disabled, #conversejs .btn-outline-dark:disabled {
     color: #343a40;
     background-color: transparent; }
-  #conversejs .btn-outline-dark:not(:disabled):not(.disabled):active, #conversejs .btn-outline-dark:not(:disabled):not(.disabled).active, .show > #conversejs .btn-outline-dark.dropdown-toggle {
+  #conversejs .btn-outline-dark:not(:disabled):not(.disabled):active, #conversejs .btn-outline-dark:not(:disabled):not(.disabled).active,
+  .show > #conversejs .btn-outline-dark.dropdown-toggle {
     color: #fff;
     background-color: #343a40;
     border-color: #343a40; }
-    #conversejs .btn-outline-dark:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-dark:not(:disabled):not(.disabled).active:focus, .show > #conversejs .btn-outline-dark.dropdown-toggle:focus {
+    #conversejs .btn-outline-dark:not(:disabled):not(.disabled):active:focus, #conversejs .btn-outline-dark:not(:disabled):not(.disabled).active:focus,
+    .show > #conversejs .btn-outline-dark.dropdown-toggle:focus {
       box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.5); }
+
 #conversejs .btn-link {
   font-weight: 400;
   color: #578EA9;
@@ -5342,46 +5573,57 @@ readers do not read off random characters that represent icons */
     box-shadow: none; }
   #conversejs .btn-link:disabled, #conversejs .btn-link.disabled {
     color: #6c757d; }
+
 #conversejs .btn-lg, #conversejs .btn-group-lg > .btn {
   padding: 0.5rem 1rem;
   font-size: 1.25rem;
   line-height: 1.5;
   border-radius: 0.3rem; }
+
 #conversejs .btn-sm, #conversejs .btn-group-sm > .btn {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   line-height: 1.5;
   border-radius: 0.2rem; }
+
 #conversejs .btn-block {
   display: block;
   width: 100%; }
   #conversejs .btn-block + .btn-block {
     margin-top: 0.5rem; }
+
 #conversejs input[type="submit"].btn-block,
 #conversejs input[type="reset"].btn-block,
 #conversejs input[type="button"].btn-block {
   width: 100%; }
+
 #conversejs .fade {
   opacity: 0;
   transition: opacity 0.15s linear; }
   #conversejs .fade.show {
     opacity: 1; }
+
 #conversejs .collapse {
   display: none; }
   #conversejs .collapse.show {
     display: block; }
+
 #conversejs tr.collapse.show {
   display: table-row; }
+
 #conversejs tbody.collapse.show {
   display: table-row-group; }
+
 #conversejs .collapsing {
   position: relative;
   height: 0;
   overflow: hidden;
   transition: height 0.35s ease; }
+
 #conversejs .dropup,
 #conversejs .dropdown {
   position: relative; }
+
 #conversejs .dropdown-toggle::after {
   display: inline-block;
   width: 0;
@@ -5393,8 +5635,10 @@ readers do not read off random characters that represent icons */
   border-right: 0.3em solid transparent;
   border-bottom: 0;
   border-left: 0.3em solid transparent; }
+
 #conversejs .dropdown-toggle:empty::after {
   margin-left: 0; }
+
 #conversejs .dropdown-menu {
   position: absolute;
   top: 100%;
@@ -5413,9 +5657,11 @@ readers do not read off random characters that represent icons */
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 0.25rem; }
+
 #conversejs .dropup .dropdown-menu {
   margin-top: 0;
   margin-bottom: 0.125rem; }
+
 #conversejs .dropup .dropdown-toggle::after {
   display: inline-block;
   width: 0;
@@ -5427,11 +5673,14 @@ readers do not read off random characters that represent icons */
   border-right: 0.3em solid transparent;
   border-bottom: 0.3em solid;
   border-left: 0.3em solid transparent; }
+
 #conversejs .dropup .dropdown-toggle:empty::after {
   margin-left: 0; }
+
 #conversejs .dropright .dropdown-menu {
   margin-top: 0;
   margin-left: 0.125rem; }
+
 #conversejs .dropright .dropdown-toggle::after {
   display: inline-block;
   width: 0;
@@ -5442,13 +5691,17 @@ readers do not read off random characters that represent icons */
   border-top: 0.3em solid transparent;
   border-bottom: 0.3em solid transparent;
   border-left: 0.3em solid; }
+
 #conversejs .dropright .dropdown-toggle:empty::after {
   margin-left: 0; }
+
 #conversejs .dropright .dropdown-toggle::after {
   vertical-align: 0; }
+
 #conversejs .dropleft .dropdown-menu {
   margin-top: 0;
   margin-right: 0.125rem; }
+
 #conversejs .dropleft .dropdown-toggle::after {
   display: inline-block;
   width: 0;
@@ -5456,8 +5709,10 @@ readers do not read off random characters that represent icons */
   margin-left: 0.255em;
   vertical-align: 0.255em;
   content: ""; }
+
 #conversejs .dropleft .dropdown-toggle::after {
   display: none; }
+
 #conversejs .dropleft .dropdown-toggle::before {
   display: inline-block;
   width: 0;
@@ -5468,15 +5723,19 @@ readers do not read off random characters that represent icons */
   border-top: 0.3em solid transparent;
   border-right: 0.3em solid;
   border-bottom: 0.3em solid transparent; }
+
 #conversejs .dropleft .dropdown-toggle:empty::after {
   margin-left: 0; }
+
 #conversejs .dropleft .dropdown-toggle::before {
   vertical-align: 0; }
+
 #conversejs .dropdown-divider {
   height: 0;
   margin: 0.5rem 0;
   overflow: hidden;
   border-top: 1px solid #e9ecef; }
+
 #conversejs .dropdown-item {
   display: block;
   width: 100%;
@@ -5499,8 +5758,10 @@ readers do not read off random characters that represent icons */
   #conversejs .dropdown-item.disabled, #conversejs .dropdown-item:disabled {
     color: #6c757d;
     background-color: transparent; }
+
 #conversejs .dropdown-menu.show {
   display: block; }
+
 #conversejs .dropdown-header {
   display: block;
   padding: 0.5rem 1.5rem;
@@ -5508,6 +5769,7 @@ readers do not read off random characters that represent icons */
   font-size: 0.875rem;
   color: #6c757d;
   white-space: nowrap; }
+
 #conversejs .btn-group,
 #conversejs .btn-group-vertical {
   position: relative;
@@ -5534,33 +5796,41 @@ readers do not read off random characters that represent icons */
   #conversejs .btn-group-vertical .btn-group + .btn,
   #conversejs .btn-group-vertical .btn-group + .btn-group {
     margin-left: -1px; }
+
 #conversejs .btn-toolbar {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start; }
   #conversejs .btn-toolbar .input-group {
     width: auto; }
+
 #conversejs .btn-group > .btn:first-child {
   margin-left: 0; }
+
 #conversejs .btn-group > .btn:not(:last-child):not(.dropdown-toggle),
 #conversejs .btn-group > .btn-group:not(:last-child) > .btn {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0; }
+
 #conversejs .btn-group > .btn:not(:first-child),
 #conversejs .btn-group > .btn-group:not(:first-child) > .btn {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0; }
+
 #conversejs .dropdown-toggle-split {
   padding-right: 0.5625rem;
   padding-left: 0.5625rem; }
   #conversejs .dropdown-toggle-split::after {
     margin-left: 0; }
+
 #conversejs .btn-sm + .dropdown-toggle-split, #conversejs .btn-group-sm > .btn + .dropdown-toggle-split {
   padding-right: 0.375rem;
   padding-left: 0.375rem; }
+
 #conversejs .btn-lg + .dropdown-toggle-split, #conversejs .btn-group-lg > .btn + .dropdown-toggle-split {
   padding-right: 0.75rem;
   padding-left: 0.75rem; }
+
 #conversejs .btn-group-vertical {
   flex-direction: column;
   align-items: flex-start;
@@ -5582,6 +5852,7 @@ readers do not read off random characters that represent icons */
   #conversejs .btn-group-vertical > .btn-group:not(:first-child) > .btn {
     border-top-left-radius: 0;
     border-top-right-radius: 0; }
+
 #conversejs .btn-group-toggle > .btn,
 #conversejs .btn-group-toggle > .btn-group > .btn {
   margin-bottom: 0; }
@@ -5592,6 +5863,7 @@ readers do not read off random characters that represent icons */
     position: absolute;
     clip: rect(0, 0, 0, 0);
     pointer-events: none; }
+
 #conversejs .input-group {
   position: relative;
   display: flex;
@@ -5630,12 +5902,15 @@ readers do not read off random characters that represent icons */
   #conversejs .input-group > .custom-file {
     display: flex;
     align-items: center; }
-    #conversejs .input-group > .custom-file:not(:last-child) .custom-file-label, #conversejs .input-group > .custom-file:not(:last-child) .custom-file-label::before {
+    #conversejs .input-group > .custom-file:not(:last-child) .custom-file-label,
+    #conversejs .input-group > .custom-file:not(:last-child) .custom-file-label::before {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0; }
-    #conversejs .input-group > .custom-file:not(:first-child) .custom-file-label, #conversejs .input-group > .custom-file:not(:first-child) .custom-file-label::before {
+    #conversejs .input-group > .custom-file:not(:first-child) .custom-file-label,
+    #conversejs .input-group > .custom-file:not(:first-child) .custom-file-label::before {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0; }
+
 #conversejs .input-group-prepend,
 #conversejs .input-group-append {
   display: flex; }
@@ -5652,10 +5927,13 @@ readers do not read off random characters that represent icons */
   #conversejs .input-group-append .input-group-text + .input-group-text,
   #conversejs .input-group-append .input-group-text + .btn {
     margin-left: -1px; }
+
 #conversejs .input-group-prepend {
   margin-right: -1px; }
+
 #conversejs .input-group-append {
   margin-left: -1px; }
+
 #conversejs .input-group-text {
   display: flex;
   align-items: center;
@@ -5673,6 +5951,7 @@ readers do not read off random characters that represent icons */
   #conversejs .input-group-text input[type="radio"],
   #conversejs .input-group-text input[type="checkbox"] {
     margin-top: 0; }
+
 #conversejs .input-group > .input-group-prepend > .btn,
 #conversejs .input-group > .input-group-prepend > .input-group-text,
 #conversejs .input-group > .input-group-append:not(:last-child) > .btn,
@@ -5681,6 +5960,7 @@ readers do not read off random characters that represent icons */
 #conversejs .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0; }
+
 #conversejs .input-group > .input-group-append > .btn,
 #conversejs .input-group > .input-group-append > .input-group-text,
 #conversejs .input-group > .input-group-prepend:not(:first-child) > .btn,
@@ -5689,14 +5969,17 @@ readers do not read off random characters that represent icons */
 #conversejs .input-group > .input-group-prepend:first-child > .input-group-text:not(:first-child) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0; }
+
 #conversejs .custom-control {
   position: relative;
   display: block;
   min-height: 1.5rem;
   padding-left: 1.5rem; }
+
 #conversejs .custom-control-inline {
   display: inline-flex;
   margin-right: 1rem; }
+
 #conversejs .custom-control-input {
   position: absolute;
   z-index: -1;
@@ -5713,6 +5996,7 @@ readers do not read off random characters that represent icons */
     color: #6c757d; }
     #conversejs .custom-control-input:disabled ~ .custom-control-label::before {
       background-color: #e9ecef; }
+
 #conversejs .custom-control-label {
   margin-bottom: 0; }
   #conversejs .custom-control-label::before {
@@ -5737,28 +6021,40 @@ readers do not read off random characters that represent icons */
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 50% 50%; }
+
 #conversejs .custom-checkbox .custom-control-label::before {
   border-radius: 0.25rem; }
+
 #conversejs .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
   background-color: #387592; }
+
 #conversejs .custom-checkbox .custom-control-input:checked ~ .custom-control-label::after {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E"); }
+
 #conversejs .custom-checkbox .custom-control-input:indeterminate ~ .custom-control-label::before {
   background-color: #387592; }
+
 #conversejs .custom-checkbox .custom-control-input:indeterminate ~ .custom-control-label::after {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4'%3E%3Cpath stroke='%23fff' d='M0 2h4'/%3E%3C/svg%3E"); }
+
 #conversejs .custom-checkbox .custom-control-input:disabled:checked ~ .custom-control-label::before {
   background-color: rgba(56, 117, 146, 0.5); }
+
 #conversejs .custom-checkbox .custom-control-input:disabled:indeterminate ~ .custom-control-label::before {
   background-color: rgba(56, 117, 146, 0.5); }
+
 #conversejs .custom-radio .custom-control-label::before {
   border-radius: 50%; }
+
 #conversejs .custom-radio .custom-control-input:checked ~ .custom-control-label::before {
   background-color: #387592; }
+
 #conversejs .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='%23fff'/%3E%3C/svg%3E"); }
+
 #conversejs .custom-radio .custom-control-input:disabled:checked ~ .custom-control-label::before {
   background-color: rgba(56, 117, 146, 0.5); }
+
 #conversejs .custom-select {
   display: inline-block;
   width: 100%;
@@ -5788,22 +6084,26 @@ readers do not read off random characters that represent icons */
     background-color: #e9ecef; }
   #conversejs .custom-select::-ms-expand {
     opacity: 0; }
+
 #conversejs .custom-select-sm {
   height: calc(1.8125rem + 2px);
   padding-top: 0.375rem;
   padding-bottom: 0.375rem;
   font-size: 75%; }
+
 #conversejs .custom-select-lg {
   height: calc(2.875rem + 2px);
   padding-top: 0.375rem;
   padding-bottom: 0.375rem;
   font-size: 125%; }
+
 #conversejs .custom-file {
   position: relative;
   display: inline-block;
   width: 100%;
   height: calc(2.25rem + 2px);
   margin-bottom: 0; }
+
 #conversejs .custom-file-input {
   position: relative;
   z-index: 2;
@@ -5818,6 +6118,7 @@ readers do not read off random characters that represent icons */
       border-color: #7db3cd; }
   #conversejs .custom-file-input:lang(en) ~ .custom-file-label::after {
     content: "Browse"; }
+
 #conversejs .custom-file-label {
   position: absolute;
   top: 0;
@@ -5846,12 +6147,14 @@ readers do not read off random characters that represent icons */
     background-color: #e9ecef;
     border-left: 1px solid #ced4da;
     border-radius: 0 0.25rem 0.25rem 0; }
+
 #conversejs .nav {
   display: flex;
   flex-wrap: wrap;
   padding-left: 0;
   margin-bottom: 0;
   list-style: none; }
+
 #conversejs .nav-link {
   display: block;
   padding: 0.5rem 1rem; }
@@ -5859,6 +6162,7 @@ readers do not read off random characters that represent icons */
     text-decoration: none; }
   #conversejs .nav-link.disabled {
     color: #6c757d; }
+
 #conversejs .nav-tabs {
   border-bottom: 1px solid #dee2e6; }
   #conversejs .nav-tabs .nav-item {
@@ -5882,23 +6186,30 @@ readers do not read off random characters that represent icons */
     margin-top: -1px;
     border-top-left-radius: 0;
     border-top-right-radius: 0; }
+
 #conversejs .nav-pills .nav-link {
   border-radius: 0.25rem; }
+
 #conversejs .nav-pills .nav-link.active,
 #conversejs .nav-pills .show > .nav-link {
   color: #fff;
   background-color: #387592; }
+
 #conversejs .nav-fill .nav-item {
   flex: 1 1 auto;
   text-align: center; }
+
 #conversejs .nav-justified .nav-item {
   flex-basis: 0;
   flex-grow: 1;
   text-align: center; }
+
 #conversejs .tab-content > .tab-pane {
   display: none; }
+
 #conversejs .tab-content > .active {
   display: block; }
+
 #conversejs .navbar {
   position: relative;
   display: flex;
@@ -5912,6 +6223,7 @@ readers do not read off random characters that represent icons */
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between; }
+
 #conversejs .navbar-brand {
   display: inline-block;
   padding-top: 0.3125rem;
@@ -5922,6 +6234,7 @@ readers do not read off random characters that represent icons */
   white-space: nowrap; }
   #conversejs .navbar-brand:hover, #conversejs .navbar-brand:focus {
     text-decoration: none; }
+
 #conversejs .navbar-nav {
   display: flex;
   flex-direction: column;
@@ -5934,14 +6247,17 @@ readers do not read off random characters that represent icons */
   #conversejs .navbar-nav .dropdown-menu {
     position: static;
     float: none; }
+
 #conversejs .navbar-text {
   display: inline-block;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem; }
+
 #conversejs .navbar-collapse {
   flex-basis: 100%;
   flex-grow: 1;
   align-items: center; }
+
 #conversejs .navbar-toggler {
   padding: 0.25rem 0.75rem;
   font-size: 1.25rem;
@@ -5953,6 +6269,7 @@ readers do not read off random characters that represent icons */
     text-decoration: none; }
   #conversejs .navbar-toggler:not(:disabled):not(.disabled) {
     cursor: pointer; }
+
 #conversejs .navbar-toggler-icon {
   display: inline-block;
   width: 1.5em;
@@ -5961,11 +6278,13 @@ readers do not read off random characters that represent icons */
   content: "";
   background: no-repeat center center;
   background-size: 100% 100%; }
+
 @media (max-width: 575.98px) {
   #conversejs .navbar-expand-sm > .container,
   #conversejs .navbar-expand-sm > .container-fluid {
     padding-right: 0;
     padding-left: 0; } }
+
 @media (min-width: 576px) {
   #conversejs .navbar-expand-sm {
     flex-flow: row nowrap;
@@ -5991,11 +6310,13 @@ readers do not read off random characters that represent icons */
     #conversejs .navbar-expand-sm .dropup .dropdown-menu {
       top: auto;
       bottom: 100%; } }
+
 @media (max-width: 767.98px) {
   #conversejs .navbar-expand-md > .container,
   #conversejs .navbar-expand-md > .container-fluid {
     padding-right: 0;
     padding-left: 0; } }
+
 @media (min-width: 768px) {
   #conversejs .navbar-expand-md {
     flex-flow: row nowrap;
@@ -6021,11 +6342,13 @@ readers do not read off random characters that represent icons */
     #conversejs .navbar-expand-md .dropup .dropdown-menu {
       top: auto;
       bottom: 100%; } }
+
 @media (max-width: 991.98px) {
   #conversejs .navbar-expand-lg > .container,
   #conversejs .navbar-expand-lg > .container-fluid {
     padding-right: 0;
     padding-left: 0; } }
+
 @media (min-width: 992px) {
   #conversejs .navbar-expand-lg {
     flex-flow: row nowrap;
@@ -6051,11 +6374,13 @@ readers do not read off random characters that represent icons */
     #conversejs .navbar-expand-lg .dropup .dropdown-menu {
       top: auto;
       bottom: 100%; } }
+
 @media (max-width: 1199.98px) {
   #conversejs .navbar-expand-xl > .container,
   #conversejs .navbar-expand-xl > .container-fluid {
     padding-right: 0;
     padding-left: 0; } }
+
 @media (min-width: 1200px) {
   #conversejs .navbar-expand-xl {
     flex-flow: row nowrap;
@@ -6081,6 +6406,7 @@ readers do not read off random characters that represent icons */
     #conversejs .navbar-expand-xl .dropup .dropdown-menu {
       top: auto;
       bottom: 100%; } }
+
 #conversejs .navbar-expand {
   flex-flow: row nowrap;
   justify-content: flex-start; }
@@ -6109,58 +6435,71 @@ readers do not read off random characters that represent icons */
   #conversejs .navbar-expand .dropup .dropdown-menu {
     top: auto;
     bottom: 100%; }
+
 #conversejs .navbar-light .navbar-brand {
   color: rgba(0, 0, 0, 0.9); }
   #conversejs .navbar-light .navbar-brand:hover, #conversejs .navbar-light .navbar-brand:focus {
     color: rgba(0, 0, 0, 0.9); }
+
 #conversejs .navbar-light .navbar-nav .nav-link {
   color: rgba(0, 0, 0, 0.5); }
   #conversejs .navbar-light .navbar-nav .nav-link:hover, #conversejs .navbar-light .navbar-nav .nav-link:focus {
     color: rgba(0, 0, 0, 0.7); }
   #conversejs .navbar-light .navbar-nav .nav-link.disabled {
     color: rgba(0, 0, 0, 0.3); }
+
 #conversejs .navbar-light .navbar-nav .show > .nav-link,
 #conversejs .navbar-light .navbar-nav .active > .nav-link,
 #conversejs .navbar-light .navbar-nav .nav-link.show,
 #conversejs .navbar-light .navbar-nav .nav-link.active {
   color: rgba(0, 0, 0, 0.9); }
+
 #conversejs .navbar-light .navbar-toggler {
   color: rgba(0, 0, 0, 0.5);
   border-color: rgba(0, 0, 0, 0.1); }
+
 #conversejs .navbar-light .navbar-toggler-icon {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E"); }
+
 #conversejs .navbar-light .navbar-text {
   color: rgba(0, 0, 0, 0.5); }
   #conversejs .navbar-light .navbar-text a {
     color: rgba(0, 0, 0, 0.9); }
     #conversejs .navbar-light .navbar-text a:hover, #conversejs .navbar-light .navbar-text a:focus {
       color: rgba(0, 0, 0, 0.9); }
+
 #conversejs .navbar-dark .navbar-brand {
   color: #fff; }
   #conversejs .navbar-dark .navbar-brand:hover, #conversejs .navbar-dark .navbar-brand:focus {
     color: #fff; }
+
 #conversejs .navbar-dark .navbar-nav .nav-link {
   color: rgba(255, 255, 255, 0.5); }
   #conversejs .navbar-dark .navbar-nav .nav-link:hover, #conversejs .navbar-dark .navbar-nav .nav-link:focus {
     color: rgba(255, 255, 255, 0.75); }
   #conversejs .navbar-dark .navbar-nav .nav-link.disabled {
     color: rgba(255, 255, 255, 0.25); }
+
 #conversejs .navbar-dark .navbar-nav .show > .nav-link,
 #conversejs .navbar-dark .navbar-nav .active > .nav-link,
 #conversejs .navbar-dark .navbar-nav .nav-link.show,
 #conversejs .navbar-dark .navbar-nav .nav-link.active {
   color: #fff; }
+
 #conversejs .navbar-dark .navbar-toggler {
   color: rgba(255, 255, 255, 0.5);
   border-color: rgba(255, 255, 255, 0.1); }
+
 #conversejs .navbar-dark .navbar-toggler-icon {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E"); }
+
 #conversejs .navbar-dark .navbar-text {
   color: rgba(255, 255, 255, 0.5); }
   #conversejs .navbar-dark .navbar-text a {
     color: #fff; }
     #conversejs .navbar-dark .navbar-text a:hover, #conversejs .navbar-dark .navbar-text a:focus {
       color: #fff; }
+
 #conversejs .card {
   position: relative;
   display: flex;
@@ -6180,20 +6519,27 @@ readers do not read off random characters that represent icons */
   #conversejs .card > .list-group:last-child .list-group-item:last-child {
     border-bottom-right-radius: 0.25rem;
     border-bottom-left-radius: 0.25rem; }
+
 #conversejs .card-body {
   flex: 1 1 auto;
   padding: 1.25rem; }
+
 #conversejs .card-title {
   margin-bottom: 0.75rem; }
+
 #conversejs .card-subtitle {
   margin-top: -0.375rem;
   margin-bottom: 0; }
+
 #conversejs .card-text:last-child {
   margin-bottom: 0; }
+
 #conversejs .card-link:hover {
   text-decoration: none; }
+
 #conversejs .card-link + .card-link {
   margin-left: 1.25rem; }
+
 #conversejs .card-header {
   padding: 0.75rem 1.25rem;
   margin-bottom: 0;
@@ -6203,20 +6549,24 @@ readers do not read off random characters that represent icons */
     border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0; }
   #conversejs .card-header + .list-group .list-group-item:first-child {
     border-top: 0; }
+
 #conversejs .card-footer {
   padding: 0.75rem 1.25rem;
   background-color: rgba(0, 0, 0, 0.03);
   border-top: 1px solid rgba(0, 0, 0, 0.125); }
   #conversejs .card-footer:last-child {
     border-radius: 0 0 calc(0.25rem - 1px) calc(0.25rem - 1px); }
+
 #conversejs .card-header-tabs {
   margin-right: -0.625rem;
   margin-bottom: -0.75rem;
   margin-left: -0.625rem;
   border-bottom: 0; }
+
 #conversejs .card-header-pills {
   margin-right: -0.625rem;
   margin-left: -0.625rem; }
+
 #conversejs .card-img-overlay {
   position: absolute;
   top: 0;
@@ -6224,17 +6574,21 @@ readers do not read off random characters that represent icons */
   bottom: 0;
   left: 0;
   padding: 1.25rem; }
+
 #conversejs .card-img {
   width: 100%;
   border-radius: calc(0.25rem - 1px); }
+
 #conversejs .card-img-top {
   width: 100%;
   border-top-left-radius: calc(0.25rem - 1px);
   border-top-right-radius: calc(0.25rem - 1px); }
+
 #conversejs .card-img-bottom {
   width: 100%;
   border-bottom-right-radius: calc(0.25rem - 1px);
   border-bottom-left-radius: calc(0.25rem - 1px); }
+
 #conversejs .card-deck {
   display: flex;
   flex-direction: column; }
@@ -6252,6 +6606,7 @@ readers do not read off random characters that represent icons */
         margin-right: 15px;
         margin-bottom: 0;
         margin-left: 15px; } }
+
 #conversejs .card-group {
   display: flex;
   flex-direction: column; }
@@ -6301,8 +6656,10 @@ readers do not read off random characters that represent icons */
           #conversejs .card-group > .card:not(:first-child):not(:last-child):not(:only-child) .card-header,
           #conversejs .card-group > .card:not(:first-child):not(:last-child):not(:only-child) .card-footer {
             border-radius: 0; } }
+
 #conversejs .card-columns .card {
   margin-bottom: 0.75rem; }
+
 @media (min-width: 576px) {
   #conversejs .card-columns {
     column-count: 3;
@@ -6310,6 +6667,7 @@ readers do not read off random characters that represent icons */
     #conversejs .card-columns .card {
       display: inline-block;
       width: 100%; } }
+
 #conversejs .breadcrumb {
   display: flex;
   flex-wrap: wrap;
@@ -6318,18 +6676,23 @@ readers do not read off random characters that represent icons */
   list-style: none;
   background-color: #e9ecef;
   border-radius: 0.25rem; }
+
 #conversejs .breadcrumb-item + .breadcrumb-item::before {
   display: inline-block;
   padding-right: 0.5rem;
   padding-left: 0.5rem;
   color: #6c757d;
   content: "/"; }
+
 #conversejs .breadcrumb-item + .breadcrumb-item:hover::before {
   text-decoration: underline; }
+
 #conversejs .breadcrumb-item + .breadcrumb-item:hover::before {
   text-decoration: none; }
+
 #conversejs .breadcrumb-item.active {
   color: #6c757d; }
+
 #conversejs .badge {
   display: inline-block;
   padding: 0.25em 0.4em;
@@ -6342,13 +6705,16 @@ readers do not read off random characters that represent icons */
   border-radius: 0.25rem; }
   #conversejs .badge:empty {
     display: none; }
+
 #conversejs .btn .badge {
   position: relative;
   top: -1px; }
+
 #conversejs .badge-pill {
   padding-right: 0.6em;
   padding-left: 0.6em;
   border-radius: 10rem; }
+
 #conversejs .badge-primary {
   color: #fff;
   background-color: #387592; }
@@ -6356,6 +6722,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     text-decoration: none;
     background-color: #2a576d; }
+
 #conversejs .badge-secondary {
   color: #fff;
   background-color: #6c757d; }
@@ -6363,6 +6730,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     text-decoration: none;
     background-color: #545b62; }
+
 #conversejs .badge-success {
   color: #fff;
   background-color: #3AA569; }
@@ -6370,6 +6738,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     text-decoration: none;
     background-color: #2d7f51; }
+
 #conversejs .badge-info {
   color: #fff;
   background-color: #3AA569; }
@@ -6377,6 +6746,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     text-decoration: none;
     background-color: #2d7f51; }
+
 #conversejs .badge-warning {
   color: #212529;
   background-color: #ffc107; }
@@ -6384,6 +6754,7 @@ readers do not read off random characters that represent icons */
     color: #212529;
     text-decoration: none;
     background-color: #d39e00; }
+
 #conversejs .badge-danger {
   color: #fff;
   background-color: #E77051; }
@@ -6391,6 +6762,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     text-decoration: none;
     background-color: #e14b24; }
+
 #conversejs .badge-light {
   color: #212529;
   background-color: #f8f9fa; }
@@ -6398,6 +6770,7 @@ readers do not read off random characters that represent icons */
     color: #212529;
     text-decoration: none;
     background-color: #dae0e5; }
+
 #conversejs .badge-dark {
   color: #fff;
   background-color: #343a40; }
@@ -6405,16 +6778,20 @@ readers do not read off random characters that represent icons */
     color: #fff;
     text-decoration: none;
     background-color: #1d2124; }
+
 #conversejs .alert {
   position: relative;
   padding: 0.75rem 1.25rem;
   margin-bottom: 1rem;
   border: 1px solid transparent;
   border-radius: 0.25rem; }
+
 #conversejs .alert-heading {
   color: inherit; }
+
 #conversejs .alert-link {
   font-weight: 700; }
+
 #conversejs .alert-dismissible {
   padding-right: 4rem; }
   #conversejs .alert-dismissible .close {
@@ -6423,6 +6800,7 @@ readers do not read off random characters that represent icons */
     right: 0;
     padding: 0.75rem 1.25rem;
     color: inherit; }
+
 #conversejs .alert-primary {
   color: #1d3d4c;
   background-color: #d7e3e9;
@@ -6431,6 +6809,7 @@ readers do not read off random characters that represent icons */
     border-top-color: #b7cdd7; }
   #conversejs .alert-primary .alert-link {
     color: #0f1f27; }
+
 #conversejs .alert-secondary {
   color: #383d41;
   background-color: #e2e3e5;
@@ -6439,6 +6818,7 @@ readers do not read off random characters that represent icons */
     border-top-color: #c8cbcf; }
   #conversejs .alert-secondary .alert-link {
     color: #202326; }
+
 #conversejs .alert-success {
   color: #1e5637;
   background-color: #d8ede1;
@@ -6447,6 +6827,7 @@ readers do not read off random characters that represent icons */
     border-top-color: #b6dec8; }
   #conversejs .alert-success .alert-link {
     color: #11301f; }
+
 #conversejs .alert-info {
   color: #1e5637;
   background-color: #d8ede1;
@@ -6455,6 +6836,7 @@ readers do not read off random characters that represent icons */
     border-top-color: #b6dec8; }
   #conversejs .alert-info .alert-link {
     color: #11301f; }
+
 #conversejs .alert-warning {
   color: #856404;
   background-color: #fff3cd;
@@ -6463,6 +6845,7 @@ readers do not read off random characters that represent icons */
     border-top-color: #ffe8a1; }
   #conversejs .alert-warning .alert-link {
     color: #533f03; }
+
 #conversejs .alert-danger {
   color: #783a2a;
   background-color: #fae2dc;
@@ -6471,6 +6854,7 @@ readers do not read off random characters that represent icons */
     border-top-color: #f5c5b8; }
   #conversejs .alert-danger .alert-link {
     color: #52281d; }
+
 #conversejs .alert-light {
   color: #818182;
   background-color: #fefefe;
@@ -6479,6 +6863,7 @@ readers do not read off random characters that represent icons */
     border-top-color: #ececf6; }
   #conversejs .alert-light .alert-link {
     color: #686868; }
+
 #conversejs .alert-dark {
   color: #1b1e21;
   background-color: #d6d8d9;
@@ -6487,16 +6872,20 @@ readers do not read off random characters that represent icons */
     border-top-color: #b9bbbe; }
   #conversejs .alert-dark .alert-link {
     color: #040505; }
+
 #conversejs .media {
   display: flex;
   align-items: flex-start; }
+
 #conversejs .media-body {
   flex: 1; }
+
 #conversejs .list-group {
   display: flex;
   flex-direction: column;
   padding-left: 0;
   margin-bottom: 0; }
+
 #conversejs .list-group-item-action {
   width: 100%;
   color: #495057;
@@ -6508,6 +6897,7 @@ readers do not read off random characters that represent icons */
   #conversejs .list-group-item-action:active {
     color: #212529;
     background-color: #e9ecef; }
+
 #conversejs .list-group-item {
   position: relative;
   display: block;
@@ -6533,14 +6923,18 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #387592;
     border-color: #387592; }
+
 #conversejs .list-group-flush .list-group-item {
   border-right: 0;
   border-left: 0;
   border-radius: 0; }
+
 #conversejs .list-group-flush:first-child .list-group-item:first-child {
   border-top: 0; }
+
 #conversejs .list-group-flush:last-child .list-group-item:last-child {
   border-bottom: 0; }
+
 #conversejs .list-group-item-primary {
   color: #1d3d4c;
   background-color: #c7d8e0; }
@@ -6551,6 +6945,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #1d3d4c;
     border-color: #1d3d4c; }
+
 #conversejs .list-group-item-secondary {
   color: #383d41;
   background-color: #d6d8db; }
@@ -6561,6 +6956,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #383d41;
     border-color: #383d41; }
+
 #conversejs .list-group-item-success {
   color: #1e5637;
   background-color: #c8e6d5; }
@@ -6571,6 +6967,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #1e5637;
     border-color: #1e5637; }
+
 #conversejs .list-group-item-info {
   color: #1e5637;
   background-color: #c8e6d5; }
@@ -6581,6 +6978,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #1e5637;
     border-color: #1e5637; }
+
 #conversejs .list-group-item-warning {
   color: #856404;
   background-color: #ffeeba; }
@@ -6591,6 +6989,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #856404;
     border-color: #856404; }
+
 #conversejs .list-group-item-danger {
   color: #783a2a;
   background-color: #f8d7ce; }
@@ -6601,6 +7000,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #783a2a;
     border-color: #783a2a; }
+
 #conversejs .list-group-item-light {
   color: #818182;
   background-color: #fdfdfe; }
@@ -6611,6 +7011,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #818182;
     border-color: #818182; }
+
 #conversejs .list-group-item-dark {
   color: #1b1e21;
   background-color: #c6c8ca; }
@@ -6621,6 +7022,7 @@ readers do not read off random characters that represent icons */
     color: #fff;
     background-color: #1b1e21;
     border-color: #1b1e21; }
+
 #conversejs .close {
   float: right;
   font-size: 1.5rem;
@@ -6635,13 +7037,16 @@ readers do not read off random characters that represent icons */
     opacity: .75; }
   #conversejs .close:not(:disabled):not(.disabled) {
     cursor: pointer; }
+
 #conversejs button.close {
   padding: 0;
   background-color: transparent;
   border: 0;
   -webkit-appearance: none; }
+
 #conversejs .modal-open {
   overflow: hidden; }
+
 #conversejs .modal {
   position: fixed;
   top: 0;
@@ -6655,6 +7060,7 @@ readers do not read off random characters that represent icons */
   .modal-open #conversejs .modal {
     overflow-x: hidden;
     overflow-y: auto; }
+
 #conversejs .modal-dialog {
   position: relative;
   width: auto;
@@ -6665,10 +7071,12 @@ readers do not read off random characters that represent icons */
     transform: translate(0, -25%); }
   .modal.show #conversejs .modal-dialog {
     transform: translate(0, 0); }
+
 #conversejs .modal-dialog-centered {
   display: flex;
   align-items: center;
   min-height: calc(100% - (0.5rem * 2)); }
+
 #conversejs .modal-content {
   position: relative;
   display: flex;
@@ -6680,6 +7088,7 @@ readers do not read off random characters that represent icons */
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
   outline: 0; }
+
 #conversejs .modal-backdrop {
   position: fixed;
   top: 0;
@@ -6692,6 +7101,7 @@ readers do not read off random characters that represent icons */
     opacity: 0; }
   #conversejs .modal-backdrop.show {
     opacity: 0.5; }
+
 #conversejs .modal-header {
   display: flex;
   align-items: flex-start;
@@ -6703,13 +7113,16 @@ readers do not read off random characters that represent icons */
   #conversejs .modal-header .close {
     padding: 1rem;
     margin: -1rem -1rem -1rem auto; }
+
 #conversejs .modal-title {
   margin-bottom: 0;
   line-height: 1.5; }
+
 #conversejs .modal-body {
   position: relative;
   flex: 1 1 auto;
   padding: 1rem; }
+
 #conversejs .modal-footer {
   display: flex;
   align-items: center;
@@ -6720,12 +7133,14 @@ readers do not read off random characters that represent icons */
     margin-left: .25rem; }
   #conversejs .modal-footer > :not(:last-child) {
     margin-right: .25rem; }
+
 #conversejs .modal-scrollbar-measure {
   position: absolute;
   top: -9999px;
   width: 50px;
   height: 50px;
   overflow: scroll; }
+
 @media (min-width: 576px) {
   #conversejs .modal-dialog {
     max-width: 500px;
@@ -6734,9 +7149,11 @@ readers do not read off random characters that represent icons */
     min-height: calc(100% - (1.75rem * 2)); }
   #conversejs .modal-sm {
     max-width: 300px; } }
+
 @media (min-width: 992px) {
   #conversejs .modal-lg {
     max-width: 800px; } }
+
 #conversejs .tooltip {
   position: absolute;
   z-index: 1070;
@@ -6771,6 +7188,7 @@ readers do not read off random characters that represent icons */
       content: "";
       border-color: transparent;
       border-style: solid; }
+
 #conversejs .bs-tooltip-top, #conversejs .bs-tooltip-auto[x-placement^="top"] {
   padding: 0.4rem 0; }
   #conversejs .bs-tooltip-top .arrow, #conversejs .bs-tooltip-auto[x-placement^="top"] .arrow {
@@ -6779,6 +7197,7 @@ readers do not read off random characters that represent icons */
       top: 0;
       border-width: 0.4rem 0.4rem 0;
       border-top-color: #000; }
+
 #conversejs .bs-tooltip-right, #conversejs .bs-tooltip-auto[x-placement^="right"] {
   padding: 0 0.4rem; }
   #conversejs .bs-tooltip-right .arrow, #conversejs .bs-tooltip-auto[x-placement^="right"] .arrow {
@@ -6789,6 +7208,7 @@ readers do not read off random characters that represent icons */
       right: 0;
       border-width: 0.4rem 0.4rem 0.4rem 0;
       border-right-color: #000; }
+
 #conversejs .bs-tooltip-bottom, #conversejs .bs-tooltip-auto[x-placement^="bottom"] {
   padding: 0.4rem 0; }
   #conversejs .bs-tooltip-bottom .arrow, #conversejs .bs-tooltip-auto[x-placement^="bottom"] .arrow {
@@ -6797,6 +7217,7 @@ readers do not read off random characters that represent icons */
       bottom: 0;
       border-width: 0 0.4rem 0.4rem;
       border-bottom-color: #000; }
+
 #conversejs .bs-tooltip-left, #conversejs .bs-tooltip-auto[x-placement^="left"] {
   padding: 0 0.4rem; }
   #conversejs .bs-tooltip-left .arrow, #conversejs .bs-tooltip-auto[x-placement^="left"] .arrow {
@@ -6807,6 +7228,7 @@ readers do not read off random characters that represent icons */
       left: 0;
       border-width: 0.4rem 0 0.4rem 0.4rem;
       border-left-color: #000; }
+
 #conversejs .tooltip-inner {
   max-width: 200px;
   padding: 0.25rem 0.5rem;
@@ -6814,6 +7236,7 @@ readers do not read off random characters that represent icons */
   text-align: center;
   background-color: #000;
   border-radius: 0.25rem; }
+
 #conversejs .popover {
   position: absolute;
   top: 0;
@@ -6853,6 +7276,7 @@ readers do not read off random characters that represent icons */
       content: "";
       border-color: transparent;
       border-style: solid; }
+
 #conversejs .bs-popover-top, #conversejs .bs-popover-auto[x-placement^="top"] {
   margin-bottom: 0.5rem; }
   #conversejs .bs-popover-top .arrow, #conversejs .bs-popover-auto[x-placement^="top"] .arrow {
@@ -6864,9 +7288,12 @@ readers do not read off random characters that represent icons */
   #conversejs .bs-popover-top .arrow::before, #conversejs .bs-popover-auto[x-placement^="top"] .arrow::before {
     bottom: 0;
     border-top-color: rgba(0, 0, 0, 0.25); }
-  #conversejs .bs-popover-top .arrow::after, #conversejs .bs-popover-auto[x-placement^="top"] .arrow::after {
+  
+  #conversejs .bs-popover-top .arrow::after,
+  #conversejs .bs-popover-auto[x-placement^="top"] .arrow::after {
     bottom: 1px;
     border-top-color: #fff; }
+
 #conversejs .bs-popover-right, #conversejs .bs-popover-auto[x-placement^="right"] {
   margin-left: 0.5rem; }
   #conversejs .bs-popover-right .arrow, #conversejs .bs-popover-auto[x-placement^="right"] .arrow {
@@ -6881,9 +7308,12 @@ readers do not read off random characters that represent icons */
   #conversejs .bs-popover-right .arrow::before, #conversejs .bs-popover-auto[x-placement^="right"] .arrow::before {
     left: 0;
     border-right-color: rgba(0, 0, 0, 0.25); }
-  #conversejs .bs-popover-right .arrow::after, #conversejs .bs-popover-auto[x-placement^="right"] .arrow::after {
+  
+  #conversejs .bs-popover-right .arrow::after,
+  #conversejs .bs-popover-auto[x-placement^="right"] .arrow::after {
     left: 1px;
     border-right-color: #fff; }
+
 #conversejs .bs-popover-bottom, #conversejs .bs-popover-auto[x-placement^="bottom"] {
   margin-top: 0.5rem; }
   #conversejs .bs-popover-bottom .arrow, #conversejs .bs-popover-auto[x-placement^="bottom"] .arrow {
@@ -6895,7 +7325,9 @@ readers do not read off random characters that represent icons */
   #conversejs .bs-popover-bottom .arrow::before, #conversejs .bs-popover-auto[x-placement^="bottom"] .arrow::before {
     top: 0;
     border-bottom-color: rgba(0, 0, 0, 0.25); }
-  #conversejs .bs-popover-bottom .arrow::after, #conversejs .bs-popover-auto[x-placement^="bottom"] .arrow::after {
+  
+  #conversejs .bs-popover-bottom .arrow::after,
+  #conversejs .bs-popover-auto[x-placement^="bottom"] .arrow::after {
     top: 1px;
     border-bottom-color: #fff; }
   #conversejs .bs-popover-bottom .popover-header::before, #conversejs .bs-popover-auto[x-placement^="bottom"] .popover-header::before {
@@ -6907,6 +7339,7 @@ readers do not read off random characters that represent icons */
     margin-left: -0.5rem;
     content: "";
     border-bottom: 1px solid #f7f7f7; }
+
 #conversejs .bs-popover-left, #conversejs .bs-popover-auto[x-placement^="left"] {
   margin-right: 0.5rem; }
   #conversejs .bs-popover-left .arrow, #conversejs .bs-popover-auto[x-placement^="left"] .arrow {
@@ -6921,9 +7354,12 @@ readers do not read off random characters that represent icons */
   #conversejs .bs-popover-left .arrow::before, #conversejs .bs-popover-auto[x-placement^="left"] .arrow::before {
     right: 0;
     border-left-color: rgba(0, 0, 0, 0.25); }
-  #conversejs .bs-popover-left .arrow::after, #conversejs .bs-popover-auto[x-placement^="left"] .arrow::after {
+  
+  #conversejs .bs-popover-left .arrow::after,
+  #conversejs .bs-popover-auto[x-placement^="left"] .arrow::after {
     right: 1px;
     border-left-color: #fff; }
+
 #conversejs .popover-header {
   padding: 0.5rem 0.75rem;
   margin-bottom: 0;
@@ -6935,151 +7371,213 @@ readers do not read off random characters that represent icons */
   border-top-right-radius: calc(0.3rem - 1px); }
   #conversejs .popover-header:empty {
     display: none; }
+
 #conversejs .popover-body {
   padding: 0.5rem 0.75rem;
   color: #212529; }
+
 #conversejs .align-baseline {
   vertical-align: baseline !important; }
+
 #conversejs .align-top {
   vertical-align: top !important; }
+
 #conversejs .align-middle {
   vertical-align: middle !important; }
+
 #conversejs .align-bottom {
   vertical-align: bottom !important; }
+
 #conversejs .align-text-bottom {
   vertical-align: text-bottom !important; }
+
 #conversejs .align-text-top {
   vertical-align: text-top !important; }
+
 #conversejs .bg-primary {
   background-color: #387592 !important; }
+
 #conversejs a.bg-primary:hover, #conversejs a.bg-primary:focus,
 #conversejs button.bg-primary:hover,
 #conversejs button.bg-primary:focus {
   background-color: #2a576d !important; }
+
 #conversejs .bg-secondary {
   background-color: #6c757d !important; }
+
 #conversejs a.bg-secondary:hover, #conversejs a.bg-secondary:focus,
 #conversejs button.bg-secondary:hover,
 #conversejs button.bg-secondary:focus {
   background-color: #545b62 !important; }
+
 #conversejs .bg-success {
   background-color: #3AA569 !important; }
+
 #conversejs a.bg-success:hover, #conversejs a.bg-success:focus,
 #conversejs button.bg-success:hover,
 #conversejs button.bg-success:focus {
   background-color: #2d7f51 !important; }
+
 #conversejs .bg-info {
   background-color: #3AA569 !important; }
+
 #conversejs a.bg-info:hover, #conversejs a.bg-info:focus,
 #conversejs button.bg-info:hover,
 #conversejs button.bg-info:focus {
   background-color: #2d7f51 !important; }
+
 #conversejs .bg-warning {
   background-color: #ffc107 !important; }
+
 #conversejs a.bg-warning:hover, #conversejs a.bg-warning:focus,
 #conversejs button.bg-warning:hover,
 #conversejs button.bg-warning:focus {
   background-color: #d39e00 !important; }
+
 #conversejs .bg-danger {
   background-color: #E77051 !important; }
+
 #conversejs a.bg-danger:hover, #conversejs a.bg-danger:focus,
 #conversejs button.bg-danger:hover,
 #conversejs button.bg-danger:focus {
   background-color: #e14b24 !important; }
+
 #conversejs .bg-light {
   background-color: #f8f9fa !important; }
+
 #conversejs a.bg-light:hover, #conversejs a.bg-light:focus,
 #conversejs button.bg-light:hover,
 #conversejs button.bg-light:focus {
   background-color: #dae0e5 !important; }
+
 #conversejs .bg-dark {
   background-color: #343a40 !important; }
+
 #conversejs a.bg-dark:hover, #conversejs a.bg-dark:focus,
 #conversejs button.bg-dark:hover,
 #conversejs button.bg-dark:focus {
   background-color: #1d2124 !important; }
+
 #conversejs .bg-white {
   background-color: #fff !important; }
+
 #conversejs .bg-transparent {
   background-color: transparent !important; }
+
 #conversejs .border {
   border: 1px solid #CCC !important; }
+
 #conversejs .border-top {
   border-top: 1px solid #CCC !important; }
+
 #conversejs .border-right {
   border-right: 1px solid #CCC !important; }
+
 #conversejs .border-bottom {
   border-bottom: 1px solid #CCC !important; }
+
 #conversejs .border-left {
   border-left: 1px solid #CCC !important; }
+
 #conversejs .border-0 {
   border: 0 !important; }
+
 #conversejs .border-top-0 {
   border-top: 0 !important; }
+
 #conversejs .border-right-0 {
   border-right: 0 !important; }
+
 #conversejs .border-bottom-0 {
   border-bottom: 0 !important; }
+
 #conversejs .border-left-0 {
   border-left: 0 !important; }
+
 #conversejs .border-primary {
   border-color: #387592 !important; }
+
 #conversejs .border-secondary {
   border-color: #6c757d !important; }
+
 #conversejs .border-success {
   border-color: #3AA569 !important; }
+
 #conversejs .border-info {
   border-color: #3AA569 !important; }
+
 #conversejs .border-warning {
   border-color: #ffc107 !important; }
+
 #conversejs .border-danger {
   border-color: #E77051 !important; }
+
 #conversejs .border-light {
   border-color: #f8f9fa !important; }
+
 #conversejs .border-dark {
   border-color: #343a40 !important; }
+
 #conversejs .border-white {
   border-color: #fff !important; }
+
 #conversejs .rounded {
   border-radius: 0.25rem !important; }
+
 #conversejs .rounded-top {
   border-top-left-radius: 0.25rem !important;
   border-top-right-radius: 0.25rem !important; }
+
 #conversejs .rounded-right {
   border-top-right-radius: 0.25rem !important;
   border-bottom-right-radius: 0.25rem !important; }
+
 #conversejs .rounded-bottom {
   border-bottom-right-radius: 0.25rem !important;
   border-bottom-left-radius: 0.25rem !important; }
+
 #conversejs .rounded-left {
   border-top-left-radius: 0.25rem !important;
   border-bottom-left-radius: 0.25rem !important; }
+
 #conversejs .rounded-circle {
   border-radius: 50% !important; }
+
 #conversejs .rounded-0 {
   border-radius: 0 !important; }
+
 #conversejs .clearfix::after {
   display: block;
   clear: both;
   content: ""; }
+
 #conversejs .d-none {
   display: none !important; }
+
 #conversejs .d-inline {
   display: inline !important; }
+
 #conversejs .d-inline-block {
   display: inline-block !important; }
+
 #conversejs .d-block {
   display: block !important; }
+
 #conversejs .d-table {
   display: table !important; }
+
 #conversejs .d-table-row {
   display: table-row !important; }
+
 #conversejs .d-table-cell {
   display: table-cell !important; }
+
 #conversejs .d-flex {
   display: flex !important; }
+
 #conversejs .d-inline-flex {
   display: inline-flex !important; }
+
 @media (min-width: 576px) {
   #conversejs .d-sm-none {
     display: none !important; }
@@ -7099,6 +7597,7 @@ readers do not read off random characters that represent icons */
     display: flex !important; }
   #conversejs .d-sm-inline-flex {
     display: inline-flex !important; } }
+
 @media (min-width: 768px) {
   #conversejs .d-md-none {
     display: none !important; }
@@ -7118,6 +7617,7 @@ readers do not read off random characters that represent icons */
     display: flex !important; }
   #conversejs .d-md-inline-flex {
     display: inline-flex !important; } }
+
 @media (min-width: 992px) {
   #conversejs .d-lg-none {
     display: none !important; }
@@ -7137,6 +7637,7 @@ readers do not read off random characters that represent icons */
     display: flex !important; }
   #conversejs .d-lg-inline-flex {
     display: inline-flex !important; } }
+
 @media (min-width: 1200px) {
   #conversejs .d-xl-none {
     display: none !important; }
@@ -7156,6 +7657,7 @@ readers do not read off random characters that represent icons */
     display: flex !important; }
   #conversejs .d-xl-inline-flex {
     display: inline-flex !important; } }
+
 @media print {
   #conversejs .d-print-none {
     display: none !important; }
@@ -7175,6 +7677,7 @@ readers do not read off random characters that represent icons */
     display: flex !important; }
   #conversejs .d-print-inline-flex {
     display: inline-flex !important; } }
+
 #conversejs .embed-responsive {
   position: relative;
   display: block;
@@ -7196,72 +7699,106 @@ readers do not read off random characters that represent icons */
     width: 100%;
     height: 100%;
     border: 0; }
+
 #conversejs .embed-responsive-21by9::before {
-  padding-top: 42.8571428571%; }
+  padding-top: 42.85714%; }
+
 #conversejs .embed-responsive-16by9::before {
   padding-top: 56.25%; }
+
 #conversejs .embed-responsive-4by3::before {
   padding-top: 75%; }
+
 #conversejs .embed-responsive-1by1::before {
   padding-top: 100%; }
+
 #conversejs .flex-row {
   flex-direction: row !important; }
+
 #conversejs .flex-column {
   flex-direction: column !important; }
+
 #conversejs .flex-row-reverse {
   flex-direction: row-reverse !important; }
+
 #conversejs .flex-column-reverse {
   flex-direction: column-reverse !important; }
+
 #conversejs .flex-wrap {
   flex-wrap: wrap !important; }
+
 #conversejs .flex-nowrap {
   flex-wrap: nowrap !important; }
+
 #conversejs .flex-wrap-reverse {
   flex-wrap: wrap-reverse !important; }
+
 #conversejs .justify-content-start {
   justify-content: flex-start !important; }
+
 #conversejs .justify-content-end {
   justify-content: flex-end !important; }
+
 #conversejs .justify-content-center {
   justify-content: center !important; }
+
 #conversejs .justify-content-between {
   justify-content: space-between !important; }
+
 #conversejs .justify-content-around {
   justify-content: space-around !important; }
+
 #conversejs .align-items-start {
   align-items: flex-start !important; }
+
 #conversejs .align-items-end {
   align-items: flex-end !important; }
+
 #conversejs .align-items-center {
   align-items: center !important; }
+
 #conversejs .align-items-baseline {
   align-items: baseline !important; }
+
 #conversejs .align-items-stretch {
   align-items: stretch !important; }
+
 #conversejs .align-content-start {
   align-content: flex-start !important; }
+
 #conversejs .align-content-end {
   align-content: flex-end !important; }
+
 #conversejs .align-content-center {
   align-content: center !important; }
+
 #conversejs .align-content-between {
   align-content: space-between !important; }
+
 #conversejs .align-content-around {
   align-content: space-around !important; }
+
 #conversejs .align-content-stretch {
   align-content: stretch !important; }
+
 #conversejs .align-self-auto {
   align-self: auto !important; }
+
 #conversejs .align-self-start {
   align-self: flex-start !important; }
+
 #conversejs .align-self-end {
   align-self: flex-end !important; }
+
 #conversejs .align-self-center {
   align-self: center !important; }
+
 #conversejs .align-self-baseline {
   align-self: baseline !important; }
+
 #conversejs .align-self-stretch {
   align-self: stretch !important; }
+
 @media (min-width: 576px) {
   #conversejs .flex-sm-row {
     flex-direction: row !important; }
@@ -7321,6 +7858,7 @@ readers do not read off random characters that represent icons */
     align-self: baseline !important; }
   #conversejs .align-self-sm-stretch {
     align-self: stretch !important; } }
+
 @media (min-width: 768px) {
   #conversejs .flex-md-row {
     flex-direction: row !important; }
@@ -7380,6 +7918,7 @@ readers do not read off random characters that represent icons */
     align-self: baseline !important; }
   #conversejs .align-self-md-stretch {
     align-self: stretch !important; } }
+
 @media (min-width: 992px) {
   #conversejs .flex-lg-row {
     flex-direction: row !important; }
@@ -7439,6 +7978,7 @@ readers do not read off random characters that represent icons */
     align-self: baseline !important; }
   #conversejs .align-self-lg-stretch {
     align-self: stretch !important; } }
+
 @media (min-width: 1200px) {
   #conversejs .flex-xl-row {
     flex-direction: row !important; }
@@ -7498,12 +8038,16 @@ readers do not read off random characters that represent icons */
     align-self: baseline !important; }
   #conversejs .align-self-xl-stretch {
     align-self: stretch !important; } }
+
 #conversejs .float-left {
   float: left !important; }
+
 #conversejs .float-right {
   float: right !important; }
+
 #conversejs .float-none {
   float: none !important; }
+
 @media (min-width: 576px) {
   #conversejs .float-sm-left {
     float: left !important; }
@@ -7511,6 +8055,7 @@ readers do not read off random characters that represent icons */
     float: right !important; }
   #conversejs .float-sm-none {
     float: none !important; } }
+
 @media (min-width: 768px) {
   #conversejs .float-md-left {
     float: left !important; }
@@ -7518,6 +8063,7 @@ readers do not read off random characters that represent icons */
     float: right !important; }
   #conversejs .float-md-none {
     float: none !important; } }
+
 @media (min-width: 992px) {
   #conversejs .float-lg-left {
     float: left !important; }
@@ -7525,6 +8071,7 @@ readers do not read off random characters that represent icons */
     float: right !important; }
   #conversejs .float-lg-none {
     float: none !important; } }
+
 @media (min-width: 1200px) {
   #conversejs .float-xl-left {
     float: left !important; }
@@ -7532,33 +8079,42 @@ readers do not read off random characters that represent icons */
     float: right !important; }
   #conversejs .float-xl-none {
     float: none !important; } }
+
 #conversejs .position-static {
   position: static !important; }
+
 #conversejs .position-relative {
   position: relative !important; }
+
 #conversejs .position-absolute {
   position: absolute !important; }
+
 #conversejs .position-fixed {
   position: fixed !important; }
+
 #conversejs .position-sticky {
   position: sticky !important; }
+
 #conversejs .fixed-top {
   position: fixed;
   top: 0;
   right: 0;
   left: 0;
   z-index: 1030; }
+
 #conversejs .fixed-bottom {
   position: fixed;
   right: 0;
   bottom: 0;
   left: 0;
   z-index: 1030; }
+
 @supports (position: sticky) {
   #conversejs .sticky-top {
     position: sticky;
     top: 0;
     z-index: 1020; } }
+
 #conversejs .sr-only {
   position: absolute;
   width: 1px;
@@ -7569,6 +8125,7 @@ readers do not read off random characters that represent icons */
   white-space: nowrap;
   clip-path: inset(50%);
   border: 0; }
+
 #conversejs .sr-only-focusable:active, #conversejs .sr-only-focusable:focus {
   position: static;
   width: auto;
@@ -7577,208 +8134,284 @@ readers do not read off random characters that represent icons */
   clip: auto;
   white-space: normal;
   clip-path: none; }
+
 #conversejs .w-25 {
   width: 25% !important; }
+
 #conversejs .w-50 {
   width: 50% !important; }
+
 #conversejs .w-75 {
   width: 75% !important; }
+
 #conversejs .w-100 {
   width: 100% !important; }
+
 #conversejs .h-25 {
   height: 25% !important; }
+
 #conversejs .h-50 {
   height: 50% !important; }
+
 #conversejs .h-75 {
   height: 75% !important; }
+
 #conversejs .h-100 {
   height: 100% !important; }
+
 #conversejs .mw-100 {
   max-width: 100% !important; }
+
 #conversejs .mh-100 {
   max-height: 100% !important; }
+
 #conversejs .m-0 {
   margin: 0 !important; }
+
 #conversejs .mt-0,
 #conversejs .my-0 {
   margin-top: 0 !important; }
+
 #conversejs .mr-0,
 #conversejs .mx-0 {
   margin-right: 0 !important; }
+
 #conversejs .mb-0,
 #conversejs .my-0 {
   margin-bottom: 0 !important; }
+
 #conversejs .ml-0,
 #conversejs .mx-0 {
   margin-left: 0 !important; }
+
 #conversejs .m-1 {
   margin: 0.25rem !important; }
+
 #conversejs .mt-1,
 #conversejs .my-1 {
   margin-top: 0.25rem !important; }
+
 #conversejs .mr-1,
 #conversejs .mx-1 {
   margin-right: 0.25rem !important; }
+
 #conversejs .mb-1,
 #conversejs .my-1 {
   margin-bottom: 0.25rem !important; }
+
 #conversejs .ml-1,
 #conversejs .mx-1 {
   margin-left: 0.25rem !important; }
+
 #conversejs .m-2 {
   margin: 0.5rem !important; }
+
 #conversejs .mt-2,
 #conversejs .my-2 {
   margin-top: 0.5rem !important; }
+
 #conversejs .mr-2,
 #conversejs .mx-2 {
   margin-right: 0.5rem !important; }
+
 #conversejs .mb-2,
 #conversejs .my-2 {
   margin-bottom: 0.5rem !important; }
+
 #conversejs .ml-2,
 #conversejs .mx-2 {
   margin-left: 0.5rem !important; }
+
 #conversejs .m-3 {
   margin: 1rem !important; }
+
 #conversejs .mt-3,
 #conversejs .my-3 {
   margin-top: 1rem !important; }
+
 #conversejs .mr-3,
 #conversejs .mx-3 {
   margin-right: 1rem !important; }
+
 #conversejs .mb-3,
 #conversejs .my-3 {
   margin-bottom: 1rem !important; }
+
 #conversejs .ml-3,
 #conversejs .mx-3 {
   margin-left: 1rem !important; }
+
 #conversejs .m-4 {
   margin: 1.5rem !important; }
+
 #conversejs .mt-4,
 #conversejs .my-4 {
   margin-top: 1.5rem !important; }
+
 #conversejs .mr-4,
 #conversejs .mx-4 {
   margin-right: 1.5rem !important; }
+
 #conversejs .mb-4,
 #conversejs .my-4 {
   margin-bottom: 1.5rem !important; }
+
 #conversejs .ml-4,
 #conversejs .mx-4 {
   margin-left: 1.5rem !important; }
+
 #conversejs .m-5 {
   margin: 3rem !important; }
+
 #conversejs .mt-5,
 #conversejs .my-5 {
   margin-top: 3rem !important; }
+
 #conversejs .mr-5,
 #conversejs .mx-5 {
   margin-right: 3rem !important; }
+
 #conversejs .mb-5,
 #conversejs .my-5 {
   margin-bottom: 3rem !important; }
+
 #conversejs .ml-5,
 #conversejs .mx-5 {
   margin-left: 3rem !important; }
+
 #conversejs .p-0 {
   padding: 0 !important; }
+
 #conversejs .pt-0,
 #conversejs .py-0 {
   padding-top: 0 !important; }
+
 #conversejs .pr-0,
 #conversejs .px-0 {
   padding-right: 0 !important; }
+
 #conversejs .pb-0,
 #conversejs .py-0 {
   padding-bottom: 0 !important; }
+
 #conversejs .pl-0,
 #conversejs .px-0 {
   padding-left: 0 !important; }
+
 #conversejs .p-1 {
   padding: 0.25rem !important; }
+
 #conversejs .pt-1,
 #conversejs .py-1 {
   padding-top: 0.25rem !important; }
+
 #conversejs .pr-1,
 #conversejs .px-1 {
   padding-right: 0.25rem !important; }
+
 #conversejs .pb-1,
 #conversejs .py-1 {
   padding-bottom: 0.25rem !important; }
+
 #conversejs .pl-1,
 #conversejs .px-1 {
   padding-left: 0.25rem !important; }
+
 #conversejs .p-2 {
   padding: 0.5rem !important; }
+
 #conversejs .pt-2,
 #conversejs .py-2 {
   padding-top: 0.5rem !important; }
+
 #conversejs .pr-2,
 #conversejs .px-2 {
   padding-right: 0.5rem !important; }
+
 #conversejs .pb-2,
 #conversejs .py-2 {
   padding-bottom: 0.5rem !important; }
+
 #conversejs .pl-2,
 #conversejs .px-2 {
   padding-left: 0.5rem !important; }
+
 #conversejs .p-3 {
   padding: 1rem !important; }
+
 #conversejs .pt-3,
 #conversejs .py-3 {
   padding-top: 1rem !important; }
+
 #conversejs .pr-3,
 #conversejs .px-3 {
   padding-right: 1rem !important; }
+
 #conversejs .pb-3,
 #conversejs .py-3 {
   padding-bottom: 1rem !important; }
+
 #conversejs .pl-3,
 #conversejs .px-3 {
   padding-left: 1rem !important; }
+
 #conversejs .p-4 {
   padding: 1.5rem !important; }
+
 #conversejs .pt-4,
 #conversejs .py-4 {
   padding-top: 1.5rem !important; }
+
 #conversejs .pr-4,
 #conversejs .px-4 {
   padding-right: 1.5rem !important; }
+
 #conversejs .pb-4,
 #conversejs .py-4 {
   padding-bottom: 1.5rem !important; }
+
 #conversejs .pl-4,
 #conversejs .px-4 {
   padding-left: 1.5rem !important; }
+
 #conversejs .p-5 {
   padding: 3rem !important; }
+
 #conversejs .pt-5,
 #conversejs .py-5 {
   padding-top: 3rem !important; }
+
 #conversejs .pr-5,
 #conversejs .px-5 {
   padding-right: 3rem !important; }
+
 #conversejs .pb-5,
 #conversejs .py-5 {
   padding-bottom: 3rem !important; }
+
 #conversejs .pl-5,
 #conversejs .px-5 {
   padding-left: 3rem !important; }
+
 #conversejs .m-auto {
   margin: auto !important; }
+
 #conversejs .mt-auto,
 #conversejs .my-auto {
   margin-top: auto !important; }
+
 #conversejs .mr-auto,
 #conversejs .mx-auto {
   margin-right: auto !important; }
+
 #conversejs .mb-auto,
 #conversejs .my-auto {
   margin-bottom: auto !important; }
+
 #conversejs .ml-auto,
 #conversejs .mx-auto {
   margin-left: auto !important; }
+
 @media (min-width: 576px) {
   #conversejs .m-sm-0 {
     margin: 0 !important; }
@@ -7962,6 +8595,7 @@ readers do not read off random characters that represent icons */
   #conversejs .ml-sm-auto,
   #conversejs .mx-sm-auto {
     margin-left: auto !important; } }
+
 @media (min-width: 768px) {
   #conversejs .m-md-0 {
     margin: 0 !important; }
@@ -8145,6 +8779,7 @@ readers do not read off random characters that represent icons */
   #conversejs .ml-md-auto,
   #conversejs .mx-md-auto {
     margin-left: auto !important; } }
+
 @media (min-width: 992px) {
   #conversejs .m-lg-0 {
     margin: 0 !important; }
@@ -8328,6 +8963,7 @@ readers do not read off random characters that represent icons */
   #conversejs .ml-lg-auto,
   #conversejs .mx-lg-auto {
     margin-left: auto !important; } }
+
 @media (min-width: 1200px) {
   #conversejs .m-xl-0 {
     margin: 0 !important; }
@@ -8511,20 +9147,27 @@ readers do not read off random characters that represent icons */
   #conversejs .ml-xl-auto,
   #conversejs .mx-xl-auto {
     margin-left: auto !important; } }
+
 #conversejs .text-justify {
   text-align: justify !important; }
+
 #conversejs .text-nowrap {
   white-space: nowrap !important; }
+
 #conversejs .text-truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap; }
+
 #conversejs .text-left {
   text-align: left !important; }
+
 #conversejs .text-right {
   text-align: right !important; }
+
 #conversejs .text-center {
   text-align: center !important; }
+
 @media (min-width: 576px) {
   #conversejs .text-sm-left {
     text-align: left !important; }
@@ -8532,6 +9175,7 @@ readers do not read off random characters that represent icons */
     text-align: right !important; }
   #conversejs .text-sm-center {
     text-align: center !important; } }
+
 @media (min-width: 768px) {
   #conversejs .text-md-left {
     text-align: left !important; }
@@ -8539,6 +9183,7 @@ readers do not read off random characters that represent icons */
     text-align: right !important; }
   #conversejs .text-md-center {
     text-align: center !important; } }
+
 @media (min-width: 992px) {
   #conversejs .text-lg-left {
     text-align: left !important; }
@@ -8546,6 +9191,7 @@ readers do not read off random characters that represent icons */
     text-align: right !important; }
   #conversejs .text-lg-center {
     text-align: center !important; } }
+
 @media (min-width: 1200px) {
   #conversejs .text-xl-left {
     text-align: left !important; }
@@ -8553,64 +9199,92 @@ readers do not read off random characters that represent icons */
     text-align: right !important; }
   #conversejs .text-xl-center {
     text-align: center !important; } }
+
 #conversejs .text-lowercase {
   text-transform: lowercase !important; }
+
 #conversejs .text-uppercase {
   text-transform: uppercase !important; }
+
 #conversejs .text-capitalize {
   text-transform: capitalize !important; }
+
 #conversejs .font-weight-light {
   font-weight: 300 !important; }
+
 #conversejs .font-weight-normal {
   font-weight: 400 !important; }
+
 #conversejs .font-weight-bold {
   font-weight: 700 !important; }
+
 #conversejs .font-italic {
   font-style: italic !important; }
+
 #conversejs .text-white {
   color: #fff !important; }
+
 #conversejs .text-primary {
   color: #387592 !important; }
+
 #conversejs a.text-primary:hover, #conversejs a.text-primary:focus {
   color: #2a576d !important; }
+
 #conversejs .text-secondary {
   color: #6c757d !important; }
+
 #conversejs a.text-secondary:hover, #conversejs a.text-secondary:focus {
   color: #545b62 !important; }
+
 #conversejs .text-success {
   color: #3AA569 !important; }
+
 #conversejs a.text-success:hover, #conversejs a.text-success:focus {
   color: #2d7f51 !important; }
+
 #conversejs .text-info {
   color: #3AA569 !important; }
+
 #conversejs a.text-info:hover, #conversejs a.text-info:focus {
   color: #2d7f51 !important; }
+
 #conversejs .text-warning {
   color: #ffc107 !important; }
+
 #conversejs a.text-warning:hover, #conversejs a.text-warning:focus {
   color: #d39e00 !important; }
+
 #conversejs .text-danger {
   color: #E77051 !important; }
+
 #conversejs a.text-danger:hover, #conversejs a.text-danger:focus {
   color: #e14b24 !important; }
+
 #conversejs .text-light {
   color: #f8f9fa !important; }
+
 #conversejs a.text-light:hover, #conversejs a.text-light:focus {
   color: #dae0e5 !important; }
+
 #conversejs .text-dark {
   color: #343a40 !important; }
+
 #conversejs a.text-dark:hover, #conversejs a.text-dark:focus {
   color: #1d2124 !important; }
+
 #conversejs .text-muted {
   color: #6c757d !important; }
+
 #conversejs .text-hide {
   font: 0/0 a;
   color: transparent;
   text-shadow: none;
   background-color: transparent;
   border: 0; }
+
 #conversejs .visible {
   visibility: visible !important; }
+
 #conversejs .invisible {
   visibility: hidden !important; }
 
@@ -8623,6 +9297,7 @@ body.reset {
   src: url("webfonts/icomoon/fonts/icomoon.eot?wvi0ht#iefix") format("embedded-opentype"), url("webfonts/icomoon/fonts/icomoon.ttf?wvi0ht") format("truetype"), url("webfonts/icomoon/fonts/icomoon.woff?wvi0ht") format("woff"), url("webfonts/icomoon/fonts/icomoon.svg?wvi0ht#icomoon") format("svg");
   font-weight: normal;
   font-style: normal; }
+
 .icon-conversejs {
   padding-right: 0.5em;
   font-family: 'Converse-js';
@@ -8665,16 +9340,16 @@ body.reset {
   padding: 0; }
   @media (min-width: 768px) {
     .converse-brand__padding {
-      flex: 0 0 33.3333333333%;
-      max-width: 33.3333333333%; } }
+      flex: 0 0 33.33333%;
+      max-width: 33.33333%; } }
   @media (min-width: 992px) {
     .converse-brand__padding {
       flex: 0 0 25%;
       max-width: 25%; } }
   @media (min-width: 1200px) {
     .converse-brand__padding {
-      flex: 0 0 16.6666666667%;
-      max-width: 16.6666666667%; } }
+      flex: 0 0 16.66667%;
+      max-width: 16.66667%; } }
 
 .converse-brand__heading {
   position: relative;
@@ -8686,8 +9361,8 @@ body.reset {
   @media (min-width: 768px) {
     .converse-brand__heading {
       font-size: 4em;
-      flex: 0 0 66.6666666667%;
-      max-width: 66.6666666667%; } }
+      flex: 0 0 66.66667%;
+      max-width: 66.66667%; } }
   @media (min-width: 992px) {
     .converse-brand__heading {
       font-size: 5em;
@@ -8696,8 +9371,8 @@ body.reset {
   @media (min-width: 1200px) {
     .converse-brand__heading {
       font-size: 6em;
-      flex: 0 0 83.3333333333%;
-      max-width: 83.3333333333%; } }
+      flex: 0 0 83.33333%;
+      max-width: 83.33333%; } }
 
 .converse-brand__text {
   font-family: "Century Gothic", futura, "URW Gothic L", Verdana, sans-serif;
@@ -8870,6 +9545,7 @@ body.reset {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none; }
+
 @keyframes colorchange-chatmessage {
   0% {
     background-color: #8dd8ae; }
@@ -8881,6 +9557,7 @@ body.reset {
     background-color: rgba(141, 216, 174, 0.25); }
   100% {
     background-color: transparent; } }
+
 @-webkit-keyframes colorchange-chatmessage {
   0% {
     background-color: #8dd8ae; }
@@ -8892,6 +9569,7 @@ body.reset {
     background-color: rgba(141, 216, 174, 0.25); }
   100% {
     background-color: transparent; } }
+
 @keyframes colorchange-chatmessage-muc {
   0% {
     background-color: #ffb5a2; }
@@ -8903,6 +9581,7 @@ body.reset {
     background-color: rgba(255, 181, 162, 0.25); }
   100% {
     background-color: transparent; } }
+
 @-webkit-keyframes colorchange-chatmessage-muc {
   0% {
     background-color: #ffb5a2; }
@@ -8914,16 +9593,19 @@ body.reset {
     background-color: rgba(255, 181, 162, 0.25); }
   100% {
     background-color: transparent; } }
+
 @keyframes fadein {
   0% {
     opacity: 0; }
   100% {
     opacity: 1; } }
+
 @-webkit-keyframes fadein {
   0% {
     opacity: 0; }
   100% {
     opacity: 1; } }
+
 @-webkit-keyframes fadeOut {
   0% {
     opacity: 1;
@@ -8931,6 +9613,7 @@ body.reset {
   100% {
     opacity: 0;
     visibility: hidden; } }
+
 @keyframes fadeOut {
   0% {
     opacity: 1;
@@ -8982,16 +9665,19 @@ body.reset {
     padding: 0 !important; }
   #conversejs .locked {
     padding-right: 22px; }
+
 @-webkit-keyframes spin {
   from {
     -webkit-transform: rotate(0deg); }
   to {
     -webkit-transform: rotate(359deg); } }
+
 @-moz-keyframes spin {
   from {
     -moz-transform: rotate(0deg); }
   to {
     -moz-transform: rotate(359deg); } }
+
 @keyframes spin {
   from {
     -webkit-transform: rotate(0deg);
@@ -9063,71 +9749,87 @@ body.reset {
 @media screen and (max-width: 575px) {
   body .converse-brand {
     font-size: 3.75em; }
-
   #conversejs:not(.converse-embedded) .chatbox .chat-body {
     border-radius: 4px; }
   #conversejs:not(.converse-embedded) .flyout {
     border-radius: 4px; } }
+
 @media screen and (min-width: 576px) {
   #conversejs .offset-sm-2 {
     margin-left: 16.666667%; } }
+
 @media screen and (min-width: 768px) {
   #conversejs .offset-md-2 {
     margin-left: 16.666667%; }
-
   #conversejs .offset-md-3 {
     margin-left: 25%; } }
+
 @media screen and (min-width: 992px) {
   #conversejs .offset-lg-2 {
     margin-left: 16.666667%; }
-
   #conversejs .offset-lg-3 {
     margin-left: 25%; } }
+
 @media screen and (min-width: 1200px) {
   #conversejs .offset-xl-2 {
     margin-left: 16.666667%; } }
+
 @media screen and (max-height: 450px) {
   #conversejs {
     left: 0; } }
+
 #conversejs .btn--small {
   font-size: 80%;
   font-weight: normal; }
+
 #conversejs form .form-check-label {
   margin-top: 0.3rem; }
+
 #conversejs form .form-control::-webkit-input-placeholder {
   /* Chrome/Opera/Safari */
   color: #A8ABA1; }
+
 #conversejs form .form-control::-moz-placeholder {
   /* Firefox 19+ */
   color: #A8ABA1; }
+
 #conversejs form .form-control:-ms-input-placeholder {
   /* IE 10+ */
   color: #A8ABA1; }
+
 #conversejs form .form-control:-moz-placeholder {
   /* Firefox 18- */
   color: #A8ABA1; }
+
 #conversejs form .form-control::placeholder {
   color: #A8ABA1; }
+
 #conversejs form .clear-input {
   position: absolute;
   right: 0.2em;
   cursor: pointer;
   font-size: 0.75rem; }
+
 #conversejs form#converse-register legend, #conversejs form#converse-login legend {
   width: 100%;
   text-align: center;
   margin: 0 auto 0.5em auto; }
+
 #conversejs form#converse-register fieldset.buttons, #conversejs form#converse-login fieldset.buttons {
   text-align: center; }
+
 #conversejs form#converse-register .login-anon, #conversejs form#converse-login .login-anon {
   height: auto;
   white-space: normal; }
+
 #conversejs form#converse-register .save-submit, #conversejs form#converse-login .save-submit {
   color: #3AA569; }
+
 #conversejs form#converse-register .form-url, #conversejs form#converse-login .form-url {
   display: block;
   font-weight: normal;
   margin: 1em 0; }
+
 #conversejs form.converse-form {
   background: white;
   padding: 1.5em; }
@@ -9163,13 +9865,16 @@ body.reset {
       color: #79a5ba; }
     #conversejs form.converse-form .text-muted.error {
       color: #A53214; }
+
 #conversejs form.converse-form--modal {
   padding-bottom: 0; }
+
 #conversejs form.converse-centered-form {
   text-align: center; }
 
 #conversejs .chatbox-navback {
   display: none; }
+
 #conversejs .flyout {
   border-radius: 4px;
   position: absolute; }
@@ -9185,6 +9890,7 @@ body.reset {
   @media screen and (max-width: 480px) {
     #conversejs .flyout {
       bottom: 0; } }
+
 #conversejs .chatbox-btn {
   border-radius: 25%;
   border: none;
@@ -9196,6 +9902,7 @@ body.reset {
   #conversejs .chatbox-btn:active {
     position: relative;
     top: 1px; }
+
 #conversejs .chat-head {
   flex-wrap: nowrap;
   color: #ffffff;
@@ -9246,6 +9953,7 @@ body.reset {
       border-radius: 5%;
       background-color: white;
       color: #3AA569; }
+
 #conversejs .chatbox {
   text-align: left;
   margin: 0 0.5em; }
@@ -9537,15 +10245,17 @@ body.reset {
       border-top-right-radius: 0; } }
   #conversejs.converse-embedded .chat-head .chatbox-title,
   #conversejs.converse-overlayed .chat-head .chatbox-title {
-    flex: 0 0 66.6666666667%;
-    max-width: 66.6666666667%; }
+    flex: 0 0 66.66667%;
+    max-width: 66.66667%; }
   #conversejs.converse-embedded .chat-head .chatbox-buttons,
   #conversejs.converse-overlayed .chat-head .chatbox-buttons {
-    flex: 0 0 33.3333333333%;
-    max-width: 33.3333333333%; }
+    flex: 0 0 33.33333%;
+    max-width: 33.33333%; }
+
 #conversejs.converse-embedded .emoji-picker,
 #conversejs.converse-overlayed .emoji-picker {
   height: 200px; }
+
 #conversejs.converse-embedded .chatbox,
 #conversejs.converse-overlayed .chatbox {
   min-width: 250px !important;
@@ -9560,21 +10270,27 @@ body.reset {
 
 #conversejs.converse-overlayed .flyout {
   bottom: 1em; }
+
 #conversejs.converse-overlayed .box-flyout {
   height: 450px;
   min-height: 225px; }
+
 #conversejs.converse-overlayed .chat-head {
   height: 55px; }
+
 #conversejs.converse-overlayed .chat-textarea {
   max-height: 200px; }
+
 #conversejs.converse-overlayed .emoji-picker {
   height: 100px; }
+
 #conversejs.converse-overlayed .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu {
   min-width: 235px; }
   #conversejs.converse-overlayed .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar {
     width: 100%; }
     #conversejs.converse-overlayed .chatbox .sendXMPPMessage .chat-toolbar li .toolbar-menu ul.emoji-toolbar .emoji-category {
       float: left; }
+
 #conversejs.converse-overlayed .chatbox .sendXMPPMessage .chat-toolbar li.toggle-smiley .emoji-toolbar .emoji-category-picker ul {
   flex-wrap: wrap;
   justify-content: flex-start; }
@@ -9584,15 +10300,18 @@ body.reset {
     flex-direction: column; }
     #conversejs.converse-overlayed > .row.no-gutters {
       margin: -1em; } }
+
 /* ******************* Fullpage styles *************************** */
 #conversejs.converse-fullscreen .flyout {
   border-radius: 0;
   border-top: 0.8em solid #3AA569;
   border: 1.2em solid #3AA569;
   bottom: 0; }
+
 #conversejs.converse-fullscreen .chatbox-btn {
   font-size: 16px;
   margin: 0 0.3em; }
+
 #conversejs.converse-fullscreen .chat-head {
   height: 62px;
   font-size: 20px;
@@ -9602,15 +10321,18 @@ body.reset {
     height: auto;
     line-height: 16px; }
   #conversejs.converse-fullscreen .chat-head .chatbox-title {
-    flex: 0 0 83.3333333333%;
-    max-width: 83.3333333333%; }
+    flex: 0 0 83.33333%;
+    max-width: 83.33333%; }
   #conversejs.converse-fullscreen .chat-head .chatbox-buttons {
-    flex: 0 0 16.6666666667%;
-    max-width: 16.6666666667%; }
+    flex: 0 0 16.66667%;
+    max-width: 16.66667%; }
+
 #conversejs.converse-fullscreen .chat-textarea {
   max-height: 15em; }
+
 #conversejs.converse-fullscreen .emoji-picker {
   height: 200px; }
+
 #conversejs.converse-fullscreen .chatbox {
   width: 100%;
   height: 100%;
@@ -9622,16 +10344,16 @@ body.reset {
   padding-left: 15px; }
   @media (min-width: 768px) {
     #conversejs.converse-fullscreen .chatbox {
-      flex: 0 0 66.6666666667%;
-      max-width: 66.6666666667%; } }
+      flex: 0 0 66.66667%;
+      max-width: 66.66667%; } }
   @media (min-width: 992px) {
     #conversejs.converse-fullscreen .chatbox {
       flex: 0 0 75%;
       max-width: 75%; } }
   @media (min-width: 1200px) {
     #conversejs.converse-fullscreen .chatbox {
-      flex: 0 0 83.3333333333%;
-      max-width: 83.3333333333%; } }
+      flex: 0 0 83.33333%;
+      max-width: 83.33333%; } }
   #conversejs.converse-fullscreen .chatbox .box-flyout {
     background-color: #3AA569;
     box-shadow: none;
@@ -9670,14 +10392,13 @@ body.reset {
       bottom: 0;
       height: 100vh;
       box-shadow: none; }
-
   #conversejs.converse-mobile .chatbox .box-flyout .chatbox-navback,
   #conversejs.converse-overlayed .chatbox .box-flyout .chatbox-navback,
   #conversejs.converse-embedded .chatbox .box-flyout .chatbox-navback,
   #conversejs.converse-fullscreen .chatbox .box-flyout .chatbox-navback {
     display: flex;
-    flex: 0 0 16.6666666667%;
-    max-width: 16.6666666667%; }
+    flex: 0 0 16.66667%;
+    max-width: 16.66667%; }
     #conversejs.converse-mobile .chatbox .box-flyout .chatbox-navback .fa-arrow-left:before,
     #conversejs.converse-overlayed .chatbox .box-flyout .chatbox-navback .fa-arrow-left:before,
     #conversejs.converse-embedded .chatbox .box-flyout .chatbox-navback .fa-arrow-left:before,
@@ -9687,14 +10408,15 @@ body.reset {
   #conversejs.converse-overlayed .chatbox .box-flyout .chatbox-title,
   #conversejs.converse-embedded .chatbox .box-flyout .chatbox-title,
   #conversejs.converse-fullscreen .chatbox .box-flyout .chatbox-title {
-    flex: 0 0 58.3333333333%;
-    max-width: 58.3333333333%; }
+    flex: 0 0 58.33333%;
+    max-width: 58.33333%; }
   #conversejs.converse-mobile .chatbox .box-flyout .chatbox-buttons,
   #conversejs.converse-overlayed .chatbox .box-flyout .chatbox-buttons,
   #conversejs.converse-embedded .chatbox .box-flyout .chatbox-buttons,
   #conversejs.converse-fullscreen .chatbox .box-flyout .chatbox-buttons {
     flex: 0 0 25%;
     max-width: 25%; } }
+
 #conversejs .oauth-providers {
   text-align: center; }
   #conversejs .oauth-providers .oauth-provider {
@@ -9709,18 +10431,22 @@ body.reset {
         color: #578EA9;
         font-size: 20px;
         margin-right: 0.5em; }
+
 #conversejs .set-xmpp-status .chat-status--online,
 #conversejs .xmpp-status .chat-status--online,
 #conversejs .roster-contacts .chat-status--online {
   color: #3AA569; }
+
 #conversejs .set-xmpp-status .chat-status--busy,
 #conversejs .xmpp-status .chat-status--busy,
 #conversejs .roster-contacts .chat-status--busy {
   color: #E77051; }
+
 #conversejs .set-xmpp-status .chat-status--away,
 #conversejs .xmpp-status .chat-status--away,
 #conversejs .roster-contacts .chat-status--away {
   color: #E7A151; }
+
 #conversejs .set-xmpp-status .far.fa-circle,
 #conversejs .set-xmpp-status .fa-times-circle,
 #conversejs .xmpp-status .far.fa-circle,
@@ -9728,6 +10454,7 @@ body.reset {
 #conversejs .roster-contacts .far.fa-circle,
 #conversejs .roster-contacts .fa-times-circle {
   color: #A8ABA1; }
+
 #conversejs .room-info {
   font-size: 12px;
   font-style: normal;
@@ -9740,10 +10467,12 @@ body.reset {
     margin: 0;
     display: block;
     white-space: normal; }
+
 #conversejs div.room-info {
   padding: 0.3em 0;
   clear: left;
   width: 100%; }
+
 #conversejs #controlbox {
   margin-right: 1.5em; }
   #conversejs #controlbox .box-flyout {
@@ -9922,6 +10651,7 @@ body.reset {
       width: 100%; }
     #conversejs #controlbox .add-xmpp-contact button {
       width: 100%; }
+
 #conversejs .toggle-controlbox {
   text-align: center;
   background-color: #578EA9;
@@ -9982,8 +10712,8 @@ body.reset {
   @media (min-width: 768px) {
     #conversejs.converse-fullscreen #controlbox,
     #conversejs.converse-mobile #controlbox {
-      flex: 0 0 33.3333333333%;
-      max-width: 33.3333333333%; } }
+      flex: 0 0 33.33333%;
+      max-width: 33.33333%; } }
   @media (min-width: 992px) {
     #conversejs.converse-fullscreen #controlbox,
     #conversejs.converse-mobile #controlbox {
@@ -9992,8 +10722,8 @@ body.reset {
   @media (min-width: 1200px) {
     #conversejs.converse-fullscreen #controlbox,
     #conversejs.converse-mobile #controlbox {
-      flex: 0 0 16.6666666667%;
-      max-width: 16.6666666667%; } }
+      flex: 0 0 16.66667%;
+      max-width: 16.66667%; } }
   #conversejs.converse-fullscreen #controlbox.logged-out,
   #conversejs.converse-mobile #controlbox.logged-out {
     flex: 0 0 100%;
@@ -10073,23 +10803,23 @@ body.reset {
     min-height: 1px;
     padding-right: 15px;
     padding-left: 15px;
-    flex: 0 0 66.6666666667%;
-    max-width: 66.6666666667%;
-    margin-left: 16.6666666667%; }
+    flex: 0 0 66.66667%;
+    max-width: 66.66667%;
+    margin-left: 16.66667%; }
     @media (min-width: 576px) {
       #conversejs.converse-fullscreen #controlbox #converse-register, #conversejs.converse-fullscreen #controlbox #converse-login,
       #conversejs.converse-mobile #controlbox #converse-register,
       #conversejs.converse-mobile #controlbox #converse-login {
-        flex: 0 0 66.6666666667%;
-        max-width: 66.6666666667%;
-        margin-left: 16.6666666667%; } }
+        flex: 0 0 66.66667%;
+        max-width: 66.66667%;
+        margin-left: 16.66667%; } }
     @media (min-width: 768px) {
       #conversejs.converse-fullscreen #controlbox #converse-register, #conversejs.converse-fullscreen #controlbox #converse-login,
       #conversejs.converse-mobile #controlbox #converse-register,
       #conversejs.converse-mobile #controlbox #converse-login {
-        flex: 0 0 66.6666666667%;
-        max-width: 66.6666666667%;
-        margin-left: 16.6666666667%; } }
+        flex: 0 0 66.66667%;
+        max-width: 66.66667%;
+        margin-left: 16.66667%; } }
     @media (min-width: 992px) {
       #conversejs.converse-fullscreen #controlbox #converse-register, #conversejs.converse-fullscreen #controlbox #converse-login,
       #conversejs.converse-mobile #controlbox #converse-register,
@@ -10142,31 +10872,38 @@ body.reset {
         display: none; }
       #conversejs:not(.converse-embedded) .converse-chatboxes.sidebar-open #controlbox .controlbox-pane {
         display: block; }
-
   #conversejs.converse-overlayed .converse-chatboxes .chatbox .box-flyout {
     margin-left: 30px; } }
+
 #conversejs #converse-modals .set-xmpp-status {
   margin: 1em; }
   #conversejs #converse-modals .set-xmpp-status .custom-control-label {
     margin-top: 0.25em; }
+
 #conversejs #converse-modals #omemo-tabpanel {
   margin-top: 1em; }
+
 #conversejs #converse-modals .btn {
   font-weight: normal; }
+
 #conversejs #converse-modals #user-profile-modal .profile-form label {
   font-weight: bold; }
+
 #conversejs #converse-modals #user-profile-modal .fingerprint-removal label {
   display: flex;
   padding: 0.75rem 1.25rem; }
+
 #conversejs #converse-modals #user-profile-modal .list-group-item {
   display: flex;
   justify-content: left;
   font-size: 95%; }
   #conversejs #converse-modals #user-profile-modal .list-group-item input[type="checkbox"] {
     margin-right: 1em; }
+
 #conversejs #converse-modals .fingerprints {
   width: 100%;
   margin-bottom: 1em; }
+
 #conversejs #converse-modals .fingerprint-trust {
   display: flex;
   justify-content: space-between;
@@ -10289,6 +11026,7 @@ body.reset {
     padding: 0 0 0.5rem 0; }
     #conversejs .list-container .list-toggle:hover {
       color: #585B51; }
+
 #conversejs .items-list {
   text-align: left; }
   #conversejs .items-list .list-item {
@@ -10364,9 +11102,11 @@ body.reset {
 #conversejs .add-chatroom input[type="submit"],
 #conversejs .add-chatroom input[type="button"] {
   margin: 0.3em 0; }
+
 #conversejs.converse-embedded #room-details-modal .features-list,
 #conversejs #room-details-modal .features-list {
   margin-left: 1em; }
+
 #conversejs.converse-embedded .chatroom-features,
 #conversejs .chatroom-features {
   width: 100%; }
@@ -10384,6 +11124,7 @@ body.reset {
       #conversejs .chatroom-features .features-list .feature .fa {
         margin-right: 0.5em;
         color: #666; }
+
 #conversejs.converse-embedded .chat-head-chatroom,
 #conversejs .chat-head-chatroom {
   background-color: #E77051; }
@@ -10418,6 +11159,7 @@ body.reset {
   #conversejs.converse-embedded .chat-head-chatroom .chat-title .chatroom-jid,
   #conversejs .chat-head-chatroom .chat-title .chatroom-jid {
     font-size: 12px; }
+
 #conversejs.converse-embedded .chatroom,
 #conversejs .chatroom {
   width: 400px; }
@@ -10640,13 +11382,13 @@ body.reset {
     min-width: 400px !important;
     width: 400px; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatbox-title {
-    flex: 0 0 58.3333333333%;
-    max-width: 58.3333333333%; }
+    flex: 0 0 58.33333%;
+    max-width: 58.33333%; }
     #conversejs.converse-overlayed .chatbox.chatroom .chatbox-title .chatroom-description {
       font-size: 80%; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatbox-buttons {
-    flex: 0 0 41.6666666667%;
-    max-width: 41.6666666667%; }
+    flex: 0 0 41.66667%;
+    max-width: 41.66667%; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .occupants-heading {
     padding: 0; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .chatroom-features .feature {
@@ -10661,6 +11403,7 @@ body.reset {
 #conversejs.converse-fullscreen .chatroom .box-flyout .chatbox-title {
   flex: 0 0 75%;
   max-width: 75%; }
+
 #conversejs.converse-fullscreen .chatroom .box-flyout .chatbox-buttons {
   flex: 0 0 25%;
   max-width: 25%; }
@@ -10669,14 +11412,15 @@ body.reset {
   #conversejs:not(.converse-embedded) .chatroom {
     width: 100vw !important; }
     #conversejs:not(.converse-embedded) .chatroom .box-flyout .chatbox-navback {
-      flex: 0 0 16.6666666667%;
-      max-width: 16.6666666667%; }
+      flex: 0 0 16.66667%;
+      max-width: 16.66667%; }
     #conversejs:not(.converse-embedded) .chatroom .box-flyout .chatbox-title {
-      flex: 0 0 58.3333333333%;
-      max-width: 58.3333333333%; }
+      flex: 0 0 58.33333%;
+      max-width: 58.33333%; }
     #conversejs:not(.converse-embedded) .chatroom .box-flyout .chatbox-buttons {
       flex: 0 0 25%;
       max-width: 25%; } }
+
 #conversejs.converse-fullscreen .chatroom .box-flyout,
 #conversejs.converse-mobile .chatroom .box-flyout {
   background-color: #E77051;
@@ -10712,32 +11456,39 @@ body.reset {
       #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list li,
       #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list li {
         font-size: 12px; }
+
 #conversejs.converse-fullscreen .chatroom .room-invite span .invited-contact,
 #conversejs.converse-mobile .chatroom .room-invite span .invited-contact {
   margin: 0 0 0.5em -1px; }
 
 #conversejs .chatbox.headlines .chat-head.chat-head-chatbox {
   background-color: #E7A151; }
+
 #conversejs .chatbox.headlines .chat-body {
   background-color: #E7A151;
   border-radius: 4px; }
   #conversejs .chatbox.headlines .chat-body .chat-message {
     color: #D2842B; }
+
 #conversejs .chatbox.headlines .chat-content {
   height: 100%; }
 
 #conversejs.converse-fullscreen .chatbox.headlines .box-flyout {
   background-color: #E7A151; }
+
 #conversejs.converse-fullscreen .chatbox.headlines .chat-head.chat-head-chatbox {
   background-color: #E7A151; }
+
 #conversejs.converse-fullscreen .chatbox.headlines .flyout {
   border: 1.2em solid #E7A151;
   border-top: 0.8em solid #E7A151; }
 
 #conversejs .message .mention {
   font-weight: bold; }
+
 #conversejs .message .mention--self {
   font-weight: normal; }
+
 #conversejs .message.date-separator {
   height: 2em;
   margin: 0;
@@ -10759,6 +11510,7 @@ body.reset {
     padding: 0 1em;
     position: relative;
     z-index: 5; }
+
 #conversejs .message.chat-info {
   color: #3AA569;
   font-size: 14px;
@@ -10775,13 +11527,16 @@ body.reset {
   #conversejs .message.chat-info.chat-error {
     color: #D24E2B;
     font-weight: bold; }
+
 #conversejs .message .chat-image {
   height: auto;
   width: auto;
   max-height: 15em;
   max-width: 100%; }
+
 #conversejs .message.chat-msg--action {
   font-style: italic; }
+
 #conversejs .message.chat-msg {
   display: flex;
   flex-direction: row;
@@ -10908,9 +11663,11 @@ body.reset {
     display: none; }
   #conversejs .message.chat-msg.chat-msg--followup .chat-msg__content {
     margin-left: 2.75rem; }
+
 #conversejs .chatroom-body .message.onload {
   animation: colorchange-chatmessage-muc 1s;
   -webkit-animation: colorchange-chatmessage-muc 1s; }
+
 #conversejs .chatroom-body .message .separator {
   border: 0.5px solid #E77051; }
 
@@ -10920,6 +11677,7 @@ body.reset {
 @media screen and (max-width: 767px) {
   #conversejs:not(.converse-embedded) .message.chat-msg .chat-msg__author {
     white-space: normal; } }
+
 #conversejs.converse-overlayed #minimized-chats {
   order: 100;
   width: 130px;
@@ -10991,12 +11749,15 @@ body.reset {
 
 #conversejs [hidden] {
   display: none; }
+
 #conversejs .visually-hidden {
   position: absolute;
   clip: rect(0, 0, 0, 0); }
+
 #conversejs .form-group .suggestion-box,
 #conversejs .form-group .awesomplete {
   width: 100%; }
+
 #conversejs .suggestion-box,
 #conversejs .awesomplete {
   position: relative; }
@@ -11074,11 +11835,13 @@ body.reset {
       border-top: 0;
       -webkit-transform: rotate(45deg);
       transform: rotate(45deg); }
+
 #conversejs .suggestion-box > ul[hidden],
 #conversejs .suggestion-box > ul:empty,
 #conversejs div.awesomplete > ul[hidden],
 #conversejs div.awesomplete > ul:empty {
   display: none; }
+
 @supports (transform: scale(0)) {
   #conversejs .suggestion-box > ul,
   #conversejs div.awesomplete > ul {
@@ -11092,14 +11855,17 @@ body.reset {
     transform: scale(0);
     display: block;
     transition-timing-function: ease; } }
+
 #conversejs .suggestion-box > ul > li[aria-selected="true"],
 #conversejs div.awesomplete > ul > li[aria-selected="true"] {
   background: #D24E2B;
   color: white; }
+
 #conversejs .suggestion-box li:hover mark,
 #conversejs div.awesomplete li:hover mark {
   background: #FFB9A7;
   color: white; }
+
 #conversejs .suggestion-box li[aria-selected="true"] mark,
 #conversejs div.awesomplete li[aria-selected="true"] mark {
   background: #E77051;
@@ -11165,5 +11931,3 @@ body.reset {
       padding-left: 0.3em; }
       #conversejs.converse-embedded .chatroom .box-flyout .occupants .occupant-list li.occupant {
         font-size: 120%; }
-
-/*# sourceMappingURL=converse.css.map */

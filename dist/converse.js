@@ -617,7 +617,7 @@ module.exports = Awesomplete;
 
 /**
  * Backbone localStorage and sessionStorage Adapter
- * Version 0.0.4
+ * Version 0.0.5
  *
  * https://github.com/jcbrand/Backbone.browserStorage
  */
@@ -63337,7 +63337,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         } else if (current_affiliation === 'outcast') {
           this.showChatEvent(__("%1$s has been banned from this groupchat", occupant.get('nick')));
         } else if (current_affiliation === 'admin' || current_affiliation == 'owner') {
-          this.showChatEvent(__(`%1$s is now an ${current_affiliation} of this groupchat`, occupant.get('nick')));
+          this.showChatEvent(__('%1$s is now an %2$s of this groupchat', occupant.get('nick'), current_affiliation));
         }
       },
 
@@ -63550,7 +63550,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         });
 
         if (!_.includes(roles, me.get('role'))) {
-          this.showErrorMessage(__(`Forbidden: you do not have the necessary role in order to do that.`));
+          this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'));
           return false;
         }
 
@@ -63563,7 +63563,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         });
 
         if (!_.includes(affiliations, me.get('affiliation'))) {
-          this.showErrorMessage(__(`Forbidden: you do not have the necessary affiliation in order to do that.`));
+          this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'));
           return false;
         }
 
@@ -63719,7 +63719,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
 
           case 'register':
             if (args.length > 1) {
-              this.showErrorMessage(__(`Error: invalid number of arguments`));
+              this.showErrorMessage(__('Error: invalid number of arguments'));
             } else {
               this.model.registerNickname().then(err_msg => {
                 if (err_msg) this.showErrorMessage(err_msg);
@@ -76388,9 +76388,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         'xmlns': Strophe.NS.REGISTER
       })).then(iq => {}).catch(iq => {
         if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', iq).length) {
-          this.feedback.set('error', __(`Error: the groupchat ${this.model.getDisplayName()} does not exist.`));
+          this.feedback.set('error', __('Error: the groupchat %1$s does not exist.', this.model.getDisplayName()));
         } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]').length) {
-          this.feedback.set('error', __(`Sorry, you're not allowed to register in this groupchat`));
+          this.feedback.set('error', __("Sorry, you're not allowed to register in this groupchat"));
         }
       });
     }

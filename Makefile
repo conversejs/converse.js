@@ -65,7 +65,7 @@ serve_bg: dev
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=4.0.3 -c
+GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=4.0.4 -c
 
 .PHONY: pot
 pot: dist/converse-no-dependencies-es2015.js
@@ -99,6 +99,9 @@ release:
 	make po
 	make po2json
 	make build
+
+.PHONY: publish
+	$(LERNA) publish from-git
 
 ########################################################################
 ## Install dependencies
@@ -207,7 +210,7 @@ build:: dev css $(BUILDS) locale.zip css/webfonts.zip
 css/webfonts.zip: css/webfonts/*
 	zip -r css/webfonts.zip css/webfonts
 
-locales.zip:
+locale.zip:
 	zip -r locale.zip locale --exclude *.pot --exclude *.po
 
 ########################################################################

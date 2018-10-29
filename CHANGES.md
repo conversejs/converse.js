@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0.4 (Unreleased)
+## 4.0.4 (2018-10-29)
 
 - Use [Lerna](https://lernajs.io/) to create the @converse/headless package
 - Use ES2015 modules instead of UMD.

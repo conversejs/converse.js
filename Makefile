@@ -100,9 +100,6 @@ release:
 	make po2json
 	make build
 
-.PHONY: publish
-publish:
-	$(LERNA) publish from-git
 
 ########################################################################
 ## Install dependencies

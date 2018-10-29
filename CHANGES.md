@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.0.5 (Unreleased)
+
+
 ## 4.0.4 (2018-10-29)
 
 - Use [Lerna](https://lernajs.io/) to create the @converse/headless package

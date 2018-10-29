@@ -1625,9 +1625,9 @@
             }));
 
             it("will render Openstreetmap-URL from geo-URI",
-                        mock.initConverseWithPromises(
-                            null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                            function (done, _converse) {
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
                 _converse.emit('rosterContactsFetched');

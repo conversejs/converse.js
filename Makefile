@@ -15,7 +15,7 @@ OXIPNG			?= oxipng
 PAPER		   	=
 PO2JSON		 	?= ./node_modules/.bin/po2json
 RJS				?= ./node_modules/.bin/r.js
-WEBPACK 		?= ./node_modules/.bin/npx
+NPX				?= ./node_modules/.bin/npx
 SASS			?= ./node_modules/.bin/node-sass
 SED				?= sed
 SPHINXBUILD	 	?= ./bin/sphinx-build
@@ -143,11 +143,11 @@ watchcss: dev
 
 .PHONY: watchjs
 watchjs: dev dist/converse-headless.js
-	./node_modules/.bin/npx  webpack --mode=development  --watch
+	$(NPX)  webpack --mode=development  --watch
 
 .PHONY: watchjsheadless
 watchjsheadless: dev
-	./node_modules/.bin/npx  webpack --mode=development  --watch --type=headless
+	$(NPX)  webpack --mode=development  --watch --type=headless
 
 .PHONY: watch
 watch: dev
@@ -182,19 +182,19 @@ BUILDS = dist/converse.js \
 	dist/converse-no-dependencies-es2015.js
 
 dist/converse.js: src webpack.config.js stamp-npm @converse/headless
-	./node_modules/.bin/npx  webpack --mode=development
+	$(NPX)  webpack --mode=development
 dist/converse.min.js: src webpack.config.js stamp-npm @converse/headless
-	./node_modules/.bin/npx  webpack --mode=production
+	$(NPX)  webpack --mode=production
 dist/converse-headless.js: src webpack.config.js stamp-npm @converse/headless
-	./node_modules/.bin/npx  webpack --mode=development --type=headless
+	$(NPX)  webpack --mode=development --type=headless
 dist/converse-headless.min.js: src webpack.config.js stamp-npm @converse/headless
-	./node_modules/.bin/npx  webpack --mode=production --type=headless
+	$(NPX)  webpack --mode=production --type=headless
 dist/converse-no-dependencies.js: src webpack.config.js stamp-npm @converse/headless
-	./node_modules/.bin/npx  webpack --mode=development --type=nodeps
+	$(NPX)  webpack --mode=development --type=nodeps
 dist/converse-no-dependencies.min.js: src webpack.config.js stamp-npm @converse/headless
-	./node_modules/.bin/npx  webpack --mode=production --type=nodeps
+	$(NPX)  webpack --mode=production --type=nodeps
 dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @converse/headless
-	./node_modules/.bin/npx  webpack --mode=development --type=nodeps --lang=es2015
+	$(NPX)  webpack --mode=development --type=nodeps --lang=es2015
 
 @converse/headless: src/headless
 
@@ -202,7 +202,13 @@ dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @conver
 dist:: build
 
 .PHONY: build
-build:: dev css $(BUILDS)
+build:: dev css $(BUILDS) locale.zip css/webfonts.zip
+
+css/webfonts.zip: css/webfonts/*
+	zip -r css/webfonts.zip css/webfonts
+
+locales.zip:
+	zip -r locale.zip locale --exclude *.pot --exclude *.po
 
 ########################################################################
 ## Tests

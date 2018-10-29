@@ -101,6 +101,7 @@ release:
 	make build
 
 .PHONY: publish
+publish:
 	$(LERNA) publish from-git
 
 ########################################################################

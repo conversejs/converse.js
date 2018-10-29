@@ -208,6 +208,7 @@ converse.plugins.add('converse-roster', {
 
 
         _converse.RosterContact = _converse.ModelWithVCardAndPresence.extend({
+
             defaults: {
                 'chat_state': undefined,
                 'image': _converse.DEFAULT_IMAGE,

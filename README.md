@@ -107,11 +107,16 @@ Recently we have started accepting donations via [Patreon](https://www.patreon.c
 
 The following people are making recurring donations:
 
+* [Alexander Matviychuk](https://www.patreon.com/user/creators?u=10203506)
+* [Christopher Kuttruff](https://www.patreon.com/user/creators?u=8477742)
 * [Daniel Gultsch](https://www.patreon.com/user/creators?u=13443518)
+* [Dele Olajide](https://www.patreon.com/user/creators?u=14392041)
 * [Drew Varner](https://www.patreon.com/user/creators?u=8131055)
-* [Krischan](https://www.patreon.com/user/creators?u=337569)
 * [Guus der Kinderen](https://www.patreon.com/user/creators?u=8302585)
+* [Krischan](https://www.patreon.com/user/creators?u=337569)
+* [Nicolas Vérité](https://www.patreon.com/nyconyco/creators)
 * [Rafael](https://www.patreon.com/user/creators?u=4340078)
+* [Ramesh Jangama](https://www.patreon.com/user/creators?u=14564234)
 * [Tilman Beitter](https://www.patreon.com/spicewiesel/creators)
 * [mt7479](https://www.patreon.com/user/creators?u=3892290)
 * An anonymous backer on Liberapay

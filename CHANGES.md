@@ -8,7 +8,9 @@
 - #1257 Prefer 'probably' over 'maybe' when evaluating audio play support.
 - #1259 Don't inform of affiliation change after user leaves MUC
 - #1261 File upload not working
+- #1264 Right Align badges of room occupants
 - #1272 Hiding MUC occupants leaves a blank space
+- #1278 Replace the default avatar with a SVG version
 
 ## 4.0.3 (2018-10-22)
 
@@ -20,7 +22,7 @@
 - New config setting [show_images_inline](https://conversejs.org/docs/html/configuration.html#show-images-inline)
 - Disable OMEMO when the user has indicated that Converse is running on an untrusted device.
 - #537 Render `xmpp:` URI as link
-- #1058 Send an inactive chat state notification when the user switches to another tab 
+- #1058 Send an inactive chat state notification when the user switches to another tab
 - #1062 Collapse multiple join/leave messages into one
 - #1063 URLs in the topic / subject are not clickable
 - #1140 Add support for destroyed chatrooms

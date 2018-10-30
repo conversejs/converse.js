@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-29 22:21+0100\n"
-"PO-Revision-Date: 2018-10-25 07:32+0000\n"
+"PO-Revision-Date: 2018-10-31 09:22+0000\n"
 "Last-Translator: Szilágyi Gyula <gyula.n7@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/hu/>\n"
@@ -109,9 +109,8 @@ msgid "Close this chat box"
 msgstr "A csevegőablak bezárása"
 
 #: dist/converse-no-dependencies.js:41073
-#, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr "Sajnáljuk, valami hiba történt a könyvjelző mentése közben."
+msgstr "Sajnáljuk, valami hiba történt frissítés közben"
 
 #: dist/converse-no-dependencies.js:41089
 #: dist/converse-no-dependencies.js:50698
@@ -514,9 +513,9 @@ msgstr "%1$s ki lett tiltva ebből a konferenciából"
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
 #: dist/converse-no-dependencies.js:45441
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s már nem admin ebben a konferenciában"
+msgstr "%1$s most már %2$s ebben a konferenciában"
 
 #: dist/converse-no-dependencies.js:45453
 #, javascript-format
@@ -1332,14 +1331,13 @@ msgid ""
 msgstr "%1$s meghívott a(z) %2$s nevű csevegőszobába. Indoka: \"%3$s\""
 
 #: dist/converse-no-dependencies.js:58493
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: the groupchat %1$s does not exist."
-msgstr "Ez a konferencia (még) nem létezik."
+msgstr "Hiba: a %1$s nevű konferencia nem létezik."
 
 #: dist/converse-no-dependencies.js:58495
-#, fuzzy
 msgid "Sorry, you're not allowed to register in this groupchat"
-msgstr "Sajnálom, nem regisztrálhatod magad ebben a konferenciában"
+msgstr "Sajnáljuk, nem regisztrálhat ebben a konferenciában"
 
 #: dist/converse-no-dependencies.js:59389
 #, javascript-format
@@ -1515,7 +1513,6 @@ msgid "This is a trusted device"
 msgstr "Ez egy megbízható eszköz"
 
 #: dist/converse-no-dependencies.js:84334
-#, fuzzy
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1528,7 +1525,7 @@ msgstr ""
 "kívánja adatait, amikor kijelentkezik. Fontos, hogy kifejezetten "
 "jelentkezzen ki, mert előfordulhat, hogy nem az összes tárolt adat törlődik. "
 "Kérjük, vegye figyelembe, ha nem megbízható eszközt használ, hogy az OMEMO "
-"titkosítás támogatott."
+"titkosítás nem elérhető."
 
 #: dist/converse-no-dependencies.js:84336
 msgid "Log in"

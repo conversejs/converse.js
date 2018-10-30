@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-29 22:21+0100\n"
-"PO-Revision-Date: 2018-10-10 01:35+0000\n"
+"PO-Revision-Date: 2018-10-31 09:22+0000\n"
 "Last-Translator: Licaon Kter <licaon.kter@protonmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ro/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 3.2.1\n"
+"X-Generator: Weblate 3.3-dev\n"
 
 #: dist/converse-no-dependencies.js:39929
 #: dist/converse-no-dependencies.js:39986
@@ -108,11 +108,8 @@ msgid "Close this chat box"
 msgstr "Închide această casetă de discuție"
 
 #: dist/converse-no-dependencies.js:41073
-#, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr ""
-"Ne pare rău, ceva a mers prost în timp ce se încerca salvarea semnului de "
-"carte."
+msgstr "Ne pare rău, ceva a mers prost în timp ce se încerca actualizarea"
 
 #: dist/converse-no-dependencies.js:41089
 #: dist/converse-no-dependencies.js:50698

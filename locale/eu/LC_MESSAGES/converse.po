@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-29 22:21+0100\n"
-"PO-Revision-Date: 2018-10-21 10:23+0000\n"
-"Last-Translator: Osoitz <oelkoro@gmail.com>\n"
+"PO-Revision-Date: 2018-11-04 12:23+0000\n"
+"Last-Translator: aitzol berasategi <aitzol@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
 "Language: eu\n"
@@ -105,9 +105,8 @@ msgid "Close this chat box"
 msgstr "Txat leiho hau itxi"
 
 #: dist/converse-no-dependencies.js:41073
-#, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr "Barkatu, zerbaitek huts egin du zure laster-marka gordetzerakoan."
+msgstr "Barkatu, zerbaitek huts egin du zure laster-marka gordetzerakoan"
 
 #: dist/converse-no-dependencies.js:41089
 #: dist/converse-no-dependencies.js:50698
@@ -511,9 +510,9 @@ msgstr "%1$s gela honetan debekatua izan da"
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
 #: dist/converse-no-dependencies.js:45441
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s ez da jada gela honetako administratzailea"
+msgstr "%1$s orain berriketa honetako %2$s da"
 
 #: dist/converse-no-dependencies.js:45453
 #, javascript-format
@@ -697,9 +696,9 @@ msgid "%1$s has left and re-entered the groupchat"
 msgstr "%1$s atera egin da eta berriro elkartu da gelara"
 
 #: dist/converse-no-dependencies.js:46400
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
-msgstr "%1$s atera egin da eta berriro elkartu da gelara"
+msgstr "%1$s atera egin da eta berriro elkartu da %2$s gelara"
 
 #: dist/converse-no-dependencies.js:46419
 #, javascript-format
@@ -1334,12 +1333,11 @@ msgstr ""
 "arrazoia eman du: \"%3$s\""
 
 #: dist/converse-no-dependencies.js:58493
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: the groupchat %1$s does not exist."
-msgstr "Gela hau ez da existitzen (oraindik)."
+msgstr "Akatsa: %1$s gela ez da existitzen."
 
 #: dist/converse-no-dependencies.js:58495
-#, fuzzy
 msgid "Sorry, you're not allowed to register in this groupchat"
 msgstr "Ez duzu baimenik gela honetan erregistratzeko"
 
@@ -1357,13 +1355,12 @@ msgid "Click to hide these contacts"
 msgstr "Klikatu kontaktu hauek ezkutatzeko"
 
 #: dist/converse-no-dependencies.js:83168
-#, fuzzy
 msgid "This room no longer exists"
-msgstr "Gela hau ez da moderatua izaten ari"
+msgstr "Gela ez da gehiago existituko"
 
 #: dist/converse-no-dependencies.js:83174
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "Elkarrizketa hau mugitua izan da. Klikatu azpian sartzeko."
 
 #: dist/converse-no-dependencies.js:83201
 msgid "Name"
@@ -1472,7 +1469,7 @@ msgstr "Moderatzaileek soilik ikus dezakete zure XMPP erabiltzailea"
 #: dist/converse-no-dependencies.js:83467
 msgid ""
 "Participants entering this groupchat need to request permission to write"
-msgstr ""
+msgstr "Grla honetara sartzen diren kideek idazteko baimena eskatu behar dute"
 
 #: dist/converse-no-dependencies.js:83321
 #: dist/converse-no-dependencies.js:83477
@@ -1482,7 +1479,7 @@ msgstr "Moderatu gabea"
 #: dist/converse-no-dependencies.js:83323
 #: dist/converse-no-dependencies.js:83475
 msgid "Participants entering this groupchat can write right away"
-msgstr ""
+msgstr "Gela honetara gehitzen diren kideek berehala idatz dezakete"
 
 #: dist/converse-no-dependencies.js:83329
 #: dist/converse-no-dependencies.js:83485
@@ -1519,7 +1516,6 @@ msgid "This is a trusted device"
 msgstr "Hau gailu fidagarri bat da"
 
 #: dist/converse-no-dependencies.js:84334
-#, fuzzy
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "

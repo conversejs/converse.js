@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-29 22:21+0100\n"
-"PO-Revision-Date: 2018-10-25 13:33+0000\n"
+"PO-Revision-Date: 2018-11-04 12:23+0000\n"
 "Last-Translator: Lorem Ipsum <aditoo@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
 "translations/cs/>\n"
@@ -105,9 +105,8 @@ msgid "Close this chat box"
 msgstr "Zavřít toto chatovací okno"
 
 #: dist/converse-no-dependencies.js:41073
-#, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr "Omlouváme se, při pokusu o uložení vaší záložky se něco pokazilo."
+msgstr "Omlouváme se, při pokusu o obnovení se něco pokazilo"
 
 #: dist/converse-no-dependencies.js:41089
 #: dist/converse-no-dependencies.js:50698
@@ -514,9 +513,9 @@ msgstr "%1$s byl/a na tomto skupinového chatu zakázán/a"
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
 #: dist/converse-no-dependencies.js:45441
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s již není administrátorem tohoto skupinového chatu"
+msgstr "%1$s je nyní %2$s tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:45453
 #, javascript-format
@@ -1337,12 +1336,11 @@ msgstr ""
 "důvod: „%3$s“"
 
 #: dist/converse-no-dependencies.js:58493
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: the groupchat %1$s does not exist."
-msgstr "Tento skupinový chat (ještě) neexistuje."
+msgstr "Chyba: skupinový chat %1$s neexistuje."
 
 #: dist/converse-no-dependencies.js:58495
-#, fuzzy
 msgid "Sorry, you're not allowed to register in this groupchat"
 msgstr "Omlouváme se, nemáte povolení se registrovat v tomto skupinovém chatu"
 
@@ -1525,7 +1523,6 @@ msgid "This is a trusted device"
 msgstr "Tohle je důvěryhodné zařízení"
 
 #: dist/converse-no-dependencies.js:84334
-#, fuzzy
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1537,7 +1534,7 @@ msgstr ""
 "tohle veřejný počítač, nebo chcete-li, aby byla vaše data po odhlášení "
 "smazána, odškrtněte toto pole. Je důležité, abyste se výslovně odhlásil/a, "
 "jinak nemusí být smazána všechna data v mezipaměti. Mějte prosím na vědomí, "
-"že pokud používáte nedůvěryhodné zařízení, není podporováno šifrování OMEMO."
+"že pokud používáte nedůvěryhodné zařízení, NENÍ podporováno šifrování OMEMO."
 
 #: dist/converse-no-dependencies.js:84336
 msgid "Log in"

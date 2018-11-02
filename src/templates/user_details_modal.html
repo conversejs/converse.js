@@ -14,7 +14,7 @@
                 {[ if (o.fullname) { ]}
                 <p><label>{{{o.__('Full Name:')}}}</label>&nbsp;{{{o.fullname}}}</p>
                 {[ } ]}
-                <p><label>{{{o.__('XMPP Address:')}}}</label>&nbsp;{{{o.jid}}}</p>
+                <p><label>{{{o.__('XMPP Address:')}}}</label>&nbsp;<a href="xmpp:{{{o.jid}}}">{{{o.jid}}}</a></p>
                 {[ if (o.nickname) { ]}
                 <p><label>{{{o.__('Nickname:')}}}</label>&nbsp;{{{o.nickname}}}</p>
                 {[ } ]}

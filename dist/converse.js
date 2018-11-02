@@ -101772,7 +101772,9 @@ __p += '<!-- src/templates/file_progress.html -->\n<div class="message chat-msg"
 __e(o.time) +
 '" data-msgid="' +
 __e(o.msgid) +
-'">\n    <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>\n    <div class="chat-msg__content">\n        <span class="chat-msg__text">Uploading file: <strong>' +
+'">\n    <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>\n    <div class="chat-msg__content">\n        <span class="chat-msg__text">' +
+__e(o.__('Uploading file:')) +
+' <strong>' +
 __e(o.filename) +
 '</strong>, ' +
 __e(o.filesize) +

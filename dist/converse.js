@@ -103634,9 +103634,11 @@ __e(o.fullname) +
  } ;
 __p += '\n                <p><label>' +
 __e(o.__('XMPP Address:')) +
-'</label>&nbsp;' +
+'</label>&nbsp;<a href="xmpp:' +
 __e(o.jid) +
-'</p>\n                ';
+'">' +
+__e(o.jid) +
+'</a></p>\n                ';
  if (o.nickname) { ;
 __p += '\n                <p><label>' +
 __e(o.__('Nickname:')) +

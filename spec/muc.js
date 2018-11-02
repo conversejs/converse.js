@@ -28,12 +28,12 @@
                 expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
                 expect(u.isVisible(_converse.chatboxviews.get('news@localhost').el)).toBeTruthy();
 
-                _converse.api.roomviews.close('lounge@localhost');
+                await _converse.api.roomviews.close('lounge@localhost');
                 expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                 expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
                 expect(u.isVisible(_converse.chatboxviews.get('news@localhost').el)).toBeTruthy();
 
-                _converse.api.roomviews.close(['leisure@localhost', 'news@localhost']);
+                await _converse.api.roomviews.close(['leisure@localhost', 'news@localhost']);
                 expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                 expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                 expect(_converse.chatboxviews.get('news@localhost')).toBeUndefined();
@@ -41,7 +41,7 @@
                 await test_utils.openAndEnterChatRoom(_converse, 'leisure', 'localhost', 'dummy');
                 expect(u.isVisible(_converse.chatboxviews.get('lounge@localhost').el)).toBeTruthy();
                 expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
-                _converse.api.roomviews.close();
+                await _converse.api.roomviews.close();
                 expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                 expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                 done();
@@ -52,43 +52,43 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
+                await test_utils.createContacts(_converse, 'current');
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group .group-toggle').length, 300);
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 let jid = 'lounge@localhost';
-                let room = _converse.api.rooms.get(jid);
+                let room = await _converse.api.rooms.get(jid);
                 expect(room instanceof Object).toBeTruthy();
 
-                let chatroomview = _converse.chatboxviews.get(jid);
-                expect(chatroomview.is_chatroom).toBeTruthy();
+                let view = _converse.chatboxviews.get(jid);
+                expect(view.is_chatroom).toBeTruthy();
 
-                expect(u.isVisible(chatroomview.el)).toBeTruthy();
-                chatroomview.close();
+                expect(u.isVisible(view.el)).toBeTruthy();
+                await view.close();
 
                 // Test with mixed case
                 await test_utils.openAndEnterChatRoom(_converse, 'Leisure', 'localhost', 'dummy');
                 jid = 'Leisure@localhost';
-                room = _converse.api.rooms.get(jid);
+                room = await _converse.api.rooms.get(jid);
                 expect(room instanceof Object).toBeTruthy();
-                chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
-                expect(u.isVisible(chatroomview.el)).toBeTruthy();
+                view = _converse.chatboxviews.get(jid.toLowerCase());
+                expect(u.isVisible(view.el)).toBeTruthy();
 
                 jid = 'leisure@localhost';
-                room = _converse.api.rooms.get(jid);
+                room = await _converse.api.rooms.get(jid);
                 expect(room instanceof Object).toBeTruthy();
-                chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
-                expect(u.isVisible(chatroomview.el)).toBeTruthy();
+                view = _converse.chatboxviews.get(jid.toLowerCase());
+                expect(u.isVisible(view.el)).toBeTruthy();
 
                 jid = 'leiSure@localhost';
-                room = _converse.api.rooms.get(jid);
+                room = await _converse.api.rooms.get(jid);
                 expect(room instanceof Object).toBeTruthy();
-                chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
-                expect(u.isVisible(chatroomview.el)).toBeTruthy();
-                chatroomview.close();
+                view = _converse.chatboxviews.get(jid.toLowerCase());
+                expect(u.isVisible(view.el)).toBeTruthy();
+                await view.close();
 
                 // Non-existing room
                 jid = 'lounge2@localhost';
-                room = _converse.api.rooms.get(jid);
+                room = await _converse.api.rooms.get(jid);
                 expect(typeof room === 'undefined').toBeTruthy();
                 done();
             }));
@@ -107,7 +107,7 @@
                 let jid = 'lounge@localhost';
                 let chatroomview, sent_IQ, IQ_id;
                 test_utils.openControlBox();
-                test_utils.createContacts(_converse, 'current');
+                await test_utils.createContacts(_converse, 'current');
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group .group-toggle').length);
                 let room = await _converse.api.rooms.open(jid);
                 // Test on groupchat that's not yet open
@@ -122,7 +122,7 @@
                 chatroomview = _converse.chatboxviews.get(jid);
                 expect(chatroomview.is_chatroom).toBeTruthy();
                 expect(u.isVisible(chatroomview.el)).toBeTruthy();
-                chatroomview.close();
+                await chatroomview.close();
 
                 // Test with mixed case in JID
                 jid = 'Leisure@localhost';
@@ -142,7 +142,7 @@
                 expect(room instanceof Backbone.Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
                 expect(u.isVisible(chatroomview.el)).toBeTruthy();
-                chatroomview.close();
+                await chatroomview.close();
 
                 _converse.muc_instant_rooms = false;
                 var sendIQ = _converse.connection.sendIQ;
@@ -390,7 +390,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
+                await test_utils.createContacts(_converse, 'current');
                 await test_utils.waitUntil(() => test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy'));
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 if (!view.el.querySelectorAll('.chat-area').length) {
@@ -442,8 +442,9 @@
                     }).up()
                     .c('status', {code: '110'}).up()
                     .c('status', {code: '100'});
-
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
+                await test_utils.waitUntil(() => sizzle('div.chat-info', chat_content).length > 1);
+
                 expect(chat_content.querySelectorAll('.chat-info').length).toBe(2);
                 expect(sizzle('div.chat-info:first', chat_content).pop().textContent)
                     .toBe("This groupchat is not anonymous");
@@ -788,6 +789,8 @@
                         </x>
                     </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
+                await test_utils.waitUntil(() => sizzle('div.chat-info', chat_content).length > 3);
+
                 expect(sizzle('div.chat-info', chat_content).length).toBe(4);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("jcbrand has entered the groupchat");
 
@@ -1129,7 +1132,7 @@
 
                 await test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp']);
                 await test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
-                test_utils.createContacts(_converse, 'current');
+                await test_utils.createContacts(_converse, 'current');
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 if (!view.el.querySelectorAll('.chat-area').length) {
@@ -1195,7 +1198,7 @@
                  *      </x>
                  *  </presence></body>
                  */
-                var presence = $pres({
+                const presence = $pres({
                         to: 'dummy@localhost/_converse.js-29092160',
                         from: 'coven@chat.shakespeare.lit/some1'
                     }).c('x', {xmlns: Strophe.NS.MUC_USER})
@@ -1207,8 +1210,10 @@
                     .c('status', {code: '110'});
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.model.saveAffiliationAndRole).toHaveBeenCalled();
+
                 expect(u.isVisible(view.el.querySelector('.toggle-chatbox-button'))).toBeTruthy();
                 await test_utils.waitUntil(() => !_.isNull(view.el.querySelector('.configure-chatroom-button')))
+
                 expect(u.isVisible(view.el.querySelector('.configure-chatroom-button'))).toBeTruthy();
                 view.el.querySelector('.configure-chatroom-button').click();
 
@@ -1715,7 +1720,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current'); // We need roster contacts, so that we have someone to invite
+                await test_utils.createContacts(_converse, 'current'); // We need roster contacts, so that we have someone to invite
                 // Since we don't actually fetch roster contacts, we need to
                 // cheat here and emit the event.
                 _converse.api.trigger('rosterContactsFetched');
@@ -1782,13 +1787,11 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current'); // We need roster contacts, who can invite us
-                spyOn(window, 'confirm').and.callFake(function () {
-                    return true;
-                });
+                const result = await test_utils.createContacts(_converse, 'current', 1);
+                spyOn(window, 'confirm').and.callFake(() => true);
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                view.close(); // Hack, otherwise we have to mock stanzas.
+                await view.close(); // Hack, otherwise we have to mock stanzas.
 
                 const name = mock.cur_names[0];
                 const from_jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1798,11 +1801,13 @@
                 expect(_converse.chatboxes.models.length).toBe(1);
                 expect(_converse.chatboxes.models[0].id).toBe("controlbox");
 
+                await test_utils.waitUntil(() => _converse.roster.get(from_jid).get('fullname'));
                 const stanza = u.toStanza(`
                     <message xmlns="jabber:client" to="${_converse.bare_jid}" from="${from_jid}" id="9bceb415-f34b-4fa4-80d5-c0d076a24231">
                        <x xmlns="jabber:x:conference" jid="${room_jid}" reason="${reason}"/>
                     </message>`);
-                _converse.onDirectMUCInvitation(stanza);
+                await _converse.onDirectMUCInvitation(stanza);
+
                 expect(window.confirm).toHaveBeenCalledWith(
                     name + ' has invited you to join a groupchat: '+ room_jid +
                     ', and left the following reason: "'+reason+'"');
@@ -2476,6 +2481,8 @@
                 // The chatboxes will then be fetched from browserStorage inside the
                 // onConnected method
                 newchatboxes.onConnected();
+                await new Promise((resolve, reject) => _converse.api.listen.once('chatBoxesFetched', resolve));
+
                 expect(newchatboxes.length).toEqual(2);
                 // Check that the chatrooms retrieved from browserStorage
                 // have the same attributes values as the original ones.
@@ -2539,6 +2546,7 @@
                 view.el.querySelector('.close-chatbox-button').click();
                 expect(view.close).toHaveBeenCalled();
                 expect(view.model.leave).toHaveBeenCalled();
+                await test_utils.waitUntil(() => _converse.api.trigger.calls.count());
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 done();
             }));
@@ -3422,11 +3430,13 @@
                     'from': view.model.get('jid'),
                     'to': _converse.connection.jid
                 });
+                spyOn(view, 'close').and.callThrough();
                 spyOn(_converse.api, "trigger");
                 expect(_converse.chatboxes.length).toBe(2);
                 _converse.connection._dataRecv(test_utils.createRequest(result_stanza));
                 await test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));
                 expect(_converse.chatboxes.length).toBe(1);
+                expect(view.close).toHaveBeenCalled();
                 expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 done();
             }));
@@ -3765,7 +3775,7 @@
                 await test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
                 expect(view.model.features.get('membersonly')).toBeTruthy();
 
-                test_utils.createContacts(_converse, 'current');
+                await test_utils.createContacts(_converse, 'current');
 
                 let sent_stanza, sent_id;
                 spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
@@ -3977,7 +3987,7 @@
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 modal.el.querySelector('input[name="chatroom"]').value = 'lounce@muc.localhost';
                 modal.el.querySelector('form input[type="submit"]').click();
-                await test_utils.waitUntil(() => _converse.chatboxes.length);
+                await test_utils.waitUntil(() => _converse.chatboxes.length > 1);
                 await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
 
                 roomspanel.model.set('muc_domain', 'muc.example.org');
@@ -4276,7 +4286,7 @@
 
             it("shows the number of unread mentions received",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {'allow_bookmarks': false},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'allow_bookmarks': false},
                     async function (done, _converse) {
 
                 test_utils.openControlBox();
@@ -4301,6 +4311,7 @@
                         to: 'dummy@localhost',
                         type: 'groupchat'
                     }).c('body').t(message).tree());
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 await test_utils.waitUntil(() => view.model.messages.length);
                 expect(roomspanel.el.querySelectorAll('.available-room').length).toBe(1);
                 expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(1);

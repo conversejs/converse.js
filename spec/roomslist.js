@@ -13,7 +13,7 @@
                                         // have to mock stanza traffic.
                 }, async function (done, _converse) {
 
-            test_utils.openControlBox();
+            await test_utils.openControlBox(_converse);
             const controlbox = _converse.chatboxviews.get('controlbox');
             let list = controlbox.el.querySelector('div.rooms-list-container');
             expect(_.includes(list.classList, 'hidden')).toBeTruthy();
@@ -123,7 +123,7 @@
             spyOn(_converse, 'isUniView').and.callFake(() => true);
 
             let room_els, item;
-            test_utils.openControlBox();
+            test_utils.openControlBox(_converse);
             await _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
             room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom");
             expect(room_els.length).toBe(1);
@@ -151,7 +151,7 @@
 
             const IQ_stanzas = _converse.connection.IQ_stanzas;
             const room_jid = 'coven@chat.shakespeare.lit';
-            test_utils.openControlBox();
+            test_utils.openControlBox(_converse);
             await _converse.api.rooms.open(room_jid, {'nick': 'some1'});
             const last_stanza = await test_utils.waitUntil(() => _.get(_.filter(
                 IQ_stanzas,
@@ -266,6 +266,8 @@
             close_el.click();
             expect(window.confirm).toHaveBeenCalledWith(
                 'Are you sure you want to leave the groupchat lounge@conference.shakespeare.lit?');
+
+            await test_utils.waitUntil(() => !_converse.api.rooms.get().length);
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(0);
             expect(_converse.chatboxes.length).toBe(1);

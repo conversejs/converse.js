@@ -169,11 +169,9 @@ converse.plugins.add('converse-roomslist', {
                 this.model.on('add', this.showOrHide, this);
                 this.model.on('remove', this.showOrHide, this);
 
-                const storage = _converse.config.get('storage'),
-                      id = `converse.roomslist${_converse.bare_jid}`;
-
+                const id = `converse.roomslist${_converse.bare_jid}`;
                 this.list_model = new _converse.RoomsList({'id': id});
-                this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
+                this.list_model.browserStorage = new _converse.BrowserStorage(id);
                 this.list_model.fetch();
                 this.render();
                 this.sortAndPositionAllItems();
@@ -264,11 +262,10 @@ converse.plugins.add('converse-roomslist', {
         });
 
         const initRoomsListView = function () {
-            const storage = _converse.config.get('storage'),
-                  id = `converse.open-rooms-{_converse.bare_jid}`,
+            const id = `converse.open-rooms-{_converse.bare_jid}`,
                   model = new _converse.OpenRooms();
 
-            model.browserStorage = new Backbone.BrowserStorage[storage](id);
+            model.browserStorage = new _converse.BrowserStorage(id);
             _converse.rooms_list_view = new _converse.RoomsListView({'model': model});
             /**
              * Triggered once the _converse.RoomsListView has been created and initialized.

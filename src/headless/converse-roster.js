@@ -52,20 +52,19 @@ converse.plugins.add('converse-roster', {
          * @method _converse.initRoster
          */
         _converse.initRoster = function () {
-            const storage = _converse.config.get('storage');
+            let id = `converse.contacts-${_converse.bare_jid}`
             _converse.roster = new _converse.RosterContacts();
-            _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](
-                `converse.contacts-${_converse.bare_jid}`);
+            _converse.roster.browserStorage = new _converse.BrowserStorage(id);
 
             _converse.roster.data = new Backbone.Model();
-            const id = `converse-roster-model-${_converse.bare_jid}`;
+            id = `converse-roster-model-${_converse.bare_jid}`;
             _converse.roster.data.id = id;
-            _converse.roster.data.browserStorage = new Backbone.BrowserStorage[storage](id);
+            _converse.roster.data.browserStorage = new _converse.BrowserStorage(id);
             _converse.roster.data.fetch();
 
+            id = `converse.roster-groups-${_converse.bare_jid}`;
             _converse.rostergroups = new _converse.RosterGroups();
-            _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](
-                `converse.roster.groups${_converse.bare_jid}`);
+            _converse.rostergroups.browserStorage = new _converse.BrowserStorage(id);
             /**
              * Triggered once the `_converse.RosterContacts` and `_converse.RosterGroups` have
              * been created, but not yet populated with data.
@@ -138,7 +137,7 @@ converse.plugins.add('converse-roster', {
             initialize () {
                 this.resources = new Resources();
                 const id = `converse.identities-${this.get('jid')}`;
-                this.resources.browserStorage = new Backbone.BrowserStorage.session(id);
+                this.resources.browserStorage = new _converse.BrowserStorage(id, 'session');
                 this.resources.on('update', this.onResourcesChanged, this);
                 this.resources.on('change', this.onResourcesChanged, this);
             },
@@ -932,9 +931,12 @@ converse.plugins.add('converse-roster', {
         _converse.api.listen.on('statusInitialized', (reconnecting) => {
             if (!reconnecting) {
                 _converse.presences = new _converse.Presences();
+                _converse.presences.browserStorage = 
+                    new _converse.BrowserStorage(`converse.presences-${_converse.bare_jid}`, 'session');
+                _converse.presences.fetch();
             }
-            _converse.presences.browserStorage =
-                new Backbone.BrowserStorage.session(`converse.presences-${_converse.bare_jid}`);
+            const id = `converse.presences-${_converse.bare_jid}`;
+            _converse.presences.browserStorage = new _converse.BrowserStorage(id, 'session');
             _converse.presences.fetch();
             /**
              * Triggered once the _converse.Presences collection has been

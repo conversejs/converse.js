@@ -5,9 +5,9 @@
         "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const Strophe = converse.env.Strophe;
     const $iq = converse.env.$iq;
     const $pres = converse.env.$pres;
+    const Strophe = converse.env.Strophe;
     const _ = converse.env._;
     const sizzle = converse.env.sizzle;
     const u = converse.env.utils;
@@ -460,7 +460,7 @@
 
                 var sent_IQ, IQ_id, jid = 'annegreet.gomez@localhost';
                 test_utils.openControlBox(_converse);
-                test_utils.createContacts(_converse, 'current');
+                await test_utils.createContacts(_converse, 'current');
                 spyOn(window, 'confirm').and.returnValue(true);
                 // We now have a contact we want to remove
                 expect(_converse.roster.get(jid) instanceof _converse.RosterContact).toBeTruthy();
@@ -516,10 +516,9 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-                spyOn(_converse.api, "trigger");
-                test_utils.openControlBox(_converse);
-                // Create some contacts so that we can test positioning
-                test_utils.createContacts(_converse, 'current');
+                spyOn(_converse.api, "trigger").and.callThrough();
+                await test_utils.openControlBox(_converse);
+                await test_utils.createContacts(_converse, 'current'); // Create some contacts so that we can test positioning
                 /* <presence
                  *     from='user@example.com'
                  *     to='contact@example.org'
@@ -537,7 +536,7 @@
                     const header = sizzle('a:contains("Contact requests")', _converse.rosterview.el).pop();
                     const contacts = _.filter(header.parentElement.querySelectorAll('li'), u.isVisible);
                     return contacts.length;
-                }, 300);
+                }, 500);
                 expect(_converse.api.trigger).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
                 const header = sizzle('a:contains("Contact requests")', _converse.rosterview.el).pop();
                 expect(u.isVisible(header)).toBe(true);

@@ -114,20 +114,18 @@ converse.plugins.add('converse-vcard', {
             return onVCardData(jid, iq);
         }
 
-        /* Event handlers */
+        /************************ Event Handlers ************************/
         _converse.initVCardCollection = function () {
             _converse.vcards = new _converse.VCards();
             const id = `${_converse.bare_jid}-converse.vcards`;
-            _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.config.get('storage')](id);
+            _converse.vcards.browserStorage = new _converse.BrowserStorage(id);
             _converse.vcards.fetch();
         }
         _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
+        _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.VCARD));
 
 
-        _converse.api.listen.on('addClientFeatures', () => {
-            _converse.api.disco.own.features.add(Strophe.NS.VCARD);
-        });
-
+        /***************************** API ******************************/
         _.extend(_converse.api, {
             /**
              * The XEP-0054 VCard API

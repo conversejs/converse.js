@@ -49,6 +49,7 @@
                         await test_utils.createContacts(_converse, 'current');
                         await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                         const view = _converse.api.chatviews.get('lounge@localhost');
+
                         if (!view.el.querySelectorAll('.chat-area').length) {
                             view.renderChatArea();
                         }
@@ -72,7 +73,6 @@
                                 to: 'dummy@localhost',
                                 type: 'groupchat'
                             }).c('body').t(message).tree();
-
                         _converse.connection._dataRecv(test_utils.createRequest(msg));
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();

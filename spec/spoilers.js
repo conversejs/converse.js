@@ -11,7 +11,7 @@
 
         it("can be received with a hint",
             mock.initConverse(
-                null, ['rosterGroupsFetched'], {},
+                null, ['rosterGroupsFetched', 'chatBoxViewsInitialized'], {},
                 async (done, _converse) => {
 
             await test_utils.waitForRoster(_converse, 'current');
@@ -37,7 +37,8 @@
             await _converse.chatboxes.onMessage(msg);
 
             await test_utils.waitUntil(() => _converse.api.chats.get().length === 2);
-            const view = _converse.chatboxviews.get(sender_jid);
+            const view = _converse.api.chatviews.get(sender_jid);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             await test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Max Frankfurter')
             expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Max Frankfurter');
             const message_content = view.el.querySelector('.chat-msg__text');
@@ -71,7 +72,8 @@
                     }).tree();
             await _converse.chatboxes.onMessage(msg);
             await test_utils.waitUntil(() => _converse.api.chats.get().length === 2);
-            const view = _converse.chatboxviews.get(sender_jid);
+            const view = _converse.api.chatviews.get(sender_jid);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             await test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Max Frankfurter')
             expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, 'Max Frankfurter')).toBeTruthy();
             const message_content = view.el.querySelector('.chat-msg__text');
@@ -174,7 +176,7 @@
             _converse.connection._dataRecv(test_utils.createRequest(presence));
             await test_utils.openChatBoxFor(_converse, contact_jid);
             await test_utils.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]);
-            const view = _converse.chatboxviews.get(contact_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
 
             await test_utils.waitUntil(() => view.el.querySelector('.toggle-compose-spoiler'));
             let spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');

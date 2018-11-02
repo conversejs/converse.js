@@ -65,11 +65,11 @@ converse.plugins.add('converse-muc-views', {
                 if (this.roomspanel && u.isVisible(this.roomspanel.el)) {
                     return;
                 }
+                const id = `converse.roomspanel-${_converse.bare_jid}`;
                 this.roomspanel = new _converse.RoomsPanel({
                     'model': new (_converse.RoomsPanelModel.extend({
-                        'id': `converse.roomspanel${_converse.bare_jid}`, // Required by web storage
-                        'browserStorage': new Backbone.BrowserStorage[_converse.config.get('storage')](
-                            `converse.roomspanel${_converse.bare_jid}`)
+                        'id': id,
+                        'browserStorage': new _converse.BrowserStorage(id)
                     }))()
                 });
                 this.roomspanel.model.fetch();
@@ -726,7 +726,6 @@ converse.plugins.add('converse-muc-views', {
                  */
                 if (u.isPersistableModel(this.model)) {
                     this.model.clearUnreadMsgCounter();
-                    this.model.save();
                 }
                 this.occupantsview.setOccupantsHeight();
                 this.scrollDown();
@@ -763,7 +762,7 @@ converse.plugins.add('converse-muc-views', {
                 );
             },
 
-            close (ev) {
+            async close (ev) {
                 /* Close this chat box, which implies leaving the groupchat as
                  * well.
                  */
@@ -771,8 +770,8 @@ converse.plugins.add('converse-muc-views', {
                 if (Backbone.history.getFragment() === "converse/room?jid="+this.model.get('jid')) {
                     _converse.router.navigate('');
                 }
-                this.model.leave();
-                _converse.ChatBoxView.prototype.close.apply(this, arguments);
+                await this.model.leave();
+                return _converse.ChatBoxView.prototype.close.apply(this, arguments);
             },
 
             setOccupantsVisibility () {
@@ -1133,7 +1132,7 @@ converse.plugins.add('converse-muc-views', {
             populateAndJoin () {
                 this.model.occupants.fetchMembers();
                 this.join();
-                this.fetchMessages();
+                this.model.fetchMessages();
             },
 
             /**
@@ -2183,19 +2182,25 @@ converse.plugins.add('converse-muc-views', {
                  */
                 'close' (jids) {
                     if (_.isUndefined(jids)) {
-                        _converse.chatboxviews.each(function (view) {
+                        return Promise.all(_converse.chatboxviews.map(view => {
                             if (view.is_chatroom && view.model) {
-                                view.close();
+                                return view.close();
                             }
-                        });
+                            return Promise.resolve();
+                        }));
                     } else if (_.isString(jids)) {
                         const view = _converse.chatboxviews.get(jids);
-                        if (view) { view.close(); }
+                        if (view) {
+                            return view.close();
+                        }
                     } else {
-                        _.each(jids, function (jid) {
+                        return Promise.all(_.map(jids, jid => {
                             const view = _converse.chatboxviews.get(jid);
-                            if (view) { view.close(); }
-                        });
+                            if (view) {
+                                return view.close();
+                            }
+                            return Promise.resolve();
+                        }));
                     }
                 }
             }

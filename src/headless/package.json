@@ -23,10 +23,11 @@
   "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
   "devDependencies": {
     "backbone": "1.4",
-    "backbone.browserStorage": "0.0.5",
+    "backbone.browserStorage": "conversejs/backbone.browserStorage#4fcb17861023becb3b25dec7b3238253873c8cd6",
     "es6-promise": "^4.1.0",
     "filesize": "^3.6.1",
     "jed": "1.1.1",
+    "localforage": "^1.7.3",
     "lodash": "^4.17.11",
     "moment": "~> 2.19.3 ",
     "pluggable.js": "2.0.0",

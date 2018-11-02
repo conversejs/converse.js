@@ -159,8 +159,6 @@
     }();
 
     async function initConverse (settings, spies, promises) {
-        window.localStorage.clear();
-        window.sessionStorage.clear();
         const el = document.querySelector('#conversejs');
         if (el) {
             el.parentElement.removeChild(el);

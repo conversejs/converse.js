@@ -6,13 +6,17 @@
         ], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    var $msg = converse.env.$msg,
-        _ = converse.env._,
-        utils = converse.env.utils;
+    const $msg = converse.env.$msg,
+          _ = converse.env._,
+          utils = converse.env.utils;
 
     describe("A headlines box", function () {
 
-        it("will not open nor display non-headline messages", mock.initConverse((done, _converse) => {
+        it("will not open nor display non-headline messages",
+            mock.initConverse(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
             /* XMPP spam message:
              *
              *  <message xmlns="jabber:client"
@@ -24,7 +28,7 @@
              *  </message
              */
             sinon.spy(utils, 'isHeadlineMessage');
-            var stanza = $msg({
+            const stanza = $msg({
                     'xmlns': 'jabber:client',
                     'to': 'dummy@localhost',
                     'type': 'chat',
@@ -33,6 +37,7 @@
                 .c('nick', {'xmlns': "http://jabber.org/protocol/nick"}).t("-wwdmz").up()
                 .c('body').t('SORRY FOR THIS ADVERT');
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.api.chats.get().length);
             expect(utils.isHeadlineMessage.called).toBeTruthy();
             expect(utils.isHeadlineMessage.returned(false)).toBeTruthy();
             utils.isHeadlineMessage.restore();
@@ -56,7 +61,7 @@
              *  </message>
              */
             sinon.spy(utils, 'isHeadlineMessage');
-            var stanza = $msg({
+            const stanza = $msg({
                     'type': 'headline',
                     'from': 'notify.example.com',
                     'to': 'dummy@localhost',
@@ -77,18 +82,20 @@
             expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
             utils.isHeadlineMessage.restore(); // unwraps
             // Headlines boxes don't show an avatar
-            var view = _converse.chatboxviews.get('notify.example.com');
+            const view = _converse.chatboxviews.get('notify.example.com');
             expect(view.model.get('show_avatar')).toBeFalsy();
             expect(view.el.querySelector('img.avatar')).toBe(null);
             done();
         }));
 
         it("will not show a headline messages from a full JID if allow_non_roster_messaging is false",
-            mock.initConverse((done, _converse) => {
+            mock.initConverse(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                function (done, _converse) {
 
             _converse.allow_non_roster_messaging = false;
             sinon.spy(utils, 'isHeadlineMessage');
-            var stanza = $msg({
+            const stanza = $msg({
                     'type': 'headline',
                     'from': 'andre5114@jabber.snc.ru/Spark',
                     'to': 'dummy@localhost',

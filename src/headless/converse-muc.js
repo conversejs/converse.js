@@ -84,7 +84,7 @@ converse.plugins.add('converse-muc', {
             const { _converse } = this.__super__,
                   groupchats = this.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
 
-            _.each(groupchats, gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
+            _.each(groupchats, gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}, {'patch': true}));
             this.__super__.tearDown.call(this, arguments);
         },
 
@@ -155,7 +155,7 @@ converse.plugins.add('converse-muc', {
             }
         }
 
-        _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
+        _converse.openChatRoom = async function (jid, settings, bring_to_foreground) {
             /* Opens a groupchat, making sure that certain attributes
              * are correct, for example that the "type" is set to
              * "chatroom".
@@ -163,7 +163,7 @@ converse.plugins.add('converse-muc', {
             settings.type = _converse.CHATROOMS_TYPE;
             settings.id = jid;
             settings.box_id = b64_sha1(jid)
-            const chatbox = _converse.chatboxes.getChatBox(jid, settings, true);
+            const chatbox = await _converse.chatboxes.getChatBox(jid, settings, true);
             chatbox.trigger('show', true);
             return chatbox;
         }
@@ -207,17 +207,16 @@ converse.plugins.add('converse-muc', {
                 this.on('change:connection_status', this.onConnectionStatusChanged, this);
 
                 const storage = _converse.config.get('storage');
-                const id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
+                let id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
                 this.features = new Backbone.Model(
                     _.assign({id}, _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)))
                 );
-                this.features.browserStorage = new Backbone.BrowserStorage.session(id);
+                this.features.browserStorage = new _converse.BrowserStorage(id, 'session');
                 this.features.fetch();
 
+                id = `converse.occupants-${_converse.bare_jid}${this.get('jid')}`;
                 this.occupants = new _converse.ChatRoomOccupants();
-                this.occupants.browserStorage = new Backbone.BrowserStorage.session(
-                    `converse.occupants-${_converse.bare_jid}${this.get('jid')}`
-                );
+                this.occupants.browserStorage = new _converse.BrowserStorage(id, 'session');
                 this.occupants.chatroom  = this;
                 this.registerHandlers();
             },
@@ -317,7 +316,7 @@ converse.plugins.add('converse-muc', {
                 if (password) {
                     stanza.cnode(Strophe.xmlElement("password", [], password));
                 }
-                this.save('connection_status', converse.ROOMSTATUS.CONNECTING);
+                this.save({'connection_status': converse.ROOMSTATUS.CONNECTING}, {'patch': true});
                 _converse.api.send(stanza);
                 return this;
             },
@@ -327,20 +326,20 @@ converse.plugins.add('converse-muc', {
              * @method _converse.ChatRoom#leave
              * @param { string } exit_msg - Optional message to indicate your reason for leaving
              */
-            leave (exit_msg) {
+            async leave (exit_msg) {
                 this.features.destroy();
-                this.occupants.browserStorage._clear();
+                await this.occupants.browserStorage._clear();
                 this.occupants.reset();
                 if (_converse.disco_entities) {
                     const disco_entity = _converse.disco_entities.get(this.get('jid'));
                     if (disco_entity) {
-                        disco_entity.destroy();
+                        await new Promise((success, error) => disco_entity.destroy({success, error}));
                     }
                 }
                 if (_converse.connection.connected) {
                     this.sendUnavailablePresence(exit_msg);
                 }
-                u.safeSave(this, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
+                u.safeSave(this, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}, {'patch': true});
                 this.removeHandlers();
             },
 
@@ -448,7 +447,7 @@ converse.plugins.add('converse-muc', {
                  * For example: groupchat@conference.example.org/nickname
                  */
                 if (nick) {
-                    this.save({'nick': nick});
+                    this.save({'nick': nick}, {'patch': true});
                 } else {
                     nick = this.get('nick');
                 }
@@ -563,7 +562,8 @@ converse.plugins.add('converse-muc', {
                     }
                     attrs[fieldname.replace('muc_', '')] = true;
                 });
-                this.features.save(attrs);
+                attrs.description = _.get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value');
+                this.features.save(attrs, {'patch': true});
             },
 
             /* Send an IQ stanza to the server, asking it for the
@@ -723,10 +723,10 @@ converse.plugins.add('converse-muc', {
                     const affiliation = item.getAttribute('affiliation');
                     const role = item.getAttribute('role');
                     if (affiliation) {
-                        this.save({'affiliation': affiliation});
+                        this.save({'affiliation': affiliation}, {'patch': true});
                     }
                     if (role) {
-                        this.save({'role': role});
+                        this.save({'role': role}, {'patch': true});
                     }
                 }
             },
@@ -834,7 +834,7 @@ converse.plugins.add('converse-muc', {
                 this.save({
                     'reserved_nick': nick,
                     'nick': nick
-                }, {'silent': true});
+                }, {'patch': true, 'silent': true});
                 return iq;
             },
 
@@ -1073,7 +1073,7 @@ converse.plugins.add('converse-muc', {
                     const msg = this.messages.create(attrs);
                     this.incrementUnreadMsgCounter(msg);
                     if (forwarded && msg && msg.get('sender')  === 'me') {
-                        msg.save({'received': moment().format()});
+                        msg.save({'received': moment().format()}, {'patch': true});
                     }
                 }
                 _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': this});
@@ -1087,7 +1087,7 @@ converse.plugins.add('converse-muc', {
              */
             onPresence (pres) {
                 if (pres.getAttribute('type') === 'error') {
-                    this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                    this.save({'connection_status': converse.ROOMSTATUS.DISCONNECTED}, {'patch': true});
                     return;
                 }
                 const is_self = pres.querySelector("status[code='110']");
@@ -1095,8 +1095,9 @@ converse.plugins.add('converse-muc', {
                     this.onOwnPresence(pres);
                 }
                 this.updateOccupantsOnPresence(pres);
+
                 if (this.get('role') !== 'none' && this.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
-                    this.save('connection_status', converse.ROOMSTATUS.CONNECTED);
+                    this.save({'connection_status': converse.ROOMSTATUS.CONNECTED}, {'patch': true});
                 }
             },
 
@@ -1149,7 +1150,7 @@ converse.plugins.add('converse-muc', {
                         this.getRoomFeatures();
                     }
                 }
-                this.save('connection_status', converse.ROOMSTATUS.ENTERED);
+                this.save({'connection_status': converse.ROOMSTATUS.ENTERED}, {'patch': true});
             },
 
             /**
@@ -1192,7 +1193,7 @@ converse.plugins.add('converse-muc', {
                 u.safeSave(this, {
                     'num_unread': 0,
                     'num_unread_general': 0
-                });
+                }, {'patch': true});
             }
         });
 
@@ -1328,7 +1329,7 @@ converse.plugins.add('converse-muc', {
          * @method _converse.ChatRoom#onDirectMUCInvitation
          * @param { XMLElement } message - The message stanza containing the invitation.
          */
-        _converse.onDirectMUCInvitation = function (message) {
+        _converse.onDirectMUCInvitation = async function (message) {
             const x_el = sizzle('x[xmlns="jabber:x:conference"]', message).pop(),
                 from = Strophe.getBareJidFromJid(message.getAttribute('from')),
                 room_jid = x_el.getAttribute('jid'),
@@ -1354,7 +1355,7 @@ converse.plugins.add('converse-muc', {
                 }
             }
             if (result === true) {
-                const chatroom = _converse.openChatRoom(room_jid, {'password': x_el.getAttribute('password') });
+                const chatroom = await _converse.openChatRoom(room_jid, {'password': x_el.getAttribute('password') });
 
                 if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
                     // XXX: Leaky abstraction from views here
@@ -1431,7 +1432,7 @@ converse.plugins.add('converse-muc', {
              */
             _converse.chatboxes.each(function (model) {
                 if (model.get('type') === _converse.CHATROOMS_TYPE) {
-                    model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                    model.save({'connection_status': converse.ROOMSTATUS.DISCONNECTED}, {'patch': true});
                 }
             });
         }
@@ -1502,6 +1503,7 @@ converse.plugins.add('converse-muc', {
                  * @param {(string[]|string)} jid|jids The JID or array of
                  *     JIDs of the chatroom(s) to create
                  * @param {object} [attrs] attrs The room attributes
+                 * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
                  */
                 'create' (jids, attrs) {
                     if (_.isString(attrs)) {
@@ -1584,14 +1586,18 @@ converse.plugins.add('converse-muc', {
                         _converse.log(err_msg, Strophe.LogLevel.ERROR);
                         throw(new TypeError(err_msg));
                     } else if (_.isString(jids)) {
-                        return _converse.api.rooms.create(jids, attrs).trigger('show');
+                        const room = await _converse.api.rooms.create(jids, attrs);
+                        room.trigger('show');
+                        return room;
                     } else {
-                        return _.map(jids, (jid) => _converse.api.rooms.create(jid, attrs).trigger('show'));
+                        const rooms = await Promise.all(_.map(jids, (jid) => _converse.api.rooms.create(jid, attrs)));
+                        rooms.forEach(r =>  r.trigger('show'));
+                        return rooms;
                     }
                 },
 
                 /**
-                 * Returns an object representing a MUC chatroom (aka groupchat)
+                 * Fetches the object representing a MUC chatroom (aka groupchat)
                  *
                  * @method _converse.api.rooms.get
                  * @param {string} [jid] The room JID (if not specified, all rooms will be returned).
@@ -1603,6 +1609,7 @@ converse.plugins.add('converse-muc', {
                  *     the user's JID will be used.
                  * @param {boolean} create A boolean indicating whether the room should be created
                  *     if not found (default: `false`)
+                 * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
                  * @example
                  * _converse.api.waitUntil('roomsAutoJoined').then(() => {
                  *     const create_if_not_found = true;

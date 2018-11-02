@@ -61784,6 +61784,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       renderFileUploadProgresBar() {
         const msg = utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_file_progress_html__WEBPACK_IMPORTED_MODULE_4___default()(_.extend(this.model.toJSON(), {
+          '__': __,
           'filename': this.model.file.name,
           'filesize': filesize__WEBPACK_IMPORTED_MODULE_1___default()(this.model.file.size)
         })));

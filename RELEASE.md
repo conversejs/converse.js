@@ -15,4 +15,5 @@
     * Update `index.html` to point to that version of the CDN
     * Run `make dist`
     * Do the same for the root dir
-11. Run `npm publish`
+11. Run `npm publish && cd src/headless/ && npm publish`
+12. Update the repository on weblate

@@ -15,24 +15,26 @@
         <div class="col-auto">
             <div class="occupant-status occupant-{{{o.show}}} circle" title="{{{o.hint_show}}}"></div>
         </div>
-        <div class="col">
+        <div class="col occupant-nick-badge">
             <span class="occupant-nick">{{{o.nick || o.jid}}}</span>
-            {[ if (o.affiliation === "owner") { ]}
-                <span class="badge badge-danger">{{{o.label_owner}}}</span>
-            {[ } ]}
-            {[ if (o.affiliation === "admin") { ]}
-                <span class="badge badge-info">{{{o.label_admin}}}</span>
-            {[ } ]}
-            {[ if (o.affiliation === "member") { ]}
-                <span class="badge badge-info">{{{o.label_member}}}</span>
-            {[ } ]}
+            <span class="occupant-badges">
+                {[ if (o.affiliation === "owner") { ]}
+                    <span class="badge badge-danger">{{{o.label_owner}}}</span>
+                {[ } ]}
+                {[ if (o.affiliation === "admin") { ]}
+                    <span class="badge badge-info">{{{o.label_admin}}}</span>
+                {[ } ]}
+                {[ if (o.affiliation === "member") { ]}
+                    <span class="badge badge-info">{{{o.label_member}}}</span>
+                {[ } ]}
 
-            {[ if (o.role === "moderator") { ]}
-                <span class="badge badge-info">{{{o.label_moderator}}}</span>
-            {[ } ]}
-            {[ if (o.role === "visitor") { ]}
-                <span class="badge badge-secondary">{{{o.label_visitor}}}</span>
-            {[ } ]}
+                {[ if (o.role === "moderator") { ]}
+                    <span class="badge badge-info">{{{o.label_moderator}}}</span>
+                {[ } ]}
+                {[ if (o.role === "visitor") { ]}
+                    <span class="badge badge-secondary">{{{o.label_visitor}}}</span>
+                {[ } ]}
+            </span>
         </div>
     </div>
 </li>

@@ -527,7 +527,7 @@
         height: $overlayed-emoji-picker-height;
     }
     .chatbox {
-        form.sendXMPPMessage {
+        .sendXMPPMessage {
             .chat-toolbar {
                 li {
                     .toolbar-menu {
@@ -537,6 +537,16 @@
                                 width: 100%;
                                 .emoji-category {
                                     float: left;
+                                }
+                            }
+                        }
+                    }
+                    &.toggle-smiley {
+                        .emoji-toolbar {
+                            .emoji-category-picker {
+                                ul {
+                                    flex-wrap: wrap;
+                                    justify-content: flex-start;
                                 }
                             }
                         }

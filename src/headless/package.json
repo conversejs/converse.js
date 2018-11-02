@@ -1,0 +1,38 @@
+{
+  "name": "@converse/headless",
+  "version": "4.0.4",
+  "description": "Converse.js Headless build",
+  "author": "cmrd Senya <senya@riseup.net>",
+  "homepage": "https://github.com/conversejs/converse.js",
+  "license": "MPL-2.0",
+  "main": "converse-core.js",
+  "files": [
+    "**/*.js",
+    "templates/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/conversejs/converse.js.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/conversejs/converse.js/issues"
+  },
+  "gitHead": "9641dcdc820e029b05930479c242d2b707bbe8e2",
+  "dependencies": {
+    "backbone": "1.3.3",
+    "backbone.browserStorage": "0.0.5",
+    "es6-promise": "^4.1.0",
+    "filesize": "^3.6.1",
+    "lodash": "^4.17.10",
+    "moment": "~> 2.19.3 ",
+    "pluggable.js": "2.0.0",
+    "strophe.js": "1.3.0",
+    "strophejs-plugin-ping": "0.0.3",
+    "strophejs-plugin-rsm": "0.0.2",
+    "twemoji": "^11.0.1",
+    "urijs": "^1.19.1"
+  }
+}

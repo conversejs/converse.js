@@ -105,6 +105,7 @@
             spyOn(view, 'onMessageSubmitted').and.callThrough();
             spyOn(_converse.connection, 'send');
 
+            await test_utils.waitUntil(() => view.el.querySelector('.toggle-compose-spoiler'));
             let spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
             spoiler_toggle.click();
 
@@ -178,6 +179,8 @@
             await test_utils.openChatBoxFor(_converse, contact_jid);
             await test_utils.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]);
             const view = _converse.chatboxviews.get(contact_jid);
+
+            await test_utils.waitUntil(() => view.el.querySelector('.toggle-compose-spoiler'));
             let spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
             spoiler_toggle.click();
 

@@ -1,7 +1,24 @@
 # Changelog
 
-## 4.0.3 (Unreleased)
+## 4.0.5 (Unreleased)
 
+- `FATAL: TypeError: Cannot read property 'extend' of undefined` when using `embedded` view mode.
+
+## 4.0.4 (2018-10-29)
+
+- Use [Lerna](https://lernajs.io/) to create the @converse/headless package
+- Use ES2015 modules instead of UMD.
+- #1252 Correctly reflect the state in bookmark icon title.
+- #1257 Prefer 'probably' over 'maybe' when evaluating audio play support.
+- #1259 Don't inform of affiliation change after user leaves MUC
+- #1261 File upload not working
+- #1264 Right Align badges of room occupants
+- #1272 Hiding MUC occupants leaves a blank space
+- #1278 Replace the default avatar with a SVG version
+
+## 4.0.3 (2018-10-22)
+
+- New translations: Arabic, Basque, Czech, French, German, Hungarian, Japanese, Norwegian Bokmål, Polish, Romanian, Spanish
 - Bugfix. Converse continuously publishes an empty OMEMO devicelist for itself
 - Bugfix. Handler not triggered when submitting MUC password form 2nd time
 - Bugfix. MUC features weren't being refreshed when saving the config form
@@ -9,7 +26,7 @@
 - New config setting [show_images_inline](https://conversejs.org/docs/html/configuration.html#show-images-inline)
 - Disable OMEMO when the user has indicated that Converse is running on an untrusted device.
 - #537 Render `xmpp:` URI as link
-- #1058 Send an inactive chat state notification when the user switches to another tab 
+- #1058 Send an inactive chat state notification when the user switches to another tab
 - #1062 Collapse multiple join/leave messages into one
 - #1063 URLs in the topic / subject are not clickable
 - #1140 Add support for destroyed chatrooms
@@ -19,6 +36,7 @@
 - #1193 OMEMO messages without a `<body>` fallback are ignored
 - #1199 Can't get back from to login screen from registration screen
 - #1204 Link encoding issue
+- #1209 Bring color codes of users' status in line with other clients
 - #1214 Setting `allow_contact_requests` to `false` has no effect
 - #1221 Avoid creating a headlines box if we don't have anything to show inside it
 - #1222 Adding a bookmark should prefill the room name

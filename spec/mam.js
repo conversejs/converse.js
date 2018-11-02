@@ -157,79 +157,79 @@
             it("checks whether returned MAM messages from a MUC room are from the right JID",
                     mock.initConverseWithPromises(
                         null, [], {},
-                        function (done, _converse) {
+                        async function (done, _converse) {
 
-                _converse.api.disco.entities.get(_converse.domain).then(function (entity) {
-                    if (!entity.features.findWhere({'var': Strophe.NS.MAM})) {
-                        _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
-                    }
-                    var sent_stanza, IQ_id;
-                    var sendIQ = _converse.connection.sendIQ;
-                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                        sent_stanza = iq;
-                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                    });
-                    var callback = jasmine.createSpy('callback');
-
-                    _converse.api.archive.query({'with': 'coven@chat.shakespear.lit', 'groupchat': true, 'max':'10'}, callback);
-                    var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
-
-                    /* <message id='iasd207' from='coven@chat.shakespeare.lit' to='hag66@shakespeare.lit/pda'>
-                     *     <result xmlns='urn:xmpp:mam:2' queryid='g27' id='34482-21985-73620'>
-                     *         <forwarded xmlns='urn:xmpp:forward:0'>
-                     *         <delay xmlns='urn:xmpp:delay' stamp='2002-10-13T23:58:37Z'/>
-                     *         <message xmlns="jabber:client"
-                     *             from='coven@chat.shakespeare.lit/firstwitch'
-                     *             id='162BEBB1-F6DB-4D9A-9BD8-CFDCC801A0B2'
-                     *             type='groupchat'>
-                     *             <body>Thrice the brinded cat hath mew'd.</body>
-                     *             <x xmlns='http://jabber.org/protocol/muc#user'>
-                     *             <item affiliation='none'
-                     *                     jid='witch1@shakespeare.lit'
-                     *                     role='participant' />
-                     *             </x>
-                     *         </message>
-                     *         </forwarded>
-                     *     </result>
-                     * </message>
-                     */
-                    var msg1 = $msg({'id':'iasd207', 'from': 'other@chat.shakespear.lit', 'to': 'dummy@localhost'})
-                                .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'34482-21985-73620'})
-                                    .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
-                                        .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
-                                        .c('message', {
-                                            'xmlns':'jabber:client',
-                                            'to':'dummy@localhost',
-                                            'id':'162BEBB1-F6DB-4D9A-9BD8-CFDCC801A0B2',
-                                            'from':'coven@chat.shakespeare.lit/firstwitch',
-                                            'type':'groupchat' })
-                                        .c('body').t("Thrice the brinded cat hath mew'd.");
-                    _converse.connection._dataRecv(test_utils.createRequest(msg1));
-
-                    /* Send an <iq> stanza to indicate the end of the result set.
-                     *
-                     * <iq type='result' id='juliet1'>
-                     *     <fin xmlns='urn:xmpp:mam:2'>
-                     *     <set xmlns='http://jabber.org/protocol/rsm'>
-                     *         <first index='0'>28482-98726-73623</first>
-                     *         <last>09af3-cc343-b409f</last>
-                     *         <count>20</count>
-                     *     </set>
-                     * </iq>
-                     */
-                    var stanza = $iq({'type': 'result', 'id': IQ_id})
-                        .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
-                            .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
-                                .c('first', {'index': '0'}).t('23452-4534-1').up()
-                                .c('last').t('09af3-cc343-b409f').up()
-                                .c('count').t('16');
-                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                    expect(callback).toHaveBeenCalled();
-                    var args = callback.calls.argsFor(0);
-                    expect(args[0].length).toBe(0);
-                    done();
+                const entity = await _converse.api.disco.entities.get(_converse.domain);
+                if (!entity.features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
+                }
+                var sent_stanza, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
+                var callback = jasmine.createSpy('callback');
+
+                _converse.api.archive.query({'with': 'coven@chat.shakespear.lit', 'groupchat': true, 'max':'10'}, callback);
+                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
+
+                /* <message id='iasd207' from='coven@chat.shakespeare.lit' to='hag66@shakespeare.lit/pda'>
+                 *     <result xmlns='urn:xmpp:mam:2' queryid='g27' id='34482-21985-73620'>
+                 *         <forwarded xmlns='urn:xmpp:forward:0'>
+                 *         <delay xmlns='urn:xmpp:delay' stamp='2002-10-13T23:58:37Z'/>
+                 *         <message xmlns="jabber:client"
+                 *             from='coven@chat.shakespeare.lit/firstwitch'
+                 *             id='162BEBB1-F6DB-4D9A-9BD8-CFDCC801A0B2'
+                 *             type='groupchat'>
+                 *             <body>Thrice the brinded cat hath mew'd.</body>
+                 *             <x xmlns='http://jabber.org/protocol/muc#user'>
+                 *             <item affiliation='none'
+                 *                     jid='witch1@shakespeare.lit'
+                 *                     role='participant' />
+                 *             </x>
+                 *         </message>
+                 *         </forwarded>
+                 *     </result>
+                 * </message>
+                 */
+                var msg1 = $msg({'id':'iasd207', 'from': 'other@chat.shakespear.lit', 'to': 'dummy@localhost'})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'34482-21985-73620'})
+                                .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns':'jabber:client',
+                                        'to':'dummy@localhost',
+                                        'id':'162BEBB1-F6DB-4D9A-9BD8-CFDCC801A0B2',
+                                        'from':'coven@chat.shakespeare.lit/firstwitch',
+                                        'type':'groupchat' })
+                                    .c('body').t("Thrice the brinded cat hath mew'd.");
+                _converse.connection._dataRecv(test_utils.createRequest(msg1));
+
+                /* Send an <iq> stanza to indicate the end of the result set.
+                 *
+                 * <iq type='result' id='juliet1'>
+                 *     <fin xmlns='urn:xmpp:mam:2'>
+                 *     <set xmlns='http://jabber.org/protocol/rsm'>
+                 *         <first index='0'>28482-98726-73623</first>
+                 *         <last>09af3-cc343-b409f</last>
+                 *         <count>20</count>
+                 *     </set>
+                 * </iq>
+                 */
+                const stanza = $iq({'type': 'result', 'id': IQ_id})
+                    .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
+                        .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
+                            .c('first', {'index': '0'}).t('23452-4534-1').up()
+                            .c('last').t('09af3-cc343-b409f').up()
+                            .c('count').t('16');
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                await test_utils.waitUntil(() => callback.calls.count());
+                expect(callback).toHaveBeenCalled();
+                var args = callback.calls.argsFor(0);
+                expect(args[0].length).toBe(0);
+                done();
            }));
 
            it("can be used to query for all messages in a certain timespan",
@@ -277,19 +277,18 @@
            }));
 
            it("throws a TypeError if an invalid date is provided",
-                    mock.initConverseWithPromises(
-                        null, [], {},
-                        function (done, _converse) {
+                mock.initConverseWithPromises(
+                    null, [], {},
+                    async function (done, _converse) {
 
-                _converse.api.disco.entities.get(_converse.domain).then(function (entity) {
-                    if (!entity.features.findWhere({'var': Strophe.NS.MAM})) {
-                        _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
-                    }
-                    expect(_.partial(_converse.api.archive.query, {'start': 'not a real date'})).toThrow(
-                        new TypeError('archive.query: invalid date provided for: start')
-                    );
-                    done();
-                });
+                const entity = await _converse.api.disco.entities.get(_converse.domain);
+                if (!entity.features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
+                }
+                expect(_.partial(_converse.api.archive.query, {'start': 'not a real date'})).toThrow(
+                    new TypeError('archive.query: invalid date provided for: start')
+                );
+                done();
            }));
 
            it("can be used to query for all messages after a certain time",
@@ -498,175 +497,176 @@
            }));
 
            it("accepts a callback function, which it passes the messages and a Strophe.RSM object",
-                    mock.initConverseWithPromises(
-                        null, [], {},
-                        function (done, _converse) {
+                mock.initConverseWithPromises(
+                    null, [], {},
+                    async function (done, _converse) {
 
-                _converse.api.disco.entities.get(_converse.domain).then(function (entity) {
-                    if (!entity.features.findWhere({'var': Strophe.NS.MAM})) {
-                        _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
-                    }
-                    var sent_stanza, IQ_id;
-                    var sendIQ = _converse.connection.sendIQ;
-                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                        sent_stanza = iq;
-                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                    });
-                    var callback = jasmine.createSpy('callback');
-
-                    _converse.api.archive.query({'with': 'romeo@capulet.lit', 'max':'10'}, callback);
-                    var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
-
-                    /*  <message id='aeb213' to='juliet@capulet.lit/chamber'>
-                     *  <result xmlns='urn:xmpp:mam:2' queryid='f27' id='28482-98726-73623'>
-                     *      <forwarded xmlns='urn:xmpp:forward:0'>
-                     *      <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>
-                     *      <message xmlns='jabber:client'
-                     *          to='juliet@capulet.lit/balcony'
-                     *          from='romeo@montague.lit/orchard'
-                     *          type='chat'>
-                     *          <body>Call me but love, and I'll be new baptized; Henceforth I never will be Romeo.</body>
-                     *      </message>
-                     *      </forwarded>
-                     *  </result>
-                     *  </message>
-                     */
-                    var msg1 = $msg({'id':'aeb213', 'to':'juliet@capulet.lit/chamber'})
-                                .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'28482-98726-73623'})
-                                    .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
-                                        .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
-                                        .c('message', {
-                                            'xmlns':'jabber:client',
-                                            'to':'juliet@capulet.lit/balcony',
-                                            'from':'romeo@montague.lit/orchard',
-                                            'type':'chat' })
-                                        .c('body').t("Call me but love, and I'll be new baptized;");
-                    _converse.connection._dataRecv(test_utils.createRequest(msg1));
-
-                    var msg2 = $msg({'id':'aeb213', 'to':'juliet@capulet.lit/chamber'})
-                                .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'28482-98726-73624'})
-                                    .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
-                                        .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
-                                        .c('message', {
-                                            'xmlns':'jabber:client',
-                                            'to':'juliet@capulet.lit/balcony',
-                                            'from':'romeo@montague.lit/orchard',
-                                            'type':'chat' })
-                                        .c('body').t("Henceforth I never will be Romeo.");
-                    _converse.connection._dataRecv(test_utils.createRequest(msg2));
-
-                    /* Send an <iq> stanza to indicate the end of the result set.
-                     *
-                     * <iq type='result' id='juliet1'>
-                     *     <fin xmlns='urn:xmpp:mam:2'>
-                     *     <set xmlns='http://jabber.org/protocol/rsm'>
-                     *         <first index='0'>28482-98726-73623</first>
-                     *         <last>09af3-cc343-b409f</last>
-                     *         <count>20</count>
-                     *     </set>
-                     * </iq>
-                     */
-                    var stanza = $iq({'type': 'result', 'id': IQ_id})
-                        .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
-                            .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
-                                .c('first', {'index': '0'}).t('23452-4534-1').up()
-                                .c('last').t('09af3-cc343-b409f').up()
-                                .c('count').t('16');
-                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                    expect(callback).toHaveBeenCalled();
-                    var args = callback.calls.argsFor(0);
-                    expect(args[0].length).toBe(2);
-                    expect(args[0][0].outerHTML).toBe(msg1.nodeTree.outerHTML);
-                    expect(args[0][1].outerHTML).toBe(msg2.nodeTree.outerHTML);
-                    expect(args[1]['with']).toBe('romeo@capulet.lit'); // eslint-disable-line dot-notation
-                    expect(args[1].max).toBe('10');
-                    expect(args[1].count).toBe('16');
-                    expect(args[1].first).toBe('23452-4534-1');
-                    expect(args[1].last).toBe('09af3-cc343-b409f');
-                    done()
+                const entity = await _converse.api.disco.entities.get(_converse.domain);
+                if (!entity.features.findWhere({'var': Strophe.NS.MAM})) {
+                    _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
+                }
+                let sent_stanza, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
+                const callback = jasmine.createSpy('callback');
+
+                _converse.api.archive.query({'with': 'romeo@capulet.lit', 'max':'10'}, callback);
+                const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
+
+                /*  <message id='aeb213' to='juliet@capulet.lit/chamber'>
+                 *  <result xmlns='urn:xmpp:mam:2' queryid='f27' id='28482-98726-73623'>
+                 *      <forwarded xmlns='urn:xmpp:forward:0'>
+                 *      <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>
+                 *      <message xmlns='jabber:client'
+                 *          to='juliet@capulet.lit/balcony'
+                 *          from='romeo@montague.lit/orchard'
+                 *          type='chat'>
+                 *          <body>Call me but love, and I'll be new baptized; Henceforth I never will be Romeo.</body>
+                 *      </message>
+                 *      </forwarded>
+                 *  </result>
+                 *  </message>
+                 */
+                var msg1 = $msg({'id':'aeb213', 'to':'juliet@capulet.lit/chamber'})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'28482-98726-73623'})
+                                .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns':'jabber:client',
+                                        'to':'juliet@capulet.lit/balcony',
+                                        'from':'romeo@montague.lit/orchard',
+                                        'type':'chat' })
+                                    .c('body').t("Call me but love, and I'll be new baptized;");
+                _converse.connection._dataRecv(test_utils.createRequest(msg1));
+
+                var msg2 = $msg({'id':'aeb213', 'to':'juliet@capulet.lit/chamber'})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'28482-98726-73624'})
+                                .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns':'jabber:client',
+                                        'to':'juliet@capulet.lit/balcony',
+                                        'from':'romeo@montague.lit/orchard',
+                                        'type':'chat' })
+                                    .c('body').t("Henceforth I never will be Romeo.");
+                _converse.connection._dataRecv(test_utils.createRequest(msg2));
+
+                /* Send an <iq> stanza to indicate the end of the result set.
+                 *
+                 * <iq type='result' id='juliet1'>
+                 *     <fin xmlns='urn:xmpp:mam:2'>
+                 *     <set xmlns='http://jabber.org/protocol/rsm'>
+                 *         <first index='0'>28482-98726-73623</first>
+                 *         <last>09af3-cc343-b409f</last>
+                 *         <count>20</count>
+                 *     </set>
+                 * </iq>
+                 */
+                const stanza = $iq({'type': 'result', 'id': IQ_id})
+                    .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
+                        .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
+                            .c('first', {'index': '0'}).t('23452-4534-1').up()
+                            .c('last').t('09af3-cc343-b409f').up()
+                            .c('count').t('16');
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                await test_utils.waitUntil(() => callback.calls.count());
+                expect(callback).toHaveBeenCalled();
+                var args = callback.calls.argsFor(0);
+                expect(args[0].length).toBe(2);
+                expect(args[0][0].outerHTML).toBe(msg1.nodeTree.outerHTML);
+                expect(args[0][1].outerHTML).toBe(msg2.nodeTree.outerHTML);
+                expect(args[1]['with']).toBe('romeo@capulet.lit'); // eslint-disable-line dot-notation
+                expect(args[1].max).toBe('10');
+                expect(args[1].count).toBe('16');
+                expect(args[1].first).toBe('23452-4534-1');
+                expect(args[1].last).toBe('09af3-cc343-b409f');
+                done()
            }));
         });
 
         describe("The default preference", function () {
 
             it("is set once server support for MAM has been confirmed",
-                    mock.initConverseWithPromises(
-                        null, [], {},
-                        function (done, _converse) {
+                mock.initConverseWithPromises(
+                    null, [], {},
+                    async function (done, _converse) {
 
-                _converse.api.disco.entities.get(_converse.domain).then(function (entity) {
-                    var sent_stanza, IQ_id;
-                    var sendIQ = _converse.connection.sendIQ;
-                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                        sent_stanza = iq;
-                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                    });
-                    spyOn(_converse, 'onMAMPreferences').and.callThrough();
-                    _converse.message_archiving = 'never';
-
-                    var feature = new Backbone.Model({
-                        'var': Strophe.NS.MAM
-                    });
-                    spyOn(feature, 'save').and.callFake(feature.set); // Save will complain about a url not being set
-
-                    entity.onFeatureAdded(feature);
-
-                    expect(_converse.connection.sendIQ).toHaveBeenCalled();
-                    expect(sent_stanza.toLocaleString()).toBe(
-                        `<iq id="${IQ_id}" type="get" xmlns="jabber:client">`+
-                            `<prefs xmlns="urn:xmpp:mam:2"/>`+
-                        `</iq>`);
-
-                    /* Example 20. Server responds with current preferences
-                     *
-                     * <iq type='result' id='juliet2'>
-                     *   <prefs xmlns='urn:xmpp:mam:0' default='roster'>
-                     *     <always/>
-                     *     <never/>
-                     *   </prefs>
-                     * </iq>
-                     */
-                    var stanza = $iq({'type': 'result', 'id': IQ_id})
-                        .c('prefs', {'xmlns': Strophe.NS.MAM, 'default':'roster'})
-                        .c('always').c('jid').t('romeo@montague.lit').up().up()
-                        .c('never').c('jid').t('montague@montague.lit');
-                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
-
-                    expect(_converse.onMAMPreferences).toHaveBeenCalled();
-                    expect(_converse.connection.sendIQ.calls.count()).toBe(2);
-
-                    expect(sent_stanza.toString()).toBe(
-                        `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
-                            `<prefs default="never" xmlns="urn:xmpp:mam:2">`+
-                                `<always><jid>romeo@montague.lit</jid></always>`+
-                                `<never><jid>montague@montague.lit</jid></never>`+
-                            `</prefs>`+
-                        `</iq>`
-                    );
-
-                    expect(feature.get('preference')).toBe(undefined);
-                    /* <iq type='result' id='juliet3'>
-                     *   <prefs xmlns='urn:xmpp:mam:0' default='always'>
-                     *       <always>
-                     *          <jid>romeo@montague.lit</jid>
-                     *       </always>
-                     *       <never>
-                     *          <jid>montague@montague.lit</jid>
-                     *       </never>
-                     *   </prefs>
-                     * </iq>
-                     */
-                    stanza = $iq({'type': 'result', 'id': IQ_id})
-                        .c('prefs', {'xmlns': Strophe.NS.MAM, 'default':'always'})
-                        .c('always').up()
-                        .c('never').up();
-                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    expect(feature.save).toHaveBeenCalled();
-                    expect(feature.get('preferences')['default']).toBe('never'); // eslint-disable-line dot-notation
-                    done();
+                const entity = await _converse.api.disco.entities.get(_converse.domain);
+                let  sent_stanza, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
+                spyOn(_converse, 'onMAMPreferences').and.callThrough();
+                _converse.message_archiving = 'never';
+
+                var feature = new Backbone.Model({
+                    'var': Strophe.NS.MAM
+                });
+                spyOn(feature, 'save').and.callFake(feature.set); // Save will complain about a url not being set
+
+                entity.onFeatureAdded(feature);
+
+                expect(_converse.connection.sendIQ).toHaveBeenCalled();
+                expect(sent_stanza.toLocaleString()).toBe(
+                    `<iq id="${IQ_id}" type="get" xmlns="jabber:client">`+
+                        `<prefs xmlns="urn:xmpp:mam:2"/>`+
+                    `</iq>`);
+
+                /* Example 20. Server responds with current preferences
+                 *
+                 * <iq type='result' id='juliet2'>
+                 *   <prefs xmlns='urn:xmpp:mam:0' default='roster'>
+                 *     <always/>
+                 *     <never/>
+                 *   </prefs>
+                 * </iq>
+                 */
+                let stanza = $iq({'type': 'result', 'id': IQ_id})
+                    .c('prefs', {'xmlns': Strophe.NS.MAM, 'default':'roster'})
+                    .c('always').c('jid').t('romeo@montague.lit').up().up()
+                    .c('never').c('jid').t('montague@montague.lit');
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                await test_utils.waitUntil(() => _converse.onMAMPreferences.calls.count());
+                expect(_converse.onMAMPreferences).toHaveBeenCalled();
+                expect(_converse.connection.sendIQ.calls.count()).toBe(2);
+
+                expect(sent_stanza.toString()).toBe(
+                    `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                        `<prefs default="never" xmlns="urn:xmpp:mam:2">`+
+                            `<always><jid>romeo@montague.lit</jid></always>`+
+                            `<never><jid>montague@montague.lit</jid></never>`+
+                        `</prefs>`+
+                    `</iq>`
+                );
+
+                expect(feature.get('preference')).toBe(undefined);
+                /* <iq type='result' id='juliet3'>
+                 *   <prefs xmlns='urn:xmpp:mam:0' default='always'>
+                 *       <always>
+                 *          <jid>romeo@montague.lit</jid>
+                 *       </always>
+                 *       <never>
+                 *          <jid>montague@montague.lit</jid>
+                 *       </never>
+                 *   </prefs>
+                 * </iq>
+                 */
+                stanza = $iq({'type': 'result', 'id': IQ_id})
+                    .c('prefs', {'xmlns': Strophe.NS.MAM, 'default':'always'})
+                        .c('always').up()
+                        .c('never');
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await test_utils.waitUntil(() => feature.save.calls.count());
+                expect(feature.save).toHaveBeenCalled();
+                expect(feature.get('preferences')['default']).toBe('never'); // eslint-disable-line dot-notation
+                done();
             }));
         });
     });

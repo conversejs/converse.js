@@ -197,6 +197,23 @@
                             &.occupant {
                                 cursor: pointer;
 
+                                .occupant-nick-badge {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    flex-wrap: wrap;
+
+                                    .occupant-badges {
+                                        display: flex;
+                                        justify-content: flex-end;
+                                        flex-wrap: wrap;
+                                        flex-direction: row;
+
+                                        span {
+                                            margin-right: 0.25rem;
+                                        }
+                                    }
+                                }
+
                                 div.row.no-gutters {
                                     flex-wrap: nowrap;
                                     min-height: 1.5em;
@@ -296,6 +313,11 @@
 #conversejs.converse-overlayed {
     .chatbox {
         &.chatroom {
+
+            .chatroom-features {
+                display: none !important;
+            }
+
             min-width: $chatroom-width !important;
             width: $chatroom-width;
             .box-flyout {
@@ -323,6 +345,11 @@
                     }
                     ul {
                         .occupant {
+                            .occupant-nick-badge {
+                                .occupant-badges {
+                                    display: none;
+                                }
+                            }
                             .occupant-status {
                                 margin-top: 6px;
                             }
@@ -406,7 +433,6 @@
                         border-top-left-radius: $chatbox-border-radius;
                     }
                     &.full {
-                        max-width: 100%;
                         .new-msgs-indicator {
                             max-width: 100%;
                         }

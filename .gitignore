@@ -11,10 +11,14 @@
 .pydevproject
 .idea
 .su?
-builds/*
+.sass-cache
+
 3rdparty/libsignal-protocol-javascript/
 *.map
 dist/converse-no-dependencies-es2015.js
+
+locale.zip
+css/webfonts.zip
 
 analytics.js
 inverse-analytics.js
@@ -32,16 +36,9 @@ inverse-dev.html
 inverse-dev-jc.html
 converse-logs/*.html
 
-# Ruby/Sass/Bundler
-.bundle
-.sass-cache
-ruby
-bourbon
-
 Backbone.Overview
 tags
 stamp-npm
-stamp-bundler
 transpile
 
 # Sphinx

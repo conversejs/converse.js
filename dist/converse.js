@@ -61597,6 +61597,8 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       _ = _converse$env._,
       moment = _converse$env.moment;
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-message-view', {
+  dependencies: ["converse-modal"],
+
   initialize() {
     /* The initialize function gets called as soon as the plugin is
      * loaded by converse.js's plugin machinery.
@@ -73339,7 +73341,6 @@ const converse = {
    *
    * @example
    * converse.initialize({
-   *     allow_otr: true,
    *     auto_list_rooms: false,
    *     auto_subscribe: false,
    *     bosh_service_url: 'https://bind.example.com',

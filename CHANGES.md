@@ -2,6 +2,7 @@
 
 ## 4.0.5 (Unreleased)
 
+- `FATAL: TypeError: Cannot read property 'extend' of undefined` when using `embedded` view mode.
 
 ## 4.0.4 (2018-10-29)
 

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-29 22:21+0100\n"
-"PO-Revision-Date: 2018-10-23 10:22+0000\n"
-"Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
+"PO-Revision-Date: 2018-11-04 12:23+0000\n"
+"Last-Translator: Atef Ben Ali <atef.bettaib@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
 "Language: ar\n"
@@ -103,12 +103,11 @@ msgstr "الفواصل المرجعية"
 
 #: dist/converse-no-dependencies.js:41001
 msgid "Close this chat box"
-msgstr "إغلق نافذة المحادثة هذه"
+msgstr "غلق نافذة المحادثة هذه"
 
 #: dist/converse-no-dependencies.js:41073
-#, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الإحتفاظ بالفواصل المرجعية."
+msgstr "المعذرة، لقد طرأ هناك خطأ أثناء محاولة الاحتفاظ بالفواصل المرجعية"
 
 #: dist/converse-no-dependencies.js:41089
 #: dist/converse-no-dependencies.js:50698
@@ -119,7 +118,7 @@ msgstr "هل أنت متأكد أنك تريد حذف هذا المراسل ؟"
 #: dist/converse-no-dependencies.js:50705
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr ""
+msgstr "حدث خطأ أثناء محاولة إزالة جهة اتصال s%1$."
 
 #: dist/converse-no-dependencies.js:41156
 #: dist/converse-no-dependencies.js:41198
@@ -136,15 +135,15 @@ msgstr "رسالة"
 
 #: dist/converse-no-dependencies.js:41193
 msgid "Send"
-msgstr "إرسل"
+msgstr "ابعث"
 
 #: dist/converse-no-dependencies.js:41194
 msgid "Optional hint"
-msgstr "دليل إختياري"
+msgstr "دليل اختياري"
 
 #: dist/converse-no-dependencies.js:41236
 msgid "Choose a file to send"
-msgstr "إختر الملف الذي تود إرساله"
+msgstr "اختر الملف الذي تريد إرساله"
 
 #: dist/converse-no-dependencies.js:41639
 #: dist/converse-no-dependencies.js:45746
@@ -153,12 +152,12 @@ msgstr "حذف الرسائل"
 
 #: dist/converse-no-dependencies.js:41639
 msgid "Write in the third person"
-msgstr "كتب كأنه شخص ثالث"
+msgstr "كتابة لشخص ثالث"
 
 #: dist/converse-no-dependencies.js:41639
 #: dist/converse-no-dependencies.js:45746
 msgid "Show this menu"
-msgstr "إظهار هذه القائمة"
+msgstr "اظهار هذه القائمة"
 
 #: dist/converse-no-dependencies.js:41869
 msgid "Are you sure you want to clear the messages from this conversation?"
@@ -173,7 +172,7 @@ msgstr "%1$s قد قطع الإتصال"
 #: dist/converse-no-dependencies.js:43870
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr "%1$s قد غاب"
+msgstr "%1$s غائب"
 
 #: dist/converse-no-dependencies.js:41995
 #, javascript-format
@@ -187,7 +186,7 @@ msgstr "%1$s متصل"
 
 #: dist/converse-no-dependencies.js:42692
 msgid "Username"
-msgstr "إسم المستخدِم"
+msgstr "اسم المستخدِم"
 
 #: dist/converse-no-dependencies.js:42692
 msgid "user@domain"
@@ -196,15 +195,15 @@ msgstr "user@domain"
 #: dist/converse-no-dependencies.js:42711
 #: dist/converse-no-dependencies.js:50286
 msgid "Please enter a valid XMPP address"
-msgstr "يرجى إدخال عنوان XMPP صالح"
+msgstr "يرجى ادخال عنوان XMPP صحيح"
 
 #: dist/converse-no-dependencies.js:42817
 msgid "Chat Contacts"
-msgstr "جهات الإتصال"
+msgstr "جهات الاتصال"
 
 #: dist/converse-no-dependencies.js:42817
 msgid "Toggle chat"
-msgstr "الإنتقال إلى الدردشة"
+msgstr "الانتقال إلى الدردشة"
 
 #: dist/converse-no-dependencies.js:43808
 msgid "Show more"

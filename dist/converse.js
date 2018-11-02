@@ -59022,7 +59022,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         'click .toggle-smiley': 'toggleEmojiMenu',
         'click .upload-file': 'toggleFileUpload',
         'input .chat-textarea': 'inputChanged',
-        'keydown .chat-textarea': 'keyPressed'
+        'keydown .chat-textarea': 'keyPressed',
+        'dragover .chat-textarea': 'onDragOver',
+        'drop .chat-textarea': 'onDrop'
       },
 
       initialize() {
@@ -59126,6 +59128,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       onFileSelection(evt) {
         this.model.sendFiles(evt.target.files);
+      },
+
+      onDragOver(evt) {
+        evt.preventDefault();
+      },
+
+      onDrop(evt) {
+        /* There are no files to be dropped, this isn’t a file transfer
+         * operation.
+         */
+        if (evt.dataTransfer.files.length == 0) return;
+        evt.preventDefault();
+        this.model.sendFiles(evt.dataTransfer.files);
       },
 
       async addFileUploadButton(options) {

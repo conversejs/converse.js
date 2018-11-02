@@ -103627,28 +103627,28 @@ __e(o.image) +
 __p += '\n                ';
  if (o.fullname) { ;
 __p += '\n                <p><label>' +
-__e(o.__('Full Name')) +
-':</label>&nbsp;' +
+__e(o.__('Full Name:')) +
+'</label>&nbsp;' +
 __e(o.fullname) +
 '</p>\n                ';
  } ;
 __p += '\n                <p><label>' +
-__e(o.__('XMPP Address')) +
-':</label>&nbsp;' +
+__e(o.__('XMPP Address:')) +
+'</label>&nbsp;' +
 __e(o.jid) +
 '</p>\n                ';
  if (o.nickname) { ;
 __p += '\n                <p><label>' +
-__e(o.__('Nickname')) +
-':</label>&nbsp;' +
+__e(o.__('Nickname:')) +
+'</label>&nbsp;' +
 __e(o.nickname) +
 '</p>\n                ';
  } ;
 __p += '\n                ';
  if (o.url) { ;
 __p += '\n                <p><label>' +
-__e(o.__('URL')) +
-':</label>&nbsp;<a target="_blank" rel="noopener" href="' +
+__e(o.__('URL:')) +
+'</label>&nbsp;<a target="_blank" rel="noopener" href="' +
 __e(o.url) +
 '">' +
 __e(o.url) +
@@ -103657,8 +103657,8 @@ __e(o.url) +
 __p += '\n                ';
  if (o.email) { ;
 __p += '\n                <p><label>' +
-__e(o.__('Email')) +
-':</label>&nbsp;<a href="mailto:' +
+__e(o.__('Email:')) +
+'</label>&nbsp;<a href="mailto:' +
 __e(o.email) +
 '">' +
 __e(o.email) +
@@ -103667,8 +103667,8 @@ __e(o.email) +
 __p += '\n                ';
  if (o.role) { ;
 __p += '\n                <p><label>' +
-__e(o.__('Role')) +
-':</label>&nbsp;' +
+__e(o.__('Role:')) +
+'</label>&nbsp;' +
 __e(o.role) +
 '</p>\n                ';
  } ;

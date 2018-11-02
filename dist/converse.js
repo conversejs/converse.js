@@ -70983,8 +70983,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
       async sendFiles(files) {
         const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain),
-              item = result.pop(),
-              data = item.dataforms.where({
+              item = result.pop();
+
+        if (!item) {
+          this.messages.create({
+            'message': __("Sorry, looks like file upload is not supported by your server."),
+            'type': 'error'
+          });
+          return;
+        }
+
+        const data = item.dataforms.where({
           'FORM_TYPE': {
             'value': Strophe.NS.HTTPUPLOAD,
             'type': "hidden"

@@ -13,7 +13,7 @@ import muc from "@converse/headless/converse-muc";
 import tpl_rooms_list from "templates/rooms_list.html";
 import tpl_rooms_list_item from "templates/rooms_list_item.html"
 
-const { Backbone, Promise, Strophe, b64_sha1, sizzle, _ } = converse.env;
+const { Backbone, Promise, Strophe, sizzle, _ } = converse.env;
 const u = converse.env.utils;
 
 
@@ -169,11 +169,9 @@ converse.plugins.add('converse-roomslist', {
                 this.model.on('add', this.showOrHide, this);
                 this.model.on('remove', this.showOrHide, this);
 
-                const storage = _converse.config.get('storage'),
-                      id = b64_sha1(`converse.roomslist${_converse.bare_jid}`);
-
+                const id = `converse.roomslist${_converse.bare_jid}`;
                 this.list_model = new _converse.RoomsList({'id': id});
-                this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
+                this.list_model.browserStorage = new _converse.BrowserStorage(id);
                 this.list_model.fetch();
                 this.render();
                 this.sortAndPositionAllItems();
@@ -264,11 +262,10 @@ converse.plugins.add('converse-roomslist', {
         });
 
         const initRoomsListView = function () {
-            const storage = _converse.config.get('storage'),
-                  id = b64_sha1(`converse.open-rooms-{_converse.bare_jid}`),
+            const id = `converse.open-rooms-{_converse.bare_jid}`,
                   model = new _converse.OpenRooms();
 
-            model.browserStorage = new Backbone.BrowserStorage[storage](id);
+            model.browserStorage = new _converse.BrowserStorage(id);
             _converse.rooms_list_view = new _converse.RoomsListView({'model': model});
             _converse.api.emit('roomsListInitialized');
         };

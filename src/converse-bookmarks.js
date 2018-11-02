@@ -17,7 +17,7 @@ import tpl_bookmarks_list from "templates/bookmarks_list.html"
 import tpl_chatroom_bookmark_form from "templates/chatroom_bookmark_form.html";
 import tpl_chatroom_bookmark_toggle from "templates/chatroom_bookmark_toggle.html";
 
-const { Backbone, Promise, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
+const { Backbone, Promise, Strophe, $iq, sizzle, _ } = converse.env;
 const u = converse.env.utils;
 
 
@@ -237,19 +237,19 @@ converse.plugins.add('converse-bookmarks', {
             comparator: (item) => item.get('name').toLowerCase(),
 
             initialize () {
-                this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
+                this.on('add', b => this.openBookmarkedRoom(b).then(b => this.markRoomAsBookmarked(b)));
                 this.on('remove', this.markRoomAsUnbookmarked, this);
                 this.on('remove', this.sendBookmarkStanza, this);
 
                 const storage = _converse.config.get('storage'),
-                      cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
-                this.fetched_flag = b64_sha1(cache_key+'fetched');
-                this.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(cache_key));
+                      cache_key = `converse.room-bookmarks-${_converse.bare_jid}`;
+                this.bookmarks_cached = `${cache_key}--cached`;
+                this.browserStorage = new Backbone.BrowserStorage(cache_key, storage);
             },
 
-            openBookmarkedRoom (bookmark) {
+            async openBookmarkedRoom (bookmark) {
                 if (bookmark.get('autojoin')) {
-                    const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+                    const groupchat = await _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
                     if (!groupchat.get('hidden')) {
                         groupchat.trigger('show');
                     }
@@ -259,19 +259,13 @@ converse.plugins.add('converse-bookmarks', {
 
             fetchBookmarks () {
                 const deferred = u.getResolveablePromise();
-                if (this.browserStorage.records.length > 0) {
+                if (sessionStorage.getItem(this.bookmarks_cached)) {
                     this.fetch({
                         'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
                         'error':  _.bind(this.onCachedBookmarksFetched, this, deferred)
                     });
-                } else if (! window.sessionStorage.getItem(this.fetched_flag)) {
-                    // There aren't any cached bookmarks and the
-                    // `fetched_flag` is off, so we query the XMPP server.
-                    // If nothing is returned from the XMPP server, we set
-                    // the `fetched_flag` to avoid calling the server again.
-                    this.fetchBookmarksFromServer(deferred);
                 } else {
-                    deferred.resolve();
+                    this.fetchBookmarksFromServer(deferred);
                 }
                 return deferred;
             },
@@ -370,13 +364,14 @@ converse.plugins.add('converse-bookmarks', {
 
             onBookmarksReceived (deferred, iq) {
                 this.createBookmarksFromStanza(iq);
+                sessionStorage.setItem(this.bookmarks_cached, true);
                 if (!_.isUndefined(deferred)) {
                     return deferred.resolve();
                 }
             },
 
             onBookmarksReceivedError (deferred, iq) {
-                window.sessionStorage.setItem(this.fetched_flag, true);
+                sessionStorage.setItem(this.bookmarks_cached, true);
                 _converse.log('Error while fetching bookmarks', Strophe.LogLevel.WARN);
                 _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
                 if (!_.isNil(deferred)) {
@@ -436,10 +431,9 @@ converse.plugins.add('converse-bookmarks', {
                 _converse.chatboxes.on('add', this.renderBookmarkListElement, this);
                 _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
-                const storage = _converse.config.get('storage'),
-                      id = b64_sha1(`converse.room-bookmarks${_converse.bare_jid}-list-model`);
+                const id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
                 this.list_model = new _converse.BookmarksList({'id': id});
-                this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
+                this.list_model.browserStorage = new _converse.BrowserStorage(id);
                 this.list_model.fetch();
                 this.render();
                 this.sortAndPositionAllItems();
@@ -554,7 +548,7 @@ converse.plugins.add('converse-bookmarks', {
         _converse.on('clearSession', () => {
             if (!_.isUndefined(_converse.bookmarks)) {
                 _converse.bookmarks.browserStorage._clear();
-                window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
+                window.sessionStorage.removeItem(_converse.bookmarks.bookmarks_cached);
             }
         });
 

@@ -209,13 +209,31 @@
         view.model.messages.browserStorage._clear();
     };
 
-    utils.createContacts = function (converse, type, length) {
+    utils.createContact = async function (_converse, name, ask, requesting, subscription) {
+        const jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+        if (_converse.roster.get(jid)) {
+            return Promise.resolve();
+        }
+        const contact = await new Promise((success, error) => {
+            _converse.roster.create({
+                'ask': ask,
+                'fullname': name,
+                'jid': jid,
+                'requesting': requesting,
+                'subscription': subscription
+            }, {success, error});
+        });
+        return contact;
+    };
+
+    utils.createContacts = async function (_converse, type, length) {
         /* Create current (as opposed to requesting or pending) contacts
          * for the user's roster.
          *
          * These contacts are not grouped. See below.
          */
-        var names, jid, subscription, requesting, ask;
+        await _converse.api.waitUntil('rosterContactsFetched');
+        let names, jid, subscription, requesting, ask;
         if (type === 'requesting') {
             names = mock.req_names;
             subscription = 'none';
@@ -232,40 +250,26 @@
             requesting = false;
             ask = null;
         } else if (type === 'all') {
-            this.createContacts(converse, 'current')
-                .createContacts(converse, 'requesting')
-                .createContacts(converse, 'pending');
+            this.createContacts(_converse, 'current')
+                .createContacts(_converse, 'requesting')
+                .createContacts(_converse, 'pending');
             return this;
         } else {
             throw Error("Need to specify the type of contact to create");
         }
-
-        if (typeof length === 'undefined') {
-            length = names.length;
-        }
-        for (var i=0; i<length; i++) {
-            jid = names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-            if (!converse.roster.get(jid)) {
-                converse.roster.create({
-                    'ask': ask,
-                    'fullname': names[i],
-                    'jid': jid,
-                    'requesting': requesting,
-                    'subscription': subscription
-                });
-            }
-        }
-        return this;
+        const promises = names.slice(0, length).map(n => this.createContact(_converse, n, ask, requesting, subscription));
+        await Promise.all(promises);
+        return this.waitUntil(() => _converse.roster.length);
     };
 
-    utils.createGroupedContacts = function (converse) {
+    utils.createGroupedContacts = function (_converse) {
         /* Create grouped contacts
          */
         var i=0, j=0;
         _.each(_.keys(mock.groups), function (name) {
             j = i;
             for (i=j; i<j+mock.groups[name]; i++) {
-                converse.roster.create({
+                _converse.roster.create({
                     jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                     subscription: 'both',
                     ask: null,

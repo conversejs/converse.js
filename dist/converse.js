@@ -608,272 +608,230 @@ module.exports = Awesomplete;
 
 /***/ }),
 
-/***/ "./node_modules/backbone.browserStorage/backbone.browserStorage.js":
-/*!*************************************************************************!*\
-  !*** ./node_modules/backbone.browserStorage/backbone.browserStorage.js ***!
-  \*************************************************************************/
+/***/ "./node_modules/backbone.browserStorage/dist/backbone.browserStorage.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/backbone.browserStorage/dist/backbone.browserStorage.js ***!
+  \******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/backbone.browserStorage.js");
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ "./node_modules/localforage/dist/localforage.js":
+/*!******************************************************!*\
+  !*** ./node_modules/localforage/dist/localforage.js ***!
+  \******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/**
- * Backbone localStorage and sessionStorage Adapter
- * Version 0.0.5
- *
- * https://github.com/jcbrand/Backbone.browserStorage
- */
-(function (root, factory) {
-  if (true) {
-    module.exports = factory(__webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js"), __webpack_require__(/*! underscore */ "./src/underscore-shim.js"));
-  } else {}
-}(this, function(Backbone, _) {
-// A simple module to replace `Backbone.sync` with *browser storage*-based
-// persistence. Models are given GUIDS, and saved into a JSON object. Simple
-// as that.
+eval("/* WEBPACK VAR INJECTION */(function(global) {var require;var require;/*!\n    localForage -- Offline Storage, Improved\n    Version 1.7.3\n    https://localforage.github.io/localForage\n    (c) 2013-2017 Mozilla, Apache License 2.0\n*/\n(function(f){if(true){module.exports=f()}else { var g; }})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require==\"function\"&&require;if(!u&&a)return require(o,!0);if(i)return i(o,!0);var f=new Error(\"Cannot find module '\"+o+\"'\");throw (f.code=\"MODULE_NOT_FOUND\", f)}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require==\"function\"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){\n(function (global){\n'use strict';\nvar Mutation = global.MutationObserver || global.WebKitMutationObserver;\n\nvar scheduleDrain;\n\n{\n  if (Mutation) {\n    var called = 0;\n    var observer = new Mutation(nextTick);\n    var element = global.document.createTextNode('');\n    observer.observe(element, {\n      characterData: true\n    });\n    scheduleDrain = function () {\n      element.data = (called = ++called % 2);\n    };\n  } else if (!global.setImmediate && typeof global.MessageChannel !== 'undefined') {\n    var channel = new global.MessageChannel();\n    channel.port1.onmessage = nextTick;\n    scheduleDrain = function () {\n      channel.port2.postMessage(0);\n    };\n  } else if ('document' in global && 'onreadystatechange' in global.document.createElement('script')) {\n    scheduleDrain = function () {\n\n      // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted\n      // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.\n      var scriptEl = global.document.createElement('script');\n      scriptEl.onreadystatechange = function () {\n        nextTick();\n\n        scriptEl.onreadystatechange = null;\n        scriptEl.parentNode.removeChild(scriptEl);\n        scriptEl = null;\n      };\n      global.document.documentElement.appendChild(scriptEl);\n    };\n  } else {\n    scheduleDrain = function () {\n      setTimeout(nextTick, 0);\n    };\n  }\n}\n\nvar draining;\nvar queue = [];\n//named nextTick for less confusing stack traces\nfunction nextTick() {\n  draining = true;\n  var i, oldQueue;\n  var len = queue.length;\n  while (len) {\n    oldQueue = queue;\n    queue = [];\n    i = -1;\n    while (++i < len) {\n      oldQueue[i]();\n    }\n    len = queue.length;\n  }\n  draining = false;\n}\n\nmodule.exports = immediate;\nfunction immediate(task) {\n  if (queue.push(task) === 1 && !draining) {\n    scheduleDrain();\n  }\n}\n\n}).call(this,typeof global !== \"undefined\" ? global : typeof self !== \"undefined\" ? self : typeof window !== \"undefined\" ? window : {})\n},{}],2:[function(_dereq_,module,exports){\n'use strict';\nvar immediate = _dereq_(1);\n\n/* istanbul ignore next */\nfunction INTERNAL() {}\n\nvar handlers = {};\n\nvar REJECTED = ['REJECTED'];\nvar FULFILLED = ['FULFILLED'];\nvar PENDING = ['PENDING'];\n\nmodule.exports = Promise;\n\nfunction Promise(resolver) {\n  if (typeof resolver !== 'function') {\n    throw new TypeError('resolver must be a function');\n  }\n  this.state = PENDING;\n  this.queue = [];\n  this.outcome = void 0;\n  if (resolver !== INTERNAL) {\n    safelyResolveThenable(this, resolver);\n  }\n}\n\nPromise.prototype[\"catch\"] = function (onRejected) {\n  return this.then(null, onRejected);\n};\nPromise.prototype.then = function (onFulfilled, onRejected) {\n  if (typeof onFulfilled !== 'function' && this.state === FULFILLED ||\n    typeof onRejected !== 'function' && this.state === REJECTED) {\n    return this;\n  }\n  var promise = new this.constructor(INTERNAL);\n  if (this.state !== PENDING) {\n    var resolver = this.state === FULFILLED ? onFulfilled : onRejected;\n    unwrap(promise, resolver, this.outcome);\n  } else {\n    this.queue.push(new QueueItem(promise, onFulfilled, onRejected));\n  }\n\n  return promise;\n};\nfunction QueueItem(promise, onFulfilled, onRejected) {\n  this.promise = promise;\n  if (typeof onFulfilled === 'function') {\n    this.onFulfilled = onFulfilled;\n    this.callFulfilled = this.otherCallFulfilled;\n  }\n  if (typeof onRejected === 'function') {\n    this.onRejected = onRejected;\n    this.callRejected = this.otherCallRejected;\n  }\n}\nQueueItem.prototype.callFulfilled = function (value) {\n  handlers.resolve(this.promise, value);\n};\nQueueItem.prototype.otherCallFulfilled = function (value) {\n  unwrap(this.promise, this.onFulfilled, value);\n};\nQueueItem.prototype.callRejected = function (value) {\n  handlers.reject(this.promise, value);\n};\nQueueItem.prototype.otherCallRejected = function (value) {\n  unwrap(this.promise, this.onRejected, value);\n};\n\nfunction unwrap(promise, func, value) {\n  immediate(function () {\n    var returnValue;\n    try {\n      returnValue = func(value);\n    } catch (e) {\n      return handlers.reject(promise, e);\n    }\n    if (returnValue === promise) {\n      handlers.reject(promise, new TypeError('Cannot resolve promise with itself'));\n    } else {\n      handlers.resolve(promise, returnValue);\n    }\n  });\n}\n\nhandlers.resolve = function (self, value) {\n  var result = tryCatch(getThen, value);\n  if (result.status === 'error') {\n    return handlers.reject(self, result.value);\n  }\n  var thenable = result.value;\n\n  if (thenable) {\n    safelyResolveThenable(self, thenable);\n  } else {\n    self.state = FULFILLED;\n    self.outcome = value;\n    var i = -1;\n    var len = self.queue.length;\n    while (++i < len) {\n      self.queue[i].callFulfilled(value);\n    }\n  }\n  return self;\n};\nhandlers.reject = function (self, error) {\n  self.state = REJECTED;\n  self.outcome = error;\n  var i = -1;\n  var len = self.queue.length;\n  while (++i < len) {\n    self.queue[i].callRejected(error);\n  }\n  return self;\n};\n\nfunction getThen(obj) {\n  // Make sure we only access the accessor once as required by the spec\n  var then = obj && obj.then;\n  if (obj && (typeof obj === 'object' || typeof obj === 'function') && typeof then === 'function') {\n    return function appyThen() {\n      then.apply(obj, arguments);\n    };\n  }\n}\n\nfunction safelyResolveThenable(self, thenable) {\n  // Either fulfill, reject or reject with error\n  var called = false;\n  function onError(value) {\n    if (called) {\n      return;\n    }\n    called = true;\n    handlers.reject(self, value);\n  }\n\n  function onSuccess(value) {\n    if (called) {\n      return;\n    }\n    called = true;\n    handlers.resolve(self, value);\n  }\n\n  function tryToUnwrap() {\n    thenable(onSuccess, onError);\n  }\n\n  var result = tryCatch(tryToUnwrap);\n  if (result.status === 'error') {\n    onError(result.value);\n  }\n}\n\nfunction tryCatch(func, value) {\n  var out = {};\n  try {\n    out.value = func(value);\n    out.status = 'success';\n  } catch (e) {\n    out.status = 'error';\n    out.value = e;\n  }\n  return out;\n}\n\nPromise.resolve = resolve;\nfunction resolve(value) {\n  if (value instanceof this) {\n    return value;\n  }\n  return handlers.resolve(new this(INTERNAL), value);\n}\n\nPromise.reject = reject;\nfunction reject(reason) {\n  var promise = new this(INTERNAL);\n  return handlers.reject(promise, reason);\n}\n\nPromise.all = all;\nfunction all(iterable) {\n  var self = this;\n  if (Object.prototype.toString.call(iterable) !== '[object Array]') {\n    return this.reject(new TypeError('must be an array'));\n  }\n\n  var len = iterable.length;\n  var called = false;\n  if (!len) {\n    return this.resolve([]);\n  }\n\n  var values = new Array(len);\n  var resolved = 0;\n  var i = -1;\n  var promise = new this(INTERNAL);\n\n  while (++i < len) {\n    allResolver(iterable[i], i);\n  }\n  return promise;\n  function allResolver(value, i) {\n    self.resolve(value).then(resolveFromAll, function (error) {\n      if (!called) {\n        called = true;\n        handlers.reject(promise, error);\n      }\n    });\n    function resolveFromAll(outValue) {\n      values[i] = outValue;\n      if (++resolved === len && !called) {\n        called = true;\n        handlers.resolve(promise, values);\n      }\n    }\n  }\n}\n\nPromise.race = race;\nfunction race(iterable) {\n  var self = this;\n  if (Object.prototype.toString.call(iterable) !== '[object Array]') {\n    return this.reject(new TypeError('must be an array'));\n  }\n\n  var len = iterable.length;\n  var called = false;\n  if (!len) {\n    return this.resolve([]);\n  }\n\n  var i = -1;\n  var promise = new this(INTERNAL);\n\n  while (++i < len) {\n    resolver(iterable[i]);\n  }\n  return promise;\n  function resolver(value) {\n    self.resolve(value).then(function (response) {\n      if (!called) {\n        called = true;\n        handlers.resolve(promise, response);\n      }\n    }, function (error) {\n      if (!called) {\n        called = true;\n        handlers.reject(promise, error);\n      }\n    });\n  }\n}\n\n},{\"1\":1}],3:[function(_dereq_,module,exports){\n(function (global){\n'use strict';\nif (typeof global.Promise !== 'function') {\n  global.Promise = _dereq_(2);\n}\n\n}).call(this,typeof global !== \"undefined\" ? global : typeof self !== \"undefined\" ? self : typeof window !== \"undefined\" ? window : {})\n},{\"2\":2}],4:[function(_dereq_,module,exports){\n'use strict';\n\nvar _typeof = typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; };\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction getIDB() {\n    /* global indexedDB,webkitIndexedDB,mozIndexedDB,OIndexedDB,msIndexedDB */\n    try {\n        if (typeof indexedDB !== 'undefined') {\n            return indexedDB;\n        }\n        if (typeof webkitIndexedDB !== 'undefined') {\n            return webkitIndexedDB;\n        }\n        if (typeof mozIndexedDB !== 'undefined') {\n            return mozIndexedDB;\n        }\n        if (typeof OIndexedDB !== 'undefined') {\n            return OIndexedDB;\n        }\n        if (typeof msIndexedDB !== 'undefined') {\n            return msIndexedDB;\n        }\n    } catch (e) {\n        return;\n    }\n}\n\nvar idb = getIDB();\n\nfunction isIndexedDBValid() {\n    try {\n        // Initialize IndexedDB; fall back to vendor-prefixed versions\n        // if needed.\n        if (!idb) {\n            return false;\n        }\n        // We mimic PouchDB here;\n        //\n        // We test for openDatabase because IE Mobile identifies itself\n        // as Safari. Oh the lulz...\n        var isSafari = typeof openDatabase !== 'undefined' && /(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) && !/BlackBerry/.test(navigator.platform);\n\n        var hasFetch = typeof fetch === 'function' && fetch.toString().indexOf('[native code') !== -1;\n\n        // Safari <10.1 does not meet our requirements for IDB support (#5572)\n        // since Safari 10.1 shipped with fetch, we can use that to detect it\n        return (!isSafari || hasFetch) && typeof indexedDB !== 'undefined' &&\n        // some outdated implementations of IDB that appear on Samsung\n        // and HTC Android devices <4.4 are missing IDBKeyRange\n        // See: https://github.com/mozilla/localForage/issues/128\n        // See: https://github.com/mozilla/localForage/issues/272\n        typeof IDBKeyRange !== 'undefined';\n    } catch (e) {\n        return false;\n    }\n}\n\n// Abstracts constructing a Blob object, so it also works in older\n// browsers that don't support the native Blob constructor. (i.e.\n// old QtWebKit versions, at least).\n// Abstracts constructing a Blob object, so it also works in older\n// browsers that don't support the native Blob constructor. (i.e.\n// old QtWebKit versions, at least).\nfunction createBlob(parts, properties) {\n    /* global BlobBuilder,MSBlobBuilder,MozBlobBuilder,WebKitBlobBuilder */\n    parts = parts || [];\n    properties = properties || {};\n    try {\n        return new Blob(parts, properties);\n    } catch (e) {\n        if (e.name !== 'TypeError') {\n            throw e;\n        }\n        var Builder = typeof BlobBuilder !== 'undefined' ? BlobBuilder : typeof MSBlobBuilder !== 'undefined' ? MSBlobBuilder : typeof MozBlobBuilder !== 'undefined' ? MozBlobBuilder : WebKitBlobBuilder;\n        var builder = new Builder();\n        for (var i = 0; i < parts.length; i += 1) {\n            builder.append(parts[i]);\n        }\n        return builder.getBlob(properties.type);\n    }\n}\n\n// This is CommonJS because lie is an external dependency, so Rollup\n// can just ignore it.\nif (typeof Promise === 'undefined') {\n    // In the \"nopromises\" build this will just throw if you don't have\n    // a global promise object, but it would throw anyway later.\n    _dereq_(3);\n}\nvar Promise$1 = Promise;\n\nfunction executeCallback(promise, callback) {\n    if (callback) {\n        promise.then(function (result) {\n            callback(null, result);\n        }, function (error) {\n            callback(error);\n        });\n    }\n}\n\nfunction executeTwoCallbacks(promise, callback, errorCallback) {\n    if (typeof callback === 'function') {\n        promise.then(callback);\n    }\n\n    if (typeof errorCallback === 'function') {\n        promise[\"catch\"](errorCallback);\n    }\n}\n\nfunction normalizeKey(key) {\n    // Cast the key to a string, as that's all we can set as a key.\n    if (typeof key !== 'string') {\n        console.warn(key + ' used as a key, but it is not a string.');\n        key = String(key);\n    }\n\n    return key;\n}\n\nfunction getCallback() {\n    if (arguments.length && typeof arguments[arguments.length - 1] === 'function') {\n        return arguments[arguments.length - 1];\n    }\n}\n\n// Some code originally from async_storage.js in\n// [Gaia](https://github.com/mozilla-b2g/gaia).\n\nvar DETECT_BLOB_SUPPORT_STORE = 'local-forage-detect-blob-support';\nvar supportsBlobs = void 0;\nvar dbContexts = {};\nvar toString = Object.prototype.toString;\n\n// Transaction Modes\nvar READ_ONLY = 'readonly';\nvar READ_WRITE = 'readwrite';\n\n// Transform a binary string to an array buffer, because otherwise\n// weird stuff happens when you try to work with the binary string directly.\n// It is known.\n// From http://stackoverflow.com/questions/14967647/ (continues on next line)\n// encode-decode-image-with-base64-breaks-image (2013-04-21)\nfunction _binStringToArrayBuffer(bin) {\n    var length = bin.length;\n    var buf = new ArrayBuffer(length);\n    var arr = new Uint8Array(buf);\n    for (var i = 0; i < length; i++) {\n        arr[i] = bin.charCodeAt(i);\n    }\n    return buf;\n}\n\n//\n// Blobs are not supported in all versions of IndexedDB, notably\n// Chrome <37 and Android <5. In those versions, storing a blob will throw.\n//\n// Various other blob bugs exist in Chrome v37-42 (inclusive).\n// Detecting them is expensive and confusing to users, and Chrome 37-42\n// is at very low usage worldwide, so we do a hacky userAgent check instead.\n//\n// content-type bug: https://code.google.com/p/chromium/issues/detail?id=408120\n// 404 bug: https://code.google.com/p/chromium/issues/detail?id=447916\n// FileReader bug: https://code.google.com/p/chromium/issues/detail?id=447836\n//\n// Code borrowed from PouchDB. See:\n// https://github.com/pouchdb/pouchdb/blob/master/packages/node_modules/pouchdb-adapter-idb/src/blobSupport.js\n//\nfunction _checkBlobSupportWithoutCaching(idb) {\n    return new Promise$1(function (resolve) {\n        var txn = idb.transaction(DETECT_BLOB_SUPPORT_STORE, READ_WRITE);\n        var blob = createBlob(['']);\n        txn.objectStore(DETECT_BLOB_SUPPORT_STORE).put(blob, 'key');\n\n        txn.onabort = function (e) {\n            // If the transaction aborts now its due to not being able to\n            // write to the database, likely due to the disk being full\n            e.preventDefault();\n            e.stopPropagation();\n            resolve(false);\n        };\n\n        txn.oncomplete = function () {\n            var matchedChrome = navigator.userAgent.match(/Chrome\\/(\\d+)/);\n            var matchedEdge = navigator.userAgent.match(/Edge\\//);\n            // MS Edge pretends to be Chrome 42:\n            // https://msdn.microsoft.com/en-us/library/hh869301%28v=vs.85%29.aspx\n            resolve(matchedEdge || !matchedChrome || parseInt(matchedChrome[1], 10) >= 43);\n        };\n    })[\"catch\"](function () {\n        return false; // error, so assume unsupported\n    });\n}\n\nfunction _checkBlobSupport(idb) {\n    if (typeof supportsBlobs === 'boolean') {\n        return Promise$1.resolve(supportsBlobs);\n    }\n    return _checkBlobSupportWithoutCaching(idb).then(function (value) {\n        supportsBlobs = value;\n        return supportsBlobs;\n    });\n}\n\nfunction _deferReadiness(dbInfo) {\n    var dbContext = dbContexts[dbInfo.name];\n\n    // Create a deferred object representing the current database operation.\n    var deferredOperation = {};\n\n    deferredOperation.promise = new Promise$1(function (resolve, reject) {\n        deferredOperation.resolve = resolve;\n        deferredOperation.reject = reject;\n    });\n\n    // Enqueue the deferred operation.\n    dbContext.deferredOperations.push(deferredOperation);\n\n    // Chain its promise to the database readiness.\n    if (!dbContext.dbReady) {\n        dbContext.dbReady = deferredOperation.promise;\n    } else {\n        dbContext.dbReady = dbContext.dbReady.then(function () {\n            return deferredOperation.promise;\n        });\n    }\n}\n\nfunction _advanceReadiness(dbInfo) {\n    var dbContext = dbContexts[dbInfo.name];\n\n    // Dequeue a deferred operation.\n    var deferredOperation = dbContext.deferredOperations.pop();\n\n    // Resolve its promise (which is part of the database readiness\n    // chain of promises).\n    if (deferredOperation) {\n        deferredOperation.resolve();\n        return deferredOperation.promise;\n    }\n}\n\nfunction _rejectReadiness(dbInfo, err) {\n    var dbContext = dbContexts[dbInfo.name];\n\n    // Dequeue a deferred operation.\n    var deferredOperation = dbContext.deferredOperations.pop();\n\n    // Reject its promise (which is part of the database readiness\n    // chain of promises).\n    if (deferredOperation) {\n        deferredOperation.reject(err);\n        return deferredOperation.promise;\n    }\n}\n\nfunction _getConnection(dbInfo, upgradeNeeded) {\n    return new Promise$1(function (resolve, reject) {\n        dbContexts[dbInfo.name] = dbContexts[dbInfo.name] || createDbContext();\n\n        if (dbInfo.db) {\n            if (upgradeNeeded) {\n                _deferReadiness(dbInfo);\n                dbInfo.db.close();\n            } else {\n                return resolve(dbInfo.db);\n            }\n        }\n\n        var dbArgs = [dbInfo.name];\n\n        if (upgradeNeeded) {\n            dbArgs.push(dbInfo.version);\n        }\n\n        var openreq = idb.open.apply(idb, dbArgs);\n\n        if (upgradeNeeded) {\n            openreq.onupgradeneeded = function (e) {\n                var db = openreq.result;\n                try {\n                    db.createObjectStore(dbInfo.storeName);\n                    if (e.oldVersion <= 1) {\n                        // Added when support for blob shims was added\n                        db.createObjectStore(DETECT_BLOB_SUPPORT_STORE);\n                    }\n                } catch (ex) {\n                    if (ex.name === 'ConstraintError') {\n                        console.warn('The database \"' + dbInfo.name + '\"' + ' has been upgraded from version ' + e.oldVersion + ' to version ' + e.newVersion + ', but the storage \"' + dbInfo.storeName + '\" already exists.');\n                    } else {\n                        throw ex;\n                    }\n                }\n            };\n        }\n\n        openreq.onerror = function (e) {\n            e.preventDefault();\n            reject(openreq.error);\n        };\n\n        openreq.onsuccess = function () {\n            resolve(openreq.result);\n            _advanceReadiness(dbInfo);\n        };\n    });\n}\n\nfunction _getOriginalConnection(dbInfo) {\n    return _getConnection(dbInfo, false);\n}\n\nfunction _getUpgradedConnection(dbInfo) {\n    return _getConnection(dbInfo, true);\n}\n\nfunction _isUpgradeNeeded(dbInfo, defaultVersion) {\n    if (!dbInfo.db) {\n        return true;\n    }\n\n    var isNewStore = !dbInfo.db.objectStoreNames.contains(dbInfo.storeName);\n    var isDowngrade = dbInfo.version < dbInfo.db.version;\n    var isUpgrade = dbInfo.version > dbInfo.db.version;\n\n    if (isDowngrade) {\n        // If the version is not the default one\n        // then warn for impossible downgrade.\n        if (dbInfo.version !== defaultVersion) {\n            console.warn('The database \"' + dbInfo.name + '\"' + \" can't be downgraded from version \" + dbInfo.db.version + ' to version ' + dbInfo.version + '.');\n        }\n        // Align the versions to prevent errors.\n        dbInfo.version = dbInfo.db.version;\n    }\n\n    if (isUpgrade || isNewStore) {\n        // If the store is new then increment the version (if needed).\n        // This will trigger an \"upgradeneeded\" event which is required\n        // for creating a store.\n        if (isNewStore) {\n            var incVersion = dbInfo.db.version + 1;\n            if (incVersion > dbInfo.version) {\n                dbInfo.version = incVersion;\n            }\n        }\n\n        return true;\n    }\n\n    return false;\n}\n\n// encode a blob for indexeddb engines that don't support blobs\nfunction _encodeBlob(blob) {\n    return new Promise$1(function (resolve, reject) {\n        var reader = new FileReader();\n        reader.onerror = reject;\n        reader.onloadend = function (e) {\n            var base64 = btoa(e.target.result || '');\n            resolve({\n                __local_forage_encoded_blob: true,\n                data: base64,\n                type: blob.type\n            });\n        };\n        reader.readAsBinaryString(blob);\n    });\n}\n\n// decode an encoded blob\nfunction _decodeBlob(encodedBlob) {\n    var arrayBuff = _binStringToArrayBuffer(atob(encodedBlob.data));\n    return createBlob([arrayBuff], { type: encodedBlob.type });\n}\n\n// is this one of our fancy encoded blobs?\nfunction _isEncodedBlob(value) {\n    return value && value.__local_forage_encoded_blob;\n}\n\n// Specialize the default `ready()` function by making it dependent\n// on the current database operations. Thus, the driver will be actually\n// ready when it's been initialized (default) *and* there are no pending\n// operations on the database (initiated by some other instances).\nfunction _fullyReady(callback) {\n    var self = this;\n\n    var promise = self._initReady().then(function () {\n        var dbContext = dbContexts[self._dbInfo.name];\n\n        if (dbContext && dbContext.dbReady) {\n            return dbContext.dbReady;\n        }\n    });\n\n    executeTwoCallbacks(promise, callback, callback);\n    return promise;\n}\n\n// Try to establish a new db connection to replace the\n// current one which is broken (i.e. experiencing\n// InvalidStateError while creating a transaction).\nfunction _tryReconnect(dbInfo) {\n    _deferReadiness(dbInfo);\n\n    var dbContext = dbContexts[dbInfo.name];\n    var forages = dbContext.forages;\n\n    for (var i = 0; i < forages.length; i++) {\n        var forage = forages[i];\n        if (forage._dbInfo.db) {\n            forage._dbInfo.db.close();\n            forage._dbInfo.db = null;\n        }\n    }\n    dbInfo.db = null;\n\n    return _getOriginalConnection(dbInfo).then(function (db) {\n        dbInfo.db = db;\n        if (_isUpgradeNeeded(dbInfo)) {\n            // Reopen the database for upgrading.\n            return _getUpgradedConnection(dbInfo);\n        }\n        return db;\n    }).then(function (db) {\n        // store the latest db reference\n        // in case the db was upgraded\n        dbInfo.db = dbContext.db = db;\n        for (var i = 0; i < forages.length; i++) {\n            forages[i]._dbInfo.db = db;\n        }\n    })[\"catch\"](function (err) {\n        _rejectReadiness(dbInfo, err);\n        throw err;\n    });\n}\n\n// FF doesn't like Promises (micro-tasks) and IDDB store operations,\n// so we have to do it with callbacks\nfunction createTransaction(dbInfo, mode, callback, retries) {\n    if (retries === undefined) {\n        retries = 1;\n    }\n\n    try {\n        var tx = dbInfo.db.transaction(dbInfo.storeName, mode);\n        callback(null, tx);\n    } catch (err) {\n        if (retries > 0 && (!dbInfo.db || err.name === 'InvalidStateError' || err.name === 'NotFoundError')) {\n            return Promise$1.resolve().then(function () {\n                if (!dbInfo.db || err.name === 'NotFoundError' && !dbInfo.db.objectStoreNames.contains(dbInfo.storeName) && dbInfo.version <= dbInfo.db.version) {\n                    // increase the db version, to create the new ObjectStore\n                    if (dbInfo.db) {\n                        dbInfo.version = dbInfo.db.version + 1;\n                    }\n                    // Reopen the database for upgrading.\n                    return _getUpgradedConnection(dbInfo);\n                }\n            }).then(function () {\n                return _tryReconnect(dbInfo).then(function () {\n                    createTransaction(dbInfo, mode, callback, retries - 1);\n                });\n            })[\"catch\"](callback);\n        }\n\n        callback(err);\n    }\n}\n\nfunction createDbContext() {\n    return {\n        // Running localForages sharing a database.\n        forages: [],\n        // Shared database.\n        db: null,\n        // Database readiness (promise).\n        dbReady: null,\n        // Deferred operations on the database.\n        deferredOperations: []\n    };\n}\n\n// Open the IndexedDB database (automatically creates one if one didn't\n// previously exist), using any options set in the config.\nfunction _initStorage(options) {\n    var self = this;\n    var dbInfo = {\n        db: null\n    };\n\n    if (options) {\n        for (var i in options) {\n            dbInfo[i] = options[i];\n        }\n    }\n\n    // Get the current context of the database;\n    var dbContext = dbContexts[dbInfo.name];\n\n    // ...or create a new context.\n    if (!dbContext) {\n        dbContext = createDbContext();\n        // Register the new context in the global container.\n        dbContexts[dbInfo.name] = dbContext;\n    }\n\n    // Register itself as a running localForage in the current context.\n    dbContext.forages.push(self);\n\n    // Replace the default `ready()` function with the specialized one.\n    if (!self._initReady) {\n        self._initReady = self.ready;\n        self.ready = _fullyReady;\n    }\n\n    // Create an array of initialization states of the related localForages.\n    var initPromises = [];\n\n    function ignoreErrors() {\n        // Don't handle errors here,\n        // just makes sure related localForages aren't pending.\n        return Promise$1.resolve();\n    }\n\n    for (var j = 0; j < dbContext.forages.length; j++) {\n        var forage = dbContext.forages[j];\n        if (forage !== self) {\n            // Don't wait for itself...\n            initPromises.push(forage._initReady()[\"catch\"](ignoreErrors));\n        }\n    }\n\n    // Take a snapshot of the related localForages.\n    var forages = dbContext.forages.slice(0);\n\n    // Initialize the connection process only when\n    // all the related localForages aren't pending.\n    return Promise$1.all(initPromises).then(function () {\n        dbInfo.db = dbContext.db;\n        // Get the connection or open a new one without upgrade.\n        return _getOriginalConnection(dbInfo);\n    }).then(function (db) {\n        dbInfo.db = db;\n        if (_isUpgradeNeeded(dbInfo, self._defaultConfig.version)) {\n            // Reopen the database for upgrading.\n            return _getUpgradedConnection(dbInfo);\n        }\n        return db;\n    }).then(function (db) {\n        dbInfo.db = dbContext.db = db;\n        self._dbInfo = dbInfo;\n        // Share the final connection amongst related localForages.\n        for (var k = 0; k < forages.length; k++) {\n            var forage = forages[k];\n            if (forage !== self) {\n                // Self is already up-to-date.\n                forage._dbInfo.db = dbInfo.db;\n                forage._dbInfo.version = dbInfo.version;\n            }\n        }\n    });\n}\n\nfunction getItem(key, callback) {\n    var self = this;\n\n    key = normalizeKey(key);\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            createTransaction(self._dbInfo, READ_ONLY, function (err, transaction) {\n                if (err) {\n                    return reject(err);\n                }\n\n                try {\n                    var store = transaction.objectStore(self._dbInfo.storeName);\n                    var req = store.get(key);\n\n                    req.onsuccess = function () {\n                        var value = req.result;\n                        if (value === undefined) {\n                            value = null;\n                        }\n                        if (_isEncodedBlob(value)) {\n                            value = _decodeBlob(value);\n                        }\n                        resolve(value);\n                    };\n\n                    req.onerror = function () {\n                        reject(req.error);\n                    };\n                } catch (e) {\n                    reject(e);\n                }\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\n// Iterate over all items stored in database.\nfunction iterate(iterator, callback) {\n    var self = this;\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            createTransaction(self._dbInfo, READ_ONLY, function (err, transaction) {\n                if (err) {\n                    return reject(err);\n                }\n\n                try {\n                    var store = transaction.objectStore(self._dbInfo.storeName);\n                    var req = store.openCursor();\n                    var iterationNumber = 1;\n\n                    req.onsuccess = function () {\n                        var cursor = req.result;\n\n                        if (cursor) {\n                            var value = cursor.value;\n                            if (_isEncodedBlob(value)) {\n                                value = _decodeBlob(value);\n                            }\n                            var result = iterator(value, cursor.key, iterationNumber++);\n\n                            // when the iterator callback retuns any\n                            // (non-`undefined`) value, then we stop\n                            // the iteration immediately\n                            if (result !== void 0) {\n                                resolve(result);\n                            } else {\n                                cursor[\"continue\"]();\n                            }\n                        } else {\n                            resolve();\n                        }\n                    };\n\n                    req.onerror = function () {\n                        reject(req.error);\n                    };\n                } catch (e) {\n                    reject(e);\n                }\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n\n    return promise;\n}\n\nfunction setItem(key, value, callback) {\n    var self = this;\n\n    key = normalizeKey(key);\n\n    var promise = new Promise$1(function (resolve, reject) {\n        var dbInfo;\n        self.ready().then(function () {\n            dbInfo = self._dbInfo;\n            if (toString.call(value) === '[object Blob]') {\n                return _checkBlobSupport(dbInfo.db).then(function (blobSupport) {\n                    if (blobSupport) {\n                        return value;\n                    }\n                    return _encodeBlob(value);\n                });\n            }\n            return value;\n        }).then(function (value) {\n            createTransaction(self._dbInfo, READ_WRITE, function (err, transaction) {\n                if (err) {\n                    return reject(err);\n                }\n\n                try {\n                    var store = transaction.objectStore(self._dbInfo.storeName);\n\n                    // The reason we don't _save_ null is because IE 10 does\n                    // not support saving the `null` type in IndexedDB. How\n                    // ironic, given the bug below!\n                    // See: https://github.com/mozilla/localForage/issues/161\n                    if (value === null) {\n                        value = undefined;\n                    }\n\n                    var req = store.put(value, key);\n\n                    transaction.oncomplete = function () {\n                        // Cast to undefined so the value passed to\n                        // callback/promise is the same as what one would get out\n                        // of `getItem()` later. This leads to some weirdness\n                        // (setItem('foo', undefined) will return `null`), but\n                        // it's not my fault localStorage is our baseline and that\n                        // it's weird.\n                        if (value === undefined) {\n                            value = null;\n                        }\n\n                        resolve(value);\n                    };\n                    transaction.onabort = transaction.onerror = function () {\n                        var err = req.error ? req.error : req.transaction.error;\n                        reject(err);\n                    };\n                } catch (e) {\n                    reject(e);\n                }\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nfunction removeItem(key, callback) {\n    var self = this;\n\n    key = normalizeKey(key);\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            createTransaction(self._dbInfo, READ_WRITE, function (err, transaction) {\n                if (err) {\n                    return reject(err);\n                }\n\n                try {\n                    var store = transaction.objectStore(self._dbInfo.storeName);\n                    // We use a Grunt task to make this safe for IE and some\n                    // versions of Android (including those used by Cordova).\n                    // Normally IE won't like `.delete()` and will insist on\n                    // using `['delete']()`, but we have a build step that\n                    // fixes this for us now.\n                    var req = store[\"delete\"](key);\n                    transaction.oncomplete = function () {\n                        resolve();\n                    };\n\n                    transaction.onerror = function () {\n                        reject(req.error);\n                    };\n\n                    // The request will be also be aborted if we've exceeded our storage\n                    // space.\n                    transaction.onabort = function () {\n                        var err = req.error ? req.error : req.transaction.error;\n                        reject(err);\n                    };\n                } catch (e) {\n                    reject(e);\n                }\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nfunction clear(callback) {\n    var self = this;\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            createTransaction(self._dbInfo, READ_WRITE, function (err, transaction) {\n                if (err) {\n                    return reject(err);\n                }\n\n                try {\n                    var store = transaction.objectStore(self._dbInfo.storeName);\n                    var req = store.clear();\n\n                    transaction.oncomplete = function () {\n                        resolve();\n                    };\n\n                    transaction.onabort = transaction.onerror = function () {\n                        var err = req.error ? req.error : req.transaction.error;\n                        reject(err);\n                    };\n                } catch (e) {\n                    reject(e);\n                }\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nfunction length(callback) {\n    var self = this;\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            createTransaction(self._dbInfo, READ_ONLY, function (err, transaction) {\n                if (err) {\n                    return reject(err);\n                }\n\n                try {\n                    var store = transaction.objectStore(self._dbInfo.storeName);\n                    var req = store.count();\n\n                    req.onsuccess = function () {\n                        resolve(req.result);\n                    };\n\n                    req.onerror = function () {\n                        reject(req.error);\n                    };\n                } catch (e) {\n                    reject(e);\n                }\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nfunction key(n, callback) {\n    var self = this;\n\n    var promise = new Promise$1(function (resolve, reject) {\n        if (n < 0) {\n            resolve(null);\n\n            return;\n        }\n\n        self.ready().then(function () {\n            createTransaction(self._dbInfo, READ_ONLY, function (err, transaction) {\n                if (err) {\n                    return reject(err);\n                }\n\n                try {\n                    var store = transaction.objectStore(self._dbInfo.storeName);\n                    var advanced = false;\n                    var req = store.openCursor();\n\n                    req.onsuccess = function () {\n                        var cursor = req.result;\n                        if (!cursor) {\n                            // this means there weren't enough keys\n                            resolve(null);\n\n                            return;\n                        }\n\n                        if (n === 0) {\n                            // We have the first key, return it if that's what they\n                            // wanted.\n                            resolve(cursor.key);\n                        } else {\n                            if (!advanced) {\n                                // Otherwise, ask the cursor to skip ahead n\n                                // records.\n                                advanced = true;\n                                cursor.advance(n);\n                            } else {\n                                // When we get here, we've got the nth key.\n                                resolve(cursor.key);\n                            }\n                        }\n                    };\n\n                    req.onerror = function () {\n                        reject(req.error);\n                    };\n                } catch (e) {\n                    reject(e);\n                }\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nfunction keys(callback) {\n    var self = this;\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            createTransaction(self._dbInfo, READ_ONLY, function (err, transaction) {\n                if (err) {\n                    return reject(err);\n                }\n\n                try {\n                    var store = transaction.objectStore(self._dbInfo.storeName);\n                    var req = store.openCursor();\n                    var keys = [];\n\n                    req.onsuccess = function () {\n                        var cursor = req.result;\n\n                        if (!cursor) {\n                            resolve(keys);\n                            return;\n                        }\n\n                        keys.push(cursor.key);\n                        cursor[\"continue\"]();\n                    };\n\n                    req.onerror = function () {\n                        reject(req.error);\n                    };\n                } catch (e) {\n                    reject(e);\n                }\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nfunction dropInstance(options, callback) {\n    callback = getCallback.apply(this, arguments);\n\n    var currentConfig = this.config();\n    options = typeof options !== 'function' && options || {};\n    if (!options.name) {\n        options.name = options.name || currentConfig.name;\n        options.storeName = options.storeName || currentConfig.storeName;\n    }\n\n    var self = this;\n    var promise;\n    if (!options.name) {\n        promise = Promise$1.reject('Invalid arguments');\n    } else {\n        var isCurrentDb = options.name === currentConfig.name && self._dbInfo.db;\n\n        var dbPromise = isCurrentDb ? Promise$1.resolve(self._dbInfo.db) : _getOriginalConnection(options).then(function (db) {\n            var dbContext = dbContexts[options.name];\n            var forages = dbContext.forages;\n            dbContext.db = db;\n            for (var i = 0; i < forages.length; i++) {\n                forages[i]._dbInfo.db = db;\n            }\n            return db;\n        });\n\n        if (!options.storeName) {\n            promise = dbPromise.then(function (db) {\n                _deferReadiness(options);\n\n                var dbContext = dbContexts[options.name];\n                var forages = dbContext.forages;\n\n                db.close();\n                for (var i = 0; i < forages.length; i++) {\n                    var forage = forages[i];\n                    forage._dbInfo.db = null;\n                }\n\n                var dropDBPromise = new Promise$1(function (resolve, reject) {\n                    var req = idb.deleteDatabase(options.name);\n\n                    req.onerror = req.onblocked = function (err) {\n                        var db = req.result;\n                        if (db) {\n                            db.close();\n                        }\n                        reject(err);\n                    };\n\n                    req.onsuccess = function () {\n                        var db = req.result;\n                        if (db) {\n                            db.close();\n                        }\n                        resolve(db);\n                    };\n                });\n\n                return dropDBPromise.then(function (db) {\n                    dbContext.db = db;\n                    for (var i = 0; i < forages.length; i++) {\n                        var _forage = forages[i];\n                        _advanceReadiness(_forage._dbInfo);\n                    }\n                })[\"catch\"](function (err) {\n                    (_rejectReadiness(options, err) || Promise$1.resolve())[\"catch\"](function () {});\n                    throw err;\n                });\n            });\n        } else {\n            promise = dbPromise.then(function (db) {\n                if (!db.objectStoreNames.contains(options.storeName)) {\n                    return;\n                }\n\n                var newVersion = db.version + 1;\n\n                _deferReadiness(options);\n\n                var dbContext = dbContexts[options.name];\n                var forages = dbContext.forages;\n\n                db.close();\n                for (var i = 0; i < forages.length; i++) {\n                    var forage = forages[i];\n                    forage._dbInfo.db = null;\n                    forage._dbInfo.version = newVersion;\n                }\n\n                var dropObjectPromise = new Promise$1(function (resolve, reject) {\n                    var req = idb.open(options.name, newVersion);\n\n                    req.onerror = function (err) {\n                        var db = req.result;\n                        db.close();\n                        reject(err);\n                    };\n\n                    req.onupgradeneeded = function () {\n                        var db = req.result;\n                        db.deleteObjectStore(options.storeName);\n                    };\n\n                    req.onsuccess = function () {\n                        var db = req.result;\n                        db.close();\n                        resolve(db);\n                    };\n                });\n\n                return dropObjectPromise.then(function (db) {\n                    dbContext.db = db;\n                    for (var j = 0; j < forages.length; j++) {\n                        var _forage2 = forages[j];\n                        _forage2._dbInfo.db = db;\n                        _advanceReadiness(_forage2._dbInfo);\n                    }\n                })[\"catch\"](function (err) {\n                    (_rejectReadiness(options, err) || Promise$1.resolve())[\"catch\"](function () {});\n                    throw err;\n                });\n            });\n        }\n    }\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nvar asyncStorage = {\n    _driver: 'asyncStorage',\n    _initStorage: _initStorage,\n    _support: isIndexedDBValid(),\n    iterate: iterate,\n    getItem: getItem,\n    setItem: setItem,\n    removeItem: removeItem,\n    clear: clear,\n    length: length,\n    key: key,\n    keys: keys,\n    dropInstance: dropInstance\n};\n\nfunction isWebSQLValid() {\n    return typeof openDatabase === 'function';\n}\n\n// Sadly, the best way to save binary data in WebSQL/localStorage is serializing\n// it to Base64, so this is how we store it to prevent very strange errors with less\n// verbose ways of binary <-> string data storage.\nvar BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';\n\nvar BLOB_TYPE_PREFIX = '~~local_forage_type~';\nvar BLOB_TYPE_PREFIX_REGEX = /^~~local_forage_type~([^~]+)~/;\n\nvar SERIALIZED_MARKER = '__lfsc__:';\nvar SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;\n\n// OMG the serializations!\nvar TYPE_ARRAYBUFFER = 'arbf';\nvar TYPE_BLOB = 'blob';\nvar TYPE_INT8ARRAY = 'si08';\nvar TYPE_UINT8ARRAY = 'ui08';\nvar TYPE_UINT8CLAMPEDARRAY = 'uic8';\nvar TYPE_INT16ARRAY = 'si16';\nvar TYPE_INT32ARRAY = 'si32';\nvar TYPE_UINT16ARRAY = 'ur16';\nvar TYPE_UINT32ARRAY = 'ui32';\nvar TYPE_FLOAT32ARRAY = 'fl32';\nvar TYPE_FLOAT64ARRAY = 'fl64';\nvar TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;\n\nvar toString$1 = Object.prototype.toString;\n\nfunction stringToBuffer(serializedString) {\n    // Fill the string into a ArrayBuffer.\n    var bufferLength = serializedString.length * 0.75;\n    var len = serializedString.length;\n    var i;\n    var p = 0;\n    var encoded1, encoded2, encoded3, encoded4;\n\n    if (serializedString[serializedString.length - 1] === '=') {\n        bufferLength--;\n        if (serializedString[serializedString.length - 2] === '=') {\n            bufferLength--;\n        }\n    }\n\n    var buffer = new ArrayBuffer(bufferLength);\n    var bytes = new Uint8Array(buffer);\n\n    for (i = 0; i < len; i += 4) {\n        encoded1 = BASE_CHARS.indexOf(serializedString[i]);\n        encoded2 = BASE_CHARS.indexOf(serializedString[i + 1]);\n        encoded3 = BASE_CHARS.indexOf(serializedString[i + 2]);\n        encoded4 = BASE_CHARS.indexOf(serializedString[i + 3]);\n\n        /*jslint bitwise: true */\n        bytes[p++] = encoded1 << 2 | encoded2 >> 4;\n        bytes[p++] = (encoded2 & 15) << 4 | encoded3 >> 2;\n        bytes[p++] = (encoded3 & 3) << 6 | encoded4 & 63;\n    }\n    return buffer;\n}\n\n// Converts a buffer to a string to store, serialized, in the backend\n// storage library.\nfunction bufferToString(buffer) {\n    // base64-arraybuffer\n    var bytes = new Uint8Array(buffer);\n    var base64String = '';\n    var i;\n\n    for (i = 0; i < bytes.length; i += 3) {\n        /*jslint bitwise: true */\n        base64String += BASE_CHARS[bytes[i] >> 2];\n        base64String += BASE_CHARS[(bytes[i] & 3) << 4 | bytes[i + 1] >> 4];\n        base64String += BASE_CHARS[(bytes[i + 1] & 15) << 2 | bytes[i + 2] >> 6];\n        base64String += BASE_CHARS[bytes[i + 2] & 63];\n    }\n\n    if (bytes.length % 3 === 2) {\n        base64String = base64String.substring(0, base64String.length - 1) + '=';\n    } else if (bytes.length % 3 === 1) {\n        base64String = base64String.substring(0, base64String.length - 2) + '==';\n    }\n\n    return base64String;\n}\n\n// Serialize a value, afterwards executing a callback (which usually\n// instructs the `setItem()` callback/promise to be executed). This is how\n// we store binary data with localStorage.\nfunction serialize(value, callback) {\n    var valueType = '';\n    if (value) {\n        valueType = toString$1.call(value);\n    }\n\n    // Cannot use `value instanceof ArrayBuffer` or such here, as these\n    // checks fail when running the tests using casper.js...\n    //\n    // TODO: See why those tests fail and use a better solution.\n    if (value && (valueType === '[object ArrayBuffer]' || value.buffer && toString$1.call(value.buffer) === '[object ArrayBuffer]')) {\n        // Convert binary arrays to a string and prefix the string with\n        // a special marker.\n        var buffer;\n        var marker = SERIALIZED_MARKER;\n\n        if (value instanceof ArrayBuffer) {\n            buffer = value;\n            marker += TYPE_ARRAYBUFFER;\n        } else {\n            buffer = value.buffer;\n\n            if (valueType === '[object Int8Array]') {\n                marker += TYPE_INT8ARRAY;\n            } else if (valueType === '[object Uint8Array]') {\n                marker += TYPE_UINT8ARRAY;\n            } else if (valueType === '[object Uint8ClampedArray]') {\n                marker += TYPE_UINT8CLAMPEDARRAY;\n            } else if (valueType === '[object Int16Array]') {\n                marker += TYPE_INT16ARRAY;\n            } else if (valueType === '[object Uint16Array]') {\n                marker += TYPE_UINT16ARRAY;\n            } else if (valueType === '[object Int32Array]') {\n                marker += TYPE_INT32ARRAY;\n            } else if (valueType === '[object Uint32Array]') {\n                marker += TYPE_UINT32ARRAY;\n            } else if (valueType === '[object Float32Array]') {\n                marker += TYPE_FLOAT32ARRAY;\n            } else if (valueType === '[object Float64Array]') {\n                marker += TYPE_FLOAT64ARRAY;\n            } else {\n                callback(new Error('Failed to get type for BinaryArray'));\n            }\n        }\n\n        callback(marker + bufferToString(buffer));\n    } else if (valueType === '[object Blob]') {\n        // Conver the blob to a binaryArray and then to a string.\n        var fileReader = new FileReader();\n\n        fileReader.onload = function () {\n            // Backwards-compatible prefix for the blob type.\n            var str = BLOB_TYPE_PREFIX + value.type + '~' + bufferToString(this.result);\n\n            callback(SERIALIZED_MARKER + TYPE_BLOB + str);\n        };\n\n        fileReader.readAsArrayBuffer(value);\n    } else {\n        try {\n            callback(JSON.stringify(value));\n        } catch (e) {\n            console.error(\"Couldn't convert value into a JSON string: \", value);\n\n            callback(null, e);\n        }\n    }\n}\n\n// Deserialize data we've inserted into a value column/field. We place\n// special markers into our strings to mark them as encoded; this isn't\n// as nice as a meta field, but it's the only sane thing we can do whilst\n// keeping localStorage support intact.\n//\n// Oftentimes this will just deserialize JSON content, but if we have a\n// special marker (SERIALIZED_MARKER, defined above), we will extract\n// some kind of arraybuffer/binary data/typed array out of the string.\nfunction deserialize(value) {\n    // If we haven't marked this string as being specially serialized (i.e.\n    // something other than serialized JSON), we can just return it and be\n    // done with it.\n    if (value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {\n        return JSON.parse(value);\n    }\n\n    // The following code deals with deserializing some kind of Blob or\n    // TypedArray. First we separate out the type of data we're dealing\n    // with from the data itself.\n    var serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);\n    var type = value.substring(SERIALIZED_MARKER_LENGTH, TYPE_SERIALIZED_MARKER_LENGTH);\n\n    var blobType;\n    // Backwards-compatible blob type serialization strategy.\n    // DBs created with older versions of localForage will simply not have the blob type.\n    if (type === TYPE_BLOB && BLOB_TYPE_PREFIX_REGEX.test(serializedString)) {\n        var matcher = serializedString.match(BLOB_TYPE_PREFIX_REGEX);\n        blobType = matcher[1];\n        serializedString = serializedString.substring(matcher[0].length);\n    }\n    var buffer = stringToBuffer(serializedString);\n\n    // Return the right type based on the code/type set during\n    // serialization.\n    switch (type) {\n        case TYPE_ARRAYBUFFER:\n            return buffer;\n        case TYPE_BLOB:\n            return createBlob([buffer], { type: blobType });\n        case TYPE_INT8ARRAY:\n            return new Int8Array(buffer);\n        case TYPE_UINT8ARRAY:\n            return new Uint8Array(buffer);\n        case TYPE_UINT8CLAMPEDARRAY:\n            return new Uint8ClampedArray(buffer);\n        case TYPE_INT16ARRAY:\n            return new Int16Array(buffer);\n        case TYPE_UINT16ARRAY:\n            return new Uint16Array(buffer);\n        case TYPE_INT32ARRAY:\n            return new Int32Array(buffer);\n        case TYPE_UINT32ARRAY:\n            return new Uint32Array(buffer);\n        case TYPE_FLOAT32ARRAY:\n            return new Float32Array(buffer);\n        case TYPE_FLOAT64ARRAY:\n            return new Float64Array(buffer);\n        default:\n            throw new Error('Unkown type: ' + type);\n    }\n}\n\nvar localforageSerializer = {\n    serialize: serialize,\n    deserialize: deserialize,\n    stringToBuffer: stringToBuffer,\n    bufferToString: bufferToString\n};\n\n/*\n * Includes code from:\n *\n * base64-arraybuffer\n * https://github.com/niklasvh/base64-arraybuffer\n *\n * Copyright (c) 2012 Niklas von Hertzen\n * Licensed under the MIT license.\n */\n\nfunction createDbTable(t, dbInfo, callback, errorCallback) {\n    t.executeSql('CREATE TABLE IF NOT EXISTS ' + dbInfo.storeName + ' ' + '(id INTEGER PRIMARY KEY, key unique, value)', [], callback, errorCallback);\n}\n\n// Open the WebSQL database (automatically creates one if one didn't\n// previously exist), using any options set in the config.\nfunction _initStorage$1(options) {\n    var self = this;\n    var dbInfo = {\n        db: null\n    };\n\n    if (options) {\n        for (var i in options) {\n            dbInfo[i] = typeof options[i] !== 'string' ? options[i].toString() : options[i];\n        }\n    }\n\n    var dbInfoPromise = new Promise$1(function (resolve, reject) {\n        // Open the database; the openDatabase API will automatically\n        // create it for us if it doesn't exist.\n        try {\n            dbInfo.db = openDatabase(dbInfo.name, String(dbInfo.version), dbInfo.description, dbInfo.size);\n        } catch (e) {\n            return reject(e);\n        }\n\n        // Create our key/value table if it doesn't exist.\n        dbInfo.db.transaction(function (t) {\n            createDbTable(t, dbInfo, function () {\n                self._dbInfo = dbInfo;\n                resolve();\n            }, function (t, error) {\n                reject(error);\n            });\n        }, reject);\n    });\n\n    dbInfo.serializer = localforageSerializer;\n    return dbInfoPromise;\n}\n\nfunction tryExecuteSql(t, dbInfo, sqlStatement, args, callback, errorCallback) {\n    t.executeSql(sqlStatement, args, callback, function (t, error) {\n        if (error.code === error.SYNTAX_ERR) {\n            t.executeSql('SELECT name FROM sqlite_master ' + \"WHERE type='table' AND name = ?\", [dbInfo.storeName], function (t, results) {\n                if (!results.rows.length) {\n                    // if the table is missing (was deleted)\n                    // re-create it table and retry\n                    createDbTable(t, dbInfo, function () {\n                        t.executeSql(sqlStatement, args, callback, errorCallback);\n                    }, errorCallback);\n                } else {\n                    errorCallback(t, error);\n                }\n            }, errorCallback);\n        } else {\n            errorCallback(t, error);\n        }\n    }, errorCallback);\n}\n\nfunction getItem$1(key, callback) {\n    var self = this;\n\n    key = normalizeKey(key);\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            var dbInfo = self._dbInfo;\n            dbInfo.db.transaction(function (t) {\n                tryExecuteSql(t, dbInfo, 'SELECT * FROM ' + dbInfo.storeName + ' WHERE key = ? LIMIT 1', [key], function (t, results) {\n                    var result = results.rows.length ? results.rows.item(0).value : null;\n\n                    // Check to see if this is serialized content we need to\n                    // unpack.\n                    if (result) {\n                        result = dbInfo.serializer.deserialize(result);\n                    }\n\n                    resolve(result);\n                }, function (t, error) {\n                    reject(error);\n                });\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nfunction iterate$1(iterator, callback) {\n    var self = this;\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            var dbInfo = self._dbInfo;\n\n            dbInfo.db.transaction(function (t) {\n                tryExecuteSql(t, dbInfo, 'SELECT * FROM ' + dbInfo.storeName, [], function (t, results) {\n                    var rows = results.rows;\n                    var length = rows.length;\n\n                    for (var i = 0; i < length; i++) {\n                        var item = rows.item(i);\n                        var result = item.value;\n\n                        // Check to see if this is serialized content\n                        // we need to unpack.\n                        if (result) {\n                            result = dbInfo.serializer.deserialize(result);\n                        }\n\n                        result = iterator(result, item.key, i + 1);\n\n                        // void(0) prevents problems with redefinition\n                        // of `undefined`.\n                        if (result !== void 0) {\n                            resolve(result);\n                            return;\n                        }\n                    }\n\n                    resolve();\n                }, function (t, error) {\n                    reject(error);\n                });\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nfunction _setItem(key, value, callback, retriesLeft) {\n    var self = this;\n\n    key = normalizeKey(key);\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            // The localStorage API doesn't return undefined values in an\n            // \"expected\" way, so undefined is always cast to null in all\n            // drivers. See: https://github.com/mozilla/localForage/pull/42\n            if (value === undefined) {\n                value = null;\n            }\n\n            // Save the original value to pass to the callback.\n            var originalValue = value;\n\n            var dbInfo = self._dbInfo;\n            dbInfo.serializer.serialize(value, function (value, error) {\n                if (error) {\n                    reject(error);\n                } else {\n                    dbInfo.db.transaction(function (t) {\n                        tryExecuteSql(t, dbInfo, 'INSERT OR REPLACE INTO ' + dbInfo.storeName + ' ' + '(key, value) VALUES (?, ?)', [key, value], function () {\n                            resolve(originalValue);\n                        }, function (t, error) {\n                            reject(error);\n                        });\n                    }, function (sqlError) {\n                        // The transaction failed; check\n                        // to see if it's a quota error.\n                        if (sqlError.code === sqlError.QUOTA_ERR) {\n                            // We reject the callback outright for now, but\n                            // it's worth trying to re-run the transaction.\n                            // Even if the user accepts the prompt to use\n                            // more storage on Safari, this error will\n                            // be called.\n                            //\n                            // Try to re-run the transaction.\n                            if (retriesLeft > 0) {\n                                resolve(_setItem.apply(self, [key, originalValue, callback, retriesLeft - 1]));\n                                return;\n                            }\n                            reject(sqlError);\n                        }\n                    });\n                }\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nfunction setItem$1(key, value, callback) {\n    return _setItem.apply(this, [key, value, callback, 1]);\n}\n\nfunction removeItem$1(key, callback) {\n    var self = this;\n\n    key = normalizeKey(key);\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            var dbInfo = self._dbInfo;\n            dbInfo.db.transaction(function (t) {\n                tryExecuteSql(t, dbInfo, 'DELETE FROM ' + dbInfo.storeName + ' WHERE key = ?', [key], function () {\n                    resolve();\n                }, function (t, error) {\n                    reject(error);\n                });\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\n// Deletes every item in the table.\n// TODO: Find out if this resets the AUTO_INCREMENT number.\nfunction clear$1(callback) {\n    var self = this;\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            var dbInfo = self._dbInfo;\n            dbInfo.db.transaction(function (t) {\n                tryExecuteSql(t, dbInfo, 'DELETE FROM ' + dbInfo.storeName, [], function () {\n                    resolve();\n                }, function (t, error) {\n                    reject(error);\n                });\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\n// Does a simple `COUNT(key)` to get the number of items stored in\n// localForage.\nfunction length$1(callback) {\n    var self = this;\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            var dbInfo = self._dbInfo;\n            dbInfo.db.transaction(function (t) {\n                // Ahhh, SQL makes this one soooooo easy.\n                tryExecuteSql(t, dbInfo, 'SELECT COUNT(key) as c FROM ' + dbInfo.storeName, [], function (t, results) {\n                    var result = results.rows.item(0).c;\n                    resolve(result);\n                }, function (t, error) {\n                    reject(error);\n                });\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\n// Return the key located at key index X; essentially gets the key from a\n// `WHERE id = ?`. This is the most efficient way I can think to implement\n// this rarely-used (in my experience) part of the API, but it can seem\n// inconsistent, because we do `INSERT OR REPLACE INTO` on `setItem()`, so\n// the ID of each key will change every time it's updated. Perhaps a stored\n// procedure for the `setItem()` SQL would solve this problem?\n// TODO: Don't change ID on `setItem()`.\nfunction key$1(n, callback) {\n    var self = this;\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            var dbInfo = self._dbInfo;\n            dbInfo.db.transaction(function (t) {\n                tryExecuteSql(t, dbInfo, 'SELECT key FROM ' + dbInfo.storeName + ' WHERE id = ? LIMIT 1', [n + 1], function (t, results) {\n                    var result = results.rows.length ? results.rows.item(0).key : null;\n                    resolve(result);\n                }, function (t, error) {\n                    reject(error);\n                });\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nfunction keys$1(callback) {\n    var self = this;\n\n    var promise = new Promise$1(function (resolve, reject) {\n        self.ready().then(function () {\n            var dbInfo = self._dbInfo;\n            dbInfo.db.transaction(function (t) {\n                tryExecuteSql(t, dbInfo, 'SELECT key FROM ' + dbInfo.storeName, [], function (t, results) {\n                    var keys = [];\n\n                    for (var i = 0; i < results.rows.length; i++) {\n                        keys.push(results.rows.item(i).key);\n                    }\n\n                    resolve(keys);\n                }, function (t, error) {\n                    reject(error);\n                });\n            });\n        })[\"catch\"](reject);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\n// https://www.w3.org/TR/webdatabase/#databases\n// > There is no way to enumerate or delete the databases available for an origin from this API.\nfunction getAllStoreNames(db) {\n    return new Promise$1(function (resolve, reject) {\n        db.transaction(function (t) {\n            t.executeSql('SELECT name FROM sqlite_master ' + \"WHERE type='table' AND name <> '__WebKitDatabaseInfoTable__'\", [], function (t, results) {\n                var storeNames = [];\n\n                for (var i = 0; i < results.rows.length; i++) {\n                    storeNames.push(results.rows.item(i).name);\n                }\n\n                resolve({\n                    db: db,\n                    storeNames: storeNames\n                });\n            }, function (t, error) {\n                reject(error);\n            });\n        }, function (sqlError) {\n            reject(sqlError);\n        });\n    });\n}\n\nfunction dropInstance$1(options, callback) {\n    callback = getCallback.apply(this, arguments);\n\n    var currentConfig = this.config();\n    options = typeof options !== 'function' && options || {};\n    if (!options.name) {\n        options.name = options.name || currentConfig.name;\n        options.storeName = options.storeName || currentConfig.storeName;\n    }\n\n    var self = this;\n    var promise;\n    if (!options.name) {\n        promise = Promise$1.reject('Invalid arguments');\n    } else {\n        promise = new Promise$1(function (resolve) {\n            var db;\n            if (options.name === currentConfig.name) {\n                // use the db reference of the current instance\n                db = self._dbInfo.db;\n            } else {\n                db = openDatabase(options.name, '', '', 0);\n            }\n\n            if (!options.storeName) {\n                // drop all database tables\n                resolve(getAllStoreNames(db));\n            } else {\n                resolve({\n                    db: db,\n                    storeNames: [options.storeName]\n                });\n            }\n        }).then(function (operationInfo) {\n            return new Promise$1(function (resolve, reject) {\n                operationInfo.db.transaction(function (t) {\n                    function dropTable(storeName) {\n                        return new Promise$1(function (resolve, reject) {\n                            t.executeSql('DROP TABLE IF EXISTS ' + storeName, [], function () {\n                                resolve();\n                            }, function (t, error) {\n                                reject(error);\n                            });\n                        });\n                    }\n\n                    var operations = [];\n                    for (var i = 0, len = operationInfo.storeNames.length; i < len; i++) {\n                        operations.push(dropTable(operationInfo.storeNames[i]));\n                    }\n\n                    Promise$1.all(operations).then(function () {\n                        resolve();\n                    })[\"catch\"](function (e) {\n                        reject(e);\n                    });\n                }, function (sqlError) {\n                    reject(sqlError);\n                });\n            });\n        });\n    }\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nvar webSQLStorage = {\n    _driver: 'webSQLStorage',\n    _initStorage: _initStorage$1,\n    _support: isWebSQLValid(),\n    iterate: iterate$1,\n    getItem: getItem$1,\n    setItem: setItem$1,\n    removeItem: removeItem$1,\n    clear: clear$1,\n    length: length$1,\n    key: key$1,\n    keys: keys$1,\n    dropInstance: dropInstance$1\n};\n\nfunction isLocalStorageValid() {\n    try {\n        return typeof localStorage !== 'undefined' && 'setItem' in localStorage &&\n        // in IE8 typeof localStorage.setItem === 'object'\n        !!localStorage.setItem;\n    } catch (e) {\n        return false;\n    }\n}\n\nfunction _getKeyPrefix(options, defaultConfig) {\n    var keyPrefix = options.name + '/';\n\n    if (options.storeName !== defaultConfig.storeName) {\n        keyPrefix += options.storeName + '/';\n    }\n    return keyPrefix;\n}\n\n// Check if localStorage throws when saving an item\nfunction checkIfLocalStorageThrows() {\n    var localStorageTestKey = '_localforage_support_test';\n\n    try {\n        localStorage.setItem(localStorageTestKey, true);\n        localStorage.removeItem(localStorageTestKey);\n\n        return false;\n    } catch (e) {\n        return true;\n    }\n}\n\n// Check if localStorage is usable and allows to save an item\n// This method checks if localStorage is usable in Safari Private Browsing\n// mode, or in any other case where the available quota for localStorage\n// is 0 and there wasn't any saved items yet.\nfunction _isLocalStorageUsable() {\n    return !checkIfLocalStorageThrows() || localStorage.length > 0;\n}\n\n// Config the localStorage backend, using options set in the config.\nfunction _initStorage$2(options) {\n    var self = this;\n    var dbInfo = {};\n    if (options) {\n        for (var i in options) {\n            dbInfo[i] = options[i];\n        }\n    }\n\n    dbInfo.keyPrefix = _getKeyPrefix(options, self._defaultConfig);\n\n    if (!_isLocalStorageUsable()) {\n        return Promise$1.reject();\n    }\n\n    self._dbInfo = dbInfo;\n    dbInfo.serializer = localforageSerializer;\n\n    return Promise$1.resolve();\n}\n\n// Remove all keys from the datastore, effectively destroying all data in\n// the app's key/value store!\nfunction clear$2(callback) {\n    var self = this;\n    var promise = self.ready().then(function () {\n        var keyPrefix = self._dbInfo.keyPrefix;\n\n        for (var i = localStorage.length - 1; i >= 0; i--) {\n            var key = localStorage.key(i);\n\n            if (key.indexOf(keyPrefix) === 0) {\n                localStorage.removeItem(key);\n            }\n        }\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\n// Retrieve an item from the store. Unlike the original async_storage\n// library in Gaia, we don't modify return values at all. If a key's value\n// is `undefined`, we pass that value to the callback function.\nfunction getItem$2(key, callback) {\n    var self = this;\n\n    key = normalizeKey(key);\n\n    var promise = self.ready().then(function () {\n        var dbInfo = self._dbInfo;\n        var result = localStorage.getItem(dbInfo.keyPrefix + key);\n\n        // If a result was found, parse it from the serialized\n        // string into a JS object. If result isn't truthy, the key\n        // is likely undefined and we'll pass it straight to the\n        // callback.\n        if (result) {\n            result = dbInfo.serializer.deserialize(result);\n        }\n\n        return result;\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\n// Iterate over all items in the store.\nfunction iterate$2(iterator, callback) {\n    var self = this;\n\n    var promise = self.ready().then(function () {\n        var dbInfo = self._dbInfo;\n        var keyPrefix = dbInfo.keyPrefix;\n        var keyPrefixLength = keyPrefix.length;\n        var length = localStorage.length;\n\n        // We use a dedicated iterator instead of the `i` variable below\n        // so other keys we fetch in localStorage aren't counted in\n        // the `iterationNumber` argument passed to the `iterate()`\n        // callback.\n        //\n        // See: github.com/mozilla/localForage/pull/435#discussion_r38061530\n        var iterationNumber = 1;\n\n        for (var i = 0; i < length; i++) {\n            var key = localStorage.key(i);\n            if (key.indexOf(keyPrefix) !== 0) {\n                continue;\n            }\n            var value = localStorage.getItem(key);\n\n            // If a result was found, parse it from the serialized\n            // string into a JS object. If result isn't truthy, the\n            // key is likely undefined and we'll pass it straight\n            // to the iterator.\n            if (value) {\n                value = dbInfo.serializer.deserialize(value);\n            }\n\n            value = iterator(value, key.substring(keyPrefixLength), iterationNumber++);\n\n            if (value !== void 0) {\n                return value;\n            }\n        }\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\n// Same as localStorage's key() method, except takes a callback.\nfunction key$2(n, callback) {\n    var self = this;\n    var promise = self.ready().then(function () {\n        var dbInfo = self._dbInfo;\n        var result;\n        try {\n            result = localStorage.key(n);\n        } catch (error) {\n            result = null;\n        }\n\n        // Remove the prefix from the key, if a key is found.\n        if (result) {\n            result = result.substring(dbInfo.keyPrefix.length);\n        }\n\n        return result;\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nfunction keys$2(callback) {\n    var self = this;\n    var promise = self.ready().then(function () {\n        var dbInfo = self._dbInfo;\n        var length = localStorage.length;\n        var keys = [];\n\n        for (var i = 0; i < length; i++) {\n            var itemKey = localStorage.key(i);\n            if (itemKey.indexOf(dbInfo.keyPrefix) === 0) {\n                keys.push(itemKey.substring(dbInfo.keyPrefix.length));\n            }\n        }\n\n        return keys;\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\n// Supply the number of keys in the datastore to the callback function.\nfunction length$2(callback) {\n    var self = this;\n    var promise = self.keys().then(function (keys) {\n        return keys.length;\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\n// Remove an item from the store, nice and simple.\nfunction removeItem$2(key, callback) {\n    var self = this;\n\n    key = normalizeKey(key);\n\n    var promise = self.ready().then(function () {\n        var dbInfo = self._dbInfo;\n        localStorage.removeItem(dbInfo.keyPrefix + key);\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\n// Set a key's value and run an optional callback once the value is set.\n// Unlike Gaia's implementation, the callback function is passed the value,\n// in case you want to operate on that value only after you're sure it\n// saved, or something like that.\nfunction setItem$2(key, value, callback) {\n    var self = this;\n\n    key = normalizeKey(key);\n\n    var promise = self.ready().then(function () {\n        // Convert undefined values to null.\n        // https://github.com/mozilla/localForage/pull/42\n        if (value === undefined) {\n            value = null;\n        }\n\n        // Save the original value to pass to the callback.\n        var originalValue = value;\n\n        return new Promise$1(function (resolve, reject) {\n            var dbInfo = self._dbInfo;\n            dbInfo.serializer.serialize(value, function (value, error) {\n                if (error) {\n                    reject(error);\n                } else {\n                    try {\n                        localStorage.setItem(dbInfo.keyPrefix + key, value);\n                        resolve(originalValue);\n                    } catch (e) {\n                        // localStorage capacity exceeded.\n                        // TODO: Make this a specific error/event.\n                        if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {\n                            reject(e);\n                        }\n                        reject(e);\n                    }\n                }\n            });\n        });\n    });\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nfunction dropInstance$2(options, callback) {\n    callback = getCallback.apply(this, arguments);\n\n    options = typeof options !== 'function' && options || {};\n    if (!options.name) {\n        var currentConfig = this.config();\n        options.name = options.name || currentConfig.name;\n        options.storeName = options.storeName || currentConfig.storeName;\n    }\n\n    var self = this;\n    var promise;\n    if (!options.name) {\n        promise = Promise$1.reject('Invalid arguments');\n    } else {\n        promise = new Promise$1(function (resolve) {\n            if (!options.storeName) {\n                resolve(options.name + '/');\n            } else {\n                resolve(_getKeyPrefix(options, self._defaultConfig));\n            }\n        }).then(function (keyPrefix) {\n            for (var i = localStorage.length - 1; i >= 0; i--) {\n                var key = localStorage.key(i);\n\n                if (key.indexOf(keyPrefix) === 0) {\n                    localStorage.removeItem(key);\n                }\n            }\n        });\n    }\n\n    executeCallback(promise, callback);\n    return promise;\n}\n\nvar localStorageWrapper = {\n    _driver: 'localStorageWrapper',\n    _initStorage: _initStorage$2,\n    _support: isLocalStorageValid(),\n    iterate: iterate$2,\n    getItem: getItem$2,\n    setItem: setItem$2,\n    removeItem: removeItem$2,\n    clear: clear$2,\n    length: length$2,\n    key: key$2,\n    keys: keys$2,\n    dropInstance: dropInstance$2\n};\n\nvar sameValue = function sameValue(x, y) {\n    return x === y || typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y);\n};\n\nvar includes = function includes(array, searchElement) {\n    var len = array.length;\n    var i = 0;\n    while (i < len) {\n        if (sameValue(array[i], searchElement)) {\n            return true;\n        }\n        i++;\n    }\n\n    return false;\n};\n\nvar isArray = Array.isArray || function (arg) {\n    return Object.prototype.toString.call(arg) === '[object Array]';\n};\n\n// Drivers are stored here when `defineDriver()` is called.\n// They are shared across all instances of localForage.\nvar DefinedDrivers = {};\n\nvar DriverSupport = {};\n\nvar DefaultDrivers = {\n    INDEXEDDB: asyncStorage,\n    WEBSQL: webSQLStorage,\n    LOCALSTORAGE: localStorageWrapper\n};\n\nvar DefaultDriverOrder = [DefaultDrivers.INDEXEDDB._driver, DefaultDrivers.WEBSQL._driver, DefaultDrivers.LOCALSTORAGE._driver];\n\nvar OptionalDriverMethods = ['dropInstance'];\n\nvar LibraryMethods = ['clear', 'getItem', 'iterate', 'key', 'keys', 'length', 'removeItem', 'setItem'].concat(OptionalDriverMethods);\n\nvar DefaultConfig = {\n    description: '',\n    driver: DefaultDriverOrder.slice(),\n    name: 'localforage',\n    // Default DB size is _JUST UNDER_ 5MB, as it's the highest size\n    // we can use without a prompt.\n    size: 4980736,\n    storeName: 'keyvaluepairs',\n    version: 1.0\n};\n\nfunction callWhenReady(localForageInstance, libraryMethod) {\n    localForageInstance[libraryMethod] = function () {\n        var _args = arguments;\n        return localForageInstance.ready().then(function () {\n            return localForageInstance[libraryMethod].apply(localForageInstance, _args);\n        });\n    };\n}\n\nfunction extend() {\n    for (var i = 1; i < arguments.length; i++) {\n        var arg = arguments[i];\n\n        if (arg) {\n            for (var _key in arg) {\n                if (arg.hasOwnProperty(_key)) {\n                    if (isArray(arg[_key])) {\n                        arguments[0][_key] = arg[_key].slice();\n                    } else {\n                        arguments[0][_key] = arg[_key];\n                    }\n                }\n            }\n        }\n    }\n\n    return arguments[0];\n}\n\nvar LocalForage = function () {\n    function LocalForage(options) {\n        _classCallCheck(this, LocalForage);\n\n        for (var driverTypeKey in DefaultDrivers) {\n            if (DefaultDrivers.hasOwnProperty(driverTypeKey)) {\n                var driver = DefaultDrivers[driverTypeKey];\n                var driverName = driver._driver;\n                this[driverTypeKey] = driverName;\n\n                if (!DefinedDrivers[driverName]) {\n                    // we don't need to wait for the promise,\n                    // since the default drivers can be defined\n                    // in a blocking manner\n                    this.defineDriver(driver);\n                }\n            }\n        }\n\n        this._defaultConfig = extend({}, DefaultConfig);\n        this._config = extend({}, this._defaultConfig, options);\n        this._driverSet = null;\n        this._initDriver = null;\n        this._ready = false;\n        this._dbInfo = null;\n\n        this._wrapLibraryMethodsWithReady();\n        this.setDriver(this._config.driver)[\"catch\"](function () {});\n    }\n\n    // Set any config values for localForage; can be called anytime before\n    // the first API call (e.g. `getItem`, `setItem`).\n    // We loop through options so we don't overwrite existing config\n    // values.\n\n\n    LocalForage.prototype.config = function config(options) {\n        // If the options argument is an object, we use it to set values.\n        // Otherwise, we return either a specified config value or all\n        // config values.\n        if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object') {\n            // If localforage is ready and fully initialized, we can't set\n            // any new configuration values. Instead, we return an error.\n            if (this._ready) {\n                return new Error(\"Can't call config() after localforage \" + 'has been used.');\n            }\n\n            for (var i in options) {\n                if (i === 'storeName') {\n                    options[i] = options[i].replace(/\\W/g, '_');\n                }\n\n                if (i === 'version' && typeof options[i] !== 'number') {\n                    return new Error('Database version must be a number.');\n                }\n\n                this._config[i] = options[i];\n            }\n\n            // after all config options are set and\n            // the driver option is used, try setting it\n            if ('driver' in options && options.driver) {\n                return this.setDriver(this._config.driver);\n            }\n\n            return true;\n        } else if (typeof options === 'string') {\n            return this._config[options];\n        } else {\n            return this._config;\n        }\n    };\n\n    // Used to define a custom driver, shared across all instances of\n    // localForage.\n\n\n    LocalForage.prototype.defineDriver = function defineDriver(driverObject, callback, errorCallback) {\n        var promise = new Promise$1(function (resolve, reject) {\n            try {\n                var driverName = driverObject._driver;\n                var complianceError = new Error('Custom driver not compliant; see ' + 'https://mozilla.github.io/localForage/#definedriver');\n\n                // A driver name should be defined and not overlap with the\n                // library-defined, default drivers.\n                if (!driverObject._driver) {\n                    reject(complianceError);\n                    return;\n                }\n\n                var driverMethods = LibraryMethods.concat('_initStorage');\n                for (var i = 0, len = driverMethods.length; i < len; i++) {\n                    var driverMethodName = driverMethods[i];\n\n                    // when the property is there,\n                    // it should be a method even when optional\n                    var isRequired = !includes(OptionalDriverMethods, driverMethodName);\n                    if ((isRequired || driverObject[driverMethodName]) && typeof driverObject[driverMethodName] !== 'function') {\n                        reject(complianceError);\n                        return;\n                    }\n                }\n\n                var configureMissingMethods = function configureMissingMethods() {\n                    var methodNotImplementedFactory = function methodNotImplementedFactory(methodName) {\n                        return function () {\n                            var error = new Error('Method ' + methodName + ' is not implemented by the current driver');\n                            var promise = Promise$1.reject(error);\n                            executeCallback(promise, arguments[arguments.length - 1]);\n                            return promise;\n                        };\n                    };\n\n                    for (var _i = 0, _len = OptionalDriverMethods.length; _i < _len; _i++) {\n                        var optionalDriverMethod = OptionalDriverMethods[_i];\n                        if (!driverObject[optionalDriverMethod]) {\n                            driverObject[optionalDriverMethod] = methodNotImplementedFactory(optionalDriverMethod);\n                        }\n                    }\n                };\n\n                configureMissingMethods();\n\n                var setDriverSupport = function setDriverSupport(support) {\n                    if (DefinedDrivers[driverName]) {\n                        console.info('Redefining LocalForage driver: ' + driverName);\n                    }\n                    DefinedDrivers[driverName] = driverObject;\n                    DriverSupport[driverName] = support;\n                    // don't use a then, so that we can define\n                    // drivers that have simple _support methods\n                    // in a blocking manner\n                    resolve();\n                };\n\n                if ('_support' in driverObject) {\n                    if (driverObject._support && typeof driverObject._support === 'function') {\n                        driverObject._support().then(setDriverSupport, reject);\n                    } else {\n                        setDriverSupport(!!driverObject._support);\n                    }\n                } else {\n                    setDriverSupport(true);\n                }\n            } catch (e) {\n                reject(e);\n            }\n        });\n\n        executeTwoCallbacks(promise, callback, errorCallback);\n        return promise;\n    };\n\n    LocalForage.prototype.driver = function driver() {\n        return this._driver || null;\n    };\n\n    LocalForage.prototype.getDriver = function getDriver(driverName, callback, errorCallback) {\n        var getDriverPromise = DefinedDrivers[driverName] ? Promise$1.resolve(DefinedDrivers[driverName]) : Promise$1.reject(new Error('Driver not found.'));\n\n        executeTwoCallbacks(getDriverPromise, callback, errorCallback);\n        return getDriverPromise;\n    };\n\n    LocalForage.prototype.getSerializer = function getSerializer(callback) {\n        var serializerPromise = Promise$1.resolve(localforageSerializer);\n        executeTwoCallbacks(serializerPromise, callback);\n        return serializerPromise;\n    };\n\n    LocalForage.prototype.ready = function ready(callback) {\n        var self = this;\n\n        var promise = self._driverSet.then(function () {\n            if (self._ready === null) {\n                self._ready = self._initDriver();\n            }\n\n            return self._ready;\n        });\n\n        executeTwoCallbacks(promise, callback, callback);\n        return promise;\n    };\n\n    LocalForage.prototype.setDriver = function setDriver(drivers, callback, errorCallback) {\n        var self = this;\n\n        if (!isArray(drivers)) {\n            drivers = [drivers];\n        }\n\n        var supportedDrivers = this._getSupportedDrivers(drivers);\n\n        function setDriverToConfig() {\n            self._config.driver = self.driver();\n        }\n\n        function extendSelfWithDriver(driver) {\n            self._extend(driver);\n            setDriverToConfig();\n\n            self._ready = self._initStorage(self._config);\n            return self._ready;\n        }\n\n        function initDriver(supportedDrivers) {\n            return function () {\n                var currentDriverIndex = 0;\n\n                function driverPromiseLoop() {\n                    while (currentDriverIndex < supportedDrivers.length) {\n                        var driverName = supportedDrivers[currentDriverIndex];\n                        currentDriverIndex++;\n\n                        self._dbInfo = null;\n                        self._ready = null;\n\n                        return self.getDriver(driverName).then(extendSelfWithDriver)[\"catch\"](driverPromiseLoop);\n                    }\n\n                    setDriverToConfig();\n                    var error = new Error('No available storage method found.');\n                    self._driverSet = Promise$1.reject(error);\n                    return self._driverSet;\n                }\n\n                return driverPromiseLoop();\n            };\n        }\n\n        // There might be a driver initialization in progress\n        // so wait for it to finish in order to avoid a possible\n        // race condition to set _dbInfo\n        var oldDriverSetDone = this._driverSet !== null ? this._driverSet[\"catch\"](function () {\n            return Promise$1.resolve();\n        }) : Promise$1.resolve();\n\n        this._driverSet = oldDriverSetDone.then(function () {\n            var driverName = supportedDrivers[0];\n            self._dbInfo = null;\n            self._ready = null;\n\n            return self.getDriver(driverName).then(function (driver) {\n                self._driver = driver._driver;\n                setDriverToConfig();\n                self._wrapLibraryMethodsWithReady();\n                self._initDriver = initDriver(supportedDrivers);\n            });\n        })[\"catch\"](function () {\n            setDriverToConfig();\n            var error = new Error('No available storage method found.');\n            self._driverSet = Promise$1.reject(error);\n            return self._driverSet;\n        });\n\n        executeTwoCallbacks(this._driverSet, callback, errorCallback);\n        return this._driverSet;\n    };\n\n    LocalForage.prototype.supports = function supports(driverName) {\n        return !!DriverSupport[driverName];\n    };\n\n    LocalForage.prototype._extend = function _extend(libraryMethodsAndProperties) {\n        extend(this, libraryMethodsAndProperties);\n    };\n\n    LocalForage.prototype._getSupportedDrivers = function _getSupportedDrivers(drivers) {\n        var supportedDrivers = [];\n        for (var i = 0, len = drivers.length; i < len; i++) {\n            var driverName = drivers[i];\n            if (this.supports(driverName)) {\n                supportedDrivers.push(driverName);\n            }\n        }\n        return supportedDrivers;\n    };\n\n    LocalForage.prototype._wrapLibraryMethodsWithReady = function _wrapLibraryMethodsWithReady() {\n        // Add a stub for each driver API method that delays the call to the\n        // corresponding driver method until localForage is ready. These stubs\n        // will be replaced by the driver methods as soon as the driver is\n        // loaded, so there is no performance impact.\n        for (var i = 0, len = LibraryMethods.length; i < len; i++) {\n            callWhenReady(this, LibraryMethods[i]);\n        }\n    };\n\n    LocalForage.prototype.createInstance = function createInstance(options) {\n        return new LocalForage(options);\n    };\n\n    return LocalForage;\n}();\n\n// The actual localForage object that we expose as a module or via a\n// global. It's extended by pulling in one of our other libraries.\n\n\nvar localforage_js = new LocalForage();\n\nmodule.exports = localforage_js;\n\n},{\"3\":3}]},{},[4])(4)\n});\n\n/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ \"./node_modules/webpack/buildin/global.js\")))\n\n//# sourceURL=webpack:///./node_modules/localforage/dist/localforage.js?");
 
-// Hold reference to Underscore.js and Backbone.js in the closure in order
-// to make things work even if they are removed from the global namespace
+/***/ }),
 
-// Generate four random hex digits.
-function S4() {
-   return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-}
+/***/ "./node_modules/localforage/src/utils/createBlob.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/localforage/src/utils/createBlob.js ***!
+  \**********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-// Generate a pseudo-GUID by concatenating random hexadecimal.
-function guid() {
-   return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
-}
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n// Abstracts constructing a Blob object, so it also works in older\n// browsers that don't support the native Blob constructor. (i.e.\n// old QtWebKit versions, at least).\n// Abstracts constructing a Blob object, so it also works in older\n// browsers that don't support the native Blob constructor. (i.e.\n// old QtWebKit versions, at least).\nfunction createBlob(parts, properties) {\n    /* global BlobBuilder,MSBlobBuilder,MozBlobBuilder,WebKitBlobBuilder */\n    parts = parts || [];\n    properties = properties || {};\n    try {\n        return new Blob(parts, properties);\n    } catch (e) {\n        if (e.name !== 'TypeError') {\n            throw e;\n        }\n        var Builder =\n            typeof BlobBuilder !== 'undefined'\n                ? BlobBuilder\n                : typeof MSBlobBuilder !== 'undefined'\n                  ? MSBlobBuilder\n                  : typeof MozBlobBuilder !== 'undefined'\n                    ? MozBlobBuilder\n                    : WebKitBlobBuilder;\n        var builder = new Builder();\n        for (var i = 0; i < parts.length; i += 1) {\n            builder.append(parts[i]);\n        }\n        return builder.getBlob(properties.type);\n    }\n}\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (createBlob);\n\n\n//# sourceURL=webpack:///./node_modules/localforage/src/utils/createBlob.js?");
 
-function contains(array, item) {
-  var i = array.length;
-  while (i--) if (array[i] === item) return true;
-  return false;
-}
+/***/ }),
 
-function extend(obj, props) {
-  for (var key in props) { obj[key] = props[key]; }
-  return obj;
-}
+/***/ "./node_modules/localforage/src/utils/executeCallback.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/localforage/src/utils/executeCallback.js ***!
+  \***************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _browserStorage (name, serializer, type) {
-    var _store;
-    if (type === 'local' && !window.localStorage ) {
-        throw "Backbone.browserStorage: Environment does not support localStorage.";
-    } else if (type === 'session' && !window.sessionStorage ) {
-        throw "Backbone.browserStorage: Environment does not support sessionStorage.";
-    }
-    this.name = name;
-    this.serializer = serializer || {
-        serialize: function(item) {
-            return _.isObject(item) ? JSON.stringify(item) : item;
-        },
-        // fix for "illegal access" error on Android when JSON.parse is passed null
-        deserialize: function (data) {
-            return data && JSON.parse(data);
-        }
-    };
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\nfunction executeCallback(promise, callback) {\n    if (callback) {\n        promise.then(\n            function(result) {\n                callback(null, result);\n            },\n            function(error) {\n                callback(error);\n            }\n        );\n    }\n}\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (executeCallback);\n\n\n//# sourceURL=webpack:///./node_modules/localforage/src/utils/executeCallback.js?");
 
-    if (type === 'session') {
-        this.store = window.sessionStorage;
-    } else if (type === 'local') {
-        this.store = window.localStorage;
-    } else {
-        throw "Backbone.browserStorage: No storage type was specified";
-    }
-    _store = this.store.getItem(this.name);
-    this.records = (_store && _store.split(",")) || [];
-}
+/***/ }),
 
-// Our Store is represented by a single JS object in *localStorage* or *sessionStorage*.
-// Create it with a meaningful name, like the name you'd give a table.
-Backbone.BrowserStorage = {
-    local: function (name, serializer) {
-        return _browserStorage.bind(this, name, serializer, 'local')();
-    },
-    session: function (name, serializer) {
-        return _browserStorage.bind(this, name, serializer, 'session')();
-    }
-};
+/***/ "./node_modules/localforage/src/utils/getCallback.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/localforage/src/utils/getCallback.js ***!
+  \***********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-// The browser's local and session stores will be extended with this obj.
-var _extension = {
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return getCallback; });\nfunction getCallback() {\n    if (\n        arguments.length &&\n        typeof arguments[arguments.length - 1] === 'function'\n    ) {\n        return arguments[arguments.length - 1];\n    }\n}\n\n\n//# sourceURL=webpack:///./node_modules/localforage/src/utils/getCallback.js?");
 
-  // Save the current state of the **Store**
-  save: function() {
-    this.store.setItem(this.name, this.records.join(","));
-  },
+/***/ }),
 
-  // Add a model, giving it a (hopefully)-unique GUID, if it doesn't already
-  // have an id of it's own.
-  create: function(model, options) {
-    if (!model.id) {
-      model.id = guid();
-      model.set(model.idAttribute, model.id, options);
-    }
-    this.store.setItem(this._itemName(model.id), this.serializer.serialize(model));
-    this.records.push(model.id.toString());
-    this.save();
-    return this.find(model);
-  },
+/***/ "./node_modules/localforage/src/utils/normalizeKey.js":
+/*!************************************************************!*\
+  !*** ./node_modules/localforage/src/utils/normalizeKey.js ***!
+  \************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-  // Update a model by replacing its copy in `this.data`.
-  update: function(model) {
-    this.store.setItem(this._itemName(model.id), this.serializer.serialize(model));
-    var modelId = model.id.toString();
-    if (!contains(this.records, modelId)) {
-      this.records.push(modelId);
-      this.save();
-    }
-    return this.find(model);
-  },
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return normalizeKey; });\nfunction normalizeKey(key) {\n    // Cast the key to a string, as that's all we can set as a key.\n    if (typeof key !== 'string') {\n        console.warn(`${key} used as a key, but it is not a string.`);\n        key = String(key);\n    }\n\n    return key;\n}\n\n\n//# sourceURL=webpack:///./node_modules/localforage/src/utils/normalizeKey.js?");
 
-  // Retrieve a model from `this.data` by id.
-  find: function(model) {
-    return this.serializer.deserialize(this.store.getItem(this._itemName(model.id)));
-  },
+/***/ }),
 
-  // Return the array of all models currently in storage.
-  findAll: function() {
-    var result = [];
-    for (var i = 0, id, data; i < this.records.length; i++) {
-      id = this.records[i];
-      data = this.serializer.deserialize(this.store.getItem(this._itemName(id)));
-      if (data !== null) result.push(data);
-    }
-    return result;
-  },
+/***/ "./node_modules/localforage/src/utils/serializer.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/localforage/src/utils/serializer.js ***!
+  \**********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-  // Delete a model from `this.data`, returning it.
-  destroy: function(model) {
-    this.store.removeItem(this._itemName(model.id));
-    var modelId = model.id.toString();
-    for (var i = 0, id; i < this.records.length; i++) {
-      if (this.records[i] === modelId) {
-        this.records.splice(i, 1);
-      }
-    }
-    this.save();
-    return model;
-  },
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _createBlob__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./createBlob */ \"./node_modules/localforage/src/utils/createBlob.js\");\n/* eslint-disable no-bitwise */\n\n\n// Sadly, the best way to save binary data in WebSQL/localStorage is serializing\n// it to Base64, so this is how we store it to prevent very strange errors with less\n// verbose ways of binary <-> string data storage.\nvar BASE_CHARS =\n    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';\n\nvar BLOB_TYPE_PREFIX = '~~local_forage_type~';\nvar BLOB_TYPE_PREFIX_REGEX = /^~~local_forage_type~([^~]+)~/;\n\nvar SERIALIZED_MARKER = '__lfsc__:';\nvar SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;\n\n// OMG the serializations!\nvar TYPE_ARRAYBUFFER = 'arbf';\nvar TYPE_BLOB = 'blob';\nvar TYPE_INT8ARRAY = 'si08';\nvar TYPE_UINT8ARRAY = 'ui08';\nvar TYPE_UINT8CLAMPEDARRAY = 'uic8';\nvar TYPE_INT16ARRAY = 'si16';\nvar TYPE_INT32ARRAY = 'si32';\nvar TYPE_UINT16ARRAY = 'ur16';\nvar TYPE_UINT32ARRAY = 'ui32';\nvar TYPE_FLOAT32ARRAY = 'fl32';\nvar TYPE_FLOAT64ARRAY = 'fl64';\nvar TYPE_SERIALIZED_MARKER_LENGTH =\n    SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;\n\nvar toString = Object.prototype.toString;\n\nfunction stringToBuffer(serializedString) {\n    // Fill the string into a ArrayBuffer.\n    var bufferLength = serializedString.length * 0.75;\n    var len = serializedString.length;\n    var i;\n    var p = 0;\n    var encoded1, encoded2, encoded3, encoded4;\n\n    if (serializedString[serializedString.length - 1] === '=') {\n        bufferLength--;\n        if (serializedString[serializedString.length - 2] === '=') {\n            bufferLength--;\n        }\n    }\n\n    var buffer = new ArrayBuffer(bufferLength);\n    var bytes = new Uint8Array(buffer);\n\n    for (i = 0; i < len; i += 4) {\n        encoded1 = BASE_CHARS.indexOf(serializedString[i]);\n        encoded2 = BASE_CHARS.indexOf(serializedString[i + 1]);\n        encoded3 = BASE_CHARS.indexOf(serializedString[i + 2]);\n        encoded4 = BASE_CHARS.indexOf(serializedString[i + 3]);\n\n        /*jslint bitwise: true */\n        bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);\n        bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);\n        bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);\n    }\n    return buffer;\n}\n\n// Converts a buffer to a string to store, serialized, in the backend\n// storage library.\nfunction bufferToString(buffer) {\n    // base64-arraybuffer\n    var bytes = new Uint8Array(buffer);\n    var base64String = '';\n    var i;\n\n    for (i = 0; i < bytes.length; i += 3) {\n        /*jslint bitwise: true */\n        base64String += BASE_CHARS[bytes[i] >> 2];\n        base64String += BASE_CHARS[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];\n        base64String +=\n            BASE_CHARS[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];\n        base64String += BASE_CHARS[bytes[i + 2] & 63];\n    }\n\n    if (bytes.length % 3 === 2) {\n        base64String = base64String.substring(0, base64String.length - 1) + '=';\n    } else if (bytes.length % 3 === 1) {\n        base64String =\n            base64String.substring(0, base64String.length - 2) + '==';\n    }\n\n    return base64String;\n}\n\n// Serialize a value, afterwards executing a callback (which usually\n// instructs the `setItem()` callback/promise to be executed). This is how\n// we store binary data with localStorage.\nfunction serialize(value, callback) {\n    var valueType = '';\n    if (value) {\n        valueType = toString.call(value);\n    }\n\n    // Cannot use `value instanceof ArrayBuffer` or such here, as these\n    // checks fail when running the tests using casper.js...\n    //\n    // TODO: See why those tests fail and use a better solution.\n    if (\n        value &&\n        (valueType === '[object ArrayBuffer]' ||\n            (value.buffer &&\n                toString.call(value.buffer) === '[object ArrayBuffer]'))\n    ) {\n        // Convert binary arrays to a string and prefix the string with\n        // a special marker.\n        var buffer;\n        var marker = SERIALIZED_MARKER;\n\n        if (value instanceof ArrayBuffer) {\n            buffer = value;\n            marker += TYPE_ARRAYBUFFER;\n        } else {\n            buffer = value.buffer;\n\n            if (valueType === '[object Int8Array]') {\n                marker += TYPE_INT8ARRAY;\n            } else if (valueType === '[object Uint8Array]') {\n                marker += TYPE_UINT8ARRAY;\n            } else if (valueType === '[object Uint8ClampedArray]') {\n                marker += TYPE_UINT8CLAMPEDARRAY;\n            } else if (valueType === '[object Int16Array]') {\n                marker += TYPE_INT16ARRAY;\n            } else if (valueType === '[object Uint16Array]') {\n                marker += TYPE_UINT16ARRAY;\n            } else if (valueType === '[object Int32Array]') {\n                marker += TYPE_INT32ARRAY;\n            } else if (valueType === '[object Uint32Array]') {\n                marker += TYPE_UINT32ARRAY;\n            } else if (valueType === '[object Float32Array]') {\n                marker += TYPE_FLOAT32ARRAY;\n            } else if (valueType === '[object Float64Array]') {\n                marker += TYPE_FLOAT64ARRAY;\n            } else {\n                callback(new Error('Failed to get type for BinaryArray'));\n            }\n        }\n\n        callback(marker + bufferToString(buffer));\n    } else if (valueType === '[object Blob]') {\n        // Conver the blob to a binaryArray and then to a string.\n        var fileReader = new FileReader();\n\n        fileReader.onload = function() {\n            // Backwards-compatible prefix for the blob type.\n            var str =\n                BLOB_TYPE_PREFIX +\n                value.type +\n                '~' +\n                bufferToString(this.result);\n\n            callback(SERIALIZED_MARKER + TYPE_BLOB + str);\n        };\n\n        fileReader.readAsArrayBuffer(value);\n    } else {\n        try {\n            callback(JSON.stringify(value));\n        } catch (e) {\n            console.error(\"Couldn't convert value into a JSON string: \", value);\n\n            callback(null, e);\n        }\n    }\n}\n\n// Deserialize data we've inserted into a value column/field. We place\n// special markers into our strings to mark them as encoded; this isn't\n// as nice as a meta field, but it's the only sane thing we can do whilst\n// keeping localStorage support intact.\n//\n// Oftentimes this will just deserialize JSON content, but if we have a\n// special marker (SERIALIZED_MARKER, defined above), we will extract\n// some kind of arraybuffer/binary data/typed array out of the string.\nfunction deserialize(value) {\n    // If we haven't marked this string as being specially serialized (i.e.\n    // something other than serialized JSON), we can just return it and be\n    // done with it.\n    if (value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {\n        return JSON.parse(value);\n    }\n\n    // The following code deals with deserializing some kind of Blob or\n    // TypedArray. First we separate out the type of data we're dealing\n    // with from the data itself.\n    var serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);\n    var type = value.substring(\n        SERIALIZED_MARKER_LENGTH,\n        TYPE_SERIALIZED_MARKER_LENGTH\n    );\n\n    var blobType;\n    // Backwards-compatible blob type serialization strategy.\n    // DBs created with older versions of localForage will simply not have the blob type.\n    if (type === TYPE_BLOB && BLOB_TYPE_PREFIX_REGEX.test(serializedString)) {\n        var matcher = serializedString.match(BLOB_TYPE_PREFIX_REGEX);\n        blobType = matcher[1];\n        serializedString = serializedString.substring(matcher[0].length);\n    }\n    var buffer = stringToBuffer(serializedString);\n\n    // Return the right type based on the code/type set during\n    // serialization.\n    switch (type) {\n        case TYPE_ARRAYBUFFER:\n            return buffer;\n        case TYPE_BLOB:\n            return Object(_createBlob__WEBPACK_IMPORTED_MODULE_0__[\"default\"])([buffer], { type: blobType });\n        case TYPE_INT8ARRAY:\n            return new Int8Array(buffer);\n        case TYPE_UINT8ARRAY:\n            return new Uint8Array(buffer);\n        case TYPE_UINT8CLAMPEDARRAY:\n            return new Uint8ClampedArray(buffer);\n        case TYPE_INT16ARRAY:\n            return new Int16Array(buffer);\n        case TYPE_UINT16ARRAY:\n            return new Uint16Array(buffer);\n        case TYPE_INT32ARRAY:\n            return new Int32Array(buffer);\n        case TYPE_UINT32ARRAY:\n            return new Uint32Array(buffer);\n        case TYPE_FLOAT32ARRAY:\n            return new Float32Array(buffer);\n        case TYPE_FLOAT64ARRAY:\n            return new Float64Array(buffer);\n        default:\n            throw new Error('Unkown type: ' + type);\n    }\n}\n\nvar localforageSerializer = {\n    serialize: serialize,\n    deserialize: deserialize,\n    stringToBuffer: stringToBuffer,\n    bufferToString: bufferToString\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (localforageSerializer);\n\n\n//# sourceURL=webpack:///./node_modules/localforage/src/utils/serializer.js?");
 
-  browserStorage: function() {
-    return {
-        session: sessionStorage,
-        local: localStorage
-    };
-  },
+/***/ }),
 
-  // Clear browserStorage for specific collection.
-  _clear: function() {
-    var local = this.store, itemRe;
+/***/ "./node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
 
-    // Escape special regex characters in id.
-    itemRe = new RegExp("^" + this.name.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") + "-");
-    
-    // Remove id-tracking item (e.g., "foo").
-    local.removeItem(this.name);
+eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn this;\n})();\n\ntry {\n\t// This works if eval is allowed (see CSP)\n\tg = g || Function(\"return this\")() || (1, eval)(\"this\");\n} catch (e) {\n\t// This works if the window reference is available\n\tif (typeof window === \"object\") g = window;\n}\n\n// g can still be undefined, but nothing to do about it...\n// We return undefined, instead of nothing here, so it's\n// easier to handle this case. if(!global) { ...}\n\nmodule.exports = g;\n\n\n//# sourceURL=webpack:///(webpack)/buildin/global.js?");
 
-    // Match all data items (e.g., "foo-ID") and remove.
-    for (var k in local) {
-      if (itemRe.test(k)) {
-        local.removeItem(k);
-      }
-    }
+/***/ }),
 
-    this.records.length = 0;
-  },
+/***/ "./src/backbone.browserStorage.js":
+/*!****************************************!*\
+  !*** ./src/backbone.browserStorage.js ***!
+  \****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-  // Size of browserStorage.
-  _storageSize: function() {
-    return this.store.length;
-  },
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! localforage */ \"./node_modules/localforage/dist/localforage.js\");\n/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(localforage__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ \"backbone\");\n/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash */ \"lodash\");\n/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _drivers_sessionStorage_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./drivers/sessionStorage.js */ \"./src/drivers/sessionStorage.js\");\n/**\n * Backbone IndexedDB, localStorage and sessionStorage adapter\n * Version 0.0.5\n *\n * https://github.com/conversejs/Backbone.browserStorage\n */\n\n\n\n\n\n\nfunction S4() {\n    // Generate four random hex digits.\n    return (((1+Math.random())*0x10000)|0).toString(16).substring(1);\n}\n\nfunction guid() {\n    // Generate a pseudo-GUID by concatenating random hexadecimal.\n    return (S4()+S4()+\"-\"+S4()+\"-\"+S4()+\"-\"+S4()+\"-\"+S4()+S4()+S4());\n}\n\n\nclass BrowserStorage {\n\n    constructor (name, type) {\n        if (type === 'local' && !window.localStorage ) {\n            throw new Error(\"Backbone.browserStorage: Environment does not support localStorage.\");\n        } else if (type === 'session' && !window.sessionStorage ) {\n            throw new Error(\"Backbone.browserStorage: Environment does not support sessionStorage.\");\n        }\n        this.type = type;\n        this.name = name;\n        this.storeInitialized = this.initStore();\n    }\n\n    async initStore () {\n        if (this.type === 'session') {\n            await localforage__WEBPACK_IMPORTED_MODULE_0__[\"defineDriver\"](_drivers_sessionStorage_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"]);\n            localforage__WEBPACK_IMPORTED_MODULE_0__[\"setDriver\"](_drivers_sessionStorage_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"]._driver);\n        } else if (this.type === 'local') {\n            await localforage__WEBPACK_IMPORTED_MODULE_0__[\"config\"]({\n                'driver': localforage__WEBPACK_IMPORTED_MODULE_0__[\"LOCALSTORAGE\"]\n            });\n        } else if (this.type !== 'indexedDB') {\n            throw new Error(\"Backbone.browserStorage: No storage type was specified\");\n        }\n        this.store = localforage__WEBPACK_IMPORTED_MODULE_0__;\n    }\n\n    sync (name) {\n        const that = this;\n\n        async function localSync (method, model, options) {\n            let resp, errorMessage;\n            // We get the collection here, waiting for storeInitialized\n            // will cause another iteration of the event loop, after\n            // which the collection reference will be removed from the model.\n            const collection = model.collection;\n            await that.storeInitialized;\n            try {\n                switch (method) {\n                    case \"read\":\n                        if (model.id !== undefined) {\n                            resp = await that.find(model);\n                        } else {\n                            resp = await that.findAll();\n                        }\n                        break;\n                    case \"create\":\n                        resp = await that.create(model, options);\n                        break;\n                    case 'patch':\n                    case \"update\":\n                        resp = await that.update(model, options);\n                        break;\n                    case \"delete\":\n                        resp = await that.destroy(model, collection);\n                        break;\n                }\n            } catch (error) {\n                if (error.code === 22 && that.getStorageSize() === 0) {\n                    errorMessage = \"Private browsing is unsupported\";\n                } else {\n                    errorMessage = error.message;\n                }\n            }\n\n            if (resp) {\n                if (options && options.success) {\n                    options.success(resp, options);\n                }\n            } else {\n                errorMessage = errorMessage ? errorMessage : \"Record Not Found\";\n                if (options && options.error) {\n                    options.error(errorMessage);\n                }\n            }\n        }\n        localSync.__name__ = 'localSync';\n        return localSync;\n    }\n\n    updateCollectionReferences (collection) {\n        if (!collection) {\n            return;\n        }\n        const ids = collection.map(m => this.getItemName(m.id));\n        this.store.setItem(this.name, ids);\n    }\n\n    async save (model) {\n        const key = this.getItemName(model.id);\n        const data = await this.store.setItem(key, model.toJSON());\n        this.updateCollectionReferences(model.collection);\n        return data;\n    }\n\n    create (model, options) {\n        /* Add a model, giving it a (hopefully)-unique GUID, if it doesn't already\n         * have an id of it's own.\n         */\n        if (!model.id) {\n            model.id = guid();\n            model.set(model.idAttribute, model.id, options);\n        }\n        return this.save(model);\n    }\n\n    update (model) {\n        return this.save(model);\n    }\n\n    find (model) {\n        return this.store.getItem(this.getItemName(model.id));\n    }\n\n    async findAll () {\n        /* Return the array of all models currently in storage.\n         */\n        await this.storeInitialized;\n        const data = await this.store.getItem(this.name);\n        if (data && data.length) {\n            return Promise.all(data.map(item => this.store.getItem(item)));\n        }\n        return [];\n    }\n\n    async destroy (model, collection) {\n        await this.store.removeItem(this.getItemName(model.id));\n        this.updateCollectionReferences(collection);\n        return model;\n    }\n\n    async _clear () {\n        await this.storeInitialized;\n        /* Clear browserStorage for specific collection. */\n        // Remove id-tracking item (e.g., \"foo\").\n        await this.store.removeItem(this.name);\n\n        // Escape special regex characters in id.\n        const itemRe = new RegExp(\"^\" + this.name.replace(/[\\-\\[\\]\\/\\{\\}\\(\\)\\*\\+\\?\\.\\\\\\^\\$\\|]/g, \"\\\\$&\") + \"-\");\n        // Match all data items (e.g., \"foo-ID\") and remove.\n        for (const k in this.store) {\n            if (itemRe.test(k)) {\n                this.store.removeItem(k);\n            }\n        }\n    }\n\n    getStorageSize () {\n        return this.store.length;\n    }\n\n    getItemName (id) {\n        return this.name+\"-\"+id;\n    }\n}\n\nbackbone__WEBPACK_IMPORTED_MODULE_1___default.a.BrowserStorage = BrowserStorage;\nbackbone__WEBPACK_IMPORTED_MODULE_1___default.a.ajaxSync = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.sync;\n\nbackbone__WEBPACK_IMPORTED_MODULE_1___default.a.getSyncMethod = function (model) {\n    const store = Object(lodash__WEBPACK_IMPORTED_MODULE_2__[\"result\"])(model, 'browserStorage') || Object(lodash__WEBPACK_IMPORTED_MODULE_2__[\"result\"])(model.collection, 'browserStorage');\n    return store ? store.sync() : backbone__WEBPACK_IMPORTED_MODULE_1___default.a.ajaxSync;\n};\n\nbackbone__WEBPACK_IMPORTED_MODULE_1___default.a.sync = function (method, model, options) {\n    return backbone__WEBPACK_IMPORTED_MODULE_1___default.a.getSyncMethod(model).apply(this, [method, model, options]);\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.BrowserStorage);\n\n\n//# sourceURL=webpack:///./src/backbone.browserStorage.js?");
 
-  _itemName: function(id) {
-    return this.name+"-"+id;
-  }
+/***/ }),
 
-};
+/***/ "./src/drivers/sessionStorage.js":
+/*!***************************************!*\
+  !*** ./src/drivers/sessionStorage.js ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-extend(Backbone.BrowserStorage.session.prototype, _extension);
-extend(Backbone.BrowserStorage.local.prototype, _extension);
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _utils_executeCallback__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/executeCallback */ \"./node_modules/localforage/src/utils/executeCallback.js\");\n/* harmony import */ var _utils_getCallback__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/getCallback */ \"./node_modules/localforage/src/utils/getCallback.js\");\n/* harmony import */ var _utils_normalizeKey__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/normalizeKey */ \"./node_modules/localforage/src/utils/normalizeKey.js\");\n/* harmony import */ var _utils_serializer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/serializer */ \"./node_modules/localforage/src/utils/serializer.js\");\n// Copyright 2014 Mozilla\n// Copyright 2015 Thodoris Greasidis\n// Copyright 2018 JC Brand\n// \n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n// \n// http://www.apache.org/licenses/LICENSE-2.0\n// \n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\n\n\n\n\n\n\nfunction isSessionStorageValid () {\n    // If the app is running inside a Google Chrome packaged webapp, or some\n    // other context where sessionStorage isn't available, we don't use\n    // sessionStorage. This feature detection is preferred over the old\n    // `if (window.chrome && window.chrome.runtime)` code.\n    // See: https://github.com/mozilla/localForage/issues/68\n    try {\n        // If sessionStorage isn't available, we get outta here!\n        // This should be inside a try catch\n        if (sessionStorage && ('setItem' in sessionStorage)) {\n            return true;\n        }\n    } catch (e) {\n        console.log(e);\n    }\n    return false;\n}\n\nfunction _getKeyPrefix(options, defaultConfig) {\n    var keyPrefix = options.name + '/';\n\n    if (options.storeName !== defaultConfig.storeName) {\n        keyPrefix += options.storeName + '/';\n    }\n    return keyPrefix;\n}\n\nfunction _initStorage(options) {\n    var self = this;\n    var dbInfo = {};\n    if (options) {\n        for (var i in options) { // eslint-disable-line guard-for-in\n            dbInfo[i] = options[i];\n        }\n    }\n\n    dbInfo.keyPrefix = _getKeyPrefix(options, self._defaultConfig);\n    self._dbInfo = dbInfo;\n    dbInfo.serializer = _utils_serializer__WEBPACK_IMPORTED_MODULE_3__[\"default\"];\n}\n\n// Remove all keys from the datastore, effectively destroying all data in\n// the app's key/value store!\nfunction clear(callback) {\n    var self = this;\n    var promise = self.ready().then(function() {\n        var keyPrefix = self._dbInfo.keyPrefix;\n\n        for (var i = sessionStorage.length - 1; i >= 0; i--) {\n            var key = sessionStorage.key(i);\n\n            if (key.indexOf(keyPrefix) === 0) {\n                sessionStorage.removeItem(key);\n            }\n        }\n    });\n\n    Object(_utils_executeCallback__WEBPACK_IMPORTED_MODULE_0__[\"default\"])(promise, callback);\n    return promise;\n}\n\n// Retrieve an item from the store. Unlike the original async_storage\n// library in Gaia, we don't modify return values at all. If a key's value\n// is `undefined`, we pass that value to the callback function.\nfunction getItem(key, callback) {\n    var self = this;\n\n    key = Object(_utils_normalizeKey__WEBPACK_IMPORTED_MODULE_2__[\"default\"])(key);\n\n    var promise = self.ready().then(function() {\n        var dbInfo = self._dbInfo;\n        var result = sessionStorage.getItem(dbInfo.keyPrefix + key);\n\n        // If a result was found, parse it from the serialized\n        // string into a JS object. If result isn't truthy, the key\n        // is likely undefined and we'll pass it straight to the\n        // callback.\n        if (result) {\n            result = dbInfo.serializer.deserialize(result);\n        }\n\n        return result;\n    });\n\n    Object(_utils_executeCallback__WEBPACK_IMPORTED_MODULE_0__[\"default\"])(promise, callback);\n    return promise;\n}\n\n// Iterate over all items in the store.\nfunction iterate(iterator, callback) {\n    var self = this;\n\n    var promise = self.ready().then(function() {\n        var dbInfo = self._dbInfo;\n        var keyPrefix = dbInfo.keyPrefix;\n        var keyPrefixLength = keyPrefix.length;\n        var length = sessionStorage.length;\n\n        // We use a dedicated iterator instead of the `i` variable below\n        // so other keys we fetch in sessionStorage aren't counted in\n        // the `iterationNumber` argument passed to the `iterate()`\n        // callback.\n        //\n        // See: github.com/mozilla/localForage/pull/435#discussion_r38061530\n        var iterationNumber = 1;\n\n        for (var i = 0; i < length; i++) {\n            var key = sessionStorage.key(i);\n            if (key.indexOf(keyPrefix) !== 0) {\n                continue;\n            }\n            var value = sessionStorage.getItem(key);\n\n            // If a result was found, parse it from the serialized\n            // string into a JS object. If result isn't truthy, the\n            // key is likely undefined and we'll pass it straight\n            // to the iterator.\n            if (value) {\n                value = dbInfo.serializer.deserialize(value);\n            }\n\n            value = iterator(\n                value,\n                key.substring(keyPrefixLength),\n                iterationNumber++\n            );\n\n            if (value !== void 0) { // eslint-disable-line no-void\n                return value;\n            }\n        }\n    });\n\n    Object(_utils_executeCallback__WEBPACK_IMPORTED_MODULE_0__[\"default\"])(promise, callback);\n    return promise;\n}\n\n// Same as sessionStorage's key() method, except takes a callback.\nfunction key(n, callback) {\n    var self = this;\n    var promise = self.ready().then(function() {\n        var dbInfo = self._dbInfo;\n        var result;\n        try {\n            result = sessionStorage.key(n);\n        } catch (error) {\n            result = null;\n        }\n\n        // Remove the prefix from the key, if a key is found.\n        if (result) {\n            result = result.substring(dbInfo.keyPrefix.length);\n        }\n\n        return result;\n    });\n\n    Object(_utils_executeCallback__WEBPACK_IMPORTED_MODULE_0__[\"default\"])(promise, callback);\n    return promise;\n}\n\nfunction keys(callback) {\n    var self = this;\n    var promise = self.ready().then(function() {\n        var dbInfo = self._dbInfo;\n        var length = sessionStorage.length;\n        var keys = [];\n\n        for (var i = 0; i < length; i++) {\n            var itemKey = sessionStorage.key(i);\n            if (itemKey.indexOf(dbInfo.keyPrefix) === 0) {\n                keys.push(itemKey.substring(dbInfo.keyPrefix.length));\n            }\n        }\n\n        return keys;\n    });\n\n    Object(_utils_executeCallback__WEBPACK_IMPORTED_MODULE_0__[\"default\"])(promise, callback);\n    return promise;\n}\n\n// Supply the number of keys in the datastore to the callback function.\nfunction length(callback) {\n    var self = this;\n    var promise = self.keys().then(function(keys) {\n        return keys.length;\n    });\n\n    Object(_utils_executeCallback__WEBPACK_IMPORTED_MODULE_0__[\"default\"])(promise, callback);\n    return promise;\n}\n\n// Remove an item from the store, nice and simple.\nfunction removeItem(key, callback) {\n    var self = this;\n\n    key = Object(_utils_normalizeKey__WEBPACK_IMPORTED_MODULE_2__[\"default\"])(key);\n\n    var promise = self.ready().then(function() {\n        var dbInfo = self._dbInfo;\n        sessionStorage.removeItem(dbInfo.keyPrefix + key);\n    });\n\n    Object(_utils_executeCallback__WEBPACK_IMPORTED_MODULE_0__[\"default\"])(promise, callback);\n    return promise;\n}\n\n// Set a key's value and run an optional callback once the value is set.\n// Unlike Gaia's implementation, the callback function is passed the value,\n// in case you want to operate on that value only after you're sure it\n// saved, or something like that.\nfunction setItem(key, value, callback) {\n    var self = this;\n\n    key = Object(_utils_normalizeKey__WEBPACK_IMPORTED_MODULE_2__[\"default\"])(key);\n\n    var promise = self.ready().then(function() {\n        // Convert undefined values to null.\n        // https://github.com/mozilla/localForage/pull/42\n        if (value === undefined) {\n            value = null;\n        }\n\n        // Save the original value to pass to the callback.\n        var originalValue = value;\n\n        return new Promise(function(resolve, reject) {\n            var dbInfo = self._dbInfo;\n            dbInfo.serializer.serialize(value, function(value, error) {\n                if (error) {\n                    reject(error);\n                } else {\n                    try {\n                        sessionStorage.setItem(dbInfo.keyPrefix + key, value);\n                        resolve(originalValue);\n                    } catch (e) {\n                        // sessionStorage capacity exceeded.\n                        // TODO: Make this a specific error/event.\n                        if (\n                            e.name === 'QuotaExceededError' ||\n                            e.name === 'NS_ERROR_DOM_QUOTA_REACHED'\n                        ) {\n                            reject(e);\n                        }\n                        reject(e);\n                    }\n                }\n            });\n        });\n    });\n\n    Object(_utils_executeCallback__WEBPACK_IMPORTED_MODULE_0__[\"default\"])(promise, callback);\n    return promise;\n}\n\nfunction dropInstance(options, callback) {\n    callback = _utils_getCallback__WEBPACK_IMPORTED_MODULE_1__[\"default\"].apply(this, arguments);\n\n    options = (typeof options !== 'function' && options) || {};\n    if (!options.name) {\n        var currentConfig = this.config();\n        options.name = options.name || currentConfig.name;\n        options.storeName = options.storeName || currentConfig.storeName;\n    }\n\n    var self = this;\n    var promise;\n    if (!options.name) {\n        promise = Promise.reject(new Error('Invalid arguments'));\n    } else {\n        promise = new Promise(function(resolve) {\n            if (!options.storeName) {\n                resolve(`${options.name}/`);\n            } else {\n                resolve(_getKeyPrefix(options, self._defaultConfig));\n            }\n        }).then(function(keyPrefix) {\n            for (var i = sessionStorage.length - 1; i >= 0; i--) {\n                var key = sessionStorage.key(i);\n\n                if (key.indexOf(keyPrefix) === 0) {\n                    sessionStorage.removeItem(key);\n                }\n            }\n        });\n    }\n\n    Object(_utils_executeCallback__WEBPACK_IMPORTED_MODULE_0__[\"default\"])(promise, callback);\n    return promise;\n}\n\nconst sessionStorageWrapper = {\n    _driver: 'sessionStorageWrapper',\n    _initStorage: _initStorage,\n    _support: isSessionStorageValid(),\n    iterate: iterate,\n    getItem: getItem,\n    setItem: setItem,\n    removeItem: removeItem,\n    clear: clear,\n    length: length,\n    key: key,\n    keys: keys,\n    dropInstance: dropInstance\n};\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (sessionStorageWrapper);\n\n\n//# sourceURL=webpack:///./src/drivers/sessionStorage.js?");
 
-// localSync delegate to the model or collection's
-// *browserStorage* property, which should be an instance of `Store`.
-// window.Store.sync and Backbone.localSync is deprecated, use Backbone.BrowserStorage.sync instead
-Backbone.BrowserStorage.sync = Backbone.localSync = function(method, model, options) {
-  var store = model.browserStorage || model.collection.browserStorage;
+/***/ }),
 
-  var resp, errorMessage;
-  //If $ is having Deferred - use it.
-  var syncDfd = Backbone.$ ?
-    (Backbone.$.Deferred && Backbone.$.Deferred()) :
-    (Backbone.Deferred && Backbone.Deferred());
+/***/ "backbone":
+/*!**************************************************************************************************!*\
+  !*** external {"amd":"backbone","commonjs":"backbone","commonjs2":"backbone","root":"Backbone"} ***!
+  \**************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
 
-  try {
+eval("module.exports = undefined;\n\n//# sourceURL=webpack:///external_%7B%22amd%22:%22backbone%22,%22commonjs%22:%22backbone%22,%22commonjs2%22:%22backbone%22,%22root%22:%22Backbone%22%7D?");
 
-    switch (method) {
-      case "read":
-        resp = model.id !== undefined ? store.find(model) : store.findAll();
-        break;
-      case "create":
-        resp = store.create(model, options);
-        break;
-      case "update":
-        resp = store.update(model, options);
-        break;
-      case "delete":
-        resp = store.destroy(model, options);
-        break;
-    }
+/***/ }),
 
-  } catch(error) {
-    if (error.code === 22 && store._storageSize() === 0)
-      errorMessage = "Private browsing is unsupported";
-    else
-      errorMessage = error.message;
-  }
+/***/ "lodash":
+/*!*************************************************************************************!*\
+  !*** external {"amd":"lodash","commonjs":"lodash","commonjs2":"lodash","root":"_"} ***!
+  \*************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
 
-  if (resp) {
-    if (options && options.success) {
-        options.success(resp, options);
-    }
-    if (syncDfd) {
-        syncDfd.resolve(resp);
-    }
-  } else {
-    errorMessage = errorMessage ? errorMessage : "Record Not Found";
-    if (options && options.error) {
-        options.error(errorMessage);
-    }
-    if (syncDfd) {
-        syncDfd.reject(errorMessage);
-    }
-  }
+eval("module.exports = undefined;\n\n//# sourceURL=webpack:///external_%7B%22amd%22:%22lodash%22,%22commonjs%22:%22lodash%22,%22commonjs2%22:%22lodash%22,%22root%22:%22_%22%7D?");
 
-  // add compatibility with $.ajax
-  // always execute callback for success and error
-  if (options && options.complete) options.complete(resp);
+/***/ })
 
-  return syncDfd && syncDfd.promise();
-};
-
-Backbone.ajaxSync = Backbone.sync;
-
-Backbone.getSyncMethod = function(model) {
-  if(model.browserStorage || (model.collection && model.collection.browserStorage)) {
-    return Backbone.localSync;
-  }
-  return Backbone.ajaxSync;
-};
-
-// Override 'Backbone.sync' to default to localSync,
-// the original 'Backbone.sync' is still available in 'Backbone.ajaxSync'
-Backbone.sync = function(method, model, options) {
-  return Backbone.getSyncMethod(model).apply(this, [method, model, options]);
-};
-
-return Backbone.BrowserStorage;
-}));
-
+/******/ });
 
 /***/ }),
 
@@ -48443,7 +48401,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
       $iq = _converse$env.$iq,
-      b64_sha1 = _converse$env.b64_sha1,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
@@ -48687,20 +48644,20 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       comparator: item => item.get('name').toLowerCase(),
 
       initialize() {
-        this.on('add', _.flow(this.openBookmarkedRoom, this.markRoomAsBookmarked));
+        this.on('add', b => this.openBookmarkedRoom(b).then(b => this.markRoomAsBookmarked(b)));
         this.on('remove', this.markRoomAsUnbookmarked, this);
         this.on('remove', this.sendBookmarkStanza, this);
 
         const storage = _converse.config.get('storage'),
-              cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
+              cache_key = `converse.room-bookmarks-${_converse.bare_jid}`;
 
-        this.fetched_flag = b64_sha1(cache_key + 'fetched');
-        this.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(cache_key));
+        this.bookmarks_cached = `${cache_key}--cached`;
+        this.browserStorage = new Backbone.BrowserStorage(cache_key, storage);
       },
 
-      openBookmarkedRoom(bookmark) {
+      async openBookmarkedRoom(bookmark) {
         if (bookmark.get('autojoin')) {
-          const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
+          const groupchat = await _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
 
           if (!groupchat.get('hidden')) {
             groupchat.trigger('show');
@@ -48713,19 +48670,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       fetchBookmarks() {
         const deferred = u.getResolveablePromise();
 
-        if (this.browserStorage.records.length > 0) {
+        if (sessionStorage.getItem(this.bookmarks_cached)) {
           this.fetch({
             'success': _.bind(this.onCachedBookmarksFetched, this, deferred),
             'error': _.bind(this.onCachedBookmarksFetched, this, deferred)
           });
-        } else if (!window.sessionStorage.getItem(this.fetched_flag)) {
-          // There aren't any cached bookmarks and the
-          // `fetched_flag` is off, so we query the XMPP server.
-          // If nothing is returned from the XMPP server, we set
-          // the `fetched_flag` to avoid calling the server again.
-          this.fetchBookmarksFromServer(deferred);
         } else {
-          deferred.resolve();
+          this.fetchBookmarksFromServer(deferred);
         }
 
         return deferred;
@@ -48832,6 +48783,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       onBookmarksReceived(deferred, iq) {
         this.createBookmarksFromStanza(iq);
+        sessionStorage.setItem(this.bookmarks_cached, true);
 
         if (!_.isUndefined(deferred)) {
           return deferred.resolve();
@@ -48839,7 +48791,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       onBookmarksReceivedError(deferred, iq) {
-        window.sessionStorage.setItem(this.fetched_flag, true);
+        sessionStorage.setItem(this.bookmarks_cached, true);
 
         _converse.log('Error while fetching bookmarks', Strophe.LogLevel.WARN);
 
@@ -48902,13 +48854,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
-        const storage = _converse.config.get('storage'),
-              id = b64_sha1(`converse.room-bookmarks${_converse.bare_jid}-list-model`);
-
+        const id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
         this.list_model = new _converse.BookmarksList({
           'id': id
         });
-        this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
+        this.list_model.browserStorage = new _converse.BrowserStorage(id);
         this.list_model.fetch();
         this.render();
         this.sortAndPositionAllItems();
@@ -49047,7 +48997,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       if (!_.isUndefined(_converse.bookmarks)) {
         _converse.bookmarks.browserStorage._clear();
 
-        window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
+        window.sessionStorage.removeItem(_converse.bookmarks.bookmarks_cached);
       }
     });
 
@@ -49320,6 +49270,21 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     });
     /************************ BEGIN Event Handlers ************************/
 
+    _converse.api.waitUntil('rosterContactsFetched').then(() => {
+      _converse.roster.on('add', contact => {
+        /* When a new contact is added, check if we already have a
+         * chatbox open for it, and if so attach it to the chatbox.
+         */
+        const chatbox = _converse.chatboxes.findWhere({
+          'jid': contact.get('jid')
+        });
+
+        if (chatbox) {
+          chatbox.addRelatedContact(contact);
+        }
+      });
+    });
+
     _converse.api.listen.on('chatBoxesInitialized', () => {
       _converse.chatboxviews = new _converse.ChatBoxViews({
         'model': _converse.chatboxes
@@ -49420,7 +49385,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
       _ = _converse$env._,
-      b64_sha1 = _converse$env.b64_sha1,
       f = _converse$env.f,
       sizzle = _converse$env.sizzle,
       moment = _converse$env.moment;
@@ -49687,7 +49651,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         'drop .chat-textarea': 'onDrop'
       },
 
-      initialize() {
+      async initialize() {
         this.initDebounced();
         this.model.messages.on('add', this.onMessageAdded, this);
         this.model.messages.on('rendered', this.scrollDown, this);
@@ -49696,7 +49660,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.model.presence.on('change:show', this.onPresenceChanged, this);
         this.model.on('showHelpMessages', this.showHelpMessages, this);
         this.render();
-        this.fetchMessages();
+        await this.model.fetchMessages();
+        this.afterMessagesFetched();
 
         _converse.emit('chatBoxOpened', this);
 
@@ -49883,15 +49848,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.content.addEventListener('scroll', this.markScrolled.bind(this));
 
         _converse.emit('afterMessagesFetched', this);
-      },
-
-      fetchMessages() {
-        this.model.messages.fetch({
-          'add': true,
-          'success': this.afterMessagesFetched.bind(this),
-          'error': this.afterMessagesFetched.bind(this)
-        });
-        return this;
       },
 
       insertIntoDOM() {
@@ -50476,7 +50432,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           _converse.emojipicker = new _converse.EmojiPicker({
             'id': id
           });
-          _converse.emojipicker.browserStorage = new Backbone.BrowserStorage[storage](id);
+          _converse.emojipicker.browserStorage = new _converse.BrowserStorage(id);
 
           _converse.emojipicker.fetch();
         }
@@ -50571,7 +50527,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
       },
 
-      close(ev) {
+      async close(ev) {
         if (ev && ev.preventDefault) {
           ev.preventDefault();
         }
@@ -50588,7 +50544,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         try {
-          this.model.destroy();
+          await new Promise((success, error) => this.model.destroy({
+            success,
+            error
+          }));
         } catch (e) {
           _converse.log(e, Strophe.LogLevel.ERROR);
         }
@@ -50763,32 +50722,65 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
        */
       'chatviews': {
         /**
-         * Get the view of an already open chat.
+         * Retrieves a chat view. The chat should already be open.
          *
          * @method _converse.api.chatviews.get
-         * @returns {ChatBoxView} A [Backbone.View](http://backbonejs.org/#View) instance.
-         *     The chat should already be open, otherwise `undefined` will be returned.
+         * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+         * @returns {(Backbone.View|Array)} The Backbone.View representing the chatview, or an array of views.
          *
          * @example
-         * // To return a single view, provide the JID of the contact:
-         * _converse.api.chatviews.get('buddy@example.com')
+         * // To return a single view, provide the JID of the contact you're chatting with in that chat:
+         * const view = _converse.api.chatviews.get('buddy@example.com');
          *
          * @example
          * // To return an array of views, provide an array of JIDs:
-         * _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])
+         * const views = _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com']);
+         *
+         * @example
+         * // To return all open views, call the method without any parameters::
+         * const views = _converse.api.chatviews.get();
          */
-        'get'(jids) {
-          if (_.isUndefined(jids)) {
-            _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+        get(jids) {
+          const chats = _converse.api.chats.get(jids);
 
+          if (_.isUndefined(chats)) {
             return null;
           }
 
-          if (_.isString(jids)) {
-            return _converse.chatboxviews.get(jids);
+          if (_.isArray(chats)) {
+            return chats.map(chat => _converse.chatboxviews.get(chat.get('jid')));
+          } else {
+            return _converse.chatboxviews.get(chats.get('jid'));
           }
+        },
 
-          return _.map(jids, jid => _converse.chatboxviews.get(jids));
+        /**
+         * Opens a chat view.
+         *
+         * @method _converse.api.chatviews.open
+         * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+         * @returns {Promise} A Promise which resolves with the view or array of views.
+         *
+         * @example
+         * // To return a single view, provide the JID of the contact you're chatting with in that chat:
+         * const view = _converse.api.chatviews.open('buddy@example.com');
+         *
+         * @example
+         * // To return an array of views, provide an array of JIDs:
+         * const views = _converse.api.chatviews.open(['buddy1@example.com', 'buddy2@example.com']);
+         *
+         * @example
+         * // To return all open views, call the method without any parameters::
+         * const views = _converse.api.chatviews.open();
+         */
+        async open(jids) {
+          const chats = await _converse.api.chats.open(jids);
+
+          if (_.isArray(chats)) {
+            return chats.map(chat => _converse.chatboxviews.get(chat.get('jid')));
+          } else {
+            return _converse.chatboxviews.get(chats.get('jid'));
+          }
         }
 
       }
@@ -51516,7 +51508,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     _converse.on('chatBoxesFetched', () => {
       const controlbox = _converse.chatboxes.get('controlbox') || addControlBox();
       controlbox.save({
-        connected: true
+        'connected': true
+      }, {
+        'patch': true
       });
     });
 
@@ -52200,7 +52194,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         'keypress textarea.chat-textarea': 'keyPressed'
       },
 
-      initialize() {
+      async initialize() {
         this.initDebounced();
         this.disable_mam = true; // Don't do MAM queries for this box
 
@@ -52208,7 +52202,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         this.model.on('show', this.show, this);
         this.model.on('destroy', this.hide, this);
         this.model.on('change:minimized', this.onMinimizedChanged, this);
-        this.render().insertHeading().fetchMessages().insertIntoDOM().hide();
+        this.render().insertHeading();
+        await this.model.fetchMessages();
+        this.hide();
+        this.insertIntoDOM();
 
         _converse.emit('chatBoxOpened', this);
 
@@ -52626,7 +52623,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].env.utils;
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-minimize', {
@@ -53064,14 +53060,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 
       initToggle() {
         const storage = _converse.config.get('storage'),
-              id = b64_sha1(`converse.minchatstoggle${_converse.bare_jid}`);
+              id = `converse.minchatstoggle-${_converse.bare_jid}`;
 
         this.toggleview = new _converse.MinimizedChatsToggleView({
           'model': new _converse.MinimizedChatsToggle({
             'id': id
           })
         });
-        this.toggleview.model.browserStorage = new Backbone.BrowserStorage[storage](id);
+        this.toggleview.model.browserStorage = new _converse.BrowserStorage(id);
         this.toggleview.model.fetch();
       },
 
@@ -53472,11 +53468,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     ControlBoxView: {
       renderRoomsPanel() {
         const _converse = this.__super__._converse;
+        const id = `converse.roomspanel-${_converse.bare_jid}`;
         this.roomspanel = new _converse.RoomsPanel({
           'model': new (_converse.RoomsPanelModel.extend({
-            'id': b64_sha1(`converse.roomspanel${_converse.bare_jid}`),
-            // Required by sessionStorage
-            'browserStorage': new Backbone.BrowserStorage[_converse.config.get('storage')](b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
+            'id': id,
+            'browserStorage': new _converse.BrowserStorage(id)
           }))()
         });
         this.roomspanel.model.fetch();
@@ -53920,30 +53916,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         this.enterRoom();
       },
 
-      enterRoom(ev) {
+      async enterRoom(ev) {
         if (ev) {
           ev.preventDefault();
         }
 
         if (this.model.get('connection_status') !== _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.ENTERED) {
-          const handler = () => {
-            if (!u.isPersistableModel(this.model)) {
-              // Happens during tests, nothing to do if this
-              // is a hanging chatbox (i.e. not in the collection anymore).
-              return;
-            }
+          await this.model.getRoomFeatures();
 
-            this.populateAndJoin();
+          if (!u.isPersistableModel(this.model)) {
+            // XXX: Happens during tests, nothing to do if this
+            // is a hanging chatbox (i.e. not in the collection anymore).
+            return;
+          }
 
-            _converse.emit('chatRoomOpened', this);
-          };
-
-          this.model.getRoomFeatures().then(handler, handler);
+          this.populateAndJoin();
         } else {
-          this.fetchMessages();
-
-          _converse.emit('chatRoomOpened', this);
+          this.model.fetchMessages();
         }
+
+        _converse.emit('chatRoomOpened', this);
       },
 
       render() {
@@ -54149,7 +54141,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         });
       },
 
-      close(ev) {
+      async close(ev) {
         /* Close this chat box, which implies leaving the groupchat as
          * well.
          */
@@ -54159,9 +54151,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           _converse.router.navigate('');
         }
 
-        this.model.leave();
-
-        _converse.ChatBoxView.prototype.close.apply(this, arguments);
+        await this.model.leave();
+        return _converse.ChatBoxView.prototype.close.apply(this, arguments);
       },
 
       setOccupantsVisibility() {
@@ -54551,7 +54542,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       populateAndJoin() {
         this.model.occupants.fetchMembers();
         this.join();
-        this.fetchMessages();
+        this.model.fetchMessages();
       },
 
       join(nick, password) {
@@ -56003,8 +55994,7 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       $iq = _converse$env.$iq,
       $msg = _converse$env.$msg,
       _ = _converse$env._,
-      f = _converse$env.f,
-      b64_sha1 = _converse$env.b64_sha1;
+      f = _converse$env.f;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
 Strophe.addNamespace('OMEMO_DEVICELIST', Strophe.NS.OMEMO + ".devicelist");
 Strophe.addNamespace('OMEMO_VERIFICATION', Strophe.NS.OMEMO + ".verification");
@@ -57010,7 +57000,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         const storage = _converse.config.get('storage');
 
-        this.devices.browserStorage = new Backbone.BrowserStorage[storage](id);
+        this.devices.browserStorage = new _converse.BrowserStorage(id, _converse.storage[storage]);
         this.fetchDevices();
       },
 
@@ -57240,7 +57230,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         _converse.omemo_store = new _converse.OMEMOStore({
           'id': id
         });
-        _converse.omemo_store.browserStorage = new Backbone.BrowserStorage[storage](id);
+        _converse.omemo_store.browserStorage = new _converse.BrowserStorage(id);
       }
 
       return _converse.omemo_store.fetchSession();
@@ -57256,7 +57246,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       const storage = _converse.config.get('storage'),
             id = `converse.devicelists-${_converse.bare_jid}`;
 
-      _converse.devicelists.browserStorage = new Backbone.BrowserStorage[storage](id);
+      _converse.devicelists.browserStorage = new _converse.BrowserStorage(id);
       await fetchOwnDevices();
       await restoreOMEMOSession();
       await _converse.omemo_store.publishBundle();
@@ -58686,7 +58676,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
@@ -58853,14 +58842,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
         this.model.on('add', this.showOrHide, this);
         this.model.on('remove', this.showOrHide, this);
-
-        const storage = _converse.config.get('storage'),
-              id = b64_sha1(`converse.roomslist${_converse.bare_jid}`);
-
+        const id = `converse.roomslist${_converse.bare_jid}`;
         this.list_model = new _converse.RoomsList({
           'id': id
         });
-        this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
+        this.list_model.browserStorage = new _converse.BrowserStorage(id);
         this.list_model.fetch();
         this.render();
         this.sortAndPositionAllItems();
@@ -58966,11 +58952,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     });
 
     const initRoomsListView = function initRoomsListView() {
-      const storage = _converse.config.get('storage'),
-            id = b64_sha1(`converse.open-rooms-{_converse.bare_jid}`),
+      const id = `converse.open-rooms-{_converse.bare_jid}`,
             model = new _converse.OpenRooms();
-
-      model.browserStorage = new Backbone.BrowserStorage[storage](id);
+      model.browserStorage = new _converse.BrowserStorage(id);
       _converse.rooms_list_view = new _converse.RoomsListView({
         'model': model
       });
@@ -59921,8 +59905,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       createRosterFilter() {
         // Create a model on which we can store filter properties
         const model = new _converse.RosterFilter();
-        model.id = b64_sha1(`_converse.rosterfilter${_converse.bare_jid}`);
-        model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
+        model.id = `converse.rosterfilter-${_converse.bare_jid}`;
+        model.browserStorage = new _converse.BrowserStorage(this.filter.id, 'local');
         this.filter_view = new _converse.RosterFilterView({
           'model': model
         });
@@ -60059,7 +60043,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         return this.model.create({
           name,
-          id: b64_sha1(name)
+          'id': b64_sha1(name)
         });
       },
 
@@ -61795,7 +61779,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
         const storage = _converse.config.get('storage');
 
-        this.messages.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.messages${jid}${_converse.bare_jid}`));
+        const id = `converse.messages-${this.get('jid')}-${_converse.bare_jid}`;
+        this.messages.browserStorage = new _converse.BrowserStorage(id, storage);
         this.messages.chatbox = this;
         this.messages.on('change:upload', message => {
           if (message.get('upload') === _converse.SUCCESS) {
@@ -61811,7 +61796,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'box_id': b64_sha1(this.get('jid')),
           'time_opened': this.get('time_opened') || moment().valueOf(),
           'user_id': Strophe.getNodeFromJid(this.get('jid'))
+        }, {
+          'wait': true
         });
+      },
+
+      fetchMessages() {
+        this.messagesFetchedPromise = new Promise((resolve, reject) => this.messages.fetch({
+          'add': true,
+          'success': resolve,
+          'error': reject
+        }));
       },
 
       validate(attrs, options) {
@@ -62152,6 +62147,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         /* Create a Backbone.Message object inside this chat box
          * based on the identified message stanza.
          */
+        await this.messagesFetchedPromise;
         const attrs = await this.getMessageAttributesFromStanza(message, original_stanza),
               is_csn = u.isOnlyChatStateNotification(attrs);
 
@@ -62255,7 +62251,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       },
 
       onConnected() {
-        this.browserStorage = new Backbone.BrowserStorage.session(`converse.chatboxes-${_converse.bare_jid}`);
+        const id = `converse.chatboxes-${_converse.bare_jid}`;
+        this.browserStorage = new _converse.BrowserStorage(id, 'session');
         this.registerMessageHandler();
         this.fetch({
           'add': true,
@@ -62263,7 +62260,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
-      onErrorMessage(message) {
+      async onErrorMessage(message) {
         /* Handler method for all incoming error message stanzas
         */
         const from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
@@ -62272,7 +62269,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           return true;
         }
 
-        const chatbox = this.getChatBox(from_jid);
+        const chatbox = await this.getChatBox(from_jid);
 
         if (!chatbox) {
           return true;
@@ -62334,7 +62331,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         _converse.api.send(receipt_stanza);
       },
 
-      onMessage(stanza) {
+      async onMessage(stanza) {
         /* Handler method for all incoming single-user chat "message"
          * stanzas.
          *
@@ -62405,7 +62402,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
         };
         const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`).length > 0;
-        const chatbox = this.getChatBox(contact_jid, attrs, has_body);
+        const chatbox = await this.getChatBox(contact_jid, attrs, has_body);
 
         if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza)) {
           const msgid = stanza.getAttribute('id'),
@@ -62415,7 +62412,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
           if (!message) {
             // Only create the message when we're sure it's not a duplicate
-            chatbox.createMessage(stanza, original_stanza).then(msg => chatbox.incrementUnreadMsgCounter(msg)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            const msg = await chatbox.createMessage(stanza, original_stanza);
+            chatbox.incrementUnreadMsgCounter(msg);
           }
         }
 
@@ -62427,7 +62425,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return true;
       },
 
-      getChatBox(jid, attrs = {}, create) {
+      async getChatBox(jid, attrs = {}, create) {
         /* Returns a chat box or optionally return a newly
          * created one if one doesn't exist.
          *
@@ -62443,6 +62441,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
 
         jid = Strophe.getBareJidFromJid(jid.toLowerCase());
+        await _converse.api.waitUntil('chatBoxesFetched');
         let chatbox = this.get(Strophe.getBareJidFromJid(jid));
 
         if (!chatbox && create) {
@@ -62451,12 +62450,16 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             'id': jid
           });
 
-          chatbox = this.create(attrs, {
-            'error'(model, response) {
-              _converse.log(response.responseText);
-            }
+          try {
+            chatbox = await new Promise((success, error) => this.create(attrs, {
+              success,
+              error
+            }));
+          } catch (e) {
+            _converse.log(e, Strophe.LogLevel.ERROR);
 
-          });
+            throw e;
+          }
         }
 
         return chatbox;
@@ -62521,8 +62524,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          * @method _converse.api.chats.create
          * @param {string|string[]} jid|jids An jid or array of jids
          * @param {object} attrs An object containing configuration attributes.
+         * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
          */
-        'create'(jids, attrs) {
+        async create(jids, attrs) {
           if (_.isUndefined(jids)) {
             _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
 
@@ -62534,7 +62538,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
               attrs.fullname = _.get(_converse.api.contacts.get(jids), 'attributes.fullname');
             }
 
-            const chatbox = _converse.chatboxes.getChatBox(jids, attrs, true);
+            const chatbox = await _converse.chatboxes.getChatBox(jids, attrs, true);
 
             if (_.isNil(chatbox)) {
               _converse.log("Could not open chatbox for JID: " + jids, Strophe.LogLevel.ERROR);
@@ -62562,11 +62566,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          * // To open a single chat, provide the JID of the contact you're chatting with in that chat:
          * converse.plugins.add('myplugin', {
          *     initialize: function() {
-         *         var _converse = this._converse;
+         *         const _converse = this._converse;
          *         // Note, buddy@example.org must be in your contacts roster!
-         *         _converse.api.chats.open('buddy@example.com').then((chat) => {
-         *             // Now you can do something with the chat model
-         *         });
+         *         const chat = await _converse.api.chats.open('buddy@example.com');
+         *         // Now you can do something with the chat model
          *     }
          * });
          *
@@ -62574,39 +62577,41 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          * // To open an array of chats, provide an array of JIDs:
          * converse.plugins.add('myplugin', {
          *     initialize: function () {
-         *         var _converse = this._converse;
+         *         const _converse = this._converse;
          *         // Note, these users must first be in your contacts roster!
-         *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then((chats) => {
-         *             // Now you can do something with the chat models
-         *         });
+         *         const chat = await _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']);
+         *         // Now you can do something with the chat models
          *     }
          * });
-         *
          */
-        'open'(jids, attrs) {
-          return new Promise((resolve, reject) => {
-            Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(() => {
-              if (_.isUndefined(jids)) {
-                const err_msg = "chats.open: You need to provide at least one JID";
+        async open(jids, attrs) {
+          await Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]);
 
-                _converse.log(err_msg, Strophe.LogLevel.ERROR);
+          if (_.isUndefined(jids)) {
+            const err_msg = "chats.open: You need to provide at least one JID";
 
-                reject(new Error(err_msg));
-              } else if (_.isString(jids)) {
-                resolve(_converse.api.chats.create(jids, attrs).trigger('show'));
-              } else {
-                resolve(_.map(jids, jid => _converse.api.chats.create(jid, attrs).trigger('show')));
-              }
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-          });
+            _converse.log(err_msg, Strophe.LogLevel.ERROR);
+
+            throw new Error(err_msg);
+          } else if (_.isString(jids)) {
+            const chat = await _converse.api.chats.create(jids, attrs);
+            chat.trigger('show');
+            return chat;
+          } else {
+            return Promise.all(_.map(jids, async jid => {
+              const chat = await _converse.api.chats.create(jid, attrs);
+              chat.trigger('show');
+              return chat;
+            }));
+          }
         },
 
         /**
-         * Returns a chat model. The chat should already be open.
+         * Retrieves a chat model. The chat should already be open.
          *
          * @method _converse.api.chats.get
          * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-         * @returns {Backbone.Model}
+         * @returns {(Backbone.Model|Array)} The Backbone.Model representing the chat or an array of models.
          *
          * @example
          * // To return a single chat, provide the JID of the contact you're chatting with in that chat:
@@ -62623,22 +62628,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          */
         'get'(jids) {
           if (_.isUndefined(jids)) {
-            const result = [];
-
-            _converse.chatboxes.each(function (chatbox) {
-              // FIXME: Leaky abstraction from MUC. We need to add a
-              // base type for chat boxes, and check for that.
-              if (chatbox.get('type') !== _converse.CHATROOMS_TYPE) {
-                result.push(chatbox);
-              }
-            });
-
-            return result;
+            return _converse.chatboxes.filter(chatbox => chatbox.get('type') !== _converse.CHATROOMS_TYPE);
           } else if (_.isString(jids)) {
-            return _converse.chatboxes.getChatBox(jids);
+            return _converse.chatboxes.get(jids);
           }
 
-          return _.map(jids, _.partial(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _, {}, true));
+          return _.map(jids, _.partial(_converse.chatboxes.get.bind(_converse.chatboxes), _, {}, true));
         }
 
       }
@@ -62664,7 +62659,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var strophe_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(strophe_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone.browserStorage */ "./node_modules/backbone.browserStorage/backbone.browserStorage.js");
+/* harmony import */ var backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone.browserStorage */ "./node_modules/backbone.browserStorage/dist/backbone.browserStorage.js");
 /* harmony import */ var backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! es6-promise/dist/es6-promise.auto */ "./node_modules/es6-promise/dist/es6-promise.auto.js");
 /* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3__);
@@ -62699,9 +62694,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-Backbone = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.noConflict(); // Strophe globals
-
-const b64_sha1 = strophe_js__WEBPACK_IMPORTED_MODULE_0__["SHA1"].b64_sha1; // Add Strophe Namespaces
+Backbone = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.noConflict();
+backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2___default.a.patch(Backbone); // Strophe globals
+// Add Strophe Namespaces
 
 strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].addNamespace('CARBONS', 'urn:xmpp:carbons:2');
 strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
@@ -62988,6 +62983,37 @@ _converse.isUniView = function () {
   return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
 };
 
+_converse.initStorage = async function () {
+  /* Set up Backbone.BrowserStorage and localForage for the 3 different stores.
+   */
+  _converse.localStorage = backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2___default.a.localForage.createInstance({
+    'name': 'local',
+    'driver': backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2___default.a.localForage.LOCALSTORAGE
+  });
+  _converse.indexedDB = backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2___default.a.localForage.createInstance({
+    'name': 'indexed',
+    'driver': backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2___default.a.localForage.INDEXEDDB
+  });
+  _converse.sessionStorage = backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2___default.a.localForage.createInstance({
+    'name': 'session'
+  });
+  _converse.storage = {
+    'session': _converse.sessionStorage,
+    'local': _converse.localStorage,
+    'indexed': _converse.indexedDB
+  };
+  await backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2___default.a.sessionStorageInitialized;
+
+  _converse.sessionStorage.setDriver('sessionStorageWrapper');
+};
+
+_converse.initStorage();
+
+_converse.BrowserStorage = function (id, storage) {
+  const s = storage ? storage : _converse.storage[_converse.config.get('storage')];
+  return new Backbone.BrowserStorage(id, s);
+};
+
 _converse.router = new Backbone.Router();
 
 function initPlugins() {
@@ -63027,13 +63053,13 @@ function initClientConfig() {
    * What this means is that config values need to persist across
    * user sessions.
    */
-  const id = b64_sha1('converse.client-config');
+  const id = 'converse.client-config';
   _converse.config = new Backbone.Model({
     'id': id,
     'trusted': _converse.trusted && true || false,
     'storage': _converse.trusted ? 'local' : 'session'
   });
-  _converse.config.browserStorage = new Backbone.BrowserStorage.session(id);
+  _converse.config.browserStorage = new _converse.BrowserStorage(id, 'session');
 
   _converse.config.fetch();
 
@@ -63107,14 +63133,12 @@ function unregisterGlobalEventHandlers() {
   _converse.emit('unregisteredGlobalEventHandlers');
 }
 
-function cleanup() {
+async function cleanup() {
   // Looks like _converse.initialized was called again without logging
   // out or disconnecting in the previous session.
   // This happens in tests. We therefore first clean up.
   Backbone.history.stop();
-
-  _converse.chatboxviews.closeAllChatBoxes();
-
+  await _converse.chatboxviews.closeAllChatBoxes();
   unregisterGlobalEventHandlers();
   window.localStorage.clear();
   window.sessionStorage.clear();
@@ -63138,14 +63162,14 @@ function cleanup() {
   initClientConfig();
 }
 
-_converse.initialize = function (settings, callback) {
+_converse.initialize = async function (settings, callback) {
   settings = !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(settings) ? settings : {};
   const init_promise = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].getResolveablePromise();
 
   _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(PROMISES, addPromise);
 
   if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection)) {
-    cleanup();
+    await cleanup();
   }
 
   if ('onpagehide' in window) {
@@ -63506,7 +63530,7 @@ _converse.initialize = function (settings, callback) {
       this.xmppstatus = new this.XMPPStatus({
         'id': id
       });
-      this.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
+      this.xmppstatus.browserStorage = new _converse.BrowserStorage(id, 'session');
       this.xmppstatus.fetch({
         'success': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.onStatusInitialized, reconnecting),
         'error': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.onStatusInitialized, reconnecting)
@@ -63515,11 +63539,11 @@ _converse.initialize = function (settings, callback) {
   };
 
   this.initSession = function () {
-    const id = b64_sha1('converse.bosh-session');
+    const id = `converse.bosh-session-${_converse.bare_jid}`;
     _converse.session = new Backbone.Model({
       id
     });
-    _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
+    _converse.session.browserStorage = new _converse.BrowserStorage(id, 'session');
 
     _converse.session.fetch();
 
@@ -63910,7 +63934,7 @@ _converse.initialize = function (settings, callback) {
 
       if (!password) {
         if (this.auto_login) {
-          throw new Error("initConnection: If you use auto_login and " + "authentication='login' then you also need to provide a password.");
+          throw new Error("If you use auto_login and " + "authentication='login' then you also need to provide a password.");
         }
 
         _converse.setDisconnectionCause(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Status.AUTHFAIL, undefined, true);
@@ -63986,7 +64010,7 @@ _converse.initialize = function (settings, callback) {
     })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).finally(finishInitialization).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL));
   }
 
-  return init_promise;
+  await init_promise;
 };
 /**
  * ### The private API
@@ -64556,7 +64580,7 @@ const converse = {
     'Strophe': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"],
     '_': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a,
     'f': _lodash_fp__WEBPACK_IMPORTED_MODULE_5___default.a,
-    'b64_sha1': b64_sha1,
+    'b64_sha1': strophe_js__WEBPACK_IMPORTED_MODULE_0__["SHA1"].b64_sha1,
     'moment': moment__WEBPACK_IMPORTED_MODULE_7___default.a,
     'sizzle': sizzle__WEBPACK_IMPORTED_MODULE_10___default.a,
     'utils': _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"]
@@ -64594,7 +64618,6 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
       $iq = _converse$env.$iq,
-      b64_sha1 = _converse$env.b64_sha1,
       utils = _converse$env.utils,
       _ = _converse$env._,
       f = _converse$env.f;
@@ -64617,19 +64640,25 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
 
       initialize() {
         this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
+        let id = `converse.dataforms-{this.get('jid')}`;
         this.dataforms = new Backbone.Collection();
-        this.dataforms.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.dataforms-{this.get('jid')}`));
+        this.dataforms.browserStorage = new _converse.BrowserStorage(id, 'session');
+        id = `converse.features-${this.get('jid')}`;
         this.features = new Backbone.Collection();
-        this.features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.features-${this.get('jid')}`));
+        this.features.browserStorage = new _converse.BrowserStorage(id, 'session');
         this.features.on('add', this.onFeatureAdded, this);
+        this.features_cached = `${id}--cached`;
+        id = `converse.fields-${this.get('jid')}`;
         this.fields = new Backbone.Collection();
-        this.fields.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.fields-${this.get('jid')}`));
+        this.fields.browserStorage = new _converse.BrowserStorage(id, 'session');
         this.fields.on('add', this.onFieldAdded, this);
+        id = `converse.identities-${this.get('jid')}`;
         this.identities = new Backbone.Collection();
-        this.identities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.identities-${this.get('jid')}`));
+        this.identities.browserStorage = new _converse.BrowserStorage(id, 'session');
         this.fetchFeatures();
+        id = `converse.disco-items-${this.get('jid')}`;
         this.items = new _converse.DiscoEntities();
-        this.items.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.disco-items-${this.get('jid')}`));
+        this.items.browserStorage = new _converse.BrowserStorage(id, 'session');
         this.items.fetch();
       },
 
@@ -64691,19 +64720,19 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       },
 
       fetchFeatures() {
-        if (this.features.browserStorage.records.length === 0) {
-          this.queryInfo();
-        } else {
+        if (sessionStorage.getItem(this.features_cached)) {
           this.features.fetch({
-            add: true,
+            'add': true,
             success: () => {
               this.waitUntilFeaturesDiscovered.resolve(this);
               this.trigger('featuresDiscovered');
             }
           });
           this.identities.fetch({
-            add: true
+            'add': true
           });
+        } else {
+          this.queryInfo();
         }
       },
 
@@ -64712,6 +64741,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
           const stanza = await _converse.api.disco.info(this.get('jid'), null);
           this.onInfo(stanza);
         } catch (iq) {
+          sessionStorage.setItem(this.features_cached, true);
           this.waitUntilFeaturesDiscovered.resolve(this);
 
           _converse.log(iq, Strophe.LogLevel.ERROR);
@@ -64756,6 +64786,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       },
 
       onInfo(stanza) {
+        sessionStorage.setItem(this.features_cached, true);
+
         _.forEach(stanza.querySelectorAll('identity'), identity => {
           this.identities.create({
             'category': identity.getAttribute('category'),
@@ -64844,8 +64876,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
     }
 
     function initStreamFeatures() {
+      const id = `converse.stream-features-${_converse.bare_jid}`;
       _converse.stream_features = new Backbone.Collection();
-      _converse.stream_features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.stream-features-${_converse.bare_jid}`));
+      _converse.stream_features.browserStorage = new _converse.BrowserStorage(id, 'session');
 
       _converse.stream_features.fetch({
         success(collection) {
@@ -64869,8 +64902,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
 
       _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
 
+      const id = `converse.disco-entities-${_converse.bare_jid}`;
       _converse.disco_entities = new _converse.DiscoEntities();
-      _converse.disco_entities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.disco-entities-${_converse.bare_jid}`));
+      _converse.disco_entities.browserStorage = new _converse.BrowserStorage(id, 'session');
       const collection = await _converse.disco_entities.fetchEntities();
 
       if (collection.length === 0 || !collection.get(_converse.domain)) {
@@ -64896,6 +64930,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
           entity.features.reset();
 
           entity.features.browserStorage._clear();
+
+          sessionStorage.removeItem(entity.features_cached);
         });
 
         _converse.disco_entities.reset();
@@ -66171,7 +66207,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
     _converse.router.route('converse/room?jid=:jid', openRoom);
 
-    _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
+    _converse.openChatRoom = async function (jid, settings, bring_to_foreground) {
       /* Opens a groupchat, making sure that certain attributes
        * are correct, for example that the "type" is set to
        * "chatroom".
@@ -66179,9 +66215,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
       settings.type = _converse.CHATROOMS_TYPE;
       settings.id = jid;
       settings.box_id = b64_sha1(jid);
-
-      const chatbox = _converse.chatboxes.getChatBox(jid, settings, true);
-
+      const chatbox = await _converse.chatboxes.getChatBox(jid, settings, true);
       chatbox.trigger('show', true);
       return chatbox;
     };
@@ -66214,8 +66248,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         this.constructor.__super__.initialize.apply(this, arguments);
 
         this.on('change:connection_status', this.onConnectionStatusChanged, this);
+        const id = `converse.occupants-${_converse.bare_jid}${this.get('jid')}`;
         this.occupants = new _converse.ChatRoomOccupants();
-        this.occupants.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`));
+        this.occupants.browserStorage = new _converse.BrowserStorage(id, 'session');
         this.occupants.chatroom = this;
         this.registerHandlers();
       },
@@ -66335,22 +66370,24 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         return this;
       },
 
-      leave(exit_msg) {
+      async leave(exit_msg) {
         /* Leave the groupchat.
          *
          * Parameters:
          *  (String) exit_msg: Optional message to indicate your
          *      reason for leaving.
          */
-        this.occupants.browserStorage._clear();
-
+        await this.occupants.browserStorage._clear();
         this.occupants.reset();
 
         if (_converse.disco_entities) {
           const disco_entity = _converse.disco_entities.get(this.get('jid'));
 
           if (disco_entity) {
-            disco_entity.destroy();
+            await new Promise((success, error) => disco_entity.destroy({
+              success,
+              error
+            }));
           }
         }
 
@@ -66798,12 +66835,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           if (affiliation) {
             this.save({
               'affiliation': affiliation
+            }, {
+              'wait': true,
+              'patch': true
             });
           }
 
           if (role) {
             this.save({
               'role': role
+            }, {
+              'wait': true,
+              'patch': true
             });
           }
         }
@@ -67177,7 +67220,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }
       },
 
-      onPresence(pres) {
+      async onPresence(pres) {
         /* Handles all MUC presence stanzas.
          *
          * Parameters:
@@ -67191,17 +67234,24 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         const is_self = pres.querySelector("status[code='110']");
 
         if (is_self && pres.getAttribute('type') !== 'unavailable') {
-          this.onOwnPresence(pres);
+          await this.onOwnPresence(pres);
         }
 
         this.updateOccupantsOnPresence(pres);
 
         if (this.get('role') !== 'none' && this.get('connection_status') === _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.CONNECTING) {
-          this.save('connection_status', _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.CONNECTED);
+          await new Promise((success, error) => this.save({
+            'connection_status': _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.CONNECTED
+          }, {
+            'patch': true,
+            'wait': true,
+            success,
+            error
+          }));
         }
       },
 
-      onOwnPresence(pres) {
+      async onOwnPresence(pres) {
         /* Handles a received presence relating to the current
          * user.
          *
@@ -67243,7 +67293,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           }
         }
 
-        this.save('connection_status', _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.ENTERED);
+        await new Promise((success, error) => this.save({
+          'connection_status': _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.ENTERED
+        }, {
+          'patch': true,
+          'wait': true,
+          success,
+          error
+        }));
       },
 
       isUserMentioned(message) {
@@ -67433,7 +67490,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
       }
     });
 
-    _converse.onDirectMUCInvitation = function (message) {
+    _converse.onDirectMUCInvitation = async function (message) {
       /* A direct MUC invitation to join a groupchat has been received
        * See XEP-0249: Direct MUC invitations.
        *
@@ -67463,7 +67520,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
       }
 
       if (result === true) {
-        const chatroom = _converse.openChatRoom(room_jid, {
+        const chatroom = await _converse.openChatRoom(room_jid, {
           'password': x_el.getAttribute('password')
         });
 
@@ -67613,6 +67670,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          * @param {(string[]|string)} jid|jids The JID or array of
          *     JIDs of the chatroom(s) to create
          * @param {object} [attrs] attrs The room attributes
+         * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
          */
         'create'(jids, attrs) {
           if (_.isString(attrs)) {
@@ -67704,14 +67762,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
             throw new TypeError(err_msg);
           } else if (_.isString(jids)) {
-            return _converse.api.rooms.create(jids, attrs).trigger('show');
+            const room = await _converse.api.rooms.create(jids, attrs);
+            room.trigger('show');
+            return room;
           } else {
-            return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).trigger('show'));
+            const rooms = await Promise.all(_.map(jids, jid => _converse.api.rooms.create(jid, attrs)));
+            rooms.forEach(r => r.trigger('show'));
+            return rooms;
           }
         },
 
         /**
-         * Returns an object representing a MUC chatroom (aka groupchat)
+         * Fetches the object representing a MUC chatroom (aka groupchat)
          *
          * @method _converse.api.rooms.get
          * @param {string} [jid] The room JID (if not specified, all rooms will be returned).
@@ -67723,6 +67785,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          *     the user's JID will be used.
          * @param {boolean} create A boolean indicating whether the room should be created
          *     if not found (default: `false`)
+         * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
          * @example
          * _converse.api.waitUntil('roomsAutoJoined').then(() => {
          *     const create_if_not_found = true;
@@ -68052,7 +68115,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Strophe = _converse$env.Strophe,
       $iq = _converse$env.$iq,
       $pres = _converse$env.$pres,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
@@ -68089,19 +68151,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       /* Initialize the Bakcbone collections that represent the contats
        * roster and the roster groups.
        */
-      const storage = _converse.config.get('storage');
-
+      let id = `converse.contacts-${_converse.bare_jid}`;
       _converse.roster = new _converse.RosterContacts();
-      _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.contacts-${_converse.bare_jid}`));
+      _converse.roster.browserStorage = new _converse.BrowserStorage(id);
       _converse.roster.data = new Backbone.Model();
-      const id = b64_sha1(`converse-roster-model-${_converse.bare_jid}`);
+      id = `converse-roster-model-${_converse.bare_jid}`;
       _converse.roster.data.id = id;
-      _converse.roster.data.browserStorage = new Backbone.BrowserStorage[storage](id);
+      _converse.roster.data.browserStorage = new _converse.BrowserStorage(id);
 
       _converse.roster.data.fetch();
 
+      id = `converse.roster-groups-${_converse.bare_jid}`;
       _converse.rostergroups = new _converse.RosterGroups();
-      _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
+      _converse.rostergroups.browserStorage = new _converse.BrowserStorage(id);
 
       _converse.emit('rosterInitialized');
     };
@@ -69001,7 +69063,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.api.listen.on('statusInitialized', reconnecting => {
       if (!reconnecting) {
         _converse.presences = new _converse.Presences();
-        _converse.presences.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
+        _converse.presences.browserStorage = new _converse.BrowserStorage(`converse.presences-${_converse.bare_jid}`, 'session');
 
         _converse.presences.fetch();
       }
@@ -69138,7 +69200,6 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env
       _ = _converse$env._,
       $iq = _converse$env.$iq,
       $build = _converse$env.$build,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment,
       sizzle = _converse$env.sizzle;
 const u = _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
@@ -69263,22 +69324,22 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
 
       return onVCardData(jid, iq);
     }
-    /* Event handlers */
+    /************************ Event Handlers ************************/
 
 
     _converse.initVCardCollection = function () {
       _converse.vcards = new _converse.VCards();
-      const id = b64_sha1(`${_converse.bare_jid}-converse.vcards`);
-      _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.config.get('storage')](id);
+      const id = `${_converse.bare_jid}-converse.vcards`;
+      _converse.vcards.browserStorage = new _converse.BrowserStorage(id);
 
       _converse.vcards.fetch();
     };
 
     _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
 
-    _converse.on('addClientFeatures', () => {
-      _converse.api.disco.own.features.add(Strophe.NS.VCARD);
-    });
+    _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.VCARD));
+    /***************************** API ******************************/
+
 
     _.extend(_converse.api, {
       /**

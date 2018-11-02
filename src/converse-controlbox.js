@@ -638,7 +638,7 @@ converse.plugins.add('converse-controlbox', {
 
         _converse.on('chatBoxesFetched', () => {
             const controlbox = _converse.chatboxes.get('controlbox') || addControlBox();
-            controlbox.save({connected:true});
+            controlbox.save({'connected': true}, {'patch': true});
         });
 
         const disconnect =  function () {

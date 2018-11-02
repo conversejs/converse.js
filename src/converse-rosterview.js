@@ -813,8 +813,8 @@ converse.plugins.add('converse-rosterview', {
             createRosterFilter () {
                 // Create a model on which we can store filter properties
                 const model = new _converse.RosterFilter();
-                model.id = b64_sha1(`_converse.rosterfilter${_converse.bare_jid}`);
-                model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
+                model.id = `converse.rosterfilter-${_converse.bare_jid}`;
+                model.browserStorage = new _converse.BrowserStorage(this.filter.id, 'local');
                 this.filter_view = new _converse.RosterFilterView({'model': model});
                 this.filter_view.model.on('change', this.updateFilter, this);
                 this.filter_view.model.fetch();
@@ -930,7 +930,7 @@ converse.plugins.add('converse-rosterview', {
                 if (view) {
                     return view.model;
                 }
-                return this.model.create({name, id: b64_sha1(name)});
+                return this.model.create({name, 'id': b64_sha1(name)});
             },
 
             addContactToGroup (contact, name, options) {

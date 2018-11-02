@@ -61,9 +61,7 @@ converse.plugins.add('converse-chatboxviews', {
         const { _converse } = this,
               { __ } = _converse;
 
-        _converse.api.promises.add([
-            'chatBoxViewsInitialized'
-        ]);
+        _converse.api.promises.add(['chatBoxViewsInitialized']);
 
         // Configuration values for this plugin
         // ====================================
@@ -152,6 +150,18 @@ converse.plugins.add('converse-chatboxviews', {
 
 
         /************************ BEGIN Event Handlers ************************/
+        _converse.api.waitUntil('rosterContactsFetched').then(() => {
+            _converse.roster.on('add', (contact) => {
+                /* When a new contact is added, check if we already have a
+                 * chatbox open for it, and if so attach it to the chatbox.
+                 */
+                const chatbox = _converse.chatboxes.findWhere({'jid': contact.get('jid')});
+                if (chatbox) {
+                    chatbox.addRelatedContact(contact);
+                }
+            });
+        });
+
         _converse.api.listen.on('chatBoxesInitialized', () => {
             _converse.chatboxviews = new _converse.ChatBoxViews({
                 'model': _converse.chatboxes

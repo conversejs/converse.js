@@ -28,7 +28,7 @@ import tpl_user_details_modal from "templates/user_details_modal.html";
 import u from "@converse/headless/utils/emoji";
 import xss from "xss";
 
-const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, moment } = converse.env;
+const { $msg, Backbone, Promise, Strophe, _, f, sizzle, moment } = converse.env;
 
 
 converse.plugins.add('converse-chatview', {
@@ -301,7 +301,7 @@ converse.plugins.add('converse-chatview', {
                 'drop .chat-textarea': 'onDrop',
             },
 
-            initialize () {
+            async initialize () {
                 this.initDebounced();
 
                 this.model.messages.on('add', this.onMessageAdded, this);
@@ -314,7 +314,8 @@ converse.plugins.add('converse-chatview', {
                 this.model.on('showHelpMessages', this.showHelpMessages, this);
                 this.render();
 
-                this.fetchMessages();
+                await this.model.fetchMessages();
+                this.afterMessagesFetched();
                 _converse.emit('chatBoxOpened', this);
                 _converse.emit('chatBoxInitialized', this);
             },
@@ -484,15 +485,6 @@ converse.plugins.add('converse-chatview', {
                 this.scrollDown();
                 this.content.addEventListener('scroll', this.markScrolled.bind(this));
                 _converse.emit('afterMessagesFetched', this);
-            },
-
-            fetchMessages () {
-                this.model.messages.fetch({
-                    'add': true,
-                    'success': this.afterMessagesFetched.bind(this),
-                    'error': this.afterMessagesFetched.bind(this),
-                });
-                return this;
             },
 
             insertIntoDOM () {
@@ -1049,7 +1041,7 @@ converse.plugins.add('converse-chatview', {
                     const storage = _converse.config.get('storage'),
                           id = `converse.emoji-${_converse.bare_jid}`;
                     _converse.emojipicker = new _converse.EmojiPicker({'id': id});
-                    _converse.emojipicker.browserStorage = new Backbone.BrowserStorage[storage](id);
+                    _converse.emojipicker.browserStorage = new _converse.BrowserStorage(id);
                     _converse.emojipicker.fetch();
                 }
                 this.emoji_picker_view = new _converse.EmojiPickerView({
@@ -1144,7 +1136,7 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            close (ev) {
+            async close (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (Backbone.history.getFragment() === "converse/chat?jid="+this.model.get('jid')) {
                     _converse.router.navigate('');
@@ -1156,7 +1148,7 @@ converse.plugins.add('converse-chatview', {
                     this.model.sendChatState();
                 }
                 try {
-                    this.model.destroy();
+                    await new Promise((success, error) => this.model.destroy({success, error}));
                 } catch (e) {
                     _converse.log(e, Strophe.LogLevel.ERROR);
                 }
@@ -1306,33 +1298,63 @@ converse.plugins.add('converse-chatview', {
              * @memberOf _converse.api
              */
             'chatviews': {
-                 /**
-                  * Get the view of an already open chat.
-                  *
-                  * @method _converse.api.chatviews.get
-                  * @returns {ChatBoxView} A [Backbone.View](http://backbonejs.org/#View) instance.
-                  *     The chat should already be open, otherwise `undefined` will be returned.
-                  *
-                  * @example
-                  * // To return a single view, provide the JID of the contact:
-                  * _converse.api.chatviews.get('buddy@example.com')
-                  *
-                  * @example
-                  * // To return an array of views, provide an array of JIDs:
-                  * _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com'])
-                  */
-                'get' (jids) {
-                    if (_.isUndefined(jids)) {
-                        _converse.log(
-                            "chats.create: You need to provide at least one JID",
-                            Strophe.LogLevel.ERROR
-                        );
+                /**
+                 * Retrieves a chat view. The chat should already be open.
+                 *
+                 * @method _converse.api.chatviews.get
+                 * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+                 * @returns {(Backbone.View|Array)} The Backbone.View representing the chatview, or an array of views.
+                 *
+                 * @example
+                 * // To return a single view, provide the JID of the contact you're chatting with in that chat:
+                 * const view = _converse.api.chatviews.get('buddy@example.com');
+                 *
+                 * @example
+                 * // To return an array of views, provide an array of JIDs:
+                 * const views = _converse.api.chatviews.get(['buddy1@example.com', 'buddy2@example.com']);
+                 *
+                 * @example
+                 * // To return all open views, call the method without any parameters::
+                 * const views = _converse.api.chatviews.get();
+                 */
+                get (jids) {
+                    const chats = _converse.api.chats.get(jids);
+                    if (_.isUndefined(chats)) {
                         return null;
                     }
-                    if (_.isString(jids)) {
-                        return _converse.chatboxviews.get(jids);
+                    if (_.isArray(chats)) {
+                        return chats.map(chat => _converse.chatboxviews.get(chat.get('jid')));
+                    } else {
+                        return _converse.chatboxviews.get(chats.get('jid'));
                     }
-                    return _.map(jids, (jid) => _converse.chatboxviews.get(jids));
+                },
+
+                /**
+                 * Opens a chat view.
+                 *
+                 * @method _converse.api.chatviews.open
+                 * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+                 * @returns {Promise} A Promise which resolves with the view or array of views.
+                 *
+                 * @example
+                 * // To return a single view, provide the JID of the contact you're chatting with in that chat:
+                 * const view = _converse.api.chatviews.open('buddy@example.com');
+                 *
+                 * @example
+                 * // To return an array of views, provide an array of JIDs:
+                 * const views = _converse.api.chatviews.open(['buddy1@example.com', 'buddy2@example.com']);
+                 *
+                 * @example
+                 * // To return all open views, call the method without any parameters::
+                 * const views = _converse.api.chatviews.open();
+                 */
+                async open (jids) {
+                    const chats = await _converse.api.chats.open(jids);
+                    if (_.isArray(chats)) {
+                        return chats.map(chat => _converse.chatboxviews.get(chat.get('jid')));
+                    } else {
+                        return _converse.chatboxviews.get(chats.get('jid'));
+                    }
                 }
             }
         });

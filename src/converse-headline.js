@@ -71,7 +71,7 @@ converse.plugins.add('converse-headline', {
                 'keypress textarea.chat-textarea': 'keyPressed'
             },
 
-            initialize () {
+            async initialize () {
                 this.initDebounced();
 
                 this.disable_mam = true; // Don't do MAM queries for this box
@@ -80,7 +80,10 @@ converse.plugins.add('converse-headline', {
                 this.model.on('destroy', this.hide, this);
                 this.model.on('change:minimized', this.onMinimizedChanged, this);
 
-                this.render().insertHeading().fetchMessages().insertIntoDOM().hide();
+                this.render().insertHeading()
+                await this.model.fetchMessages()
+                this.hide();
+                this.insertIntoDOM();
                 _converse.emit('chatBoxOpened', this);
                 _converse.emit('chatBoxInitialized', this);
             },

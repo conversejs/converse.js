@@ -6,7 +6,7 @@
 
 import converse from "@converse/headless/converse-core";
 
-const { Backbone, Promise, Strophe, $iq, $pres, b64_sha1, moment, sizzle, _ } = converse.env;
+const { Backbone, Promise, Strophe, $iq, $pres, moment, sizzle, _ } = converse.env;
 const u = converse.env.utils;
 
 
@@ -50,20 +50,19 @@ converse.plugins.add('converse-roster', {
             /* Initialize the Bakcbone collections that represent the contats
              * roster and the roster groups.
              */
-            const storage = _converse.config.get('storage');
+            let id = `converse.contacts-${_converse.bare_jid}`
             _converse.roster = new _converse.RosterContacts();
-            _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](
-                b64_sha1(`converse.contacts-${_converse.bare_jid}`));
+            _converse.roster.browserStorage = new _converse.BrowserStorage(id);
 
             _converse.roster.data = new Backbone.Model();
-            const id = b64_sha1(`converse-roster-model-${_converse.bare_jid}`);
+            id = `converse-roster-model-${_converse.bare_jid}`;
             _converse.roster.data.id = id;
-            _converse.roster.data.browserStorage = new Backbone.BrowserStorage[storage](id);
+            _converse.roster.data.browserStorage = new _converse.BrowserStorage(id);
             _converse.roster.data.fetch();
 
+            id = `converse.roster-groups-${_converse.bare_jid}`;
             _converse.rostergroups = new _converse.RosterGroups();
-            _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](
-                b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
+            _converse.rostergroups.browserStorage = new _converse.BrowserStorage(id);
             _converse.emit('rosterInitialized');
         };
 
@@ -860,7 +859,7 @@ converse.plugins.add('converse-roster', {
             if (!reconnecting) {
                 _converse.presences = new _converse.Presences();
                 _converse.presences.browserStorage = 
-                    new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
+                    new _converse.BrowserStorage(`converse.presences-${_converse.bare_jid}`, 'session');
                 _converse.presences.fetch();
             }
             _converse.emit('presencesInitialized', reconnecting);

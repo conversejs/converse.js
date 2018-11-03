@@ -144,7 +144,7 @@ converse.plugins.add('converse-message-view', {
                 const msg_content = msg.querySelector('.chat-msg__text');
                 if (text && text !== url) {
                     if (is_me_message) {
-                        text = text.replace(/^\/me/, '');
+                        text = text.substring(4);
                     }
                     text = xss.filterXSS(text, {'whiteList': {}});
                     msg_content.innerHTML = _.flow(
@@ -239,8 +239,7 @@ converse.plugins.add('converse-message-view', {
                 if (!text) {
                     return false;
                 }
-                const match = text.match(/^\/(.*?)(?: (.*))?$/);
-                return match && match[1] === 'me';
+                return text.startsWith('/me ');
             },
 
             processMessageText () {

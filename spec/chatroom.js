@@ -1180,7 +1180,7 @@
                 view.model.onMessage(msg);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Dyon van de Wege')).toBeTruthy();
-                expect(view.el.querySelector('.chat-msg__text').textContent).toBe(' is tired');
+                expect(view.el.querySelector('.chat-msg__text').textContent).toBe('is tired');
 
                 message = '/me is as well';
                 msg = $msg({
@@ -1192,7 +1192,7 @@
                 view.model.onMessage(msg);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 expect(_.includes(sizzle('.chat-msg__author:last', view.el).pop().textContent, '**Max Mustermann')).toBeTruthy();
-                expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe(' is as well');
+                expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe('is as well');
                 done();
             }));
 

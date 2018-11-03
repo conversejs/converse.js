@@ -61735,7 +61735,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         if (text && text !== url) {
           if (is_me_message) {
-            text = text.replace(/^\/me/, '');
+            text = text.substring(4);
           }
 
           text = xss__WEBPACK_IMPORTED_MODULE_9___default.a.filterXSS(text, {
@@ -61833,8 +61833,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           return false;
         }
 
-        const match = text.match(/^\/(.*?)(?: (.*))?$/);
-        return match && match[1] === 'me';
+        return text.startsWith('/me ');
       },
 
       processMessageText() {

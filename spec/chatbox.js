@@ -80,12 +80,12 @@
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
                 expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Max Frankfurter')).toBeTruthy();
-                expect(view.el.querySelector('.chat-msg__text').textContent).toBe(' is tired');
+                expect(view.el.querySelector('.chat-msg__text').textContent).toBe('is tired');
                 message = '/me is as well';
                 await test_utils.sendMessage(view, message);
                 expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(2);
                 await test_utils.waitUntil(() => $(view.el).find('.chat-msg__author:last').text().trim() === '**Max Mustermann');
-                expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe(' is as well');
+                expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe('is as well');
                 expect($(view.el).find('.chat-msg:last').hasClass('chat-msg--followup')).toBe(false);
                 // Check that /me messages after a normal message don't
                 // get the 'chat-msg--followup' class.
@@ -97,7 +97,7 @@
                 await test_utils.sendMessage(view, message);
                 message_el = view.el.querySelector('.message:last-child');
                 expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(3);
-                expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe(' wrote a 3rd person message');
+                expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe('wrote a 3rd person message');
                 expect(u.isVisible(sizzle('.chat-msg__author:last', view.el).pop())).toBeTruthy();
                 expect(u.hasClass('chat-msg--followup', message_el)).toBeFalsy();
                 done();

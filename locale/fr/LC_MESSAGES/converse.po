@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-29 22:21+0100\n"
-"PO-Revision-Date: 2018-10-28 22:14+0000\n"
-"Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
+"PO-Revision-Date: 2018-11-04 12:23+0000\n"
+"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -112,11 +112,10 @@ msgid "Close this chat box"
 msgstr "Fermer cette fenêtre de discussion"
 
 #: dist/converse-no-dependencies.js:41073
-#, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
 msgstr ""
-"Désolé, quelque chose s’est mal passé mal lors de la tentative de "
-"réactualisation"
+"Désolé, quelque chose s’est mal passé mal en récupérant les détails de ce "
+"contact"
 
 #: dist/converse-no-dependencies.js:41089
 #: dist/converse-no-dependencies.js:50698
@@ -375,7 +374,7 @@ msgstr "Description :"
 
 #: dist/converse-no-dependencies.js:45005
 msgid "Groupchat Address (JID):"
-msgstr "Adresse du groupe de discussion (JID) :"
+msgstr "Adresse du salon (JID) :"
 
 #: dist/converse-no-dependencies.js:45006
 msgid "Participants:"
@@ -463,7 +462,7 @@ msgstr "Aucun salon trouvé"
 
 #: dist/converse-no-dependencies.js:45126
 msgid "Groupchats found:"
-msgstr "Groupes de discussion trouvés :"
+msgstr "Salons trouvés :"
 
 #: dist/converse-no-dependencies.js:45182
 msgid "Enter a new Groupchat"
@@ -523,9 +522,9 @@ msgstr "%1$s a été banni de ce salon"
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
 #: dist/converse-no-dependencies.js:45441
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s est devenu %2$s de ce salon"
+msgstr "%1$s est maintenant %2$s de ce salon"
 
 #: dist/converse-no-dependencies.js:45453
 #, javascript-format
@@ -1384,7 +1383,8 @@ msgstr "Ce salon n’existe plus"
 
 #: dist/converse-no-dependencies.js:83174
 msgid "The conversation has moved. Click below to enter."
-msgstr "la conversation a déménagé.Cliquez ci-dessous pour entrer."
+msgstr ""
+"Ce salon a déménagé. Cliquez ci-dessous pour rejoindre sa nouvelle adresse."
 
 #: dist/converse-no-dependencies.js:83201
 msgid "Name"

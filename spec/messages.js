@@ -77,6 +77,7 @@
                     `xmlns="jabber:client">`+
                         `<body>But soft, what light through yonder window breaks?</body>`+
                         `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                        `<request xmlns="urn:xmpp:receipts"/>`+
                         `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
                 `</message>`);
             expect(view.model.messages.models.length).toBe(1);
@@ -181,6 +182,7 @@
                     `xmlns="jabber:client">`+
                         `<body>But soft, what light through yonder window breaks?</body>`+
                         `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                        `<request xmlns="urn:xmpp:receipts"/>`+
                         `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
                 `</message>`);
             expect(view.model.messages.models.length).toBe(1);
@@ -1200,6 +1202,64 @@
             done();
         }));
 
+        it("received may emit a message delivery receipt",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                function (done, _converse) {
+            test_utils.createContacts(_converse, 'current', 1);
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const msg_id = u.getUniqueId();
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
+                sent_stanzas.push(stanza);
+            });
+            const msg = $msg({
+                    'from': sender_jid,
+                    'to': _converse.connection.jid,
+                    'type': 'chat',
+                    'id': msg_id,
+                }).c('body').t('Message!').up()
+                .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
+            _converse.chatboxes.onMessage(msg);
+            const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_stanzas[0].tree()).pop();
+            expect(receipt.outerHTML).toBe(`<received xmlns="${Strophe.NS.RECEIPTS}" id="${msg_id}"/>`);
+            done();
+        }));
+
+        it("delivery can be acknowledged by a receipt",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            test_utils.createContacts(_converse, 'current', 1);
+            _converse.emit('rosterContactsFetched');
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            await test_utils.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = 'But soft, what light through yonder airlock breaks?';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            await test_utils.waitUntil(() => _converse.api.chats.get().length);
+            const chatbox = _converse.chatboxes.get(contact_jid);
+            expect(chatbox).toBeDefined();
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            const msg_obj = chatbox.messages.models[0];
+            const msg_id = msg_obj.get('msgid');
+            const msg = $msg({
+                    'from': contact_jid,
+                    'to': _converse.connection.jid,
+                    'id': u.getUniqueId(),
+                }).c('received', {'id': msg_id, xmlns: Strophe.NS.RECEIPTS}).up().tree();
+            _converse.chatboxes.onMessage(msg);
+            await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
+            expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(1);
+            done();
+        }));
+
 
         describe("when received from someone else", function () {
 
@@ -2010,6 +2070,7 @@
                     `xmlns="jabber:client">`+
                         `<body>But soft, what light through yonder window breaks?</body>`+
                         `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                        `<request xmlns="urn:xmpp:receipts"/>`+
                         `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
                 `</message>`);
 
@@ -2053,6 +2114,38 @@
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
             expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
+            done();
+        }));
+
+        it("delivery can be acknowledged by a receipt",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            test_utils.createContacts(_converse, 'current');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+            const view = _converse.chatboxviews.get('lounge@localhost');
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = 'But soft, what light through yonder airlock breaks?';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            const msg_obj = view.model.messages.at(0);
+            const msg_id = msg_obj.get('msgid');
+            const from = msg_obj.get('from');
+            const body = msg_obj.get('message');
+            const msg = $msg({
+                    'from': from,
+                    'id': msg_id,
+                    'to': 'dummy@localhost',
+                    'type': 'groupchat',
+                }).c('body').t(body).up().tree();
+            view.model.onMessage(msg);
+            await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
+            expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(1);
             done();
         }));
 
@@ -2201,6 +2294,7 @@
                             `xmlns="jabber:client">`+
                                 `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
                                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                `<request xmlns="urn:xmpp:receipts"/>`+
                                 `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+
@@ -2226,6 +2320,7 @@
                             `xmlns="jabber:client">`+
                                 `<body>hello z3r0 gibson sw0rdf1sh, how are you?</body>`+
                                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                `<request xmlns="urn:xmpp:receipts"/>`+
                                 `<reference begin="18" end="27" type="mention" uri="xmpp:sw0rdf1sh@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+
@@ -2274,6 +2369,7 @@
                                 `xmlns="jabber:client">`+
                                     `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
                                     `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                    `<request xmlns="urn:xmpp:receipts"/>`+
                                     `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                     `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                     `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+

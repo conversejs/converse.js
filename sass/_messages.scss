@@ -256,6 +256,10 @@
                     margin-left: 2.75rem;
                 }
             }
+
+            .chat-msg__receipt {
+                color: var(--message-receipt-color);
+            }
         }
     }
 

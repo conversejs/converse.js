@@ -86,7 +86,7 @@ converse.plugins.add('converse-message-view', {
                 if (this.model.changed.progress) {
                     return this.renderFileUploadProgresBar();
                 }
-                if (_.filter(['correcting', 'message', 'type', 'upload'],
+                if (_.filter(['correcting', 'message', 'type', 'upload', 'received'],
                              prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop)).length) {
                     await this.render();
                 }

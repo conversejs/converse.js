@@ -61682,7 +61682,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           return this.renderFileUploadProgresBar();
         }
 
-        if (_.filter(['correcting', 'message', 'type', 'upload'], prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop)).length) {
+        if (_.filter(['correcting', 'message', 'type', 'upload', 'received'], prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop)).length) {
           await this.render();
         }
 
@@ -65704,7 +65704,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'to': this.get('jid'),
           'type': this.get('message_type'),
           'id': message.get('msgid')
-        }).c('body').t(body).up() // An encrypted header is added to the message for
+        }).c('body').t(body).up().c('request', {
+          'xmlns': Strophe.NS.RECEIPTS
+        }).up() // An encrypted header is added to the message for
         // each device that is supposed to receive it.
         // These headers simply contain the key that the
         // payload message is encrypted with,
@@ -70645,6 +70647,7 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env
       _ = _converse$env._;
 const u = _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env.utils;
 Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
+Strophe.addNamespace('RECEIPTS', 'urn:xmpp:receipts');
 Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
 _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-chatboxes', {
   dependencies: ["converse-roster", "converse-vcard"],
@@ -70955,6 +70958,31 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return false;
       },
 
+      handleReceipt(stanza) {
+        const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));
+
+        if (to_bare_jid === _converse.bare_jid) {
+          const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop();
+
+          if (receipt) {
+            const msgid = receipt && receipt.getAttribute('id'),
+                  message = msgid && this.messages.findWhere({
+              msgid
+            });
+
+            if (message && !message.get('received')) {
+              message.save({
+                'received': moment().format()
+              });
+            }
+
+            return true;
+          }
+        }
+
+        return false;
+      },
+
       createMessageStanza(message) {
         /* Given a _converse.Message Backbone.Model, return the XML
          * stanza that represents it.
@@ -70969,6 +70997,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'id': message.get('edited') && _converse.connection.getUniqueId() || message.get('msgid')
         }).c('body').t(message.get('message')).up().c(_converse.ACTIVE, {
           'xmlns': Strophe.NS.CHATSTATES
+        }).up().c('request', {
+          'xmlns': Strophe.NS.RECEIPTS
         }).up();
 
         if (message.get('is_spoiler')) {
@@ -71359,6 +71389,19 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
       },
 
+      sendReceiptStanza(to_jid, id) {
+        const receipt_stanza = $msg({
+          'from': _converse.connection.jid,
+          'id': _converse.connection.getUniqueId(),
+          'to': to_jid
+        }).c('received', {
+          'xmlns': Strophe.NS.RECEIPTS,
+          'id': id
+        }).up();
+
+        _converse.api.send(receipt_stanza);
+      },
+
       onMessage(stanza) {
         /* Handler method for all incoming single-user chat "message"
          * stanzas.
@@ -71402,6 +71445,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           to_jid = stanza.getAttribute('to');
         }
 
+        const requests_receipt = !_.isUndefined(sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
+
+        if (requests_receipt) {
+          this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
+        }
+
         const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
               from_resource = Strophe.getResourceFromJid(from_jid),
               is_me = from_bare_jid === _converse.bare_jid;
@@ -71425,7 +71474,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`).length > 0;
         const chatbox = this.getChatBox(contact_jid, attrs, has_body);
 
-        if (chatbox && !chatbox.handleMessageCorrection(stanza)) {
+        if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza)) {
           const msgid = stanza.getAttribute('id'),
                 message = msgid && chatbox.messages.findWhere({
             msgid
@@ -76079,15 +76128,23 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         return data;
       },
 
-      isDuplicate(message, original_stanza) {
+      isDuplicate(message) {
         const msgid = message.getAttribute('id'),
               jid = message.getAttribute('from');
 
         if (msgid) {
-          return this.messages.where({
+          const msg = this.messages.findWhere({
             'msgid': msgid,
             'from': jid
-          }).length;
+          });
+
+          if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
+            msg.save({
+              'received': moment().format()
+            });
+          }
+
+          return msg;
         }
 
         return false;
@@ -76120,7 +76177,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           stanza = forwarded.querySelector('message');
         }
 
-        if (this.isDuplicate(stanza, original_stanza)) {
+        if (this.isDuplicate(stanza)) {
           return;
         }
 
@@ -102460,6 +102517,10 @@ __p += '<span class="fa fa-lock"></span>';
 __p += '\n        </span>\n        ';
  if (!o.is_me_message) { ;
 __p += '<div class="chat-msg__body">';
+ } ;
+__p += '\n            ';
+ if (o.received) { ;
+__p += ' <span class="fa fa-check chat-msg__receipt">&nbsp;</span> ';
  } ;
 __p += '\n            ';
  if (o.edited) { ;

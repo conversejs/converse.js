@@ -9303,6 +9303,7 @@ readers do not read off random characters that represent icons */
   --text-color: #666;
   --text-color-lighten-15-percent: #8c8c8c;
   --message-text-color: #555;
+  --message-receipt-color: #3AA569;
   --save-button-color: #3AA569;
   --chat-textarea-color: #666;
   --chat-textarea-height: 60px;
@@ -11796,6 +11797,8 @@ body.reset {
     display: none; }
   #conversejs .message.chat-msg.chat-msg--followup .chat-msg__content {
     margin-left: 2.75rem; }
+  #conversejs .message.chat-msg .chat-msg__receipt {
+    color: var(--message-receipt-color); }
 
 #conversejs .chatroom-body .message.onload {
   animation: colorchange-chatmessage-muc 1s;

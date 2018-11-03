@@ -394,6 +394,7 @@ converse.plugins.add('converse-omemo', {
                         'type': this.get('message_type'),
                         'id': message.get('msgid')
                     }).c('body').t(body).up()
+                        .c('request', {'xmlns': Strophe.NS.RECEIPTS}).up()
                         // An encrypted header is added to the message for
                         // each device that is supposed to receive it.
                         // These headers simply contain the key that the

@@ -1005,6 +1005,15 @@ notified of all messages received in a room.
 You can also pass an array of room JIDs to this option, to only apply it to
 certain rooms.
 
+notification_delay
+------------------
+
+* Default: ``5000``
+
+Desktop notifications will be shown for a time of ``notification_delay``
+ms. Setting this to ``0`` will make the notification stay until dismissed by
+the user (requires browser support).
+
 notification_icon
 -----------------
 
@@ -1012,7 +1021,6 @@ notification_icon
 
 This option specifies which icon is shown in HTML5 notifications, as provided
 by the ``src/converse-notification.js`` plugin.
-
 
 oauth_providers
 ---------------

@@ -1247,11 +1247,14 @@ show_desktop_notifications
 
 Should HTML5 desktop notifications be shown?
 
-Notification will be shown in the following cases:
+If set to ``true``, notifications will be shown in the following cases:
 
 * the browser is not visible nor focused and a private message is received.
 * the browser is not visible nor focused and a groupchat message is received which mentions you.
 * `auto_subscribe` is set to `false` and a new contact request is received.
+
+If set to ``all``, notifications will be shown even if the above conditions are
+not fulfilled.
 
 Requires the `src/converse-notification.js` plugin.
 

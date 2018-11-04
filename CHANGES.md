@@ -8,6 +8,7 @@
 - #1268 Switch from SASS variables to CSS custom properties
 - #1278 Replace the default avatar with a SVG version
 - #1306 added option `notification_delay`
+- #1305 added value 'all' for 'show_desktop_notifications' to notifiy even if converse.js is open
 
 ## 4.0.4 (2018-10-29)
 

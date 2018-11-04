@@ -25,7 +25,7 @@
                 cursor: help;
                 .fa {
                     margin-right: 0.5em;
-                    color: $text-color;
+                    color: var(--text-color);
                 }
             }
         }
@@ -33,11 +33,11 @@
 
 
     .chat-head-chatroom {
-        background-color: $chatroom-head-color;
+        background-color: var(--chatroom-head-color);
 
         .chatroom-description {
-            color: lighten($chatroom-head-color, 25%);
-            font-size: $font-size;
+            color: var(--chatroom-head-color-lighten-25-percent);
+            font-size: var(--font-size);
             font-size: 70%;
             margin-top: 3px;
             overflow-y: hidden;
@@ -52,9 +52,9 @@
         a, a:visited, a:hover, a:not([href]):not([tabindex]) {
             &.chatbox-btn {
                 &.fa {
-                    color: $chat-head-text-color;
+                    color: var(--chat-head-text-color);
                     &.button-on:before {
-                        color: $chatroom-head-color;
+                        color: var(--chatroom-head-color);
                     }
                 }
             }
@@ -62,44 +62,44 @@
 
         .chatbox-btn {
             &.button-on:before {
-                color: $chatroom-head-color;
+                color: var(--chatroom-head-color);
             }
         }
         .chat-title {
             .chatroom-jid {
-                font-size: $font-size-small;
+                font-size: var(--font-size-small);
             }
         }
     }
 
     .chatroom {
-        width: $chatroom-width;
+        width: var(--chatroom-width);
         @media screen and (max-height: $mobile-landscape-height){
-            width: $mobile-chat-width;
+            width: var(--mobile-chat-width);
         }
         @media screen and (max-width: $mobile-portrait-length) {
-            width: $mobile-chat-width;
+            width: var(--mobile-chat-width);
         }
 
         .box-flyout {
             overflow-y: hidden;
-            background-color: $chatroom-head-color;
+            background-color: var(--chatroom-head-color);
 
             width: 100%;
             @media screen and (max-height: $mobile-landscape-height) {
-                height: $mobile-chat-height;
-                width: $mobile-chat-width;
+                height: var(--mobile-chat-height);
+                width: var(--mobile-chat-width);
                 height: 100vh;
             }
             @media screen and (max-width: $mobile-portrait-length) {
-                height: $mobile-chat-height;
-                width: $mobile-chat-width;
+                height: var(--mobile-chat-height);
+                width: var(--mobile-chat-width);
                 height: 100vh;
             }
             .chatroom-body {
                 flex-direction: row;
                 flex-flow: nowrap;
-                @include border-bottom-radius($chatbox-border-radius);
+                border-bottom-radius: var(--chatbox-border-radius);
                 background-color: white;
                 border-top: 0;
                 width: 100%;
@@ -110,13 +110,13 @@
                 }
                 .chat-topic {
                     font-weight: bold;
-                    color: $chatroom-head-color;
+                    color: var(--chatroom-head-color);
                 }
                 .chat-info {
-                    color: $chatroom-head-color;
+                    color: var(--chatroom-head-color);
                     line-height: normal;
                     &.badge {
-                        color: $chat-head-text-color;
+                        color: var(--chat-head-text-color);
                     }
                 }
                 .disconnect-container {
@@ -131,7 +131,7 @@
                     flex-direction: column;
                     word-wrap: break-word;
                     .new-msgs-indicator {
-                        background-color: $chatroom-head-color;
+                        background-color: var(--chatroom-head-color);
                     }
                     .chat-content {
                         height: 100%;
@@ -145,8 +145,8 @@
                     overflow-y: hidden;
                     vertical-align: top;
                     background-color: white;
-                    border-left: 1px solid $text-color;
-                    border-bottom-right-radius: $chatbox-border-radius;
+                    border-left: 1px solid var(--text-color);
+                    border-bottom-right-radius: var(--chatbox-border-radius);
                     padding: 0.5em;
 
                     .occupants-header {
@@ -158,7 +158,7 @@
                         }
                     }
                     .occupants-heading {
-                        font-family: $heading-font;
+                        font-family: var(--heading-font);
                     }
                     .awesomplete {
                         ul {
@@ -184,7 +184,7 @@
                         li {
                             cursor: default;
                             display: block;
-                            font-size: $font-size-small;
+                            font-size: var(--font-size-small);
                             overflow: hidden;
                             padding: 0.25em 0.25em 0.25em 0;
                             text-overflow: ellipsis;
@@ -192,7 +192,7 @@
                                 margin-right: 0.5em;
                             }
                             &.feature {
-                                font-size: $font-size-tiny;
+                                font-size: var(--font-size-tiny);
                             }
                             &.occupant {
                                 cursor: pointer;
@@ -251,25 +251,25 @@
                 }
                 .chatroom-form-container {
                     background-color: white;
-                    border-bottom-left-radius: $chatbox-border-radius;
-                    border-bottom-right-radius: $chatbox-border-radius;
+                    border-bottom-left-radius: var(--chatbox-border-radius);
+                    border-bottom-right-radius: var(--chatbox-border-radius);
                     border: 0;
-                    color: $text-color;
-                    font-size: $font-size;
+                    color: var(--text-color);
+                    font-size: var(--font-size);
                     height: 100%;
                     width: 100%;
                     overflow-y: auto;
 
                     .validation-message {
                         font-size: 90%;
-                        color: $error-color;
+                        color: var(--error-color);
                     }
                     input[type=button],
                     input[type=submit] {
                         margin: 0 0.5em;
                     }
                     .button-primary {
-                        background-color: $chatroom-head-color;
+                        background-color: var(--chatroom-head-color);
                     }
                 }
             }
@@ -278,22 +278,22 @@
         .sendXMPPMessage {
             .chat-toolbar {
                 background-color: white;
-                border-top: 4px solid $chatroom-head-color;
-                color: $chatroom-head-color;
+                border-top: 4px solid var(--chatroom-head-color);
+                color: var(--chatroom-head-color);
                 .fas, .fas:hover,
                 .far, .far:hover,
                 .fa, .fa:hover {
-                    color: $chatroom-head-color;
+                    color: var(--chatroom-head-color);
                 }
             }
             .chat-textarea {
                 border-bottom-right-radius: 0;
                 &.correcting {
-                    background-color: lighten($chatroom-head-color, 30%);
+                    background-color: var(--chatroom-head-color-lighten-30-percent);
                 }
             }
             .send-button {
-                background-color: $chatroom-head-color;
+                background-color: var(--chatroom-head-color);
             }
         }
 
@@ -313,16 +313,15 @@
 #conversejs.converse-overlayed {
     .chatbox {
         &.chatroom {
-
             .chatroom-features {
                 display: none !important;
             }
 
-            min-width: $chatroom-width !important;
-            width: $chatroom-width;
+            min-width: var(--chatroom-width) !important;
+            width: var(--chatroom-width);
             .box-flyout {
-                min-width: $chatroom-width !important;
-                width: $chatroom-width;
+                min-width: var(--chatroom-width) !important;
+                width: var(--chatroom-width);
             }
             .chatbox-title {
                 @include make-col(7);
@@ -340,7 +339,7 @@
                     }
                     .chatroom-features {
                         .feature {
-                            font-size: $font-size-tiny;
+                            font-size: var(--font-size-tiny);
                         }
                     }
                     ul {
@@ -357,7 +356,7 @@
                     }
                 }
                 .chat-area {
-                    min-width: $overlayed-chat-width;
+                    min-width: var(--overlayed-chat-width);
                 }
             }
             .sendXMPPMessage {
@@ -411,9 +410,9 @@
 
     .chatroom {
         .box-flyout {
-            background-color: $chatroom-head-color;
-            border: $flyout-padding solid $chatroom-head-color;
-            border-top: 0.8em solid $chatroom-head-color;
+            background-color: var(--chatroom-head-color);
+            border: var(--flyout-padding) solid var(--chatroom-head-color);
+            border-top: 0.8em solid var(--chatroom-head-color);
             width: 100%;
 
             .chatbox-title {
@@ -423,14 +422,14 @@
             }
 
             .chatroom-body {
-                @include border-top-radius($chatbox-border-radius);
+                border-top-radius: var(--chatbox-border-radius);
                 .chatroom-form-container {
-                    border-radius: $chatbox-border-radius;
+                    border-radius: var(--chatbox-border-radius);
                 }
                 .chat-area {
-                    border-top-left-radius: $chatbox-border-radius;
+                    border-top-left-radius: var(--chatbox-border-radius);
                     .chat-content {
-                        border-top-left-radius: $chatbox-border-radius;
+                        border-top-left-radius: var(--chatbox-border-radius);
                     }
                     &.full {
                         .new-msgs-indicator {
@@ -439,15 +438,15 @@
                     }
                 }
                 .occupants {
-                    border-top-right-radius: $chatbox-border-radius;;
-                    padding: $occupants-padding;
+                    border-top-right-radius: var(--chatbox-border-radius);
+                    padding: var(--occupants-padding);
                     .occupants-heading {
-                        font-size: $font-size-large;
+                        font-size: var(--font-size-large);
                     }
                     ul {
                         &.occupant-list {
                             li {
-                                font-size: $font-size-small;
+                                font-size: var(--font-size-small);
                             }
                         }
                     }

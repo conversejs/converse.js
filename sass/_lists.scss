@@ -4,12 +4,12 @@
         padding: 0.3em 0;
 
         .list-toggle {
-            font-family: $heading-font; 
+            font-family: var(--heading-font);
             display: block;
-            color: $text-color;
+            color: var(--text-color);
             padding: 0 0 0.5rem 0;
             &:hover {
-                color: $dark-gray-color;
+                color: var(--list-toggle-color);
             }
         }
     }
@@ -20,20 +20,20 @@
         .list-item {
             border: none;
             clear: both;
-            color: $text-color;
+            color: var(--text-color);
             display: block;
             height: 2em;
             overflow: hidden;
             padding-top: 0.5em;
-            text-shadow: 0 1px 0 $text-shadow-color;
+            text-shadow: 0 1px 0 var(--text-shadow-color);
             word-wrap: break-word;
 
             .list-item-link {
                 &:hover {
-                    color: $dark-link-color;
+                    color: var(--dark-link-color);
                 }
-                font-size: $font-size;
-                line-height: $font-size;
+                font-size: var(--font-size);
+                line-height: var(--font-size);
                 padding-right: 0.5em;
                 overflow: hidden;
                 white-space: nowrap;
@@ -42,30 +42,30 @@
 
             .list-item-action {
                 opacity: 0;
-                font-size: $font-size-tiny;
+                font-size: var(--font-size-tiny);
                 padding: 0;
                 margin: 0 0 0 0.4em;
                 width: 1.6em;
                 &:before {
-                    font-size: $font-size;
+                    font-size: var(--font-size);
                 }
                 &.button-on {
-                    color: $link-color;
+                    color: var(--link-color);
                     &:hover {
-                        color: $dark-link-color;
+                        color: var(--dark-link-color);
                     }
                 }
-                color: $subdued-color;
+                color: var(--subdued-color);
                 &:hover {
-                    color: $gray-color;
+                    color: var(--list-toggle-hover-color);
                     opacity: 1;
                 }
             }
 
             &.open {
-                background-color: $controlbox-head-color;
+                background-color: var(--controlbox-head-color);
                 &:hover {
-                    background-color: $controlbox-head-color !important;
+                    background-color: var(--controlbox-head-color) !important;
                 }
                 a {
                     color: white;
@@ -76,28 +76,28 @@
                     }
                 }
                 .list-item-action {
-                    color: lighten($lightest-blue, 25%);
+                    color: var(--list-item-action-color);
                     &:hover {
                         color: white;
                     }
                 }
                 .fa-circle {
-                    color: lighten($green, 25%);
+                    color: var(--list-circle-color);
                 }
                 .fa-minus-circle {
-                    color: lighten($red, 15%);
+                    color: var(--list-minus-circle-color);
                 }
                 .fa-dot-circle {
-                    color: lighten($orange, 25%);
+                    color: var(--list-dot-circle-color);
                 }
                 .far .fa-circle,
                 .fa-times-circle {
-                    color: lighten($subdued-color, 25%);
+                    color: var(--subdued-color-lighten-25-percent);
                 }
             }
 
             &:hover {
-                background-color: lighten($controlbox-head-color, 45%);
+                background-color: var(--controlbox-head-color-lighten-45-percent);
                 .fa, .far, .fas {
                     opacity: 1;
                 }

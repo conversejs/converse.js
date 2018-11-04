@@ -12,20 +12,20 @@
                     height="100" width="100" src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
                 {[ } ]}
                 {[ if (o.fullname) { ]}
-                <p><label>{{{o.__('Full Name')}}}:</label>&nbsp;{{{o.fullname}}}</p>
+                <p><label>{{{o.__('Full Name:')}}}</label>&nbsp;{{{o.fullname}}}</p>
                 {[ } ]}
-                <p><label>{{{o.__('XMPP Address')}}}:</label>&nbsp;{{{o.jid}}}</p>
+                <p><label>{{{o.__('XMPP Address:')}}}</label>&nbsp;<a href="xmpp:{{{o.jid}}}">{{{o.jid}}}</a></p>
                 {[ if (o.nickname) { ]}
-                <p><label>{{{o.__('Nickname')}}}:</label>&nbsp;{{{o.nickname}}}</p>
+                <p><label>{{{o.__('Nickname:')}}}</label>&nbsp;{{{o.nickname}}}</p>
                 {[ } ]}
                 {[ if (o.url) { ]}
-                <p><label>{{{o.__('URL')}}}:</label>&nbsp;<a target="_blank" rel="noopener" href="{{{o.url}}}">{{{o.url}}}</a></p>
+                <p><label>{{{o.__('URL:')}}}</label>&nbsp;<a target="_blank" rel="noopener" href="{{{o.url}}}">{{{o.url}}}</a></p>
                 {[ } ]}
                 {[ if (o.email) { ]}
-                <p><label>{{{o.__('Email')}}}:</label>&nbsp;<a href="mailto:{{{o.email}}}">{{{o.email}}}</a></p>
+                <p><label>{{{o.__('Email:')}}}</label>&nbsp;<a href="mailto:{{{o.email}}}">{{{o.email}}}</a></p>
                 {[ } ]}
                 {[ if (o.role) { ]}
-                <p><label>{{{o.__('Role')}}}:</label>&nbsp;{{{o.role}}}</p>
+                <p><label>{{{o.__('Role:')}}}</label>&nbsp;{{{o.role}}}</p>
                 {[ } ]}
 
                 {[ if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ]}

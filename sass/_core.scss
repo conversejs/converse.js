@@ -81,7 +81,7 @@ body.reset {
 }
 
 .converse-brand__text {
-    font-family: $heading-font; 
+    font-family: var(--heading-font);
     font-weight: normal;
     width: 50%;
     margin: auto;
@@ -92,14 +92,14 @@ body.reset {
     }
 }
 .converse-brand__byline {
-    font-size: $font-size-small;
+    font-size: var(--font-size-small);
     width: 50%;
     margin: auto;
     text-align: center;
 
     a {
         text-decoration: none;
-        color: lighten($chatroom-head-color, 25%);
+        color: var(--chatroom-head-color-lighten-25-percent);
     }
 }
 
@@ -109,9 +109,9 @@ body.reset {
     position: fixed;
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
-    color: $text-color;
+    color: var(--text-color);
     font-family: "Helvetica", "Arial", sans-serif;
-    font-size: $font-size;
+    font-size: var(--font-size);
     direction: ltr;
     z-index: 1031; // One more than bootstrap navbar
 
@@ -137,7 +137,7 @@ body.reset {
     }
 
     .brand-heading {
-        font-family: $heading-font; 
+        font-family: var(--heading-font);
         .icon-conversejs {
             font-size: 80%;
         }
@@ -155,26 +155,26 @@ body.reset {
     }
 
     ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-        color: $subdued-color;
+        color: var(--subdued-color);
     }
     ::-moz-placeholder { /* Firefox 19+ */
-        color: $subdued-color;
+        color: var(--subdued-color);
     }
     :-ms-input-placeholder { /* IE 10+ */
-        color: $subdued-color;
+        color: var(--subdued-color);
     }
     :-moz-placeholder { /* Firefox 18- */
-        color: $subdued-color;
+        color: var(--subdued-color);
     }
     ::placeholder {
-        color: $subdued-color;
+        color: var(--subdued-color);
     }
 
     ::selection {
-        background-color: $highlight-color;
+        background-color: var(--highlight-color);
     }
     ::-moz-selection {
-        background-color: $highlight-color;
+        background-color: var(--highlight-color);
     }
 
     @media screen and (max-width: $mobile-portrait-length) {
@@ -208,7 +208,7 @@ body.reset {
     input[type=submit], input[type=button],
     input[type=text], input[type=password],
     button {
-        font-size: $font-size;
+        font-size: var(--font-size);
         padding: 0.25em;
         min-height: 0;
     }
@@ -236,32 +236,32 @@ body.reset {
 
     a, a:visited, a:not([href]):not([tabindex]) {
         text-decoration: none;
-        color: $link-color;
+        color: var(--link-color);
         text-shadow: none;
         &:hover {
-            color: darken($link-color, 20%);
+            color: var(--link-color-darken-20-percent);
             text-decoration: none;
             text-shadow: none;
         }
 
         &.fa, &.far, &.fas {
-            color: $subdued-color;
+            color: var(--subdued-color);
             &:hover {
-                color: $gray-color;
+                color: var(--gray-color);
             }
         }
     }
 
     canvas {
-        border-radius: $chatbox-border-radius;
+        border-radius: var(--chatbox-border-radius);
     }
 
     .fa, .far, .fas {
-        color: $subdued-color;
+        color: var(--subdued-color);
     }
 
     .fa:hover, .far:hover, .fas:hover {
-        color: $gray-color;
+        color: var(--gray-color);
     }
 
     .modal {
@@ -275,7 +275,7 @@ body.reset {
     }
 
     .selected {
-        color: $link-color !important;
+        color: var(--link-color) !important;
     }
 
     .circle {
@@ -287,7 +287,7 @@ body.reset {
         width: 50px;
         height: 100vh;
         padding: 1rem 0;
-        background-color: $controlbox-head-color;
+        background-color: var(--controlbox-head-color);
         color: white;
         text-align: center;
 
@@ -311,7 +311,7 @@ body.reset {
     }
 
     .btn {
-        font-family: $heading-font; 
+        font-family: var(--heading-font);
         font-weight: normal;
         color: #fff;
         .fa, .far, .fas {
@@ -444,10 +444,10 @@ body.reset {
     }
 
     .error {
-        color: $error-color;
+        color: var(--error-color);
     }
     .info {
-        color: $info-color;
+        color: var(--info-color);
     }
     .reg-feedback {
         font-size: 85%;
@@ -473,15 +473,15 @@ body.reset {
 
     .button-primary {
         color: white;
-        background-color: $primary-color;
+        background-color: var(--primary-color);
     }
     .button-secondary {
         color: white;
-        background-color: $secondary-color;
+        background-color: var(--secondary-color);
     }
     .button-cancel {
         color: white;
-        background-color: $text-color;
+        background-color: var(--text-color);
     }
 
     .chat-textarea-chatbox-selected {
@@ -489,7 +489,7 @@ body.reset {
         margin: 0;
     }
     .chat-textarea-chatroom-selected {
-        border: 2px solid $link-color;
+        border: 2px solid var(--link-color);
         margin: 0;
     }
 }
@@ -503,11 +503,11 @@ body.reset {
     #conversejs:not(.converse-embedded)  {
         .chatbox  {
             .chat-body {
-                border-radius: $chatbox-border-radius;
+                border-radius: var(--chatbox-border-radius);
             }
         }
         .flyout {
-            border-radius: $chatbox-border-radius;
+            border-radius: var(--chatbox-border-radius);
         }
     }
 }

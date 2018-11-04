@@ -6,14 +6,14 @@
 
             .oauth-login {
                 margin-left: 0;
-                color: $link-color;
-                font-size: $font-size-large;
+                color: var(--link-color);
+                font-size: var(--font-size-large);
                 &:hover {
-                    color: darken($link-color, 20%);
+                    color: var(--link-color-darken-20-percent);
                 }
                 i {
-                    color: $link-color;
-                    font-size: $font-size-huge;
+                    color: var(--link-color);
+                    font-size: var(--font-size-huge);
                     margin-right: 0.5em;
                 }
             }
@@ -24,22 +24,22 @@
     .xmpp-status,
     .roster-contacts {
         .chat-status--online {
-            color: $green;
+            color: var(--chat-status-online);
         }
         .chat-status--busy {
-            color: $red
+            color: var(--chat-status-busy);
         }
         .chat-status--away {
-            color: $orange,
+            color: var(--chat-status-away);
         }
         .far.fa-circle,
         .fa-times-circle {
-            color: $subdued-color;
+            color: var(--subdued-color);
         }
     }
 
     .room-info {
-        font-size: $font-size-small;
+        font-size: var(--font-size-small);
         font-style: normal;
         font-weight: normal;
 
@@ -48,7 +48,7 @@
             margin-left: 5px;
         }
         p.room-info {
-            line-height: $line-height;
+            line-height: var(--line-height);
             margin: 0;
             display: block;
             white-space: normal;
@@ -65,7 +65,7 @@
             background-color: white;
         }
 
-        margin-right: 3*$chat-gutter;
+        margin-right: calc(3 * var(--chat-gutter));
 
         &.logged-out {
             .box-flyout {
@@ -105,11 +105,11 @@
                 margin: 1.5em 0;
             }
             .form-errors {
-                color: $error-color;
+                color: var(--error-color);
                 margin: 1em 0;
             }
             .provider-title {
-                font-size: $font-size-huge;
+                font-size: var(--font-size-huge);
                 margin: 0;
             }
             .provider-score {
@@ -118,7 +118,7 @@
             }
             .form-help .url {
                 font-weight: bold;
-                color: $link-color;
+                color: var(--link-color);
             }
             .input-group {
                 display: table;
@@ -138,15 +138,15 @@
                 color: gray;
                 font-size: 85%;
                 &:hover {
-                    color: $text-color;
+                    color: var(--text-color);
                 }
             }
         }
 
         .conn-feedback {
-            color: $controlbox-head-color;
+            color: var(--controlbox-head-color);
             &.error {
-                color: $error-color;
+                color: var(--error-color);
             }
             p {
                 padding-bottom: 1em;
@@ -174,7 +174,7 @@
             flex-direction: column;
 
             .brand-heading {
-                color: $global-background-color;
+                color: var(--global-background-color);
             }
         }
 
@@ -215,7 +215,7 @@
             margin: 1em 0 0 0;
 
             .controlbox-heading {
-                font-family: $heading-font; 
+                font-family: var(--heading-font);
                 margin: 0 0 0.5em 0;
                 text-transform: uppercase;
             }
@@ -239,9 +239,9 @@
                     top: 0;
                     width: 100%;
                     z-index: 21;
-                    background-color: $light-background-color;
+                    background-color: var(--light-background-color);
                     li:hover {
-                        background-color: $highlight-color;
+                        background-color: var(--highlight-color);
                     }
                 }
             }
@@ -257,7 +257,7 @@
                     }
                 }
                 li:hover {
-                    background-color: $light-background-color;
+                    background-color: var(--light-background-color);
                 }
             }
             dt a span {
@@ -276,7 +276,7 @@
         .controlbox-pane {
             background-color: white;
             border: 0;
-            font-size: $font-size;
+            font-size: var(--font-size);
             left: 0;
             text-align: left;
             overflow-x: hidden;
@@ -325,16 +325,16 @@
 
     .toggle-controlbox {
         text-align: center;
-        background-color: $link-color;
-        border-top-left-radius: $button-border-radius;
-        border-top-right-radius: $button-border-radius;
+        background-color: var(--link-color);
+        border-top-left-radius: var(--button-border-radius);
+        border-top-right-radius: var(--button-border-radius);
         color: #0a0a0a;
         float: right;
         height: 100%;
-        margin: 0 $chat-gutter;
+        margin: 0 var(--chat-gutter);
         padding: 1em;
         span {
-            color: $inverse-link-color;
+            color: var(--inverse-link-color);
         }
     }
 }
@@ -343,11 +343,11 @@
 #conversejs.converse-overlayed {
     #controlbox {
         order: -1;
-        min-width: $controlbox-width !important;
-        width: $controlbox-width;
+        min-width: var(--controlbox-width) !important;
+        width: var(--controlbox-width);
         .box-flyout {
-            min-width: $controlbox-width !important;
-            width: $controlbox-width;
+            min-width: var(--controlbox-width) !important;
+            width: var(--controlbox-width);
         }
 
         .login-trusted {
@@ -375,11 +375,11 @@
             justify-content: space-between;
 
             .brand-heading {
-                color: $text-color;
+                color: var(--text-color);
                 font-size: 2em;
             }
             .chatbox-btn {
-                color: $controlbox-head-color;
+                color: var(--controlbox-head-color);
                 margin: 0;
             }
         }
@@ -396,7 +396,7 @@
         }
 
         .controlbox-panes {
-            border-radius: $chatbox-border-radius;
+            border-radius: var(--chatbox-border-radius);
         }
     }
 }
@@ -438,7 +438,7 @@
         }
 
         .toggle-register-login {
-            line-height: $line-height-huge;
+            line-height: var(--line-height-huge);
         }
 
         .brand-heading-container {
@@ -450,7 +450,7 @@
                 font-size: 600%;
                 padding: 0.7em 0 0 0;
                 opacity: 0.8;
-                color: $blue;
+                color: var(--brand-heading-color);
             }
             .brand-subtitle {
                 font-size: 90%;
@@ -475,7 +475,7 @@
             border: 0;
             width: 100%;
             z-index: 1;
-            background-color: $controlbox-head-color;
+            background-color: var(--controlbox-head-color);
 
             .controlbox-head {
                 display: none;

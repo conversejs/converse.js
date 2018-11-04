@@ -1008,7 +1008,7 @@ certain rooms.
 notification_icon
 -----------------
 
-* Default: ``'/logo/conversejs.png'``
+* Default: ``'logo/conversejs-filled.svg'``
 
 This option specifies which icon is shown in HTML5 notifications, as provided
 by the ``src/converse-notification.js`` plugin.
@@ -1291,7 +1291,7 @@ If set to ``true``, a button will be visible which can be clicked to send a mess
 sounds_path
 -----------
 
-* Default: ``/sounds/``
+* Default: ``sounds/``
 
 This option only makes sense in conjunction with the `play_sounds`_ option and
 specifies the URL of the sound files to be played (exluding the file names

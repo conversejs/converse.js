@@ -59022,7 +59022,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         'click .toggle-smiley': 'toggleEmojiMenu',
         'click .upload-file': 'toggleFileUpload',
         'input .chat-textarea': 'inputChanged',
-        'keydown .chat-textarea': 'keyPressed'
+        'keydown .chat-textarea': 'keyPressed',
+        'dragover .chat-textarea': 'onDragOver',
+        'drop .chat-textarea': 'onDrop'
       },
 
       initialize() {
@@ -59126,6 +59128,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       onFileSelection(evt) {
         this.model.sendFiles(evt.target.files);
+      },
+
+      onDragOver(evt) {
+        evt.preventDefault();
+      },
+
+      onDrop(evt) {
+        if (evt.dataTransfer.files.length == 0) // There are no files to be dropped, so this isn’t a file
+          // transfer operation.
+          return;
+        evt.preventDefault();
+        this.model.sendFiles(evt.dataTransfer.files);
       },
 
       async addFileUploadButton(options) {
@@ -61784,6 +61798,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       renderFileUploadProgresBar() {
         const msg = utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_file_progress_html__WEBPACK_IMPORTED_MODULE_4___default()(_.extend(this.model.toJSON(), {
+          '__': __,
           'filename': this.model.file.name,
           'filesize': filesize__WEBPACK_IMPORTED_MODULE_1___default()(this.model.file.size)
         })));
@@ -70967,8 +70982,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
       async sendFiles(files) {
         const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain),
-              item = result.pop(),
-              data = item.dataforms.where({
+              item = result.pop();
+
+        if (!item) {
+          this.messages.create({
+            'message': __("Sorry, looks like file upload is not supported by your server."),
+            'type': 'error'
+          });
+          return;
+        }
+
+        const data = item.dataforms.where({
           'FORM_TYPE': {
             'value': Strophe.NS.HTTPUPLOAD,
             'type': "hidden"
@@ -101772,7 +101796,9 @@ __p += '<!-- src/templates/file_progress.html -->\n<div class="message chat-msg"
 __e(o.time) +
 '" data-msgid="' +
 __e(o.msgid) +
-'">\n    <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>\n    <div class="chat-msg__content">\n        <span class="chat-msg__text">Uploading file: <strong>' +
+'">\n    <canvas class="avatar chat-msg__avatar" height="36" width="36"></canvas>\n    <div class="chat-msg__content">\n        <span class="chat-msg__text">' +
+__e(o.__('Uploading file:')) +
+' <strong>' +
 __e(o.filename) +
 '</strong>, ' +
 __e(o.filesize) +
@@ -103624,28 +103650,30 @@ __e(o.image) +
 __p += '\n                ';
  if (o.fullname) { ;
 __p += '\n                <p><label>' +
-__e(o.__('Full Name')) +
-':</label>&nbsp;' +
+__e(o.__('Full Name:')) +
+'</label>&nbsp;' +
 __e(o.fullname) +
 '</p>\n                ';
  } ;
 __p += '\n                <p><label>' +
-__e(o.__('XMPP Address')) +
-':</label>&nbsp;' +
+__e(o.__('XMPP Address:')) +
+'</label>&nbsp;<a href="xmpp:' +
 __e(o.jid) +
-'</p>\n                ';
+'">' +
+__e(o.jid) +
+'</a></p>\n                ';
  if (o.nickname) { ;
 __p += '\n                <p><label>' +
-__e(o.__('Nickname')) +
-':</label>&nbsp;' +
+__e(o.__('Nickname:')) +
+'</label>&nbsp;' +
 __e(o.nickname) +
 '</p>\n                ';
  } ;
 __p += '\n                ';
  if (o.url) { ;
 __p += '\n                <p><label>' +
-__e(o.__('URL')) +
-':</label>&nbsp;<a target="_blank" rel="noopener" href="' +
+__e(o.__('URL:')) +
+'</label>&nbsp;<a target="_blank" rel="noopener" href="' +
 __e(o.url) +
 '">' +
 __e(o.url) +
@@ -103654,8 +103682,8 @@ __e(o.url) +
 __p += '\n                ';
  if (o.email) { ;
 __p += '\n                <p><label>' +
-__e(o.__('Email')) +
-':</label>&nbsp;<a href="mailto:' +
+__e(o.__('Email:')) +
+'</label>&nbsp;<a href="mailto:' +
 __e(o.email) +
 '">' +
 __e(o.email) +
@@ -103664,8 +103692,8 @@ __e(o.email) +
 __p += '\n                ';
  if (o.role) { ;
 __p += '\n                <p><label>' +
-__e(o.__('Role')) +
-':</label>&nbsp;' +
+__e(o.__('Role:')) +
+'</label>&nbsp;' +
 __e(o.role) +
 '</p>\n                ';
  } ;

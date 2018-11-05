@@ -7,7 +7,8 @@
 "use strict";
 
 import { $build, $iq, $msg, $pres, SHA1, Strophe } from "strophe.js";
-import Backbone from "./backbone.noconflict";
+import Backbone from "backbone";
+import BrowserStorage from "backbone.browserStorage";
 import Promise from "es6-promise/dist/es6-promise.auto";
 import _ from "./lodash.noconflict";
 import browserStorage from "backbone.browserStorage";
@@ -19,6 +20,7 @@ import polyfill from "./polyfill";
 import sizzle from "sizzle";
 import u from "./utils/core";
 
+Backbone = Backbone.noConflict();
 
 // Strophe globals
 const b64_sha1 = SHA1.b64_sha1;

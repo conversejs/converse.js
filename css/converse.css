@@ -10174,9 +10174,9 @@ body.reset {
       #conversejs .chatbox .sendXMPPMessage .chat-textarea.correcting {
         background-color: var(--chat-head-color-lighten-50-percent); }
     #conversejs .chatbox .sendXMPPMessage .send-button {
-      position: absolute;
+      position: static;
       left: var(--send-button-margin);
-      width: calc(100% - 2 * var(--send-button-margin));
+      width: 100%;
       background-color: var(--chat-head-color);
       color: var(--inverse-link-color);
       font-size: 80%;

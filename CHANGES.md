@@ -8,6 +8,8 @@
 - #1268 Switch from SASS variables to CSS custom properties
 - #1278 Replace the default avatar with a SVG version
 - #1033 Setting show_send_button to true didn't work
+- #1306 added option `notification_delay`
+
 ## 4.0.4 (2018-10-29)
 
 - Use [Lerna](https://lernajs.io/) to create the @converse/headless package

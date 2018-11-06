@@ -59135,10 +59135,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       onDrop(evt) {
-        /* There are no files to be dropped, this isn’t a file transfer
-         * operation.
-         */
-        if (evt.dataTransfer.files.length == 0) return;
+        if (evt.dataTransfer.files.length == 0) // There are no files to be dropped, so this isn’t a file
+          // transfer operation.
+          return;
         evt.preventDefault();
         this.model.sendFiles(evt.dataTransfer.files);
       },
@@ -61736,7 +61735,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         if (text && text !== url) {
           if (is_me_message) {
-            text = text.replace(/^\/me/, '');
+            text = text.substring(4);
           }
 
           text = xss__WEBPACK_IMPORTED_MODULE_9___default.a.filterXSS(text, {
@@ -61834,8 +61833,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           return false;
         }
 
-        const match = text.match(/^\/(.*?)(?: (.*))?$/);
-        return match && match[1] === 'me';
+        return text.startsWith('/me ');
       },
 
       processMessageText() {
@@ -64998,8 +64996,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       chatstate_notification_blacklist: [],
       // ^ a list of JIDs to ignore concerning chat state notifications
       play_sounds: true,
-      sounds_path: '/sounds/',
-      notification_icon: '/logo/conversejs-filled.svg'
+      sounds_path: 'sounds/',
+      notification_icon: 'logo/conversejs-filled.svg'
     });
 
     _converse.isOnlyChatStateNotification = msg => // See XEP-0085 Chat State Notification
@@ -77204,7 +77202,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }, Strophe.NS.ROSTERX, 'message', null);
       },
 
-      fetchRosterContacts() {
+      async fetchRosterContacts() {
         /* Fetches the roster contacts, first by trying the
          * sessionStorage cache, and if that's empty, then by querying
          * the XMPP server.
@@ -77212,26 +77210,29 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          * Returns a promise which resolves once the contacts have been
          * fetched.
          */
-        const that = this;
-        return new Promise((resolve, reject) => {
-          this.fetch({
-            'add': true,
-            'silent': true,
+        let collection;
 
-            success(collection) {
-              if (collection.length === 0 || that.rosterVersioningSupported() && !_converse.session.get('roster_fetched')) {
-                _converse.send_initial_presence = true;
-
-                _converse.roster.fetchFromServer().then(resolve).catch(reject);
-              } else {
-                _converse.emit('cachedRoster', collection);
-
-                resolve();
-              }
-            }
-
+        try {
+          collection = await new Promise((resolve, reject) => {
+            const config = {
+              'add': true,
+              'silent': true,
+              'success': resolve,
+              'error': reject
+            };
+            this.fetch(config);
           });
-        });
+        } catch (e) {
+          return _converse.log(e, Strophe.LogLevel.ERROR);
+        }
+
+        if (collection.length === 0 || this.rosterVersioningSupported() && !_converse.session.get('roster_fetched')) {
+          _converse.send_initial_presence = true;
+
+          _converse.roster.fetchFromServer();
+        } else {
+          _converse.emit('cachedRoster', collection);
+        }
       },
 
       subscribeToSuggestedItems(msg) {

@@ -2,14 +2,15 @@
 
 ## 4.0.5 (Unreleased)
 
-- `FATAL: TypeError: Cannot read property 'extend' of undefined` when using `embedded` view mode.
-- default paths in converse-notifications.js are now relative
+- Error `FATAL: TypeError: Cannot read property 'extend' of undefined` when using `embedded` view mode.
+- Default paths in converse-notifications.js are now relative
 - #1188 Feature request: drag and drop file to HTTP Upload
 - #1268 Switch from SASS variables to CSS custom properties
 - #1278 Replace the default avatar with a SVG version
 - #1033 Setting show_send_button to true didn't work
 - #1306 added option `notification_delay`
 - #1305 added value 'all' for 'show_desktop_notifications' to notifiy even if converse.js is open
+- #1312 Error `unrecognized expression` in Safari
 
 ## 4.0.4 (2018-10-29)
 

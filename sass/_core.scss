@@ -282,28 +282,6 @@ body.reset {
         border-radius: 50%;
     }
 
-    .sidebar {
-        display: none;
-        width: 50px;
-        height: 100vh;
-        padding: 1rem 0;
-        background-color: var(--controlbox-head-color);
-        color: white;
-        text-align: center;
-
-        .chatbox-btn {
-            float: none;
-            margin: 0;
-            font-size: 1.35em;
-            &.fa-vcard {
-                margin-top: 1em;
-            }
-        }
-        .bottom {
-            position: absolute;
-            bottom: 1em;
-        }
-    }
     .badge {
         line-height: 1;
         font-weight: normal;

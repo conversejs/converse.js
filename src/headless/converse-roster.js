@@ -401,8 +401,12 @@ converse.plugins.add('converse-roster', {
                 let collection;
                 try {
                     collection = await new Promise((resolve, reject) => {
-                        const config = {'add': true, 'silent': true, 'success': resolve, 'error': reject};
-                        this.fetch(config);
+                        this.fetch({
+                            'add': true,
+                            'silent': true,
+                            'success': resolve,
+                            'error': reject
+                        });
                     });
                 } catch (e) {
                     return _converse.log(e, Strophe.LogLevel.ERROR);
@@ -562,7 +566,7 @@ converse.plugins.add('converse-roster', {
             },
 
             rosterVersioningSupported () {
-                return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
+                return !!(_converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version'));
             },
 
             async fetchFromServer () {

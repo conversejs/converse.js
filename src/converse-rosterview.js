@@ -751,6 +751,7 @@ converse.plugins.add('converse-rosterview', {
 
             events: {
                 'click a.controlbox-heading__btn.add-contact': 'showAddContactModal',
+                'click a.controlbox-heading__btn.sync-contacts': 'syncContacts'
             },
 
             initialize () {
@@ -787,7 +788,8 @@ converse.plugins.add('converse-rosterview', {
                 this.el.innerHTML = tpl_roster({
                     'allow_contact_requests': _converse.allow_contact_requests,
                     'heading_contacts': __('Contacts'),
-                    'title_add_contact': __('Add a contact')
+                    'title_add_contact': __('Add a contact'),
+                    'title_sync_contacts': __('Re-sync your contacts')
                 });
                 const form = this.el.querySelector('.roster-filter-form');
                 this.el.replaceChild(this.filter_view.render().el, form);
@@ -859,6 +861,15 @@ converse.plugins.add('converse-rosterview', {
                         view.filter(query, type);
                     });
                 }
+            },
+
+            async syncContacts (ev) {
+                ev.preventDefault();
+                u.addClass('fa-spin', ev.target);
+                _converse.roster.data.save('version', null);
+                await _converse.roster.fetchFromServer();
+                _converse.xmppstatus.sendPresence();
+                u.removeClass('fa-spin', ev.target);
             },
 
             reset () {

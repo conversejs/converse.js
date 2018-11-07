@@ -59,8 +59,6 @@ export default (o) => {
                         <div class="container brand-heading-container">
                             <h6 class="brand-heading">Converse</h6>
                             <p class="brand-subtitle">${o.version_name}</p>
-                            <p class="brand-subtitle">${unsafeHTML(xss.filterXSS(first_subtitle, {'whiteList': {'a': []}}))}</p>
-                            <p class="brand-subtitle">${unsafeHTML(xss.filterXSS(second_subtitle, {'whiteList': {'a': []}}))}</p>
                         </div>
                     </div>
 

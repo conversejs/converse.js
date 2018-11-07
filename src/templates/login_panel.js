@@ -78,6 +78,9 @@ const form_fields = (o) => {
     `;
 }
 
+const manual_link = (o) => html`
+    <br><p align="center"><a target="_blank" rel="nofollow" href="${ o.manual_url }">Benutzerhandbuch</a></p>
+`;
 
 export default (o) => html`
     <form id="converse-login" class="converse-form" method="post">
@@ -86,5 +89,6 @@ export default (o) => html`
             <p class="feedback-message ${ !o.conn_feedback_message ? 'hidden' : '' }">${o.conn_feedback_message}</p>
         </div>
         ${ (o._converse.CONNECTION_STATUS[o.connection_status] === 'CONNECTING') ? tpl_spinner({'classes': 'hor_centered'}) : form_fields(o) }
+        ${ o.manual_url ? manual_link(o) : '' }
     </form>
 `;

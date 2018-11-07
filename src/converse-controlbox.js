@@ -104,7 +104,8 @@ converse.plugins.add('converse-controlbox', {
             default_domain: undefined,
             locked_domain: undefined,
             show_controlbox_by_default: false,
-            sticky_controlbox: false
+            sticky_controlbox: false,
+            manual_url: undefined
         });
 
         api.promises.add('controlBoxInitialized');
@@ -392,7 +393,8 @@ converse.plugins.add('converse-controlbox', {
                         'conn_feedback_message': _converse.connfeedback.get('message'),
                         'placeholder_username': (api.settings.get('locked_domain') || api.settings.get('default_domain')) &&
                                                 __('Username') || __('user@domain'),
-                        'show_trust_checkbox': _converse.trusted !== 'on' && _converse.trusted !== 'off'
+                        'show_trust_checkbox': _converse.trusted !== 'on' && _converse.trusted !== 'off',
+                        'manual_url': _converse.manual_url,
                     })
                 );
             },

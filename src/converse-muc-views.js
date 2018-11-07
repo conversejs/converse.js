@@ -1756,8 +1756,8 @@ converse.plugins.add('converse-muc-views', {
             className: 'controlbox-section',
             id: 'chatrooms',
             events: {
-                'click a.chatbox-btn.show-add-muc-modal': 'showAddRoomModal',
-                'click a.chatbox-btn.show-list-muc-modal': 'showListRoomsModal'
+                'click a.controlbox-heading__btn.show-add-muc-modal': 'showAddRoomModal',
+                'click a.controlbox-heading__btn.show-list-muc-modal': 'showListRoomsModal'
             },
 
             render () {

@@ -212,12 +212,24 @@
         }
 
         .controlbox-section {
-            margin: 1em 0 0 0;
 
             .controlbox-heading {
                 font-family: var(--heading-font);
-                margin: 0 0 0.5em 0;
+                padding: 0;
+                margin: 0.75em 0;
+                font-size: 1.1em;
                 text-transform: uppercase;
+            }
+
+            .controlbox-heading__btn {
+                cursor: pointer;
+                align-self: flex-start;
+                font-size: 1.1em;
+                padding: 0;
+                margin: 0.75em 0 0.75em 0.75em;
+                &.fa-vcard {
+                    margin-top: 1em;
+                }
             }
         }
 

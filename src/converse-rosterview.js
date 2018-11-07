@@ -750,7 +750,7 @@ converse.plugins.add('converse-rosterview', {
             subviewIndex: 'name',
 
             events: {
-                'click a.chatbox-btn.add-contact': 'showAddContactModal',
+                'click a.controlbox-heading__btn.add-contact': 'showAddContactModal',
             },
 
             initialize () {

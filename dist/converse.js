@@ -64553,8 +64553,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       className: 'controlbox-section',
       id: 'chatrooms',
       events: {
-        'click a.chatbox-btn.show-add-muc-modal': 'showAddRoomModal',
-        'click a.chatbox-btn.show-list-muc-modal': 'showListRoomsModal'
+        'click a.controlbox-heading__btn.show-add-muc-modal': 'showAddRoomModal',
+        'click a.controlbox-heading__btn.show-list-muc-modal': 'showListRoomsModal'
       },
 
       render() {
@@ -64997,7 +64997,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       // ^ a list of JIDs to ignore concerning chat state notifications
       play_sounds: true,
       sounds_path: 'sounds/',
-      notification_icon: 'logo/conversejs-filled.svg'
+      notification_icon: 'logo/conversejs-filled.svg',
+      notification_delay: 5000
     });
 
     _converse.isOnlyChatStateNotification = msg => // See XEP-0085 Chat State Notification
@@ -65063,7 +65064,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       const is_me = Strophe.getBareJidFromJid(message.getAttribute('from')) === _converse.bare_jid;
 
-      return !_converse.isOnlyChatStateNotification(message) && !is_me && _converse.isMessageToHiddenChat(message);
+      return !_converse.isOnlyChatStateNotification(message) && !is_me && (_converse.show_desktop_notifications === 'all' || _converse.isMessageToHiddenChat(message));
     };
 
     _converse.playSoundNotification = function () {
@@ -65147,9 +65148,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       const n = new Notification(title, {
         'body': body,
         'lang': _converse.locale,
-        'icon': _converse.notification_icon
+        'icon': _converse.notification_icon,
+        'requireInteraction': !_converse.notification_delay
       });
-      setTimeout(n.close.bind(n), 5000);
+
+      if (_converse.notification_delay) {
+        setTimeout(n.close.bind(n), _converse.notification_delay);
+      }
     };
 
     _converse.showChatStateNotification = function (contact) {
@@ -68865,7 +68870,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       // Groups are immutable, so they don't get re-sorted
       subviewIndex: 'name',
       events: {
-        'click a.chatbox-btn.add-contact': 'showAddContactModal'
+        'click a.controlbox-heading__btn.add-contact': 'showAddContactModal',
+        'click a.controlbox-heading__btn.sync-contacts': 'syncContacts'
       },
 
       initialize() {
@@ -68910,7 +68916,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.el.innerHTML = templates_roster_html__WEBPACK_IMPORTED_MODULE_10___default()({
           'allow_contact_requests': _converse.allow_contact_requests,
           'heading_contacts': __('Contacts'),
-          'title_add_contact': __('Add a contact')
+          'title_add_contact': __('Add a contact'),
+          'title_sync_contacts': __('Re-sync your contacts')
         });
         const form = this.el.querySelector('.roster-filter-form');
         this.el.replaceChild(this.filter_view.render().el, form);
@@ -68990,6 +68997,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
             view.filter(query, type);
           });
         }
+      },
+
+      async syncContacts(ev) {
+        ev.preventDefault();
+        u.addClass('fa-spin', ev.target);
+
+        _converse.roster.data.save('version', null);
+
+        await _converse.roster.fetchFromServer();
+
+        _converse.xmppstatus.sendPresence();
+
+        u.removeClass('fa-spin', ev.target);
       },
 
       reset() {
@@ -77214,13 +77234,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         try {
           collection = await new Promise((resolve, reject) => {
-            const config = {
+            this.fetch({
               'add': true,
               'silent': true,
               'success': resolve,
               'error': reject
-            };
-            this.fetch(config);
+            });
           });
         } catch (e) {
           return _converse.log(e, Strophe.LogLevel.ERROR);
@@ -77412,7 +77431,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       rosterVersioningSupported() {
-        return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
+        return !!(_converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version'));
       },
 
       async fetchFromServer() {
@@ -103051,9 +103070,9 @@ module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/room_panel.html -->\n<!-- <div id="chatrooms"> -->\n<div class="d-flex controlbox-padded">\n    <span class="w-100 controlbox-heading">' +
 __e(o.heading_chatrooms) +
-'</span>\n    <a class="chatbox-btn show-list-muc-modal fa fa-list-ul" title="' +
+'</span>\n    <a class="controlbox-heading__btn show-list-muc-modal fa fa-list-ul" title="' +
 __e(o.title_list_rooms) +
-'" data-toggle="modal" data-target="#list-chatrooms-modal"></a>\n    <a class="chatbox-btn show-add-muc-modal fa fa-plus" title="' +
+'" data-toggle="modal" data-target="#list-chatrooms-modal"></a>\n    <a class="controlbox-heading__btn show-add-muc-modal fa fa-plus" title="' +
 __e(o.title_new_room) +
 '" data-toggle="modal" data-target="#add-chatrooms-modal"></a>\n</div>\n<div class="list-container open-rooms-list rooms-list-container"></div>\n<div class="list-container bookmarks-list rooms-list-container"></div>\n<!-- </div> -->\n';
 return __p
@@ -103192,9 +103211,11 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/roster.html -->\n<div class="d-flex controlbox-padded">\n    <span class="w-100 controlbox-heading">' +
 __e(o.heading_contacts) +
-'</span>\n    ';
+'</span>\n    <a class="controlbox-heading__btn sync-contacts fa fa-sync" title="' +
+__e(o.title_sync_contacts) +
+'"></a>\n    ';
  if (o.allow_contact_requests) { ;
-__p += '\n        <a class="chatbox-btn add-contact fa fa-user-plus"\n           title="' +
+__p += '\n        <a class="controlbox-heading__btn add-contact fa fa-user-plus"\n           title="' +
 __e(o.title_add_contact) +
 '"\n           data-toggle="modal"\n           data-target="#add-contact-modal"></a>\n    ';
  } ;

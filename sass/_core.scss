@@ -449,17 +449,25 @@ body.reset {
         display: block !important;
     }
 
-    .button-primary {
+    .btn-primary, .button-primary, .badge-primary {
         color: white;
         background-color: var(--primary-color);
     }
-    .button-secondary {
+    .btn-info, .badge-info {
+        color: white;
+        background-color: var(--link-color);
+    }
+    .btn-secondary, .badge-secondary {
         color: white;
         background-color: var(--secondary-color);
     }
     .button-cancel {
         color: white;
         background-color: var(--text-color);
+    }
+    .btn-warning {
+        color: white;
+        background-color: var(--warning-color);
     }
 
     .chat-textarea-chatbox-selected {

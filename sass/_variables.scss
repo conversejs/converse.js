@@ -3,7 +3,7 @@ $mobile_portrait_length: 480px !default;
 
 $font-path: "webfonts/icomoon/fonts/" !default;
 
-#conversejs {
+#conversejs, .converse-content {
     --subdued-color: #A8ABA1;
     --subdued-color-lighten-25-percent: #e6e7e4; // lighten(#A8ABA1, 25%)
 
@@ -48,7 +48,7 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     --highlight-color: #DCF9F6;
 
     --primary-color: #E7A151; // $orange
-    --secondary-color: #387592; // $blue
+    --secondary-color: #578EA9; // $light-blue
     --warning-color: #D24E2B; // $dark-red
 
     --light-background-color: #FCFDFD;
@@ -73,7 +73,7 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     // --font-path: "webfonts/icomoon/fonts/";
 
     --normal-font: "Helvetica", "Arial", sans-serif;
-    --heading-font: 'Century Gothic', futura, 'URW Gothic L', Verdana, sans-serif;
+    --heading-font: futura, 'Century Gothic', 'URW Gothic L', Verdana, sans-serif;
 
     --chatroom-head-color: #E77051; // $red
     --chatroom-head-color-lighten-25-percent: #f6ccc1; // lighten($red, 25%)

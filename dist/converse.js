@@ -102527,7 +102527,7 @@ __e(o.hint_show) +
 __e(o.nick || o.jid) +
 '</span>\n            <span class="occupant-badges">\n                ';
  if (o.affiliation === "owner") { ;
-__p += '\n                    <span class="badge badge-danger">' +
+__p += '\n                    <span class="badge badge-primary">' +
 __e(o.label_owner) +
 '</span>\n                ';
  } ;

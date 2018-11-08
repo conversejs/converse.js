@@ -126,13 +126,16 @@ dev: stamp-npm
 ## Builds
 
 .PHONY: css
-css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/fonts.css
+css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/font-awesome.css
 
 css/converse.css:: dev sass
 	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/converse.scss css/converse.css
 
 css/website.css:: dev sass
 	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
+
+css/font-awesome.css:: dev sass
+	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@
 
 css/%.min.css:: css/%.css
 	make dev

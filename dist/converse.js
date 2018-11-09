@@ -65812,21 +65812,21 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       return _converse.getDevicesForContact(jid).then(devices => devices.get(device_id));
     };
 
-    _converse.getDevicesForContact = function (jid) {
-      let devicelist;
-      return _converse.api.waitUntil('OMEMOInitialized').then(() => {
-        devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({
-          'jid': jid
-        });
-        return devicelist.fetchDevices();
-      }).then(() => devicelist.devices);
+    _converse.getDevicesForContact = async function (jid) {
+      await _converse.api.waitUntil('OMEMOInitialized');
+
+      const devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({
+        'jid': jid
+      });
+
+      await devicelist.fetchDevices();
+      return devicelist.devices;
     };
 
-    _converse.contactHasOMEMOSupport = function (jid) {
+    _converse.contactHasOMEMOSupport = async function (jid) {
       /* Checks whether the contact advertises any OMEMO-compatible devices. */
-      return new Promise((resolve, reject) => {
-        _converse.getDevicesForContact(jid).then(devices => resolve(devices.length > 0)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-      });
+      const devices = await _converse.getDevicesForContact(jid);
+      return devices.length > 0;
     };
 
     function generateDeviceID() {
@@ -66192,20 +66192,21 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       fetchDevices() {
         if (_.isUndefined(this._devices_promise)) {
-          this._devices_promise = new Promise((resolve, reject) => {
-            this.devices.fetch({
-              'success': collection => {
-                if (collection.length === 0) {
-                  this.fetchDevicesFromServer().then(ids => this.publishCurrentDevice(ids)).finally(resolve);
-                } else {
-                  resolve();
-                }
-              }
-            });
-          });
+          const options = {
+            'success': c => this.onCachedDevicesFetched(c),
+            'error': e => _converse.log(e, Strophe.LogLevel.ERROR)
+          };
+          this._devices_promise = this.devices.fetch(options);
         }
 
         return this._devices_promise;
+      },
+
+      async onCachedDevicesFetched(collection) {
+        if (collection.length === 0) {
+          const ids = await this.fetchDevicesFromServer();
+          this.publishCurrentDevice(ids);
+        }
       },
 
       async publishCurrentDevice(device_ids) {
@@ -66231,7 +66232,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
       },
 
-      fetchDevicesFromServer() {
+      async fetchDevicesFromServer() {
         const stanza = $iq({
           'type': 'get',
           'from': _converse.bare_jid,
@@ -66241,16 +66242,24 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }).c('items', {
           'node': Strophe.NS.OMEMO_DEVICELIST
         });
-        return _converse.api.sendIQ(stanza).then(iq => {
-          const device_ids = _.map(sizzle(`list[xmlns="${Strophe.NS.OMEMO}"] device`, iq), dev => dev.getAttribute('id'));
+        let iq;
 
-          _.forEach(device_ids, id => this.devices.create({
-            'id': id,
-            'jid': this.get('jid')
-          }));
+        try {
+          iq = await _converse.api.sendIQ(stanza);
+        } catch (e) {
+          _converse.log(e, Strophe.LogLevel.ERROR);
 
-          return device_ids;
-        });
+          return [];
+        }
+
+        const device_ids = _.map(sizzle(`list[xmlns="${Strophe.NS.OMEMO}"] device`, iq), dev => dev.getAttribute('id'));
+
+        _.forEach(device_ids, id => this.devices.create({
+          'id': id,
+          'jid': this.get('jid')
+        }));
+
+        return device_ids;
       },
 
       publishDevices() {

@@ -10737,6 +10737,10 @@ body.reset {
     height: 100%;
     overflow-y: auto;
     background-color: white; }
+  #conversejs #controlbox .controlbox-subtitle {
+    font-size: 90%;
+    padding: 0.5em;
+    text-align: right; }
   #conversejs #controlbox .controlbox-pane {
     background-color: white;
     border: 0;

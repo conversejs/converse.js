@@ -71,6 +71,8 @@ const _converse = {
 
 _.extend(_converse, Backbone.Events);
 
+_converse.VERSION_NAME = "v4.0.5";
+
 // Core plugins are whitelisted automatically
 _converse.core_plugins = [
     'converse-chatboxes',

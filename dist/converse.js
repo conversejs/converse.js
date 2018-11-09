@@ -60401,7 +60401,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           }
         }
 
-        this.el.innerHTML = templates_controlbox_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.toJSON()));
+        this.el.innerHTML = templates_controlbox_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.toJSON(), {
+          'version_name': _converse.VERSION_NAME,
+          'view_mode': _converse.view_mode
+        }));
 
         if (!this.model.get('closed')) {
           this.show();
@@ -60603,7 +60606,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           'conn_feedback_class': feedback_class,
           'conn_feedback_subject': pretty_status,
           'conn_feedback_message': _converse.connfeedback.get('message'),
-          'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain')
+          'placeholder_username': (_converse.locked_domain || _converse.default_domain) && __('Username') || __('user@domain'),
+          'show_trust_checkbox': _converse.trusted !== 'on' && _converse.trusted !== 'off'
         }));
       },
 
@@ -60648,10 +60652,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         const form_data = new FormData(ev.target);
 
-        _converse.config.save({
-          'trusted': form_data.get('trusted') && true || false,
-          'storage': form_data.get('trusted') ? 'local' : 'session'
-        });
+        if (_converse.trusted === 'on' || _converse.trusted === 'off') {
+          _converse.config.save({
+            'trusted': _converse.trusted === 'on',
+            'storage': _converse.trusted === 'on' ? 'local' : 'session'
+          });
+        } else {
+          _converse.config.save({
+            'trusted': form_data.get('trusted') && true || false,
+            'storage': form_data.get('trusted') ? 'local' : 'session'
+          });
+        }
 
         let jid = form_data.get('jid');
 
@@ -61367,7 +61378,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
     // new functions which don't exist yet can also be added.
     ControlBoxView: {
       createBrandHeadingHTML() {
-        return templates_inverse_brand_heading_html__WEBPACK_IMPORTED_MODULE_5___default()();
+        const _converse = this.__super__._converse;
+        return templates_inverse_brand_heading_html__WEBPACK_IMPORTED_MODULE_5___default()({
+          'version_name': _converse.VERSION_NAME
+        });
       },
 
       insertBrandHeading() {
@@ -71819,8 +71833,9 @@ const _converse = {
   'promises': {}
 };
 
-_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
+_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.extend(_converse, Backbone.Events);
 
+_converse.VERSION_NAME = "v4.0.5"; // Core plugins are whitelisted automatically
 
 _converse.core_plugins = ['converse-chatboxes', 'converse-core', 'converse-disco', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-roster', 'converse-vcard']; // Setting wait to 59 instead of 60 to avoid timing conflicts with the
 // webserver, which is often also set to 60 and might therefore sometimes
@@ -101772,13 +101787,19 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __j = Array.prototype.join;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/controlbox.html -->\n<div class="flyout box-flyout">\n    <div class="chat-head controlbox-head">\n        ';
  if (!o.sticky_controlbox) { ;
 __p += '\n            <a class="chatbox-btn close-chatbox-button fa fa-times"></a>\n        ';
  } ;
-__p += '\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
+__p += '\n    </div>\n    <div class="controlbox-panes"></div>\n    ';
+ if (o.view_mode != 'fullscreen') { ;
+__p += '\n        <div class="controlbox-subtitle">\n            ' +
+__e(o.version_name) +
+'\n        </div>\n    ';
+ } ;
+__p += '\n</div>\n';
 return __p
 };
 
@@ -102358,8 +102379,10 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '';
-__p += '<!-- src/templates/inverse_brand_heading.html -->\n<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse</h1>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client brought to you by <a target="_blank" rel="nofollow" href="https://opkode.com">Opkode</a> </p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> it into your own language</p>\n    <div>\n</div>\n';
+var __t, __p = '', __e = _.escape;
+__p += '<!-- src/templates/inverse_brand_heading.html -->\n<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse</h1>\n        <p class="brand-subtitle">' +
+__e(o.version_name) +
+'</p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client brought to you by <a target="_blank" rel="nofollow" href="https://opkode.com">Opkode</a> </p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> it into your own language</p>\n    <div>\n</div>\n';
 return __p
 };
 
@@ -102434,15 +102457,19 @@ __e(o.__("Password:")) +
 __e(o.__('password')) +
 '">\n                </div>\n                ';
  } ;
-__p += '\n                <div class="form-group form-check login-trusted">\n                    <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ';
+__p += '\n                ';
+ if (o.show_trust_checkbox) { ;
+__p += '\n                    <div class="form-group form-check login-trusted">\n                        <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" ';
  if (o._converse.config.get('trusted')) { ;
 __p += ' checked="checked" ';
  } ;
-__p += '>\n                    <label for="converse-login-trusted" class="form-check-label login-trusted__desc">' +
+__p += '>\n                        <label for="converse-login-trusted" class="form-check-label login-trusted__desc">' +
 __e(o.__('This is a trusted device')) +
-'</label>\n                    <i class="fa fa-info-circle" data-toggle="popover"\n                       data-title="Trusted device?"\n                       data-content="' +
+'</label>\n                        <i class="fa fa-info-circle" data-toggle="popover"\n                           data-title="Trusted device?"\n                           data-content="' +
 __e(o.__('To improve performance, we cache your data in this browser. Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. It\'s important that you explicitly log out, otherwise not all cached data might be deleted. Please note, when using an untrusted device, OMEMO encryption is NOT available.')) +
-'"></i>\n                </div>\n\n                <fieldset class="buttons">\n                    <input class="btn btn-primary" type="submit" value="' +
+'"></i>\n                    </div>\n                ';
+ } ;
+__p += '\n\n                <fieldset class="buttons">\n                    <input class="btn btn-primary" type="submit" value="' +
 __e(o.__('Log in')) +
 '">\n                </fieldset>\n            ';
  } ;

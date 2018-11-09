@@ -427,7 +427,7 @@ converse.plugins.add('converse-chatview', {
                  * messages, based on whether the contact's client supports
                  * it.
                  */
-                if (!options.show_spoiler_button || this.model.get('type') === 'chatroom') {
+                if (!options.show_spoiler_button || this.model.get('type') === _converse.CHATROOMS_TYPE) {
                     return;
                 }
                 const contact_jid = this.model.get('jid');

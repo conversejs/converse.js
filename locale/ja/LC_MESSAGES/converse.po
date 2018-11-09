@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-29 22:21+0100\n"
-"PO-Revision-Date: 2018-10-22 09:20+0000\n"
+"PO-Revision-Date: 2018-11-11 07:07+0000\n"
 "Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
@@ -105,9 +105,8 @@ msgid "Close this chat box"
 msgstr "このチャットを閉じる"
 
 #: dist/converse-no-dependencies.js:41073
-#, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr "ブックマークの保存に失敗しました。"
+msgstr "復元に失敗したようです"
 
 #: dist/converse-no-dependencies.js:41089
 #: dist/converse-no-dependencies.js:50698
@@ -390,7 +389,7 @@ msgstr "招待の要求"
 #: dist/converse-no-dependencies.js:83313
 #: dist/converse-no-dependencies.js:83469
 msgid "Moderated"
-msgstr "発言制限談話室"
+msgstr "司会付き"
 
 #: dist/converse-no-dependencies.js:45012
 msgid "Non-anonymous"
@@ -416,7 +415,7 @@ msgstr "公開談話室"
 #: dist/converse-no-dependencies.js:83305
 #: dist/converse-no-dependencies.js:83461
 msgid "Semi-anonymous"
-msgstr "半匿名談話室"
+msgstr "半匿名"
 
 #: dist/converse-no-dependencies.js:45017
 #: dist/converse-no-dependencies.js:83289
@@ -510,9 +509,9 @@ msgstr "%1$s はこの談話室から締め出されました"
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
 #: dist/converse-no-dependencies.js:45441
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s はこの談話室の管理人ではなくなりました"
+msgstr "%1$s はこの談話室の %2$s になりました"
 
 #: dist/converse-no-dependencies.js:45453
 #, javascript-format
@@ -696,9 +695,9 @@ msgid "%1$s has left and re-entered the groupchat"
 msgstr "%1$s はこの談話室を退出して再入室しました"
 
 #: dist/converse-no-dependencies.js:46400
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
-msgstr "%1$s はこの談話室を退出して再入室しました"
+msgstr "%1$s はこの談話室を退出して再入室しました。\"%2$s2\""
 
 #: dist/converse-no-dependencies.js:46419
 #, javascript-format
@@ -1321,12 +1320,11 @@ msgid ""
 msgstr "%1$s があなたを談話室%2$s へ招待しています。案内: \"%3$s\""
 
 #: dist/converse-no-dependencies.js:58493
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: the groupchat %1$s does not exist."
-msgstr "この談話室は(まだ)存在しません。"
+msgstr "エラー:談話室 %1$s は存在しません。"
 
 #: dist/converse-no-dependencies.js:58495
-#, fuzzy
 msgid "Sorry, you're not allowed to register in this groupchat"
 msgstr "新しい談話室に登録する権限がありません"
 
@@ -1344,13 +1342,12 @@ msgid "Click to hide these contacts"
 msgstr "クリックしてこの相手先を隠す"
 
 #: dist/converse-no-dependencies.js:83168
-#, fuzzy
 msgid "This room no longer exists"
-msgstr "この談話室は誰でも発言できます"
+msgstr "この談話室はもう存在していません"
 
 #: dist/converse-no-dependencies.js:83174
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "会話は場所を移しました。参加するには下をクリックしてください。"
 
 #: dist/converse-no-dependencies.js:83201
 msgid "Name"
@@ -1379,7 +1376,7 @@ msgstr "オンラインユーザー"
 #: dist/converse-no-dependencies.js:83229
 #: dist/converse-no-dependencies.js:83381
 msgid "Features"
-msgstr "主要点"
+msgstr "摘要"
 
 #: dist/converse-no-dependencies.js:83233
 #: dist/converse-no-dependencies.js:83389
@@ -1458,7 +1455,7 @@ msgstr "司会者のみが XMPP ユーザー名を見ることができます"
 #: dist/converse-no-dependencies.js:83467
 msgid ""
 "Participants entering this groupchat need to request permission to write"
-msgstr ""
+msgstr "このグループチャットの参加者は書込権を得る必要があります"
 
 #: dist/converse-no-dependencies.js:83321
 #: dist/converse-no-dependencies.js:83477
@@ -1468,7 +1465,7 @@ msgstr "発言制限なし"
 #: dist/converse-no-dependencies.js:83323
 #: dist/converse-no-dependencies.js:83475
 msgid "Participants entering this groupchat can write right away"
-msgstr ""
+msgstr "このグループチャットの参加者は直ちに書き込むことができます"
 
 #: dist/converse-no-dependencies.js:83329
 #: dist/converse-no-dependencies.js:83485
@@ -1505,7 +1502,6 @@ msgid "This is a trusted device"
 msgstr "これは信頼できるデバイスです"
 
 #: dist/converse-no-dependencies.js:84334
-#, fuzzy
 msgid ""
 "To improve performance, we cache your data in this browser. Uncheck this box "
 "if this is a public computer or if you want your data to be deleted when you "
@@ -1513,9 +1509,8 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
-"性能改善のため、このブラウザーにデータをキャッシュします。共用コンピューター"
-"の場合や、ログアウト時にデータを消去したい場合は、この欄のチェックをはずして"
-"ください。確実にログアウトしないと、キャッシュデータが残る可能性があります。"
+"性能改善のため、このブラウザーにデータをキャッシュします。共用コンピューターの場合や、ログアウト時にデータを消去したい場合は、この欄のチェックをはずしてく"
+"ださい。確実にログアウトしないと、キャッシュデータが残る可能性があります。信頼のない機器での利用の場合には OMEMO が使えないことにご注意ください。"
 
 #: dist/converse-no-dependencies.js:84336
 msgid "Log in"

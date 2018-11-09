@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-29 22:21+0100\n"
-"PO-Revision-Date: 2018-04-29 18:41+0000\n"
-"Last-Translator: Anton Tikhomirov <anton.d.tikhomirov@gmail.com>\n"
+"PO-Revision-Date: 2018-11-11 07:07+0000\n"
+"Last-Translator: Infinite universe <0ser0tim0@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.0-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 3.3-dev\n"
 
 #: dist/converse-no-dependencies.js:39929
 #: dist/converse-no-dependencies.js:39986
@@ -154,7 +154,7 @@ msgstr "Опционная подсказка"
 
 #: dist/converse-no-dependencies.js:41236
 msgid "Choose a file to send"
-msgstr ""
+msgstr "Выберите файл для отправки"
 
 #: dist/converse-no-dependencies.js:41639
 #: dist/converse-no-dependencies.js:45746
@@ -163,7 +163,7 @@ msgstr "Удалить сообщения"
 
 #: dist/converse-no-dependencies.js:41639
 msgid "Write in the third person"
-msgstr "Вписать третьего человека"
+msgstr "Писать от третьего лица"
 
 #: dist/converse-no-dependencies.js:41639
 #: dist/converse-no-dependencies.js:45746
@@ -227,22 +227,22 @@ msgid "Typing from another device"
 msgstr "Набирает с другого девайса"
 
 #: dist/converse-no-dependencies.js:43861
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is typing"
-msgstr "набирает текст"
+msgstr "%1$s набирает текст"
 
 #: dist/converse-no-dependencies.js:43865
 msgid "Stopped typing on the other device"
 msgstr "Перестал набирать с другого девайса"
 
 #: dist/converse-no-dependencies.js:43867
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has stopped typing"
-msgstr "перестал набирать"
+msgstr "%1$s прекратил печатать"
 
 #: dist/converse-no-dependencies.js:43906
 msgid "Unencryptable OMEMO message"
-msgstr ""
+msgstr "Незашифрованное OMEMO сообщение"
 
 #: dist/converse-no-dependencies.js:44146
 #: dist/converse-no-dependencies.js:44192
@@ -258,79 +258,65 @@ msgid "Minimized"
 msgstr "Свёрнуто"
 
 #: dist/converse-no-dependencies.js:44936
-#, fuzzy
 msgid "This groupchat is not anonymous"
-msgstr "Этот чат не анонимный"
+msgstr "Этот групповой чат не анонимный"
 
 #: dist/converse-no-dependencies.js:44937
-#, fuzzy
 msgid "This groupchat now shows unavailable members"
-msgstr "Этот чат показывает недоступных собеседников"
+msgstr "В данный момент этот групповой чат показывает недоступных участников"
 
 #: dist/converse-no-dependencies.js:44938
-#, fuzzy
 msgid "This groupchat does not show unavailable members"
-msgstr "Этот чат не показывает недоступных собеседников"
+msgstr "В этом групповом чате отсутствуют недоступные участники"
 
 #: dist/converse-no-dependencies.js:44939
-#, fuzzy
 msgid "The groupchat configuration has changed"
-msgstr "Настройки комнаты изменились"
+msgstr "Изменена конфигурация группового чата"
 
 #: dist/converse-no-dependencies.js:44940
-#, fuzzy
 msgid "groupchat logging is now enabled"
 msgstr "Протокол чата включен"
 
 #: dist/converse-no-dependencies.js:44941
-#, fuzzy
 msgid "groupchat logging is now disabled"
 msgstr "Протокол чата выключен"
 
 #: dist/converse-no-dependencies.js:44942
-#, fuzzy
 msgid "This groupchat is now no longer anonymous"
-msgstr "Эта комната больше не анонимная"
+msgstr "Этот групповой чат больше не анонимен"
 
 #: dist/converse-no-dependencies.js:44943
-#, fuzzy
 msgid "This groupchat is now semi-anonymous"
-msgstr "Этот чат частично анонимный"
+msgstr "Этот групповой чат частично анонимный"
 
 #: dist/converse-no-dependencies.js:44944
-#, fuzzy
 msgid "This groupchat is now fully-anonymous"
-msgstr "Этот чат стал полностью анонимный"
+msgstr "Этот групповой чат стал полностью анонимный"
 
 #: dist/converse-no-dependencies.js:44945
-#, fuzzy
 msgid "A new groupchat has been created"
-msgstr "Появился новый чат"
+msgstr "Появился новый групповой чат"
 
 #: dist/converse-no-dependencies.js:44948
-#, fuzzy
 msgid "You have been banned from this groupchat"
-msgstr "Вам запрещено подключатся к этому чату"
+msgstr "Вам запрещено подключатся к этому групповому чату"
 
 #: dist/converse-no-dependencies.js:44949
-#, fuzzy
 msgid "You have been kicked from this groupchat"
-msgstr "Вас выкинули из чата"
+msgstr "Вас исключили из группового чата"
 
 #: dist/converse-no-dependencies.js:44950
-#, fuzzy
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
 msgstr "Вас удалили из-за изменения прав"
 
 #: dist/converse-no-dependencies.js:44951
-#, fuzzy
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
 msgstr ""
-"Вы отключены от чата, потому что он теперь только для участников и вы не "
-"являетесь членом"
+"Вы были удалены из этого группового чата, потому что групповой чат был "
+"изменен только для членов, а вы им не являетесь"
 
 #: dist/converse-no-dependencies.js:44952
 #, fuzzy

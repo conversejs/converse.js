@@ -405,7 +405,7 @@ converse.plugins.add('converse-chatboxes', {
                  * as taken from the 'chat_state' attribute of the chat box.
                  * See XEP-0085 Chat State Notifications.
                  */
-                if (_converse.send_chat_state_notifications) {
+                if (_converse.send_chat_state_notifications && this.get('chat_state')) {
                     _converse.api.send(
                         $msg({'to':this.get('jid'), 'type': 'chat'})
                             .c(this.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()

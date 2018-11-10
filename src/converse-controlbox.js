@@ -403,6 +403,7 @@ converse.plugins.add('converse-controlbox', {
                         'conn_feedback_message': _converse.connfeedback.get('message'),
                         'placeholder_username': (_converse.locked_domain || _converse.default_domain) &&
                                                 __('Username') || __('user@domain'),
+                        'show_trust_checkbox': _converse.trusted !== 'on' && _converse.trusted !== 'off'
                     })
                 );
             },
@@ -442,10 +443,18 @@ converse.plugins.add('converse-controlbox', {
                 if (!this.validate()) { return; }
 
                 const form_data = new FormData(ev.target);
-                _converse.config.save({
-                    'trusted': form_data.get('trusted') && true || false,
-                    'storage': form_data.get('trusted') ? 'local' : 'session'
-                });
+
+                if (_converse.trusted === 'on' || _converse.trusted === 'off') {
+                    _converse.config.save({
+                        'trusted': _converse.trusted === 'on',
+                        'storage': _converse.trusted === 'on' ? 'local' : 'session'
+                    });
+                } else {
+                    _converse.config.save({
+                        'trusted': form_data.get('trusted') && true || false,
+                        'storage': form_data.get('trusted') ? 'local' : 'session'
+                    });
+                }
 
                 let jid = form_data.get('jid');
                 if (_converse.locked_domain) {

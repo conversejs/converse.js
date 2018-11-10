@@ -68616,7 +68616,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         _converse.api.chats.open(attrs.jid, attrs);
       },
 
-      removeContact(ev) {
+      async removeContact(ev) {
         if (ev && ev.preventDefault) {
           ev.preventDefault();
         }
@@ -68625,28 +68625,35 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           return;
         }
 
-        const result = confirm(__("Are you sure you want to remove this contact?"));
+        if (!confirm(__("Are you sure you want to remove this contact?"))) {
+          return;
+        }
 
-        if (result === true) {
-          this.model.removeFromRoster(iq => {
+        let iq;
+
+        try {
+          iq = await this.model.removeFromRoster();
+          this.remove();
+
+          if (this.model.collection) {
+            // The model might have already been removed as
+            // result of a roster push.
             this.model.destroy();
-            this.remove();
-          }, function (err) {
-            alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
+          }
+        } catch (e) {
+          _converse.log(e, Strophe.LogLevel.ERROR);
 
-            _converse.log(err, Strophe.LogLevel.ERROR);
-          });
+          _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Sorry, there was an error while trying to remove %1$s as a contact.', name));
         }
       },
 
-      acceptRequest(ev) {
+      async acceptRequest(ev) {
         if (ev && ev.preventDefault) {
           ev.preventDefault();
         }
 
-        _converse.roster.sendContactAddIQ(this.model.get('jid'), this.model.getFullname(), [], () => {
-          this.model.authorize().subscribe();
-        });
+        await _converse.roster.sendContactAddIQ(this.model.get('jid'), this.model.getFullname(), []);
+        this.model.authorize().subscribe();
       },
 
       declineRequest(ev) {
@@ -77112,13 +77119,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       ackUnsubscribe() {
         /* Upon receiving the presence stanza of type "unsubscribed",
-        * the user SHOULD acknowledge receipt of that subscription state
-        * notification by sending a presence stanza of type "unsubscribe"
-        * this step lets the user's server know that it MUST no longer
-        * send notification of the subscription state change to the user.
-        *  Parameters:
-        *    (String) jid - The Jabber ID of the user who is unsubscribing
-        */
+         * the user SHOULD acknowledge receipt of that subscription state
+         * notification by sending a presence stanza of type "unsubscribe"
+         * this step lets the user's server know that it MUST no longer
+         * send notification of the subscription state change to the user.
+         *  Parameters:
+         *    (String) jid - The Jabber ID of the user who is unsubscribing
+         */
         _converse.api.send($pres({
           'type': 'unsubscribe',
           'to': this.get('jid')
@@ -77140,9 +77147,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       authorize(message) {
         /* Authorize presence subscription
-        * Parameters:
-        *   (String) message - Optional message to send to the person being authorized
-        */
+         * Parameters:
+         *   (String) message - Optional message to send to the person being authorized
+         */
         const pres = $pres({
           'to': this.get('jid'),
           'type': "subscribed"
@@ -77157,11 +77164,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return this;
       },
 
-      removeFromRoster(callback, errback) {
+      removeFromRoster() {
         /* Instruct the XMPP server to remove this contact from our roster
-        * Parameters:
-        *   (Function) callback
-        */
+         * Parameters:
+         *   (Function) callback
+         */
         const iq = $iq({
           type: 'set'
         }).c('query', {
@@ -77170,10 +77177,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           jid: this.get('jid'),
           subscription: "remove"
         });
-
-        _converse.api.sendIQ(iq).then(callback).catch(errback);
-
-        return this;
+        return _converse.api.sendIQ(iq);
       }
 
     });
@@ -77319,7 +77323,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         _.each(groups, group => iq.c('group').t(group).up());
 
-        _converse.api.sendIQ(iq);
+        return _converse.api.sendIQ(iq);
       },
 
       async addContactToRoster(jid, name, groups, attributes) {

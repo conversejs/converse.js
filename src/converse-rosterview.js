@@ -513,32 +513,38 @@ converse.plugins.add('converse-rosterview', {
                 _converse.api.chats.open(attrs.jid, attrs);
             },
 
-            removeContact (ev) {
+            async removeContact (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (!_converse.allow_contact_removal) { return; }
-                const result = confirm(__("Are you sure you want to remove this contact?"));
-                if (result === true) {
-                    this.model.removeFromRoster(
-                        (iq) => {
-                            this.model.destroy();
-                            this.remove();
-                        },
-                        function (err) {
-                            alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
-                            _converse.log(err, Strophe.LogLevel.ERROR);
-                        }
+                if (!confirm(__("Are you sure you want to remove this contact?"))) { return; }
+
+                let iq;
+                try {
+                    iq = await this.model.removeFromRoster();
+                    this.remove();
+                    if (this.model.collection) {
+                        // The model might have already been removed as
+                        // result of a roster push.
+                        this.model.destroy();
+                    }
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    _converse.api.alert.show(
+                        Strophe.LogLevel.ERROR,
+                        __('Sorry, there was an error while trying to remove %1$s as a contact.', name)
                     );
                 }
             },
 
-            acceptRequest (ev) {
+            async acceptRequest (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                _converse.roster.sendContactAddIQ(
+
+                await _converse.roster.sendContactAddIQ(
                     this.model.get('jid'),
                     this.model.getFullname(),
-                    [],
-                    () => { this.model.authorize().subscribe(); }
+                    []
                 );
+                this.model.authorize().subscribe();
             },
 
             declineRequest (ev) {

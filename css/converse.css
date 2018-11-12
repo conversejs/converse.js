@@ -9324,7 +9324,7 @@ readers do not read off random characters that represent icons */
   --danger-color: #D24E2B;
   --danger-color-dark: #A93415;
   --light-background-color: #FCFDFD;
-  --error-color: #A53214;
+  --error-color: #D24E2B;
   --info-color: #1E9652;
   --button-border-radius: 5px;
   --chatbox-border-radius: 4px;
@@ -11657,7 +11657,7 @@ body.reset {
     clear: left;
     font-style: italic; }
   #conversejs .message.chat-info.chat-error {
-    color: var(--warning-color);
+    color: var(--error-color);
     font-weight: bold; }
 
 #conversejs .message .chat-image {

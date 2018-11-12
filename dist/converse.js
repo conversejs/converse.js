@@ -65359,6 +65359,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     ProfileModal: {
       events: {
         'change input.select-all': 'selectAll',
+        'click .generate-bundle': 'generateOMEMODeviceBundle',
         'submit .fingerprint-removal': 'removeSelectedFingerprints'
       },
 
@@ -65367,6 +65368,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         this.debouncedRender = _.debounce(this.render, 50);
         this.devicelist = _converse.devicelists.get(_converse.bare_jid);
         this.devicelist.devices.on('change:bundle', this.debouncedRender, this);
+        this.devicelist.devices.on('reset', this.debouncedRender, this);
         this.devicelist.devices.on('reset', this.debouncedRender, this);
         this.devicelist.devices.on('remove', this.debouncedRender, this);
         this.devicelist.devices.on('add', this.debouncedRender, this);
@@ -65377,7 +65379,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         const _converse = this.__super__._converse,
               device_id = _converse.omemo_store.get('device_id');
 
-        this.current_device = this.devicelist.devices.get(device_id);
+        if (device_id) {
+          this.current_device = this.devicelist.devices.get(device_id);
+        }
+
         this.other_devices = this.devicelist.devices.filter(d => d.get('id') !== device_id);
 
         if (this.__super__.beforeRender) {
@@ -65410,6 +65415,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
           _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [__('Sorry, an error occurred while trying to remove the devices.')]);
         });
+      },
+
+      generateOMEMODeviceBundle(ev) {
+        const _converse = this.__super__._converse,
+              __ = _converse.__,
+              api = _converse.api;
+        ev.preventDefault();
+
+        if (confirm(__("Are you sure you want to generate new OMEMO keys?" + "This will remove your old keys and all previously encrypted messages will no longer be ecryptable on this device."))) {
+          api.omemo.bundle.generate();
+        }
       }
 
     },
@@ -65453,27 +65469,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }).then(() => this.buildSessions(devices));
       },
 
-      buildSession(device) {
+      async buildSession(device) {
         const _converse = this.__super__._converse,
               address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
               sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
-              prekey = device.getRandomPreKey();
-        return device.getBundle().then(bundle => {
-          return sessionBuilder.processPreKey({
-            'registrationId': parseInt(device.get('id'), 10),
-            'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
-            'signedPreKey': {
-              'keyId': bundle.signed_prekey.id,
-              // <Number>
-              'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
-              'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
-            },
-            'preKey': {
-              'keyId': prekey.id,
-              // <Number>
-              'publicKey': u.base64ToArrayBuffer(prekey.key)
-            }
-          });
+              prekey = device.getRandomPreKey(),
+              bundle = await device.getBundle();
+        return sessionBuilder.processPreKey({
+          'registrationId': parseInt(device.get('id'), 10),
+          'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
+          'signedPreKey': {
+            'keyId': bundle.signed_prekey.id,
+            // <Number>
+            'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
+            'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
+          },
+          'preKey': {
+            'keyId': prekey.id,
+            // <Number>
+            'publicKey': u.base64ToArrayBuffer(prekey.key)
+          }
         });
       },
 
@@ -65792,20 +65807,20 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     _converse.NUM_PREKEYS = 100; // Set here so that tests can override
 
-    function generateFingerprint(device) {
+    async function generateFingerprint(device) {
       if (_.get(device.get('bundle'), 'fingerprint')) {
         return;
       }
 
-      return device.getBundle().then(bundle => {
-        bundle['fingerprint'] = u.arrayBufferToHex(u.base64ToArrayBuffer(bundle['identity_key']));
-        device.save('bundle', bundle);
-        device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
-      });
+      const bundle = await device.getBundle();
+      bundle['fingerprint'] = u.arrayBufferToHex(u.base64ToArrayBuffer(bundle['identity_key']));
+      device.save('bundle', bundle);
+      device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
     }
 
-    _converse.generateFingerprints = function (jid) {
-      return _converse.getDevicesForContact(jid).then(devices => Promise.all(devices.map(d => generateFingerprint(d))));
+    _converse.generateFingerprints = async function (jid) {
+      const devices = await _converse.getDevicesForContact(jid);
+      return Promise.all(devices.map(d => generateFingerprint(d)));
     };
 
     _converse.getDeviceForContact = function (jid, device_id) {
@@ -66452,6 +66467,61 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.api.listen.on('profileModalInitialized', contact => {
       _converse.generateFingerprints(_converse.bare_jid).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
     });
+    /************************ BEGIN API ************************/
+
+
+    _.extend(_converse.api, {
+      /**
+       * The "omemo" namespace groups methods relevant to OMEMO
+       * encryption.
+       *
+       * @namespace _converse.api.omemo
+       * @memberOf _converse.api
+       */
+      'omemo': {
+        /**
+         * The "bundle" namespace groups methods relevant to the user's
+         * OMEMO bundle.
+         *
+         * @namespace _converse.api.omemo.bundle
+         * @memberOf _converse.api.omemo
+         */
+        'bundle': {
+          /**
+           * Lets you generate a new OMEMO device bundle
+           *
+           * @method _converse.api.omemo.bundle.generate
+           * @returns {promise} Promise which resolves once we have a result from the server.
+           */
+          'generate': async () => {
+            // Remove current device
+            const devicelist = _converse.devicelists.get(_converse.bare_jid),
+                  device_id = _converse.omemo_store.get('device_id');
+
+            if (device_id) {
+              const device = devicelist.devices.get(device_id);
+
+              _converse.omemo_store.unset(device_id);
+
+              if (device) {
+                await new Promise(done => device.destroy({
+                  'success': done,
+                  'error': done
+                }));
+              }
+
+              devicelist.devices.trigger('remove');
+            } // Generate new bundle and publish
+
+
+            await _converse.omemo_store.generateBundle();
+            await devicelist.publishDevices();
+            const device = devicelist.devices.get(_converse.omemo_store.get('device_id'));
+            return generateFingerprint(device);
+          }
+        }
+      }
+    });
   }
 
 });
@@ -66518,8 +66588,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
           __ = _converse.__;
     _converse.ProfileModal = _converse.BootstrapModal.extend({
       events: {
-        'click .change-avatar': "openFileSelection",
         'change input[type="file"': "updateFilePreview",
+        'click .change-avatar': "openFileSelection",
         'submit .profile-form': 'onFormSubmitted'
       },
 
@@ -102683,7 +102753,9 @@ __e(o.utils.formatFingerprint(o.view.current_device.get('bundle').fingerprint)) 
  } else {;
 __p += '\n                                        <span class="spinner fa fa-spinner centered"/>\n                                    ';
  } ;
-__p += '\n                                    </li>\n                                </ul>\n                                ';
+__p += '\n                                    </li>\n                                </ul>\n                                <div class="form-group">\n                                    <button type="button" class="generate-bundle btn btn-danger">' +
+__e(o.__('Generate new keys and fingerprint')) +
+'</button>\n                                </div>\n\n                                ';
  if (o.view.other_devices.length) { ;
 __p += '\n                                    <ul class="list-group fingerprints">\n                                        <li class="list-group-item nopadding active">\n                                            <label>\n                                            <input type="checkbox" class="select-all" title="' +
 __e(o.__('Select all')) +

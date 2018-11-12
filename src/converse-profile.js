@@ -35,8 +35,8 @@ converse.plugins.add('converse-profile', {
 
         _converse.ProfileModal = _converse.BootstrapModal.extend({
             events: {
-                'click .change-avatar': "openFileSelection",
                 'change input[type="file"': "updateFilePreview",
+                'click .change-avatar': "openFileSelection",
                 'submit .profile-form': 'onFormSubmitted'
             },
 

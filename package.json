@@ -75,7 +75,7 @@
     "run-headless-chromium": "^0.1.1",
     "sinon": "^2.1.0",
     "sizzle": "^2.3.3",
-    "snabbdom": "0.7.1",
+    "snabbdom": "0.7.2",
     "strophejs-plugin-register": "0.0.1",
     "uglify-es": "^3.0.24",
     "urijs": "^1.19.1",

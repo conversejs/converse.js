@@ -101295,7 +101295,7 @@ __e( o.__('Message archiving') ) +
 __e( o.__('Messages are archived on the server') ) +
 '</em></li>\n                        ';
  } ;
-__p += '\n                        </ul>\n                        </div>\n                    </p>\n                </div>\n            </div>\n            <div class="modal-footer">\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__p += '\n                        </ul>\n                        </div>\n                    </p>\n                </div>\n            </div>\n            <div class="modal-footer">\n                <button type="button" class="btn btn-warning" data-dismiss="modal">' +
 __e(o.__('Close')) +
 '</button>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
@@ -103790,17 +103790,17 @@ __p += '\n                        ';
  } ;
 __p += '\n                    </ul>\n                ';
  } ;
-__p += '\n            </div>\n            <div class="modal-footer">\n                ';
+__p += '\n            </div>\n            <div class="modal-footer">\n                <button type="button" class="btn btn-warning" data-dismiss="modal">' +
+__e(o.__('Close')) +
+'</button>\n                <button type="button" class="btn btn-info refresh-contact"><i class="fa fa-refresh"> </i>' +
+__e(o.__('Refresh')) +
+'</button>\n                ';
  if (o.allow_contact_removal && o.is_roster_contact) { ;
 __p += '\n                    <button type="button" class="btn btn-danger remove-contact"><i class="far fa-trash-alt"> </i>' +
 __e(o.__('Remove as contact')) +
 '</button>\n                ';
  } ;
-__p += '\n                <button type="button" class="btn btn-info refresh-contact"><i class="fa fa-refresh"> </i>' +
-__e(o.__('Refresh')) +
-'</button>\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
-__e(o.__('Close')) +
-'</button>\n            </div>\n        </div>\n    </div>\n</div>\n';
+__p += '\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 

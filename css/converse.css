@@ -9316,10 +9316,13 @@ readers do not read off random characters that represent icons */
   --chat-head-text-color: white;
   --highlight-color: #DCF9F6;
   --primary-color: #578EA9;
-  --secondary-color: #E7A151;
-  --warning-color: #D24E2B;
-  --primary-color-dark: #345566;
-  --secondary-color-dark: #D2842B;
+  --primary-color-dark:  #397491;
+  --secondary-color: #818479;
+  --secondary-color-dark: #585B51;
+  --warning-color: #E7A151;
+  --warning-color-dark: #D2842B;
+  --danger-color: #D24E2B;
+  --danger-color-dark: #A93415;
   --light-background-color: #FCFDFD;
   --error-color: #A53214;
   --info-color: #1E9652;
@@ -9804,26 +9807,49 @@ body.reset {
   #conversejs .nav-pills .show > .nav-link {
     background-color: var(--primary-color); }
   #conversejs .list-group-item.active {
-    background-color: var(--primary-color); }
+    background-color: var(--primary-color);
+    border-color: var(--primary-color-dark); }
   #conversejs .btn-primary, #conversejs .button-primary, #conversejs .badge-primary {
     color: white;
     background-color: var(--primary-color);
     border-color: transparent; }
     #conversejs .btn-primary:hover, #conversejs .button-primary:hover, #conversejs .badge-primary:hover {
-      background-color: var(--secondary-color-dark);
+      background-color: var(--primary-color-dark);
       border-color: transparent; }
+    #conversejs .btn-primary.active, #conversejs .button-primary.active, #conversejs .badge-primary.active {
+      background-color: var(--primary-color-dark) !important;
+      border-color: transparent !important; }
   #conversejs .btn-info, #conversejs .badge-info {
     color: white;
-    background-color: var(--link-color); }
+    background-color: var(--primary-color);
+    border-color: var(--primary-color); }
+    #conversejs .btn-info:hover, #conversejs .badge-info:hover {
+      background-color: var(--primary-color-dark);
+      border-color: var(--primary-color-dark); }
+  #conversejs .button-cancel,
   #conversejs .btn-secondary, #conversejs .badge-secondary {
     color: white;
-    background-color: var(--secondary-color); }
-  #conversejs .button-cancel {
-    color: white;
-    background-color: var(--text-color); }
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color); }
+    #conversejs .button-cancel:hover,
+    #conversejs .btn-secondary:hover, #conversejs .badge-secondary:hover {
+      background-color: var(--secondary-color-dark);
+      border-color: var(--secondary-color-dark); }
   #conversejs .btn-warning {
     color: white;
-    background-color: var(--warning-color); }
+    background-color: var(--warning-color);
+    border-color: var(--warning-color); }
+    #conversejs .btn-warning:hover {
+      color: white;
+      background-color: var(--warning-color-dark);
+      border-color: var(--warning-color-dark); }
+  #conversejs .btn-danger {
+    color: white;
+    background-color: var(--danger-color);
+    border-color: var(--danger-color) !important; }
+    #conversejs .btn-danger:hover {
+      background-color: var(--danger-color-dark);
+      border-color: var(--danger-color-dark); }
   #conversejs .chat-textarea-chatbox-selected {
     border: 1px solid #578308;
     margin: 0; }

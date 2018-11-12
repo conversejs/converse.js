@@ -47,12 +47,17 @@ $font-path: "webfonts/icomoon/fonts/" !default;
 
     --highlight-color: #DCF9F6;
 
-    --primary-color: #578EA9; // light-blue
-    --secondary-color: #E7A151; // orange
-    --warning-color: #D24E2B; // dark-red
+    --primary-color: #578EA9; // blue
+    --primary-color-dark:  #397491;
 
-    --primary-color-dark: #345566; // dark blue
-    --secondary-color-dark: #D2842B; // dark orange
+    --secondary-color: #818479; // gray
+    --secondary-color-dark: #585B51;
+
+    --warning-color: #E7A151; // orange
+    --warning-color-dark: #D2842B;
+
+    --danger-color: #D24E2B; // dark-red
+    --danger-color-dark: #A93415; // darker red
 
     --light-background-color: #FCFDFD;
 

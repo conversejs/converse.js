@@ -460,6 +460,7 @@ body.reset {
 
     .list-group-item.active {
         background-color: var(--primary-color);
+        border-color: var(--primary-color-dark);
     }
 
     .btn-primary, .button-primary, .badge-primary {
@@ -467,25 +468,55 @@ body.reset {
         background-color: var(--primary-color);
         border-color: transparent;
         &:hover {
-            background-color: var(--secondary-color-dark);
+            background-color: var(--primary-color-dark);
             border-color: transparent;
         }
+        &.active {
+            background-color: var(--primary-color-dark) !important;
+            border-color: transparent !important;
+        }
     }
+
     .btn-info, .badge-info {
         color: white;
-        background-color: var(--link-color);
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        &:hover {
+            background-color: var(--primary-color-dark);
+            border-color: var(--primary-color-dark);
+        }
     }
+
+    .button-cancel,
     .btn-secondary, .badge-secondary {
         color: white;
         background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        &:hover {
+            background-color: var(--secondary-color-dark);
+            border-color: var(--secondary-color-dark);
+        }
     }
-    .button-cancel {
-        color: white;
-        background-color: var(--text-color);
-    }
+
     .btn-warning {
         color: white;
         background-color: var(--warning-color);
+        border-color: var(--warning-color);
+        &:hover {
+            color: white;
+            background-color: var(--warning-color-dark);
+            border-color: var(--warning-color-dark)
+        }
+    }
+
+    .btn-danger {
+        color: white;
+        background-color: var(--danger-color);
+        border-color: var(--danger-color) !important;
+        &:hover {
+            background-color: var(--danger-color-dark);
+            border-color: var(--danger-color-dark);
+        }
     }
 
     .chat-textarea-chatbox-selected {

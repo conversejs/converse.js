@@ -272,6 +272,10 @@ body.reset {
                 padding: 0.25rem 0;
             }
         }
+
+        .modal-footer {
+            justify-content: flex-start;
+        }
     }
 
     .selected {

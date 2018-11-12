@@ -9592,6 +9592,8 @@ body.reset {
     background-color: rgba(0, 0, 0, 0.4); }
     #conversejs .modal .modal-body p {
       padding: 0.25rem 0; }
+    #conversejs .modal .modal-footer {
+      justify-content: flex-start; }
   #conversejs .selected {
     color: var(--link-color) !important; }
   #conversejs .circle {

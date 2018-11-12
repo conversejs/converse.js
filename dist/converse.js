@@ -100682,7 +100682,7 @@ __e(o.label_nickname) +
 __e(o.nickname) +
 '"\n                               class="form-control"\n                               placeholder="' +
 __e(o.nickname_placeholder) +
-'"/>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="btn btn-primary">' +
+'"/>\n                    </div>\n                    <button type="submit" class="btn btn-primary">' +
 __e(o.label_add) +
 '</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
 return __p
@@ -100844,7 +100844,7 @@ __p += '<!-- src/templates/chat_status_modal.html -->\n<!-- Change status Modal 
 __e(o.modal_title) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
-'">\n                    <span aria-hidden="true">&times;</span>\n                </button>\n            </div>\n            <form class="set-xmpp-status" id="set-xmpp-status">\n                <div class="modal-body">\n                    <div class="form-group">\n                        <div class="custom-control custom-radio">\n                            <input ';
+'">\n                    <span aria-hidden="true">&times;</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form set-xmpp-status" id="set-xmpp-status">\n                    <div class="form-group">\n                        <div class="custom-control custom-radio">\n                            <input ';
  if (o.status === 'online') { ;
 __p += ' checked="checked" ';
  } ;
@@ -100868,17 +100868,17 @@ __p += ' checked="checked" ';
  } ;
 __p += '\n                                   type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-xa">\n                                <span class="far fa-circle chat-status chat-status--xa"></span>&nbsp;' +
 __e(o.label_xa) +
-'</label>\n                        </div>\n                    </div>\n                    <div class="btn-group w-100">\n                        <input name="status_message" type="text" class="form-control" \n                               value="' +
+'</label>\n                        </div>\n                    </div>\n                    <div class="form-group">\n                        <div class="btn-group w-100">\n                            <input name="status_message" type="text" class="form-control" \n                                value="' +
 __e(o.status_message) +
 '" placeholder="' +
 __e(o.placeholder_status_message) +
-'">\n                        <span class="clear-input fa fa-times ';
+'">\n                            <span class="clear-input fa fa-times ';
  if (!o.status_message) { ;
 __p += ' hidden ';
  } ;
-__p += '"></span>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="btn btn-primary">' +
+__p += '"></span>\n                        </div>\n                    </div>\n                    <button type="submit" class="btn btn-primary">' +
 __e(o.label_save) +
-'</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
+'</button>\n                </form>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 

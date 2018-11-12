@@ -895,7 +895,7 @@ Used in conjunction with `message_archiving` and in context of `XEP-0313: Messag
 message_carbons
 ---------------
 
-* Default:  ``false``
+* Default:  ``true``
 
 Support for `XEP-0280: Message Carbons <https://xmpp.org/extensions/xep-0280.html>`_
 

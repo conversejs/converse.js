@@ -885,7 +885,7 @@ archived. The other two values are self-explanatory.
 message_archiving_timeout
 -------------------------
 
-* Default:  ``8000``
+* Default:  ``20000``
 
 The amount of time (in milliseconds) to wait when requesting archived messages
 from the XMPP server.

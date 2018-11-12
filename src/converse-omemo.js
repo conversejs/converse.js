@@ -159,28 +159,26 @@ converse.plugins.add('converse-omemo', {
                     }).then(() => this.buildSessions(devices))
             },
 
-            buildSession (device) {
+            async buildSession (device) {
                 const { _converse } = this.__super__,
                       address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
                       sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
-                      prekey = device.getRandomPreKey();
+                      prekey = device.getRandomPreKey(),
+                      bundle = await device.getBundle();
 
-                return device.getBundle()
-                    .then(bundle => {
-                        return sessionBuilder.processPreKey({
-                            'registrationId': parseInt(device.get('id'), 10),
-                            'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
-                            'signedPreKey': {
-                                'keyId': bundle.signed_prekey.id, // <Number>
-                                'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
-                                'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
-                            },
-                            'preKey': {
-                                'keyId': prekey.id, // <Number>
-                                'publicKey': u.base64ToArrayBuffer(prekey.key),
-                            }
-                        });
-                    });
+                return sessionBuilder.processPreKey({
+                    'registrationId': parseInt(device.get('id'), 10),
+                    'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
+                    'signedPreKey': {
+                        'keyId': bundle.signed_prekey.id, // <Number>
+                        'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
+                        'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
+                    },
+                    'preKey': {
+                        'keyId': prekey.id, // <Number>
+                        'publicKey': u.base64ToArrayBuffer(prekey.key),
+                    }
+                });
             },
 
             getSession (device) {

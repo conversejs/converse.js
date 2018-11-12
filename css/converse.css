@@ -9315,9 +9315,11 @@ readers do not read off random characters that represent icons */
   --chat-head-color-lighten-50-percent: #e7f7ee;
   --chat-head-text-color: white;
   --highlight-color: #DCF9F6;
-  --primary-color: #E7A151;
-  --secondary-color: #578EA9;
+  --primary-color: #578EA9;
+  --secondary-color: #E7A151;
   --warning-color: #D24E2B;
+  --primary-color-dark: #345566;
+  --secondary-color-dark: #D2842B;
   --light-background-color: #FCFDFD;
   --error-color: #A53214;
   --info-color: #1E9652;
@@ -9796,9 +9798,18 @@ body.reset {
     background: white; }
   #conversejs .activated {
     display: block !important; }
+  #conversejs .nav-pills .nav-link.active,
+  #conversejs .nav-pills .show > .nav-link {
+    background-color: var(--primary-color); }
+  #conversejs .list-group-item.active {
+    background-color: var(--primary-color); }
   #conversejs .btn-primary, #conversejs .button-primary, #conversejs .badge-primary {
     color: white;
-    background-color: var(--primary-color); }
+    background-color: var(--primary-color);
+    border-color: transparent; }
+    #conversejs .btn-primary:hover, #conversejs .button-primary:hover, #conversejs .badge-primary:hover {
+      background-color: var(--secondary-color-dark);
+      border-color: transparent; }
   #conversejs .btn-info, #conversejs .badge-info {
     color: white;
     background-color: var(--link-color); }

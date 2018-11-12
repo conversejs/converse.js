@@ -449,9 +449,23 @@ body.reset {
         display: block !important;
     }
 
+    .nav-pills .nav-link.active,
+    .nav-pills .show > .nav-link {
+        background-color: var(--primary-color);
+    }
+
+    .list-group-item.active {
+        background-color: var(--primary-color);
+    }
+
     .btn-primary, .button-primary, .badge-primary {
         color: white;
         background-color: var(--primary-color);
+        border-color: transparent;
+        &:hover {
+            background-color: var(--secondary-color-dark);
+            border-color: transparent;
+        }
     }
     .btn-info, .badge-info {
         color: white;

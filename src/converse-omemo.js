@@ -840,20 +840,23 @@ converse.plugins.add('converse-omemo', {
 
             fetchDevices () {
                 if (_.isUndefined(this._devices_promise)) {
-                    const options = {
-                        'success': c => this.onCachedDevicesFetched(c),
-                        'error': e => _converse.log(e, Strophe.LogLevel.ERROR)
-                    }
-                    this._devices_promise = this.devices.fetch(options);
+                    this._devices_promise = new Promise(resolve => {
+                        this.devices.fetch({
+                            'success': async collection => {
+                                if (collection.length === 0) {
+                                    const ids = await this.fetchDevicesFromServer()
+                                    await this.publishCurrentDevice(ids);
+                                }
+                                resolve();
+                            },
+                            'error': e => {
+                                _converse.log(e, Strophe.LogLevel.ERROR);
+                                resolve();
+                            }
+                        });
+                    });
                 }
                 return this._devices_promise;
-            },
-
-            async onCachedDevicesFetched (collection) {
-                if (collection.length === 0) {
-                    const ids = await this.fetchDevicesFromServer()
-                    this.publishCurrentDevice(ids);
-                }
             },
 
             async publishCurrentDevice (device_ids) {

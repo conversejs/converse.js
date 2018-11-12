@@ -13,6 +13,7 @@
 - #1306 added option `notification_delay`
 - #1305 added value 'all' for 'show_desktop_notifications' to notifiy even if converse.js is open
 - #1312 Error `unrecognized expression` in Safari
+- #1319 Implement sending of presences according to XEP-0319: Last User Interaction in Presence
 
 ## 4.0.4 (2018-10-29)
 

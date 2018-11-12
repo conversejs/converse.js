@@ -9768,6 +9768,7 @@ body.reset {
     -webkit-animation: spin 2s infinite, linear;
     -moz-animation: spin 2s infinite, linear;
     animation: spin 2s infinite, linear;
+    width: 1em;
     display: block;
     text-align: center;
     margin: 2em;

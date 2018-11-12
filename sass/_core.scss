@@ -402,6 +402,7 @@ body.reset {
 
     .spinner {
         @include animation(spin 2s infinite, linear);
+        width: 1em;
         display: block;
         text-align: center;
         margin: 2em;

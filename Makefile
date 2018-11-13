@@ -230,13 +230,13 @@ check: eslint
 ## Documentation
 
 .PHONY: html
-html:
+html: apidoc
 	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	make apidoc
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
-ePHONY: apidoc
+PHONY: apidoc
 apidoc:
 	$(JSDOC) --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/*.js

@@ -206,13 +206,16 @@ dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @conver
 dist:: build
 
 .PHONY: build
-build:: dev css $(BUILDS) locale.zip css/webfonts.zip
+build:: dev css $(BUILDS) locale.zip css/webfonts.zip sounds.zip
 
 css/webfonts.zip: css/webfonts/*
 	zip -r css/webfonts.zip css/webfonts
 
 locale.zip:
 	zip -r locale.zip locale --exclude *.pot --exclude *.po
+
+sounds.zip:
+	zip -r sounds.zip sounds
 
 ########################################################################
 ## Tests

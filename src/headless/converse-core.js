@@ -32,6 +32,7 @@ Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
 Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
 Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
 Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
+Strophe.addNamespace('IDLE', 'urn:xmpp:idle:1');
 Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
 Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
 Strophe.addNamespace('OMEMO', "eu.siacs.conversations.axolotl");
@@ -197,6 +198,7 @@ _converse.default_settings = {
     expose_rid_and_sid: false,
     geouri_regex: /https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
+    idle_presence_timeout: 300, // Seconds after which an idle presence is sent
     jid: undefined,
     keepalive: true,
     locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
@@ -416,6 +418,10 @@ _converse.initialize = function (settings, callback) {
         if (_converse.inactive) {
             _converse.sendCSI(_converse.ACTIVE);
         }
+        if (_converse.idle) {
+            _converse.idle = false;
+            _converse.xmppstatus.sendPresence();
+        }
         if (_converse.auto_changed_status === true) {
             _converse.auto_changed_status = false;
             // XXX: we should really remember the original state here, and
@@ -440,6 +446,12 @@ _converse.initialize = function (settings, callback) {
                 !_converse.inactive) {
             _converse.sendCSI(_converse.INACTIVE);
         }
+        if (_converse.idle_presence_timeout > 0 &&
+                _converse.idle_seconds > _converse.idle_presence_timeout &&
+                !_converse.idle) {
+            _converse.idle = true;
+            _converse.xmppstatus.sendPresence();
+        }
         if (_converse.auto_away > 0 &&
                 _converse.idle_seconds > _converse.auto_away &&
                 stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
@@ -457,7 +469,7 @@ _converse.initialize = function (settings, callback) {
         /* Set an interval of one second and register a handler for it.
          * Required for the auto_away, auto_xa and csi_waiting_time features.
          */
-        if (_converse.auto_away < 1 && _converse.auto_xa < 1 && _converse.csi_waiting_time < 1) {
+        if (_converse.auto_away < 1 && _converse.auto_xa < 1 && _converse.csi_waiting_time < 1 && _converse.idle_presence_timeout < 1) {
             // Waiting time of less then one second means features aren't used.
             return;
         }
@@ -888,7 +900,12 @@ _converse.initialize = function (settings, callback) {
             }
             presence.c('priority').t(
                 _.isNaN(Number(_converse.priority)) ? 0 : _converse.priority
-            );
+            ).up();
+            if (_converse.idle) {
+                const idle_since = new Date();
+                idle_since.setSeconds(idle_since.getSeconds() - _converse.idle_seconds);
+                presence.c('idle', {xmlns: Strophe.NS.IDLE, since: idle_since.toISOString()});
+            }
             return presence;
         },
 
@@ -1186,6 +1203,12 @@ _converse.initialize = function (settings, callback) {
 
         if (!Backbone.history.started) {
             Backbone.history.start();
+        }
+
+        if (_converse.idle_presence_timeout > 0) {
+            _converse.on('addClientFeatures', () => {
+                _converse.api.disco.own.features.add(Strophe.NS.IDLE);
+            });
         }
     }
 

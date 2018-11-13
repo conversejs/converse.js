@@ -757,6 +757,16 @@ then Converse will fall back to trying to determine the browser's language
 and fetching those translations, or if that fails the default English texts
 will be used.
 
+idle_presence_timeout
+---------------------
+
+* Default:  ``300``
+
+The amount of seconds after which the user is considered to be idle
+and an idle presence according to XEP-0319 is sent.
+
+If the given value is negative or ``0``, this feature is disabled.
+
 jid
 ---
 

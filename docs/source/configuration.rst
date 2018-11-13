@@ -1409,6 +1409,11 @@ open, what features the XMPP server supports and what your online status was.
 Clearing the cache makes Converse much slower when the user logs
 in again, because all data needs to be fetch anew.
 
+If ``trusted`` is set to ``on`` or ``off`` the "This is a trusted device"
+checkbox in the login form will not appear at all and cannot be changed by the user.
+``on`` means to trust the device as stated above and use ``localStorage``. ``off``
+means to not trust the device (cache is cleared when the user logs out) and to use
+``sessionStorage``.
 
 time_format
 -----------

@@ -59157,7 +59157,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          * messages, based on whether the contact's client supports
          * it.
          */
-        if (!options.show_spoiler_button || this.model.get('type') === 'chatroom') {
+        if (!options.show_spoiler_button || this.model.get('type') === _converse.CHATROOMS_TYPE) {
           return;
         }
 
@@ -70595,21 +70595,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_20__["default"].initia
 
 /***/ }),
 
-/***/ "./src/headless/backbone.noconflict.js":
-/*!*********************************************!*\
-  !*** ./src/headless/backbone.noconflict.js ***!
-  \*********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*global define */
-!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function (Backbone) {
-  return Backbone.noConflict();
-}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ }),
-
 /***/ "./src/headless/converse-chatboxes.js":
 /*!********************************************!*\
   !*** ./src/headless/converse-chatboxes.js ***!
@@ -71076,7 +71061,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          * as taken from the 'chat_state' attribute of the chat box.
          * See XEP-0085 Chat State Notifications.
          */
-        if (_converse.send_chat_state_notifications) {
+        if (_converse.send_chat_state_notifications && this.get('chat_state')) {
           _converse.api.send($msg({
             'to': this.get('jid'),
             'type': 'chat'
@@ -71695,14 +71680,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var strophe_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! strophe.js */ "./node_modules/strophe.js/dist/strophe.js");
 /* harmony import */ var strophe_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(strophe_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./backbone.noconflict */ "./src/headless/backbone.noconflict.js");
-/* harmony import */ var _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_backbone_noconflict__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! es6-promise/dist/es6-promise.auto */ "./node_modules/es6-promise/dist/es6-promise.auto.js");
-/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./lodash.noconflict */ "./src/headless/lodash.noconflict.js");
-/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var backbone_browserStorage__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! backbone.browserStorage */ "./node_modules/backbone.browserStorage/backbone.browserStorage.js");
-/* harmony import */ var backbone_browserStorage__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(backbone_browserStorage__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone.browserStorage */ "./node_modules/backbone.browserStorage/backbone.browserStorage.js");
+/* harmony import */ var backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! es6-promise/dist/es6-promise.auto */ "./node_modules/es6-promise/dist/es6-promise.auto.js");
+/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./lodash.noconflict */ "./src/headless/lodash.noconflict.js");
+/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _lodash_fp__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./lodash.fp */ "./src/headless/lodash.fp.js");
 /* harmony import */ var _lodash_fp__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_lodash_fp__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _i18n__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./i18n */ "./src/headless/i18n.js");
@@ -71734,7 +71719,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- // Strophe globals
+
+Backbone = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.noConflict(); // Strophe globals
 
 const b64_sha1 = strophe_js__WEBPACK_IMPORTED_MODULE_0__["SHA1"].b64_sha1; // Add Strophe Namespaces
 
@@ -71763,12 +71749,12 @@ strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].addNamespace('XFORM', 'jabber
  * config of requirejs-tpl in main.js). This one is for normal inline templates.
  */
 
-_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.templateSettings = {
+_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.templateSettings = {
   'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
   'evaluate': /\{\[([\s\S]+?)\]\}/g,
   'interpolate': /\{\{([\s\S]+?)\}\}/g,
   'imports': {
-    '_': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a
+    '_': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a
   }
 };
 /**
@@ -71783,7 +71769,7 @@ const _converse = {
   'promises': {}
 };
 
-_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.extend(_converse, _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Events); // Core plugins are whitelisted automatically
+_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
 
 
 _converse.core_plugins = ['converse-chatboxes', 'converse-core', 'converse-disco', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-roster', 'converse-vcard']; // Setting wait to 59 instead of 60 to avoid timing conflicts with the
@@ -71936,17 +71922,17 @@ _converse.log = function (message, level, style = '') {
 
   if (message instanceof Error) {
     message = message.stack;
-  } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isElement(message)) {
+  } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isElement(message)) {
     message = message.outerHTML;
   }
 
   const prefix = style ? '%c' : '';
 
-  const logger = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.assign({
-    'debug': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.noop,
-    'error': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.noop,
-    'info': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.noop,
-    'warn': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.noop
+  const logger = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assign({
+    'debug': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop,
+    'error': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop,
+    'info': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop,
+    'warn': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop
   }, console);
 
   if (level === strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR) {
@@ -71980,7 +71966,7 @@ _converse.__ = function (str) {
    * Parameters:
    *      (String) str - The string to translate.
    */
-  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
+  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
     return str;
   }
 
@@ -72003,28 +71989,28 @@ _converse.emit = function (name) {
 
   const promise = _converse.promises[name];
 
-  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(promise)) {
+  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(promise)) {
     promise.resolve();
   }
 };
 
 _converse.isSingleton = function () {
-  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
 };
 
-_converse.router = new _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Router();
+_converse.router = new Backbone.Router();
 
 _converse.initialize = function (settings, callback) {
-  settings = !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(settings) ? settings : {};
+  settings = !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(settings) ? settings : {};
   const init_promise = _utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].getResolveablePromise();
 
-  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.each(PROMISES, addPromise);
+  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(PROMISES, addPromise);
 
-  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.connection)) {
+  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection)) {
     // Looks like _converse.initialized was called again without logging
     // out or disconnecting in the previous session.
     // This happens in tests. We therefore first clean up.
-    _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.history.stop();
+    Backbone.history.stop();
 
     _converse.chatboxviews.closeAllChatBoxes();
 
@@ -72060,10 +72046,10 @@ _converse.initialize = function (settings, callback) {
     _converse.unloadevent = 'unload';
   }
 
-  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.assignIn(this, this.default_settings); // Allow only whitelisted configuration attributes to be overwritten
+  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(this, this.default_settings); // Allow only whitelisted configuration attributes to be overwritten
 
 
-  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.assignIn(this, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.pick(settings, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.keys(this.default_settings)));
+  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(this, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.pick(settings, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(this.default_settings)));
 
   if (this.authentication === _converse.ANONYMOUS) {
     if (this.auto_login && !this.jid) {
@@ -72073,7 +72059,7 @@ _converse.initialize = function (settings, callback) {
   /* Localisation */
 
 
-  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
+  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
     _i18n__WEBPACK_IMPORTED_MODULE_6___default.a.setLocales(settings.i18n, _converse);
   } else {
     _converse.locale = 'en';
@@ -72081,7 +72067,7 @@ _converse.initialize = function (settings, callback) {
   // ----------------------
 
 
-  this.callback = callback || _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.noop;
+  this.callback = callback || _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop;
   /* When reloading the page:
    * For new sessions, we need to send out a presence stanza to notify
    * the server/network that we're online.
@@ -72219,7 +72205,7 @@ _converse.initialize = function (settings, callback) {
     _converse.api.send(pres);
   };
 
-  this.reconnect = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.debounce(function () {
+  this.reconnect = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.debounce(function () {
     _converse.log('RECONNECTING');
 
     _converse.log('The connection has dropped, attempting to reconnect.');
@@ -72267,7 +72253,7 @@ _converse.initialize = function (settings, callback) {
       } else {
         return _converse.disconnect();
       }
-    } else if (_converse.disconnection_cause === _converse.LOGOUT || !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(reason) && reason === _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.get(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"], 'ErrorCondition.NO_AUTH_MECH') || reason === "host-unknown" || reason === "remote-connection-failed" || !_converse.auto_reconnect) {
+    } else if (_converse.disconnection_cause === _converse.LOGOUT || !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(reason) && reason === _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"], 'ErrorCondition.NO_AUTH_MECH') || reason === "host-unknown" || reason === "remote-connection-failed" || !_converse.auto_reconnect) {
       return _converse.disconnect();
     }
 
@@ -72280,10 +72266,10 @@ _converse.initialize = function (settings, callback) {
     /* Used to keep track of why we got disconnected, so that we can
      * decide on what the next appropriate action is (in onDisconnected)
      */
-    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(cause)) {
+    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(cause)) {
       delete _converse.disconnection_cause;
       delete _converse.disconnection_reason;
-    } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.disconnection_cause) || override) {
+    } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.disconnection_cause) || override) {
       _converse.disconnection_cause = cause;
       _converse.disconnection_reason = reason;
     }
@@ -72344,7 +72330,7 @@ _converse.initialize = function (settings, callback) {
 
       if (message === "host-unknown" || message == "remote-connection-failed") {
         feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s", `\"${strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getDomainFromJid(_converse.connection.jid)}\"`);
-      } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(message) && message === _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.get(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"], 'ErrorCondition.NO_AUTH_MECH')) {
+      } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(message) && message === _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"], 'ErrorCondition.NO_AUTH_MECH')) {
         feedback = __("The XMPP server did not offer a supported authentication mechanism");
       }
 
@@ -72361,7 +72347,7 @@ _converse.initialize = function (settings, callback) {
     const unreadMsgCount = this.msg_counter;
     let title = document.title;
 
-    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isNil(title)) {
+    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isNil(title)) {
       return;
     }
 
@@ -72376,7 +72362,7 @@ _converse.initialize = function (settings, callback) {
     this.msg_counter = 0;
     let title = document.title;
 
-    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isNil(title)) {
+    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isNil(title)) {
       return;
     }
 
@@ -72388,7 +72374,7 @@ _converse.initialize = function (settings, callback) {
   this.initStatus = reconnecting => {
     // If there's no xmppstatus obj, then we were never connected to
     // begin with, so we set reconnecting to false.
-    reconnecting = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.xmppstatus) ? false : reconnecting;
+    reconnecting = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.xmppstatus) ? false : reconnecting;
 
     if (reconnecting) {
       _converse.onStatusInitialized(reconnecting);
@@ -72397,10 +72383,10 @@ _converse.initialize = function (settings, callback) {
       this.xmppstatus = new this.XMPPStatus({
         'id': id
       });
-      this.xmppstatus.browserStorage = new _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.BrowserStorage.session(id);
+      this.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
       this.xmppstatus.fetch({
-        'success': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.onStatusInitialized, reconnecting),
-        'error': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.onStatusInitialized, reconnecting)
+        'success': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.onStatusInitialized, reconnecting),
+        'error': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.onStatusInitialized, reconnecting)
       });
     }
   };
@@ -72412,12 +72398,12 @@ _converse.initialize = function (settings, callback) {
      * user sessions.
      */
     const id = b64_sha1('converse.client-config');
-    _converse.config = new _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Model({
+    _converse.config = new Backbone.Model({
       'id': id,
       'trusted': _converse.trusted && true || false,
       'storage': _converse.trusted ? 'local' : 'session'
     });
-    _converse.config.browserStorage = new _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.BrowserStorage.session(id);
+    _converse.config.browserStorage = new Backbone.BrowserStorage.session(id);
 
     _converse.config.fetch();
 
@@ -72426,10 +72412,10 @@ _converse.initialize = function (settings, callback) {
 
   this.initSession = function () {
     const id = b64_sha1('converse.bosh-session');
-    _converse.session = new _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Model({
+    _converse.session = new Backbone.Model({
       'id': id
     });
-    _converse.session.browserStorage = new _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.BrowserStorage.session(id);
+    _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
 
     _converse.session.fetch();
 
@@ -72440,7 +72426,7 @@ _converse.initialize = function (settings, callback) {
     if (!_converse.config.get('trusted')) {
       window.localStorage.clear();
       window.sessionStorage.clear();
-    } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(this.session) && this.session.browserStorage) {
+    } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(this.session) && this.session.browserStorage) {
       this.session.browserStorage._clear();
     }
 
@@ -72452,14 +72438,14 @@ _converse.initialize = function (settings, callback) {
 
     _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
 
-    if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.connection)) {
+    if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection)) {
       _converse.connection.disconnect();
     } else {
       _converse.tearDown();
     } // Recreate all the promises
 
 
-    _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.each(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.keys(_converse.promises), addPromise);
+    _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.promises), addPromise);
 
     _converse.emit('logout');
   };
@@ -72502,24 +72488,24 @@ _converse.initialize = function (settings, callback) {
     let hidden = "hidden"; // Standards:
 
     if (hidden in document) {
-      document.addEventListener("visibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden));
+      document.addEventListener("visibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden));
     } else if ((hidden = "mozHidden") in document) {
-      document.addEventListener("mozvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden));
+      document.addEventListener("mozvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden));
     } else if ((hidden = "webkitHidden") in document) {
-      document.addEventListener("webkitvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden));
+      document.addEventListener("webkitvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden));
     } else if ((hidden = "msHidden") in document) {
-      document.addEventListener("msvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden));
+      document.addEventListener("msvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden));
     } else if ("onfocusin" in document) {
       // IE 9 and lower:
-      document.onfocusin = document.onfocusout = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden);
+      document.onfocusin = document.onfocusout = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden);
     } else {
       // All others:
-      window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden);
+      window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden);
     } // set the initial state (but only if browser supports the Page Visibility API)
 
 
     if (document[hidden] !== undefined) {
-      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden)({
+      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden)({
         type: document[hidden] ? "blur" : "focus"
       });
     }
@@ -72601,7 +72587,7 @@ _converse.initialize = function (settings, callback) {
     _converse.initStatus(reconnecting);
   };
 
-  this.ConnectionFeedback = _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
+  this.ConnectionFeedback = Backbone.Model.extend({
     defaults: {
       'connection_status': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Status.DISCONNECTED,
       'message': ''
@@ -72615,7 +72601,7 @@ _converse.initialize = function (settings, callback) {
 
   });
   this.connfeedback = new this.ConnectionFeedback();
-  this.XMPPStatus = _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
+  this.XMPPStatus = Backbone.Model.extend({
     defaults() {
       return {
         "jid": _converse.bare_jid,
@@ -72628,7 +72614,7 @@ _converse.initialize = function (settings, callback) {
         'jid': this.get('jid')
       });
 
-      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isNil(this.vcard)) {
+      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isNil(this.vcard)) {
         this.vcard = _converse.vcards.create({
           'jid': this.get('jid')
         });
@@ -72650,8 +72636,8 @@ _converse.initialize = function (settings, callback) {
 
     constructPresence(type, status_message) {
       let presence;
-      type = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isString(type) ? type : this.get('status') || _converse.default_state;
-      status_message = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isString(status_message) ? status_message : this.get('status_message'); // Most of these presence types are actually not explicitly sent,
+      type = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isString(type) ? type : this.get('status') || _converse.default_state;
+      status_message = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isString(status_message) ? status_message : this.get('status_message'); // Most of these presence types are actually not explicitly sent,
       // but I add all of them here for reference and future proofing.
 
       if (type === 'unavailable' || type === 'probe' || type === 'error' || type === 'unsubscribe' || type === 'unsubscribed' || type === 'subscribe' || type === 'subscribed') {
@@ -72672,7 +72658,7 @@ _converse.initialize = function (settings, callback) {
         presence.c('status').t(status_message).up();
       }
 
-      presence.c('priority').t(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isNaN(Number(_converse.priority)) ? 0 : _converse.priority);
+      presence.c('priority').t(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isNaN(Number(_converse.priority)) ? 0 : _converse.priority);
       return presence;
     },
 
@@ -72698,7 +72684,7 @@ _converse.initialize = function (settings, callback) {
     }
   };
 
-  this.fetchLoginCredentials = () => new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2___default.a((resolve, reject) => {
+  this.fetchLoginCredentials = () => new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', _converse.credentials_url, true);
     xhr.setRequestHeader('Accept', "application/json, text/javascript");
@@ -72842,7 +72828,7 @@ _converse.initialize = function (settings, callback) {
 
       this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged, BOSH_WAIT);
     } else if (this.authentication === _converse.LOGIN) {
-      const password = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isNil(credentials) ? _converse.connection.pass || this.password : credentials.password;
+      const password = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isNil(credentials) ? _converse.connection.pass || this.password : credentials.password;
 
       if (!password) {
         if (this.auto_login) {
@@ -72893,7 +72879,7 @@ _converse.initialize = function (settings, callback) {
       if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
         this.connection = new strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Connection(this.websocket_url, this.connection_options);
       } else if (this.bosh_service_url) {
-        this.connection = new strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Connection(this.bosh_service_url, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.assignIn(this.connection_options, {
+        this.connection = new strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Connection(this.bosh_service_url, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(this.connection_options, {
           'keepalive': this.keepalive
         }));
       } else {
@@ -72910,7 +72896,7 @@ _converse.initialize = function (settings, callback) {
      */
     _converse.emit('beforeTearDown');
 
-    if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.session)) {
+    if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.session)) {
       _converse.session.destroy();
     }
 
@@ -72938,7 +72924,7 @@ _converse.initialize = function (settings, callback) {
     const whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
 
     if (_converse.view_mode === 'embedded') {
-      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.forEach([// eslint-disable-line lodash/prefer-map
+      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.forEach([// eslint-disable-line lodash/prefer-map
       "converse-bookmarks", "converse-controlbox", "converse-headline", "converse-register"], name => {
         _converse.blacklisted_plugins.push(name);
       });
@@ -72977,20 +72963,20 @@ _converse.initialize = function (settings, callback) {
 
     _converse.registerGlobalEventHandlers();
 
-    if (!_backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.history.started) {
-      _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.history.start();
+    if (!Backbone.history.started) {
+      Backbone.history.start();
     }
   }
 
-  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {
+  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {
     finishInitialization();
     return _converse;
-  } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
+  } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
     finishInitialization();
   } else {
     _i18n__WEBPACK_IMPORTED_MODULE_6___default.a.fetchTranslations(_converse.locale, _converse.locales, _utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
       'locale': _converse.locale
-    })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).then(finishInitialization).catch(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.log, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL));
+    })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).then(finishInitialization).catch(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.log, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL));
   }
 
   return init_promise;
@@ -73132,11 +73118,11 @@ _converse.api = {
           'status': value
         };
 
-        if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.includes(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.keys(_converse.STATUS_WEIGHTS), value)) {
+        if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.STATUS_WEIGHTS), value)) {
           throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
         }
 
-        if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isString(message)) {
+        if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isString(message)) {
           data.status_message = message;
         }
 
@@ -73214,7 +73200,7 @@ _converse.api = {
      * @example _converse.api.settings.get("play_sounds");
      */
     'get'(key) {
-      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.includes(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.keys(_converse.default_settings), key)) {
+      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.default_settings), key)) {
         return _converse[key];
       }
     },
@@ -73240,12 +73226,12 @@ _converse.api = {
     'set'(key, val) {
       const o = {};
 
-      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isObject(key)) {
-        _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.assignIn(_converse, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.pick(key, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.keys(_converse.default_settings)));
-      } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isString("string")) {
+      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isObject(key)) {
+        _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(_converse, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.pick(key, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.default_settings)));
+      } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isString("string")) {
         o[key] = val;
 
-        _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.assignIn(_converse, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.pick(o, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.keys(_converse.default_settings)));
+        _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(_converse, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.pick(o, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.default_settings)));
       }
     }
 
@@ -73296,9 +73282,9 @@ _converse.api = {
      * @example _converse.api.promises.add('foo-completed');
      */
     'add'(promises) {
-      promises = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isArray(promises) ? promises : [promises];
+      promises = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isArray(promises) ? promises : [promises];
 
-      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.each(promises, addPromise);
+      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(promises, addPromise);
     }
 
   },
@@ -73317,7 +73303,7 @@ _converse.api = {
      * @example _converse.api.tokens.get('rid');
      */
     'get'(id) {
-      if (!_converse.expose_rid_and_sid || _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.connection)) {
+      if (!_converse.expose_rid_and_sid || _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection)) {
         return null;
       }
 
@@ -73388,7 +73374,7 @@ _converse.api = {
      * @param {function} handler The callback method to be called when the stanza appears
      */
     'stanza'(name, options, handler) {
-      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isFunction(options)) {
+      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isFunction(options)) {
         handler = options;
         options = {};
       } else {
@@ -73410,7 +73396,7 @@ _converse.api = {
   'waitUntil'(name) {
     const promise = _converse.promises[name];
 
-    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(promise)) {
+    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(promise)) {
       return null;
     }
 
@@ -73443,7 +73429,7 @@ _converse.api = {
    * or is rejected when we receive an `error` stanza.
    */
   'sendIQ'(stanza, timeout) {
-    return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2___default.a((resolve, reject) => {
+    return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
       _converse.connection.sendIQ(stanza, resolve, reject, timeout || _converse.IQ_TIMEOUT);
 
       _converse.emit('send', stanza);
@@ -73526,7 +73512,7 @@ const converse = {
     'add'(name, plugin) {
       plugin.__name__ = name;
 
-      if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.pluggable.plugins[name])) {
+      if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.pluggable.plugins[name])) {
         throw new TypeError(`Error: plugin with name "${name}" has already been ` + 'registered!');
       } else {
         _converse.pluggable.plugins[name] = plugin;
@@ -73558,10 +73544,10 @@ const converse = {
     '$iq': strophe_js__WEBPACK_IMPORTED_MODULE_0__["$iq"],
     '$msg': strophe_js__WEBPACK_IMPORTED_MODULE_0__["$msg"],
     '$pres': strophe_js__WEBPACK_IMPORTED_MODULE_0__["$pres"],
-    'Backbone': _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a,
-    'Promise': es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2___default.a,
+    'Backbone': Backbone,
+    'Promise': es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a,
     'Strophe': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"],
-    '_': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a,
+    '_': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a,
     'f': _lodash_fp__WEBPACK_IMPORTED_MODULE_5___default.a,
     'b64_sha1': b64_sha1,
     'moment': moment__WEBPACK_IMPORTED_MODULE_7___default.a,

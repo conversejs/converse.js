@@ -11,7 +11,6 @@ import Backbone from "backbone";
 import BrowserStorage from "backbone.browserStorage";
 import Promise from "es6-promise/dist/es6-promise.auto";
 import _ from "./lodash.noconflict";
-import browserStorage from "backbone.browserStorage";
 import f from "./lodash.fp";
 import i18n from "./i18n";
 import moment from "moment";

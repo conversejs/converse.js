@@ -259,16 +259,11 @@
             }
 
             .chat-textarea {
-                color: var(--chat-textarea-color);
-                border-top-left-radius: 0;
-                border-top-right-radius: 0;
-                border-bottom-radius: var(--chatbox-border-radius);
-                padding: 0.5em;
-                width: 100%;
-                border: none;
-                min-height: var(--chat-textarea-height);
-                margin-bottom: -4px; // Not clear why this is necessar :(
-                resize: none;
+		     border: 1px solid #fff;
+                     margin: 0 0 0 0px;
+                     min-height: 40px;
+                     padding: 10px 75px 10px 10px;
+                    text-align: justify;
                 &.spoiler {
                     height: 42px;
                 }
@@ -278,14 +273,19 @@
             }
 
             .send-button {
-                position: static;
-                left: var(--send-button-margin);
-                width: 100%;
+                right: 5px;
                 background-color: var(--chat-head-color);
-                color: var(--inverse-link-color);
-                font-size: 80%;
-                height: var(--send-button-height);
-                bottom: calc(-var(--send-button-height) - var(--send-button-margin));
+                color: #fff;
+                font-size: 12px;
+                bottom: 22px;
+                border-radius: 3px;
+                border: none;
+                padding: 5px 12px;
+                height: auto;
+                cursor: pointer;
+                width: auto;
+                left: auto;
+                position: absolute;
 
             }
             .chat-toolbar {

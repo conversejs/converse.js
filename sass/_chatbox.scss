@@ -259,6 +259,7 @@
             }
 
             .chat-textarea {
+		     color: var(--chat-textarea-color);
 		     border: 1px solid #fff;
                      margin: 0 0 0 0px;
                      min-height: 40px;

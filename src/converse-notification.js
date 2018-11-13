@@ -100,7 +100,7 @@ converse.plugins.add('converse-notification', {
                     message.getAttribute('from')) === _converse.bare_jid;
             return !_converse.isOnlyChatStateNotification(message) &&
                 !is_me &&
-                _converse.isMessageToHiddenChat(message);
+                (_converse.show_desktop_notifications === 'all' || _converse.isMessageToHiddenChat(message));
         };
 
 

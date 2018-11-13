@@ -59157,7 +59157,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          * messages, based on whether the contact's client supports
          * it.
          */
-        if (!options.show_spoiler_button || this.model.get('type') === 'chatroom') {
+        if (!options.show_spoiler_button || this.model.get('type') === _converse.CHATROOMS_TYPE) {
           return;
         }
 
@@ -64553,8 +64553,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       className: 'controlbox-section',
       id: 'chatrooms',
       events: {
-        'click a.chatbox-btn.show-add-muc-modal': 'showAddRoomModal',
-        'click a.chatbox-btn.show-list-muc-modal': 'showListRoomsModal'
+        'click a.controlbox-heading__btn.show-add-muc-modal': 'showAddRoomModal',
+        'click a.controlbox-heading__btn.show-list-muc-modal': 'showListRoomsModal'
       },
 
       render() {
@@ -64997,7 +64997,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       // ^ a list of JIDs to ignore concerning chat state notifications
       play_sounds: true,
       sounds_path: 'sounds/',
-      notification_icon: 'logo/conversejs-filled.svg'
+      notification_icon: 'logo/conversejs-filled.svg',
+      notification_delay: 5000
     });
 
     _converse.isOnlyChatStateNotification = msg => // See XEP-0085 Chat State Notification
@@ -65063,7 +65064,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       const is_me = Strophe.getBareJidFromJid(message.getAttribute('from')) === _converse.bare_jid;
 
-      return !_converse.isOnlyChatStateNotification(message) && !is_me && _converse.isMessageToHiddenChat(message);
+      return !_converse.isOnlyChatStateNotification(message) && !is_me && (_converse.show_desktop_notifications === 'all' || _converse.isMessageToHiddenChat(message));
     };
 
     _converse.playSoundNotification = function () {
@@ -65147,9 +65148,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       const n = new Notification(title, {
         'body': body,
         'lang': _converse.locale,
-        'icon': _converse.notification_icon
+        'icon': _converse.notification_icon,
+        'requireInteraction': !_converse.notification_delay
       });
-      setTimeout(n.close.bind(n), 5000);
+
+      if (_converse.notification_delay) {
+        setTimeout(n.close.bind(n), _converse.notification_delay);
+      }
     };
 
     _converse.showChatStateNotification = function (contact) {
@@ -65354,6 +65359,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     ProfileModal: {
       events: {
         'change input.select-all': 'selectAll',
+        'click .generate-bundle': 'generateOMEMODeviceBundle',
         'submit .fingerprint-removal': 'removeSelectedFingerprints'
       },
 
@@ -65362,6 +65368,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         this.debouncedRender = _.debounce(this.render, 50);
         this.devicelist = _converse.devicelists.get(_converse.bare_jid);
         this.devicelist.devices.on('change:bundle', this.debouncedRender, this);
+        this.devicelist.devices.on('reset', this.debouncedRender, this);
         this.devicelist.devices.on('reset', this.debouncedRender, this);
         this.devicelist.devices.on('remove', this.debouncedRender, this);
         this.devicelist.devices.on('add', this.debouncedRender, this);
@@ -65372,7 +65379,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         const _converse = this.__super__._converse,
               device_id = _converse.omemo_store.get('device_id');
 
-        this.current_device = this.devicelist.devices.get(device_id);
+        if (device_id) {
+          this.current_device = this.devicelist.devices.get(device_id);
+        }
+
         this.other_devices = this.devicelist.devices.filter(d => d.get('id') !== device_id);
 
         if (this.__super__.beforeRender) {
@@ -65405,6 +65415,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
           _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [__('Sorry, an error occurred while trying to remove the devices.')]);
         });
+      },
+
+      generateOMEMODeviceBundle(ev) {
+        const _converse = this.__super__._converse,
+              __ = _converse.__,
+              api = _converse.api;
+        ev.preventDefault();
+
+        if (confirm(__("Are you sure you want to generate new OMEMO keys?" + "This will remove your old keys and all previously encrypted messages will no longer be ecryptable on this device."))) {
+          api.omemo.bundle.generate();
+        }
       }
 
     },
@@ -65448,27 +65469,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }).then(() => this.buildSessions(devices));
       },
 
-      buildSession(device) {
+      async buildSession(device) {
         const _converse = this.__super__._converse,
               address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
               sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
-              prekey = device.getRandomPreKey();
-        return device.getBundle().then(bundle => {
-          return sessionBuilder.processPreKey({
-            'registrationId': parseInt(device.get('id'), 10),
-            'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
-            'signedPreKey': {
-              'keyId': bundle.signed_prekey.id,
-              // <Number>
-              'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
-              'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
-            },
-            'preKey': {
-              'keyId': prekey.id,
-              // <Number>
-              'publicKey': u.base64ToArrayBuffer(prekey.key)
-            }
-          });
+              prekey = device.getRandomPreKey(),
+              bundle = await device.getBundle();
+        return sessionBuilder.processPreKey({
+          'registrationId': parseInt(device.get('id'), 10),
+          'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
+          'signedPreKey': {
+            'keyId': bundle.signed_prekey.id,
+            // <Number>
+            'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
+            'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
+          },
+          'preKey': {
+            'keyId': prekey.id,
+            // <Number>
+            'publicKey': u.base64ToArrayBuffer(prekey.key)
+          }
         });
       },
 
@@ -65787,41 +65807,41 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     _converse.NUM_PREKEYS = 100; // Set here so that tests can override
 
-    function generateFingerprint(device) {
+    async function generateFingerprint(device) {
       if (_.get(device.get('bundle'), 'fingerprint')) {
         return;
       }
 
-      return device.getBundle().then(bundle => {
-        bundle['fingerprint'] = u.arrayBufferToHex(u.base64ToArrayBuffer(bundle['identity_key']));
-        device.save('bundle', bundle);
-        device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
-      });
+      const bundle = await device.getBundle();
+      bundle['fingerprint'] = u.arrayBufferToHex(u.base64ToArrayBuffer(bundle['identity_key']));
+      device.save('bundle', bundle);
+      device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
     }
 
-    _converse.generateFingerprints = function (jid) {
-      return _converse.getDevicesForContact(jid).then(devices => Promise.all(devices.map(d => generateFingerprint(d))));
+    _converse.generateFingerprints = async function (jid) {
+      const devices = await _converse.getDevicesForContact(jid);
+      return Promise.all(devices.map(d => generateFingerprint(d)));
     };
 
     _converse.getDeviceForContact = function (jid, device_id) {
       return _converse.getDevicesForContact(jid).then(devices => devices.get(device_id));
     };
 
-    _converse.getDevicesForContact = function (jid) {
-      let devicelist;
-      return _converse.api.waitUntil('OMEMOInitialized').then(() => {
-        devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({
-          'jid': jid
-        });
-        return devicelist.fetchDevices();
-      }).then(() => devicelist.devices);
+    _converse.getDevicesForContact = async function (jid) {
+      await _converse.api.waitUntil('OMEMOInitialized');
+
+      const devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({
+        'jid': jid
+      });
+
+      await devicelist.fetchDevices();
+      return devicelist.devices;
     };
 
-    _converse.contactHasOMEMOSupport = function (jid) {
+    _converse.contactHasOMEMOSupport = async function (jid) {
       /* Checks whether the contact advertises any OMEMO-compatible devices. */
-      return new Promise((resolve, reject) => {
-        _converse.getDevicesForContact(jid).then(devices => resolve(devices.length > 0)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-      });
+      const devices = await _converse.getDevicesForContact(jid);
+      return devices.length > 0;
     };
 
     function generateDeviceID() {
@@ -66187,14 +66207,20 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       fetchDevices() {
         if (_.isUndefined(this._devices_promise)) {
-          this._devices_promise = new Promise((resolve, reject) => {
+          this._devices_promise = new Promise(resolve => {
             this.devices.fetch({
-              'success': collection => {
+              'success': async collection => {
                 if (collection.length === 0) {
-                  this.fetchDevicesFromServer().then(ids => this.publishCurrentDevice(ids)).finally(resolve);
-                } else {
-                  resolve();
+                  const ids = await this.fetchDevicesFromServer();
+                  await this.publishCurrentDevice(ids);
                 }
+
+                resolve();
+              },
+              'error': e => {
+                _converse.log(e, Strophe.LogLevel.ERROR);
+
+                resolve();
               }
             });
           });
@@ -66226,7 +66252,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
       },
 
-      fetchDevicesFromServer() {
+      async fetchDevicesFromServer() {
         const stanza = $iq({
           'type': 'get',
           'from': _converse.bare_jid,
@@ -66236,16 +66262,24 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }).c('items', {
           'node': Strophe.NS.OMEMO_DEVICELIST
         });
-        return _converse.api.sendIQ(stanza).then(iq => {
-          const device_ids = _.map(sizzle(`list[xmlns="${Strophe.NS.OMEMO}"] device`, iq), dev => dev.getAttribute('id'));
+        let iq;
 
-          _.forEach(device_ids, id => this.devices.create({
-            'id': id,
-            'jid': this.get('jid')
-          }));
+        try {
+          iq = await _converse.api.sendIQ(stanza);
+        } catch (e) {
+          _converse.log(e, Strophe.LogLevel.ERROR);
 
-          return device_ids;
-        });
+          return [];
+        }
+
+        const device_ids = _.map(sizzle(`list[xmlns="${Strophe.NS.OMEMO}"] device`, iq), dev => dev.getAttribute('id'));
+
+        _.forEach(device_ids, id => this.devices.create({
+          'id': id,
+          'jid': this.get('jid')
+        }));
+
+        return device_ids;
       },
 
       publishDevices() {
@@ -66433,6 +66467,61 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.api.listen.on('profileModalInitialized', contact => {
       _converse.generateFingerprints(_converse.bare_jid).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
     });
+    /************************ BEGIN API ************************/
+
+
+    _.extend(_converse.api, {
+      /**
+       * The "omemo" namespace groups methods relevant to OMEMO
+       * encryption.
+       *
+       * @namespace _converse.api.omemo
+       * @memberOf _converse.api
+       */
+      'omemo': {
+        /**
+         * The "bundle" namespace groups methods relevant to the user's
+         * OMEMO bundle.
+         *
+         * @namespace _converse.api.omemo.bundle
+         * @memberOf _converse.api.omemo
+         */
+        'bundle': {
+          /**
+           * Lets you generate a new OMEMO device bundle
+           *
+           * @method _converse.api.omemo.bundle.generate
+           * @returns {promise} Promise which resolves once we have a result from the server.
+           */
+          'generate': async () => {
+            // Remove current device
+            const devicelist = _converse.devicelists.get(_converse.bare_jid),
+                  device_id = _converse.omemo_store.get('device_id');
+
+            if (device_id) {
+              const device = devicelist.devices.get(device_id);
+
+              _converse.omemo_store.unset(device_id);
+
+              if (device) {
+                await new Promise(done => device.destroy({
+                  'success': done,
+                  'error': done
+                }));
+              }
+
+              devicelist.devices.trigger('remove');
+            } // Generate new bundle and publish
+
+
+            await _converse.omemo_store.generateBundle();
+            await devicelist.publishDevices();
+            const device = devicelist.devices.get(_converse.omemo_store.get('device_id'));
+            return generateFingerprint(device);
+          }
+        }
+      }
+    });
   }
 
 });
@@ -66499,8 +66588,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
           __ = _converse.__;
     _converse.ProfileModal = _converse.BootstrapModal.extend({
       events: {
-        'click .change-avatar': "openFileSelection",
         'change input[type="file"': "updateFilePreview",
+        'click .change-avatar': "openFileSelection",
         'submit .profile-form': 'onFormSubmitted'
       },
 
@@ -68602,7 +68691,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         _converse.api.chats.open(attrs.jid, attrs);
       },
 
-      removeContact(ev) {
+      async removeContact(ev) {
         if (ev && ev.preventDefault) {
           ev.preventDefault();
         }
@@ -68611,28 +68700,35 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           return;
         }
 
-        const result = confirm(__("Are you sure you want to remove this contact?"));
+        if (!confirm(__("Are you sure you want to remove this contact?"))) {
+          return;
+        }
 
-        if (result === true) {
-          this.model.removeFromRoster(iq => {
+        let iq;
+
+        try {
+          iq = await this.model.removeFromRoster();
+          this.remove();
+
+          if (this.model.collection) {
+            // The model might have already been removed as
+            // result of a roster push.
             this.model.destroy();
-            this.remove();
-          }, function (err) {
-            alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
+          }
+        } catch (e) {
+          _converse.log(e, Strophe.LogLevel.ERROR);
 
-            _converse.log(err, Strophe.LogLevel.ERROR);
-          });
+          _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Sorry, there was an error while trying to remove %1$s as a contact.', name));
         }
       },
 
-      acceptRequest(ev) {
+      async acceptRequest(ev) {
         if (ev && ev.preventDefault) {
           ev.preventDefault();
         }
 
-        _converse.roster.sendContactAddIQ(this.model.get('jid'), this.model.getFullname(), [], () => {
-          this.model.authorize().subscribe();
-        });
+        await _converse.roster.sendContactAddIQ(this.model.get('jid'), this.model.getFullname(), []);
+        this.model.authorize().subscribe();
       },
 
       declineRequest(ev) {
@@ -68865,7 +68961,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       // Groups are immutable, so they don't get re-sorted
       subviewIndex: 'name',
       events: {
-        'click a.chatbox-btn.add-contact': 'showAddContactModal'
+        'click a.controlbox-heading__btn.add-contact': 'showAddContactModal',
+        'click a.controlbox-heading__btn.sync-contacts': 'syncContacts'
       },
 
       initialize() {
@@ -68910,7 +69007,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.el.innerHTML = templates_roster_html__WEBPACK_IMPORTED_MODULE_10___default()({
           'allow_contact_requests': _converse.allow_contact_requests,
           'heading_contacts': __('Contacts'),
-          'title_add_contact': __('Add a contact')
+          'title_add_contact': __('Add a contact'),
+          'title_sync_contacts': __('Re-sync your contacts')
         });
         const form = this.el.querySelector('.roster-filter-form');
         this.el.replaceChild(this.filter_view.render().el, form);
@@ -68990,6 +69088,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
             view.filter(query, type);
           });
         }
+      },
+
+      async syncContacts(ev) {
+        ev.preventDefault();
+        u.addClass('fa-spin', ev.target);
+
+        _converse.roster.data.save('version', null);
+
+        await _converse.roster.fetchFromServer();
+
+        _converse.xmppstatus.sendPresence();
+
+        u.removeClass('fa-spin', ev.target);
       },
 
       reset() {
@@ -70484,21 +70595,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_20__["default"].initia
 
 /***/ }),
 
-/***/ "./src/headless/backbone.noconflict.js":
-/*!*********************************************!*\
-  !*** ./src/headless/backbone.noconflict.js ***!
-  \*********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*global define */
-!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")], __WEBPACK_AMD_DEFINE_RESULT__ = (function (Backbone) {
-  return Backbone.noConflict();
-}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ }),
-
 /***/ "./src/headless/converse-chatboxes.js":
 /*!********************************************!*\
   !*** ./src/headless/converse-chatboxes.js ***!
@@ -70965,7 +71061,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          * as taken from the 'chat_state' attribute of the chat box.
          * See XEP-0085 Chat State Notifications.
          */
-        if (_converse.send_chat_state_notifications) {
+        if (_converse.send_chat_state_notifications && this.get('chat_state')) {
           _converse.api.send($msg({
             'to': this.get('jid'),
             'type': 'chat'
@@ -71311,7 +71407,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname') // Get chat box, but only create a new one when the message has a body.
 
         };
-        const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}`).length > 0;
+        const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`).length > 0;
         const chatbox = this.getChatBox(contact_jid, attrs, has_body);
 
         if (chatbox && !chatbox.handleMessageCorrection(stanza)) {
@@ -71584,14 +71680,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var strophe_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! strophe.js */ "./node_modules/strophe.js/dist/strophe.js");
 /* harmony import */ var strophe_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(strophe_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./backbone.noconflict */ "./src/headless/backbone.noconflict.js");
-/* harmony import */ var _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_backbone_noconflict__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! es6-promise/dist/es6-promise.auto */ "./node_modules/es6-promise/dist/es6-promise.auto.js");
-/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./lodash.noconflict */ "./src/headless/lodash.noconflict.js");
-/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var backbone_browserStorage__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! backbone.browserStorage */ "./node_modules/backbone.browserStorage/backbone.browserStorage.js");
-/* harmony import */ var backbone_browserStorage__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(backbone_browserStorage__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone.browserStorage */ "./node_modules/backbone.browserStorage/backbone.browserStorage.js");
+/* harmony import */ var backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone_browserStorage__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! es6-promise/dist/es6-promise.auto */ "./node_modules/es6-promise/dist/es6-promise.auto.js");
+/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./lodash.noconflict */ "./src/headless/lodash.noconflict.js");
+/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _lodash_fp__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./lodash.fp */ "./src/headless/lodash.fp.js");
 /* harmony import */ var _lodash_fp__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_lodash_fp__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _i18n__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./i18n */ "./src/headless/i18n.js");
@@ -71623,7 +71719,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- // Strophe globals
+
+Backbone = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.noConflict(); // Strophe globals
 
 const b64_sha1 = strophe_js__WEBPACK_IMPORTED_MODULE_0__["SHA1"].b64_sha1; // Add Strophe Namespaces
 
@@ -71652,12 +71749,12 @@ strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].addNamespace('XFORM', 'jabber
  * config of requirejs-tpl in main.js). This one is for normal inline templates.
  */
 
-_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.templateSettings = {
+_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.templateSettings = {
   'escape': /\{\{\{([\s\S]+?)\}\}\}/g,
   'evaluate': /\{\[([\s\S]+?)\]\}/g,
   'interpolate': /\{\{([\s\S]+?)\}\}/g,
   'imports': {
-    '_': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a
+    '_': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a
   }
 };
 /**
@@ -71672,7 +71769,7 @@ const _converse = {
   'promises': {}
 };
 
-_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.extend(_converse, _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Events); // Core plugins are whitelisted automatically
+_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.extend(_converse, Backbone.Events); // Core plugins are whitelisted automatically
 
 
 _converse.core_plugins = ['converse-chatboxes', 'converse-core', 'converse-disco', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-roster', 'converse-vcard']; // Setting wait to 59 instead of 60 to avoid timing conflicts with the
@@ -71825,17 +71922,17 @@ _converse.log = function (message, level, style = '') {
 
   if (message instanceof Error) {
     message = message.stack;
-  } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isElement(message)) {
+  } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isElement(message)) {
     message = message.outerHTML;
   }
 
   const prefix = style ? '%c' : '';
 
-  const logger = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.assign({
-    'debug': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.noop,
-    'error': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.noop,
-    'info': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.noop,
-    'warn': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.noop
+  const logger = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assign({
+    'debug': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop,
+    'error': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop,
+    'info': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop,
+    'warn': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(console, 'log') ? console.log.bind(console) : _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop
   }, console);
 
   if (level === strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR) {
@@ -71869,7 +71966,7 @@ _converse.__ = function (str) {
    * Parameters:
    *      (String) str - The string to translate.
    */
-  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
+  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
     return str;
   }
 
@@ -71892,28 +71989,28 @@ _converse.emit = function (name) {
 
   const promise = _converse.promises[name];
 
-  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(promise)) {
+  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(promise)) {
     promise.resolve();
   }
 };
 
 _converse.isSingleton = function () {
-  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
 };
 
-_converse.router = new _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Router();
+_converse.router = new Backbone.Router();
 
 _converse.initialize = function (settings, callback) {
-  settings = !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(settings) ? settings : {};
+  settings = !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(settings) ? settings : {};
   const init_promise = _utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].getResolveablePromise();
 
-  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.each(PROMISES, addPromise);
+  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(PROMISES, addPromise);
 
-  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.connection)) {
+  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection)) {
     // Looks like _converse.initialized was called again without logging
     // out or disconnecting in the previous session.
     // This happens in tests. We therefore first clean up.
-    _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.history.stop();
+    Backbone.history.stop();
 
     _converse.chatboxviews.closeAllChatBoxes();
 
@@ -71949,10 +72046,10 @@ _converse.initialize = function (settings, callback) {
     _converse.unloadevent = 'unload';
   }
 
-  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.assignIn(this, this.default_settings); // Allow only whitelisted configuration attributes to be overwritten
+  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(this, this.default_settings); // Allow only whitelisted configuration attributes to be overwritten
 
 
-  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.assignIn(this, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.pick(settings, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.keys(this.default_settings)));
+  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(this, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.pick(settings, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(this.default_settings)));
 
   if (this.authentication === _converse.ANONYMOUS) {
     if (this.auto_login && !this.jid) {
@@ -71962,7 +72059,7 @@ _converse.initialize = function (settings, callback) {
   /* Localisation */
 
 
-  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
+  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
     _i18n__WEBPACK_IMPORTED_MODULE_6___default.a.setLocales(settings.i18n, _converse);
   } else {
     _converse.locale = 'en';
@@ -71970,7 +72067,7 @@ _converse.initialize = function (settings, callback) {
   // ----------------------
 
 
-  this.callback = callback || _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.noop;
+  this.callback = callback || _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop;
   /* When reloading the page:
    * For new sessions, we need to send out a presence stanza to notify
    * the server/network that we're online.
@@ -72108,7 +72205,7 @@ _converse.initialize = function (settings, callback) {
     _converse.api.send(pres);
   };
 
-  this.reconnect = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.debounce(function () {
+  this.reconnect = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.debounce(function () {
     _converse.log('RECONNECTING');
 
     _converse.log('The connection has dropped, attempting to reconnect.');
@@ -72156,7 +72253,7 @@ _converse.initialize = function (settings, callback) {
       } else {
         return _converse.disconnect();
       }
-    } else if (_converse.disconnection_cause === _converse.LOGOUT || !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(reason) && reason === _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.get(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"], 'ErrorCondition.NO_AUTH_MECH') || reason === "host-unknown" || reason === "remote-connection-failed" || !_converse.auto_reconnect) {
+    } else if (_converse.disconnection_cause === _converse.LOGOUT || !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(reason) && reason === _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"], 'ErrorCondition.NO_AUTH_MECH') || reason === "host-unknown" || reason === "remote-connection-failed" || !_converse.auto_reconnect) {
       return _converse.disconnect();
     }
 
@@ -72169,10 +72266,10 @@ _converse.initialize = function (settings, callback) {
     /* Used to keep track of why we got disconnected, so that we can
      * decide on what the next appropriate action is (in onDisconnected)
      */
-    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(cause)) {
+    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(cause)) {
       delete _converse.disconnection_cause;
       delete _converse.disconnection_reason;
-    } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.disconnection_cause) || override) {
+    } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.disconnection_cause) || override) {
       _converse.disconnection_cause = cause;
       _converse.disconnection_reason = reason;
     }
@@ -72233,7 +72330,7 @@ _converse.initialize = function (settings, callback) {
 
       if (message === "host-unknown" || message == "remote-connection-failed") {
         feedback = __("Sorry, we could not connect to the XMPP host with domain: %1$s", `\"${strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getDomainFromJid(_converse.connection.jid)}\"`);
-      } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(message) && message === _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.get(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"], 'ErrorCondition.NO_AUTH_MECH')) {
+      } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(message) && message === _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"], 'ErrorCondition.NO_AUTH_MECH')) {
         feedback = __("The XMPP server did not offer a supported authentication mechanism");
       }
 
@@ -72250,7 +72347,7 @@ _converse.initialize = function (settings, callback) {
     const unreadMsgCount = this.msg_counter;
     let title = document.title;
 
-    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isNil(title)) {
+    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isNil(title)) {
       return;
     }
 
@@ -72265,7 +72362,7 @@ _converse.initialize = function (settings, callback) {
     this.msg_counter = 0;
     let title = document.title;
 
-    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isNil(title)) {
+    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isNil(title)) {
       return;
     }
 
@@ -72277,7 +72374,7 @@ _converse.initialize = function (settings, callback) {
   this.initStatus = reconnecting => {
     // If there's no xmppstatus obj, then we were never connected to
     // begin with, so we set reconnecting to false.
-    reconnecting = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.xmppstatus) ? false : reconnecting;
+    reconnecting = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.xmppstatus) ? false : reconnecting;
 
     if (reconnecting) {
       _converse.onStatusInitialized(reconnecting);
@@ -72286,10 +72383,10 @@ _converse.initialize = function (settings, callback) {
       this.xmppstatus = new this.XMPPStatus({
         'id': id
       });
-      this.xmppstatus.browserStorage = new _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.BrowserStorage.session(id);
+      this.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
       this.xmppstatus.fetch({
-        'success': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.onStatusInitialized, reconnecting),
-        'error': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.onStatusInitialized, reconnecting)
+        'success': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.onStatusInitialized, reconnecting),
+        'error': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.onStatusInitialized, reconnecting)
       });
     }
   };
@@ -72301,12 +72398,12 @@ _converse.initialize = function (settings, callback) {
      * user sessions.
      */
     const id = b64_sha1('converse.client-config');
-    _converse.config = new _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Model({
+    _converse.config = new Backbone.Model({
       'id': id,
       'trusted': _converse.trusted && true || false,
       'storage': _converse.trusted ? 'local' : 'session'
     });
-    _converse.config.browserStorage = new _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.BrowserStorage.session(id);
+    _converse.config.browserStorage = new Backbone.BrowserStorage.session(id);
 
     _converse.config.fetch();
 
@@ -72315,10 +72412,10 @@ _converse.initialize = function (settings, callback) {
 
   this.initSession = function () {
     const id = b64_sha1('converse.bosh-session');
-    _converse.session = new _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Model({
+    _converse.session = new Backbone.Model({
       'id': id
     });
-    _converse.session.browserStorage = new _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.BrowserStorage.session(id);
+    _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
 
     _converse.session.fetch();
 
@@ -72329,7 +72426,7 @@ _converse.initialize = function (settings, callback) {
     if (!_converse.config.get('trusted')) {
       window.localStorage.clear();
       window.sessionStorage.clear();
-    } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(this.session) && this.session.browserStorage) {
+    } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(this.session) && this.session.browserStorage) {
       this.session.browserStorage._clear();
     }
 
@@ -72341,14 +72438,14 @@ _converse.initialize = function (settings, callback) {
 
     _converse.setDisconnectionCause(_converse.LOGOUT, undefined, true);
 
-    if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.connection)) {
+    if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection)) {
       _converse.connection.disconnect();
     } else {
       _converse.tearDown();
     } // Recreate all the promises
 
 
-    _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.each(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.keys(_converse.promises), addPromise);
+    _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.promises), addPromise);
 
     _converse.emit('logout');
   };
@@ -72391,24 +72488,24 @@ _converse.initialize = function (settings, callback) {
     let hidden = "hidden"; // Standards:
 
     if (hidden in document) {
-      document.addEventListener("visibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden));
+      document.addEventListener("visibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden));
     } else if ((hidden = "mozHidden") in document) {
-      document.addEventListener("mozvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden));
+      document.addEventListener("mozvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden));
     } else if ((hidden = "webkitHidden") in document) {
-      document.addEventListener("webkitvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden));
+      document.addEventListener("webkitvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden));
     } else if ((hidden = "msHidden") in document) {
-      document.addEventListener("msvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden));
+      document.addEventListener("msvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden));
     } else if ("onfocusin" in document) {
       // IE 9 and lower:
-      document.onfocusin = document.onfocusout = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden);
+      document.onfocusin = document.onfocusout = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden);
     } else {
       // All others:
-      window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden);
+      window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden);
     } // set the initial state (but only if browser supports the Page Visibility API)
 
 
     if (document[hidden] !== undefined) {
-      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, hidden)({
+      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden)({
         type: document[hidden] ? "blur" : "focus"
       });
     }
@@ -72490,7 +72587,7 @@ _converse.initialize = function (settings, callback) {
     _converse.initStatus(reconnecting);
   };
 
-  this.ConnectionFeedback = _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
+  this.ConnectionFeedback = Backbone.Model.extend({
     defaults: {
       'connection_status': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Status.DISCONNECTED,
       'message': ''
@@ -72504,7 +72601,7 @@ _converse.initialize = function (settings, callback) {
 
   });
   this.connfeedback = new this.ConnectionFeedback();
-  this.XMPPStatus = _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
+  this.XMPPStatus = Backbone.Model.extend({
     defaults() {
       return {
         "jid": _converse.bare_jid,
@@ -72517,7 +72614,7 @@ _converse.initialize = function (settings, callback) {
         'jid': this.get('jid')
       });
 
-      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isNil(this.vcard)) {
+      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isNil(this.vcard)) {
         this.vcard = _converse.vcards.create({
           'jid': this.get('jid')
         });
@@ -72539,8 +72636,8 @@ _converse.initialize = function (settings, callback) {
 
     constructPresence(type, status_message) {
       let presence;
-      type = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isString(type) ? type : this.get('status') || _converse.default_state;
-      status_message = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isString(status_message) ? status_message : this.get('status_message'); // Most of these presence types are actually not explicitly sent,
+      type = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isString(type) ? type : this.get('status') || _converse.default_state;
+      status_message = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isString(status_message) ? status_message : this.get('status_message'); // Most of these presence types are actually not explicitly sent,
       // but I add all of them here for reference and future proofing.
 
       if (type === 'unavailable' || type === 'probe' || type === 'error' || type === 'unsubscribe' || type === 'unsubscribed' || type === 'subscribe' || type === 'subscribed') {
@@ -72561,7 +72658,7 @@ _converse.initialize = function (settings, callback) {
         presence.c('status').t(status_message).up();
       }
 
-      presence.c('priority').t(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isNaN(Number(_converse.priority)) ? 0 : _converse.priority);
+      presence.c('priority').t(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isNaN(Number(_converse.priority)) ? 0 : _converse.priority);
       return presence;
     },
 
@@ -72587,7 +72684,7 @@ _converse.initialize = function (settings, callback) {
     }
   };
 
-  this.fetchLoginCredentials = () => new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2___default.a((resolve, reject) => {
+  this.fetchLoginCredentials = () => new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', _converse.credentials_url, true);
     xhr.setRequestHeader('Accept', "application/json, text/javascript");
@@ -72731,7 +72828,7 @@ _converse.initialize = function (settings, callback) {
 
       this.connection.connect(this.jid.toLowerCase(), null, this.onConnectStatusChanged, BOSH_WAIT);
     } else if (this.authentication === _converse.LOGIN) {
-      const password = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isNil(credentials) ? _converse.connection.pass || this.password : credentials.password;
+      const password = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isNil(credentials) ? _converse.connection.pass || this.password : credentials.password;
 
       if (!password) {
         if (this.auto_login) {
@@ -72782,7 +72879,7 @@ _converse.initialize = function (settings, callback) {
       if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
         this.connection = new strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Connection(this.websocket_url, this.connection_options);
       } else if (this.bosh_service_url) {
-        this.connection = new strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Connection(this.bosh_service_url, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.assignIn(this.connection_options, {
+        this.connection = new strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Connection(this.bosh_service_url, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(this.connection_options, {
           'keepalive': this.keepalive
         }));
       } else {
@@ -72799,7 +72896,7 @@ _converse.initialize = function (settings, callback) {
      */
     _converse.emit('beforeTearDown');
 
-    if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.session)) {
+    if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.session)) {
       _converse.session.destroy();
     }
 
@@ -72827,7 +72924,7 @@ _converse.initialize = function (settings, callback) {
     const whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
 
     if (_converse.view_mode === 'embedded') {
-      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.forEach([// eslint-disable-line lodash/prefer-map
+      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.forEach([// eslint-disable-line lodash/prefer-map
       "converse-bookmarks", "converse-controlbox", "converse-headline", "converse-register"], name => {
         _converse.blacklisted_plugins.push(name);
       });
@@ -72866,20 +72963,20 @@ _converse.initialize = function (settings, callback) {
 
     _converse.registerGlobalEventHandlers();
 
-    if (!_backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.history.started) {
-      _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.history.start();
+    if (!Backbone.history.started) {
+      Backbone.history.start();
     }
   }
 
-  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {
+  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {
     finishInitialization();
     return _converse;
-  } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
+  } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
     finishInitialization();
   } else {
     _i18n__WEBPACK_IMPORTED_MODULE_6___default.a.fetchTranslations(_converse.locale, _converse.locales, _utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
       'locale': _converse.locale
-    })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).then(finishInitialization).catch(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(_converse.log, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL));
+    })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).then(finishInitialization).catch(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.log, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL));
   }
 
   return init_promise;
@@ -73021,11 +73118,11 @@ _converse.api = {
           'status': value
         };
 
-        if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.includes(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.keys(_converse.STATUS_WEIGHTS), value)) {
+        if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.STATUS_WEIGHTS), value)) {
           throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
         }
 
-        if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isString(message)) {
+        if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isString(message)) {
           data.status_message = message;
         }
 
@@ -73103,7 +73200,7 @@ _converse.api = {
      * @example _converse.api.settings.get("play_sounds");
      */
     'get'(key) {
-      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.includes(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.keys(_converse.default_settings), key)) {
+      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.default_settings), key)) {
         return _converse[key];
       }
     },
@@ -73129,12 +73226,12 @@ _converse.api = {
     'set'(key, val) {
       const o = {};
 
-      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isObject(key)) {
-        _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.assignIn(_converse, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.pick(key, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.keys(_converse.default_settings)));
-      } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isString("string")) {
+      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isObject(key)) {
+        _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(_converse, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.pick(key, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.default_settings)));
+      } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isString("string")) {
         o[key] = val;
 
-        _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.assignIn(_converse, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.pick(o, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.keys(_converse.default_settings)));
+        _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(_converse, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.pick(o, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.default_settings)));
       }
     }
 
@@ -73185,9 +73282,9 @@ _converse.api = {
      * @example _converse.api.promises.add('foo-completed');
      */
     'add'(promises) {
-      promises = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isArray(promises) ? promises : [promises];
+      promises = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isArray(promises) ? promises : [promises];
 
-      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.each(promises, addPromise);
+      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(promises, addPromise);
     }
 
   },
@@ -73206,7 +73303,7 @@ _converse.api = {
      * @example _converse.api.tokens.get('rid');
      */
     'get'(id) {
-      if (!_converse.expose_rid_and_sid || _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.connection)) {
+      if (!_converse.expose_rid_and_sid || _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection)) {
         return null;
       }
 
@@ -73277,7 +73374,7 @@ _converse.api = {
      * @param {function} handler The callback method to be called when the stanza appears
      */
     'stanza'(name, options, handler) {
-      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isFunction(options)) {
+      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isFunction(options)) {
         handler = options;
         options = {};
       } else {
@@ -73299,7 +73396,7 @@ _converse.api = {
   'waitUntil'(name) {
     const promise = _converse.promises[name];
 
-    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(promise)) {
+    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(promise)) {
       return null;
     }
 
@@ -73332,7 +73429,7 @@ _converse.api = {
    * or is rejected when we receive an `error` stanza.
    */
   'sendIQ'(stanza, timeout) {
-    return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2___default.a((resolve, reject) => {
+    return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
       _converse.connection.sendIQ(stanza, resolve, reject, timeout || _converse.IQ_TIMEOUT);
 
       _converse.emit('send', stanza);
@@ -73415,7 +73512,7 @@ const converse = {
     'add'(name, plugin) {
       plugin.__name__ = name;
 
-      if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.isUndefined(_converse.pluggable.plugins[name])) {
+      if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.pluggable.plugins[name])) {
         throw new TypeError(`Error: plugin with name "${name}" has already been ` + 'registered!');
       } else {
         _converse.pluggable.plugins[name] = plugin;
@@ -73447,10 +73544,10 @@ const converse = {
     '$iq': strophe_js__WEBPACK_IMPORTED_MODULE_0__["$iq"],
     '$msg': strophe_js__WEBPACK_IMPORTED_MODULE_0__["$msg"],
     '$pres': strophe_js__WEBPACK_IMPORTED_MODULE_0__["$pres"],
-    'Backbone': _backbone_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a,
-    'Promise': es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_2___default.a,
+    'Backbone': Backbone,
+    'Promise': es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a,
     'Strophe': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"],
-    '_': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a,
+    '_': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a,
     'f': _lodash_fp__WEBPACK_IMPORTED_MODULE_5___default.a,
     'b64_sha1': b64_sha1,
     'moment': moment__WEBPACK_IMPORTED_MODULE_7___default.a,
@@ -74632,7 +74729,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
       archived_messages_page_size: '50',
       message_archiving: undefined,
       // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
-      message_archiving_timeout: 8000 // Time (in milliseconds) to wait before aborting MAM request
+      message_archiving_timeout: 20000 // Time (in milliseconds) to wait before aborting MAM request
 
     });
 
@@ -77083,13 +77180,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       ackUnsubscribe() {
         /* Upon receiving the presence stanza of type "unsubscribed",
-        * the user SHOULD acknowledge receipt of that subscription state
-        * notification by sending a presence stanza of type "unsubscribe"
-        * this step lets the user's server know that it MUST no longer
-        * send notification of the subscription state change to the user.
-        *  Parameters:
-        *    (String) jid - The Jabber ID of the user who is unsubscribing
-        */
+         * the user SHOULD acknowledge receipt of that subscription state
+         * notification by sending a presence stanza of type "unsubscribe"
+         * this step lets the user's server know that it MUST no longer
+         * send notification of the subscription state change to the user.
+         *  Parameters:
+         *    (String) jid - The Jabber ID of the user who is unsubscribing
+         */
         _converse.api.send($pres({
           'type': 'unsubscribe',
           'to': this.get('jid')
@@ -77111,9 +77208,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       authorize(message) {
         /* Authorize presence subscription
-        * Parameters:
-        *   (String) message - Optional message to send to the person being authorized
-        */
+         * Parameters:
+         *   (String) message - Optional message to send to the person being authorized
+         */
         const pres = $pres({
           'to': this.get('jid'),
           'type': "subscribed"
@@ -77128,11 +77225,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return this;
       },
 
-      removeFromRoster(callback, errback) {
+      removeFromRoster() {
         /* Instruct the XMPP server to remove this contact from our roster
-        * Parameters:
-        *   (Function) callback
-        */
+         * Parameters:
+         *   (Function) callback
+         */
         const iq = $iq({
           type: 'set'
         }).c('query', {
@@ -77141,10 +77238,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           jid: this.get('jid'),
           subscription: "remove"
         });
-
-        _converse.api.sendIQ(iq).then(callback).catch(errback);
-
-        return this;
+        return _converse.api.sendIQ(iq);
       }
 
     });
@@ -77214,13 +77308,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         try {
           collection = await new Promise((resolve, reject) => {
-            const config = {
+            this.fetch({
               'add': true,
               'silent': true,
               'success': resolve,
               'error': reject
-            };
-            this.fetch(config);
+            });
           });
         } catch (e) {
           return _converse.log(e, Strophe.LogLevel.ERROR);
@@ -77291,7 +77384,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         _.each(groups, group => iq.c('group').t(group).up());
 
-        _converse.api.sendIQ(iq);
+        return _converse.api.sendIQ(iq);
       },
 
       async addContactToRoster(jid, name, groups, attributes) {
@@ -77412,7 +77505,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       rosterVersioningSupported() {
-        return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
+        return !!(_converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version'));
       },
 
       async fetchFromServer() {
@@ -100645,7 +100738,7 @@ __e(o.label_nickname) +
 __e(o.nickname) +
 '"\n                               class="form-control"\n                               placeholder="' +
 __e(o.nickname_placeholder) +
-'"/>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="btn btn-primary">' +
+'"/>\n                    </div>\n                    <button type="submit" class="btn btn-primary">' +
 __e(o.label_add) +
 '</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
 return __p
@@ -100807,7 +100900,7 @@ __p += '<!-- src/templates/chat_status_modal.html -->\n<!-- Change status Modal 
 __e(o.modal_title) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
-'">\n                    <span aria-hidden="true">&times;</span>\n                </button>\n            </div>\n            <form class="set-xmpp-status" id="set-xmpp-status">\n                <div class="modal-body">\n                    <div class="form-group">\n                        <div class="custom-control custom-radio">\n                            <input ';
+'">\n                    <span aria-hidden="true">&times;</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form set-xmpp-status" id="set-xmpp-status">\n                    <div class="form-group">\n                        <div class="custom-control custom-radio">\n                            <input ';
  if (o.status === 'online') { ;
 __p += ' checked="checked" ';
  } ;
@@ -100831,17 +100924,17 @@ __p += ' checked="checked" ';
  } ;
 __p += '\n                                   type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-xa">\n                                <span class="far fa-circle chat-status chat-status--xa"></span>&nbsp;' +
 __e(o.label_xa) +
-'</label>\n                        </div>\n                    </div>\n                    <div class="btn-group w-100">\n                        <input name="status_message" type="text" class="form-control" \n                               value="' +
+'</label>\n                        </div>\n                    </div>\n                    <div class="form-group">\n                        <div class="btn-group w-100">\n                            <input name="status_message" type="text" class="form-control" \n                                value="' +
 __e(o.status_message) +
 '" placeholder="' +
 __e(o.placeholder_status_message) +
-'">\n                        <span class="clear-input fa fa-times ';
+'">\n                            <span class="clear-input fa fa-times ';
  if (!o.status_message) { ;
 __p += ' hidden ';
  } ;
-__p += '"></span>\n                    </div>\n                </div>\n                <div class="modal-footer">\n                    <button type="submit" class="btn btn-primary">' +
+__p += '"></span>\n                        </div>\n                    </div>\n                    <button type="submit" class="btn btn-primary">' +
 __e(o.label_save) +
-'</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
+'</button>\n                </form>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -101258,7 +101351,7 @@ __e( o.__('Message archiving') ) +
 __e( o.__('Messages are archived on the server') ) +
 '</em></li>\n                        ';
  } ;
-__p += '\n                        </ul>\n                        </div>\n                    </p>\n                </div>\n            </div>\n            <div class="modal-footer">\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
+__p += '\n                        </ul>\n                        </div>\n                    </p>\n                </div>\n            </div>\n            <div class="modal-footer">\n                <button type="button" class="btn btn-warning" data-dismiss="modal">' +
 __e(o.__('Close')) +
 '</button>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
@@ -102508,7 +102601,7 @@ __e(o.hint_show) +
 __e(o.nick || o.jid) +
 '</span>\n            <span class="occupant-badges">\n                ';
  if (o.affiliation === "owner") { ;
-__p += '\n                    <span class="badge badge-danger">' +
+__p += '\n                    <span class="badge badge-primary">' +
 __e(o.label_owner) +
 '</span>\n                ';
  } ;
@@ -102646,7 +102739,9 @@ __e(o.utils.formatFingerprint(o.view.current_device.get('bundle').fingerprint)) 
  } else {;
 __p += '\n                                        <span class="spinner fa fa-spinner centered"/>\n                                    ';
  } ;
-__p += '\n                                    </li>\n                                </ul>\n                                ';
+__p += '\n                                    </li>\n                                </ul>\n                                <div class="form-group">\n                                    <button type="button" class="generate-bundle btn btn-danger">' +
+__e(o.__('Generate new keys and fingerprint')) +
+'</button>\n                                </div>\n\n                                ';
  if (o.view.other_devices.length) { ;
 __p += '\n                                    <ul class="list-group fingerprints">\n                                        <li class="list-group-item nopadding active">\n                                            <label>\n                                            <input type="checkbox" class="select-all" title="' +
 __e(o.__('Select all')) +
@@ -103051,9 +103146,9 @@ module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/room_panel.html -->\n<!-- <div id="chatrooms"> -->\n<div class="d-flex controlbox-padded">\n    <span class="w-100 controlbox-heading">' +
 __e(o.heading_chatrooms) +
-'</span>\n    <a class="chatbox-btn show-list-muc-modal fa fa-list-ul" title="' +
+'</span>\n    <a class="controlbox-heading__btn show-list-muc-modal fa fa-list-ul" title="' +
 __e(o.title_list_rooms) +
-'" data-toggle="modal" data-target="#list-chatrooms-modal"></a>\n    <a class="chatbox-btn show-add-muc-modal fa fa-plus" title="' +
+'" data-toggle="modal" data-target="#list-chatrooms-modal"></a>\n    <a class="controlbox-heading__btn show-add-muc-modal fa fa-plus" title="' +
 __e(o.title_new_room) +
 '" data-toggle="modal" data-target="#add-chatrooms-modal"></a>\n</div>\n<div class="list-container open-rooms-list rooms-list-container"></div>\n<div class="list-container bookmarks-list rooms-list-container"></div>\n<!-- </div> -->\n';
 return __p
@@ -103192,9 +103287,11 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/roster.html -->\n<div class="d-flex controlbox-padded">\n    <span class="w-100 controlbox-heading">' +
 __e(o.heading_contacts) +
-'</span>\n    ';
+'</span>\n    <a class="controlbox-heading__btn sync-contacts fa fa-sync" title="' +
+__e(o.title_sync_contacts) +
+'"></a>\n    ';
  if (o.allow_contact_requests) { ;
-__p += '\n        <a class="chatbox-btn add-contact fa fa-user-plus"\n           title="' +
+__p += '\n        <a class="controlbox-heading__btn add-contact fa fa-user-plus"\n           title="' +
 __e(o.title_add_contact) +
 '"\n           data-toggle="modal"\n           data-target="#add-contact-modal"></a>\n    ';
  } ;
@@ -103751,17 +103848,17 @@ __p += '\n                        ';
  } ;
 __p += '\n                    </ul>\n                ';
  } ;
-__p += '\n            </div>\n            <div class="modal-footer">\n                ';
+__p += '\n            </div>\n            <div class="modal-footer">\n                <button type="button" class="btn btn-warning" data-dismiss="modal">' +
+__e(o.__('Close')) +
+'</button>\n                <button type="button" class="btn btn-info refresh-contact"><i class="fa fa-refresh"> </i>' +
+__e(o.__('Refresh')) +
+'</button>\n                ';
  if (o.allow_contact_removal && o.is_roster_contact) { ;
 __p += '\n                    <button type="button" class="btn btn-danger remove-contact"><i class="far fa-trash-alt"> </i>' +
 __e(o.__('Remove as contact')) +
 '</button>\n                ';
  } ;
-__p += '\n                <button type="button" class="btn btn-info refresh-contact"><i class="fa fa-refresh"> </i>' +
-__e(o.__('Refresh')) +
-'</button>\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
-__e(o.__('Close')) +
-'</button>\n            </div>\n        </div>\n    </div>\n</div>\n';
+__p += '\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 

@@ -8,8 +8,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="set-xmpp-status" id="set-xmpp-status">
-                <div class="modal-body">
+            <div class="modal-body">
+                <form class="converse-form set-xmpp-status" id="set-xmpp-status">
                     <div class="form-group">
                         <div class="custom-control custom-radio">
                             <input {[ if (o.status === 'online') { ]} checked="checked" {[ } ]}
@@ -36,16 +36,16 @@
                                 <span class="far fa-circle chat-status chat-status--xa"></span>&nbsp;{{{o.label_xa}}}</label>
                         </div>
                     </div>
-                    <div class="btn-group w-100">
-                        <input name="status_message" type="text" class="form-control" 
-                               value="{{{o.status_message}}}" placeholder="{{{o.placeholder_status_message}}}">
-                        <span class="clear-input fa fa-times {[ if (!o.status_message) { ]} hidden {[ } ]}"></span>
+                    <div class="form-group">
+                        <div class="btn-group w-100">
+                            <input name="status_message" type="text" class="form-control" 
+                                value="{{{o.status_message}}}" placeholder="{{{o.placeholder_status_message}}}">
+                            <span class="clear-input fa fa-times {[ if (!o.status_message) { ]} hidden {[ } ]}"></span>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">{{{o.label_save}}}</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>

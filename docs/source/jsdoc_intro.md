@@ -4,7 +4,7 @@ Welcome to the new Converse API documentation, generated with
 [JSDoc](http://usejsdoc.org/).
 
 The old (increasingly out of date and incomplete) API documentation is
-currently still [available here](/docs/htmls/developer_api.html).
+currently still [available here](/docs/html/developer_api.html).
 
 ## The public and private API
 

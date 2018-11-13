@@ -126,13 +126,16 @@ dev: stamp-npm
 ## Builds
 
 .PHONY: css
-css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/fonts.css
+css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/font-awesome.css
 
 css/converse.css:: dev sass
 	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/converse.scss css/converse.css
 
 css/website.css:: dev sass
 	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
+
+css/font-awesome.css:: dev sass
+	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@
 
 css/%.min.css:: css/%.css
 	make dev
@@ -227,13 +230,13 @@ check: eslint
 ## Documentation
 
 .PHONY: html
-html:
+html: apidoc
 	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	make apidoc
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
-ePHONY: apidoc
+PHONY: apidoc
 apidoc:
 	$(JSDOC) --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/*.js

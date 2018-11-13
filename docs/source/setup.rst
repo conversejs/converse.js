@@ -129,30 +129,35 @@ configure Converse to connect to a websocket URL.
 The Webserver
 =============
 
-.. _CORS:
-
-Overcoming cross-domain request restrictions
---------------------------------------------
-
 Lets say the domain under which you host Converse is *example.org:80*,
 but the domain of your connection manager or the domain of
 your HTTP file server (for `XEP-0363 HTTP File Upload <https://xmpp.org/extensions/xep-0363.html>`_)
 is at a different domain, either a different port like *example.org:5280* or a
 different name like *elsehwere.org*.
 
-In cases like this, cross-domain request restrictions of the browser come into
-force. For security purposes a browser does not by default allow a website to
+In such a situation the same-origin security policy of the browser comes into force.
+For security purposes a browser does not by default allow a website to
 make certain types of requests to other domains.
 
-One solution is to add a reverse proxy to a webserver such as Nginx or Apache to ensure that
+There are two ways in which you can solve this problem.
+
+.. _CORS:
+
+1. Cross-Origin Resource Sharing (CORS)
+---------------------------------------
+
+CORS is a technique for overcoming browser restrictions related to the
+`same-origin security policy <https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy>`_.
+
+CORS is enabled by adding an ``Access-Control-Allow-Origin`` header. Where this
+is configured depends on what webserver is used for your file upload server.
+
+
+2. Reverse-proxy 
+----------------
+
+Another possible solution is to add a reverse proxy to a webserver such as Nginx or Apache to ensure that
 all services you use are hosted under the same domain name and port.
-
-Alternatively you can use something called `CORS <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`__
-(Cross-origin resource sharing).
-
-By enabling CORS on the non-local domains (e.g. *elsewhere.org*, when
-*example.org* is the local domain), you allow the browser to make requests to it.
-
 
 Examples:
 *********

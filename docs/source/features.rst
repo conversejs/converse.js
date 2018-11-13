@@ -2,22 +2,32 @@
 
     <div id="banner"><a href="https://github.com/jcbrand/converse.js/blob/master/docs/source/features.rst">Edit me on GitHub</a></div>
 
+.. _`features`:
+
 ========
 Features
 ========
 
-Open chats via URL
-==================
+File sharing (`XEP-0363 HTTP File Upload <https://xmpp.org/extensions/xep-0363.html>`_)
+=======================================================================================
 
-From version 3.3.0, converse.js now has the ability to open chats (private or
-groupchat) based on the URL fragment.
+Converse supports file sharing by first uploading the file to a file server and
+then sending the file's URL to the recipient.
 
-A room (aka groupchat) can be opened with a URL fragment such as `#converse/room?jid=room@domain`
-and a private chat with a URL fragment such as
-`#converse/chat?jid=user@domain`.
+The file server that is used is configured by the XMPP server admin, and is not
+something that Converse has any control over.
 
-XEP-0384 OMEMO Encryption
-=========================
+Often when people report file sharing not working, it's because the file server
+is not configured to allow file uploads from other domains.
+
+The file server needs to be configured for `Cross-Origin resource sharing <https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS>`_
+(known by the acronym CORS). Specifically, it needs to add a
+``Access-Control-Allow-Origin`` header which includes the domain hosting
+Converse.
+
+
+End to end message encryption (`XEP-0384 OMEMO <https://xmpp.org/extensions/xep-0363.html>`_)
+=============================================================================================
 
 Converse supports OMEMO encryption based on the
 `Signal Protocol <https://github.com/signalapp/libsignal-protocol-javascript>`_.
@@ -82,6 +92,18 @@ articles:
 
 * `What's wrong with webcrypto? <https://tonyarcieri.com/whats-wrong-with-webcrypto>`_
 * `Heartbleed and JavaScript crypto <https://tankredhase.com/2014/04/13/heartbleed-and-javascript-crypto/>`_
+
+
+Open chats via URL
+==================
+
+From version 3.3.0, converse.js now has the ability to open chats (private or
+groupchat) based on the URL fragment.
+
+A room (aka groupchat) can be opened with a URL fragment such as `#converse/room?jid=room@domain`
+and a private chat with a URL fragment such as
+`#converse/chat?jid=user@domain`.
+
 
 Notifications
 =============

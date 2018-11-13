@@ -68,6 +68,7 @@ converse.plugins.add('converse-omemo', {
         ProfileModal: {
             events: {
                 'change input.select-all': 'selectAll',
+                'click .generate-bundle': 'generateOMEMODeviceBundle',
                 'submit .fingerprint-removal': 'removeSelectedFingerprints'
             },
 
@@ -77,6 +78,7 @@ converse.plugins.add('converse-omemo', {
                 this.devicelist = _converse.devicelists.get(_converse.bare_jid);
                 this.devicelist.devices.on('change:bundle', this.debouncedRender, this);
                 this.devicelist.devices.on('reset', this.debouncedRender, this);
+                this.devicelist.devices.on('reset', this.debouncedRender, this);
                 this.devicelist.devices.on('remove', this.debouncedRender, this);
                 this.devicelist.devices.on('add', this.debouncedRender, this);
                 return this.__super__.initialize.apply(this, arguments);
@@ -85,7 +87,10 @@ converse.plugins.add('converse-omemo', {
             beforeRender () {
                 const { _converse } = this.__super__,
                       device_id = _converse.omemo_store.get('device_id');
-                this.current_device = this.devicelist.devices.get(device_id);
+                
+                if (device_id) {
+                    this.current_device = this.devicelist.devices.get(device_id);
+                }
                 this.other_devices = this.devicelist.devices.filter(d => (d.get('id') !== device_id));
                 if (this.__super__.beforeRender) {
                     return this.__super__.beforeRender.apply(this, arguments);
@@ -118,6 +123,18 @@ converse.plugins.add('converse-omemo', {
                         )
                     });
             },
+
+            generateOMEMODeviceBundle (ev) {
+                const { _converse } = this.__super__,
+                      { __, api } = _converse;
+                ev.preventDefault();
+                if (confirm(__(
+                    "Are you sure you want to generate new OMEMO keys?" +
+                    "This will remove your old keys and all previously encrypted messages will no longer be ecryptable on this device.")
+                )) {
+                    api.omemo.bundle.generate();
+                }
+            }
         },
 
         UserDetailsModal: {
@@ -159,28 +176,26 @@ converse.plugins.add('converse-omemo', {
                     }).then(() => this.buildSessions(devices))
             },
 
-            buildSession (device) {
+            async buildSession (device) {
                 const { _converse } = this.__super__,
                       address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
                       sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
-                      prekey = device.getRandomPreKey();
+                      prekey = device.getRandomPreKey(),
+                      bundle = await device.getBundle();
 
-                return device.getBundle()
-                    .then(bundle => {
-                        return sessionBuilder.processPreKey({
-                            'registrationId': parseInt(device.get('id'), 10),
-                            'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
-                            'signedPreKey': {
-                                'keyId': bundle.signed_prekey.id, // <Number>
-                                'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
-                                'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
-                            },
-                            'preKey': {
-                                'keyId': prekey.id, // <Number>
-                                'publicKey': u.base64ToArrayBuffer(prekey.key),
-                            }
-                        });
-                    });
+                return sessionBuilder.processPreKey({
+                    'registrationId': parseInt(device.get('id'), 10),
+                    'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
+                    'signedPreKey': {
+                        'keyId': bundle.signed_prekey.id, // <Number>
+                        'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
+                        'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
+                    },
+                    'preKey': {
+                        'keyId': prekey.id, // <Number>
+                        'publicKey': u.base64ToArrayBuffer(prekey.key),
+                    }
+                });
             },
 
             getSession (device) {
@@ -477,42 +492,36 @@ converse.plugins.add('converse-omemo', {
 
         _converse.NUM_PREKEYS = 100; // Set here so that tests can override
 
-        function generateFingerprint (device) {
+        async function generateFingerprint (device) {
             if (_.get(device.get('bundle'), 'fingerprint')) {
                 return;
             }
-            return device.getBundle().then(bundle => {
-                bundle['fingerprint'] = u.arrayBufferToHex(u.base64ToArrayBuffer(bundle['identity_key']));
-                device.save('bundle', bundle);
-                device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
-            });
+            const bundle = await device.getBundle();
+            bundle['fingerprint'] = u.arrayBufferToHex(u.base64ToArrayBuffer(bundle['identity_key']));
+            device.save('bundle', bundle);
+            device.trigger('change:bundle'); // Doesn't get triggered automatically due to pass-by-reference
         }
 
-        _converse.generateFingerprints = function (jid) {
-            return _converse.getDevicesForContact(jid)
-                .then(devices => Promise.all(devices.map(d => generateFingerprint(d))))
+        _converse.generateFingerprints = async function (jid) {
+            const devices = await _converse.getDevicesForContact(jid)
+            return Promise.all(devices.map(d => generateFingerprint(d)));
         }
 
         _converse.getDeviceForContact = function (jid, device_id) {
             return _converse.getDevicesForContact(jid).then(devices => devices.get(device_id));
         }
 
-        _converse.getDevicesForContact = function (jid) {
-            let devicelist;
-            return _converse.api.waitUntil('OMEMOInitialized')
-                .then(() => {
-                    devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid});
-                    return devicelist.fetchDevices();
-                }).then(() => devicelist.devices);
+        _converse.getDevicesForContact = async function (jid) {
+            await _converse.api.waitUntil('OMEMOInitialized');
+            const devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid});
+            await devicelist.fetchDevices();
+            return devicelist.devices;
         }
 
-        _converse.contactHasOMEMOSupport = function (jid) {
+        _converse.contactHasOMEMOSupport = async function (jid) {
             /* Checks whether the contact advertises any OMEMO-compatible devices. */
-            return new Promise((resolve, reject) => {
-                _converse.getDevicesForContact(jid)
-                    .then((devices) => resolve(devices.length > 0))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-            });
+            const devices = await _converse.getDevicesForContact(jid);
+            return devices.length > 0;
         }
 
 
@@ -845,16 +854,18 @@ converse.plugins.add('converse-omemo', {
 
             fetchDevices () {
                 if (_.isUndefined(this._devices_promise)) {
-                    this._devices_promise = new Promise((resolve, reject) => {
+                    this._devices_promise = new Promise(resolve => {
                         this.devices.fetch({
-                            'success': (collection) => {
+                            'success': async collection => {
                                 if (collection.length === 0) {
-                                    this.fetchDevicesFromServer()
-                                        .then(ids => this.publishCurrentDevice(ids))
-                                        .finally(resolve)
-                                } else {
-                                    resolve();
+                                    const ids = await this.fetchDevicesFromServer()
+                                    await this.publishCurrentDevice(ids);
                                 }
+                                resolve();
+                            },
+                            'error': e => {
+                                _converse.log(e, Strophe.LogLevel.ERROR);
+                                resolve();
                             }
                         });
                     });
@@ -879,19 +890,24 @@ converse.plugins.add('converse-omemo', {
                 }
             },
 
-            fetchDevicesFromServer () {
+            async fetchDevicesFromServer () {
                 const stanza = $iq({
                     'type': 'get',
                     'from': _converse.bare_jid,
                     'to': this.get('jid')
                 }).c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                     .c('items', {'node': Strophe.NS.OMEMO_DEVICELIST});
-                return _converse.api.sendIQ(stanza)
-                    .then(iq => {
-                        const device_ids = _.map(sizzle(`list[xmlns="${Strophe.NS.OMEMO}"] device`, iq), dev => dev.getAttribute('id'));
-                        _.forEach(device_ids, id => this.devices.create({'id': id, 'jid': this.get('jid')}));
-                        return device_ids;
-                    });
+
+                let iq;
+                try {
+                    iq = await _converse.api.sendIQ(stanza);
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    return [];
+                }
+                const device_ids = _.map(sizzle(`list[xmlns="${Strophe.NS.OMEMO}"] device`, iq), dev => dev.getAttribute('id'));
+                _.forEach(device_ids, id => this.devices.create({'id': id, 'jid': this.get('jid')}));
+                return device_ids;
             },
 
             publishDevices () {
@@ -1043,6 +1059,52 @@ converse.plugins.add('converse-omemo', {
 
         _converse.api.listen.on('profileModalInitialized', (contact) => {
             _converse.generateFingerprints(_converse.bare_jid).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        });
+
+        /************************ BEGIN API ************************/
+        _.extend(_converse.api, {
+            /**
+             * The "omemo" namespace groups methods relevant to OMEMO
+             * encryption.
+             *
+             * @namespace _converse.api.omemo
+             * @memberOf _converse.api
+             */
+            'omemo': {
+                /**
+                 * The "bundle" namespace groups methods relevant to the user's
+                 * OMEMO bundle.
+                 *
+                 * @namespace _converse.api.omemo.bundle
+                 * @memberOf _converse.api.omemo
+                 */
+                'bundle': {
+                    /**
+                     * Lets you generate a new OMEMO device bundle
+                     *
+                     * @method _converse.api.omemo.bundle.generate
+                     * @returns {promise} Promise which resolves once we have a result from the server.
+                     */
+                    'generate': async () => {
+                        // Remove current device
+                        const devicelist = _converse.devicelists.get(_converse.bare_jid),
+                              device_id = _converse.omemo_store.get('device_id');
+                        if (device_id) {
+                            const device = devicelist.devices.get(device_id);
+                            _converse.omemo_store.unset(device_id);
+                            if (device) {
+                                await new Promise(done => device.destroy({'success': done, 'error': done}));
+                            }
+                            devicelist.devices.trigger('remove');
+                        }
+                        // Generate new bundle and publish
+                        await _converse.omemo_store.generateBundle();
+                        await devicelist.publishDevices();
+                        const device = devicelist.devices.get(_converse.omemo_store.get('device_id'));
+                        return generateFingerprint(device);
+                    }
+                }
+            }
         });
     }
 });

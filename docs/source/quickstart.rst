@@ -20,10 +20,11 @@ The latest versions of these files are available at these URLs:
 * https://cdn.conversejs.org/dist/converse.min.js
 * https://cdn.conversejs.org/css/converse.min.css
 
-It's however recommended that you load a specific version of Converse, to avoid
-breakage when a new version is released and the above URLs load new resources.
+If you are integrating Converse into an existing website or app, then we recommend
+that you load a specific version of Converse. Otherwise your website or app
+might break when a new backwards-incompatible version of Converse is released.
 
-To load a specific version of Converse you can put the version in the URL, like so:
+To load a specific version of Converse you can put the version in the URL:
 
 * https://cdn.conversejs.org/4.0.4/dist/converse.min.js
 * https://cdn.conversejs.org/4.0.4/css/converse.min.css
@@ -33,28 +34,19 @@ via the *script* and *link* tags:
 
 .. code-block:: html
 
-    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/css/converse.min.css">
-    <script src="https://cdn.conversejs.org/dist/converse.min.js" charset="utf-8"></script>
-
-
-.. note:: Instead of always loading the latest version of Converse via the
-    CDN, it's generally better to load a specific version (preferably the
-    latest one), to avoid breakage when new backwards-incompatible versions are
-    released.
+    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/4.0.4/css/converse.min.css">
+    <script src="https://cdn.conversejs.org/4.0.4/dist/converse.min.js" charset="utf-8"></script>
 
 
 Option 2: Building the files yourself
 -------------------------------------
 
-Instead of using the CDN, you can also create your own builds and host them
-yourself.
+Instead of using the CDN, you can also create your own builds and host them yourself.
 
-Have a look at the :ref:`creating_builds` section on how to create your own
-builds.
+Have a look at the :ref:`creating_builds` section on how to create your own builds.
 
-Long story short, you should be able to do it by running `make dist`, but you
-might need to install some development libraries on your system first
-(e.g. gcc, libffi-dev and ruby-dev).
+In short, you should be able to do it by running ``make dist`` inside a
+checkout of the `Converse repo <http://github.com/conversejs/converse.js/>`_.
 
 Besides including the ``converse.min.js`` and ``converse.min.css`` files,
 you'll also need to make sure that the ``webfonts`` directory is available in
@@ -64,8 +56,8 @@ the same location as ``converse.min.css``.
 Initializing Converse
 ---------------------
 
-You'll then need to initialize Converse with configuration settings relevant to your requirements.
-Refer to the :ref:`configuration-settings` section for info on all the available configuration settings.
+You'll need to initialize Converse with configuration settings relevant to your requirements.
+Take a look at the :ref:`configuration-settings` section for info on all the available settings.
 
 To quickly get started, you can put the following JavaScript code at the
 bottom of your page (after the closing *</body>* element)::
@@ -78,7 +70,7 @@ bottom of your page (after the closing *</body>* element)::
     </script>
 
 The `index.html <https://github.com/jcbrand/converse.js/blob/master/index.html>`_ file inside the
-Converse repository may serve as a nice usable example.
+Converse repository serves as a nice, usable example.
 
 Fullscreen version
 ------------------
@@ -103,15 +95,19 @@ For example::
 Where to go from here?
 ======================
 
+Have a look at the various :ref:`features <features>` that Converse provides, for some of
+them you might have to do more setup work, like configuring an XMPP server or
+webserver.
+
 You might want to implement some kind of persistent single-session solution for
 your website, where users authenticate once in your website and are then
 automatically logged in to the XMPP server as well. For more info on how this
 can be achieved, read: :ref:`session-support`.
 
 Perhaps you want to create your own custom build of Converse? Then head over
-to the :doc:`builds` section, or more generally the :doc:`development`
+to the :doc:`builds` section, or more generally the :doc:`development <development>`
 documentation.
 
-Do you want to know how to theme Converse? Then read the :doc:`theming`
+Do you want to know how to theme Converse? Then read the :doc:`theming <theming>`
 documentation.
 

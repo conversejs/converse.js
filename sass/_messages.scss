@@ -198,9 +198,11 @@
 
             .chat-msg__avatar {
                 margin-top: 0.5em;
-                height: 36px;
                 vertical-align: middle;
+                height: 36px;
                 width: 36px;
+                min-height: 36px;
+                min-width: 36px;
             }
 
             .chat-msg__heading {

@@ -11866,9 +11866,11 @@ body.reset {
       display: block; }
   #conversejs .message.chat-msg .chat-msg__avatar {
     margin-top: 0.5em;
-    height: 36px;
     vertical-align: middle;
-    width: 36px; }
+    height: 36px;
+    width: 36px;
+    min-height: 36px;
+    min-width: 36px; }
   #conversejs .message.chat-msg .chat-msg__heading {
     width: 100%;
     margin-top: 0.5em;

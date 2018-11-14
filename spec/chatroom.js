@@ -2642,56 +2642,55 @@
             it("takes /topic to set the groupchat topic",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                    var sent_stanza;
-                    var view = _converse.chatboxviews.get('lounge@localhost');
-                    spyOn(view, 'onMessageSubmitted').and.callThrough();
-                    spyOn(view, 'clearMessages');
-                    spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
-                        sent_stanza = stanza;
-                    });
-                    // Check the alias /topic
-                    var textarea = view.el.querySelector('.chat-textarea');
-                    textarea.value = '/topic This is the groupchat subject';
-                    view.keyPressed({
-                        target: textarea,
-                        preventDefault: _.noop,
-                        keyCode: 13
-                    });
-                    expect(view.onMessageSubmitted).toHaveBeenCalled();
-                    expect(_converse.connection.send).toHaveBeenCalled();
-                    expect(sent_stanza.textContent).toBe('This is the groupchat subject');
+                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                const view = _converse.chatboxviews.get('lounge@localhost');
+                spyOn(view, 'onMessageSubmitted').and.callThrough();
+                spyOn(view, 'clearMessages');
+                let sent_stanza;
+                spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
+                    sent_stanza = stanza;
+                });
+                // Check the alias /topic
+                const textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = '/topic This is the groupchat subject';
+                view.keyPressed({
+                    target: textarea,
+                    preventDefault: _.noop,
+                    keyCode: 13
+                });
+                expect(view.onMessageSubmitted).toHaveBeenCalled();
+                expect(_converse.connection.send).toHaveBeenCalled();
+                expect(sent_stanza.textContent).toBe('This is the groupchat subject');
 
-                    // Check /subject
-                    textarea.value = '/subject This is a new subject';
-                    view.keyPressed({
-                        target: textarea,
-                        preventDefault: _.noop,
-                        keyCode: 13
-                    });
+                // Check /subject
+                textarea.value = '/subject This is a new subject';
+                view.keyPressed({
+                    target: textarea,
+                    preventDefault: _.noop,
+                    keyCode: 13
+                });
 
-                    expect(sent_stanza.textContent).toBe('This is a new subject');
-                    expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
-                        '<message from="dummy@localhost/resource" to="lounge@localhost" type="groupchat" xmlns="jabber:client">'+
-                            '<subject xmlns="jabber:client">This is a new subject</subject>'+
-                        '</message>');
+                expect(sent_stanza.textContent).toBe('This is a new subject');
+                expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
+                    '<message from="dummy@localhost/resource" to="lounge@localhost" type="groupchat" xmlns="jabber:client">'+
+                        '<subject xmlns="jabber:client">This is a new subject</subject>'+
+                    '</message>');
 
-                    // Check case insensitivity
-                    textarea.value = '/Subject This is yet another subject';
-                    view.keyPressed({
-                        target: textarea,
-                        preventDefault: _.noop,
-                        keyCode: 13
-                    });
-                    expect(sent_stanza.textContent).toBe('This is yet another subject');
-                    expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
-                        '<message from="dummy@localhost/resource" to="lounge@localhost" type="groupchat" xmlns="jabber:client">'+
-                            '<subject xmlns="jabber:client">This is yet another subject</subject>'+
-                        '</message>');
-                    done();
-                }).catch(_.partial(console.error, _));
+                // Check case insensitivity
+                textarea.value = '/Subject This is yet another subject';
+                view.keyPressed({
+                    target: textarea,
+                    preventDefault: _.noop,
+                    keyCode: 13
+                });
+                expect(sent_stanza.textContent).toBe('This is yet another subject');
+                expect(Strophe.serialize(sent_stanza).toLocaleString()).toBe(
+                    '<message from="dummy@localhost/resource" to="lounge@localhost" type="groupchat" xmlns="jabber:client">'+
+                        '<subject xmlns="jabber:client">This is yet another subject</subject>'+
+                    '</message>');
+                done();
             }));
 
             it("takes /clear to clear messages",

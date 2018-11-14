@@ -505,9 +505,10 @@
 
 
         it("can be a carbon message, as defined in XEP-0280",
-        mock.initConverseWithPromises(
-            null, ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
 
@@ -549,7 +550,6 @@
             expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(msgtext);
             expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
             await test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')
-            await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
             expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Candice van der Knijff');
             done();
         }));
@@ -2154,7 +2154,6 @@
                 target: textarea,
                 keyCode: 38 // Up arrow
             });
-            await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);

@@ -1620,6 +1620,44 @@
                     expect(chat_content.querySelectorAll('.chat-error').length).toEqual(3);
                     done();
                 }));
+
+                it("will not show to the user an error message for a CSI message",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        async function (done, _converse) {
+
+                    // See #1317
+                    // https://github.com/conversejs/converse.js/issues/1317
+                    test_utils.createContacts(_converse, 'current');
+                    _converse.emit('rosterContactsFetched');
+                    test_utils.openControlBox();
+
+                    const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    await test_utils.openChatBoxFor(_converse, contact_jid);
+
+                    const messages = _converse.connection.sent_stanzas.filter(s => s.nodeName === 'message');
+                    expect(messages.length).toBe(1);
+                    expect(Strophe.serialize(messages[0])).toBe(
+                        `<message id="${messages[0].getAttribute('id')}" to="robin.schook@localhost" type="chat" xmlns="jabber:client">`+
+                           `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                           `<no-store xmlns="urn:xmpp:hints"/>`+
+                           `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
+                        `</message>`);
+
+                    const stanza = $msg({
+                            'from': contact_jid,
+                            'type': 'error',
+                            'id': messages[0].getAttribute('id')
+                        }).c('error', {'type': 'cancel', 'code': '503'})
+                            .c('service-unavailable', { 'xmlns': 'urn:ietf:params:xml:ns:xmpp-stanzas' }).up()
+                            .c('text', { 'xmlns': 'urn:ietf:params:xml:ns:xmpp-stanzas' })
+                                .t('User session not found')
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    const view = _converse.chatboxviews.get(contact_jid);
+                    const chat_content = view.el.querySelector('.chat-content');
+                    expect(chat_content.querySelectorAll('.chat-error').length).toEqual(0);
+                    done();
+                }));
             });
 
 

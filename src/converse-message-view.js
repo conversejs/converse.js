@@ -168,10 +168,10 @@ converse.plugins.add('converse-message-view', {
             renderErrorMessage () {
                 const moment_time = moment(this.model.get('time')),
                       msg = u.stringToElement(
-                    tpl_info(_.extend(this.model.toJSON(), {
-                        'extra_classes': 'chat-error',
-                        'isodate': moment_time.format()
-                    })));
+                        tpl_info(_.extend(this.model.toJSON(), {
+                            'extra_classes': 'chat-error',
+                            'isodate': moment_time.format()
+                        })));
                 return this.replaceElement(msg);
             },
 

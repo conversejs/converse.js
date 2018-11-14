@@ -71131,6 +71131,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          */
         if (_converse.send_chat_state_notifications && this.get('chat_state')) {
           _converse.api.send($msg({
+            'id': _converse.connection.getUniqueId(),
             'to': this.get('jid'),
             'type': 'chat'
           }).c(this.get('chat_state'), {
@@ -71393,6 +71394,27 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
         if (!chatbox) {
           return true;
+        }
+
+        const id = message.getAttribute('id');
+
+        if (id) {
+          const msg = chatbox.messages.findWhere({
+            'msgid': id
+          });
+
+          if (!msg) {
+            // This error refers to a message not included in our store.
+            // We assume that this was a CSI message (which we don't store).
+            // See https://github.com/conversejs/converse.js/issues/1317
+            return;
+          }
+        } else {
+          // An error message without id likely means that we
+          // sent a message without id (which shouldn't happen).
+          _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
+
+          _converse.log(message, Strophe.LogLevel.ERROR);
         }
 
         chatbox.createMessage(message, message);

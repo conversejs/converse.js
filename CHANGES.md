@@ -15,6 +15,7 @@
 - #1306 added option `notification_delay`
 - #1312 Error `unrecognized expression` in Safari
 - #1316 show version info in login dialog
+- #1317 Don't show errors for CSI messages
 - #1318 added values 'on' and 'off' for 'trusted' option which removes the "This is a trusted device" checkbox from the login form
 - #1319 Implement sending of presences according to XEP-0319: Last User Interaction in Presence
 

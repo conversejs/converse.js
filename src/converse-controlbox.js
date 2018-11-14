@@ -213,7 +213,10 @@ converse.plugins.add('converse-controlbox', {
                         this.model.set('closed', !_converse.show_controlbox_by_default);
                     }
                 }
-                this.el.innerHTML = tpl_controlbox(_.extend(this.model.toJSON()));
+                this.el.innerHTML = tpl_controlbox(_.extend(this.model.toJSON(), {
+                    'version_name': _converse.VERSION_NAME,
+                    'view_mode': _converse.view_mode
+                }));
 
                 if (!this.model.get('closed')) {
                     this.show();

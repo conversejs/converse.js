@@ -9,19 +9,18 @@
             {[ if (o.default_domain) { ]}
                 {{{o.default_domain}}}
             </div>
-            {[ } ]}
-            {[ if (!o.default_domain) { ]}
-                <input class="form-control" autofocus="autofocus" required="required" type="text" name="domain" placeholder="{{{o.domain_placeholder}}}">
+            {[ } else { ]}
+                <input class="form-control" autofocus="autofocus" required="required" type="text" name="domain" placeholder="{{{o.domain_placeholder}}}"/>
                 <p class="form-text text-muted">{{{o.help_providers}}} <a href="{{{o.href_providers}}}" class="url" target="_blank" rel="noopener">{{{o.help_providers_link}}}</a>.</p>
             </div>
             <fieldset class="buttons">
-                <input class="btn btn-primary" type="submit" value="{{{o.label_register}}}">
+                <input class="btn btn-primary" type="submit" value="{{{o.label_register}}}"/>
                 <div class="switch-form">
                     <p>{{{ o.__("Already have a chat account?") }}}</p>
                     <p><a class="login-here toggle-register-login" href="#converse/login">{{{o.__("Log in here")}}}</a></p>
                 </div>
             </fieldset>
             {[ } ]}
-        </div>
+        <!--</div>-->
     </form>
 </div>

@@ -10,17 +10,17 @@
             {[ if (o.authentication == o.LOGIN || o.authentication == o.EXTERNAL) { ]}
                 <div class="form-group">
                     <label for="converse-login-jid">{{{o.__("XMPP Username:")}}}</label>
-                    <input id="converse-login-jid" class="form-control" autofocus required="required" type="text" name="jid" placeholder="{{{o.placeholder_username}}}">
+                    <input id="converse-login-jid" class="form-control" autofocus required="required" type="text" name="jid" placeholder="{{{o.placeholder_username}}}"/>
                 </div>
                 {[ if (o.authentication !== o.EXTERNAL) { ]}
                 <div class="form-group">
                     <label for="converse-login-password">{{{o.__("Password:")}}}</label>
-                    <input id="converse-login-password" class="form-control" required="required" type="password" name="password" placeholder="{{{o.__('password')}}}">
+                    <input id="converse-login-password" class="form-control" required="required" type="password" name="password" placeholder="{{{o.__('password')}}}"/>
                 </div>
                 {[ } ]}
                 {[ if (o.show_trust_checkbox) { ]}
                     <div class="form-group form-check login-trusted">
-                        <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" {[ if (o._converse.config.get('trusted')) { ]} checked="checked" {[ } ]}>
+                        <input id="converse-login-trusted" type="checkbox" class="form-check-input" name="trusted" {[ if (o._converse.config.get('trusted')) { ]} checked="checked" {[ } ]}/>
                         <label for="converse-login-trusted" class="form-check-label login-trusted__desc">{{{o.__('This is a trusted device')}}}</label>
                         <i class="fa fa-info-circle" data-toggle="popover"
                            data-title="Trusted device?"
@@ -29,7 +29,7 @@
                 {[ } ]}
 
                 <fieldset class="buttons">
-                    <input class="btn btn-primary" type="submit" value="{{{o.__('Log in')}}}">
+                    <input class="btn btn-primary" type="submit" value="{{{o.__('Log in')}}}"/>
                 </fieldset>
             {[ } ]}
             {[ if (o.authentication == o.ANONYMOUS) { ]}

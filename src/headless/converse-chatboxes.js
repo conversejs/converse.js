@@ -671,11 +671,13 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 const id = message.getAttribute('id');
                 if (id) {
-                    const msg = chatbox.messages.findWhere({'msgid': id});
-                    if (!msg) {
-                        // This error refers to a message not included in our store.
+                    const msgs = chatbox.messages.where({'msgid': id});
+                    if (!msgs.length || msgs.filter(m => m.get('type') === 'error').length) {
+                        // If the error refers to a message not included in our store.
                         // We assume that this was a CSI message (which we don't store).
                         // See https://github.com/conversejs/converse.js/issues/1317
+                        //
+                        // We also ignore duplicate error messages.
                         return;
                     }
                 } else {

@@ -1564,8 +1564,8 @@
                      */
                     let stanza = $msg({
                             'to': _converse.connection.jid,
-                            'type':'error',
-                            'id':'82bc02ce-9651-4336-baf0-fa04762ed8d2',
+                            'type': 'error',
+                            'id': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
@@ -1577,8 +1577,8 @@
                     expect(chat_content.querySelector('.chat-error').textContent).toEqual(error_txt);
                     stanza = $msg({
                             'to': _converse.connection.jid,
-                            'type':'error',
-                            'id':'some-other-unused-id',
+                            'type': 'error',
+                            'id': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
@@ -1589,12 +1589,11 @@
                     await test_utils.waitUntil(() => view.model.messages.length > 1);
                     expect(chat_content.querySelectorAll('.chat-error').length).toEqual(2);
 
-                    // If the last message is already an error message,
-                    // then we don't render it another time.
+                    // We don't render duplicates
                     stanza = $msg({
                             'to': _converse.connection.jid,
                             'type':'error',
-                            'id':'another-unused-id',
+                            'id': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
@@ -1604,11 +1603,28 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     await test_utils.waitUntil(() => view.model.messages.length > 2);
                     expect(chat_content.querySelectorAll('.chat-error').length).toEqual(2);
+
+                    // We send another message, for which an error will
+                    // not be received, to test that errors appear
+                    // after the relevant message.
+                    msg_text = 'This message will be sent, and also receive an error';
+                    message = view.model.messages.create({
+                        'msgid': 'another-id',
+                        'fullname': fullname,
+                        'sender': 'me',
+                        'time': moment().format(),
+                        'message': msg_text
+                    });
+                    view.model.sendMessage(message);
+                    await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                    msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
+                    expect(msg_txt).toEqual(msg_text);
+
                     // A different error message will however render
                     stanza = $msg({
                             'to': _converse.connection.jid,
                             'type':'error',
-                            'id':'another-id',
+                            'id': 'another-id',
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})

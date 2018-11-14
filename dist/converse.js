@@ -102832,9 +102832,9 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/pending_contact.html -->\n';
  if (o.allow_chat_pending_contacts)  { ;
-__p += '<a class="open-chat w-100" href="#">';
+__p += '\n<a class="list-item-link open-chat w-100" href="#">\n';
  } ;
-__p += '\n<span class="pending-contact-name w-100" title="JID: ' +
+__p += '\n<span class="pending-contact-name" title="JID: ' +
 __e(o.jid) +
 '">' +
 __e(o.display_name) +
@@ -102842,7 +102842,7 @@ __e(o.display_name) +
  if (o.allow_chat_pending_contacts)  { ;
 __p += '</a>';
  } ;
-__p += '\n<a class="remove-xmpp-contact far fa-trash-alt" title="' +
+__p += '\n<a class="list-item-action remove-xmpp-contact far fa-trash-alt" title="' +
 __e(o.desc_remove) +
 '" href="#"></a>\n';
 return __p

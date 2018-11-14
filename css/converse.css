@@ -11221,8 +11221,6 @@ body.reset {
         margin-left: 5px; }
       #conversejs #converse-roster .roster-contacts .roster-group li:hover {
         background-color: var(--controlbox-head-color-lighten-45-percent); }
-        #conversejs #converse-roster .roster-contacts .roster-group li:hover .remove-xmpp-contact {
-          display: inline-block; }
   #conversejs #converse-roster span.pending-contact-name {
     line-height: var(--line-height);
     width: 100%; }

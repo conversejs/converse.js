@@ -75470,10 +75470,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
         this.occupants.reset();
 
-        const disco_entity = _converse.disco_entities.get(this.get('jid'));
+        if (_converse.disco_entities) {
+          const disco_entity = _converse.disco_entities.get(this.get('jid'));
 
-        if (disco_entity) {
-          disco_entity.destroy();
+          if (disco_entity) {
+            disco_entity.destroy();
+          }
         }
 
         if (_converse.connection.connected) {
@@ -100837,17 +100839,17 @@ module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/add_chatroom_modal.html -->\n<div class="modal fade" id="add-chatroom-modal" tabindex="-1" role="dialog" aria-labelledby="add-chatroom-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title"\n                    id="add-chatroom-modal-label">' +
 __e(o.heading_new_chatroom) +
-'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">&times;</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form add-chatroom">\n                    <div class="form-group">\n                        <label for="chatroom">' +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form add-chatroom">\n                    <div class="form-group">\n                        <label for="chatroom">' +
 __e(o.label_room_address) +
 ':</label>\n                        <input type="text" required="required" name="chatroom" class="form-control" placeholder="' +
 __e(o.chatroom_placeholder) +
-'">\n                    </div>\n                    <div class="form-group">\n                        <label for="nickname">' +
+'"/>\n                    </div>\n                    <div class="form-group">\n                        <label for="nickname">' +
 __e(o.label_nickname) +
 ':</label>\n                        <input type="text" name="nickname" value="' +
 __e(o.nick) +
-'" class="form-control">\n                    </div>\n                    <input type="submit" class="btn btn-primary" name="join" value="' +
+'" class="form-control"/>\n                    </div>\n                    <input type="submit" class="btn btn-primary" name="join" value="' +
 __e(o.label_join) +
-'">\n                </form>\n            </div>\n        </div>\n    </div>\n</div>\n';
+'"/>\n                </form>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -100866,7 +100868,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/add_contact_modal.html -->\n<!-- Add contact Modal -->\n<div class="modal fade" id="add-contact-modal" tabindex="-1" role="dialog" aria-labelledby="addContactModalLabel" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="addContactModalLabel">' +
 __e(o.heading_new_contact) +
-'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <form class="converse-form add-xmpp-contact">\n                <div class="modal-body">\n                    <div class="form-group ';
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>\n            </div>\n            <form class="converse-form add-xmpp-contact">\n                <div class="modal-body">\n                    <div class="form-group ';
  if (o._converse.xhr_user_search_url) { ;
 __p += ' hidden ';
  } ;
@@ -100927,13 +100929,13 @@ __p += '<!-- src/templates/alert_modal.html -->\n<div class="modal" tabindex="-1
 __e(o.type) +
 '">\n        <h5 class="modal-title">' +
 __e(o.title) +
-'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">';
+'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">×</span>\n        </button>\n      </div>\n      <div class="modal-body">';
 o.messages.forEach(function (message) { ;
 __p += '\n          <p>' +
 __e(message) +
 '</p>\n      ';
  }) ;
-__p += '\n    </div>\n    </div>\n  </div>\n</div>\n';
+__p += '\n      </div>\n    </div>\n  </div>\n</div>\n';
 return __p
 };
 
@@ -101022,7 +101024,7 @@ __e(o.jid) +
 __e(o.name) +
 '"\n        title="' +
 __e(o.info_remove_bookmark) +
-'" href="#">&nbsp;</a>\n</div>\n';
+'" href="#"></a>\n</div>\n';
 return __p
 };
 
@@ -101074,35 +101076,35 @@ __p += '<!-- src/templates/chat_status_modal.html -->\n<!-- Change status Modal 
 __e(o.modal_title) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
-'">\n                    <span aria-hidden="true">&times;</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form set-xmpp-status" id="set-xmpp-status">\n                    <div class="form-group">\n                        <div class="custom-control custom-radio">\n                            <input ';
+'">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form set-xmpp-status" id="set-xmpp-status">\n                    <div class="form-group">\n                        <div class="custom-control custom-radio">\n                            <input ';
  if (o.status === 'online') { ;
 __p += ' checked="checked" ';
  } ;
-__p += '\n                                   type="radio" id="radio-online" value="online" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-online">\n                                <span class="fa fa-circle chat-status chat-status--online"></span>&nbsp;' +
+__p += '\n                                   type="radio" id="radio-online" value="online" name="chat_status" class="custom-control-input"/>\n                            <label class="custom-control-label" for="radio-online">\n                                <span class="fa fa-circle chat-status chat-status--online"></span>' +
 __e(o.label_online) +
 '</label>\n                        </div>\n                        <div class="custom-control custom-radio">\n                            <input ';
  if (o.status === 'busy') { ;
 __p += ' checked="checked" ';
  } ;
-__p += '\n                                   type="radio" id="radio-busy" value="dnd" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-busy">\n                                <span class="fa fa-minus-circle  chat-status chat-status--busy"></span>&nbsp;' +
+__p += '\n                                   type="radio" id="radio-busy" value="dnd" name="chat_status" class="custom-control-input"/>\n                            <label class="custom-control-label" for="radio-busy">\n                                <span class="fa fa-minus-circle  chat-status chat-status--busy"></span>' +
 __e(o.label_busy) +
 '</label>\n                        </div>\n                        <div class="custom-control custom-radio">\n                            <input ';
  if (o.status === 'away') { ;
 __p += ' checked="checked" ';
  } ;
-__p += '\n                                   type="radio" id="radio-away" value="away" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-away">\n                                <span class="fa fa-circle chat-status chat-status--away"></span>&nbsp;' +
+__p += '\n                                   type="radio" id="radio-away" value="away" name="chat_status" class="custom-control-input"/>\n                            <label class="custom-control-label" for="radio-away">\n                                <span class="fa fa-circle chat-status chat-status--away"></span>' +
 __e(o.label_away) +
 '</label>\n                        </div>\n                        <div class="custom-control custom-radio">\n                            <input ';
  if (o.status === 'xa') { ;
 __p += ' checked="checked" ';
  } ;
-__p += '\n                                   type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input">\n                            <label class="custom-control-label" for="radio-xa">\n                                <span class="far fa-circle chat-status chat-status--xa"></span>&nbsp;' +
+__p += '\n                                   type="radio" id="radio-xa" value="xa" name="chat_status" class="custom-control-input"/>\n                            <label class="custom-control-label" for="radio-xa">\n                                <span class="far fa-circle chat-status chat-status--xa"></span>' +
 __e(o.label_xa) +
 '</label>\n                        </div>\n                    </div>\n                    <div class="form-group">\n                        <div class="btn-group w-100">\n                            <input name="status_message" type="text" class="form-control" \n                                value="' +
 __e(o.status_message) +
 '" placeholder="' +
 __e(o.placeholder_status_message) +
-'">\n                            <span class="clear-input fa fa-times ';
+'"/>\n                            <span class="clear-input fa fa-times ';
  if (!o.status_message) { ;
 __p += ' hidden ';
  } ;
@@ -101150,7 +101152,7 @@ __p += '<!-- src/templates/chatbox.html -->\n<div class="flyout box-flyout">\n  
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;
-__p += '"></div>\n        <div class="message-form-container"/>\n    </div>\n</div>\n';
+__p += '"></div>\n        <div class="message-form-container"></div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -101183,9 +101185,9 @@ __p += '\n                    </a>\n                ';
  } ;
 __p += '\n                <p class="user-custom-message">' +
 __e( o.status ) +
-'</p>\n            </div>\n        </div>\n    </div>\n    <div class="chatbox-buttons row no-gutters">\n        <a class="chatbox-btn close-chatbox-button fa fa-times" title=' +
+'</p>\n            </div>\n        </div>\n    </div>\n    <div class="chatbox-buttons row no-gutters">\n        <a class="chatbox-btn close-chatbox-button fa fa-times" title="' +
 __e(o.info_close) +
-'></a>\n        <a class="chatbox-btn show-user-details-modal fa fa-id-card" title="' +
+'"></a>\n        <a class="chatbox-btn show-user-details-modal fa fa-id-card" title="' +
 __e(o.info_details) +
 '"></a>\n    </div>\n</div>\n';
 return __p
@@ -101218,7 +101220,7 @@ __p += '\n    <input type="text" placeholder="' +
  if (!o.composing_spoiler) { ;
 __p += ' hidden ';
  } ;
-__p += ' spoiler-hint"/>\n\n    <div class="suggestion-box">\n        <ul class="suggestion-box__results suggestion-box__results--above" hidden></ul>\n        <textarea\n            type="text"\n            class="chat-textarea suggestion-box__input\n                ';
+__p += ' spoiler-hint"/>\n\n    <div class="suggestion-box">\n        <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>\n        <textarea\n            type="text"\n            class="chat-textarea suggestion-box__input\n                ';
  if (o.show_send_button) { ;
 __p += ' chat-textarea-send-button ';
  } ;
@@ -101391,7 +101393,7 @@ __p += '<!-- src/templates/chatroom_details_modal.html -->\n<div class="modal fa
 __e(o.display_name) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
-'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <div class="room-info">\n                    <p class="room-info"><strong>' +
+'"><span aria-hidden="true">×</span></button>\n            </div>\n            <div class="modal-body">\n                <div class="room-info">\n                    <p class="room-info"><strong>' +
 __e(o.__('Name')) +
 '</strong>: ' +
 __e(o.name) +
@@ -101863,13 +101865,13 @@ __p += '<!-- src/templates/client_info_modal.html -->\n<!-- Change status Modal 
 __e(o.modal_title) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
-'">\n                    <span aria-hidden="true">&times;</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <div class="container brand-heading-container">\n                    <h6 class="brand-heading"><i class="icon-conversejs"></i>Converse</h6>\n                    <p class="brand-subtitle">' +
+'">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <div class="container brand-heading-container">\n                    <h6 class="brand-heading"><i class="icon-conversejs"></i>Converse</h6>\n                    <p class="brand-subtitle">' +
 __e(o.version_name) +
 '</p>\n                    <p class="brand-subtitle">' +
 ((__t = (o.first_subtitle)) == null ? '' : __t) +
-'</a> </p>\n                    <p class="brand-subtitle">' +
+'</p>\n                    <p class="brand-subtitle">' +
 ((__t = (o.second_subtitle)) == null ? '' : __t) +
-'</p>\n                <div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';
+'</p>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -102132,7 +102134,7 @@ __e(o.name) +
  if (o.required) { ;
 __p += ' class="required" ';
  } ;
-__p += ' >\n\n\n';
+__p += ' />\n\n\n';
 return __p
 };
 
@@ -102159,7 +102161,7 @@ __e(o.checked) +
  if (o.required) { ;
 __p += ' required ';
  } ;
-__p += ' >\n    <label class="form-check-label" for="' +
+__p += ' />\n    <label class="form-check-label" for="' +
 __e(o.id) +
 '">' +
 __e(o.label) +
@@ -102210,7 +102212,7 @@ __p += '\n        ';
  if (o.required) { ;
 __p += ' required ';
  } ;
-__p += ' >\n</div>\n';
+__p += ' />\n</div>\n';
 return __p
 };
 
@@ -102404,7 +102406,7 @@ __p += '<!-- src/templates/image.html -->\n<a href="' +
 __e(o.url) +
 '" target="_blank" rel="noopener"><img class="chat-image img-thumbnail" src="' +
 __e(o.url) +
-'"></a>\n';
+'"/></a>\n';
 return __p
 };
 
@@ -102473,7 +102475,7 @@ module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/inverse_brand_heading.html -->\n<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse</h1>\n        <p class="brand-subtitle">' +
 __e(o.version_name) +
-'</p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client brought to you by <a target="_blank" rel="nofollow" href="https://opkode.com">Opkode</a> </p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> it into your own language</p>\n    <div>\n</div>\n';
+'</p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client brought to you by <a target="_blank" rel="nofollow" href="https://opkode.com">Opkode</a> </p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> it into your own language</p>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -102491,15 +102493,15 @@ module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/list_chatrooms_modal.html -->\n<div class="modal fade" id="list-chatrooms-modal" tabindex="-1" role="dialog" aria-labelledby="list-chatrooms-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title"\n                    id="list-chatrooms-modal-label">' +
 __e(o.heading_list_chatrooms) +
-'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">&times;</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form list-chatrooms">\n                    <div class="form-group">\n                        <label for="chatroom">' +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form list-chatrooms">\n                    <div class="form-group">\n                        <label for="chatroom">' +
 __e(o.label_server_address) +
 ':</label>\n                        <input type="text" value="' +
 __e(o.muc_domain) +
 '" required="required" name="server" class="form-control" placeholder="' +
 __e(o.server_placeholder) +
-'">\n                    </div>\n                    <input type="submit" class="btn btn-primary" name="join" value="' +
+'"/>\n                    </div>\n                    <input type="submit" class="btn btn-primary" name="join" value="' +
 __e(o.label_query) +
-'">\n                </form>\n                <ul class="available-chatrooms list-group"></ul>\n            </div>\n        </div>\n    </div>\n</div>\n';
+'"/>\n                </form>\n                <ul class="available-chatrooms list-group"></ul>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -102540,13 +102542,13 @@ __p += '\n                <div class="form-group">\n                    <label f
 __e(o.__("XMPP Username:")) +
 '</label>\n                    <input id="converse-login-jid" class="form-control" autofocus required="required" type="text" name="jid" placeholder="' +
 __e(o.placeholder_username) +
-'">\n                </div>\n                ';
+'"/>\n                </div>\n                ';
  if (o.authentication !== o.EXTERNAL) { ;
 __p += '\n                <div class="form-group">\n                    <label for="converse-login-password">' +
 __e(o.__("Password:")) +
 '</label>\n                    <input id="converse-login-password" class="form-control" required="required" type="password" name="password" placeholder="' +
 __e(o.__('password')) +
-'">\n                </div>\n                ';
+'"/>\n                </div>\n                ';
  } ;
 __p += '\n                ';
  if (o.show_trust_checkbox) { ;
@@ -102554,7 +102556,7 @@ __p += '\n                    <div class="form-group form-check login-trusted">\
  if (o._converse.config.get('trusted')) { ;
 __p += ' checked="checked" ';
  } ;
-__p += '>\n                        <label for="converse-login-trusted" class="form-check-label login-trusted__desc">' +
+__p += '/>\n                        <label for="converse-login-trusted" class="form-check-label login-trusted__desc">' +
 __e(o.__('This is a trusted device')) +
 '</label>\n                        <i class="fa fa-info-circle" data-toggle="popover"\n                           data-title="Trusted device?"\n                           data-content="' +
 __e(o.__('To improve performance, we cache your data in this browser. Uncheck this box if this is a public computer or if you want your data to be deleted when you log out. It\'s important that you explicitly log out, otherwise not all cached data might be deleted. Please note, when using an untrusted device, OMEMO encryption is NOT available.')) +
@@ -102562,7 +102564,7 @@ __e(o.__('To improve performance, we cache your data in this browser. Uncheck th
  } ;
 __p += '\n\n                <fieldset class="buttons">\n                    <input class="btn btn-primary" type="submit" value="' +
 __e(o.__('Log in')) +
-'">\n                </fieldset>\n            ';
+'"/>\n                </fieldset>\n            ';
  } ;
 __p += '\n            ';
  if (o.authentication == o.ANONYMOUS) { ;
@@ -102655,7 +102657,7 @@ __p += '<div class="chat-msg__body">';
  } ;
 __p += '\n            ';
  if (o.received) { ;
-__p += ' <span class="fa fa-check chat-msg__receipt">&nbsp;</span> ';
+__p += ' <span class="fa fa-check chat-msg__receipt"></span> ';
  } ;
 __p += '\n            ';
  if (o.edited) { ;
@@ -102687,7 +102689,7 @@ __p += '\n            ';
  if (o.type !== 'headline' && !o.is_me_message && o.sender === 'me') { ;
 __p += '\n            <div class="chat-msg__actions">\n                <button class="chat-msg__action chat-msg__action-edit fa fa-pencil-alt" title="' +
 __e(o.__('Edit this message')) +
-'">&nbsp;</button>\n            </div>\n            ';
+'"></button>\n            </div>\n            ';
  } ;
 __p += '\n\n        ';
  if (!o.is_me_message) { ;
@@ -102714,13 +102716,13 @@ __p += '<!-- src/templates/message_versions_modal.html -->\n<div class="modal fa
 __e(o.__('Message versions')) +
 '</h4>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
-'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                <h4>Older versions</h4>\n                ';
+'"><span aria-hidden="true">×</span></button>\n            </div>\n            <div class="modal-body">\n                <h4>Older versions</h4>\n                ';
 o.older_versions.forEach(function (text) { ;
 __p += ' <p class="older-msg">' +
 __e(text) +
 '</p> ';
  }); ;
-__p += '\n                <hr>\n                <h4>Current version</h4>\n                <p>' +
+__p += '\n                <hr/>\n                <h4>Current version</h4>\n                <p>' +
 __e(o.message) +
 '</p>\n            </div>\n            <div class="modal-footer">\n                <button type="button" class="btn btn-secondary" data-dismiss="modal">' +
 __e(o.__('Close')) +
@@ -102742,7 +102744,7 @@ module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/new_day.html -->\n<div class="message date-separator" data-isodate="' +
 __e(o.isodate) +
-'">\n    <hr class="separator">\n    <time class="separator-text" datetime="' +
+'">\n    <hr class="separator"/>\n    <time class="separator-text" datetime="' +
 __e(o.isodate) +
 '"><span>' +
 __e(o.datestring) +
@@ -102891,7 +102893,7 @@ __p += '<!-- src/templates/profile_modal.html -->\n<div class="modal fade" id="u
 __e(o.heading_profile) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
-'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                ';
+'"><span aria-hidden="true">×</span></button>\n            </div>\n            <div class="modal-body">\n                ';
  if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ;
 __p += '\n                <ul class="nav nav-pills justify-content-center">\n                    <li role="presentation" class="nav-item">\n                        <a class="nav-link active" id="profile-tab" href="#profile-tabpanel" aria-controls="profile-tabpanel" role="tab" data-toggle="tab">Profile</a>\n                    </li>\n                    <li role="presentation" class="nav-item">\n                        <a class="nav-link" id="omemo-tab" href="#omemo-tabpanel" aria-controls="omemo-tabpanel" role="tab" data-toggle="tab">OMEMO</a>\n                    </li>\n                </ul>\n                ';
  } ;
@@ -102909,7 +102911,7 @@ __p += '\n                                        ';
  if (!o.image) { ;
 __p += '\n                                            <canvas class="avatar" height="100px" width="100px"></canvas>\n                                        ';
  } ;
-__p += '\n                                    </a>\n                                    <input class="hidden" name="image" type="file">\n                                </div>\n                                <div class="col">\n                                    <div class="form-group">\n                                        <label class="col-form-label">' +
+__p += '\n                                    </a>\n                                    <input class="hidden" name="image" type="file"/>\n                                </div>\n                                <div class="col">\n                                    <div class="form-group">\n                                        <label class="col-form-label">' +
 __e(o.label_jid) +
 ':</label>\n                                        <div>' +
 __e(o.jid) +
@@ -102917,23 +102919,23 @@ __e(o.jid) +
 __e(o.label_fullname) +
 ':</label>\n                                <input id="vcard-fullname" type="text" class="form-control" name="fn" value="' +
 __e(o.fullname) +
-'">\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-nickname" class="col-form-label">' +
+'"/>\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-nickname" class="col-form-label">' +
 __e(o.label_nickname) +
 ':</label>\n                                <input id="vcard-nickname" type="text" class="form-control" name="nickname" value="' +
 __e(o.nickname) +
-'">\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-url" class="col-form-label">' +
+'"/>\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-url" class="col-form-label">' +
 __e(o.label_url) +
 ':</label>\n                                <input id="vcard-url" type="url" class="form-control" name="url" value="' +
 __e(o.url) +
-'">\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-email" class="col-form-label">' +
+'"/>\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-email" class="col-form-label">' +
 __e(o.label_email) +
 ':</label>\n                                <input id="vcard-email" type="email" class="form-control" name="email" value="' +
 __e(o.email) +
-'">\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-role" class="col-form-label">' +
+'"/>\n                            </div>\n                            <div class="form-group">\n                                <label for="vcard-role" class="col-form-label">' +
 __e(o.label_role) +
 ':</label>\n                                <input id="vcard-role" type="text" class="form-control" name="role" value="' +
 __e(o.role) +
-'" aria-describedby="vcard-role-help">\n                                <small id="vcard-role-help" class="form-text text-muted">' +
+'" aria-describedby="vcard-role-help"/>\n                                <small id="vcard-role-help" class="form-text text-muted">' +
 __e(o.label_role_help) +
 '</small>\n                            </div>\n                            <hr/>\n                            <div class="form-group">\n                                <button type="submit" class="save-form btn btn-primary">' +
 __e(o.__('Save and close')) +
@@ -102957,7 +102959,7 @@ __p += '\n                                    <ul class="list-group fingerprints
 __e(o.__('Select all')) +
 '"\n                                                   aria-label="' +
 __e(o.__('Checkbox to select fingerprints of all other OMEMO devices')) +
-'">\n                                            ' +
+'"/>\n                                            ' +
 __e(o.__('Other OMEMO-enabled devices')) +
 '\n                                            </label>\n                                        </li>\n                                        ';
  o._.forEach(o.view.other_devices, function (device) { ;
@@ -102967,7 +102969,7 @@ __p += '\n                                            <li class="fingerprint-rem
 __e(device.get('id')) +
 '"\n                                                       aria-label="' +
 __e(o.__('Checkbox for selecting the following fingerprint')) +
-'">\n                                                <span class="fingerprint">' +
+'"/>\n                                                <span class="fingerprint">' +
 __e(o.utils.formatFingerprint(device.get('bundle').fingerprint)) +
 '</span>\n                                                </label>\n                                            </li>\n                                            ';
  } else {;
@@ -102975,7 +102977,7 @@ __p += '\n                                            <li class="fingerprint-rem
 __e(device.get('id')) +
 '"\n                                                       aria-label="' +
 __e(o.__('Checkbox for selecting the following fingerprint')) +
-'">\n                                                <span>' +
+'"/>\n                                                <span>' +
 __e(o.__('Device without a fingerprint')) +
 '</span>\n                                                </label>\n                                            </li>\n                                            ';
  } ;
@@ -103093,12 +103095,10 @@ __e(o.__("Please enter the XMPP provider to register with:")) +
 __p += '\n                ' +
 __e(o.default_domain) +
 '\n            </div>\n            ';
- } ;
-__p += '\n            ';
- if (!o.default_domain) { ;
+ } else { ;
 __p += '\n                <input class="form-control" autofocus="autofocus" required="required" type="text" name="domain" placeholder="' +
 __e(o.domain_placeholder) +
-'">\n                <p class="form-text text-muted">' +
+'"/>\n                <p class="form-text text-muted">' +
 __e(o.help_providers) +
 ' <a href="' +
 __e(o.href_providers) +
@@ -103106,13 +103106,13 @@ __e(o.href_providers) +
 __e(o.help_providers_link) +
 '</a>.</p>\n            </div>\n            <fieldset class="buttons">\n                <input class="btn btn-primary" type="submit" value="' +
 __e(o.label_register) +
-'">\n                <div class="switch-form">\n                    <p>' +
+'"/>\n                <div class="switch-form">\n                    <p>' +
 __e( o.__("Already have a chat account?") ) +
 '</p>\n                    <p><a class="login-here toggle-register-login" href="#converse/login">' +
 __e(o.__("Log in here")) +
 '</a></p>\n                </div>\n            </fieldset>\n            ';
  } ;
-__p += '\n        </div>\n    </form>\n</div>\n';
+__p += '\n        <!--</div>-->\n    </form>\n</div>\n';
 return __p
 };
 
@@ -103336,7 +103336,7 @@ __e(o.name) +
 __e(o.jid) +
 '"\n       title="' +
 __e(o.info_title) +
-'" href="#">&nbsp;</a>\n  </div>\n</li>\n';
+'" href="#"></a>\n  </div>\n</li>\n';
 return __p
 };
 
@@ -103446,19 +103446,19 @@ __p += ' ' +
 __e(o.info_add_bookmark) +
 ' ';
  } ;
-__p += '"\n   href="#">&nbsp;</a>\n';
+__p += '"\n   href="#"></a>\n';
  } ;
 __p += '\n\n<a class="list-item-action room-info fa fa-info-circle" data-room-jid="' +
 __e(o.jid) +
 '"\n   title="' +
 __e(o.info_title) +
-'" href="#">&nbsp;</a>\n\n<a class="list-item-action fa fa-times close-room"\n   data-room-jid="' +
+'" href="#"></a>\n\n<a class="list-item-action fa fa-times close-room"\n   data-room-jid="' +
 __e(o.jid) +
 '"\n   data-room-name="' +
 __e(o.name || o.jid) +
 '"\n   title="' +
 __e(o.info_leave_room) +
-'" href="#">&nbsp;</a>\n\n</div>\n';
+'" href="#"></a>\n\n</div>\n';
 return __p
 };
 
@@ -103476,7 +103476,7 @@ module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/rooms_results.html -->\n<li class="list-group-item active">' +
 __e( o.feedback_text ) +
-'</dt>\n';
+'</li>\n';
 return __p
 };
 
@@ -103536,7 +103536,7 @@ __p += ' hidden ';
  } ;
 __p += '"\n                placeholder="' +
 __e(o.placeholder) +
-'">\n            <span class="clear-input fa fa-times ';
+'"/>\n            <span class="clear-input fa fa-times ';
  if (!o.filter_text || o.filter_type === 'state') { ;
 __p += ' hidden ';
  } ;
@@ -103739,7 +103739,7 @@ __p += ' fa-eye ';
  } ;
 __p += '"\n    title="' +
 ((__t = ( o.label_toggle_spoiler )) == null ? '' : __t) +
-'"></a>\n</li>\n';
+'">\n</li>\n';
 return __p
 };
 
@@ -103871,7 +103871,7 @@ module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/toolbar_fileupload.html -->\n<li class="upload-file">\n    <a class="fa fa-paperclip" title="' +
 __e(o.tooltip_upload_file) +
-'"></a>\n    <input type="file" class="fileupload" multiple style="display:none"/>\n</li> \n';
+'"></a>\n    <input type="file" class="fileupload" multiple="" style="display:none"/>\n</li> \n';
 return __p
 };
 
@@ -103944,7 +103944,7 @@ __p += '<!-- src/templates/user_details_modal.html -->\n<div class="modal fade" 
 __e(o.display_name) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.__('Close')) +
-'"><span aria-hidden="true">&times;</span></button>\n            </div>\n            <div class="modal-body">\n                ';
+'"><span aria-hidden="true">×</span></button>\n            </div>\n            <div class="modal-body">\n                ';
  if (o.image) { ;
 __p += '\n                <img alt="' +
 __e(o.__('The User\'s Profile Image')) +
@@ -103958,13 +103958,13 @@ __p += '\n                ';
  if (o.fullname) { ;
 __p += '\n                <p><label>' +
 __e(o.__('Full Name:')) +
-'</label>&nbsp;' +
+'</label> ' +
 __e(o.fullname) +
 '</p>\n                ';
  } ;
 __p += '\n                <p><label>' +
 __e(o.__('XMPP Address:')) +
-'</label>&nbsp;<a href="xmpp:' +
+'</label> <a href="xmpp:' +
 __e(o.jid) +
 '">' +
 __e(o.jid) +
@@ -103972,7 +103972,7 @@ __e(o.jid) +
  if (o.nickname) { ;
 __p += '\n                <p><label>' +
 __e(o.__('Nickname:')) +
-'</label>&nbsp;' +
+'</label> ' +
 __e(o.nickname) +
 '</p>\n                ';
  } ;
@@ -103980,7 +103980,7 @@ __p += '\n                ';
  if (o.url) { ;
 __p += '\n                <p><label>' +
 __e(o.__('URL:')) +
-'</label>&nbsp;<a target="_blank" rel="noopener" href="' +
+'</label> <a target="_blank" rel="noopener" href="' +
 __e(o.url) +
 '">' +
 __e(o.url) +
@@ -103990,7 +103990,7 @@ __p += '\n                ';
  if (o.email) { ;
 __p += '\n                <p><label>' +
 __e(o.__('Email:')) +
-'</label>&nbsp;<a href="mailto:' +
+'</label> <a href="mailto:' +
 __e(o.email) +
 '">' +
 __e(o.email) +
@@ -104000,13 +104000,13 @@ __p += '\n                ';
  if (o.role) { ;
 __p += '\n                <p><label>' +
 __e(o.__('Role:')) +
-'</label>&nbsp;' +
+'</label> ' +
 __e(o.role) +
 '</p>\n                ';
  } ;
 __p += '\n\n                ';
  if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ;
-__p += '\n                    <hr>\n                    <ul class="list-group fingerprints">\n                        <li class="list-group-item active">' +
+__p += '\n                    <hr/>\n                    <ul class="list-group fingerprints">\n                        <li class="list-group-item active">' +
 __e(o.__('OMEMO Fingerprints')) +
 '</li>\n                        ';
  if (!o.view.devicelist.devices) { ;
@@ -104030,7 +104030,7 @@ __e(device.get('id')) +
  if (device.get('trusted') !== -1) { ;
 __p += ' checked="checked" ';
  } ;
-__p += '>' +
+__p += '/>' +
 __e(o.__('Trusted')) +
 '\n                                        </label>\n                                        <label class="btn btn--small ';
  if (device.get('trusted') === -1) { ;
@@ -104044,7 +104044,7 @@ __e(device.get('id')) +
  if (device.get('trusted') === -1) { ;
 __p += ' checked="checked" ';
  } ;
-__p += '>' +
+__p += '/>' +
 __e(o.__('Untrusted')) +
 '\n                                        </label>\n                                    </div>\n                                    <span class="fingerprint">' +
 __e(o.utils.formatFingerprint(device.get('bundle').fingerprint)) +

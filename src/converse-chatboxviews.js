@@ -10,7 +10,8 @@ import "backbone.overview";
 import converse from "@converse/headless/converse-core";
 import tpl_chatboxes from "templates/chatboxes.html";
 
-const { Backbone, _ } = converse.env;
+const { Backbone, _, utils } = converse.env;
+const u = utils;
 
 const AvatarMixin = {
 
@@ -74,6 +75,14 @@ converse.plugins.add('converse-chatboxviews', {
             'chatBoxViewsInitialized'
         ]);
 
+        // Configuration values for this plugin
+        // ====================================
+        // Refer to docs/source/configuration.rst for explanations of these
+        // configuration settings.
+        _converse.api.settings.update({
+            'theme': 'default',
+        });
+
         _converse.ViewWithAvatar = Backbone.NativeView.extend(AvatarMixin);
         _converse.VDOMViewWithAvatar = Backbone.VDOMView.extend(AvatarMixin);
 
@@ -89,6 +98,7 @@ converse.plugins.add('converse-chatboxviews', {
                     if (_.isNull(el)) {
                         el = document.createElement('div');
                         el.setAttribute('id', 'conversejs');
+                        u.addClass(`theme-${_converse.theme}`, el);
                         const body = _converse.root.querySelector('body');
                         if (body) {
                             body.appendChild(el);

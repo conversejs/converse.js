@@ -9413,7 +9413,7 @@ readers do not read off random characters that represent icons */
   --list-minus-circle-color: #f0a794;
   --list-dot-circle-color: #f6dec1; }
 
-#conversejs.theme-dark {
+#conversejs.theme-concord {
   --avatar-border-radius: 100%;
   --avatar-border: 0px;
   --avatar-background-color: none;

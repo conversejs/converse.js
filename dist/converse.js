@@ -58506,7 +58506,9 @@ __webpack_require__.r(__webpack_exports__);
 
 const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].env,
       Backbone = _converse$env.Backbone,
-      _ = _converse$env._;
+      _ = _converse$env._,
+      utils = _converse$env.utils;
+const u = utils;
 const AvatarMixin = {
   renderAvatar(el) {
     el = el || this.el;
@@ -58566,7 +58568,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     const _converse = this._converse,
           __ = _converse.__;
 
-    _converse.api.promises.add(['chatBoxViewsInitialized']);
+    _converse.api.promises.add(['chatBoxViewsInitialized']); // Configuration values for this plugin
+    // ====================================
+    // Refer to docs/source/configuration.rst for explanations of these
+    // configuration settings.
+
+
+    _converse.api.settings.update({
+      'theme': 'default'
+    });
 
     _converse.ViewWithAvatar = Backbone.NativeView.extend(AvatarMixin);
     _converse.VDOMViewWithAvatar = Backbone.VDOMView.extend(AvatarMixin);
@@ -58581,6 +58591,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           if (_.isNull(el)) {
             el = document.createElement('div');
             el.setAttribute('id', 'conversejs');
+            u.addClass(`theme-${_converse.theme}`, el);
 
             const body = _converse.root.querySelector('body');
 

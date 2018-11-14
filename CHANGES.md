@@ -6,6 +6,7 @@
 - Default paths in converse-notifications.js are now relative
 - Add a button to regenerate OMEMO keys
 - Add client info modal which shows Converse's version number
+- New config setting [theme](https://conversejs.org/docs/html/configuration.html#theme)
 - #141 XEP-0184: Message Delivery Receipts
 - #1033 Setting show_send_button to true didn't work
 - #1188 Feature request: drag and drop file to HTTP Upload

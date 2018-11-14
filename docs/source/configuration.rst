@@ -1379,6 +1379,16 @@ If set to ``false``, this feature is disabled.
 
 If set to ``a resource name``, Converse will synchronize only with a client that has that particular resource assigned to it.
 
+theme
+-----
+
+* Default: ``default``
+
+Valid options: ``default``, ``concord``
+
+Let's you set a color theme for Converse.
+
+
 trusted
 -------
 

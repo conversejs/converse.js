@@ -5,17 +5,18 @@
 - Error `FATAL: TypeError: Cannot read property 'extend' of undefined` when using `embedded` view mode.
 - Default paths in converse-notifications.js are now relative
 - Add a button to regenerate OMEMO keys
+- Add client info modal which shows Converse's version number
 - #141 XEP-0184: Message Delivery Receipts
+- #1033 Setting show_send_button to true didn't work
 - #1188 Feature request: drag and drop file to HTTP Upload
 - #1268 Switch from SASS variables to CSS custom properties
 - #1278 Replace the default avatar with a SVG version
-- #1033 Setting show_send_button to true didn't work
-- #1306 added option `notification_delay`
 - #1305 added value 'all' for 'show_desktop_notifications' to notifiy even if converse.js is open
+- #1306 added option `notification_delay`
 - #1312 Error `unrecognized expression` in Safari
+- #1316 show version info in login dialog
 - #1318 added values 'on' and 'off' for 'trusted' option which removes the "This is a trusted device" checkbox from the login form
 - #1319 Implement sending of presences according to XEP-0319: Last User Interaction in Presence
-- #1316 show version info in login dialog
 
 ## 4.0.4 (2018-10-29)
 

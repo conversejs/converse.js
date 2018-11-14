@@ -401,8 +401,6 @@ _converse.initialize = function (settings, callback) {
          * Parameters:
          *  (String) stat: The user's chat status
          */
-        /* Send out a Chat Status Notification (XEP-0352) */
-        // XXX if (converse.features[Strophe.NS.CSI] || true) {
         _converse.api.send($build(stat, {xmlns: Strophe.NS.CSI}));
         _converse.inactive = (stat === _converse.INACTIVE) ? true : false;
     };
@@ -414,7 +412,7 @@ _converse.initialize = function (settings, callback) {
         }
         if (!_converse.connection.authenticated) {
             // We can't send out any stanzas when there's no authenticated connection.
-            // converse can happen when the connection reconnects.
+            // This can happen when the connection reconnects.
             return;
         }
         if (_converse.inactive) {
@@ -476,7 +474,7 @@ _converse.initialize = function (settings, callback) {
             return;
         }
         _converse.idle_seconds = 0
-        _converse.auto_changed_status = false; // Was the user's status changed by _converse.js?
+        _converse.auto_changed_status = false; // Was the user's status changed by Converse?
         window.addEventListener('click', _converse.onUserActivity);
         window.addEventListener('focus', _converse.onUserActivity);
         window.addEventListener('keypress', _converse.onUserActivity);

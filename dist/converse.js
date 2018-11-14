@@ -60401,10 +60401,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           }
         }
 
-        this.el.innerHTML = templates_controlbox_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.toJSON(), {
-          'version_name': _converse.VERSION_NAME,
-          'view_mode': _converse.view_mode
-        }));
+        this.el.innerHTML = templates_controlbox_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.toJSON()));
 
         if (!this.model.get('closed')) {
           this.show();
@@ -66562,12 +66559,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/chat_status_modal.html */ "./src/templates/chat_status_modal.html");
 /* harmony import */ var templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/profile_modal.html */ "./src/templates/profile_modal.html");
-/* harmony import */ var templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var templates_profile_view_html__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! templates/profile_view.html */ "./src/templates/profile_view.html");
-/* harmony import */ var templates_profile_view_html__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(templates_profile_view_html__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var templates_status_option_html__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! templates/status_option.html */ "./src/templates/status_option.html");
-/* harmony import */ var templates_status_option_html__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(templates_status_option_html__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var templates_client_info_modal_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/client_info_modal.html */ "./src/templates/client_info_modal.html");
+/* harmony import */ var templates_client_info_modal_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_client_info_modal_html__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! templates/profile_modal.html */ "./src/templates/profile_modal.html");
+/* harmony import */ var templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var templates_profile_view_html__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! templates/profile_view.html */ "./src/templates/profile_view.html");
+/* harmony import */ var templates_profile_view_html__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(templates_profile_view_html__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var templates_status_option_html__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! templates/status_option.html */ "./src/templates/status_option.html");
+/* harmony import */ var templates_status_option_html__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(templates_status_option_html__WEBPACK_IMPORTED_MODULE_9__);
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -66576,6 +66575,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /*global define */
+
 
 
 
@@ -66618,7 +66618,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       },
 
       toHTML() {
-        return templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_6___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+        return templates_profile_modal_html__WEBPACK_IMPORTED_MODULE_7___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
           '_': _,
           '__': __,
           '_converse': _converse,
@@ -66751,11 +66751,24 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       }
 
     });
+    _converse.ClientInfoModal = _converse.BootstrapModal.extend({
+      toHTML() {
+        return templates_client_info_modal_html__WEBPACK_IMPORTED_MODULE_6___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+          '__': __,
+          'modal_title': __('About'),
+          'version_name': _converse.VERSION_NAME,
+          'first_subtitle': __('%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s', '<a target="_blank" rel="nofollow" href="https://conversejs.org">', '</a>', '<a target="_blank" rel="nofollow" href="https://opkode.com">'),
+          'second_subtitle': __('%1$s Translate %2$s it into your own language', '<a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">', '</a>')
+        }));
+      }
+
+    });
     _converse.XMPPStatusView = _converse.VDOMViewWithAvatar.extend({
       tagName: "div",
       events: {
         "click a.show-profile": "showProfileModal",
         "click a.change-status": "showStatusChangeModal",
+        "click .show-client-info": "showClientInfoModal",
         "click .logout": "logOut"
       },
 
@@ -66766,7 +66779,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
 
       toHTML() {
         const chat_status = this.model.get('status') || 'offline';
-        return templates_profile_view_html__WEBPACK_IMPORTED_MODULE_7___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+        return templates_profile_view_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
           '__': __,
           'fullname': this.model.vcard.get('fullname') || _converse.bare_jid,
           'status_message': this.model.get('status_message') || __("I am %1$s", this.getPrettyStatus(chat_status)),
@@ -66775,6 +66788,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
           'title_change_settings': __('Change settings'),
           'title_change_status': __('Click to change your chat status'),
           'title_log_out': __('Log out'),
+          'info_details': __('Show details about this chat client'),
           'title_your_profile': __('Your profile')
         }));
       },
@@ -66801,6 +66815,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
         }
 
         this.status_modal.show(ev);
+      },
+
+      showClientInfoModal(ev) {
+        if (_.isUndefined(this.client_info_modal)) {
+          this.client_info_modal = new _converse.ClientInfoModal({
+            model: this.model
+          });
+        }
+
+        this.client_info_modal.show(ev);
       },
 
       logOut(ev) {
@@ -72158,9 +72182,6 @@ _converse.initialize = function (settings, callback) {
      * Parameters:
      *  (String) stat: The user's chat status
      */
-
-    /* Send out a Chat Status Notification (XEP-0352) */
-    // XXX if (converse.features[Strophe.NS.CSI] || true) {
     _converse.api.send(Object(strophe_js__WEBPACK_IMPORTED_MODULE_0__["$build"])(stat, {
       xmlns: strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].NS.CSI
     }));
@@ -72176,7 +72197,7 @@ _converse.initialize = function (settings, callback) {
 
     if (!_converse.connection.authenticated) {
       // We can't send out any stanzas when there's no authenticated connection.
-      // converse can happen when the connection reconnects.
+      // This can happen when the connection reconnects.
       return;
     }
 
@@ -72243,7 +72264,7 @@ _converse.initialize = function (settings, callback) {
     }
 
     _converse.idle_seconds = 0;
-    _converse.auto_changed_status = false; // Was the user's status changed by _converse.js?
+    _converse.auto_changed_status = false; // Was the user's status changed by Converse?
 
     window.addEventListener('click', _converse.onUserActivity);
     window.addEventListener('focus', _converse.onUserActivity);
@@ -101778,6 +101799,32 @@ return __p
 
 /***/ }),
 
+/***/ "./src/templates/client_info_modal.html":
+/*!**********************************************!*\
+  !*** ./src/templates/client_info_modal.html ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
+module.exports = function(o) {
+var __t, __p = '', __e = _.escape;
+__p += '<!-- src/templates/client_info_modal.html -->\n<!-- Change status Modal -->\n<div class="modal fade" id="modal-status-change" tabindex="-1" role="dialog" aria-labelledby="changeStatusModalLabel" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="changeStatusModalLabel">' +
+__e(o.modal_title) +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
+__e(o.label_close) +
+'">\n                    <span aria-hidden="true">&times;</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <div class="container brand-heading-container">\n                    <h6 class="brand-heading"><i class="icon-conversejs"></i>Converse</h6>\n                    <p class="brand-subtitle">' +
+__e(o.version_name) +
+'</p>\n                    <p class="brand-subtitle">' +
+((__t = (o.first_subtitle)) == null ? '' : __t) +
+'</a> </p>\n                    <p class="brand-subtitle">' +
+((__t = (o.second_subtitle)) == null ? '' : __t) +
+'</p>\n                <div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';
+return __p
+};
+
+/***/ }),
+
 /***/ "./src/templates/controlbox.html":
 /*!***************************************!*\
   !*** ./src/templates/controlbox.html ***!
@@ -101787,19 +101834,13 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/controlbox.html -->\n<div class="flyout box-flyout">\n    <div class="chat-head controlbox-head">\n        ';
  if (!o.sticky_controlbox) { ;
 __p += '\n            <a class="chatbox-btn close-chatbox-button fa fa-times"></a>\n        ';
  } ;
-__p += '\n    </div>\n    <div class="controlbox-panes"></div>\n    ';
- if (o.view_mode != 'fullscreen') { ;
-__p += '\n        <div class="controlbox-subtitle">\n            ' +
-__e(o.version_name) +
-'\n        </div>\n    ';
- } ;
-__p += '\n</div>\n';
+__p += '\n    </div>\n    <div class="controlbox-panes"></div>\n</div>\n';
 return __p
 };
 
@@ -102913,15 +102954,13 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/profile_view.html -->\n<div class="userinfo controlbox-padded">\n<div class="profile d-flex">\n    <a class="show-profile" href="#">\n        <canvas alt="o.__(\'Your avatar\')" class="avatar align-self-center" height="40" width="40"></canvas>\n    </a>\n    <span class="username w-100 align-self-center">' +
+__p += '<!-- src/templates/profile_view.html -->\n<div class="userinfo controlbox-padded">\n<div class="controlbox-section profile d-flex">\n    <a class="show-profile" href="#">\n        <canvas alt="o.__(\'Your avatar\')" class="avatar align-self-center" height="40" width="40"></canvas>\n    </a>\n    <span class="username w-100 align-self-center">' +
 __e(o.fullname) +
-'</span>\n    <!-- <a class="chatbox-btn fa fa-id-card align-self-center" title="' +
-__e(o.title_your_profile) +
-'" data-toggle="modal" data-target="#userProfileModal"></a> -->\n    <!-- <a class="chatbox-btn fa fa-cog align-self-center" title="' +
-__e(o.title_change_status) +
-'" data-toggle="modal" data-target="#settingsModal"></a> -->\n    ';
+'</span>\n    <a class="controlbox-heading__btn show-client-info fa fa-info-circle align-self-center" title="' +
+__e(o.info_details) +
+'"></a>\n    ';
  if (o._converse.allow_logout) { ;
-__p += '\n        <a class="chatbox-btn logout fa fa-sign-out-alt align-self-center" title="' +
+__p += '\n        <a class="controlbox-heading__btn logout fa fa-sign-out-alt align-self-center" title="' +
 __e(o.title_log_out) +
 '"></a>\n    ';
  } ;
@@ -102951,7 +102990,7 @@ __p += ' fa fa-circle chat-status chat-status--offline';
  } ;
 __p += '"></span> ' +
 __e(o.status_message) +
-'</span>\n    <a class="chatbox-btn change-status fa fa-pencil-alt" title="' +
+'</span>\n    <a class="controlbox-heading__btn change-status fa fa-pencil-alt" title="' +
 __e(o.title_change_status) +
 '" data-toggle="modal" data-target="#changeStatusModal"></a>\n</div>\n</div>\n';
 return __p

@@ -136,11 +136,13 @@ body.reset {
         height: 3em;
     }
 
+    .brand-heading-container {
+        text-align: center;
+    }
+
     .brand-heading {
+        font-size: 200%;
         font-family: var(--heading-font);
-        .icon-conversejs {
-            font-size: 80%;
-        }
     }
 
     .popover {

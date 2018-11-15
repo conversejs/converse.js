@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-15 12:25+0100\n"
-"PO-Revision-Date: 2018-11-04 12:23+0000\n"
+"PO-Revision-Date: 2018-11-17 15:07+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -1025,18 +1025,18 @@ msgstr "Message de statut personnel"
 
 #: dist/converse-no-dependencies.js:39515
 msgid "About"
-msgstr ""
+msgstr "À propos"
 
 #: dist/converse-no-dependencies.js:39517
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
-msgstr ""
+msgstr "Client XMPP %1$s libre %2$s qui vous est fourni par %3$s Opkode %2$s"
 
 #: dist/converse-no-dependencies.js:39518
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
-msgstr ""
+msgstr "%1$s Traduisez-le %2$s dans votre langue"
 
 #: dist/converse-no-dependencies.js:39542
 #, javascript-format
@@ -1056,9 +1056,8 @@ msgid "Log out"
 msgstr "Se déconnecter"
 
 #: dist/converse-no-dependencies.js:39548
-#, fuzzy
 msgid "Show details about this chat client"
-msgstr "Afficher davantage d’informations sur ce salon"
+msgstr "Afficher davantage d’informations sur ce client"
 
 #: dist/converse-no-dependencies.js:39549
 msgid "Your profile"
@@ -1285,9 +1284,8 @@ msgid "Add a contact"
 msgstr "Ajouter un contact"
 
 #: dist/converse-no-dependencies.js:41808
-#, fuzzy
 msgid "Re-sync your contacts"
-msgstr "Mes contacts"
+msgstr "Resynchronise vos contacts"
 
 #: dist/converse-no-dependencies.js:43586
 msgid "Sorry, could not determine upload URL."
@@ -1555,7 +1553,7 @@ msgstr "ce salon est restreint aux membres uniquement"
 
 #: dist/converse-no-dependencies.js:74937
 msgid "Uploading file:"
-msgstr ""
+msgstr "Envoi de fichier :"
 
 #: dist/converse-no-dependencies.js:75382
 msgid "XMPP Username:"
@@ -1619,7 +1617,7 @@ msgstr "Empreinte de clé OMEMO de ce client"
 
 #: dist/converse-no-dependencies.js:75797
 msgid "Generate new keys and fingerprint"
-msgstr ""
+msgstr "Générer de nouvelles clés et empreintes de clés"
 
 #: dist/converse-no-dependencies.js:75801
 msgid "Select all"
@@ -1699,33 +1697,28 @@ msgid "The User's Profile Image"
 msgstr "Image de profil de l’utilisateur"
 
 #: dist/converse-no-dependencies.js:76802
-#, fuzzy
 msgid "Full Name:"
-msgstr "Nom complet"
+msgstr "Nom complet :"
 
 #: dist/converse-no-dependencies.js:76808
-#, fuzzy
 msgid "XMPP Address:"
-msgstr "Adresse XMPP"
+msgstr "Adresse XMPP :"
 
 #: dist/converse-no-dependencies.js:76816
-#, fuzzy
 msgid "Nickname:"
-msgstr "Alias"
+msgstr "Pseudonyme :"
 
 #: dist/converse-no-dependencies.js:76824
 msgid "URL:"
-msgstr ""
+msgstr "Site web :"
 
 #: dist/converse-no-dependencies.js:76834
-#, fuzzy
 msgid "Email:"
-msgstr "E-mail"
+msgstr "E-mail :"
 
 #: dist/converse-no-dependencies.js:76844
-#, fuzzy
 msgid "Role:"
-msgstr "Rôle"
+msgstr "Rôle :"
 
 #: dist/converse-no-dependencies.js:76852
 msgid "OMEMO Fingerprints"

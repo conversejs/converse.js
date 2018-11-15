@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0.5 (Unreleased)
+## 4.0.5 (2018-11-15)
 
 - Error `FATAL: TypeError: Cannot read property 'extend' of undefined` when using `embedded` view mode.
 - Default paths in converse-notifications.js are now relative

@@ -9308,6 +9308,8 @@ readers do not read off random characters that represent icons */
   --chat-textarea-height: 60px;
   --send-button-height: 27px;
   --send-button-margin: 3px;
+  --send-button-right: 5px;
+  --send-button-bottom: 20px;
   --roster-height: 194px;
   --roster-group-toggle-hover-color: #585B51;
   --flyout-padding: 1.2em;
@@ -10188,32 +10190,39 @@ body.reset {
     #conversejs .chatbox .sendXMPPMessage .spoiler-hint {
       width: 100%; }
     #conversejs .chatbox .sendXMPPMessage .chat-textarea {
-      color: var(--chat-textarea-color);
-      border: 1px solid #fff;
-      margin: 0 0 0 0px;
-      min-height: 40px;
+       color: var(--chat-textarea-color);
+      background-color: var(--chat-textarea-background-color);
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      text-align: justify;
+      border-bottom-radius: var(--chatbox-border-radius);
+      padding-left: 0.5em;
+      padding-right: 4.5em;
+      padding-top: 0.5em;
+      padding-bottom:0.5em; 
       width: 100%;
-      padding: 10px 75px 10px 10px;
-      text-align: justify; }
+      border: none;
+      min-height: var(--chat-textarea-height);
+      margin-bottom: -4px;
+      resize: none; }
       #conversejs .chatbox .sendXMPPMessage .chat-textarea.spoiler {
         height: 42px; }
       #conversejs .chatbox .sendXMPPMessage .chat-textarea.correcting {
         background-color: var(--chat-head-color-lighten-50-percent); }
 
     #conversejs .chatbox .sendXMPPMessage .send-button {
-     right: 5px;
-    background-color: var(--chat-head-color);
-    color: #fff;
-    font-size: 12px;
-    bottom: 22px;
-    border-radius: 3px;
-    border: none;
-    padding: 5px 12px;
-    height: auto;
-    cursor: pointer;
-    width: auto;
-    left: auto;
-    position: absolute; }
+     bottom: var(--send-button-bottom);
+      border: none;
+      padding: 0.5em;
+      right: var(--send-button-right);
+      height: auto;
+      cursor: pointer;
+      width: auto;
+      left: auto;
+      position: absolute;
+      background-color: var(--chat-head-color);
+      color: var(--inverse-link-color);
+      font-size: 80%; }
 
     #conversejs .chatbox .sendXMPPMessage .chat-toolbar {
       box-sizing: border-box;

@@ -2,6 +2,7 @@
 'use strict'
 const minimist = require('minimist');
 const path = require('path');
+const webpack = require('webpack');
 
 const config = {
     entry: path.resolve(__dirname, 'src/converse.js'),
@@ -13,6 +14,9 @@ const config = {
         filename: 'converse.js'
     },
     devtool: 'source-map',
+    plugins: [
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+    ],
     module: {
         rules: [
         {

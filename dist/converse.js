@@ -26595,6 +26595,92 @@ return fr;
 
 /***/ }),
 
+/***/ "./node_modules/moment/locale/gl.js":
+/*!******************************************!*\
+  !*** ./node_modules/moment/locale/gl.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
+//! locale : Galician [gl]
+//! author : Juan G. Hurtado : https://github.com/juanghurtado
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(/*! ../moment */ "./node_modules/moment/moment.js")) :
+   undefined
+}(this, (function (moment) { 'use strict';
+
+
+var gl = moment.defineLocale('gl', {
+    months : 'xaneiro_febreiro_marzo_abril_maio_xuño_xullo_agosto_setembro_outubro_novembro_decembro'.split('_'),
+    monthsShort : 'xan._feb._mar._abr._mai._xuñ._xul._ago._set._out._nov._dec.'.split('_'),
+    monthsParseExact: true,
+    weekdays : 'domingo_luns_martes_mércores_xoves_venres_sábado'.split('_'),
+    weekdaysShort : 'dom._lun._mar._mér._xov._ven._sáb.'.split('_'),
+    weekdaysMin : 'do_lu_ma_mé_xo_ve_sá'.split('_'),
+    weekdaysParseExact : true,
+    longDateFormat : {
+        LT : 'H:mm',
+        LTS : 'H:mm:ss',
+        L : 'DD/MM/YYYY',
+        LL : 'D [de] MMMM [de] YYYY',
+        LLL : 'D [de] MMMM [de] YYYY H:mm',
+        LLLL : 'dddd, D [de] MMMM [de] YYYY H:mm'
+    },
+    calendar : {
+        sameDay : function () {
+            return '[hoxe ' + ((this.hours() !== 1) ? 'ás' : 'á') + '] LT';
+        },
+        nextDay : function () {
+            return '[mañá ' + ((this.hours() !== 1) ? 'ás' : 'á') + '] LT';
+        },
+        nextWeek : function () {
+            return 'dddd [' + ((this.hours() !== 1) ? 'ás' : 'a') + '] LT';
+        },
+        lastDay : function () {
+            return '[onte ' + ((this.hours() !== 1) ? 'á' : 'a') + '] LT';
+        },
+        lastWeek : function () {
+            return '[o] dddd [pasado ' + ((this.hours() !== 1) ? 'ás' : 'a') + '] LT';
+        },
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : function (str) {
+            if (str.indexOf('un') === 0) {
+                return 'n' + str;
+            }
+            return 'en ' + str;
+        },
+        past : 'hai %s',
+        s : 'uns segundos',
+        m : 'un minuto',
+        mm : '%d minutos',
+        h : 'unha hora',
+        hh : '%d horas',
+        d : 'un día',
+        dd : '%d días',
+        M : 'un mes',
+        MM : '%d meses',
+        y : 'un ano',
+        yy : '%d anos'
+    },
+    dayOfMonthOrdinalParse : /\d{1,2}º/,
+    ordinal : '%dº',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 4  // The week that contains Jan 4th is the first week of the year.
+    }
+});
+
+return gl;
+
+})));
+
+
+/***/ }),
+
 /***/ "./node_modules/moment/locale/he.js":
 /*!******************************************!*\
   !*** ./node_modules/moment/locale/he.js ***!
@@ -62568,7 +62654,7 @@ _converse.default_settings = {
   jid: undefined,
   keepalive: true,
   locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
-  locales: ['af', 'ar', 'bg', 'ca', 'cs', 'de', 'es', 'eu', 'en', 'fr', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
+  locales: ['af', 'ar', 'bg', 'ca', 'cs', 'de', 'es', 'eu', 'en', 'fr', 'gl', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
   message_carbons: true,
   nickname: undefined,
   password: undefined,
@@ -68932,46 +69018,48 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var moment_locale_eu__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(moment_locale_eu__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var moment_locale_fr__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! moment/locale/fr */ "./node_modules/moment/locale/fr.js");
 /* harmony import */ var moment_locale_fr__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(moment_locale_fr__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var moment_locale_he__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! moment/locale/he */ "./node_modules/moment/locale/he.js");
-/* harmony import */ var moment_locale_he__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(moment_locale_he__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var moment_locale_hi__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! moment/locale/hi */ "./node_modules/moment/locale/hi.js");
-/* harmony import */ var moment_locale_hi__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(moment_locale_hi__WEBPACK_IMPORTED_MODULE_10__);
-/* harmony import */ var moment_locale_hu__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! moment/locale/hu */ "./node_modules/moment/locale/hu.js");
-/* harmony import */ var moment_locale_hu__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(moment_locale_hu__WEBPACK_IMPORTED_MODULE_11__);
-/* harmony import */ var moment_locale_id__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! moment/locale/id */ "./node_modules/moment/locale/id.js");
-/* harmony import */ var moment_locale_id__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(moment_locale_id__WEBPACK_IMPORTED_MODULE_12__);
-/* harmony import */ var moment_locale_it__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! moment/locale/it */ "./node_modules/moment/locale/it.js");
-/* harmony import */ var moment_locale_it__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(moment_locale_it__WEBPACK_IMPORTED_MODULE_13__);
-/* harmony import */ var moment_locale_ja__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! moment/locale/ja */ "./node_modules/moment/locale/ja.js");
-/* harmony import */ var moment_locale_ja__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ja__WEBPACK_IMPORTED_MODULE_14__);
-/* harmony import */ var moment_locale_nb__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! moment/locale/nb */ "./node_modules/moment/locale/nb.js");
-/* harmony import */ var moment_locale_nb__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(moment_locale_nb__WEBPACK_IMPORTED_MODULE_15__);
-/* harmony import */ var moment_locale_nl__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! moment/locale/nl */ "./node_modules/moment/locale/nl.js");
-/* harmony import */ var moment_locale_nl__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(moment_locale_nl__WEBPACK_IMPORTED_MODULE_16__);
-/* harmony import */ var moment_locale_pl__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! moment/locale/pl */ "./node_modules/moment/locale/pl.js");
-/* harmony import */ var moment_locale_pl__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(moment_locale_pl__WEBPACK_IMPORTED_MODULE_17__);
-/* harmony import */ var moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! moment/locale/pt-br */ "./node_modules/moment/locale/pt-br.js");
-/* harmony import */ var moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_18__);
-/* harmony import */ var moment_locale_ro__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! moment/locale/ro */ "./node_modules/moment/locale/ro.js");
-/* harmony import */ var moment_locale_ro__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ro__WEBPACK_IMPORTED_MODULE_19__);
-/* harmony import */ var moment_locale_ru__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! moment/locale/ru */ "./node_modules/moment/locale/ru.js");
-/* harmony import */ var moment_locale_ru__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ru__WEBPACK_IMPORTED_MODULE_20__);
-/* harmony import */ var moment_locale_tr__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! moment/locale/tr */ "./node_modules/moment/locale/tr.js");
-/* harmony import */ var moment_locale_tr__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(moment_locale_tr__WEBPACK_IMPORTED_MODULE_21__);
-/* harmony import */ var moment_locale_uk__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! moment/locale/uk */ "./node_modules/moment/locale/uk.js");
-/* harmony import */ var moment_locale_uk__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(moment_locale_uk__WEBPACK_IMPORTED_MODULE_22__);
-/* harmony import */ var moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! moment/locale/zh-cn */ "./node_modules/moment/locale/zh-cn.js");
-/* harmony import */ var moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_23___default = /*#__PURE__*/__webpack_require__.n(moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_23__);
-/* harmony import */ var moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! moment/locale/zh-tw */ "./node_modules/moment/locale/zh-tw.js");
-/* harmony import */ var moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_24___default = /*#__PURE__*/__webpack_require__.n(moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_24__);
-/* harmony import */ var jed__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! jed */ "./node_modules/jed/jed.js");
-/* harmony import */ var jed__WEBPACK_IMPORTED_MODULE_25___default = /*#__PURE__*/__webpack_require__.n(jed__WEBPACK_IMPORTED_MODULE_25__);
-/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! es6-promise/dist/es6-promise.auto */ "./node_modules/es6-promise/dist/es6-promise.auto.js");
-/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_26___default = /*#__PURE__*/__webpack_require__.n(es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_26__);
-/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./lodash.noconflict */ "./src/headless/lodash.noconflict.js");
-/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default = /*#__PURE__*/__webpack_require__.n(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_27__);
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_28___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_28__);
+/* harmony import */ var moment_locale_gl__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! moment/locale/gl */ "./node_modules/moment/locale/gl.js");
+/* harmony import */ var moment_locale_gl__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(moment_locale_gl__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var moment_locale_he__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! moment/locale/he */ "./node_modules/moment/locale/he.js");
+/* harmony import */ var moment_locale_he__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(moment_locale_he__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var moment_locale_hi__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! moment/locale/hi */ "./node_modules/moment/locale/hi.js");
+/* harmony import */ var moment_locale_hi__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(moment_locale_hi__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var moment_locale_hu__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! moment/locale/hu */ "./node_modules/moment/locale/hu.js");
+/* harmony import */ var moment_locale_hu__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(moment_locale_hu__WEBPACK_IMPORTED_MODULE_12__);
+/* harmony import */ var moment_locale_id__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! moment/locale/id */ "./node_modules/moment/locale/id.js");
+/* harmony import */ var moment_locale_id__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(moment_locale_id__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var moment_locale_it__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! moment/locale/it */ "./node_modules/moment/locale/it.js");
+/* harmony import */ var moment_locale_it__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(moment_locale_it__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony import */ var moment_locale_ja__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! moment/locale/ja */ "./node_modules/moment/locale/ja.js");
+/* harmony import */ var moment_locale_ja__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ja__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var moment_locale_nb__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! moment/locale/nb */ "./node_modules/moment/locale/nb.js");
+/* harmony import */ var moment_locale_nb__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(moment_locale_nb__WEBPACK_IMPORTED_MODULE_16__);
+/* harmony import */ var moment_locale_nl__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! moment/locale/nl */ "./node_modules/moment/locale/nl.js");
+/* harmony import */ var moment_locale_nl__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(moment_locale_nl__WEBPACK_IMPORTED_MODULE_17__);
+/* harmony import */ var moment_locale_pl__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! moment/locale/pl */ "./node_modules/moment/locale/pl.js");
+/* harmony import */ var moment_locale_pl__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(moment_locale_pl__WEBPACK_IMPORTED_MODULE_18__);
+/* harmony import */ var moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! moment/locale/pt-br */ "./node_modules/moment/locale/pt-br.js");
+/* harmony import */ var moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_19__);
+/* harmony import */ var moment_locale_ro__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! moment/locale/ro */ "./node_modules/moment/locale/ro.js");
+/* harmony import */ var moment_locale_ro__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ro__WEBPACK_IMPORTED_MODULE_20__);
+/* harmony import */ var moment_locale_ru__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! moment/locale/ru */ "./node_modules/moment/locale/ru.js");
+/* harmony import */ var moment_locale_ru__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ru__WEBPACK_IMPORTED_MODULE_21__);
+/* harmony import */ var moment_locale_tr__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! moment/locale/tr */ "./node_modules/moment/locale/tr.js");
+/* harmony import */ var moment_locale_tr__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(moment_locale_tr__WEBPACK_IMPORTED_MODULE_22__);
+/* harmony import */ var moment_locale_uk__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! moment/locale/uk */ "./node_modules/moment/locale/uk.js");
+/* harmony import */ var moment_locale_uk__WEBPACK_IMPORTED_MODULE_23___default = /*#__PURE__*/__webpack_require__.n(moment_locale_uk__WEBPACK_IMPORTED_MODULE_23__);
+/* harmony import */ var moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! moment/locale/zh-cn */ "./node_modules/moment/locale/zh-cn.js");
+/* harmony import */ var moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_24___default = /*#__PURE__*/__webpack_require__.n(moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_24__);
+/* harmony import */ var moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! moment/locale/zh-tw */ "./node_modules/moment/locale/zh-tw.js");
+/* harmony import */ var moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_25___default = /*#__PURE__*/__webpack_require__.n(moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_25__);
+/* harmony import */ var jed__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! jed */ "./node_modules/jed/jed.js");
+/* harmony import */ var jed__WEBPACK_IMPORTED_MODULE_26___default = /*#__PURE__*/__webpack_require__.n(jed__WEBPACK_IMPORTED_MODULE_26__);
+/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! es6-promise/dist/es6-promise.auto */ "./node_modules/es6-promise/dist/es6-promise.auto.js");
+/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_27___default = /*#__PURE__*/__webpack_require__.n(es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_27__);
+/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./lodash.noconflict */ "./src/headless/lodash.noconflict.js");
+/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default = /*#__PURE__*/__webpack_require__.n(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_28__);
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_29___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_29__);
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -68982,6 +69070,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /*global define */
+
 
 
 
@@ -69048,15 +69137,15 @@ function detectLocale(library_check) {
 }
 
 function isMomentLocale(locale) {
-  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a.includes(moment__WEBPACK_IMPORTED_MODULE_28___default.a.locales(), locale);
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a.includes(moment__WEBPACK_IMPORTED_MODULE_29___default.a.locales(), locale);
 }
 
 function isConverseLocale(locale, supported_locales) {
-  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a.isString(locale) && _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a.includes(supported_locales, locale);
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a.isString(locale) && _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a.includes(supported_locales, locale);
 }
 
 function getLocale(preferred_locale, isSupportedByLibrary) {
-  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a.isString(preferred_locale)) {
+  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a.isString(preferred_locale)) {
     if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
       return preferred_locale;
     }
@@ -69086,13 +69175,13 @@ function isLocaleAvailable(locale, available) {
 let jed_instance;
 /* harmony default export */ __webpack_exports__["default"] = ({
   setLocales(preferred_locale, _converse) {
-    _converse.locale = getLocale(preferred_locale, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a.partial(isConverseLocale, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a, _converse.locales));
-    moment__WEBPACK_IMPORTED_MODULE_28___default.a.locale(getLocale(preferred_locale, isMomentLocale));
+    _converse.locale = getLocale(preferred_locale, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a.partial(isConverseLocale, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a, _converse.locales));
+    moment__WEBPACK_IMPORTED_MODULE_29___default.a.locale(getLocale(preferred_locale, isMomentLocale));
   },
 
   translate(str) {
-    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a.isNil(jed_instance)) {
-      return jed__WEBPACK_IMPORTED_MODULE_25___default.a.sprintf.apply(jed__WEBPACK_IMPORTED_MODULE_25___default.a, arguments);
+    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a.isNil(jed_instance)) {
+      return jed__WEBPACK_IMPORTED_MODULE_26___default.a.sprintf.apply(jed__WEBPACK_IMPORTED_MODULE_26___default.a, arguments);
     }
 
     var t = jed_instance.translate(str);
@@ -69113,7 +69202,7 @@ let jed_instance;
      *  (String) locale_url:        The URL from which the translations
      *                              should be fetched.
      */
-    return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_26___default.a((resolve, reject) => {
+    return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_27___default.a((resolve, reject) => {
       if (!isConverseLocale(locale, supported_locales) || locale === 'en') {
         return resolve();
       }
@@ -69126,7 +69215,7 @@ let jed_instance;
         if (xhr.status >= 200 && xhr.status < 400) {
           try {
             const data = window.JSON.parse(xhr.responseText);
-            jed_instance = new jed__WEBPACK_IMPORTED_MODULE_25___default.a(data);
+            jed_instance = new jed__WEBPACK_IMPORTED_MODULE_26___default.a(data);
             resolve();
           } catch (e) {
             xhr.onerror(e);

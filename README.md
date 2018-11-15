@@ -64,7 +64,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   Off-the-record encryption
 -   OMEMO encrypted messaging [XEP 384](https://xmpp.org/extensions/xep-0384.html")
 -   Supports anonymous logins, see the [anonymous login demo](https://conversejs.org/demo/anonymous.html).
--   Translated into 17 languages
+-   Translated into 28 languages
 
 ## Integration into other frameworks
 

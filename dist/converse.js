@@ -102627,25 +102627,27 @@ __e(o.isodate) +
 __e(o.pretty_time) +
 '</time>';
  } ;
-__p += '\n            <span class="chat-msg__author">';
+__p += '\n            <span class="chat-msg__author chat-msg__' +
+__e(o.sender) +
+'">';
  if (o.is_me_message) { ;
 __p += '**';
  }; ;
 __p +=
 __e(o.username) +
 '</span>\n            ';
+ if (!o.is_me_message) { ;
+__p += '\n                ';
 o.roles.forEach(function (role) { ;
 __p += ' <span class="badge badge-secondary">' +
 __e(role) +
 '</span> ';
  }); ;
-__p += '\n            ';
- if (!o.is_me_message) { ;
-__p += '<time timestamp="' +
+__p += '\n                <time timestamp="' +
 __e(o.isodate) +
 '" class="chat-msg__time">' +
 __e(o.pretty_time) +
-'</time>';
+'</time>\n            ';
  } ;
 __p += '\n            ';
  if (o.is_encrypted) { ;

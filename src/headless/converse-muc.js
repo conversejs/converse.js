@@ -922,9 +922,7 @@ converse.plugins.add('converse-muc', {
                 if (msgid) {
                     const msg = this.messages.findWhere({'msgid': msgid, 'from': jid});
                     if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
-                        msg.save({
-                            'received': moment().format()
-                        });
+                        msg.save({'received': moment().format()});
                     }
                     return msg;
                 }

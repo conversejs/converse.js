@@ -11909,6 +11909,7 @@ body.reset {
   #conversejs .message.chat-msg.chat-msg--followup .chat-msg__content {
     margin-left: 2.75rem; }
   #conversejs .message.chat-msg .chat-msg__receipt {
+    margin-right: 0.5em;
     color: var(--message-receipt-color); }
 
 #conversejs .chatroom-body .message.onload {

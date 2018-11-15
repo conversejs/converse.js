@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.9.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-29 22:21+0100\n"
-"PO-Revision-Date: 2018-10-04 08:34+0000\n"
+"PO-Revision-Date: 2018-11-15 11:19+0000\n"
 "Last-Translator: Sneer Sneerowski <weblate@0xf.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/conversejs/"
 "translations/pl/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.2-dev\n"
+"X-Generator: Weblate 3.3-dev\n"
 
 #: dist/converse-no-dependencies.js:39929
 #: dist/converse-no-dependencies.js:39986
@@ -107,9 +107,8 @@ msgid "Close this chat box"
 msgstr "Zamknij okno rozmowy"
 
 #: dist/converse-no-dependencies.js:41073
-#, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr "Wystąpił błąd w trakcie próby zapisu zakładki."
+msgstr "Wystąpił błąd w trakcie próby odświeżenia"
 
 #: dist/converse-no-dependencies.js:41089
 #: dist/converse-no-dependencies.js:50698
@@ -514,9 +513,9 @@ msgstr "%1$s został zablokowany w tym pokoju"
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
 #: dist/converse-no-dependencies.js:45441
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s nie jest już administratorem tego pokoju"
+msgstr "%1$s został %2$s tego pokoju"
 
 #: dist/converse-no-dependencies.js:45453
 #, javascript-format
@@ -573,9 +572,10 @@ msgstr ""
 "powód."
 
 #: dist/converse-no-dependencies.js:45688
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: couldn't find a groupchat participant \"%1$s\""
-msgstr "Błąd: Nie można znaleźć uczestnika czatu grupowego o pseudonimie \""
+msgstr ""
+"Błąd: nie można znaleźć uczestnika czatu grupowego o pseudonimie \"%1$s\""
 
 #: dist/converse-no-dependencies.js:45698
 msgid ""
@@ -626,9 +626,8 @@ msgid "Grant ownership of this groupchat"
 msgstr "Uczyń właścicielem pokoju"
 
 #: dist/converse-no-dependencies.js:45746
-#, fuzzy
 msgid "Register a nickname for this room"
-msgstr "Nazwa dla tej zakładki:"
+msgstr "Zarejestruj pseudonim dla tego pokoju"
 
 #: dist/converse-no-dependencies.js:45746
 msgid "Revoke user's membership"
@@ -700,9 +699,9 @@ msgid "%1$s has left and re-entered the groupchat"
 msgstr "%1$s opuścił i ponownie wszedł do pokoju"
 
 #: dist/converse-no-dependencies.js:46400
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
-msgstr "%1$s opuścił i ponownie wszedł do pokoju"
+msgstr "%1$s opuścił i ponownie wszedł do pokoju. \"%2$s\""
 
 #: dist/converse-no-dependencies.js:46419
 #, javascript-format
@@ -772,34 +771,31 @@ msgid "The explanation given is: \"%1$s\"."
 msgstr "Podana przyczyna to: \"%1$s\"."
 
 #: dist/converse-no-dependencies.js:46610
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic set by %1$s"
-msgstr "Temat ustawiony przez %1$s na: %2$s"
+msgstr "Temat ustawiony przez %1$s"
 
 #: dist/converse-no-dependencies.js:46610
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr "Temat ustawiony przez %1$s na: %2$s"
+msgstr "Temat wyczyszczony przez %1$s"
 
 #: dist/converse-no-dependencies.js:46646
-#, fuzzy
 msgid "Groupchats"
 msgstr "Grupy"
 
 #: dist/converse-no-dependencies.js:46647
-#, fuzzy
 msgid "Add a new groupchat"
-msgstr "Wejdź do pokoju"
+msgstr "Dodaj nową grupę"
 
 #: dist/converse-no-dependencies.js:46648
-#, fuzzy
 msgid "Query for groupchats"
-msgstr "Zablokuj dostępu do pokoju"
+msgstr "Wyszukaj pokoje"
 
 #: dist/converse-no-dependencies.js:46691
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to mention %1$s in your message."
-msgstr "Kliknij aby wspomnieć człowieka w wiadomości."
+msgstr "Kliknij aby wspomnieć o %1$s we wiadomości."
 
 #: dist/converse-no-dependencies.js:46692
 msgid "This user is a moderator."
@@ -1379,7 +1375,7 @@ msgstr "Pokój nie jest anonimowy"
 
 #: dist/converse-no-dependencies.js:83174
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "Rozmowa została przeniesiona. Kliknij poniżej aby wejść."
 
 #: dist/converse-no-dependencies.js:83201
 #, fuzzy

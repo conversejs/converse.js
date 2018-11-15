@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-10-29 22:21+0100\n"
-"PO-Revision-Date: 2018-10-18 15:29+0000\n"
-"Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
+"PO-Revision-Date: 2018-11-15 11:19+0000\n"
+"Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
 "Language: de\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.2.1\n"
+"X-Generator: Weblate 3.3-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -108,9 +108,8 @@ msgid "Close this chat box"
 msgstr "Dieses Chat-Fenster schließen"
 
 #: dist/converse-no-dependencies.js:41073
-#, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr "Leider konnte das Lesezeichen nicht gespeichert werden."
+msgstr "Leider konnte das Lesezeichen nicht gespeichert werden"
 
 #: dist/converse-no-dependencies.js:41089
 #: dist/converse-no-dependencies.js:50698
@@ -438,7 +437,7 @@ msgstr "Nicht moderiert"
 
 #: dist/converse-no-dependencies.js:45054
 msgid "Query for Groupchats"
-msgstr "Benutzer aus dem Raum verbannen"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:45055
 msgid "Server address"
@@ -450,16 +449,15 @@ msgstr "Gruppen"
 
 #: dist/converse-no-dependencies.js:45057
 msgid "conference.example.org"
-msgstr "z.B. conference.example.tld"
+msgstr "z.B. conference.example.org"
 
 #: dist/converse-no-dependencies.js:45108
 msgid "No groupchats found"
 msgstr "Keine Räume gefunden"
 
 #: dist/converse-no-dependencies.js:45126
-#, fuzzy
 msgid "Groupchats found:"
-msgstr "Raum gefunden:"
+msgstr "Räume gefunden:"
 
 #: dist/converse-no-dependencies.js:45182
 msgid "Enter a new Groupchat"
@@ -476,7 +474,7 @@ msgstr "Optionaler Spitzname"
 
 #: dist/converse-no-dependencies.js:45185
 msgid "name@conference.example.org"
-msgstr "name@conference.beispiel.tld"
+msgstr "name@conference.beispiel.org"
 
 #: dist/converse-no-dependencies.js:45186
 msgid "Join"
@@ -488,40 +486,40 @@ msgid "Groupchat info for %1$s"
 msgstr "Benachrichtigung für %1$s"
 
 #: dist/converse-no-dependencies.js:45424
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr "%1$s hat den Raum wieder verlassen"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:45426
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr "Besitzrechte an diesem Raum vergeben"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:45428
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "Sie wurden aus diesem Raum verbannt"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:45432
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a permanent member of this groupchat"
-msgstr "Sie sind nicht auf der Mitgliederliste dieses Raums."
+msgstr ""
 
 #: dist/converse-no-dependencies.js:45436
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a permanent member of this groupchat"
-msgstr "Sie sind nicht auf der Mitgliederliste dieses Raums."
+msgstr ""
 
 #: dist/converse-no-dependencies.js:45438
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned from this groupchat"
-msgstr "Sie wurden aus diesem Raum verbannt"
+msgstr ""
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
 #: dist/converse-no-dependencies.js:45441
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s hat den Raum wieder verlassen"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:45453
 #, javascript-format
@@ -875,9 +873,8 @@ msgstr "%1$s sagt"
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
 #: dist/converse-no-dependencies.js:47225
-#, fuzzy
 msgid "OMEMO Message received"
-msgstr "Nachrichtenarchivierung"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:47252
 msgid "has gone offline"
@@ -1012,7 +1009,7 @@ msgstr "Hier klicken, um Ihren Status zu ändern"
 
 #: dist/converse-no-dependencies.js:48702
 msgid "Personal status message"
-msgstr "Persönliche Nachricht"
+msgstr "Persönliche Statusnachricht"
 
 #: dist/converse-no-dependencies.js:48751
 #, javascript-format
@@ -1188,7 +1185,7 @@ msgstr "XMPP Adresse"
 
 #: dist/converse-no-dependencies.js:50284
 msgid "name@example.org"
-msgstr "z.B. benutzer@example.tld"
+msgstr "z.B. benutzer@beispiel.org"
 
 #: dist/converse-no-dependencies.js:50285
 msgid "Add"
@@ -1200,11 +1197,11 @@ msgstr "Filter"
 
 #: dist/converse-no-dependencies.js:50402
 msgid "Filter by contact name"
-msgstr "Name des Kontakts"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:50403
 msgid "Filter by group name"
-msgstr "Suche per Gruppenname"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:50404
 msgid "Filter by status"
@@ -1311,15 +1308,13 @@ msgstr ""
 "herstellen"
 
 #: dist/converse-no-dependencies.js:57911
-#, fuzzy
 msgid "You're not allowed to register yourself in this groupchat."
-msgstr "Es ist Ihnen nicht erlaubt neue Räume anzulegen."
+msgstr ""
 
 #: dist/converse-no-dependencies.js:57913
-#, fuzzy
 msgid ""
 "You're not allowed to register in this groupchat because it's members-only."
-msgstr "Es ist Ihnen nicht erlaubt neue Räume anzulegen."
+msgstr ""
 
 #: dist/converse-no-dependencies.js:57944
 msgid ""

@@ -81,10 +81,8 @@ const config = {
             "SecondLevelDomains":       path.resolve(__dirname, "node_modules/urijs/src/SecondLevelDomains"),
             "awesomplete":              path.resolve(__dirname, "node_modules/awesomplete-avoid-xss/awesomplete"),
             "bootstrap":                path.resolve(__dirname, "node_modules/bootstrap.native/dist/bootstrap-native-v4"),
-            "crypto":                   path.resolve(__dirname, "node_modules/otr/build/dep/crypto"),
             "formdata-polyfill":        path.resolve(__dirname, "node_modules/formdata-polyfill/FormData"),
             "jquery":                   path.resolve(__dirname, "src/jquery-stub"),
-            "lodash.converter":         "@converse/core/3rdparty/lodash.fp",
             "pluggable":                path.resolve(__dirname, "node_modules/pluggable.js/dist/pluggable"),
             "punycode":                 path.resolve(__dirname, "node_modules/urijs/src/punycode"),
             "snabbdom":                 path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom"),
@@ -97,10 +95,6 @@ const config = {
             "tovnode":                  path.resolve(__dirname, "node_modules/snabbdom/dist/tovnode"),
             "underscore":               path.resolve(__dirname, "src/underscore-shim"),
             "uri":                      path.resolve(__dirname, "node_modules/urijs/src/URI"),
-            "utils/core":               "@converse/headless/utils/core",
-            "utils/emoji":              "@converse/headless/utils/emoji",
-            "utils/form":               "@converse/headless/utils/form",
-            "utils/muc":                "@converse/headless/utils/muc",
             "vdom-parser":              path.resolve(__dirname, "node_modules/vdom-parser/dist"),
             "xss":                      path.resolve(__dirname, "node_modules/xss/dist/xss")
         }

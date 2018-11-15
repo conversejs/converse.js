@@ -19,7 +19,7 @@ import tpl_register_panel from "templates/register_panel.html";
 import tpl_registration_form from "templates/registration_form.html";
 import tpl_registration_request from "templates/registration_request.html";
 import tpl_spinner from "templates/spinner.html";
-import utils from "utils/form";
+import utils from "@converse/headless/utils/form";
 
 // Strophe methods for building stanzas
 const { Strophe, Backbone, sizzle, $iq, _ } = converse.env;

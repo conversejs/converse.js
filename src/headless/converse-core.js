@@ -4,8 +4,6 @@
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-"use strict";
-
 import { $build, $iq, $msg, $pres, SHA1, Strophe } from "strophe.js";
 import Backbone from "backbone";
 import BrowserStorage from "backbone.browserStorage";
@@ -17,7 +15,7 @@ import moment from "moment";
 import pluggable from "pluggable.js/dist/pluggable";
 import polyfill from "./polyfill";
 import sizzle from "sizzle";
-import u from "./utils/core";
+import u from "@converse/headless/utils/core";
 
 Backbone = Backbone.noConflict();
 

@@ -12,7 +12,7 @@ import tpl_file_progress from "templates/file_progress.html";
 import tpl_info from "templates/info.html";
 import tpl_message from "templates/message.html";
 import tpl_message_versions_modal from "templates/message_versions_modal.html";
-import u from "utils/emoji";
+import u from "@converse/headless/utils/emoji";
 import xss from "xss";
 
 const { Backbone, _, moment } = converse.env;

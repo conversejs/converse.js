@@ -58722,7 +58722,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_toolbar_fileupload_html__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(templates_toolbar_fileupload_html__WEBPACK_IMPORTED_MODULE_19__);
 /* harmony import */ var templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! templates/user_details_modal.html */ "./src/templates/user_details_modal.html");
 /* harmony import */ var templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_20__);
-/* harmony import */ var utils_emoji__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! utils/emoji */ "./src/headless/utils/emoji.js");
+/* harmony import */ var _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! @converse/headless/utils/emoji */ "./src/headless/utils/emoji.js");
 /* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js");
 /* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(xss__WEBPACK_IMPORTED_MODULE_22__);
 // Converse.js
@@ -58833,9 +58833,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       toHTML() {
         return templates_emojis_html__WEBPACK_IMPORTED_MODULE_10___default()(_.extend(this.model.toJSON(), {
           '_': _,
-          'transform': utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getEmojiRenderer(_converse),
-          'emojis_by_category': utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getEmojisByCategory(_converse),
-          'toned_emojis': utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getTonedEmojis(_converse),
+          'transform': _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getEmojiRenderer(_converse),
+          'emojis_by_category': _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getEmojisByCategory(_converse),
+          'toned_emojis': _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getTonedEmojis(_converse),
           'skintones': ['tone1', 'tone2', 'tone3', 'tone4', 'tone5'],
           'shouldBeHidden': this.shouldBeHidden
         }));
@@ -58939,7 +58939,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           'allow_contact_removal': _converse.allow_contact_removal,
           'display_name': this.model.getDisplayName(),
           'is_roster_contact': !_.isUndefined(this.model.contact),
-          'utils': utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"]
+          'utils': _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"]
         }));
       },
 
@@ -58960,7 +58960,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         const refresh_icon = this.el.querySelector('.fa-refresh');
-        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('fa-spin', refresh_icon);
+        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('fa-spin', refresh_icon);
 
         try {
           await _converse.api.vcard.update(this.model.contact.vcard, true);
@@ -58973,7 +58973,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           }));
         }
 
-        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('fa-spin', refresh_icon);
+        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('fa-spin', refresh_icon);
       },
 
       removeContact(ev) {
@@ -59290,7 +59290,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          *      This element must have a "data-isodate" attribute
          *      which specifies its creation date.
          */
-        const prev_msg_el = utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getPreviousElement(next_msg_el, ".message:not(.chat-state-notification)"),
+        const prev_msg_el = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getPreviousElement(next_msg_el, ".message:not(.chat-state-notification)"),
               prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
               next_msg_date = next_msg_el.getAttribute('data-isodate');
 
@@ -59314,14 +59314,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          *  (Object) cutoff: Moment Date cutoff date. The last
          *      message received cutoff this date will be returned.
          */
-        const first_msg = utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getFirstChildElement(this.content, '.message:not(.chat-state-notification)'),
+        const first_msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getFirstChildElement(this.content, '.message:not(.chat-state-notification)'),
               oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
 
         if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
           return null;
         }
 
-        const last_msg = utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getLastChildElement(this.content, '.message:not(.chat-state-notification)'),
+        const last_msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getLastChildElement(this.content, '.message:not(.chat-state-notification)'),
               most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
 
         if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
@@ -59358,7 +59358,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          * up when using infinite scroll).
          */
         if (this.model.get('scrolled')) {
-          const next_msg_el = utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getNextElement(message_el, ".chat-msg");
+          const next_msg_el = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getNextElement(message_el, ".chat-msg");
 
           if (next_msg_el) {
             // The currently received message is not new, there
@@ -59399,14 +59399,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       clearChatStateNotification(message, isodate) {
         if (isodate) {
-          _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"][data-isodate="${isodate}"]`, this.content), utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeElement);
+          _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"][data-isodate="${isodate}"]`, this.content), _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeElement);
         } else {
-          _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content), utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeElement);
+          _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content), _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeElement);
         }
       },
 
       shouldShowOnTextMessage() {
-        return !utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.el);
+        return !_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.el);
       },
 
       insertMessage(view) {
@@ -59433,7 +59433,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         } else {
           const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date}"]:last`, this.content).pop();
 
-          if (view.model.get('type') === 'error' && utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-error', previous_msg_el) && previous_msg_el.textContent === view.model.get('message')) {
+          if (view.model.get('type') === 'error' && _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-error', previous_msg_el) && previous_msg_el.textContent === view.model.get('message')) {
             // We don't show a duplicate error message
             return;
           }
@@ -59464,18 +59464,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
               date = moment(el.getAttribute('data-isodate')),
               next_el = el.nextElementSibling;
 
-        if (!utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-msg--action', el) && !utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-msg--action', previous_el) && previous_el.getAttribute('data-from') === from && date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) && el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')) {
-          utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('chat-msg--followup', el);
+        if (!_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-msg--action', el) && !_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-msg--action', previous_el) && previous_el.getAttribute('data-from') === from && date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) && el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')) {
+          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('chat-msg--followup', el);
         }
 
         if (!next_el) {
           return;
         }
 
-        if (!utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-msg--action', 'el') && next_el.getAttribute('data-from') === from && moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) && el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {
-          utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('chat-msg--followup', next_el);
+        if (!_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-msg--action', 'el') && next_el.getAttribute('data-from') === from && moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) && el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {
+          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('chat-msg--followup', next_el);
         } else {
-          utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('chat-msg--followup', next_el);
+          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('chat-msg--followup', next_el);
         }
       },
 
@@ -59504,14 +59504,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.insertDayIndicator(view.el);
         this.setScrollPosition(view.el);
 
-        if (utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isNewMessage(message)) {
+        if (_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isNewMessage(message)) {
           if (message.get('sender') === 'me') {
             // We remove the "scrolled" flag so that the chat area
             // gets scrolled down. We always want to scroll down
             // when the user writes a message as opposed to when a
             // message is received.
             this.model.set('scrolled', false);
-          } else if (this.model.get('scrolled', true) && !utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isOnlyChatStateNotification(message)) {
+          } else if (this.model.get('scrolled', true) && !_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isOnlyChatStateNotification(message)) {
             this.showNewMessagesIndicator();
           }
         }
@@ -59621,7 +59621,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         textarea.value = '';
-        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea);
+        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea);
         textarea.focus(); // Trigger input event, so that the textarea resizes
 
         const event = document.createEvent('Event');
@@ -59653,7 +59653,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           } else if (ev.keyCode === _converse.keycodes.ESCAPE) {
             return this.onEscapePressed(ev);
           } else if (ev.keyCode === _converse.keycodes.ENTER) {
-            if (this.emoji_dropdown && utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.emoji_dropdown.el.querySelector('.emoji-picker'))) {
+            if (this.emoji_dropdown && _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.emoji_dropdown.el.querySelector('.emoji-picker'))) {
               this.emoji_dropdown.toggle();
             }
 
@@ -59698,7 +59698,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         ev.preventDefault();
         const idx = this.model.messages.findLastIndex('correcting'),
               currently_correcting = idx >= 0 ? this.model.messages.at(idx) : null,
-              message_el = utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].ancestor(ev.target, '.chat-msg'),
+              message_el = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].ancestor(ev.target, '.chat-msg'),
               message = this.model.messages.findWhere({
           'msgid': message_el.getAttribute('data-msgid')
         });
@@ -59709,7 +59709,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           }
 
           message.save('correcting', true);
-          this.insertIntoTextArea(utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].prefixMentions(message), true, true);
+          this.insertIntoTextArea(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].prefixMentions(message), true, true);
         } else {
           message.save('correcting', false);
           this.insertIntoTextArea('', true, false);
@@ -59795,9 +59795,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         const textarea = this.el.querySelector('.chat-textarea');
 
         if (correcting) {
-          utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('correcting', textarea);
+          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('correcting', textarea);
         } else {
-          utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea);
+          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea);
         }
 
         if (replace) {
@@ -59814,7 +59814,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           textarea.value = existing + value + ' ';
         }
 
-        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].putCurserAtEnd(textarea);
+        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].putCurserAtEnd(textarea);
       },
 
       createEmojiPicker() {
@@ -59877,7 +59877,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         const toggle_el = ev.target,
               icon_el = toggle_el.firstElementChild;
-        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].slideToggleElement(toggle_el.parentElement.parentElement.querySelector('.spoiler'));
+        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].slideToggleElement(toggle_el.parentElement.parentElement.querySelector('.spoiler'));
 
         if (toggle_el.getAttribute("data-toggle-state") == "closed") {
           toggle_el.textContent = 'Show less';
@@ -59899,7 +59899,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
               fullname = this.model.getDisplayName();
         let text;
 
-        if (utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.el)) {
+        if (_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.el)) {
           if (show === 'offline') {
             text = __('%1$s has gone offline', fullname);
           } else if (show === 'away') {
@@ -59988,16 +59988,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       _show(f) {
         /* Inner show method that gets debounced */
-        if (utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.el)) {
+        if (_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.el)) {
           this.focus();
           return;
         }
 
-        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].fadeIn(this.el, _.bind(this.afterShown, this));
+        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].fadeIn(this.el, _.bind(this.afterShown, this));
       },
 
       showNewMessagesIndicator() {
-        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].showElement(this.el.querySelector('.new-msgs-indicator'));
+        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].showElement(this.el.querySelector('.new-msgs-indicator'));
       },
 
       hideNewMessagesIndicator() {
@@ -60027,7 +60027,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           this.onScrolledDown();
         }
 
-        utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].safeSave(this.model, {
+        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].safeSave(this.model, {
           'scrolled': scrolled,
           'top_visible_message': null
         });
@@ -60047,7 +60047,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           return;
         }
 
-        if (utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.content) && !this.model.get('scrolled')) {
+        if (_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.content) && !this.model.get('scrolled')) {
           this.content.scrollTop = this.content.scrollHeight;
         }
       },
@@ -61598,7 +61598,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_message_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_message_html__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var templates_message_versions_modal_html__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! templates/message_versions_modal.html */ "./src/templates/message_versions_modal.html");
 /* harmony import */ var templates_message_versions_modal_html__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(templates_message_versions_modal_html__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var utils_emoji__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! utils/emoji */ "./src/headless/utils/emoji.js");
+/* harmony import */ var _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @converse/headless/utils/emoji */ "./src/headless/utils/emoji.js");
 /* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js");
 /* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(xss__WEBPACK_IMPORTED_MODULE_9__);
 // Converse.js
@@ -61657,7 +61657,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       async render() {
-        const is_followup = utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].hasClass('chat-msg--followup', this.el);
+        const is_followup = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].hasClass('chat-msg--followup', this.el);
 
         if (this.model.isOnlyChatStateNotification()) {
           this.renderChatStateNotification();
@@ -61676,7 +61676,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
 
         if (is_followup) {
-          utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addClass('chat-msg--followup', this.el);
+          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addClass('chat-msg--followup', this.el);
         }
 
         return this.el;
@@ -61706,8 +61706,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           return;
         }
 
-        this.el.addEventListener('animationend', () => utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].removeClass('onload', this.el));
-        utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addClass('onload', this.el);
+        this.el.addEventListener('animationend', () => _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].removeClass('onload', this.el));
+        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addClass('onload', this.el);
       },
 
       replaceElement(msg) {
@@ -61724,7 +61724,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
               moment_time = moment(this.model.get('time')),
               role = this.model.vcard ? this.model.vcard.get('role') : null,
               roles = role ? role.split(',') : [];
-        const msg = utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_message_html__WEBPACK_IMPORTED_MODULE_6___default()(_.extend(this.model.toJSON(), {
+        const msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_message_html__WEBPACK_IMPORTED_MODULE_6___default()(_.extend(this.model.toJSON(), {
           '__': __,
           'is_me_message': is_me_message,
           'roles': roles,
@@ -61737,7 +61737,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         const url = this.model.get('oob_url');
 
         if (url) {
-          msg.querySelector('.chat-msg__media').innerHTML = _.flow(_.partial(utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderFileURL, _converse), _.partial(utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderMovieURL, _converse), _.partial(utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderAudioURL, _converse), _.partial(utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderImageURL, _converse))(url);
+          msg.querySelector('.chat-msg__media').innerHTML = _.flow(_.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderFileURL, _converse), _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderMovieURL, _converse), _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderAudioURL, _converse), _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderImageURL, _converse))(url);
         }
 
         let text = this.getMessageText();
@@ -61751,10 +61751,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           text = xss__WEBPACK_IMPORTED_MODULE_9___default.a.filterXSS(text, {
             'whiteList': {}
           });
-          msg_content.innerHTML = _.flow(_.partial(utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].geoUriToHttp, _, _converse.geouri_replacement), _.partial(utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox), utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addHyperlinks, utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderNewLines, _.partial(utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addEmoji, _converse, _))(text);
+          msg_content.innerHTML = _.flow(_.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].geoUriToHttp, _, _converse.geouri_replacement), _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox), _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addHyperlinks, _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderNewLines, _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addEmoji, _converse, _))(text);
         }
 
-        const promise = utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderImageURLs(_converse, msg_content);
+        const promise = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderImageURLs(_converse, msg_content);
 
         if (this.model.get('type') !== 'headline') {
           this.renderAvatar(msg);
@@ -61767,7 +61767,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       renderErrorMessage() {
         const moment_time = moment(this.model.get('time')),
-              msg = utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_info_html__WEBPACK_IMPORTED_MODULE_5___default()(_.extend(this.model.toJSON(), {
+              msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_info_html__WEBPACK_IMPORTED_MODULE_5___default()(_.extend(this.model.toJSON(), {
           'extra_classes': 'chat-error',
           'isodate': moment_time.format()
         })));
@@ -61798,7 +61798,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
 
         const isodate = moment().format();
-        this.replaceElement(utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_csn_html__WEBPACK_IMPORTED_MODULE_3___default()({
+        this.replaceElement(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_csn_html__WEBPACK_IMPORTED_MODULE_3___default()({
           'message': text,
           'from': from,
           'isodate': isodate
@@ -61806,7 +61806,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       renderFileUploadProgresBar() {
-        const msg = utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_file_progress_html__WEBPACK_IMPORTED_MODULE_4___default()(_.extend(this.model.toJSON(), {
+        const msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_file_progress_html__WEBPACK_IMPORTED_MODULE_4___default()(_.extend(this.model.toJSON(), {
           '__': __,
           'filename': this.model.file.name,
           'filesize': filesize__WEBPACK_IMPORTED_MODULE_1___default()(this.model.file.size)
@@ -61847,7 +61847,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       processMessageText() {
         var text = this.get('message');
-        text = utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].geoUriToHttp(text, _converse.geouri_replacement);
+        text = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].geoUriToHttp(text, _converse.geouri_replacement);
       },
 
       getExtraMessageClasses() {
@@ -62647,7 +62647,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(formdata_polyfill__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
-/* harmony import */ var utils_muc__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! utils/muc */ "./src/headless/utils/muc.js");
+/* harmony import */ var _converse_headless_utils_muc__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @converse/headless/utils/muc */ "./src/headless/utils/muc.js");
 /* harmony import */ var templates_add_chatroom_modal_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/add_chatroom_modal.html */ "./src/templates/add_chatroom_modal.html");
 /* harmony import */ var templates_add_chatroom_modal_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_add_chatroom_modal_html__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var templates_chatarea_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/chatarea.html */ "./src/templates/chatarea.html");
@@ -67050,7 +67050,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_registration_request_html__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(templates_registration_request_html__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var templates_spinner_html__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! templates/spinner.html */ "./src/templates/spinner.html");
 /* harmony import */ var templates_spinner_html__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(templates_spinner_html__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var utils_form__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! utils/form */ "./src/headless/utils/form.js");
+/* harmony import */ var _converse_headless_utils_form__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @converse/headless/utils/form */ "./src/headless/utils/form.js");
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -67565,7 +67565,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 
         if (this.form_type === 'xform') {
           _.each(stanza.querySelectorAll('field'), field => {
-            buttons.insertAdjacentHTML('beforebegin', utils_form__WEBPACK_IMPORTED_MODULE_9__["default"].xForm2webForm(field, stanza, this.domain));
+            buttons.insertAdjacentHTML('beforebegin', _converse_headless_utils_form__WEBPACK_IMPORTED_MODULE_9__["default"].xForm2webForm(field, stanza, this.domain));
           });
         } else {
           this.renderLegacyRegistrationForm(form);
@@ -67685,7 +67685,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
           });
 
           _.each(inputs, input => {
-            iq.cnode(utils_form__WEBPACK_IMPORTED_MODULE_9__["default"].webForm2xForm(input)).up();
+            iq.cnode(_converse_headless_utils_form__WEBPACK_IMPORTED_MODULE_9__["default"].webForm2xForm(input)).up();
           });
         } else {
           _.each(inputs, input => {
@@ -71809,14 +71809,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _polyfill__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_polyfill__WEBPACK_IMPORTED_MODULE_9__);
 /* harmony import */ var sizzle__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js");
 /* harmony import */ var sizzle__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(sizzle__WEBPACK_IMPORTED_MODULE_10__);
-/* harmony import */ var _utils_core__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./utils/core */ "./src/headless/utils/core.js");
+/* harmony import */ var _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @converse/headless/utils/core */ "./src/headless/utils/core.js");
 // Converse.js
 // https://conversejs.org
 //
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
-
-
 
 
 
@@ -72093,7 +72091,7 @@ function addPromise(promise) {
   /* Private function, used to add a new promise to the ones already
    * available via the `waitUntil` api method.
    */
-  _converse.promises[promise] = _utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].getResolveablePromise();
+  _converse.promises[promise] = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].getResolveablePromise();
 }
 
 _converse.emit = function (name) {
@@ -72115,7 +72113,7 @@ _converse.router = new Backbone.Router();
 
 _converse.initialize = function (settings, callback) {
   settings = !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(settings) ? settings : {};
-  const init_promise = _utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].getResolveablePromise();
+  const init_promise = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].getResolveablePromise();
 
   _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(PROMISES, addPromise);
 
@@ -73112,7 +73110,7 @@ _converse.initialize = function (settings, callback) {
   } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
     finishInitialization();
   } else {
-    _i18n__WEBPACK_IMPORTED_MODULE_6___default.a.fetchTranslations(_converse.locale, _converse.locales, _utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
+    _i18n__WEBPACK_IMPORTED_MODULE_6___default.a.fetchTranslations(_converse.locale, _converse.locales, _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
       'locale': _converse.locale
     })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).then(finishInitialization).catch(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.log, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL));
   }
@@ -73327,9 +73325,9 @@ _converse.api = {
      * });
      */
     'update'(settings) {
-      _utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].merge(_converse.default_settings, settings);
-      _utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].merge(_converse, settings);
-      _utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].applyUserSettings(_converse, settings, _converse.user_settings);
+      _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].merge(_converse.default_settings, settings);
+      _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].merge(_converse, settings);
+      _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].applyUserSettings(_converse, settings, _converse.user_settings);
     },
 
     /**
@@ -73690,7 +73688,7 @@ const converse = {
     'b64_sha1': b64_sha1,
     'moment': moment__WEBPACK_IMPORTED_MODULE_7___default.a,
     'sizzle': sizzle__WEBPACK_IMPORTED_MODULE_10___default.a,
-    'utils': _utils_core__WEBPACK_IMPORTED_MODULE_11__["default"]
+    'utils': _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"]
   }
 };
 window.converse = converse;

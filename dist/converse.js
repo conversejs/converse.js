@@ -62373,7 +62373,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _lodash_fp__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./lodash.fp */ "./src/headless/lodash.fp.js");
 /* harmony import */ var _lodash_fp__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_lodash_fp__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _i18n__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./i18n */ "./src/headless/i18n.js");
-/* harmony import */ var _i18n__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_i18n__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var pluggable_js_dist_pluggable__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! pluggable.js/dist/pluggable */ "./node_modules/pluggable.js/dist/pluggable.js");
@@ -62650,11 +62649,11 @@ _converse.__ = function (str) {
    * Parameters:
    *      (String) str - The string to translate.
    */
-  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
+  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"])) {
     return str;
   }
 
-  return _i18n__WEBPACK_IMPORTED_MODULE_6___default.a.translate.apply(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a, arguments);
+  return _i18n__WEBPACK_IMPORTED_MODULE_6__["default"].translate.apply(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"], arguments);
 };
 
 const __ = _converse.__;
@@ -62743,8 +62742,8 @@ _converse.initialize = function (settings, callback) {
   /* Localisation */
 
 
-  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
-    _i18n__WEBPACK_IMPORTED_MODULE_6___default.a.setLocales(settings.i18n, _converse);
+  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"])) {
+    _i18n__WEBPACK_IMPORTED_MODULE_6__["default"].setLocales(settings.i18n, _converse);
   } else {
     _converse.locale = 'en';
   } // Module-level variables
@@ -63680,10 +63679,10 @@ _converse.initialize = function (settings, callback) {
   if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {
     finishInitialization();
     return _converse;
-  } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6___default.a)) {
+  } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"])) {
     finishInitialization();
   } else {
-    _i18n__WEBPACK_IMPORTED_MODULE_6___default.a.fetchTranslations(_converse.locale, _converse.locales, _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
+    _i18n__WEBPACK_IMPORTED_MODULE_6__["default"].fetchTranslations(_converse.locale, _converse.locales, _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
       'locale': _converse.locale
     })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).then(finishInitialization).catch(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.log, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL));
   }
@@ -68910,10 +68909,70 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
 /*!******************************!*\
   !*** ./src/headless/i18n.js ***!
   \******************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Converse.js (A browser based XMPP chat client)
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var moment_locale_af__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! moment/locale/af */ "./node_modules/moment/locale/af.js");
+/* harmony import */ var moment_locale_af__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(moment_locale_af__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var moment_locale_ar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment/locale/ar */ "./node_modules/moment/locale/ar.js");
+/* harmony import */ var moment_locale_ar__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ar__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var moment_locale_bg__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! moment/locale/bg */ "./node_modules/moment/locale/bg.js");
+/* harmony import */ var moment_locale_bg__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(moment_locale_bg__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var moment_locale_ca__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! moment/locale/ca */ "./node_modules/moment/locale/ca.js");
+/* harmony import */ var moment_locale_ca__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ca__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var moment_locale_cs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! moment/locale/cs */ "./node_modules/moment/locale/cs.js");
+/* harmony import */ var moment_locale_cs__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(moment_locale_cs__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var moment_locale_de__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! moment/locale/de */ "./node_modules/moment/locale/de.js");
+/* harmony import */ var moment_locale_de__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(moment_locale_de__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var moment_locale_es__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! moment/locale/es */ "./node_modules/moment/locale/es.js");
+/* harmony import */ var moment_locale_es__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(moment_locale_es__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var moment_locale_eu__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! moment/locale/eu */ "./node_modules/moment/locale/eu.js");
+/* harmony import */ var moment_locale_eu__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(moment_locale_eu__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var moment_locale_fr__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! moment/locale/fr */ "./node_modules/moment/locale/fr.js");
+/* harmony import */ var moment_locale_fr__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(moment_locale_fr__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var moment_locale_he__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! moment/locale/he */ "./node_modules/moment/locale/he.js");
+/* harmony import */ var moment_locale_he__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(moment_locale_he__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var moment_locale_hi__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! moment/locale/hi */ "./node_modules/moment/locale/hi.js");
+/* harmony import */ var moment_locale_hi__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(moment_locale_hi__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var moment_locale_hu__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! moment/locale/hu */ "./node_modules/moment/locale/hu.js");
+/* harmony import */ var moment_locale_hu__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(moment_locale_hu__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var moment_locale_id__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! moment/locale/id */ "./node_modules/moment/locale/id.js");
+/* harmony import */ var moment_locale_id__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(moment_locale_id__WEBPACK_IMPORTED_MODULE_12__);
+/* harmony import */ var moment_locale_it__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! moment/locale/it */ "./node_modules/moment/locale/it.js");
+/* harmony import */ var moment_locale_it__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(moment_locale_it__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var moment_locale_ja__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! moment/locale/ja */ "./node_modules/moment/locale/ja.js");
+/* harmony import */ var moment_locale_ja__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ja__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony import */ var moment_locale_nb__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! moment/locale/nb */ "./node_modules/moment/locale/nb.js");
+/* harmony import */ var moment_locale_nb__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(moment_locale_nb__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var moment_locale_nl__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! moment/locale/nl */ "./node_modules/moment/locale/nl.js");
+/* harmony import */ var moment_locale_nl__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(moment_locale_nl__WEBPACK_IMPORTED_MODULE_16__);
+/* harmony import */ var moment_locale_pl__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! moment/locale/pl */ "./node_modules/moment/locale/pl.js");
+/* harmony import */ var moment_locale_pl__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(moment_locale_pl__WEBPACK_IMPORTED_MODULE_17__);
+/* harmony import */ var moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! moment/locale/pt-br */ "./node_modules/moment/locale/pt-br.js");
+/* harmony import */ var moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_18__);
+/* harmony import */ var moment_locale_ro__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! moment/locale/ro */ "./node_modules/moment/locale/ro.js");
+/* harmony import */ var moment_locale_ro__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ro__WEBPACK_IMPORTED_MODULE_19__);
+/* harmony import */ var moment_locale_ru__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! moment/locale/ru */ "./node_modules/moment/locale/ru.js");
+/* harmony import */ var moment_locale_ru__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ru__WEBPACK_IMPORTED_MODULE_20__);
+/* harmony import */ var moment_locale_tr__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! moment/locale/tr */ "./node_modules/moment/locale/tr.js");
+/* harmony import */ var moment_locale_tr__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(moment_locale_tr__WEBPACK_IMPORTED_MODULE_21__);
+/* harmony import */ var moment_locale_uk__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! moment/locale/uk */ "./node_modules/moment/locale/uk.js");
+/* harmony import */ var moment_locale_uk__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(moment_locale_uk__WEBPACK_IMPORTED_MODULE_22__);
+/* harmony import */ var moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! moment/locale/zh-cn */ "./node_modules/moment/locale/zh-cn.js");
+/* harmony import */ var moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_23___default = /*#__PURE__*/__webpack_require__.n(moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_23__);
+/* harmony import */ var moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! moment/locale/zh-tw */ "./node_modules/moment/locale/zh-tw.js");
+/* harmony import */ var moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_24___default = /*#__PURE__*/__webpack_require__.n(moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_24__);
+/* harmony import */ var jed__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! jed */ "./node_modules/jed/jed.js");
+/* harmony import */ var jed__WEBPACK_IMPORTED_MODULE_25___default = /*#__PURE__*/__webpack_require__.n(jed__WEBPACK_IMPORTED_MODULE_25__);
+/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! es6-promise/dist/es6-promise.auto */ "./node_modules/es6-promise/dist/es6-promise.auto.js");
+/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_26___default = /*#__PURE__*/__webpack_require__.n(es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_26__);
+/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./lodash.noconflict */ "./src/headless/lodash.noconflict.js");
+/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default = /*#__PURE__*/__webpack_require__.n(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_27__);
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_28___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_28__);
+// Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
 // This is the internationalization module.
@@ -68923,148 +68982,169 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 //
 
 /*global define */
-(function (root, factory) {
-  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! es6-promise/dist/es6-promise.auto */ "./node_modules/es6-promise/dist/es6-promise.auto.js"), __webpack_require__(/*! jed */ "./node_modules/jed/jed.js"), __webpack_require__(/*! ./lodash.noconflict */ "./src/headless/lodash.noconflict.js"), __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"), __webpack_require__(/*! moment/locale/af */ "./node_modules/moment/locale/af.js"), __webpack_require__(/*! moment/locale/ar */ "./node_modules/moment/locale/ar.js"), __webpack_require__(/*! moment/locale/bg */ "./node_modules/moment/locale/bg.js"), __webpack_require__(/*! moment/locale/ca */ "./node_modules/moment/locale/ca.js"), __webpack_require__(/*! moment/locale/cs */ "./node_modules/moment/locale/cs.js"), __webpack_require__(/*! moment/locale/de */ "./node_modules/moment/locale/de.js"), __webpack_require__(/*! moment/locale/es */ "./node_modules/moment/locale/es.js"), __webpack_require__(/*! moment/locale/eu */ "./node_modules/moment/locale/eu.js"), __webpack_require__(/*! moment/locale/fr */ "./node_modules/moment/locale/fr.js"), __webpack_require__(/*! moment/locale/he */ "./node_modules/moment/locale/he.js"), __webpack_require__(/*! moment/locale/hi */ "./node_modules/moment/locale/hi.js"), __webpack_require__(/*! moment/locale/hu */ "./node_modules/moment/locale/hu.js"), __webpack_require__(/*! moment/locale/id */ "./node_modules/moment/locale/id.js"), __webpack_require__(/*! moment/locale/it */ "./node_modules/moment/locale/it.js"), __webpack_require__(/*! moment/locale/ja */ "./node_modules/moment/locale/ja.js"), __webpack_require__(/*! moment/locale/nb */ "./node_modules/moment/locale/nb.js"), __webpack_require__(/*! moment/locale/nl */ "./node_modules/moment/locale/nl.js"), __webpack_require__(/*! moment/locale/pl */ "./node_modules/moment/locale/pl.js"), __webpack_require__(/*! moment/locale/pt-br */ "./node_modules/moment/locale/pt-br.js"), __webpack_require__(/*! moment/locale/ro */ "./node_modules/moment/locale/ro.js"), __webpack_require__(/*! moment/locale/ru */ "./node_modules/moment/locale/ru.js"), __webpack_require__(/*! moment/locale/tr */ "./node_modules/moment/locale/tr.js"), __webpack_require__(/*! moment/locale/uk */ "./node_modules/moment/locale/uk.js"), __webpack_require__(/*! moment/locale/zh-cn */ "./node_modules/moment/locale/zh-cn.js"), __webpack_require__(/*! moment/locale/zh-tw */ "./node_modules/moment/locale/zh-tw.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-})(this, function (Promise, Jed, _, moment) {
-  'use strict';
 
-  function detectLocale(library_check) {
-    /* Determine which locale is supported by the user's system as well
-     * as by the relevant library (e.g. converse.js or moment.js).
-     *
-     * Parameters:
-     *      (Function) library_check - Returns a boolean indicating whether
-     *                                 the locale is supported.
-     */
-    var locale, i;
 
-    if (window.navigator.userLanguage) {
-      locale = isLocaleAvailable(window.navigator.userLanguage, library_check);
-    }
 
-    if (window.navigator.languages && !locale) {
-      for (i = 0; i < window.navigator.languages.length && !locale; i++) {
-        locale = isLocaleAvailable(window.navigator.languages[i], library_check);
-      }
-    }
 
-    if (window.navigator.browserLanguage && !locale) {
-      locale = isLocaleAvailable(window.navigator.browserLanguage, library_check);
-    }
 
-    if (window.navigator.language && !locale) {
-      locale = isLocaleAvailable(window.navigator.language, library_check);
-    }
 
-    if (window.navigator.systemLanguage && !locale) {
-      locale = isLocaleAvailable(window.navigator.systemLanguage, library_check);
-    }
 
-    return locale || 'en';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function detectLocale(library_check) {
+  /* Determine which locale is supported by the user's system as well
+   * as by the relevant library (e.g. converse.js or moment.js).
+   *
+   * Parameters:
+   *      (Function) library_check - Returns a boolean indicating whether
+   *                                 the locale is supported.
+   */
+  var locale, i;
+
+  if (window.navigator.userLanguage) {
+    locale = isLocaleAvailable(window.navigator.userLanguage, library_check);
   }
 
-  function isMomentLocale(locale) {
-    return _.includes(moment.locales(), locale);
+  if (window.navigator.languages && !locale) {
+    for (i = 0; i < window.navigator.languages.length && !locale; i++) {
+      locale = isLocaleAvailable(window.navigator.languages[i], library_check);
+    }
   }
 
-  function isConverseLocale(locale, supported_locales) {
-    return _.isString(locale) && _.includes(supported_locales, locale);
+  if (window.navigator.browserLanguage && !locale) {
+    locale = isLocaleAvailable(window.navigator.browserLanguage, library_check);
   }
 
-  function getLocale(preferred_locale, isSupportedByLibrary) {
-    if (_.isString(preferred_locale)) {
-      if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
-        return preferred_locale;
-      }
+  if (window.navigator.language && !locale) {
+    locale = isLocaleAvailable(window.navigator.language, library_check);
+  }
+
+  if (window.navigator.systemLanguage && !locale) {
+    locale = isLocaleAvailable(window.navigator.systemLanguage, library_check);
+  }
+
+  return locale || 'en';
+}
+
+function isMomentLocale(locale) {
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a.includes(moment__WEBPACK_IMPORTED_MODULE_28___default.a.locales(), locale);
+}
+
+function isConverseLocale(locale, supported_locales) {
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a.isString(locale) && _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a.includes(supported_locales, locale);
+}
+
+function getLocale(preferred_locale, isSupportedByLibrary) {
+  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a.isString(preferred_locale)) {
+    if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
+      return preferred_locale;
+    }
+  }
+
+  return detectLocale(isSupportedByLibrary) || 'en';
+}
+
+function isLocaleAvailable(locale, available) {
+  /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
+   *
+   * Parameters:
+   *      (String) locale - The locale to check for
+   *      (Function) available - returns a boolean indicating whether the locale is supported
+   */
+  if (available(locale)) {
+    return locale;
+  } else {
+    var sublocale = locale.split("-")[0];
+
+    if (sublocale !== locale && available(sublocale)) {
+      return sublocale;
+    }
+  }
+}
+
+let jed_instance;
+/* harmony default export */ __webpack_exports__["default"] = ({
+  setLocales(preferred_locale, _converse) {
+    _converse.locale = getLocale(preferred_locale, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a.partial(isConverseLocale, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a, _converse.locales));
+    moment__WEBPACK_IMPORTED_MODULE_28___default.a.locale(getLocale(preferred_locale, isMomentLocale));
+  },
+
+  translate(str) {
+    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_27___default.a.isNil(jed_instance)) {
+      return jed__WEBPACK_IMPORTED_MODULE_25___default.a.sprintf.apply(jed__WEBPACK_IMPORTED_MODULE_25___default.a, arguments);
     }
 
-    return detectLocale(isSupportedByLibrary) || 'en';
-  }
+    var t = jed_instance.translate(str);
 
-  function isLocaleAvailable(locale, available) {
-    /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
-     *
-     * Parameters:
-     *      (String) locale - The locale to check for
-     *      (Function) available - returns a boolean indicating whether the locale is supported
-     */
-    if (available(locale)) {
-      return locale;
+    if (arguments.length > 1) {
+      return t.fetch.apply(t, [].slice.call(arguments, 1));
     } else {
-      var sublocale = locale.split("-")[0];
-
-      if (sublocale !== locale && available(sublocale)) {
-        return sublocale;
-      }
+      return t.fetch();
     }
+  },
+
+  fetchTranslations(locale, supported_locales, locale_url) {
+    /* Fetch the translations for the given local at the given URL.
+     *
+     * Parameters:
+     *  (String) locale:            The given i18n locale
+     *  (Array) supported_locales:  List of locales supported
+     *  (String) locale_url:        The URL from which the translations
+     *                              should be fetched.
+     */
+    return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_26___default.a((resolve, reject) => {
+      if (!isConverseLocale(locale, supported_locales) || locale === 'en') {
+        return resolve();
+      }
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', locale_url, true);
+      xhr.setRequestHeader('Accept', "application/json, text/javascript");
+
+      xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 400) {
+          try {
+            const data = window.JSON.parse(xhr.responseText);
+            jed_instance = new jed__WEBPACK_IMPORTED_MODULE_25___default.a(data);
+            resolve();
+          } catch (e) {
+            xhr.onerror(e);
+          }
+        } else {
+          xhr.onerror();
+        }
+      };
+
+      xhr.onerror = e => {
+        const err_message = e ? ` Error: ${e.message}` : '';
+        reject(new Error(`Could not fetch translations. Status: ${xhr.statusText}. ${err_message}`));
+      };
+
+      xhr.send();
+    });
   }
 
-  let jed_instance;
-  return {
-    setLocales(preferred_locale, _converse) {
-      _converse.locale = getLocale(preferred_locale, _.partial(isConverseLocale, _, _converse.locales));
-      moment.locale(getLocale(preferred_locale, isMomentLocale));
-    },
-
-    translate(str) {
-      if (_.isNil(jed_instance)) {
-        return Jed.sprintf.apply(Jed, arguments);
-      }
-
-      var t = jed_instance.translate(str);
-
-      if (arguments.length > 1) {
-        return t.fetch.apply(t, [].slice.call(arguments, 1));
-      } else {
-        return t.fetch();
-      }
-    },
-
-    fetchTranslations(locale, supported_locales, locale_url) {
-      /* Fetch the translations for the given local at the given URL.
-       *
-       * Parameters:
-       *  (String) locale:            The given i18n locale
-       *  (Array) supported_locales:  List of locales supported
-       *  (String) locale_url:        The URL from which the translations
-       *                              should be fetched.
-       */
-      return new Promise((resolve, reject) => {
-        if (!isConverseLocale(locale, supported_locales) || locale === 'en') {
-          return resolve();
-        }
-
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', locale_url, true);
-        xhr.setRequestHeader('Accept', "application/json, text/javascript");
-
-        xhr.onload = function () {
-          if (xhr.status >= 200 && xhr.status < 400) {
-            try {
-              const data = window.JSON.parse(xhr.responseText);
-              jed_instance = new Jed(data);
-              resolve();
-            } catch (e) {
-              xhr.onerror(e);
-            }
-          } else {
-            xhr.onerror();
-          }
-        };
-
-        xhr.onerror = e => {
-          const err_message = e ? ` Error: ${e.message}` : '';
-          reject(new Error(`Could not fetch translations. Status: ${xhr.statusText}. ${err_message}`));
-        };
-
-        xhr.send();
-      });
-    }
-
-  };
 });
 
 /***/ }),

@@ -172,6 +172,7 @@
                             `to="max.frankfurter@localhost" `+
                             `type="chat" xmlns="jabber:client">`+
                     `<body>This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo</body>`+
+                    `<request xmlns="urn:xmpp:receipts"/>`+
                     `<encrypted xmlns="eu.siacs.conversations.axolotl">`+
                         `<header sid="123456789">`+
                             `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+

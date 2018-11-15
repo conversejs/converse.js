@@ -136,11 +136,13 @@ body.reset {
         height: 3em;
     }
 
+    .brand-heading-container {
+        text-align: center;
+    }
+
     .brand-heading {
+        font-size: 200%;
         font-family: var(--heading-font);
-        .icon-conversejs {
-            font-size: 80%;
-        }
     }
 
     .popover {
@@ -194,7 +196,7 @@ body.reset {
     div, span, h1, h2, h3, h4, h5, h6, p, blockquote,
     pre, a, em, img, strong, dl, dt, dd, ol, ul, li,
     fieldset, form, legend, table, caption, tbody,
-    tfoot, thead, tr, th, td, article, aside, canvas, details,
+    tfoot, thead, tr, th, td, article, aside, details,
     embed, figure, figcaption, footer, header, hgroup, menu,
     nav, output, ruby, section, summary, time, mark, audio, video {
         margin: 0;
@@ -252,7 +254,7 @@ body.reset {
         }
     }
 
-    canvas {
+    svg {
         border-radius: var(--chatbox-border-radius);
     }
 
@@ -445,9 +447,9 @@ body.reset {
     }
 
     .avatar {
-        border-radius: 10%;
-        border: 1px solid lightgrey;
-        background: white;
+        border-radius: var(--avatar-border-radius);
+        border: var(--avatar-border);
+        background-color: var(--avatar-background-color);
     }
 
     .activated {

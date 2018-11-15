@@ -5,6 +5,7 @@
 
         .list-toggle {
             font-family: var(--heading-font);
+            font-weight: var(--list-toggle-font-weight);
             display: block;
             color: var(--text-color);
             padding: 0 0 0.5rem 0;
@@ -29,8 +30,9 @@
             word-wrap: break-word;
 
             .list-item-link {
+                color: var(--list-item-link-color);
                 &:hover {
-                    color: var(--dark-link-color);
+                    color: var(--list-item-link-hover-color);
                 }
                 font-size: var(--font-size);
                 line-height: var(--font-size);
@@ -50,9 +52,9 @@
                     font-size: var(--font-size);
                 }
                 &.button-on {
-                    color: var(--link-color);
+                    color: var(--list-item-link-color);
                     &:hover {
-                        color: var(--dark-link-color);
+                        color: var(--list-item-link-hover-color);
                     }
                 }
                 color: var(--subdued-color);
@@ -63,9 +65,9 @@
             }
 
             &.open {
-                background-color: var(--controlbox-head-color);
+                background-color: var(--list-item-open-color);
                 &:hover {
-                    background-color: var(--controlbox-head-color) !important;
+                    background-color: var(--list-item-open-hover-color) !important;
                 }
                 a {
                     color: white;

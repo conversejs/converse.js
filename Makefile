@@ -65,7 +65,7 @@ serve_bg: dev
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=4.0.4 -c
+GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=4.0.5 -c
 
 .PHONY: pot
 pot: dist/converse-no-dependencies-es2015.js
@@ -84,6 +84,8 @@ po2json:
 
 .PHONY: release
 release:
+
+	$(SED) -ri s/_converse.VERSION_NAME = "v[0-9]\+\.[0-9]\+\.[0-9]\+";/ _converse.VERSION_NAME = "$(VERSION)";/ src/headless/converse-core.js
 	$(SED) -ri s/Version:\ [0-9]\+\.[0-9]\+\.[0-9]\+/Version:\ $(VERSION)/ COPYRIGHT
 	$(SED) -ri s/Project-Id-Version:\ Converse\.js\ [0-9]\+\.[0-9]\+\.[0-9]\+/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
 	$(SED) -ri s/\"version\":\ \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\":\ \"$(VERSION)\"/ package.json
@@ -206,13 +208,16 @@ dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @conver
 dist:: build
 
 .PHONY: build
-build:: dev css $(BUILDS) locale.zip css/webfonts.zip
+build:: dev css $(BUILDS) locale.zip css/webfonts.zip sounds.zip
 
 css/webfonts.zip: css/webfonts/*
 	zip -r css/webfonts.zip css/webfonts
 
 locale.zip:
 	zip -r locale.zip locale --exclude *.pot --exclude *.po
+
+sounds.zip:
+	zip -r sounds.zip sounds
 
 ########################################################################
 ## Tests

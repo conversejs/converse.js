@@ -215,6 +215,8 @@
 
             .controlbox-heading {
                 font-family: var(--heading-font);
+                color: var(--controlbox-heading-color);
+                font-weight: var(--controlbox-heading-font-weight);
                 padding: 0;
                 margin: 0.75em 0;
                 font-size: 1.1em;
@@ -224,7 +226,7 @@
             .controlbox-heading__btn {
                 cursor: pointer;
                 align-self: flex-start;
-                font-size: 1.1em;
+                font-size: 1em;
                 padding: 0;
                 margin: 0.75em 0 0.75em 0.75em;
                 &.fa-vcard {
@@ -282,11 +284,17 @@
         .controlbox-panes {
             height: 100%;
             overflow-y: auto;
-            background-color: white;
+            background-color: var(--controlbox-pane-background-color);
+        }
+
+        .controlbox-subtitle {
+            font-size: 90%;
+            padding: 0.5em;
+            text-align: right;
         }
 
         .controlbox-pane {
-            background-color: white;
+            background-color: var(--controlbox-pane-background-color);
             border: 0;
             font-size: var(--font-size);
             left: 0;

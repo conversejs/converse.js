@@ -757,6 +757,16 @@ then Converse will fall back to trying to determine the browser's language
 and fetching those translations, or if that fails the default English texts
 will be used.
 
+idle_presence_timeout
+---------------------
+
+* Default:  ``300``
+
+The amount of seconds after which the user is considered to be idle
+and an idle presence according to XEP-0319 is sent.
+
+If the given value is negative or ``0``, this feature is disabled.
+
 jid
 ---
 
@@ -1369,6 +1379,16 @@ If set to ``false``, this feature is disabled.
 
 If set to ``a resource name``, Converse will synchronize only with a client that has that particular resource assigned to it.
 
+theme
+-----
+
+* Default: ``default``
+
+Valid options: ``default``, ``concord``
+
+Let's you set a color theme for Converse.
+
+
 trusted
 -------
 
@@ -1399,6 +1419,11 @@ open, what features the XMPP server supports and what your online status was.
 Clearing the cache makes Converse much slower when the user logs
 in again, because all data needs to be fetch anew.
 
+If ``trusted`` is set to ``on`` or ``off`` the "This is a trusted device"
+checkbox in the login form will not appear at all and cannot be changed by the user.
+``on`` means to trust the device as stated above and use ``localStorage``. ``off``
+means to not trust the device (cache is cleared when the user logs out) and to use
+``sessionStorage``.
 
 time_format
 -----------

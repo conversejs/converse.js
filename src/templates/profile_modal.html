@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="user-profile-modal-label">{{{o.heading_profile}}}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="{{{o.label_close}}}"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{{o.label_close}}}"><span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body">
                 {[ if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ]}
@@ -26,10 +26,10 @@
                                             <img alt="{{{o.alt_avatar}}}" class="img-thumbnail avatar align-self-center" height="100px" width="100px" src="data:{{{o.image_type}}};base64,{{{o.image}}}"/>
                                         {[ } ]}
                                         {[ if (!o.image) { ]}
-                                            <canvas class="avatar" height="100px" width="100px"/>
+                                            <canvas class="avatar" height="100px" width="100px"></canvas>
                                         {[ } ]}
                                     </a>
-                                    <input class="hidden" name="image" type="file">
+                                    <input class="hidden" name="image" type="file"/>
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
@@ -40,23 +40,23 @@
                             </div>
                             <div class="form-group">
                                 <label for="vcard-fullname" class="col-form-label">{{{o.label_fullname}}}:</label>
-                                <input id="vcard-fullname" type="text" class="form-control" name="fn" value="{{{o.fullname}}}">
+                                <input id="vcard-fullname" type="text" class="form-control" name="fn" value="{{{o.fullname}}}"/>
                             </div>
                             <div class="form-group">
                                 <label for="vcard-nickname" class="col-form-label">{{{o.label_nickname}}}:</label>
-                                <input id="vcard-nickname" type="text" class="form-control" name="nickname" value="{{{o.nickname}}}">
+                                <input id="vcard-nickname" type="text" class="form-control" name="nickname" value="{{{o.nickname}}}"/>
                             </div>
                             <div class="form-group">
                                 <label for="vcard-url" class="col-form-label">{{{o.label_url}}}:</label>
-                                <input id="vcard-url" type="url" class="form-control" name="url" value="{{{o.url}}}">
+                                <input id="vcard-url" type="url" class="form-control" name="url" value="{{{o.url}}}"/>
                             </div>
                             <div class="form-group">
                                 <label for="vcard-email" class="col-form-label">{{{o.label_email}}}:</label>
-                                <input id="vcard-email" type="email" class="form-control" name="email" value="{{{o.email}}}">
+                                <input id="vcard-email" type="email" class="form-control" name="email" value="{{{o.email}}}"/>
                             </div>
                             <div class="form-group">
                                 <label for="vcard-role" class="col-form-label">{{{o.label_role}}}:</label>
-                                <input id="vcard-role" type="text" class="form-control" name="role" value="{{{o.role}}}" aria-describedby="vcard-role-help">
+                                <input id="vcard-role" type="text" class="form-control" name="role" value="{{{o.role}}}" aria-describedby="vcard-role-help"/>
                                 <small id="vcard-role-help" class="form-text text-muted">{{{o.label_role_help}}}</small>
                             </div>
                             <hr/>
@@ -87,7 +87,7 @@
                                         <li class="list-group-item nopadding active">
                                             <label>
                                             <input type="checkbox" class="select-all" title="{{{o.__('Select all')}}}"
-                                                   aria-label="{{{o.__('Checkbox to select fingerprints of all other OMEMO devices')}}}">
+                                                   aria-label="{{{o.__('Checkbox to select fingerprints of all other OMEMO devices')}}}"/>
                                             {{{o.__('Other OMEMO-enabled devices')}}}
                                             </label>
                                         </li>
@@ -96,7 +96,7 @@
                                             <li class="fingerprint-removal-item list-group-item nopadding">
                                                 <label>
                                                 <input type="checkbox" value="{{{device.get('id')}}}"
-                                                       aria-label="{{{o.__('Checkbox for selecting the following fingerprint')}}}">
+                                                       aria-label="{{{o.__('Checkbox for selecting the following fingerprint')}}}"/>
                                                 <span class="fingerprint">{{{o.utils.formatFingerprint(device.get('bundle').fingerprint)}}}</span>
                                                 </label>
                                             </li>
@@ -104,7 +104,7 @@
                                             <li class="fingerprint-removal-item list-group-item nopadding">
                                                 <label>
                                                 <input type="checkbox" value="{{{device.get('id')}}}"
-                                                       aria-label="{{{o.__('Checkbox for selecting the following fingerprint')}}}">
+                                                       aria-label="{{{o.__('Checkbox for selecting the following fingerprint')}}}"/>
                                                 <span>{{{o.__('Device without a fingerprint')}}}</span>
                                                 </label>
                                             </li>

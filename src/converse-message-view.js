@@ -12,7 +12,7 @@ import tpl_file_progress from "templates/file_progress.html";
 import tpl_info from "templates/info.html";
 import tpl_message from "templates/message.html";
 import tpl_message_versions_modal from "templates/message_versions_modal.html";
-import u from "utils/emoji";
+import u from "@converse/headless/utils/emoji";
 import xss from "xss";
 
 const { Backbone, _, moment } = converse.env;
@@ -86,7 +86,7 @@ converse.plugins.add('converse-message-view', {
                 if (this.model.changed.progress) {
                     return this.renderFileUploadProgresBar();
                 }
-                if (_.filter(['correcting', 'message', 'type', 'upload'],
+                if (_.filter(['correcting', 'message', 'type', 'upload', 'received'],
                              prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop)).length) {
                     await this.render();
                 }
@@ -155,12 +155,11 @@ converse.plugins.add('converse-message-view', {
                         _.partial(u.addEmoji, _converse, _)
                     )(text);
                 }
-                const promises = [];
-                promises.push(u.renderImageURLs(_converse, msg_content));
+                const promise = u.renderImageURLs(_converse, msg_content);
                 if (this.model.get('type') !== 'headline') {
-                    promises.push(this.renderAvatar(msg));
+                    this.renderAvatar(msg);
                 }
-                await Promise.all(promises);
+                await promise;
                 this.replaceElement(msg);
                 this.model.collection.trigger('rendered', this);
             },
@@ -168,10 +167,10 @@ converse.plugins.add('converse-message-view', {
             renderErrorMessage () {
                 const moment_time = moment(this.model.get('time')),
                       msg = u.stringToElement(
-                    tpl_info(_.extend(this.model.toJSON(), {
-                        'extra_classes': 'chat-error',
-                        'isodate': moment_time.format()
-                    })));
+                        tpl_info(_.extend(this.model.toJSON(), {
+                            'extra_classes': 'chat-error',
+                            'isodate': moment_time.format()
+                        })));
                 return this.replaceElement(msg);
             },
 

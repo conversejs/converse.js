@@ -12,6 +12,7 @@ import _FormData from "formdata-polyfill";
 import bootstrap from "bootstrap";
 import converse from "@converse/headless/converse-core";
 import tpl_chat_status_modal from "templates/chat_status_modal.html";
+import tpl_client_info_modal from "templates/client_info_modal.html";
 import tpl_profile_modal from "templates/profile_modal.html";
 import tpl_profile_view from "templates/profile_view.html";
 import tpl_status_option from "templates/status_option.html";
@@ -185,11 +186,37 @@ converse.plugins.add('converse-profile', {
             }
         });
 
+        _converse.ClientInfoModal = _converse.BootstrapModal.extend({
+
+            toHTML () {
+                return tpl_client_info_modal(
+                    _.extend(
+                        this.model.toJSON(),
+                        this.model.vcard.toJSON(), {
+                            '__': __,
+                            'modal_title': __('About'),
+                            'version_name': _converse.VERSION_NAME,
+                            'first_subtitle': __( '%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s',
+                                '<a target="_blank" rel="nofollow" href="https://conversejs.org">',
+                                '</a>',
+                                '<a target="_blank" rel="nofollow" href="https://opkode.com">'
+                            ),
+                            'second_subtitle': __('%1$s Translate %2$s it into your own language',
+                                '<a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">',
+                                '</a>'
+                            )
+                        }
+                    )
+                );
+            }
+        });
+
         _converse.XMPPStatusView = _converse.VDOMViewWithAvatar.extend({
             tagName: "div",
             events: {
                 "click a.show-profile": "showProfileModal",
                 "click a.change-status": "showStatusChangeModal",
+                "click .show-client-info": "showClientInfoModal",
                 "click .logout": "logOut"
             },
 
@@ -212,6 +239,7 @@ converse.plugins.add('converse-profile', {
                     'title_change_settings': __('Change settings'),
                     'title_change_status': __('Click to change your chat status'),
                     'title_log_out': __('Log out'),
+                    'info_details': __('Show details about this chat client'),
                     'title_your_profile': __('Your profile')
                 }));
             },
@@ -232,6 +260,13 @@ converse.plugins.add('converse-profile', {
                     this.status_modal = new _converse.ChatStatusModal({model: this.model});
                 }
                 this.status_modal.show(ev);
+            },
+
+            showClientInfoModal(ev) {
+                if (_.isUndefined(this.client_info_modal)) {
+                    this.client_info_modal = new _converse.ClientInfoModal({model: this.model});
+                }
+                this.client_info_modal.show(ev);
             },
 
             logOut (ev) {

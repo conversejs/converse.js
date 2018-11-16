@@ -66943,6 +66943,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           }
 
           const msg = await this.createMessage(stanza, original_stanza);
+
+          if (!_.isNull(forwarded) && msg && msg.get('sender') === 'me') {
+            msg.save({
+              'received': moment().format()
+            });
+          }
+
           this.incrementUnreadMsgCounter(msg);
         }
 

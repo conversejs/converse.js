@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-15 12:25+0100\n"
-"PO-Revision-Date: 2018-11-11 07:07+0000\n"
+"PO-Revision-Date: 2018-11-17 15:07+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -899,6 +899,8 @@ msgid ""
 "keys and all previously encrypted messages will no longer be ecryptable on "
 "this device."
 msgstr ""
+"Realmente quere xerar unhas novas chaves OMEMO? Esto eliminará as antigas e "
+"todas as mensaxes anteriores cifradas non se poderán ler neste dispositivo."
 
 #: dist/converse-no-dependencies.js:38323
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -1008,18 +1010,20 @@ msgstr "Mensaxe de estado persoal"
 
 #: dist/converse-no-dependencies.js:39515
 msgid "About"
-msgstr ""
+msgstr "Acerca de"
 
 #: dist/converse-no-dependencies.js:39517
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
+"Cliente de %1$s código aberto %2$s para conversas XMPP proporcionado por  %3$"
+"s Opkode %2$s"
 
 #: dist/converse-no-dependencies.js:39518
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
-msgstr ""
+msgstr "%1$sTradúzao%2$s para o seu idioma"
 
 #: dist/converse-no-dependencies.js:39542
 #, javascript-format
@@ -1039,9 +1043,8 @@ msgid "Log out"
 msgstr "Desconectar"
 
 #: dist/converse-no-dependencies.js:39548
-#, fuzzy
 msgid "Show details about this chat client"
-msgstr "Mostrar máis detalles sobre esta conversa en grupo"
+msgstr "Mostrar detalles sobre esta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:39549
 msgid "Your profile"
@@ -1266,9 +1269,8 @@ msgid "Add a contact"
 msgstr "Engadir un contacto"
 
 #: dist/converse-no-dependencies.js:41808
-#, fuzzy
 msgid "Re-sync your contacts"
-msgstr "Os meus contactos"
+msgstr "Sincronizar contactos"
 
 #: dist/converse-no-dependencies.js:43586
 msgid "Sorry, could not determine upload URL."
@@ -1525,7 +1527,7 @@ msgstr "esta conversa en grupo está limitada a só membros"
 
 #: dist/converse-no-dependencies.js:74937
 msgid "Uploading file:"
-msgstr ""
+msgstr "Subindo ficheiro:"
 
 #: dist/converse-no-dependencies.js:75382
 msgid "XMPP Username:"
@@ -1587,7 +1589,7 @@ msgstr "Pegada dixital OMEMO de este dispositivo"
 
 #: dist/converse-no-dependencies.js:75797
 msgid "Generate new keys and fingerprint"
-msgstr ""
+msgstr "Xerar novas chaves e pegada dixital"
 
 #: dist/converse-no-dependencies.js:75801
 msgid "Select all"
@@ -1666,33 +1668,28 @@ msgid "The User's Profile Image"
 msgstr "Imaxe de perfil do usuario"
 
 #: dist/converse-no-dependencies.js:76802
-#, fuzzy
 msgid "Full Name:"
-msgstr "Nome completo"
+msgstr "Nome completo:"
 
 #: dist/converse-no-dependencies.js:76808
-#, fuzzy
 msgid "XMPP Address:"
-msgstr "Enderezo XMPP"
+msgstr "Enderezo XMPP:"
 
 #: dist/converse-no-dependencies.js:76816
-#, fuzzy
 msgid "Nickname:"
-msgstr "Alcume"
+msgstr "Alcume:"
 
 #: dist/converse-no-dependencies.js:76824
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: dist/converse-no-dependencies.js:76834
-#, fuzzy
 msgid "Email:"
-msgstr "Correo-e"
+msgstr "Correo-e:"
 
 #: dist/converse-no-dependencies.js:76844
-#, fuzzy
 msgid "Role:"
-msgstr "Rol"
+msgstr "Rol:"
 
 #: dist/converse-no-dependencies.js:76852
 msgid "OMEMO Fingerprints"

@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.6 (unreleased)
+
+- #1331 Fix missing checkmarks in old muc messages
+
 ## 4.0.5 (2018-11-15)
 
 - Error `FATAL: TypeError: Cannot read property 'extend' of undefined` when using `embedded` view mode.

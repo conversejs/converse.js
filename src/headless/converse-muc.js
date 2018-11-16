@@ -974,6 +974,9 @@ converse.plugins.add('converse-muc', {
                         u.safeSave(this, {'subject': {'author': sender, 'text': subject}});
                     }
                     const msg = await this.createMessage(stanza, original_stanza);
+                    if (!_.isNull(forwarded) && msg && msg.get('sender')  === 'me') {
+                        msg.save({'received': moment().format()});
+                    }
                     this.incrementUnreadMsgCounter(msg);
                 }
                 if (sender !== this.get('nick')) {

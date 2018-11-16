@@ -3,10 +3,10 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-15 12:25+0100\n"
-"PO-Revision-Date: 2018-10-28 22:15+0000\n"
+"PO-Revision-Date: 2018-11-17 15:07+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
-"conversejs/translations/nb/>\n"
+"conversejs/translations/nb_NO/>\n"
 "Language: nb\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -934,6 +934,9 @@ msgid ""
 "keys and all previously encrypted messages will no longer be ecryptable on "
 "this device."
 msgstr ""
+"Er du sikker på at du ønsker å generere nye OMEMO-nøkler? Dette vil fjerne "
+"gamle nøkler, og alle tidligere krypterte meldinger vil ikke lenger kunne "
+"krypteres på denne enheten."
 
 #: dist/converse-no-dependencies.js:38323
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -1045,13 +1048,13 @@ msgstr "Personlig statusmelding"
 
 #: dist/converse-no-dependencies.js:39515
 msgid "About"
-msgstr ""
+msgstr "Om"
 
 #: dist/converse-no-dependencies.js:39517
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
-msgstr ""
+msgstr "%1$sFriprog%2$s-XMPP-sludreklient, av %3$sOpkode%2$s."
 
 #: dist/converse-no-dependencies.js:39518
 #, javascript-format
@@ -1581,7 +1584,7 @@ msgstr "Dette rommet er forbeholdt medlemmer"
 
 #: dist/converse-no-dependencies.js:74937
 msgid "Uploading file:"
-msgstr ""
+msgstr "Laster opp fil:"
 
 #: dist/converse-no-dependencies.js:75382
 msgid "XMPP Username:"
@@ -1645,7 +1648,7 @@ msgstr "Denne enhetens OMEMO-fingeravtrykk"
 
 #: dist/converse-no-dependencies.js:75797
 msgid "Generate new keys and fingerprint"
-msgstr ""
+msgstr "Generer nye nøkler og fingeravtrykk"
 
 #: dist/converse-no-dependencies.js:75801
 #, fuzzy
@@ -1742,7 +1745,7 @@ msgstr "Kallenavn"
 
 #: dist/converse-no-dependencies.js:76824
 msgid "URL:"
-msgstr ""
+msgstr "Nettadresse:"
 
 #: dist/converse-no-dependencies.js:76834
 #, fuzzy

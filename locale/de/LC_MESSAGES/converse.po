@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-15 12:25+0100\n"
-"PO-Revision-Date: 2018-11-15 11:19+0000\n"
-"Last-Translator: JC Brand <jc@opkode.com>\n"
+"PO-Revision-Date: 2018-11-17 15:07+0000\n"
+"Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
 "Language: de\n"
@@ -233,7 +233,7 @@ msgstr "%1$s1 tippt nicht mehr"
 
 #: dist/converse-no-dependencies.js:34591
 msgid "Unencryptable OMEMO message"
-msgstr ""
+msgstr "Unentschlüsselbare OMEMO Nachricht"
 
 #: dist/converse-no-dependencies.js:34830
 #: dist/converse-no-dependencies.js:34876
@@ -1003,7 +1003,7 @@ msgstr "Online"
 
 #: dist/converse-no-dependencies.js:39478
 msgid "Away for long"
-msgstr "länger abwesend"
+msgstr "Lange abwesend"
 
 #: dist/converse-no-dependencies.js:39479
 msgid "Change chat status"
@@ -1015,7 +1015,7 @@ msgstr "Persönliche Statusnachricht"
 
 #: dist/converse-no-dependencies.js:39515
 msgid "About"
-msgstr ""
+msgstr "Über"
 
 #: dist/converse-no-dependencies.js:39517
 #, javascript-format
@@ -1604,7 +1604,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:75801
 msgid "Select all"
-msgstr ""
+msgstr "Alle auswählen"
 
 #: dist/converse-no-dependencies.js:75803
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
@@ -1680,45 +1680,40 @@ msgid "The User's Profile Image"
 msgstr "Benutzerprofilbild"
 
 #: dist/converse-no-dependencies.js:76802
-#, fuzzy
 msgid "Full Name:"
-msgstr "Name"
+msgstr "Name:"
 
 #: dist/converse-no-dependencies.js:76808
-#, fuzzy
 msgid "XMPP Address:"
-msgstr "XMPP Adresse"
+msgstr "XMPP Adresse:"
 
 #: dist/converse-no-dependencies.js:76816
-#, fuzzy
 msgid "Nickname:"
-msgstr "Spitzname"
+msgstr "Spitzname:"
 
 #: dist/converse-no-dependencies.js:76824
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: dist/converse-no-dependencies.js:76834
-#, fuzzy
 msgid "Email:"
-msgstr "E-Mail"
+msgstr "E-Mail:"
 
 #: dist/converse-no-dependencies.js:76844
-#, fuzzy
 msgid "Role:"
-msgstr "Rolle"
+msgstr "Rolle:"
 
 #: dist/converse-no-dependencies.js:76852
 msgid "OMEMO Fingerprints"
-msgstr ""
+msgstr "OMEMO Fingerabdrücke"
 
 #: dist/converse-no-dependencies.js:76876
 msgid "Trusted"
-msgstr ""
+msgstr "Vertrauenswürdig"
 
 #: dist/converse-no-dependencies.js:76890
 msgid "Untrusted"
-msgstr ""
+msgstr "Nicht vertrauenswürdig"
 
 #: dist/converse-no-dependencies.js:76904
 msgid "Refresh"

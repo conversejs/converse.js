@@ -953,7 +953,8 @@ converse.plugins.add('converse-muc', {
                 this.fetchFeaturesIfConfigurationChanged(stanza);
 
                 const original_stanza = stanza,
-                      forwarded = stanza.querySelector('forwarded');
+                      forwarded = sizzle(`forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).pop();
+
                 if (!_.isNull(forwarded)) {
                     stanza = forwarded.querySelector('message');
                 }

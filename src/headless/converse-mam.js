@@ -238,11 +238,12 @@ converse.plugins.add('converse-mam', {
                                 this.clearSpinner();
                                 _.each(messages, message_handler);
                             },
-                            () => { // Error
+                            e => { // Error
                                 this.clearSpinner();
                                 _converse.log(
                                     "Error or timeout while trying to fetch "+
                                     "archived messages", Strophe.LogLevel.ERROR);
+                                _converse.log(e, Strophe.LogLevel.ERROR);
                             }
                         );
                     },

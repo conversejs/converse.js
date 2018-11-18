@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-15 12:25+0100\n"
-"PO-Revision-Date: 2018-11-04 12:23+0000\n"
-"Last-Translator: aitzol berasategi <aitzol@disroot.org>\n"
+"PO-Revision-Date: 2018-11-22 18:07+0000\n"
+"Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
 "Language: eu\n"
@@ -571,7 +571,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:36372
 #, javascript-format
 msgid "Error: couldn't find a groupchat participant \"%1$s\""
-msgstr "Errorea: ezin izan da gelako parte-hartzaile bat aurkitu \"%1$s1\""
+msgstr "Errorea: ezin izan da gelako parte-hartzaile bat aurkitu \"%1$s\""
 
 #: dist/converse-no-dependencies.js:36382
 msgid ""
@@ -1718,7 +1718,7 @@ msgstr "Kendu kontaktuetatik"
 #: dist/converse-no-dependencies.js:77119
 #, javascript-format
 msgid "Download audio file \"%1$s\""
-msgstr "Deskargatu audio fitxategia \"%1$s1\""
+msgstr "Deskargatu audio fitxategia \"%1$s\""
 
 #: dist/converse-no-dependencies.js:77137
 #, javascript-format
@@ -1737,7 +1737,7 @@ msgstr "Deskargatu"
 #: dist/converse-no-dependencies.js:77199
 #, javascript-format
 msgid "Download video file \"%1$s\""
-msgstr "Deskargatu bideo fitxategia \"%1$s1\""
+msgstr "Deskargatu bideo fitxategia \"%1$s\""
 
 #~ msgid "Click to write as a normal (non-spoiler) message"
 #~ msgstr "Klikatu mezua ohiko moduan idazteko"

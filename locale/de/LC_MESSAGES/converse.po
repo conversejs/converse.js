@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-15 12:25+0100\n"
-"PO-Revision-Date: 2018-11-17 15:07+0000\n"
-"Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
+"PO-Revision-Date: 2018-11-18 23:11+0000\n"
+"Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
 "Language: de\n"
@@ -170,23 +170,23 @@ msgstr ""
 #: dist/converse-no-dependencies.js:32663
 #, javascript-format
 msgid "%1$s has gone offline"
-msgstr "%1$s1 hat sich abgemeldet"
+msgstr "%1$s hat sich abgemeldet"
 
 #: dist/converse-no-dependencies.js:32665
 #: dist/converse-no-dependencies.js:34554
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr "%1$s1 ist jetzt abwesend"
+msgstr "%1$s ist jetzt abwesend"
 
 #: dist/converse-no-dependencies.js:32667
 #, javascript-format
 msgid "%1$s is busy"
-msgstr "%1$s1 ist beschäftigt"
+msgstr "%1$s ist beschäftigt"
 
 #: dist/converse-no-dependencies.js:32669
 #, javascript-format
 msgid "%1$s is online"
-msgstr "%1$s1 ist jetzt online"
+msgstr "%1$s ist jetzt online"
 
 #: dist/converse-no-dependencies.js:33364
 msgid "Username"
@@ -229,7 +229,7 @@ msgstr "Schreibt nicht mehr auf dem anderen Gerät"
 #: dist/converse-no-dependencies.js:34551
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr "%1$s1 tippt nicht mehr"
+msgstr "%1$s tippt nicht mehr"
 
 #: dist/converse-no-dependencies.js:34591
 msgid "Unencryptable OMEMO message"
@@ -1296,7 +1296,7 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
 msgstr ""
-"Die Datei konnte nicht hochgeladen werden. Der Server antwortete: \"%1$s1\""
+"Die Datei konnte nicht hochgeladen werden. Der Server antwortete: \"%1$s\""
 
 #: dist/converse-no-dependencies.js:43636
 msgid "Sorry, could not succesfully upload your file."
@@ -1314,8 +1314,8 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
-"Die Größe deiner Datei, %1$s1, überschreitet das erlaubte Maximum vom "
-"Server, welches bei %2$s2 liegt."
+"Die Größe deiner Datei, %1$s, überschreitet das erlaubte Maximum vom Server, "
+"welches bei %2$s liegt."
 
 #: dist/converse-no-dependencies.js:44190
 msgid "Sorry, an error occurred:"

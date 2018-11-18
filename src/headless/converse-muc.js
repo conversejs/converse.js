@@ -633,7 +633,7 @@ converse.plugins.add('converse-muc', {
                         disco_entity.destroy();
                     }
                 }
-                if (_converse.connection.connected) {
+                if (_converse.api.connection.connected()) {
                     this.sendUnavailablePresence(exit_msg);
                 }
                 u.safeSave(this, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});

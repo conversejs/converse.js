@@ -19,6 +19,10 @@ const BOSH_SESSION_ID = 'converse.bosh-session';
 
 converse.plugins.add('converse-bosh', {
 
+    enabled () {
+        return true;
+    },
+
     initialize () {
         const { _converse } = this;
 
@@ -35,9 +39,15 @@ converse.plugins.add('converse-bosh', {
                 _converse.bosh_session.browserStorage = new BrowserStorage.session(id);
                 await new Promise(resolve => _converse.bosh_session.fetch({'success': resolve, 'error': resolve}));
             }
-            if (_converse.jid && _converse.bosh_session.get('jid') === _converse.jid) {
-                _converse.bosh_session.clear({'silent': true });
-                _converse.bosh_session.save({'jid': _converse.jid, id});
+            if (_converse.jid) {
+                if (_converse.bosh_session.get('jid') !== _converse.jid) {
+                    const jid = await _converse.setUserJID(_converse.jid);
+                    _converse.bosh_session.clear({'silent': true });
+                    _converse.bosh_session.save({jid});
+                }
+            } else { // Keepalive
+                const jid = _converse.bosh_session.get('jid');
+                jid && await _converse.setUserJID();
             }
             return _converse.bosh_session;
         }
@@ -45,17 +55,17 @@ converse.plugins.add('converse-bosh', {
 
         _converse.startNewPreboundBOSHSession = function () {
             if (!_converse.prebind_url) {
-                throw new Error(
-                    "attemptPreboundSession: If you use prebind then you MUST supply a prebind_url");
+                throw new Error("startNewPreboundBOSHSession: If you use prebind then you MUST supply a prebind_url");
             }
             const xhr = new XMLHttpRequest();
             xhr.open('GET', _converse.prebind_url, true);
             xhr.setRequestHeader('Accept', 'application/json, text/javascript');
-            xhr.onload = function () {
+            xhr.onload = async function () {
                 if (xhr.status >= 200 && xhr.status < 400) {
                     const data = JSON.parse(xhr.responseText);
+                    const jid = await _converse.setUserJID(data.jid);
                     _converse.connection.attach(
-                        data.jid,
+                        jid,
                         data.sid,
                         data.rid,
                         _converse.onConnectStatusChanged
@@ -79,9 +89,6 @@ converse.plugins.add('converse-bosh', {
 
 
         _converse.restoreBOSHSession = async function () {
-            if (!_converse.api.connection.isType('bosh')) {
-                return false;
-            }
             const jid = (await initBOSHSession()).get('jid');
             if (jid) {
                 try {
@@ -119,9 +126,7 @@ converse.plugins.add('converse-bosh', {
             }
         });
 
-        _converse.api.listen.on('addClientFeatures',
-            () => _converse.api.disco.own.features.add(Strophe.NS.BOSH)
-        );
+        _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.BOSH));
 
         /************************ END Event Handlers ************************/
 

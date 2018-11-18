@@ -850,8 +850,8 @@ converse.plugins.add('converse-chatboxes', {
                             'to': this.get('jid'),
                             'type': 'chat'
                         }).c(this.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
-                          .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
-                          .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
+                        .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                        .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
                     );
                 }
             },

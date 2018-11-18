@@ -2,6 +2,7 @@
 
 ## 6.0.0 (Unreleased)
 
+- #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
 - #1691 Fix `collection.chatbox is undefined` errors
 - Prevent editing of sent file uploads.
 

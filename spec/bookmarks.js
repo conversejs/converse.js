@@ -404,8 +404,8 @@
 
 
         it("can be retrieved from the XMPP server", mock.initConverse(
-            {'connection': ['send']}, ['chatBoxesFetched', 'roomsPanelRendered', 'rosterGroupsFetched'], {},
-            async function (done, _converse) {
+                null, ['chatBoxesFetched', 'roomsPanelRendered', 'rosterGroupsFetched'], {},
+                async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
@@ -421,25 +421,12 @@
              *  </pubsub>
              *  </iq>
              */
-            let IQ_id;
-            const call = await u.waitUntil(() =>
-                _.filter(
-                    _converse.connection.send.calls.all(),
-                    call => {
-                        const stanza = call.args[0];
-                        if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
-                            return;
-                        }
-                        if (sizzle('items[node="storage:bookmarks"]', stanza).length) {
-                            IQ_id = stanza.getAttribute('id');
-                            return true;
-                        }
-                    }
-                ).pop()
-            );
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const sent_stanza = await u.waitUntil(
+                () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
 
-            expect(Strophe.serialize(call.args[0])).toBe(
-                `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(sent_stanza)).toBe(
+                `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
                 '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                     '<items node="storage:bookmarks"/>'+
                 '</pubsub>'+
@@ -469,7 +456,7 @@
             expect(_converse.bookmarks.models.length).toBe(0);
 
             spyOn(_converse.bookmarks, 'onBookmarksReceived').and.callThrough();
-            var stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':IQ_id})
+            var stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
                 .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                     .c('items', {'node': 'storage:bookmarks'})
                         .c('item', {'id': 'current'})
@@ -495,7 +482,7 @@
         describe("The rooms panel", function () {
 
             it("shows a list of bookmarks", mock.initConverse(
-                {'connection': ['send']}, ['rosterGroupsFetched'], {},
+                null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(
@@ -505,31 +492,19 @@
                 );
                 test_utils.openControlBox();
 
-                let IQ_id;
-                const call = await u.waitUntil(() =>
-                    _.filter(
-                        _converse.connection.send.calls.all(),
-                        call => {
-                            const stanza = call.args[0];
-                            if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
-                                return;
-                            }
-                            if (sizzle('items[node="storage:bookmarks"]', stanza).length) {
-                                IQ_id = stanza.getAttribute('id');
-                                return true;
-                            }
-                        }
-                    ).pop()
-                );
-                expect(Strophe.serialize(call.args[0])).toBe(
-                    `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="get" xmlns="jabber:client">`+
+                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                const sent_stanza = await u.waitUntil(
+                    () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
+
+                expect(Strophe.serialize(sent_stanza)).toBe(
+                    `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
                     '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                         '<items node="storage:bookmarks"/>'+
                     '</pubsub>'+
                     '</iq>'
                 );
 
-                const stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':IQ_id})
+                const stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
                     .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'})
                             .c('item', {'id': 'current'})
@@ -583,7 +558,7 @@
 
 
             it("remembers the toggle state of the bookmarks list", mock.initConverse(
-                {'connection': ['send']}, ['rosterGroupsFetched'], {},
+                null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 test_utils.openControlBox();
@@ -593,31 +568,19 @@
                     ['http://jabber.org/protocol/pubsub#publish-options']
                 );
 
-                let IQ_id;
-                const call = await u.waitUntil(() =>
-                    _.filter(
-                        _converse.connection.send.calls.all(),
-                        call => {
-                            const stanza = call.args[0];
-                            if (!(stanza instanceof Element) || stanza.nodeName !== 'iq') {
-                                return;
-                            }
-                            if (sizzle('items[node="storage:bookmarks"]', stanza).length) {
-                                IQ_id = stanza.getAttribute('id');
-                                return true;
-                            }
-                        }
-                    ).pop()
-                );
-                expect(Strophe.serialize(call.args[0])).toBe(
-                    `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="get" xmlns="jabber:client">`+
+                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                const sent_stanza = await u.waitUntil(
+                    () => IQ_stanzas.filter(s => sizzle('items[node="storage:bookmarks"]', s).length).pop());
+
+                expect(Strophe.serialize(sent_stanza)).toBe(
+                    `<iq from="romeo@montague.lit/orchard" id="${sent_stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
                     '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                         '<items node="storage:bookmarks"/>'+
                     '</pubsub>'+
                     '</iq>'
                 );
 
-                const stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':IQ_id})
+                const stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':sent_stanza.getAttribute('id')})
                     .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
                         .c('items', {'node': 'storage:bookmarks'})
                             .c('item', {'id': 'current'})

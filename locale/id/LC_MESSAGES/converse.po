@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-15 12:25+0100\n"
-"PO-Revision-Date: 2018-07-02 15:36+0200\n"
-"Last-Translator: Bitelaserkhalif 555 <khalif.ops@gmail.com>\n"
+"PO-Revision-Date: 2018-11-22 18:07+0000\n"
+"Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/conversejs/"
 "translations/id/>\n"
 "Language: id\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.0-dev\n"
+"X-Generator: Weblate 3.3-dev\n"
 
 #: dist/converse-no-dependencies.js:30588
 #: dist/converse-no-dependencies.js:30645
@@ -1450,10 +1450,10 @@ msgid "Sorry, you're not allowed to register in this groupchat"
 msgstr "Anda tak diizinkan untuk membuat ruangan baru"
 
 #: dist/converse-no-dependencies.js:50313
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, there was an error while trying to add %1$s as a contact."
 msgstr ""
-"Maaf, ada sesuatu kesalahan saat mencoba menambahkan %1$s1 sebagai kontak"
+"Maaf, ada sesuatu kesalahan saat mencoba menambahkan %1$s sebagai kontak"
 
 #: dist/converse-no-dependencies.js:50530
 #, fuzzy

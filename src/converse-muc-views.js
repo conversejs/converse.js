@@ -8,7 +8,7 @@ import "converse-modal";
 import Awesomplete from "awesomplete";
 import _FormData from "formdata-polyfill";
 import converse from "@converse/headless/converse-core";
-import muc_utils from "utils/muc";
+import muc_utils from "@converse/headless/utils/muc";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.html";
 import tpl_chatarea from "templates/chatarea.html";
 import tpl_chatroom from "templates/chatroom.html";
@@ -1756,8 +1756,8 @@ converse.plugins.add('converse-muc-views', {
             className: 'controlbox-section',
             id: 'chatrooms',
             events: {
-                'click a.chatbox-btn.show-add-muc-modal': 'showAddRoomModal',
-                'click a.chatbox-btn.show-list-muc-modal': 'showListRoomsModal'
+                'click a.controlbox-heading__btn.show-add-muc-modal': 'showAddRoomModal',
+                'click a.controlbox-heading__btn.show-list-muc-modal': 'showListRoomsModal'
             },
 
             render () {

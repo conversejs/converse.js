@@ -6,9 +6,6 @@
  * Licensed under the Mozilla Public License
  */
 @import "font-awesome";
-@import "bourbon";
-@import "variables";
-
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/mixins";
@@ -40,6 +37,10 @@
     @import "bootstrap/scss/popover";
     @import "bootstrap/scss/utilities";
 }
+
+@import "bourbon";
+@import "variables";
+
 @import "core";
 @import "forms";
 @import "chatbox";

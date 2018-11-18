@@ -136,11 +136,13 @@ body.reset {
         height: 3em;
     }
 
+    .brand-heading-container {
+        text-align: center;
+    }
+
     .brand-heading {
+        font-size: 200%;
         font-family: var(--heading-font);
-        .icon-conversejs {
-            font-size: 80%;
-        }
     }
 
     .popover {
@@ -194,7 +196,7 @@ body.reset {
     div, span, h1, h2, h3, h4, h5, h6, p, blockquote,
     pre, a, em, img, strong, dl, dt, dd, ol, ul, li,
     fieldset, form, legend, table, caption, tbody,
-    tfoot, thead, tr, th, td, article, aside, canvas, details,
+    tfoot, thead, tr, th, td, article, aside, details,
     embed, figure, figcaption, footer, header, hgroup, menu,
     nav, output, ruby, section, summary, time, mark, audio, video {
         margin: 0;
@@ -252,7 +254,7 @@ body.reset {
         }
     }
 
-    canvas {
+    svg {
         border-radius: var(--chatbox-border-radius);
     }
 
@@ -272,6 +274,10 @@ body.reset {
                 padding: 0.25rem 0;
             }
         }
+
+        .modal-footer {
+            justify-content: flex-start;
+        }
     }
 
     .selected {
@@ -282,28 +288,6 @@ body.reset {
         border-radius: 50%;
     }
 
-    .sidebar {
-        display: none;
-        width: 50px;
-        height: 100vh;
-        padding: 1rem 0;
-        background-color: var(--controlbox-head-color);
-        color: white;
-        text-align: center;
-
-        .chatbox-btn {
-            float: none;
-            margin: 0;
-            font-size: 1.35em;
-            &.fa-vcard {
-                margin-top: 1em;
-            }
-        }
-        .bottom {
-            position: absolute;
-            bottom: 1em;
-        }
-    }
     .badge {
         line-height: 1;
         font-weight: normal;
@@ -420,6 +404,7 @@ body.reset {
 
     .spinner {
         @include animation(spin 2s infinite, linear);
+        width: 1em;
         display: block;
         text-align: center;
         margin: 2em;
@@ -462,26 +447,79 @@ body.reset {
     }
 
     .avatar {
-        border-radius: 10%;
-        border: 1px solid lightgrey;
-        background: white;
+        border-radius: var(--avatar-border-radius);
+        border: var(--avatar-border);
+        background-color: var(--avatar-background-color);
     }
 
     .activated {
         display: block !important;
     }
 
-    .button-primary {
-        color: white;
+    .nav-pills .nav-link.active,
+    .nav-pills .show > .nav-link {
         background-color: var(--primary-color);
     }
-    .button-secondary {
+
+    .list-group-item.active {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color-dark);
+    }
+
+    .btn-primary, .button-primary, .badge-primary {
+        color: white;
+        background-color: var(--primary-color);
+        border-color: transparent;
+        &:hover {
+            background-color: var(--primary-color-dark);
+            border-color: transparent;
+        }
+        &.active {
+            background-color: var(--primary-color-dark) !important;
+            border-color: transparent !important;
+        }
+    }
+
+    .btn-info, .badge-info {
+        color: white;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        &:hover {
+            background-color: var(--primary-color-dark);
+            border-color: var(--primary-color-dark);
+        }
+    }
+
+    .button-cancel,
+    .btn-secondary, .badge-secondary {
         color: white;
         background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        &:hover {
+            background-color: var(--secondary-color-dark);
+            border-color: var(--secondary-color-dark);
+        }
     }
-    .button-cancel {
+
+    .btn-warning {
         color: white;
-        background-color: var(--text-color);
+        background-color: var(--warning-color);
+        border-color: var(--warning-color);
+        &:hover {
+            color: white;
+            background-color: var(--warning-color-dark);
+            border-color: var(--warning-color-dark)
+        }
+    }
+
+    .btn-danger {
+        color: white;
+        background-color: var(--danger-color);
+        border-color: var(--danger-color) !important;
+        &:hover {
+            background-color: var(--danger-color-dark);
+            border-color: var(--danger-color-dark);
+        }
     }
 
     .chat-textarea-chatbox-selected {

@@ -513,32 +513,38 @@ converse.plugins.add('converse-rosterview', {
                 _converse.api.chats.open(attrs.jid, attrs);
             },
 
-            removeContact (ev) {
+            async removeContact (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 if (!_converse.allow_contact_removal) { return; }
-                const result = confirm(__("Are you sure you want to remove this contact?"));
-                if (result === true) {
-                    this.model.removeFromRoster(
-                        (iq) => {
-                            this.model.destroy();
-                            this.remove();
-                        },
-                        function (err) {
-                            alert(__('Sorry, there was an error while trying to remove %1$s as a contact.', name));
-                            _converse.log(err, Strophe.LogLevel.ERROR);
-                        }
+                if (!confirm(__("Are you sure you want to remove this contact?"))) { return; }
+
+                let iq;
+                try {
+                    iq = await this.model.removeFromRoster();
+                    this.remove();
+                    if (this.model.collection) {
+                        // The model might have already been removed as
+                        // result of a roster push.
+                        this.model.destroy();
+                    }
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                    _converse.api.alert.show(
+                        Strophe.LogLevel.ERROR,
+                        __('Sorry, there was an error while trying to remove %1$s as a contact.', name)
                     );
                 }
             },
 
-            acceptRequest (ev) {
+            async acceptRequest (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                _converse.roster.sendContactAddIQ(
+
+                await _converse.roster.sendContactAddIQ(
                     this.model.get('jid'),
                     this.model.getFullname(),
-                    [],
-                    () => { this.model.authorize().subscribe(); }
+                    []
                 );
+                this.model.authorize().subscribe();
             },
 
             declineRequest (ev) {
@@ -750,7 +756,8 @@ converse.plugins.add('converse-rosterview', {
             subviewIndex: 'name',
 
             events: {
-                'click a.chatbox-btn.add-contact': 'showAddContactModal',
+                'click a.controlbox-heading__btn.add-contact': 'showAddContactModal',
+                'click a.controlbox-heading__btn.sync-contacts': 'syncContacts'
             },
 
             initialize () {
@@ -787,7 +794,8 @@ converse.plugins.add('converse-rosterview', {
                 this.el.innerHTML = tpl_roster({
                     'allow_contact_requests': _converse.allow_contact_requests,
                     'heading_contacts': __('Contacts'),
-                    'title_add_contact': __('Add a contact')
+                    'title_add_contact': __('Add a contact'),
+                    'title_sync_contacts': __('Re-sync your contacts')
                 });
                 const form = this.el.querySelector('.roster-filter-form');
                 this.el.replaceChild(this.filter_view.render().el, form);
@@ -859,6 +867,15 @@ converse.plugins.add('converse-rosterview', {
                         view.filter(query, type);
                     });
                 }
+            },
+
+            async syncContacts (ev) {
+                ev.preventDefault();
+                u.addClass('fa-spin', ev.target);
+                _converse.roster.data.save('version', null);
+                await _converse.roster.fetchFromServer();
+                _converse.xmppstatus.sendPresence();
+                u.removeClass('fa-spin', ev.target);
             },
 
             reset () {

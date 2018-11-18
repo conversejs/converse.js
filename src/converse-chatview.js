@@ -25,7 +25,7 @@ import tpl_status_message from "templates/status_message.html";
 import tpl_toolbar from "templates/toolbar.html";
 import tpl_toolbar_fileupload from "templates/toolbar_fileupload.html";
 import tpl_user_details_modal from "templates/user_details_modal.html";
-import u from "utils/emoji";
+import u from "@converse/headless/utils/emoji";
 import xss from "xss";
 
 const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, moment } = converse.env;
@@ -427,7 +427,7 @@ converse.plugins.add('converse-chatview', {
                  * messages, based on whether the contact's client supports
                  * it.
                  */
-                if (!options.show_spoiler_button || this.model.get('type') === 'chatroom') {
+                if (!options.show_spoiler_button || this.model.get('type') === _converse.CHATROOMS_TYPE) {
                     return;
                 }
                 const contact_jid = this.model.get('jid');

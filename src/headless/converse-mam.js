@@ -238,11 +238,12 @@ converse.plugins.add('converse-mam', {
                                 this.clearSpinner();
                                 _.each(messages, message_handler);
                             },
-                            () => { // Error
+                            e => { // Error
                                 this.clearSpinner();
                                 _converse.log(
                                     "Error or timeout while trying to fetch "+
                                     "archived messages", Strophe.LogLevel.ERROR);
+                                _converse.log(e, Strophe.LogLevel.ERROR);
                             }
                         );
                     },
@@ -329,7 +330,7 @@ converse.plugins.add('converse-mam', {
         _converse.api.settings.update({
             archived_messages_page_size: '50',
             message_archiving: undefined, // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
-            message_archiving_timeout: 8000, // Time (in milliseconds) to wait before aborting MAM request
+            message_archiving_timeout: 20000, // Time (in milliseconds) to wait before aborting MAM request
         });
 
         _converse.onMAMError = function (iq) {

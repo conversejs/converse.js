@@ -13,15 +13,15 @@
 <a class="list-item-action fa {[ if (o.bookmarked) { ]} fa-bookmark remove-bookmark button-on {[ } else { ]} add-bookmark fa-bookmark-o {[ } ]}"
    data-room-jid="{{{o.jid}}}" data-bookmark-name="{{{o.name}}}"
    title="{[ if (o.bookmarked) { ]} {{{o.info_remove_bookmark}}} {[ } else { ]} {{{o.info_add_bookmark}}} {[ } ]}"
-   href="#">&nbsp;</a>
+   href="#"></a>
 {[ } ]}
 
 <a class="list-item-action room-info fa fa-info-circle" data-room-jid="{{{o.jid}}}"
-   title="{{{o.info_title}}}" href="#">&nbsp;</a>
+   title="{{{o.info_title}}}" href="#"></a>
 
 <a class="list-item-action fa fa-times close-room"
    data-room-jid="{{{o.jid}}}"
    data-room-name="{{{o.name || o.jid}}}"
-   title="{{{o.info_leave_room}}}" href="#">&nbsp;</a>
+   title="{{{o.info_leave_room}}}" href="#"></a>
 
 </div>

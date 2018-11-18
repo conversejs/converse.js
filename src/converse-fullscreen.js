@@ -28,8 +28,11 @@ converse.plugins.add('converse-fullscreen', {
         // new functions which don't exist yet can also be added.
 
         ControlBoxView: {
-             createBrandHeadingHTML() {
-                return tpl_brand_heading();
+            createBrandHeadingHTML() {
+                const { _converse } = this.__super__;
+                return tpl_brand_heading({
+                    'version_name': _converse.VERSION_NAME
+                });
             },
 
             insertBrandHeading () {

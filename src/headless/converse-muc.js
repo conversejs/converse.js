@@ -289,9 +289,11 @@ converse.plugins.add('converse-muc', {
                  */
                 this.occupants.browserStorage._clear();
                 this.occupants.reset();
-                const disco_entity = _converse.disco_entities.get(this.get('jid'));
-                if (disco_entity) {
-                    disco_entity.destroy();
+                if (_converse.disco_entities) {
+                    const disco_entity = _converse.disco_entities.get(this.get('jid'));
+                    if (disco_entity) {
+                        disco_entity.destroy();
+                    }
                 }
                 if (_converse.connection.connected) {
                     this.sendUnavailablePresence(exit_msg);
@@ -913,13 +915,19 @@ converse.plugins.add('converse-muc', {
                 return data;
             },
 
-            isDuplicate (message, original_stanza) {
+            isDuplicate (message) {
                 const msgid = message.getAttribute('id'),
                       jid = message.getAttribute('from');
+
                 if (msgid) {
-                    return this.messages.where({'msgid': msgid, 'from': jid}).length;
+                    const msg = this.messages.findWhere({'msgid': msgid, 'from': jid});
+                    if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
+                        msg.save({'received': moment().format()});
+                    }
+                    return msg;
                 }
                 return false;
+
             },
 
             fetchFeaturesIfConfigurationChanged (stanza) {
@@ -945,11 +953,12 @@ converse.plugins.add('converse-muc', {
                 this.fetchFeaturesIfConfigurationChanged(stanza);
 
                 const original_stanza = stanza,
-                      forwarded = stanza.querySelector('forwarded');
-                if (!_.isNull(forwarded)) {
+                      forwarded = sizzle(`forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).pop();
+
+                if (forwarded) {
                     stanza = forwarded.querySelector('message');
                 }
-                if (this.isDuplicate(stanza, original_stanza)) {
+                if (this.isDuplicate(stanza)) {
                     return;
                 }
                 const jid = stanza.getAttribute('from'),
@@ -966,6 +975,9 @@ converse.plugins.add('converse-muc', {
                         u.safeSave(this, {'subject': {'author': sender, 'text': subject}});
                     }
                     const msg = await this.createMessage(stanza, original_stanza);
+                    if (forwarded && msg && msg.get('sender')  === 'me') {
+                        msg.save({'received': moment().format()});
+                    }
                     this.incrementUnreadMsgCounter(msg);
                 }
                 if (sender !== this.get('nick')) {

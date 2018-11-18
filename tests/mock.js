@@ -111,17 +111,29 @@
     mock.mock_connection = function ()  {  // eslint-disable-line wrap-iife
         return function () {
             Strophe.Bosh.prototype._processRequest = function () {}; // Don't attempt to send out stanzas
-            var c = new Strophe.Connection('jasmine tests');
-            var sendIQ = c.sendIQ;
+            const c = new Strophe.Connection('jasmine tests');
+            const sendIQ = c.sendIQ;
 
             c.IQ_stanzas = [];
             c.IQ_ids = [];
             c.sendIQ = function (iq, callback, errback) {
                 this.IQ_stanzas.push(iq);
-                var id = sendIQ.bind(this)(iq, callback, errback);
+                const id = sendIQ.bind(this)(iq, callback, errback);
                 this.IQ_ids.push(id);
                 return id;
             }
+
+            const send = c.send;
+            c.sent_stanzas = [];
+            c.send = function (stanza) {
+                if (_.isElement(stanza)) {
+                    this.sent_stanzas.push(stanza);
+                } else {
+                    this.sent_stanzas.push(stanza.nodeTree);
+                }
+                return send.apply(this, arguments);
+            }
+
             c.features = Strophe.xmlHtmlNode(
                 '<stream:features xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client">'+
                     '<ver xmlns="urn:xmpp:features:rosterver"/>'+

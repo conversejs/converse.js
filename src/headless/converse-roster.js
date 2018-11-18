@@ -288,13 +288,13 @@ converse.plugins.add('converse-roster', {
 
             ackUnsubscribe () {
                 /* Upon receiving the presence stanza of type "unsubscribed",
-                * the user SHOULD acknowledge receipt of that subscription state
-                * notification by sending a presence stanza of type "unsubscribe"
-                * this step lets the user's server know that it MUST no longer
-                * send notification of the subscription state change to the user.
-                *  Parameters:
-                *    (String) jid - The Jabber ID of the user who is unsubscribing
-                */
+                 * the user SHOULD acknowledge receipt of that subscription state
+                 * notification by sending a presence stanza of type "unsubscribe"
+                 * this step lets the user's server know that it MUST no longer
+                 * send notification of the subscription state change to the user.
+                 *  Parameters:
+                 *    (String) jid - The Jabber ID of the user who is unsubscribing
+                 */
                 _converse.api.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
                 this.removeFromRoster();
                 this.destroy();
@@ -311,9 +311,9 @@ converse.plugins.add('converse-roster', {
 
             authorize (message) {
                 /* Authorize presence subscription
-                * Parameters:
-                *   (String) message - Optional message to send to the person being authorized
-                */
+                 * Parameters:
+                 *   (String) message - Optional message to send to the person being authorized
+                 */
                 const pres = $pres({'to': this.get('jid'), 'type': "subscribed"});
                 if (message && message !== "") {
                     pres.c("status").t(message);
@@ -322,16 +322,15 @@ converse.plugins.add('converse-roster', {
                 return this;
             },
 
-            removeFromRoster (callback, errback) {
+            removeFromRoster () {
                 /* Instruct the XMPP server to remove this contact from our roster
-                * Parameters:
-                *   (Function) callback
-                */
+                 * Parameters:
+                 *   (Function) callback
+                 */
                 const iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
-                _converse.api.sendIQ(iq).then(callback).catch(errback);
-                return this;
+                return _converse.api.sendIQ(iq);
             }
         });
 
@@ -365,7 +364,7 @@ converse.plugins.add('converse-roster', {
                 /* Register a handler for roster IQ "set" stanzas, which update
                  * roster contacts.
                  */
-                _converse.connection.addHandler((iq) => {
+                _converse.connection.addHandler(iq => {
                     _converse.roster.onRosterPush(iq);
                     return true;
                 }, Strophe.NS.ROSTER, 'iq', "set");
@@ -390,7 +389,7 @@ converse.plugins.add('converse-roster', {
                 );
             },
 
-            fetchRosterContacts () {
+            async fetchRosterContacts () {
                 /* Fetches the roster contacts, first by trying the
                  * sessionStorage cache, and if that's empty, then by querying
                  * the XMPP server.
@@ -398,23 +397,26 @@ converse.plugins.add('converse-roster', {
                  * Returns a promise which resolves once the contacts have been
                  * fetched.
                  */
-                const that = this;
-                return new Promise((resolve, reject) => {
-                    this.fetch({
-                        'add': true,
-                        'silent': true,
-                        success (collection) {
-                            if (collection.length === 0 || 
-                                    (that.rosterVersioningSupported() && !_converse.session.get('roster_fetched'))) {
-                                _converse.send_initial_presence = true;
-                                _converse.roster.fetchFromServer().then(resolve).catch(reject);
-                            } else {
-                                _converse.emit('cachedRoster', collection);
-                                resolve();
-                            }
-                        }
+                let collection;
+                try {
+                    collection = await new Promise((resolve, reject) => {
+                        this.fetch({
+                            'add': true,
+                            'silent': true,
+                            'success': resolve,
+                            'error': reject
+                        });
                     });
-                });
+                } catch (e) {
+                    return _converse.log(e, Strophe.LogLevel.ERROR);
+                }
+                if (collection.length === 0 ||
+                        (this.rosterVersioningSupported() && !_converse.session.get('roster_fetched'))) {
+                    _converse.send_initial_presence = true;
+                    _converse.roster.fetchFromServer();
+                } else {
+                    _converse.emit('cachedRoster', collection);
+                }
             },
 
             subscribeToSuggestedItems (msg) {
@@ -467,7 +469,7 @@ converse.plugins.add('converse-roster', {
                     .c('query', {'xmlns': Strophe.NS.ROSTER})
                     .c('item', { jid, name });
                 _.each(groups, group => iq.c('group').t(group).up());
-                _converse.api.sendIQ(iq);
+                return _converse.api.sendIQ(iq);
             },
 
             async addContactToRoster (jid, name, groups, attributes) {
@@ -563,7 +565,7 @@ converse.plugins.add('converse-roster', {
             },
 
             rosterVersioningSupported () {
-                return _converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version');
+                return !!(_converse.api.disco.stream.getFeature('ver', 'urn:xmpp:features:rosterver') && this.data.get('version'));
             },
 
             async fetchFromServer () {

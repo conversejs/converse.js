@@ -65,7 +65,7 @@ serve_bg: dev
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=4.0.4 -c
+GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=4.0.5 -c
 
 .PHONY: pot
 pot: dist/converse-no-dependencies-es2015.js
@@ -84,6 +84,8 @@ po2json:
 
 .PHONY: release
 release:
+
+	$(SED) -ri s/_converse.VERSION_NAME = "v[0-9]\+\.[0-9]\+\.[0-9]\+";/ _converse.VERSION_NAME = "$(VERSION)";/ src/headless/converse-core.js
 	$(SED) -ri s/Version:\ [0-9]\+\.[0-9]\+\.[0-9]\+/Version:\ $(VERSION)/ COPYRIGHT
 	$(SED) -ri s/Project-Id-Version:\ Converse\.js\ [0-9]\+\.[0-9]\+\.[0-9]\+/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
 	$(SED) -ri s/\"version\":\ \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\":\ \"$(VERSION)\"/ package.json
@@ -126,13 +128,16 @@ dev: stamp-npm
 ## Builds
 
 .PHONY: css
-css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/fonts.css
+css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/font-awesome.css
 
 css/converse.css:: dev sass
 	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/converse.scss css/converse.css
 
 css/website.css:: dev sass
 	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
+
+css/font-awesome.css:: dev sass
+	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@
 
 css/%.min.css:: css/%.css
 	make dev
@@ -203,13 +208,16 @@ dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @conver
 dist:: build
 
 .PHONY: build
-build:: dev css $(BUILDS) locale.zip css/webfonts.zip
+build:: dev css $(BUILDS) locale.zip css/webfonts.zip sounds.zip
 
 css/webfonts.zip: css/webfonts/*
 	zip -r css/webfonts.zip css/webfonts
 
 locale.zip:
 	zip -r locale.zip locale --exclude *.pot --exclude *.po
+
+sounds.zip:
+	zip -r sounds.zip sounds
 
 ########################################################################
 ## Tests
@@ -227,13 +235,13 @@ check: eslint
 ## Documentation
 
 .PHONY: html
-html:
+html: apidoc
 	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	make apidoc
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
-ePHONY: apidoc
+PHONY: apidoc
 apidoc:
 	$(JSDOC) --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/*.js

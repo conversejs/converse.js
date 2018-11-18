@@ -33,7 +33,8 @@ converse.plugins.add('converse-notification', {
             // ^ a list of JIDs to ignore concerning chat state notifications
             play_sounds: true,
             sounds_path: 'sounds/',
-            notification_icon: 'logo/conversejs-filled.svg'
+            notification_icon: 'logo/conversejs-filled.svg',
+            notification_delay: 5000
         });
 
         _converse.isOnlyChatStateNotification = (msg) =>
@@ -99,7 +100,7 @@ converse.plugins.add('converse-notification', {
                     message.getAttribute('from')) === _converse.bare_jid;
             return !_converse.isOnlyChatStateNotification(message) &&
                 !is_me &&
-                _converse.isMessageToHiddenChat(message);
+                (_converse.show_desktop_notifications === 'all' || _converse.isMessageToHiddenChat(message));
         };
 
 
@@ -180,9 +181,12 @@ converse.plugins.add('converse-notification', {
             const n = new Notification(title, {
                 'body': body,
                 'lang': _converse.locale,
-                'icon': _converse.notification_icon
+                'icon': _converse.notification_icon,
+                'requireInteraction': !_converse.notification_delay
             });
-            setTimeout(n.close.bind(n), 5000);
+            if (_converse.notification_delay) {
+                setTimeout(n.close.bind(n), _converse.notification_delay);
+            }
         };
 
         _converse.showChatStateNotification = function (contact) {

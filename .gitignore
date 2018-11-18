@@ -19,6 +19,7 @@ dist/converse-no-dependencies-es2015.js
 
 locale.zip
 css/webfonts.zip
+css/font-awesome.css
 
 analytics.js
 inverse-analytics.js

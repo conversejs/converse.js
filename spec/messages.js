@@ -77,6 +77,7 @@
                     `xmlns="jabber:client">`+
                         `<body>But soft, what light through yonder window breaks?</body>`+
                         `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                        `<request xmlns="urn:xmpp:receipts"/>`+
                         `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
                 `</message>`);
             expect(view.model.messages.models.length).toBe(1);
@@ -181,6 +182,7 @@
                     `xmlns="jabber:client">`+
                         `<body>But soft, what light through yonder window breaks?</body>`+
                         `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                        `<request xmlns="urn:xmpp:receipts"/>`+
                         `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
                 `</message>`);
             expect(view.model.messages.models.length).toBe(1);
@@ -503,9 +505,10 @@
 
 
         it("can be a carbon message, as defined in XEP-0280",
-        mock.initConverseWithPromises(
-            null, ['rosterGroupsFetched'], {},
-            async function (done, _converse) {
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
 
@@ -547,7 +550,6 @@
             expect(chat_content.querySelector('.chat-msg .chat-msg__text').textContent).toEqual(msgtext);
             expect(chat_content.querySelector('.chat-msg__time').textContent.match(/^[0-9][0-9]:[0-9][0-9]/)).toBeTruthy();
             await test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')
-            await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
             expect(chat_content.querySelector('span.chat-msg__author').textContent.trim()).toBe('Candice van der Knijff');
             done();
         }));
@@ -1200,6 +1202,64 @@
             done();
         }));
 
+        it("received may emit a message delivery receipt",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                function (done, _converse) {
+            test_utils.createContacts(_converse, 'current', 1);
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const msg_id = u.getUniqueId();
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
+                sent_stanzas.push(stanza);
+            });
+            const msg = $msg({
+                    'from': sender_jid,
+                    'to': _converse.connection.jid,
+                    'type': 'chat',
+                    'id': msg_id,
+                }).c('body').t('Message!').up()
+                .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
+            _converse.chatboxes.onMessage(msg);
+            const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_stanzas[0].tree()).pop();
+            expect(receipt.outerHTML).toBe(`<received xmlns="${Strophe.NS.RECEIPTS}" id="${msg_id}"/>`);
+            done();
+        }));
+
+        it("delivery can be acknowledged by a receipt",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            test_utils.createContacts(_converse, 'current', 1);
+            _converse.emit('rosterContactsFetched');
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            await test_utils.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = 'But soft, what light through yonder airlock breaks?';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            await test_utils.waitUntil(() => _converse.api.chats.get().length);
+            const chatbox = _converse.chatboxes.get(contact_jid);
+            expect(chatbox).toBeDefined();
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            const msg_obj = chatbox.messages.models[0];
+            const msg_id = msg_obj.get('msgid');
+            const msg = $msg({
+                    'from': contact_jid,
+                    'to': _converse.connection.jid,
+                    'id': u.getUniqueId(),
+                }).c('received', {'id': msg_id, xmlns: Strophe.NS.RECEIPTS}).up().tree();
+            _converse.chatboxes.onMessage(msg);
+            await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
+            expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(1);
+            done();
+        }));
+
 
         describe("when received from someone else", function () {
 
@@ -1504,8 +1564,8 @@
                      */
                     let stanza = $msg({
                             'to': _converse.connection.jid,
-                            'type':'error',
-                            'id':'82bc02ce-9651-4336-baf0-fa04762ed8d2',
+                            'type': 'error',
+                            'id': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
@@ -1517,8 +1577,8 @@
                     expect(chat_content.querySelector('.chat-error').textContent).toEqual(error_txt);
                     stanza = $msg({
                             'to': _converse.connection.jid,
-                            'type':'error',
-                            'id':'some-other-unused-id',
+                            'type': 'error',
+                            'id': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
@@ -1529,12 +1589,11 @@
                     await test_utils.waitUntil(() => view.model.messages.length > 1);
                     expect(chat_content.querySelectorAll('.chat-error').length).toEqual(2);
 
-                    // If the last message is already an error message,
-                    // then we don't render it another time.
+                    // We don't render duplicates
                     stanza = $msg({
                             'to': _converse.connection.jid,
                             'type':'error',
-                            'id':'another-unused-id',
+                            'id': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
@@ -1544,11 +1603,28 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     await test_utils.waitUntil(() => view.model.messages.length > 2);
                     expect(chat_content.querySelectorAll('.chat-error').length).toEqual(2);
+
+                    // We send another message, for which an error will
+                    // not be received, to test that errors appear
+                    // after the relevant message.
+                    msg_text = 'This message will be sent, and also receive an error';
+                    message = view.model.messages.create({
+                        'msgid': 'another-id',
+                        'fullname': fullname,
+                        'sender': 'me',
+                        'time': moment().format(),
+                        'message': msg_text
+                    });
+                    view.model.sendMessage(message);
+                    await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                    msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
+                    expect(msg_txt).toEqual(msg_text);
+
                     // A different error message will however render
                     stanza = $msg({
                             'to': _converse.connection.jid,
                             'type':'error',
-                            'id':'another-id',
+                            'id': 'another-id',
                             'from': sender_jid
                         })
                         .c('error', {'type': 'cancel'})
@@ -1558,6 +1634,44 @@
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     await test_utils.waitUntil(() => view.model.messages.length > 3);
                     expect(chat_content.querySelectorAll('.chat-error').length).toEqual(3);
+                    done();
+                }));
+
+                it("will not show to the user an error message for a CSI message",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                        async function (done, _converse) {
+
+                    // See #1317
+                    // https://github.com/conversejs/converse.js/issues/1317
+                    test_utils.createContacts(_converse, 'current');
+                    _converse.emit('rosterContactsFetched');
+                    test_utils.openControlBox();
+
+                    const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    await test_utils.openChatBoxFor(_converse, contact_jid);
+
+                    const messages = _converse.connection.sent_stanzas.filter(s => s.nodeName === 'message');
+                    expect(messages.length).toBe(1);
+                    expect(Strophe.serialize(messages[0])).toBe(
+                        `<message id="${messages[0].getAttribute('id')}" to="robin.schook@localhost" type="chat" xmlns="jabber:client">`+
+                           `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                           `<no-store xmlns="urn:xmpp:hints"/>`+
+                           `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
+                        `</message>`);
+
+                    const stanza = $msg({
+                            'from': contact_jid,
+                            'type': 'error',
+                            'id': messages[0].getAttribute('id')
+                        }).c('error', {'type': 'cancel', 'code': '503'})
+                            .c('service-unavailable', { 'xmlns': 'urn:ietf:params:xml:ns:xmpp-stanzas' }).up()
+                            .c('text', { 'xmlns': 'urn:ietf:params:xml:ns:xmpp-stanzas' })
+                                .t('User session not found')
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    const view = _converse.chatboxviews.get(contact_jid);
+                    const chat_content = view.el.querySelector('.chat-content');
+                    expect(chat_content.querySelectorAll('.chat-error').length).toEqual(0);
                     done();
                 }));
             });
@@ -2010,6 +2124,7 @@
                     `xmlns="jabber:client">`+
                         `<body>But soft, what light through yonder window breaks?</body>`+
                         `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                        `<request xmlns="urn:xmpp:receipts"/>`+
                         `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
                 `</message>`);
 
@@ -2039,7 +2154,6 @@
                 target: textarea,
                 keyCode: 38 // Up arrow
             });
-            await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
@@ -2053,6 +2167,38 @@
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
             expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
+            done();
+        }));
+
+        it("delivery can be acknowledged by a receipt",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            test_utils.createContacts(_converse, 'current');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+            const view = _converse.chatboxviews.get('lounge@localhost');
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = 'But soft, what light through yonder airlock breaks?';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            const msg_obj = view.model.messages.at(0);
+            const msg_id = msg_obj.get('msgid');
+            const from = msg_obj.get('from');
+            const body = msg_obj.get('message');
+            const msg = $msg({
+                    'from': from,
+                    'id': msg_id,
+                    'to': 'dummy@localhost',
+                    'type': 'groupchat',
+                }).c('body').t(body).up().tree();
+            view.model.onMessage(msg);
+            await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
+            expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(1);
             done();
         }));
 
@@ -2201,6 +2347,7 @@
                             `xmlns="jabber:client">`+
                                 `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
                                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                `<request xmlns="urn:xmpp:receipts"/>`+
                                 `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+
@@ -2226,6 +2373,7 @@
                             `xmlns="jabber:client">`+
                                 `<body>hello z3r0 gibson sw0rdf1sh, how are you?</body>`+
                                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                `<request xmlns="urn:xmpp:receipts"/>`+
                                 `<reference begin="18" end="27" type="mention" uri="xmpp:sw0rdf1sh@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+
@@ -2274,6 +2422,7 @@
                                 `xmlns="jabber:client">`+
                                     `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
                                     `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                    `<request xmlns="urn:xmpp:receipts"/>`+
                                     `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                     `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                     `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+

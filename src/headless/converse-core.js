@@ -4,21 +4,20 @@
 // Copyright (c) 2013-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-"use strict";
-
 import { $build, $iq, $msg, $pres, SHA1, Strophe } from "strophe.js";
-import Backbone from "./backbone.noconflict";
+import Backbone from "backbone";
+import BrowserStorage from "backbone.browserStorage";
 import Promise from "es6-promise/dist/es6-promise.auto";
 import _ from "./lodash.noconflict";
-import browserStorage from "backbone.browserStorage";
 import f from "./lodash.fp";
 import i18n from "./i18n";
 import moment from "moment";
 import pluggable from "pluggable.js/dist/pluggable";
 import polyfill from "./polyfill";
 import sizzle from "sizzle";
-import u from "./utils/core";
+import u from "@converse/headless/utils/core";
 
+Backbone = Backbone.noConflict();
 
 // Strophe globals
 const b64_sha1 = SHA1.b64_sha1;
@@ -31,6 +30,7 @@ Strophe.addNamespace('DELAY', 'urn:xmpp:delay');
 Strophe.addNamespace('FORWARD', 'urn:xmpp:forward:0');
 Strophe.addNamespace('HINTS', 'urn:xmpp:hints');
 Strophe.addNamespace('HTTPUPLOAD', 'urn:xmpp:http:upload:0');
+Strophe.addNamespace('IDLE', 'urn:xmpp:idle:1');
 Strophe.addNamespace('MAM', 'urn:xmpp:mam:2');
 Strophe.addNamespace('NICK', 'http://jabber.org/protocol/nick');
 Strophe.addNamespace('OMEMO', "eu.siacs.conversations.axolotl");
@@ -56,6 +56,11 @@ _.templateSettings = {
     'imports': { '_': _ }
 };
 
+// Setting wait to 59 instead of 60 to avoid timing conflicts with the
+// webserver, which is often also set to 60 and might therefore sometimes
+// return a 504 error page instead of passing through to the BOSH proxy.
+const BOSH_WAIT = 59;
+
 /**
  * A private, closured object containing the private api (via `_converse.api`)
  * as well as private methods and internal data-structures.
@@ -67,9 +72,16 @@ const _converse = {
     'promises': {}
 }
 
+_converse.VERSION_NAME = "v4.0.5";
+
 _.extend(_converse, Backbone.Events);
 
+// Make converse pluggable
+pluggable.enable(_converse, '_converse', 'pluggable');
+
 // Core plugins are whitelisted automatically
+// These are just the @converse/headless plugins, for the full converse,
+// the other plugins are whitelisted in src/converse.js
 _converse.core_plugins = [
     'converse-chatboxes',
     'converse-core',
@@ -80,14 +92,6 @@ _converse.core_plugins = [
     'converse-roster',
     'converse-vcard'
 ];
-
-// Setting wait to 59 instead of 60 to avoid timing conflicts with the
-// webserver, which is often also set to 60 and might therefore sometimes
-// return a 504 error page instead of passing through to the BOSH proxy.
-const BOSH_WAIT = 59;
-
-// Make converse pluggable
-pluggable.enable(_converse, '_converse', 'pluggable');
 
 _converse.keycodes = {
     TAB: 9,
@@ -196,12 +200,13 @@ _converse.default_settings = {
     expose_rid_and_sid: false,
     geouri_regex: /https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
+    idle_presence_timeout: 300, // Seconds after which an idle presence is sent
     jid: undefined,
     keepalive: true,
     locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
     locales: [
-        'af', 'ar', 'bg', 'ca', 'cs', 'de', 'es', 'eu', 'en', 'fr', 'he',
-        'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl',
+        'af', 'ar', 'bg', 'ca', 'cs', 'de', 'es', 'eu', 'en', 'fr', 'gl',
+        'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl',
         'pl', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'
     ],
     message_carbons: true,
@@ -314,29 +319,143 @@ _converse.isSingleton = function () {
 _converse.router = new Backbone.Router();
 
 
+function initPlugins() {
+    // If initialize gets called a second time (e.g. during tests), then we
+    // need to re-apply all plugins (for a new converse instance), and we
+    // therefore need to clear this array that prevents plugins from being
+    // initialized twice.
+    // If initialize is called for the first time, then this array is empty
+    // in any case.
+    _converse.pluggable.initialized_plugins = [];
+    const whitelist = _converse.core_plugins.concat(
+        _converse.whitelisted_plugins);
+
+    if (_converse.view_mode === 'embedded') {
+        _.forEach([ // eslint-disable-line lodash/prefer-map
+            "converse-bookmarks",
+            "converse-controlbox",
+            "converse-headline",
+            "converse-register"
+        ], (name) => {
+            _converse.blacklisted_plugins.push(name)
+        });
+    }
+
+    _converse.pluggable.initializePlugins({
+        'updateSettings' () {
+            _converse.log(
+                "(DEPRECATION) "+
+                "The `updateSettings` method has been deprecated. "+
+                "Please use `_converse.api.settings.update` instead.",
+                Strophe.LogLevel.WARN
+            )
+            _converse.api.settings.update.apply(_converse, arguments);
+        },
+        '_converse': _converse
+    }, whitelist, _converse.blacklisted_plugins);
+    _converse.emit('pluginsInitialized');
+}
+
+function initClientConfig () {
+    /* The client config refers to configuration of the client which is
+     * independent of any particular user.
+     * What this means is that config values need to persist across
+     * user sessions.
+     */
+    const id = b64_sha1('converse.client-config');
+    _converse.config = new Backbone.Model({
+        'id': id,
+        'trusted': _converse.trusted && true || false,
+        'storage': _converse.trusted ? 'local' : 'session'
+    });
+    _converse.config.browserStorage = new Backbone.BrowserStorage.session(id);
+    _converse.config.fetch();
+    _converse.emit('clientConfigInitialized');
+}
+
+_converse.initConnection = function () {
+    /* Creates a new Strophe.Connection instance if we don't already have one.
+     */
+    if (!_converse.connection) {
+        if (!_converse.bosh_service_url && ! _converse.websocket_url) {
+            throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
+        }
+        if (('WebSocket' in window || 'MozWebSocket' in window) && _converse.websocket_url) {
+            _converse.connection = new Strophe.Connection(_converse.websocket_url, _converse.connection_options);
+        } else if (_converse.bosh_service_url) {
+            _converse.connection = new Strophe.Connection(
+                _converse.bosh_service_url,
+                _.assignIn(_converse.connection_options, {'keepalive': _converse.keepalive})
+            );
+        } else {
+            throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
+        }
+    }
+    _converse.emit('connectionInitialized');
+}
+
+
+function setUpXMLLogging () {
+    Strophe.log = function (level, msg) {
+        _converse.log(msg, level);
+    };
+    if (_converse.debug) {
+        _converse.connection.xmlInput = function (body) {
+            _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkgoldenrod');
+        };
+        _converse.connection.xmlOutput = function (body) {
+            _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkcyan');
+        };
+    }
+}
+
+
+function finishInitialization () {
+    initPlugins();
+    initClientConfig();
+    _converse.initConnection();
+    setUpXMLLogging();
+    _converse.logIn();
+    _converse.registerGlobalEventHandlers();
+    if (!Backbone.history.started) {
+        Backbone.history.start();
+    }
+    if (_converse.idle_presence_timeout > 0) {
+        _converse.on('addClientFeatures', () => {
+            _converse.api.disco.own.features.add(Strophe.NS.IDLE);
+        });
+    }
+}
+
+
+function cleanup () {
+    // Looks like _converse.initialized was called again without logging
+    // out or disconnecting in the previous session.
+    // This happens in tests. We therefore first clean up.
+    Backbone.history.stop();
+    _converse.chatboxviews.closeAllChatBoxes();
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    if (_converse.bookmarks) {
+        _converse.bookmarks.reset();
+    }
+    delete _converse.controlboxtoggle;
+    delete _converse.chatboxviews;
+    _converse.connection.reset();
+    _converse.stopListening();
+    _converse.tearDown();
+    delete _converse.config;
+    initClientConfig();
+    _converse.off();
+}
+
+
 _converse.initialize = function (settings, callback) {
     settings = !_.isUndefined(settings) ? settings : {};
     const init_promise = u.getResolveablePromise();
-
     _.each(PROMISES, addPromise);
-
     if (!_.isUndefined(_converse.connection)) {
-        // Looks like _converse.initialized was called again without logging
-        // out or disconnecting in the previous session.
-        // This happens in tests. We therefore first clean up.
-        Backbone.history.stop();
-        _converse.chatboxviews.closeAllChatBoxes();
-        if (_converse.bookmarks) {
-            _converse.bookmarks.reset();
-        }
-        delete _converse.controlboxtoggle;
-        delete _converse.chatboxviews;
-        _converse.connection.reset();
-        _converse.stopListening();
-        _converse.tearDown();
-        delete _converse.config;
-        _converse.initClientConfig();
-        _converse.off();
+        cleanup();
     }
 
     if ('onpagehide' in window) {
@@ -396,8 +515,6 @@ _converse.initialize = function (settings, callback) {
          * Parameters:
          *  (String) stat: The user's chat status
          */
-        /* Send out a Chat Status Notification (XEP-0352) */
-        // XXX if (converse.features[Strophe.NS.CSI] || true) {
         _converse.api.send($build(stat, {xmlns: Strophe.NS.CSI}));
         _converse.inactive = (stat === _converse.INACTIVE) ? true : false;
     };
@@ -409,11 +526,15 @@ _converse.initialize = function (settings, callback) {
         }
         if (!_converse.connection.authenticated) {
             // We can't send out any stanzas when there's no authenticated connection.
-            // converse can happen when the connection reconnects.
+            // This can happen when the connection reconnects.
             return;
         }
         if (_converse.inactive) {
             _converse.sendCSI(_converse.ACTIVE);
+        }
+        if (_converse.idle) {
+            _converse.idle = false;
+            _converse.xmppstatus.sendPresence();
         }
         if (_converse.auto_changed_status === true) {
             _converse.auto_changed_status = false;
@@ -439,6 +560,12 @@ _converse.initialize = function (settings, callback) {
                 !_converse.inactive) {
             _converse.sendCSI(_converse.INACTIVE);
         }
+        if (_converse.idle_presence_timeout > 0 &&
+                _converse.idle_seconds > _converse.idle_presence_timeout &&
+                !_converse.idle) {
+            _converse.idle = true;
+            _converse.xmppstatus.sendPresence();
+        }
         if (_converse.auto_away > 0 &&
                 _converse.idle_seconds > _converse.auto_away &&
                 stat !== 'away' && stat !== 'xa' && stat !== 'dnd') {
@@ -456,12 +583,12 @@ _converse.initialize = function (settings, callback) {
         /* Set an interval of one second and register a handler for it.
          * Required for the auto_away, auto_xa and csi_waiting_time features.
          */
-        if (_converse.auto_away < 1 && _converse.auto_xa < 1 && _converse.csi_waiting_time < 1) {
+        if (_converse.auto_away < 1 && _converse.auto_xa < 1 && _converse.csi_waiting_time < 1 && _converse.idle_presence_timeout < 1) {
             // Waiting time of less then one second means features aren't used.
             return;
         }
         _converse.idle_seconds = 0
-        _converse.auto_changed_status = false; // Was the user's status changed by _converse.js?
+        _converse.auto_changed_status = false; // Was the user's status changed by Converse?
         window.addEventListener('click', _converse.onUserActivity);
         window.addEventListener('focus', _converse.onUserActivity);
         window.addEventListener('keypress', _converse.onUserActivity);
@@ -652,26 +779,10 @@ _converse.initialize = function (settings, callback) {
         }
     }
 
-    this.initClientConfig = function () {
-        /* The client config refers to configuration of the client which is
-         * independent of any particular user.
-         * What this means is that config values need to persist across
-         * user sessions.
-         */
-        const id = b64_sha1('converse.client-config');
-        _converse.config = new Backbone.Model({
-            'id': id,
-            'trusted': _converse.trusted && true || false,
-            'storage': _converse.trusted ? 'local' : 'session'
-        });
-        _converse.config.browserStorage = new Backbone.BrowserStorage.session(id);
-        _converse.config.fetch();
-        _converse.emit('clientConfigInitialized');
-    };
 
     this.initSession = function () {
         const id = b64_sha1('converse.bosh-session');
-        _converse.session = new Backbone.Model({'id': id});
+        _converse.session = new Backbone.Model({id});
         _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
         _converse.session.fetch();
         _converse.emit('sessionInitialized');
@@ -887,7 +998,12 @@ _converse.initialize = function (settings, callback) {
             }
             presence.c('priority').t(
                 _.isNaN(Number(_converse.priority)) ? 0 : _converse.priority
-            );
+            ).up();
+            if (_converse.idle) {
+                const idle_since = new Date();
+                idle_since.setSeconds(idle_since.getSeconds() - _converse.idle_seconds);
+                presence.c('idle', {xmlns: Strophe.NS.IDLE, since: idle_since.toISOString()});
+            }
             return presence;
         },
 
@@ -896,19 +1012,6 @@ _converse.initialize = function (settings, callback) {
         }
     });
 
-    this.setUpXMLLogging = function () {
-        Strophe.log = function (level, msg) {
-            _converse.log(msg, level);
-        };
-        if (this.debug) {
-            this.connection.xmlInput = function (body) {
-                _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkgoldenrod');
-            };
-            this.connection.xmlOutput = function (body) {
-                _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkcyan');
-            };
-        }
-    };
 
     this.fetchLoginCredentials = () =>
         new Promise((resolve, reject) => {
@@ -1091,28 +1194,6 @@ _converse.initialize = function (settings, callback) {
         }
     };
 
-    this.initConnection = function () {
-        /* Creates a new Strophe.Connection instance if we don't already have one.
-         */
-        if (!this.connection) {
-            if (!this.bosh_service_url && ! this.websocket_url) {
-                throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-            }
-            if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-                this.connection = new Strophe.Connection(this.websocket_url, this.connection_options);
-            } else if (this.bosh_service_url) {
-                this.connection = new Strophe.Connection(
-                    this.bosh_service_url,
-                    _.assignIn(this.connection_options, {'keepalive': this.keepalive})
-                );
-            } else {
-                throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
-            }
-        }
-        _converse.emit('connectionInitialized');
-    };
-
-
     this.tearDown = function () {
         /* Remove those views which are only allowed with a valid
          * connection.
@@ -1131,61 +1212,12 @@ _converse.initialize = function (settings, callback) {
         return _converse;
     };
 
-    this.initPlugins = function () {
-        // If initialize gets called a second time (e.g. during tests), then we
-        // need to re-apply all plugins (for a new converse instance), and we
-        // therefore need to clear this array that prevents plugins from being
-        // initialized twice.
-        // If initialize is called for the first time, then this array is empty
-        // in any case.
-        _converse.pluggable.initialized_plugins = [];
-        const whitelist = _converse.core_plugins.concat(
-            _converse.whitelisted_plugins);
-
-        if (_converse.view_mode === 'embedded') {
-            _.forEach([ // eslint-disable-line lodash/prefer-map
-                "converse-bookmarks",
-                "converse-controlbox",
-                "converse-headline",
-                "converse-register"
-            ], (name) => {
-                _converse.blacklisted_plugins.push(name)
-            });
-        }
-
-        _converse.pluggable.initializePlugins({
-            'updateSettings' () {
-                _converse.log(
-                    "(DEPRECATION) "+
-                    "The `updateSettings` method has been deprecated. "+
-                    "Please use `_converse.api.settings.update` instead.",
-                    Strophe.LogLevel.WARN
-                )
-                _converse.api.settings.update.apply(_converse, arguments);
-            },
-            '_converse': _converse
-        }, whitelist, _converse.blacklisted_plugins);
-        _converse.emit('pluginsInitialized');
-    };
 
     // Initialization
     // --------------
     // This is the end of the initialize method.
     if (settings.connection) {
         this.connection = settings.connection;
-    }
-
-    function finishInitialization () {
-        _converse.initPlugins();
-        _converse.initClientConfig();
-        _converse.initConnection();
-        _converse.setUpXMLLogging();
-        _converse.logIn();
-        _converse.registerGlobalEventHandlers();
-
-        if (!Backbone.history.started) {
-            Backbone.history.start();
-        }
     }
 
     if (!_.isUndefined(_converse.connection) &&

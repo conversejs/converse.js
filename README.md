@@ -64,7 +64,7 @@ which shows you how to use the CDN (content delivery network) to quickly get a d
 -   Off-the-record encryption
 -   OMEMO encrypted messaging [XEP 384](https://xmpp.org/extensions/xep-0384.html")
 -   Supports anonymous logins, see the [anonymous login demo](https://conversejs.org/demo/anonymous.html).
--   Translated into 17 languages
+-   Translated into 28 languages
 
 ## Integration into other frameworks
 
@@ -108,10 +108,10 @@ Recently we have started accepting donations via [Patreon](https://www.patreon.c
 The following people are making recurring donations:
 
 * [Alexander Matviychuk](https://www.patreon.com/user/creators?u=10203506)
-* [Christopher Kuttruff](https://www.patreon.com/user/creators?u=8477742)
 * [Daniel Gultsch](https://www.patreon.com/user/creators?u=13443518)
 * [Dele Olajide](https://www.patreon.com/user/creators?u=14392041)
 * [Drew Varner](https://www.patreon.com/user/creators?u=8131055)
+* [Fabian Pack](https://www.patreon.com/user/creators?u=14725359)
 * [Guus der Kinderen](https://www.patreon.com/user/creators?u=8302585)
 * [Krischan](https://www.patreon.com/user/creators?u=337569)
 * [Nicolas Vérité](https://www.patreon.com/nyconyco/creators)

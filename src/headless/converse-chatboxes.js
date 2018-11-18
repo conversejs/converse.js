@@ -13,6 +13,7 @@ const { $msg, Backbone, Promise, Strophe, b64_sha1, moment, sizzle, utils, _ } =
 const u = converse.env.utils;
 
 Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
+Strophe.addNamespace('RECEIPTS', 'urn:xmpp:receipts');
 Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
 
 
@@ -297,6 +298,24 @@ converse.plugins.add('converse-chatboxes', {
                 return false;
             },
 
+            handleReceipt (stanza) {
+                const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));
+                if (to_bare_jid === _converse.bare_jid) {
+                    const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop();
+                    if (receipt) {
+                        const msgid = receipt && receipt.getAttribute('id'),
+                            message = msgid && this.messages.findWhere({msgid});
+                        if (message && !message.get('received')) {
+                            message.save({
+                                'received': moment().format()
+                            });
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            },
+
             createMessageStanza (message) {
                 /* Given a _converse.Message Backbone.Model, return the XML
                  * stanza that represents it.
@@ -310,7 +329,8 @@ converse.plugins.add('converse-chatboxes', {
                         'type': this.get('message_type'),
                         'id': message.get('edited') && _converse.connection.getUniqueId() || message.get('msgid'),
                     }).c('body').t(message.get('message')).up()
-                      .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+                      .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up()
+                      .c('request', {'xmlns': Strophe.NS.RECEIPTS}).up();
 
                 if (message.get('is_spoiler')) {
                     if (message.get('spoiler_hint')) {
@@ -405,12 +425,15 @@ converse.plugins.add('converse-chatboxes', {
                  * as taken from the 'chat_state' attribute of the chat box.
                  * See XEP-0085 Chat State Notifications.
                  */
-                if (_converse.send_chat_state_notifications) {
+                if (_converse.send_chat_state_notifications && this.get('chat_state')) {
                     _converse.api.send(
-                        $msg({'to':this.get('jid'), 'type': 'chat'})
-                            .c(this.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
-                            .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
-                            .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
+                        $msg({
+                            'id': _converse.connection.getUniqueId(),
+                            'to': this.get('jid'),
+                            'type': 'chat'
+                        }).c(this.get('chat_state'), {'xmlns': Strophe.NS.CHATSTATES}).up()
+                          .c('no-store', {'xmlns': Strophe.NS.HINTS}).up()
+                          .c('no-permanent-store', {'xmlns': Strophe.NS.HINTS})
                     );
                 }
             },
@@ -646,6 +669,23 @@ converse.plugins.add('converse-chatboxes', {
                 if (!chatbox) {
                     return true;
                 }
+                const id = message.getAttribute('id');
+                if (id) {
+                    const msgs = chatbox.messages.where({'msgid': id});
+                    if (!msgs.length || msgs.filter(m => m.get('type') === 'error').length) {
+                        // If the error refers to a message not included in our store.
+                        // We assume that this was a CSI message (which we don't store).
+                        // See https://github.com/conversejs/converse.js/issues/1317
+                        //
+                        // We also ignore duplicate error messages.
+                        return;
+                    }
+                } else {
+                    // An error message without id likely means that we
+                    // sent a message without id (which shouldn't happen).
+                    _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
+                    _converse.log(message, Strophe.LogLevel.ERROR);
+                }
                 chatbox.createMessage(message, message);
                 return true;
             },
@@ -661,6 +701,15 @@ converse.plugins.add('converse-chatboxes', {
                 } else {
                     return _.propertyOf(stanza.querySelector('body'))('textContent');
                 }
+            },
+
+            sendReceiptStanza (to_jid, id) {
+                const receipt_stanza = $msg({
+                    'from': _converse.connection.jid,
+                    'id': _converse.connection.getUniqueId(),
+                    'to': to_jid,
+                }).c('received', {'xmlns': Strophe.NS.RECEIPTS, 'id': id}).up();
+                _converse.api.send(receipt_stanza);
             },
 
             onMessage (stanza) {
@@ -709,6 +758,11 @@ converse.plugins.add('converse-chatboxes', {
                     to_jid = stanza.getAttribute('to');
                 }
 
+                const requests_receipt = !_.isUndefined(sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
+                if (requests_receipt) {
+                    this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
+                }
+
                 const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
                       from_resource = Strophe.getResourceFromJid(from_jid),
                       is_me = from_bare_jid === _converse.bare_jid;
@@ -730,9 +784,9 @@ converse.plugins.add('converse-chatboxes', {
                     'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
                 }
                 // Get chat box, but only create a new one when the message has a body.
-                const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}`).length > 0;
+                const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`).length > 0;
                 const chatbox = this.getChatBox(contact_jid, attrs, has_body);
-                if (chatbox && !chatbox.handleMessageCorrection(stanza)) {
+                if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza)) {
                     const msgid = stanza.getAttribute('id'),
                           message = msgid && chatbox.messages.findWhere({msgid});
                     if (!message) {

@@ -1,13 +1,12 @@
 <div class="userinfo controlbox-padded">
-<div class="profile d-flex">
+<div class="controlbox-section profile d-flex">
     <a class="show-profile" href="#">
-        <canvas alt="o.__('Your avatar')" class="avatar align-self-center" height="40" width="40"></canvas>
+        <canvas class="avatar align-self-center" height="40" width="40"></canvas>
     </a>
     <span class="username w-100 align-self-center">{{{o.fullname}}}</span>
-    <!-- <a class="chatbox-btn fa fa-id-card align-self-center" title="{{{o.title_your_profile}}}" data-toggle="modal" data-target="#userProfileModal"></a> -->
-    <!-- <a class="chatbox-btn fa fa-cog align-self-center" title="{{{o.title_change_status}}}" data-toggle="modal" data-target="#settingsModal"></a> -->
+    <a class="controlbox-heading__btn show-client-info fa fa-info-circle align-self-center" title="{{{o.info_details}}}"></a>
     {[ if (o._converse.allow_logout) { ]}
-        <a class="chatbox-btn logout fa fa-sign-out-alt align-self-center" title="{{{o.title_log_out}}}"></a>
+        <a class="controlbox-heading__btn logout fa fa-sign-out-alt align-self-center" title="{{{o.title_log_out}}}"></a>
     {[ } ]}
 </div>
 <div class="d-flex xmpp-status">
@@ -18,6 +17,6 @@
             {[ if (o.chat_status === 'away') { ]} fa fa-circle chat-status chat-status--away{[ } ]}
             {[ if (o.chat_status === 'xa') { ]} far fa-circle chat-status chat-status--xa {[ } ]}
             {[ if (o.chat_status === 'offline') { ]} fa fa-circle chat-status chat-status--offline{[ } ]}"></span> {{{o.status_message}}}</span>
-    <a class="chatbox-btn change-status fa fa-pencil-alt" title="{{{o.title_change_status}}}" data-toggle="modal" data-target="#changeStatusModal"></a>
+    <a class="controlbox-heading__btn change-status fa fa-pencil-alt" title="{{{o.title_change_status}}}" data-toggle="modal" data-target="#changeStatusModal"></a>
 </div>
 </div>

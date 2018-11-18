@@ -1187,29 +1187,24 @@
             it("can have their requests accepted by the user", 
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.openControlBox();
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group li').length;
-                }, 700).then(function () {
-                    // TODO: Testing can be more thorough here, the user is
-                    // actually not accepted/authorized because of
-                    // mock_connection.
-                    var name = mock.req_names.sort()[0];
-                    var jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var contact = _converse.roster.get(jid);
-                    spyOn(_converse.roster, 'sendContactAddIQ').and.callFake(function (jid, fullname, groups, callback) {
-                        callback();
-                    });
-                    spyOn(contact, 'authorize').and.callFake(function () { return contact; });
-                    $(_converse.rosterview.el).find(".req-contact-name:contains('"+name+"')")
-                        .parent().parent().find('.accept-xmpp-request')[0].click();
-                    expect(_converse.roster.sendContactAddIQ).toHaveBeenCalled();
-                    expect(contact.authorize).toHaveBeenCalled();
-                    done();
-                });
+                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length)
+                // TODO: Testing can be more thorough here, the user is
+                // actually not accepted/authorized because of
+                // mock_connection.
+                const jid =  mock.req_names.sort()[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const contact = _converse.roster.get(jid);
+                spyOn(contact, 'authorize').and.callFake(() => contact);
+                spyOn(_converse.roster, 'sendContactAddIQ').and.callFake(() => Promise.resolve());
+                $(_converse.rosterview.el).find(".req-contact-name:contains('"+name+"')")
+                    .parent().parent().find('.accept-xmpp-request')[0].click();
+                expect(_converse.roster.sendContactAddIQ).toHaveBeenCalled();
+                await test_utils.waitUntil(() => contact.authorize.calls.count());
+                expect(contact.authorize).toHaveBeenCalled();
+                done();
             }));
 
             it("can have their requests denied by the user", 

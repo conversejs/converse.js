@@ -955,7 +955,7 @@ converse.plugins.add('converse-muc', {
                 const original_stanza = stanza,
                       forwarded = sizzle(`forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).pop();
 
-                if (!_.isNull(forwarded)) {
+                if (forwarded) {
                     stanza = forwarded.querySelector('message');
                 }
                 if (this.isDuplicate(stanza)) {
@@ -975,7 +975,7 @@ converse.plugins.add('converse-muc', {
                         u.safeSave(this, {'subject': {'author': sender, 'text': subject}});
                     }
                     const msg = await this.createMessage(stanza, original_stanza);
-                    if (!_.isNull(forwarded) && msg && msg.get('sender')  === 'me') {
+                    if (forwarded && msg && msg.get('sender')  === 'me') {
                         msg.save({'received': moment().format()});
                     }
                     this.incrementUnreadMsgCounter(msg);

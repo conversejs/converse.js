@@ -65432,11 +65432,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
             this.clearSpinner();
 
             _.each(messages, message_handler);
-          }, () => {
+          }, e => {
             // Error
             this.clearSpinner();
 
             _converse.log("Error or timeout while trying to fetch " + "archived messages", Strophe.LogLevel.ERROR);
+
+            _converse.log(e, Strophe.LogLevel.ERROR);
           });
         }, () => {
           // Error
@@ -66911,9 +66913,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          */
         this.fetchFeaturesIfConfigurationChanged(stanza);
         const original_stanza = stanza,
-              forwarded = stanza.querySelector('forwarded');
+              forwarded = sizzle(`forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).pop();
 
-        if (!_.isNull(forwarded)) {
+        if (forwarded) {
           stanza = forwarded.querySelector('message');
         }
 
@@ -66944,7 +66946,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
           const msg = await this.createMessage(stanza, original_stanza);
 
-          if (!_.isNull(forwarded) && msg && msg.get('sender') === 'me') {
+          if (forwarded && msg && msg.get('sender') === 'me') {
             msg.save({
               'received': moment().format()
             });

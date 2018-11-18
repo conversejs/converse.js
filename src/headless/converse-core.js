@@ -69,7 +69,29 @@ const BOSH_WAIT = 59;
  */
 const _converse = {
     'templates': {},
-    'promises': {}
+    'promises': {},
+
+    get connection () {
+        /* Creates a new Strophe.Connection instance if we don't already have one.
+         */
+        if (!this._connection) {
+            if (!this.bosh_service_url && ! this.websocket_url) {
+                throw new Error("connection: you must supply a value for either the bosh_service_url or websocket_url or both.");
+            }
+            if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
+                this._connection = new Strophe.Connection(this.websocket_url, this.connection_options);
+            } else if (this.bosh_service_url) {
+                this._connection = new Strophe.Connection(
+                    this.bosh_service_url,
+                    _.assignIn(this.connection_options, {'keepalive': this.keepalive})
+                );
+            } else {
+                throw new Error("connection: this browser does not support websockets and bosh_service_url wasn't specified.");
+            }
+            _converse.emit('connectionInitialized');
+        }
+        return this._connection;
+    }
 }
 
 _converse.VERSION_NAME = "v4.0.5";
@@ -373,27 +395,6 @@ function initClientConfig () {
     _converse.emit('clientConfigInitialized');
 }
 
-_converse.initConnection = function () {
-    /* Creates a new Strophe.Connection instance if we don't already have one.
-     */
-    if (!_converse.connection) {
-        if (!_converse.bosh_service_url && ! _converse.websocket_url) {
-            throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-        }
-        if (('WebSocket' in window || 'MozWebSocket' in window) && _converse.websocket_url) {
-            _converse.connection = new Strophe.Connection(_converse.websocket_url, _converse.connection_options);
-        } else if (_converse.bosh_service_url) {
-            _converse.connection = new Strophe.Connection(
-                _converse.bosh_service_url,
-                _.assignIn(_converse.connection_options, {'keepalive': _converse.keepalive})
-            );
-        } else {
-            throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
-        }
-    }
-    _converse.emit('connectionInitialized');
-}
-
 
 function setUpXMLLogging () {
     Strophe.log = function (level, msg) {
@@ -413,7 +414,6 @@ function setUpXMLLogging () {
 function finishInitialization () {
     initPlugins();
     initClientConfig();
-    _converse.initConnection();
     setUpXMLLogging();
     _converse.logIn();
     _converse.registerGlobalEventHandlers();
@@ -425,6 +425,7 @@ function finishInitialization () {
             _converse.api.disco.own.features.add(Strophe.NS.IDLE);
         });
     }
+    _converse.initialized = true;
 }
 
 
@@ -441,7 +442,9 @@ function cleanup () {
     }
     delete _converse.controlboxtoggle;
     delete _converse.chatboxviews;
-    _converse.connection.reset();
+    if (_converse._connection) {
+        _converse._connection.reset();
+    }
     _converse.stopListening();
     _converse.tearDown();
     delete _converse.config;
@@ -454,7 +457,7 @@ _converse.initialize = function (settings, callback) {
     settings = !_.isUndefined(settings) ? settings : {};
     const init_promise = u.getResolveablePromise();
     _.each(PROMISES, addPromise);
-    if (!_.isUndefined(_converse.connection)) {
+    if (_converse.initialized) {
         cleanup();
     }
 
@@ -1212,12 +1215,11 @@ _converse.initialize = function (settings, callback) {
         return _converse;
     };
 
-
     // Initialization
     // --------------
     // This is the end of the initialize method.
     if (settings.connection) {
-        this.connection = settings.connection;
+        this._connection = settings.connection;
     }
 
     if (!_.isUndefined(_converse.connection) &&

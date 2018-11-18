@@ -12,20 +12,24 @@
         
         describe("Authentication", function () {
             it("needs either a bosh_service_url a websocket_url or both", mock.initConverse(function (_converse) {
-                var url = _converse.bosh_service_url;
-                var connection = _converse.connection;
+                const url = _converse.bosh_service_url;
                 delete _converse.bosh_service_url;
-                delete _converse.connection;
-                expect(_converse.initConnection).toThrow(
-                    new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both."));
-                _converse.bosh_service_url = url;
-                _converse.connection = connection;
+                delete _converse._connection;
+                let err;
+                try {
+                    _converse.connection;
+                } catch (e) {
+                    err = e;
+                }
+                expect(_.get(err, 'message'))
+                    .toBe("connection: you must supply a value for either the bosh_service_url or websocket_url or both.");
             }));
 
             describe("with prebind", function () {
+
                 it("needs a jid when also using keepalive", mock.initConverse(function (_converse) {
-                    var authentication = _converse.authentication;
-                    var jid = _converse.jid;
+                    const authentication = _converse.authentication;
+                    const jid = _converse.jid;
                     delete _converse.jid;
                     _converse.keepalive = true;
                     _converse.authentication = "prebind";
@@ -33,9 +37,6 @@
                         new Error(
                             "restoreBOSHSession: tried to restore a \"keepalive\" session "+
                             "but we don't have the JID for the user!"));
-                    _converse.authentication= authentication;
-                    _converse.jid = jid;
-                    _converse.keepalive = false;
                 }));
 
                 it("needs jid, rid and sid values when not using keepalive", mock.initConverse(function (_converse) {
@@ -208,30 +209,20 @@
 
             it("has a method for retrieving the next RID", mock.initConverse(function (_converse) {
                 test_utils.createContacts(_converse, 'current');
-                var old_connection = _converse.connection;
                 _converse.connection._proto.rid = '1234';
                 _converse.expose_rid_and_sid = false;
                 expect(_converse.api.tokens.get('rid')).toBe(null);
                 _converse.expose_rid_and_sid = true;
                 expect(_converse.api.tokens.get('rid')).toBe('1234');
-                _converse.connection = undefined;
-                expect(_converse.api.tokens.get('rid')).toBe(null);
-                // Restore the connection
-                _converse.connection = old_connection;
             }));
 
             it("has a method for retrieving the SID", mock.initConverse(function (_converse) {
                 test_utils.createContacts(_converse, 'current');
-                var old_connection = _converse.connection;
                 _converse.connection._proto.sid = '1234';
                 _converse.expose_rid_and_sid = false;
                 expect(_converse.api.tokens.get('sid')).toBe(null);
                 _converse.expose_rid_and_sid = true;
                 expect(_converse.api.tokens.get('sid')).toBe('1234');
-                _converse.connection = undefined;
-                expect(_converse.api.tokens.get('sid')).toBe(null);
-                // Restore the connection
-                _converse.connection = old_connection;
             }));
         });
 

@@ -598,10 +598,9 @@ converse.plugins.add('converse-controlbox', {
             }
         });
 
-        Promise.all([
-            _converse.api.waitUntil('connectionInitialized'),
-            _converse.api.waitUntil('chatBoxViewsInitialized')
-        ]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        _converse.api.waitUntil('chatBoxViewsInitialized')
+            .then(_converse.addControlBox)
+            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
         _converse.on('chatBoxesFetched', () => {
             const controlbox = _converse.chatboxes.get('controlbox') || _converse.addControlBox();

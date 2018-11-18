@@ -240,8 +240,8 @@ converse.plugins.add('converse-omemo', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by Converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
+        const { __ } = _converse;
 
         _converse.api.settings.update({
             'omemo_default': false,

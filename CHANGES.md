@@ -2,10 +2,17 @@
 
 ## 6.0.0 (Unreleased)
 
+- #129: Add support for XEP-0156: Disovering Alternative XMPP Connection Methods. Only XML is supported for now.
 - #1691 Fix `collection.chatbox is undefined` errors
 - Prevent editing of sent file uploads.
 
 ### Breaking changes
+
+- In order to add support for XEP-0156, the XMPP connection needs to be created
+  only once we know the JID of the user that's logging in. This means that the
+  [connectionInitialized](https://conversejs.org/docs/html/api/-_converse.html#event:connectionInitialized)
+  event now fires much later than before. Plugins that rely on `connectionInitialized`
+  being triggered before the user's JID has been provided will need to be updated.
 
 - The following API methods now return promises:
   * `_converse.api.chats.get`

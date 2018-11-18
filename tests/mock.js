@@ -9,7 +9,6 @@
     const Strophe = converse.env.Strophe;
     const dayjs = converse.env.dayjs;
     const $iq = converse.env.$iq;
-    const u = converse.env.utils;
 
     window.libsignal = {
         'SignalProtocolAddress': function (name, device_id) {
@@ -32,7 +31,7 @@
                 return Promise.resolve(key_and_tag);
             }
         },
-        'SessionBuilder': function (storage, remote_address) {
+        'SessionBuilder': function (storage, remote_address) { // eslint-disable-line no-unused-vars
             this.processPreKey = function () {
                 return Promise.resolve();
             }
@@ -116,95 +115,87 @@
         'preventDefault': function () {}
     };
 
-    mock.mock_connection = function ()  {  // eslint-disable-line wrap-iife
-        return function () {
-            Strophe.Bosh.prototype._processRequest = function () {}; // Don't attempt to send out stanzas
-            const c = new Strophe.Connection('jasmine tests');
-            const sendIQ = c.sendIQ;
 
-            c.IQ_stanzas = [];
-            c.IQ_ids = [];
-            c.sendIQ = function (iq, callback, errback) {
-                if (!_.isElement(iq)) {
-                    iq = iq.nodeTree;
-                }
-                this.IQ_stanzas.push(iq);
-                const id = sendIQ.bind(this)(iq, callback, errback);
-                this.IQ_ids.push(id);
-                return id;
+    const OriginalConnection = Strophe.Connection;
+
+    function MockConnection (service, options) {
+        OriginalConnection.call(this, service, options);
+
+        Strophe.Bosh.prototype._processRequest = function () {}; // Don't attempt to send out stanzas
+        const sendIQ = this.sendIQ;
+
+        this.IQ_stanzas = [];
+        this.IQ_ids = [];
+        this.sendIQ = function (iq, callback, errback) {
+            if (!_.isElement(iq)) {
+                iq = iq.nodeTree;
             }
+            this.IQ_stanzas.push(iq);
+            const id = sendIQ.bind(this)(iq, callback, errback);
+            this.IQ_ids.push(id);
+            return id;
+        }
 
-            const send = c.send;
-            c.sent_stanzas = [];
-            c.send = function (stanza) {
-                if (_.isElement(stanza)) {
-                    this.sent_stanzas.push(stanza);
-                } else {
-                    this.sent_stanzas.push(stanza.nodeTree);
-                }
-                return send.apply(this, arguments);
+        const send = this.send;
+        this.sent_stanzas = [];
+        this.send = function (stanza) {
+            if (_.isElement(stanza)) {
+                this.sent_stanzas.push(stanza);
+            } else {
+                this.sent_stanzas.push(stanza.nodeTree);
             }
+            return send.apply(this, arguments);
+        }
 
-            c.features = Strophe.xmlHtmlNode(
-                '<stream:features xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client">'+
-                    '<ver xmlns="urn:xmpp:features:rosterver"/>'+
-                    '<csi xmlns="urn:xmpp:csi:0"/>'+
-                    '<c xmlns="http://jabber.org/protocol/caps" ver="UwBpfJpEt3IoLYfWma/o/p3FFRo=" hash="sha-1" node="http://prosody.im"/>'+
-                    '<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind">'+
-                        '<required/>'+
-                    '</bind>'+
-                    `<sm xmlns='urn:xmpp:sm:3'/>`+
-                    '<session xmlns="urn:ietf:params:xml:ns:xmpp-session">'+
-                        '<optional/>'+
-                    '</session>'+
-                '</stream:features>').firstChild;
+        this.features = Strophe.xmlHtmlNode(
+            '<stream:features xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client">'+
+                '<ver xmlns="urn:xmpp:features:rosterver"/>'+
+                '<csi xmlns="urn:xmpp:csi:0"/>'+
+                '<this xmlns="http://jabber.org/protocol/caps" ver="UwBpfJpEt3IoLYfWma/o/p3FFRo=" hash="sha-1" node="http://prosody.im"/>'+
+                '<bind xmlns="urn:ietf:params:xml:ns:xmpp-bind">'+
+                    '<required/>'+
+                '</bind>'+
+                `<sm xmlns='urn:xmpp:sm:3'/>`+
+                '<session xmlns="urn:ietf:params:xml:ns:xmpp-session">'+
+                    '<optional/>'+
+                '</session>'+
+            '</stream:features>').firstChild;
 
-            c._proto._connect = function () {
-                c.connected = true;
-                c.mock = true;
-                c.jid = 'romeo@montague.lit/orchard';
-                c._changeConnectStatus(Strophe.Status.BINDREQUIRED);
-            };
-
-            c.bind = function () {
-                c.authenticated = true;
-                this.authenticated = true;
-                c._changeConnectStatus(Strophe.Status.CONNECTED);
-            };
-
-            c._proto._disconnect = function () {
-                c._onDisconnectTimeout();
-            }
-
-            c._proto._onDisconnectTimeout = _.noop;
-            return c;
+        this._proto._connect = () => {
+            this.connected = true;
+            this.mock = true;
+            this.jid = 'romeo@montague.lit/orchard';
+            this._changeConnectStatus(Strophe.Status.BINDREQUIRED);
         };
-    }();
 
-    async function initConverse (settings, spies={}, promises) {
+        this.bind = () => {
+            this.authenticated = true;
+            this.authenticated = true;
+            this._changeConnectStatus(Strophe.Status.CONNECTED);
+        };
+
+        this._proto._disconnect = () => this._onDisconnectTimeout();
+        this._proto._onDisconnectTimeout = _.noop;
+    }
+
+    MockConnection.prototype = Object.create(OriginalConnection.prototype);
+    Strophe.Connection = MockConnection;
+
+
+    async function initConverse (settings, spies={}) {
         window.localStorage.clear();
         window.sessionStorage.clear();
-        const el = document.querySelector('#conversejs');
-        if (el) {
-            el.parentElement.removeChild(el);
-        }
-
-        const connection = mock.mock_connection();
-        if (spies && spies.connection) {
-            spies.connection.forEach(method => spyOn(connection, method));
-        }
 
         const _converse = await converse.initialize(Object.assign({
-            'i18n': 'en',
-            'auto_subscribe': false,
-            'play_sounds': false,
-            'bosh_service_url': 'montague.lit/http-bind',
-            'connection': connection,
             'animate': false,
-            'use_emojione': false,
+            'auto_subscribe': false,
+            'bosh_service_url': 'montague.lit/http-bind',
+            'debug': false,
+            'i18n': 'en',
             'no_trimming': true,
+            'play_sounds': false,
+            'use_emojione': false,
             'view_mode': mock.view_mode,
-            'debug': false
         }, settings || {}));
 
         if (spies && spies._converse) {
@@ -214,7 +205,7 @@
         _converse.ChatBoxViews.prototype.trimChat = function () {};
 
         _converse.api.vcard.get = function (model, force) {
-            return new Promise((resolve, reject) => {
+            return new Promise(resolve => {
                 let jid;
                 if (_.isString(model)) {
                     jid = model;
@@ -263,9 +254,13 @@
         return async done => {
             const _converse = await initConverse(settings, spies);
             async function _done () {
-                await _converse.api.user.logout();
+                if (_converse.api.connection.connected()) {
+                    await _converse.api.user.logout();
+                }
                 const el = document.querySelector('#conversejs');
-                el.parentElement.removeChild(el);
+                if (el) {
+                    el.parentElement.removeChild(el);
+                }
                 done();
             }
             await Promise.all((promise_names || []).map(_converse.api.waitUntil));

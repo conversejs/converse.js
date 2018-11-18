@@ -318,7 +318,7 @@ converse.plugins.add('converse-minimize', {
              * @param { _converse.ChatBoxView|_converse.ChatRoomView|_converse.ControlBoxView|_converse.HeadlinesBoxView } [newchat]
              */
             async trimChats (newchat) {
-                if (_converse.no_trimming || !_converse.connection.connected || _converse.view_mode !== 'overlayed') {
+                if (_converse.no_trimming || !_converse.api.connection.connected() || _converse.view_mode !== 'overlayed') {
                     return;
                 }
                 const shown_chats = this.getShownChats();
@@ -556,10 +556,7 @@ converse.plugins.add('converse-minimize', {
         });
 
         /************************ BEGIN Event Handlers ************************/
-        Promise.all([
-            _converse.api.waitUntil('connectionInitialized'),
-            _converse.api.waitUntil('chatBoxViewsInitialized')
-        ]).then(() => {
+        _converse.api.waitUntil('chatBoxViewsInitialized').then(() => {
             _converse.minimized_chats = new _converse.MinimizedChats({
                 model: _converse.chatboxes
             });

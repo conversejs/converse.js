@@ -53,7 +53,7 @@
 
         it("uses bookmarks to determine groupchat names",
             mock.initConverse(
-                {'connection': ['send']},
+                null,
                 ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
                 {'view_mode': 'fullscreen'},
                 async function (done, _converse) {
@@ -113,7 +113,7 @@
 
     describe("A groupchat shown in the groupchats list", function () {
 
-        it("is highlighted if its currently open", mock.initConverse(
+        it("is highlighted if it's currently open", mock.initConverse(
             null, ['rosterGroupsFetched', 'chatBoxesFetched', 'emojisInitialized'],
             { view_mode: 'fullscreen',
               allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
@@ -137,8 +137,6 @@
             expect(room_els.length).toBe(1);
             item = room_els[0];
             expect(item.textContent.trim()).toBe('balcony@chat.shakespeare.lit');
-            const conv_el = document.querySelector('#conversejs');
-            conv_el.parentElement.removeChild(conv_el);
             done();
         }));
 

@@ -107,6 +107,15 @@ u.isSameBareJID = function (jid1, jid2) {
             Strophe.getBareJidFromJid(jid2).toLowerCase();
 };
 
+
+u.isSameDomain = function (jid1, jid2) {
+    if (!_.isString(jid1) || !_.isString(jid2)) {
+        return false;
+    }
+    return Strophe.getDomainFromJid(jid1).toLowerCase() ===
+            Strophe.getDomainFromJid(jid2).toLowerCase();
+};
+
 u.isNewMessage = function (message) {
     /* Given a stanza, determine whether it's a new
      * message, i.e. not a MAM archived one.

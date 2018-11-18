@@ -639,14 +639,29 @@ The default chat status that the user wil have. If you for example set this to
 ``'chat'``, then Converse will send out a presence stanza with ``"show"``
 set to ``'chat'`` as soon as you've been logged in.
 
+
+discover_connection_methods
+---------------------------
+
+* Default: ``false``
+
+Use `XEP-0156 <https://xmpp.org/extensions/xep-0156.html>`_ to discover whether
+the XMPP host for the current user advertises any Websocket or BOSH connection
+URLs that can be used.
+
+If this is set to ``false``, then a `websocket_url`_ or `bosh_service_url`_ need to be
+set.
+
+Currently only the XML encoded host-meta resource is supported as shown in
+`Example 2 under section 3.3 <https://xmpp.org/extensions/xep-0156.html#httpexamples>`_.
+
+
 domain_placeholder
 ------------------
 
 * Default: ``e.g. conversejs.org``
 
 The placeholder text shown in the domain input on the registration form.
-
-
 
 
 emoji_image_path
@@ -1623,6 +1638,7 @@ Allows you to show or hide buttons on the chatboxes' toolbars.
     Shows a button for toggling (i.e. showing/hiding) the list of occupants in a chatroom.
 
 .. _`websocket-url`:
+
 
 websocket_url
 -------------

@@ -230,6 +230,7 @@ _converse.default_settings = {
     csi_waiting_time: 0, // Support for XEP-0352. Seconds before client is considered idle and CSI is sent out.
     debug: false,
     default_state: 'online',
+    discover_connection_methods: false,
     geouri_regex: /https\:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
     idle_presence_timeout: 300, // Seconds after which an idle presence is sent
@@ -330,7 +331,7 @@ function addPromise (promise) {
 }
 
 _converse.isTestEnv = function () {
-    return _.get(_converse.connection, 'service') === 'jasmine tests';
+    return Strophe.Connection.name === 'MockConnection';
 }
 
 
@@ -457,7 +458,7 @@ async function attemptNonPreboundSession (credentials, automatic) {
         } else if (!_converse.isTestEnv() && window.PasswordCredential) {
             connect(await getLoginCredentialsFromBrowser());
         } else {
-            throw new Error("attemptNonPreboundSession: Could not find any credentials to log you in with!");
+            _converse.log("attemptNonPreboundSession: Could not find any credentials to log in with", Strophe.LogLevel.WARN);
         }
     } else if ([_converse.ANONYMOUS, _converse.EXTERNAL].includes(_converse.authentication) && (!automatic || _converse.auto_login)) {
         connect();
@@ -523,9 +524,7 @@ function reconnect () {
 const debouncedReconnect = _.debounce(reconnect, 2000);
 
 
-_converse.shouldClearCache = function () {
-    return !_converse.config.get('trusted') || _converse.isTestEnv();
-}
+_converse.shouldClearCache = () => (!_converse.config.get('trusted') || _converse.isTestEnv());
 
 function clearSession  () {
     if (_converse.session !== undefined) {
@@ -548,36 +547,83 @@ function clearSession  () {
 }
 
 
-/**
- * Creates a new Strophe.Connection instance and if applicable, attempt to
- * restore the BOSH session or if `auto_login` is true, attempt to log in.
+async function onDomainDiscovered (response) {
+    const text = await response.text();
+    const xrd = (new window.DOMParser()).parseFromString(text, "text/xml").firstElementChild;
+    if (xrd.nodeName != "XRD" || xrd.namespaceURI != "http://docs.oasis-open.org/ns/xri/xrd-1.0") {
+        return _converse.log("Could not discover XEP-0156 connection methods", Strophe.LogLevel.WARN);
+    }
+    const bosh_links = sizzle(`Link[rel="urn:xmpp:alt-connections:xbosh"]`, xrd);
+    const ws_links = sizzle(`Link[rel="urn:xmpp:alt-connections:websocket"]`, xrd);
+    const bosh_methods = bosh_links.map(el => el.getAttribute('href'));
+    const ws_methods = ws_links.map(el => el.getAttribute('href'));
+    // TODO: support multiple endpoints
+    _converse.websocket_url = ws_methods.pop();
+    _converse.bosh_service_url = bosh_methods.pop();
+    if (bosh_methods.length === 0 && ws_methods.length === 0) {
+        _converse.log(
+            "onDomainDiscovered: neither BOSH nor WebSocket connection methods have been specified with XEP-0156.",
+            Strophe.LogLevel.WARN
+        );
+    }
+}
+
+
+/* Use XEP-0156 to check whether this host advertises websocket or BOSH connection methods.
  */
-_converse.initConnection = async function () {
-    if (!_converse.connection) {
-        if (!_converse.bosh_service_url && ! _converse.websocket_url) {
+async function discoverConnectionMethods (domain) {
+    const options = {
+        'mode': 'cors',
+        'headers': {
+            'Accept': 'application/xrd+xml, text/xml'
+        }
+    };
+    const url = `https://${domain}/.well-known/host-meta`;
+    let response;
+    try {
+        response = await fetch(url, options);
+    } catch (e) {
+        _converse.log(`Failed to discover alternative connection methods at ${url}`, Strophe.LogLevel.ERROR);
+        return _converse.log(e, Strophe.LogLevel.ERROR);
+    }
+    if (response.status >= 200 && response.status < 400) {
+        await onDomainDiscovered(response);
+    } else {
+        _converse.log("Could not discover XEP-0156 connection methods", Strophe.LogLevel.WARN);
+    }
+}
+
+
+_converse.initConnection = async function (domain) {
+    if (_converse.discover_connection_methods) {
+        await discoverConnectionMethods(domain);
+    }
+    if (! _converse.bosh_service_url) {
+        if (_converse.authentication === _converse.PREBIND) {
+            throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
+        }
+        if (! _converse.websocket_url) {
             throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
         }
-        if (('WebSocket' in window || 'MozWebSocket' in window) && _converse.websocket_url) {
-            _converse.connection = new Strophe.Connection(
-                _converse.websocket_url,
-                Object.assign(_converse.default_connection_options, _converse.connection_options)
-            );
-        } else if (_converse.bosh_service_url) {
-            _converse.connection = new Strophe.Connection(
-                _converse.bosh_service_url,
-                Object.assign(
-                    _converse.default_connection_options,
-                    _converse.connection_options,
-                    {'keepalive': _converse.keepalive}
-                )
-            );
-        } else {
-            throw new Error("initConnection: this browser does not support "+
-                            "websockets and bosh_service_url wasn't specified.");
-        }
-        if (_converse.auto_login || _converse.keepalive) {
-            await _converse.api.user.login(null, null, true);
-        }
+    }
+
+    if (('WebSocket' in window || 'MozWebSocket' in window) && _converse.websocket_url) {
+        _converse.connection = new Strophe.Connection(
+            _converse.websocket_url,
+            Object.assign(_converse.default_connection_options, _converse.connection_options)
+        );
+    } else if (_converse.bosh_service_url) {
+        _converse.connection = new Strophe.Connection(
+            _converse.bosh_service_url,
+            Object.assign(
+                _converse.default_connection_options,
+                _converse.connection_options,
+                {'keepalive': _converse.keepalive}
+            )
+        );
+    } else {
+        throw new Error("initConnection: this browser does not support "+
+                        "websockets and bosh_service_url wasn't specified.");
     }
     setUpXMLLogging();
     /**
@@ -587,10 +633,10 @@ _converse.initConnection = async function () {
      * @event _converse#connectionInitialized
      */
     _converse.api.trigger('connectionInitialized');
-};
+}
 
 
-async function setUserJID (jid) {
+async function initSession (jid) {
     const bare_jid = Strophe.getBareJidFromJid(jid).toLowerCase();
     const id = `converse.session-${bare_jid}`;
     if (!_converse.session || _converse.session.get('id') !== id) {
@@ -612,23 +658,14 @@ async function setUserJID (jid) {
     } else {
         saveJIDtoSession(jid);
     }
-    /**
-     * Triggered whenever the user's JID has been updated
-     * @event _converse#setUserJID
-     */
-    _converse.api.trigger('setUserJID');
-    return jid;
 }
+
 
 function saveJIDtoSession (jid) {
     jid = _converse.session.get('jid') || jid;
     if (_converse.authentication !== _converse.ANONYMOUS && !Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + _converse.generateResource();
     }
-    // Set JID on the connection object so that when we call
-    // `connection.bind` the new resource is found by Strophe.js
-    // and sent to the XMPP server.
-    _converse.connection.jid = jid;
     _converse.jid = jid;
     _converse.bare_jid = Strophe.getBareJidFromJid(jid);
     _converse.resource = Strophe.getResourceFromJid(jid);
@@ -640,6 +677,37 @@ function saveJIDtoSession (jid) {
        'domain': _converse.domain,
        'active': true
     });
+    // Set JID on the connection object so that when we call `connection.bind`
+    // the new resource is found by Strophe.js and sent to the XMPP server.
+    _converse.connection.jid = jid;
+}
+
+
+/**
+ * Stores the passed in JID for the current user, potentially creating a
+ * resource if the JID is bare.
+ *
+ * Given that we can only create an XMPP connection if we know the domain of
+ * the server connect to and we only know this once we know the JID, we also
+ * call {@link _converse.initConnection } (if necessary) to make sure that the
+ * connection is set up.
+ *
+ * @method _converse#setUserJID
+ * @emits _converse#setUserJID
+ * @params { String } jid
+ */
+_converse.setUserJID = async function (jid) {
+    if (!_converse.connection || !u.isSameDomain(_converse.connection.jid, jid)) {
+        const domain = Strophe.getDomainFromJid(jid)
+        await _converse.initConnection(domain);
+    }
+    await initSession(jid);
+    /**
+     * Triggered whenever the user's JID has been updated
+     * @event _converse#setUserJID
+     */
+    _converse.api.trigger('setUserJID');
+    return jid;
 }
 
 
@@ -649,7 +717,7 @@ async function onConnected (reconnecting) {
      */
     delete _converse.connection.reconnecting;
     _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
-    await setUserJID(_converse.connection.jid);
+    await _converse.setUserJID(_converse.connection.jid);
     /**
      * Synchronous event triggered after we've sent an IQ to bind the
      * user's JID resource for this session.
@@ -681,15 +749,19 @@ function setUpXMLLogging () {
 async function finishInitialization () {
     initClientConfig();
     initPlugins();
-    await _converse.initConnection();
     _converse.registerGlobalEventHandlers();
-    if (!Backbone.history.started) {
+
+    if (!Backbone.History.started) {
         Backbone.history.start();
     }
     if (_converse.idle_presence_timeout > 0) {
         _converse.api.listen.on('addClientFeatures', () => {
             _converse.api.disco.own.features.add(Strophe.NS.IDLE);
         });
+    }
+    if (_converse.auto_login ||
+            _converse.keepalive && _.invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
+        await _converse.api.user.login(null, null, true);
     }
 }
 
@@ -706,6 +778,7 @@ function finishDisconnection () {
     _converse.connection.reset();
     tearDown();
     clearSession();
+    delete _converse.connection;
     /**
      * Triggered after converse.js has disconnected from the XMPP server.
      * @event _converse#disconnected
@@ -725,7 +798,7 @@ function fetchLoginCredentials (wait=0) {
             xhr.onload = () => {
                 if (xhr.status >= 200 && xhr.status < 400) {
                     const data = JSON.parse(xhr.responseText);
-                    setUserJID(data.jid).then(() => {
+                    _converse.setUserJID(data.jid).then(() => {
                         resolve({
                             jid: data.jid,
                             password: data.password
@@ -761,7 +834,7 @@ async function getLoginCredentials () {
 async function getLoginCredentialsFromBrowser () {
     const creds = await navigator.credentials.get({'password': true});
     if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
-        await setUserJID(creds.id);
+        await _converse.setUserJID(creds.id);
         return {'jid': creds.id, 'password': creds.password};
     }
 }
@@ -782,18 +855,20 @@ function cleanup () {
     if (_converse.chatboxviews) {
         delete _converse.chatboxviews;
     }
+    if (_converse.connection) {
+        _converse.connection.reset();
+    }
     _converse.stopListening();
     _converse.off();
 }
 
 
 _converse.initialize = async function (settings, callback) {
+    cleanup();
+
     settings = settings !== undefined ? settings : {};
     const init_promise = u.getResolveablePromise();
     PROMISES.forEach(addPromise);
-    if (_converse.connection !== undefined) {
-        cleanup();
-    }
 
     if ('onpagehide' in window) {
         // Pagehide gets thrown in more cases than unload. Specifically it
@@ -877,7 +952,7 @@ _converse.initialize = async function (settings, callback) {
         if (_converse.idle_seconds > 0) {
             _converse.idle_seconds = 0;
         }
-        if (!_converse.connection.authenticated) {
+        if (!_.get(_converse.connection, 'authenticated')) {
             // We can't send out any stanzas when there's no authenticated connection.
             // This can happen when the connection reconnects.
             return;
@@ -901,7 +976,7 @@ _converse.initialize = async function (settings, callback) {
         /* An interval handler running every second.
          * Used for CSI and the auto_away and auto_xa features.
          */
-        if (!_converse.connection.authenticated) {
+        if (!_.get(_converse.connection, 'authenticated')) {
             // We can't send out any stanzas when there's no authenticated connection.
             // This can happen when the connection reconnects.
             return;
@@ -1378,7 +1453,7 @@ _converse.api = {
          * @returns {boolean} Whether there is an established connection or not.
          */
         connected () {
-            return (_converse.connection && _converse.connection.connected) || false;
+            return _.get(_converse, 'connection', {}).connected && true;
         },
 
         /**
@@ -1417,7 +1492,7 @@ _converse.api = {
                 // We also call `_proto._doDisconnect` so that connection event handlers
                 // for the old transport are removed.
                 if (_converse.api.connection.isType('websocket') && _converse.bosh_service_url) {
-                    await setUserJID(_converse.bare_jid);
+                    await _converse.setUserJID(_converse.bare_jid);
                     _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Bosh(_converse.connection);
                     _converse.connection.service = _converse.bosh_service_url;
@@ -1426,9 +1501,9 @@ _converse.api = {
                         // When reconnecting anonymously, we need to connect with only
                         // the domain, not the full JID that we had in our previous
                         // (now failed) session.
-                        await setUserJID(_converse.settings.jid);
+                        await _converse.setUserJID(_converse.settings.jid);
                     } else {
-                        await setUserJID(_converse.bare_jid);
+                        await _converse.setUserJID(_converse.bare_jid);
                     }
                     _converse.connection._proto._doDisconnect();
                     _converse.connection._proto = new Strophe.Websocket(_converse.connection);
@@ -1439,7 +1514,7 @@ _converse.api = {
                 // When reconnecting anonymously, we need to connect with only
                 // the domain, not the full JID that we had in our previous
                 // (now failed) session.
-                await setUserJID(_converse.settings.jid);
+                await _converse.setUserJID(_converse.settings.jid);
             }
             if (_converse.connection.reconnecting) {
                 debouncedReconnect();
@@ -1527,20 +1602,19 @@ _converse.api = {
          *  fails to restore a previous auth'd session.
          */
         async login (jid, password, automatic=false) {
-            if (_converse.api.connection.isType('bosh')) {
+            if (jid || _converse.jid) {
+                jid = await _converse.setUserJID(jid || _converse.jid);
+            }
+
+            // See whether there is a BOSH session to re-attach to
+            if (_.invoke(_converse.pluggable.plugins['converse-bosh'], 'enabled')) {
                 if (await _converse.restoreBOSHSession()) {
                     return;
                 } else if (_converse.authentication === _converse.PREBIND && (!automatic || _converse.auto_login)) {
                     return _converse.startNewPreboundBOSHSession();
                 }
-            } else if (_converse.authentication === _converse.PREBIND) {
-                throw new Error("authentication is set to 'prebind' but we don't have a BOSH connection");
             }
 
-            if (jid || _converse.jid) {
-                // Reassign because we might have gained a resource
-                jid = await setUserJID(jid || _converse.jid);
-            }
             password = password || _converse.password;
             const credentials = (jid && password) ? { jid, password } : null;
             attemptNonPreboundSession(credentials, automatic);
@@ -1866,6 +1940,11 @@ _converse.api = {
      * _converse.api.send(msg);
      */
     send (stanza) {
+        if (!_converse.api.connection.connected()) {
+            _converse.log("Not sending stanza because we're not connected!", Strophe.LogLevel.WARN);
+            _converse.log(Strophe.serialize(stanza), Strophe.LogLevel.WARN);
+            return;
+        }
         if (_.isString(stanza)) {
             stanza = u.toStanza(stanza);
         }

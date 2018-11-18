@@ -1124,7 +1124,7 @@ converse.plugins.add('converse-chatview', {
                 if (Backbone.history.getFragment() === "converse/chat?jid="+this.model.get('jid')) {
                     _converse.router.navigate('');
                 }
-                if (_converse.connection.connected) {
+                if (_converse.api.connection.connected()) {
                     // Immediately sending the chat state, because the
                     // model is going to be destroyed afterwards.
                     this.model.setChatState(_converse.INACTIVE);

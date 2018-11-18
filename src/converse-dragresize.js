@@ -351,7 +351,7 @@ converse.plugins.add('converse-dragresize', {
                         _converse.resizing.chatbox.width,
                         _converse.resizing.chatbox.model.get('default_width')
                 );
-                if (_converse.connection.connected) {
+                if (_converse.api.connection.connected()) {
                     _converse.resizing.chatbox.model.save({'height': height});
                     _converse.resizing.chatbox.model.save({'width': width});
                 } else {

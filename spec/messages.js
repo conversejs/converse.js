@@ -961,51 +961,45 @@
         }));
 
         it("will render images from their URLs",
-                mock.initConverseWithPromises(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                    function (done, _converse) {
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
             const base_url = document.URL.split(window.location.pathname)[0];
             let message = base_url+"/logo/conversejs-filled.svg";
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-            let view;
-            test_utils.openChatBoxFor(_converse, contact_jid)
-            .then(() => {
-                view = _converse.chatboxviews.get(contact_jid);
-                spyOn(view.model, 'sendMessage').and.callThrough();
-                test_utils.sendMessage(view, message);
-                return test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length, 1000)
-            }).then(() => {
-                expect(view.model.sendMessage).toHaveBeenCalled();
-                const msg = $(view.el).find('.chat-content .chat-msg').last().find('.chat-msg__text');
-                expect(msg.html().trim()).toEqual(
-                    '<!-- src/templates/image.html -->\n'+
-                    '<a href="'+base_url+'/logo/conversejs-filled.svg" target="_blank" rel="noopener"><img class="chat-image img-thumbnail"'+
-                    ' src="' + message + '"></a>');
-                message += "?param1=val1&param2=val2";
-                test_utils.sendMessage(view, message);
-                return test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
-            }).then(() => {
-                expect(view.model.sendMessage).toHaveBeenCalled();
-                const msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
-                expect(msg.html().trim()).toEqual(
-                    '<!-- src/templates/image.html -->\n'+
-                    '<a href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2" target="_blank" rel="noopener"><img'+
-                    ' class="chat-image img-thumbnail" src="'+message.replace(/&/g, '&amp;')+'"></a>')
+            await test_utils.openChatBoxFor(_converse, contact_jid);
+            const view = _converse.chatboxviews.get(contact_jid);
+            spyOn(view.model, 'sendMessage').and.callThrough();
+            test_utils.sendMessage(view, message);
+            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length, 1000)
+            expect(view.model.sendMessage).toHaveBeenCalled();
+            let msg = $(view.el).find('.chat-content .chat-msg').last().find('.chat-msg__text');
+            expect(msg.html().trim()).toEqual(
+                '<!-- src/templates/image.html -->\n'+
+                '<a href="'+base_url+'/logo/conversejs-filled.svg" target="_blank" rel="noopener"><img class="chat-image img-thumbnail"'+
+                ' src="' + message + '"></a>');
+            message += "?param1=val1&param2=val2";
+            test_utils.sendMessage(view, message);
+            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
+            expect(view.model.sendMessage).toHaveBeenCalled();
+            msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
+            expect(msg.html().trim()).toEqual(
+                '<!-- src/templates/image.html -->\n'+
+                '<a href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2" target="_blank" rel="noopener"><img'+
+                ' class="chat-image img-thumbnail" src="'+message.replace(/&/g, '&amp;')+'"></a>')
 
-                // Test now with two images in one message
-                message += ' hello world '+base_url+"/logo/conversejs-filled.svg";
-                test_utils.sendMessage(view, message);
-                return test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 4, 1000);
-            }).then(function () {
-                expect(view.model.sendMessage).toHaveBeenCalled();
-                const msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
-                expect(msg[0].textContent.trim()).toEqual('hello world');
-                expect(msg[0].querySelectorAll('img').length).toEqual(2);
-                done();
-            });
+            // Test now with two images in one message
+            message += ' hello world '+base_url+"/logo/conversejs-filled.svg";
+            test_utils.sendMessage(view, message);
+            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 4, 1000);
+            expect(view.model.sendMessage).toHaveBeenCalled();
+            msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
+            expect(msg[0].textContent.trim()).toEqual('hello world');
+            expect(msg[0].querySelectorAll('img').length).toEqual(2);
+            done();
         }));
 
         it("will render the message time as configured",

@@ -68,53 +68,48 @@
             it("shows the number of unread mentions received",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'all').openControlBox();
                 _converse.emit('rosterContactsFetched');
 
-                let chatview;
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                await test_utils.openChatBoxFor(_converse, sender_jid);
+                await test_utils.waitUntil(() => _converse.chatboxes.length);
+                const chatview = _converse.chatboxviews.get(sender_jid);
+                chatview.model.set({'minimized': true});
 
-                test_utils.openChatBoxFor(_converse, sender_jid);
-                return test_utils.waitUntil(() => _converse.chatboxes.length).then(() => {
-                    chatview = _converse.chatboxviews.get(sender_jid);
-                    chatview.model.set({'minimized': true});
+                expect(_.isNull(_converse.chatboxviews.el.querySelector('.restore-chat .message-count'))).toBeTruthy();
+                expect(_.isNull(_converse.rosterview.el.querySelector('.msgs-indicator'))).toBeTruthy();
 
-                    expect(_.isNull(_converse.chatboxviews.el.querySelector('.restore-chat .message-count'))).toBeTruthy();
-                    expect(_.isNull(_converse.rosterview.el.querySelector('.msgs-indicator'))).toBeTruthy();
+                let msg = $msg({
+                        from: sender_jid,
+                        to: _converse.connection.jid,
+                        type: 'chat',
+                        id: (new Date()).getTime()
+                    }).c('body').t('hello').up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                _converse.chatboxes.onMessage(msg);
+                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll(".msgs-indicator"));
+                spyOn(chatview.model, 'incrementUnreadMsgCounter').and.callThrough();
+                expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('1');
+                expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('1');
 
-                    const msg = $msg({
-                            from: sender_jid,
-                            to: _converse.connection.jid,
-                            type: 'chat',
-                            id: (new Date()).getTime()
-                        }).c('body').t('hello').up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    _converse.chatboxes.onMessage(msg);
-                    return test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll(".msgs-indicator"));
-                }).then(() => {
-                    spyOn(chatview.model, 'incrementUnreadMsgCounter').and.callThrough();
-                    expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('1');
-                    expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('1');
-
-                    const msg = $msg({
-                            from: sender_jid,
-                            to: _converse.connection.jid,
-                            type: 'chat',
-                            id: (new Date()).getTime()
-                        }).c('body').t('hello again').up()
-                        .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                    _converse.chatboxes.onMessage(msg);
-                return test_utils.waitUntil(() => chatview.model.incrementUnreadMsgCounter.calls.count());
-            }).then(() => {
-                    expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('2');
-                    expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('2');
-                    chatview.model.set({'minimized': false});
-                    expect(_.isNull(_converse.chatboxviews.el.querySelector('.restore-chat .message-count'))).toBeTruthy();
-                    expect(_.isNull(_converse.rosterview.el.querySelector('.msgs-indicator'))).toBeTruthy();
-                    done();
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                msg = $msg({
+                        from: sender_jid,
+                        to: _converse.connection.jid,
+                        type: 'chat',
+                        id: (new Date()).getTime()
+                    }).c('body').t('hello again').up()
+                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+                _converse.chatboxes.onMessage(msg);
+                await test_utils.waitUntil(() => chatview.model.incrementUnreadMsgCounter.calls.count());
+                expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('2');
+                expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('2');
+                chatview.model.set({'minimized': false});
+                expect(_.isNull(_converse.chatboxviews.el.querySelector('.restore-chat .message-count'))).toBeTruthy();
+                expect(_.isNull(_converse.rosterview.el.querySelector('.msgs-indicator'))).toBeTruthy();
+                done();
             }));
         });
 

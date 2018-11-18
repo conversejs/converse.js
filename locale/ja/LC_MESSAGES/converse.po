@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-15 12:25+0100\n"
-"PO-Revision-Date: 2018-11-11 07:07+0000\n"
-"Last-Translator: Mako N <mako@pasero.net>\n"
+"PO-Revision-Date: 2018-11-22 18:07+0000\n"
+"Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
 "Language: ja\n"
@@ -696,7 +696,7 @@ msgstr "%1$s はこの談話室を退出して再入室しました"
 #: dist/converse-no-dependencies.js:37084
 #, javascript-format
 msgid "%1$s has left and re-entered the groupchat. \"%2$s\""
-msgstr "%1$s はこの談話室を退出して再入室しました。\"%2$s2\""
+msgstr "%1$s はこの談話室を退出して再入室しました。\"%2$s\""
 
 #: dist/converse-no-dependencies.js:37103
 #, javascript-format

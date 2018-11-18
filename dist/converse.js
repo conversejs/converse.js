@@ -94990,7 +94990,7 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].isAudioURL = funct
 
   const filename = url.filename().toLowerCase();
 
-  if (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.includes(["https", "http"], url.protocol().toLowerCase())) {
+  if (url.protocol().toLowerCase() !== "https") {
     return false;
   }
 
@@ -95004,7 +95004,7 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].isImageURL = funct
 
   const filename = url.filename().toLowerCase();
 
-  if (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.includes(["https", "http"], url.protocol().toLowerCase())) {
+  if (url.protocol().toLowerCase() !== "https") {
     return false;
   }
 
@@ -95018,7 +95018,7 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].isVideoURL = funct
 
   const filename = url.filename().toLowerCase();
 
-  if (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.includes(["https", "http"], url.protocol().toLowerCase())) {
+  if (url.protocol().toLowerCase() !== "https") {
     return false;
   }
 

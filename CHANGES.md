@@ -2,6 +2,7 @@
 
 ## 4.0.6 (unreleased)
 
+- Don't render http (i.e. non-TLS) resources
 - #1331 Fix missing checkmarks in old muc messages
 
 ## 4.0.5 (2018-11-15)

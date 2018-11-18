@@ -967,7 +967,7 @@
 
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
-            const base_url = document.URL.split(window.location.pathname)[0];
+            let base_url = 'https://conversejs.org';
             let message = base_url+"/logo/conversejs-filled.svg";
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -999,6 +999,13 @@
             msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
             expect(msg[0].textContent.trim()).toEqual('hello world');
             expect(msg[0].querySelectorAll('img').length).toEqual(2);
+
+            // Non-https images aren't rendered
+            base_url = document.URL.split(window.location.pathname)[0];
+            message = base_url+"/logo/conversejs-filled.svg";
+            expect(view.el.querySelectorAll('img').length).toBe(4);
+            test_utils.sendMessage(view, message);
+            expect(view.el.querySelectorAll('img').length).toBe(4);
             done();
         }));
 
@@ -1795,7 +1802,7 @@
                     "         type='chat'"+
                     "         to='dummy@localhost/resource'>"+
                     "    <body>Have you heard this funny audio?</body>"+
-                    "    <x xmlns='jabber:x:oob'><url>http://localhost/audio.mp3</url></x>"+
+                    "    <x xmlns='jabber:x:oob'><url>https://localhost/audio.mp3</url></x>"+
                     "</message>").firstChild
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -1805,16 +1812,16 @@
                 let media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/audio.html -->'+
-                    '<audio controls="" src="http://localhost/audio.mp3"></audio>'+
-                    '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file "audio.mp3"</a>');
+                    '<audio controls="" src="https://localhost/audio.mp3"></audio>'+
+                    '<a target="_blank" rel="noopener" href="https://localhost/audio.mp3">Download audio file "audio.mp3"</a>');
 
                 // If the <url> and <body> contents is the same, don't duplicate.
                 stanza = Strophe.xmlHtmlNode(
                     "<message from='"+contact_jid+"'"+
                     "         type='chat'"+
                     "         to='dummy@localhost/resource'>"+
-                    "    <body>http://localhost/audio.mp3</body>"+
-                    "    <x xmlns='jabber:x:oob'><url>http://localhost/audio.mp3</url></x>"+
+                    "    <body>https://localhost/audio.mp3</body>"+
+                    "    <x xmlns='jabber:x:oob'><url>https://localhost/audio.mp3</url></x>"+
                     "</message>").firstChild;
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -1823,8 +1830,8 @@
                 media = view.el.querySelector('.chat-msg:last-child .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/audio.html -->'+
-                    '<audio controls="" src="http://localhost/audio.mp3"></audio>'+
-                    '<a target="_blank" rel="noopener" href="http://localhost/audio.mp3">Download audio file "audio.mp3"</a>'
+                    '<audio controls="" src="https://localhost/audio.mp3"></audio>'+
+                    '<a target="_blank" rel="noopener" href="https://localhost/audio.mp3">Download audio file "audio.mp3"</a>'
                 );
                 done();
             }));
@@ -1846,7 +1853,7 @@
                     "         type='chat'"+
                     "         to='dummy@localhost/resource'>"+
                     "    <body>Have you seen this funny video?</body>"+
-                    "    <x xmlns='jabber:x:oob'><url>http://localhost/video.mp4</url></x>"+
+                    "    <x xmlns='jabber:x:oob'><url>https://localhost/video.mp4</url></x>"+
                     "</message>").firstChild;
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg video').length, 2000)
@@ -1855,16 +1862,16 @@
                 let media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/video.html -->'+
-                    '<video controls="" src="http://localhost/video.mp4" style="max-height: 50vh"></video>'+
-                    '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file "video.mp4"</a>');
+                    '<video controls="" src="https://localhost/video.mp4" style="max-height: 50vh"></video>'+
+                    '<a target="_blank" rel="noopener" href="https://localhost/video.mp4">Download video file "video.mp4"</a>');
 
                 // If the <url> and <body> contents is the same, don't duplicate.
                 stanza = Strophe.xmlHtmlNode(
                     "<message from='"+contact_jid+"'"+
                     "         type='chat'"+
                     "         to='dummy@localhost/resource'>"+
-                    "    <body>http://localhost/video.mp4</body>"+
-                    "    <x xmlns='jabber:x:oob'><url>http://localhost/video.mp4</url></x>"+
+                    "    <body>https://localhost/video.mp4</body>"+
+                    "    <x xmlns='jabber:x:oob'><url>https://localhost/video.mp4</url></x>"+
                     "</message>").firstChild;
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -1873,8 +1880,8 @@
                 media = view.el.querySelector('.chat-msg:last-child .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/video.html -->'+
-                    '<video controls="" src="http://localhost/video.mp4" style="max-height: 50vh"></video>'+
-                    '<a target="_blank" rel="noopener" href="http://localhost/video.mp4">Download video file "video.mp4"</a>');
+                    '<video controls="" src="https://localhost/video.mp4" style="max-height: 50vh"></video>'+
+                    '<a target="_blank" rel="noopener" href="https://localhost/video.mp4">Download video file "video.mp4"</a>');
                 done();
             }));
 
@@ -1894,7 +1901,7 @@
                     "         type='chat'"+
                     "         to='dummy@localhost/resource'>"+
                     "    <body>Have you downloaded this funny file?</body>"+
-                    "    <x xmlns='jabber:x:oob'><url>http://localhost/funny.pdf</url></x>"+
+                    "    <x xmlns='jabber:x:oob'><url>https://localhost/funny.pdf</url></x>"+
                     "</message>").firstChild;
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -1904,7 +1911,7 @@
                 const media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/file.html -->'+
-                    '<a target="_blank" rel="noopener" href="http://localhost/funny.pdf">Download file "funny.pdf"</a>');
+                    '<a target="_blank" rel="noopener" href="https://localhost/funny.pdf">Download file "funny.pdf"</a>');
                 done();
             }));
 
@@ -1913,6 +1920,7 @@
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         function (done, _converse) {
 
+                const base_url = 'https://conversejs.org';
                 test_utils.createContacts(_converse, 'current');
                 _converse.emit('rosterContactsFetched');
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1921,7 +1929,6 @@
                 .then(() => {
                     view = _converse.chatboxviews.get(contact_jid);
                     spyOn(view.model, 'sendMessage').and.callThrough();
-                    const base_url = document.URL.split(window.location.pathname)[0];
                     const url = base_url+"/logo/conversejs-filled.svg";
 
                     const stanza = Strophe.xmlHtmlNode(
@@ -1939,8 +1946,8 @@
                     const media = view.el.querySelector('.chat-msg .chat-msg__media');
                     expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                         `<!-- src/templates/image.html -->`+
-                        `<a href="${window.location.origin}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
-                            `<img class="chat-image img-thumbnail" src="${window.location.origin}/logo/conversejs-filled.svg">`+
+                        `<a href="${base_url}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
+                            `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg">`+
                         `</a>`);
                     done();
                 }).catch(_.partial(console.error, _));

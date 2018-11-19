@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-15 12:25+0100\n"
-"PO-Revision-Date: 2018-11-04 12:23+0000\n"
+"PO-Revision-Date: 2018-11-22 18:07+0000\n"
 "Last-Translator: Lorem Ipsum <aditoo@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
 "translations/cs/>\n"
@@ -900,6 +900,9 @@ msgid ""
 "keys and all previously encrypted messages will no longer be ecryptable on "
 "this device."
 msgstr ""
+"Opravdu chcete generovat nové klíče OMEMO? Tímto budou odstraněny vaše staré "
+"klíče a všechny dříve zašifrované zprávy již nepůjde na tomto zařízení "
+"dešifrovat."
 
 #: dist/converse-no-dependencies.js:38323
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -1011,18 +1014,19 @@ msgstr "Osobní stavová zpráva"
 
 #: dist/converse-no-dependencies.js:39515
 msgid "About"
-msgstr ""
+msgstr "O nás"
 
 #: dist/converse-no-dependencies.js:39517
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
+"%1$s Otevřený %2$s chatovací klient pro XMPP vám přináší %3$s Opkode%2$s"
 
 #: dist/converse-no-dependencies.js:39518
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
-msgstr ""
+msgstr "%1$s Přeložte %2$s jej do svého vlastního jazyka"
 
 #: dist/converse-no-dependencies.js:39542
 #, javascript-format
@@ -1042,9 +1046,8 @@ msgid "Log out"
 msgstr "Odhlásit"
 
 #: dist/converse-no-dependencies.js:39548
-#, fuzzy
 msgid "Show details about this chat client"
-msgstr "Zobrazit více detailů o tomto skupinovém chatu"
+msgstr "Zobrazit detaily o tomto chatovacím klientovi"
 
 #: dist/converse-no-dependencies.js:39549
 msgid "Your profile"
@@ -1271,9 +1274,8 @@ msgid "Add a contact"
 msgstr "Přidat kontakt"
 
 #: dist/converse-no-dependencies.js:41808
-#, fuzzy
 msgid "Re-sync your contacts"
-msgstr "Moje kontakty"
+msgstr "Znovu synchronizovat své kontakty"
 
 #: dist/converse-no-dependencies.js:43586
 msgid "Sorry, could not determine upload URL."
@@ -1535,7 +1537,7 @@ msgstr "tento skupinový chat je omezen pouze na členy"
 
 #: dist/converse-no-dependencies.js:74937
 msgid "Uploading file:"
-msgstr ""
+msgstr "Nahrává se soubor:"
 
 #: dist/converse-no-dependencies.js:75382
 msgid "XMPP Username:"
@@ -1597,7 +1599,7 @@ msgstr "Otisk OMEMO tohoto zařízení"
 
 #: dist/converse-no-dependencies.js:75797
 msgid "Generate new keys and fingerprint"
-msgstr ""
+msgstr "Generovat nové klíče a otisk"
 
 #: dist/converse-no-dependencies.js:75801
 msgid "Select all"
@@ -1675,33 +1677,28 @@ msgid "The User's Profile Image"
 msgstr "Profilový obrázek uživatele"
 
 #: dist/converse-no-dependencies.js:76802
-#, fuzzy
 msgid "Full Name:"
-msgstr "Celé jméno"
+msgstr "Celé jméno:"
 
 #: dist/converse-no-dependencies.js:76808
-#, fuzzy
 msgid "XMPP Address:"
-msgstr "XMPP adresa"
+msgstr "XMPP adresa:"
 
 #: dist/converse-no-dependencies.js:76816
-#, fuzzy
 msgid "Nickname:"
-msgstr "Přezdívka"
+msgstr "Přezdívka:"
 
 #: dist/converse-no-dependencies.js:76824
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: dist/converse-no-dependencies.js:76834
-#, fuzzy
 msgid "Email:"
-msgstr "E-mail"
+msgstr "E-mail:"
 
 #: dist/converse-no-dependencies.js:76844
-#, fuzzy
 msgid "Role:"
-msgstr "Role"
+msgstr "Role:"
 
 #: dist/converse-no-dependencies.js:76852
 msgid "OMEMO Fingerprints"

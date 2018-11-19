@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-15 12:25+0100\n"
-"PO-Revision-Date: 2018-10-31 09:22+0000\n"
+"PO-Revision-Date: 2018-11-22 18:07+0000\n"
 "Last-Translator: Szilágyi Gyula <gyula.n7@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
 "translations/hu/>\n"
@@ -900,6 +900,9 @@ msgid ""
 "keys and all previously encrypted messages will no longer be ecryptable on "
 "this device."
 msgstr ""
+"Biztos, hogy új OMEMO kulcsokat akarsz létrehozni? Ez eltávolítja a régi "
+"kulcsokat, valamint a korábban titkosított üzeneteid már nem lesznek "
+"titkosíthatók ezen az eszközön."
 
 #: dist/converse-no-dependencies.js:38323
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -1009,18 +1012,19 @@ msgstr "Személyes állapot üzenet"
 
 #: dist/converse-no-dependencies.js:39515
 msgid "About"
-msgstr ""
+msgstr "Névjegy"
 
 #: dist/converse-no-dependencies.js:39517
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
 msgstr ""
+"%1$s Nyílt Forráskódú %2$s XMPP chat kliens az %3$s Opkode %2$s jóvoltából"
 
 #: dist/converse-no-dependencies.js:39518
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
-msgstr ""
+msgstr "%1$s Lefordítani %2$s a saját nyelvére"
 
 #: dist/converse-no-dependencies.js:39542
 #, javascript-format
@@ -1040,9 +1044,8 @@ msgid "Log out"
 msgstr "Kijelentkezés"
 
 #: dist/converse-no-dependencies.js:39548
-#, fuzzy
 msgid "Show details about this chat client"
-msgstr "További információk a konferenciáról"
+msgstr "További információk a csevegő kliensről"
 
 #: dist/converse-no-dependencies.js:39549
 msgid "Your profile"
@@ -1269,9 +1272,8 @@ msgid "Add a contact"
 msgstr "Új névjegy felvétele"
 
 #: dist/converse-no-dependencies.js:41808
-#, fuzzy
 msgid "Re-sync your contacts"
-msgstr "Névjegyeim"
+msgstr "Újra szinkronizálni a névjegyeket"
 
 #: dist/converse-no-dependencies.js:43586
 msgid "Sorry, could not determine upload URL."
@@ -1525,7 +1527,7 @@ msgstr "Ez a konferencia csak a tagokra korlátozódik"
 
 #: dist/converse-no-dependencies.js:74937
 msgid "Uploading file:"
-msgstr ""
+msgstr "Fájl feltöltése:"
 
 #: dist/converse-no-dependencies.js:75382
 msgid "XMPP Username:"
@@ -1588,7 +1590,7 @@ msgstr "Készülékének OMEMO ujjlenyomata"
 
 #: dist/converse-no-dependencies.js:75797
 msgid "Generate new keys and fingerprint"
-msgstr ""
+msgstr "Új kulcsok és ujjlenyomat létrehozása"
 
 #: dist/converse-no-dependencies.js:75801
 msgid "Select all"
@@ -1667,33 +1669,28 @@ msgid "The User's Profile Image"
 msgstr "A felhasználó profilképe"
 
 #: dist/converse-no-dependencies.js:76802
-#, fuzzy
 msgid "Full Name:"
-msgstr "Teljes név"
+msgstr "Teljes név:"
 
 #: dist/converse-no-dependencies.js:76808
-#, fuzzy
 msgid "XMPP Address:"
-msgstr "XMPP Cím"
+msgstr "XMPP Cím:"
 
 #: dist/converse-no-dependencies.js:76816
-#, fuzzy
 msgid "Nickname:"
-msgstr "Becenév"
+msgstr "Becenév:"
 
 #: dist/converse-no-dependencies.js:76824
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: dist/converse-no-dependencies.js:76834
-#, fuzzy
 msgid "Email:"
-msgstr "Email"
+msgstr "E-mail:"
 
 #: dist/converse-no-dependencies.js:76844
-#, fuzzy
 msgid "Role:"
-msgstr "Szerepkör"
+msgstr "Szerepkör:"
 
 #: dist/converse-no-dependencies.js:76852
 msgid "OMEMO Fingerprints"

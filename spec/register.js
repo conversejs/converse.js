@@ -9,21 +9,23 @@
 
         it("is not available unless allow_registration=true",
             mock.initConverseWithPromises(
-                null, ['chatBoxesInitialized'],
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: false },
-                async function (done, _converse) {
+                function (done, _converse) {
 
-            await test_utils.waitUntil(() => _converse.chatboxviews.get('controlbox'));
-            test_utils.openControlBox();
-            const cbview = _converse.chatboxviews.get('controlbox');
-            expect(cbview.el.querySelectorAll('a.register-account').length).toBe(0);
-            done();
+            test_utils.waitUntil(() => _converse.chatboxviews.get('controlbox'))
+            .then(function () {
+                test_utils.openControlBox();
+                var cbview = _converse.chatboxviews.get('controlbox');
+                expect($(cbview.el.querySelector('a.register-account')).length).toBe(0);
+                done();
+            });
         }));
 
         it("can be opened by clicking on the registration tab",
             mock.initConverseWithPromises(
-                null, ['chatBoxesInitialized'],
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 function (done, _converse) {
@@ -50,7 +52,7 @@
 
         it("allows the user to choose an XMPP provider's domain",
             mock.initConverseWithPromises(
-                null, ['chatBoxesInitialized'],
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 function (done, _converse) {
@@ -90,7 +92,7 @@
 
         it("will render a registration form as received from the XMPP provider",
             mock.initConverseWithPromises(
-                null, ['chatBoxesInitialized'],
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 function (done, _converse) {
@@ -149,7 +151,7 @@
 
         it("will set form_type to legacy and submit it as legacy",
             mock.initConverseWithPromises(
-                null, ['chatBoxesInitialized'],
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 function (done, _converse) {
@@ -210,7 +212,7 @@
 
         it("will set form_type to xform and submit it as xform",
             mock.initConverseWithPromises(
-                null, ['chatBoxesInitialized'],
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
                 function (done, _converse) {

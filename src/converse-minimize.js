@@ -509,8 +509,10 @@ converse.plugins.add('converse-minimize', {
             }
         });
 
-        _converse.api.waitUntil('chatBoxViewsInitialized')
-        .then(() => {
+        Promise.all([
+            _converse.api.waitUntil('connectionInitialized'),
+            _converse.api.waitUntil('chatBoxViewsInitialized')
+        ]).then(() => {
             _converse.minimized_chats = new _converse.MinimizedChats({
                 model: _converse.chatboxes
             });

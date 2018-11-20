@@ -6,7 +6,7 @@
 
         it("contains a checkbox to indicate whether the computer is trusted or not",
             mock.initConverseWithPromises(
-                null, ['chatBoxesInitialized'],
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: false },
                 function (done, _converse) {
@@ -44,7 +44,7 @@
 
         it("checkbox can be set to false by default",
             mock.initConverseWithPromises(
-                null, ['chatBoxesInitialized'],
+                null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   trusted: false,
                   allow_registration: false },

@@ -66,7 +66,7 @@
     };
 
     utils.openControlBox = function () {
-        const toggle = document.querySelector(".toggle-controlbox");
+        var toggle = document.querySelector(".toggle-controlbox");
         if (!u.isVisible(document.querySelector("#controlbox"))) {
             if (!u.isVisible(toggle)) {
                 u.removeClass('hidden', toggle);

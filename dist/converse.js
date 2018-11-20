@@ -51479,7 +51479,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       }
     });
 
-    _converse.api.waitUntil('chatBoxViewsInitialized').then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+    Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxViewsInitialized')]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
     _converse.on('chatBoxesFetched', () => {
       const controlbox = _converse.chatboxes.get('controlbox') || _converse.addControlBox();
@@ -53126,8 +53126,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       }
 
     });
-
-    _converse.api.waitUntil('chatBoxViewsInitialized').then(() => {
+    Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxViewsInitialized')]).then(() => {
       _converse.minimized_chats = new _converse.MinimizedChats({
         model: _converse.chatboxes
       });
@@ -59689,7 +59688,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         _converse.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this));
 
         _converse.on('rosterContactsFetched', () => {
-          _converse.roster.each(c => this.addRosterContact(c, {
+          _converse.roster.each(contact => this.addRosterContact(contact, {
             'silent': true
           }));
 
@@ -62537,32 +62536,7 @@ const BOSH_WAIT = 59;
 
 const _converse = {
   'templates': {},
-  'promises': {},
-
-  get connection() {
-    /* Creates a new Strophe.Connection instance if we don't already have one.
-     */
-    if (!this._connection) {
-      if (!this.bosh_service_url && !this.websocket_url) {
-        throw new Error("connection: you must supply a value for either the bosh_service_url or websocket_url or both.");
-      }
-
-      if (('WebSocket' in window || 'MozWebSocket' in window) && this.websocket_url) {
-        this._connection = new strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Connection(this.websocket_url, this.connection_options);
-      } else if (this.bosh_service_url) {
-        this._connection = new strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Connection(this.bosh_service_url, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(this.connection_options, {
-          'keepalive': this.keepalive
-        }));
-      } else {
-        throw new Error("connection: this browser does not support websockets and bosh_service_url wasn't specified.");
-      }
-
-      _converse.emit('connectionInitialized');
-    }
-
-    return this._connection;
-  }
-
+  'promises': {}
 };
 _converse.VERSION_NAME = "v4.0.5";
 
@@ -62847,6 +62821,28 @@ function initClientConfig() {
   _converse.emit('clientConfigInitialized');
 }
 
+_converse.initConnection = function () {
+  /* Creates a new Strophe.Connection instance if we don't already have one.
+   */
+  if (!_converse.connection) {
+    if (!_converse.bosh_service_url && !_converse.websocket_url) {
+      throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
+    }
+
+    if (('WebSocket' in window || 'MozWebSocket' in window) && _converse.websocket_url) {
+      _converse.connection = new strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Connection(_converse.websocket_url, _converse.connection_options);
+    } else if (_converse.bosh_service_url) {
+      _converse.connection = new strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Connection(_converse.bosh_service_url, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(_converse.connection_options, {
+        'keepalive': _converse.keepalive
+      }));
+    } else {
+      throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
+    }
+  }
+
+  _converse.emit('connectionInitialized');
+};
+
 function setUpXMLLogging() {
   strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].log = function (level, msg) {
     _converse.log(msg, level);
@@ -62866,6 +62862,9 @@ function setUpXMLLogging() {
 function finishInitialization() {
   initPlugins();
   initClientConfig();
+
+  _converse.initConnection();
+
   setUpXMLLogging();
 
   _converse.logIn();
@@ -62881,8 +62880,6 @@ function finishInitialization() {
       _converse.api.disco.own.features.add(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].NS.IDLE);
     });
   }
-
-  _converse.initialized = true;
 }
 
 function cleanup() {
@@ -62903,9 +62900,7 @@ function cleanup() {
   delete _converse.controlboxtoggle;
   delete _converse.chatboxviews;
 
-  if (_converse._connection) {
-    _converse._connection.reset();
-  }
+  _converse.connection.reset();
 
   _converse.stopListening();
 
@@ -62923,7 +62918,7 @@ _converse.initialize = function (settings, callback) {
 
   _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(PROMISES, addPromise);
 
-  if (_converse.initialized) {
+  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection)) {
     cleanup();
   }
 
@@ -63771,7 +63766,7 @@ _converse.initialize = function (settings, callback) {
 
 
   if (settings.connection) {
-    this._connection = settings.connection;
+    this.connection = settings.connection;
   }
 
   if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {

@@ -49257,10 +49257,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         /* This method gets overridden in src/converse-controlbox.js if
          * the controlbox plugin is active.
          */
-        this.each(function (view) {
-          view.close();
-        });
-        return this;
+        return Promise.all(this.map(view => view.close({
+          'name': 'closeAllChatBoxes'
+        })));
       },
 
       chatBoxMayBeShown(chatbox) {
@@ -50555,8 +50554,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.remove();
 
         _converse.emit('chatBoxClosed', this);
-
-        return this;
       },
 
       renderEmojiPicker() {
@@ -50935,18 +50932,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
     },
     ChatBoxViews: {
-      closeAllChatBoxes() {
-        const _converse = this.__super__._converse;
-        this.each(function (view) {
-          if (view.model.get('id') === 'controlbox' && (_converse.disconnection_cause !== _converse.LOGOUT || _converse.show_controlbox_by_default)) {
-            return;
-          }
-
-          view.close();
-        });
-        return this;
-      },
-
       getChatBoxWidth(view) {
         const _converse = this.__super__._converse;
         const controlbox = this.get('controlbox');
@@ -51169,9 +51154,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.el.querySelector('.controlbox-panes').insertAdjacentElement('afterBegin', this.controlbox_pane.el);
       },
 
-      close(ev) {
+      async close(ev) {
         if (ev && ev.preventDefault) {
           ev.preventDefault();
+        }
+
+        if (ev.name === 'closeAllChatBoxes' && (_converse.disconnection_cause !== _converse.LOGOUT || _converse.show_controlbox_by_default)) {
+          return;
         }
 
         if (_converse.sticky_controlbox) {
@@ -51179,8 +51168,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         if (_converse.connection.connected && !_converse.connection.disconnecting) {
-          this.model.save({
-            'closed': true
+          await new Promise((resolve, reject) => {
+            return this.model.save({
+              'closed': true
+            }, {
+              'success': resolve,
+              'error': reject
+            });
           });
         } else {
           this.model.trigger('hide');
@@ -52663,6 +52657,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         this.save({
           'minimized': this.get('minimized') || false,
           'time_minimized': this.get('time_minimized') || moment()
+        }, {
+          'patch': true
         });
       },
 
@@ -52670,6 +52666,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         u.safeSave(this, {
           'minimized': false,
           'time_opened': moment().valueOf()
+        }, {
+          'patch': true
         });
       },
 
@@ -52677,6 +52675,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         u.safeSave(this, {
           'minimized': true,
           'time_minimized': moment().format()
+        }, {
+          'patch': true
         });
       }
 
@@ -52760,6 +52760,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         if (this.model.collection && this.model.collection.browserStorage) {
           this.model.save({
             'scroll': this.content.scrollTop
+          }, {
+            'patch': true
           });
         } else {
           this.model.set({
@@ -53078,6 +53080,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 
         this.toggleview.model.save({
           'collapsed': !this.toggleview.model.get('collapsed')
+        }, {
+          'patch': true
         });
         u.slideToggleElement(this.el.querySelector('.minimized-chats-flyout'), 200);
       },
@@ -53137,6 +53141,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       updateUnreadMessagesCounter() {
         this.toggleview.model.save({
           'num_unread': _.sum(this.model.pluck('num_unread'))
+        }, {
+          'patch': true
         });
         this.render();
       }
@@ -54105,7 +54111,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
          */
         if (u.isPersistableModel(this.model)) {
           this.model.clearUnreadMsgCounter();
-          this.model.save();
         }
 
         this.occupantsview.setOccupantsHeight();
@@ -55595,6 +55600,43 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
        */
       'roomviews': {
         /**
+         * Retrieves a groupchat (aka chatroom) view. The chat should already be open.
+         *
+         * @method _converse.api.roomviews.get
+         * @param {String|string[]} name - e.g. 'coven@conference.shakespeare.lit' or
+         *  ['coven@conference.shakespeare.lit', 'cave@conference.shakespeare.lit']
+         * @returns {Backbone.View} Backbone.View representing the groupchat
+         *
+         * @example
+         * // To return a single view, provide the JID of the groupchat
+         * const view = _converse.api.roomviews.get('coven@conference.shakespeare.lit');
+         *
+         * @example
+         * // To return an array of views, provide an array of JIDs:
+         * const views = _converse.api.roomviews.get(['coven@conference.shakespeare.lit', 'cave@conference.shakespeare.lit']);
+         *
+         * @example
+         * // To return views of all open groupchats, call the method without any parameters::
+         * const views = _converse.api.roomviews.get();
+         *
+         */
+        get(jids) {
+          if (_.isArray(jids)) {
+            const views = _converse.api.chatviews.get(jids);
+
+            return views.filter(v => v.model.get('type') === _converse.CHATROOMS_TYPE);
+          } else {
+            const view = _converse.api.chatviews.get(jids);
+
+            if (view.model.get('type') === _converse.CHATROOMS_TYPE) {
+              return view;
+            } else {
+              return null;
+            }
+          }
+        },
+
+        /**
          * Lets you close open chatrooms.
          *
          * You can call this method without any arguments to close
@@ -55606,25 +55648,29 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
          */
         'close'(jids) {
           if (_.isUndefined(jids)) {
-            _converse.chatboxviews.each(function (view) {
+            return Promise.all(_converse.chatboxviews.map(view => {
               if (view.is_chatroom && view.model) {
-                view.close();
+                return view.close();
               }
-            });
+
+              return Promise.resolve();
+            }));
           } else if (_.isString(jids)) {
             const view = _converse.chatboxviews.get(jids);
 
             if (view) {
-              view.close();
+              return view.close();
             }
           } else {
-            _.each(jids, function (jid) {
+            return Promise.all(_.map(jids, jid => {
               const view = _converse.chatboxviews.get(jid);
 
               if (view) {
-                view.close();
+                return view.close();
               }
-            });
+
+              return Promise.resolve();
+            }));
           }
         }
 
@@ -61845,6 +61891,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             'references': this.getReferencesFromStanza(stanza),
             'older_versions': older_versions,
             'edited': moment().format()
+          }, {
+            'wait': true
           });
           return true;
         }
@@ -62159,7 +62207,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           // TODO: handle <subject> messages (currently being done by ChatRoom)
           return;
         } else {
-          return this.messages.create(attrs);
+          return new Promise((success, error) => this.messages.create(attrs, {
+            success,
+            error,
+            'wait': true
+          }));
         }
       },
 
@@ -62298,7 +62350,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           _converse.log(message, Strophe.LogLevel.ERROR);
         }
 
-        chatbox.createMessage(message, message);
+        await chatbox.createMessage(message, message);
         return true;
       },
 
@@ -66148,6 +66200,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
       _.each(groupchats, gc => _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].safeSave(gc, {
         'connection_status': _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.DISCONNECTED
+      }, {
+        'patch': true
       }));
 
       this.__super__.tearDown.call(this, arguments);
@@ -66363,7 +66417,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           stanza.cnode(Strophe.xmlElement("password", [], password));
         }
 
-        this.save('connection_status', _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.CONNECTING);
+        this.save({
+          'connection_status': _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.CONNECTING
+        }, {
+          'patch': true
+        });
 
         _converse.api.send(stanza);
 
@@ -66397,6 +66455,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
         _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].safeSave(this, {
           'connection_status': _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.DISCONNECTED
+        }, {
+          'patch': true
         });
         this.removeHandlers();
       },
@@ -66525,6 +66585,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         if (nick) {
           this.save({
             'nick': nick
+          }, {
+            'patch': true
           });
         } else {
           nick = this.get('nick');
@@ -66645,7 +66707,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         attrs.description = _.get(fields.findWhere({
           'var': "muc#roominfo_description"
         }), 'attributes.value');
-        this.save(attrs);
+        this.save(attrs, {
+          'patch': true
+        });
       },
 
       requestMemberList(affiliation) {
@@ -66836,7 +66900,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
             this.save({
               'affiliation': affiliation
             }, {
-              'wait': true,
               'patch': true
             });
           }
@@ -66845,7 +66908,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
             this.save({
               'role': role
             }, {
-              'wait': true,
               'patch': true
             });
           }
@@ -66968,6 +67030,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           'reserved_nick': nick,
           'nick': nick
         }, {
+          'patch': true,
           'silent': true
         });
         return iq;
@@ -67139,6 +67202,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
             msg.save({
               'received': moment().format()
+            }, {
+              'patch': true
             });
           }
 
@@ -67205,6 +67270,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           if (forwarded && msg && msg.get('sender') === 'me') {
             msg.save({
               'received': moment().format()
+            }, {
+              'patch': true
             });
           }
 
@@ -67220,38 +67287,39 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }
       },
 
-      async onPresence(pres) {
+      onPresence(pres) {
         /* Handles all MUC presence stanzas.
          *
          * Parameters:
          *  (XMLElement) pres: The stanza
          */
         if (pres.getAttribute('type') === 'error') {
-          this.save('connection_status', _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.DISCONNECTED);
+          this.save({
+            'connection_status': _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.DISCONNECTED
+          }, {
+            'patch': true
+          });
           return;
         }
 
         const is_self = pres.querySelector("status[code='110']");
 
         if (is_self && pres.getAttribute('type') !== 'unavailable') {
-          await this.onOwnPresence(pres);
+          this.onOwnPresence(pres);
         }
 
         this.updateOccupantsOnPresence(pres);
 
         if (this.get('role') !== 'none' && this.get('connection_status') === _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.CONNECTING) {
-          await new Promise((success, error) => this.save({
+          this.save({
             'connection_status': _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.CONNECTED
           }, {
-            'patch': true,
-            'wait': true,
-            success,
-            error
-          }));
+            'patch': true
+          });
         }
       },
 
-      async onOwnPresence(pres) {
+      onOwnPresence(pres) {
         /* Handles a received presence relating to the current
          * user.
          *
@@ -67293,14 +67361,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           }
         }
 
-        await new Promise((success, error) => this.save({
+        this.save({
           'connection_status': _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.ENTERED
         }, {
-          'patch': true,
-          'wait': true,
-          success,
-          error
-        }));
+          'patch': true
+        });
       },
 
       isUserMentioned(message) {
@@ -67356,6 +67421,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].safeSave(this, {
           'num_unread': 0,
           'num_unread_general': 0
+        }, {
+          'patch': true
         });
       }
 
@@ -67592,7 +67659,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
        */
       _converse.chatboxes.each(function (model) {
         if (model.get('type') === _converse.CHATROOMS_TYPE) {
-          model.save('connection_status', _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.DISCONNECTED);
+          model.save({
+            'connection_status': _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.DISCONNECTED
+          }, {
+            'patch': true
+          });
         }
       });
     }
@@ -70181,11 +70252,11 @@ u.onMultipleEvents = function (events = [], callback) {
   _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.each(events, map => map.object.on(map.event, handler));
 };
 
-u.safeSave = function (model, attributes) {
+u.safeSave = function (model, attributes, options) {
   if (u.isPersistableModel(model)) {
-    model.save(attributes);
+    model.save(attributes, options);
   } else {
-    model.set(attributes);
+    model.set(attributes, options);
   }
 };
 

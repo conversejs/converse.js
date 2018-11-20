@@ -2125,7 +2125,6 @@
                     `xmlns="jabber:client">`+
                         `<body>But soft, what light through yonder window breaks?</body>`+
                         `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                        `<request xmlns="urn:xmpp:receipts"/>`+
                         `<replace id="${first_msg.get("msgid")}" xmlns="urn:xmpp:message-correct:0"/>`+
                 `</message>`);
 
@@ -2348,7 +2347,6 @@
                             `xmlns="jabber:client">`+
                                 `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
                                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                                `<request xmlns="urn:xmpp:receipts"/>`+
                                 `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+
@@ -2374,7 +2372,6 @@
                             `xmlns="jabber:client">`+
                                 `<body>hello z3r0 gibson sw0rdf1sh, how are you?</body>`+
                                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                                `<request xmlns="urn:xmpp:receipts"/>`+
                                 `<reference begin="18" end="27" type="mention" uri="xmpp:sw0rdf1sh@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+
@@ -2423,7 +2420,6 @@
                                 `xmlns="jabber:client">`+
                                     `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
                                     `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                                    `<request xmlns="urn:xmpp:receipts"/>`+
                                     `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                     `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                     `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+

@@ -329,9 +329,10 @@ converse.plugins.add('converse-chatboxes', {
                         'type': this.get('message_type'),
                         'id': message.get('edited') && _converse.connection.getUniqueId() || message.get('msgid'),
                     }).c('body').t(message.get('message')).up()
-                      .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up()
-                      .c('request', {'xmlns': Strophe.NS.RECEIPTS}).up();
-
+                      .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+                if (message.get('type') === 'chat') {
+                    stanza.c('request', {'xmlns': Strophe.NS.RECEIPTS}).up();
+                }
                 if (message.get('is_spoiler')) {
                     if (message.get('spoiler_hint')) {
                         stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER}, message.get('spoiler_hint')).up();

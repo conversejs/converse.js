@@ -652,7 +652,7 @@
         it("received for a minimized chat box will increment a counter on its header",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                function (done, _converse) {
+                async function (done, _converse) {
 
             if (_converse.view_mode === 'fullscreen') {
                 return done();
@@ -661,58 +661,55 @@
             _converse.emit('rosterContactsFetched');
             const contact_name = mock.cur_names[0];
             const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
-            let chatview, trimmedview, $count, trimmed_chatboxes;
             test_utils.openControlBox();
             spyOn(_converse, 'emit').and.callThrough();
 
-            test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
-            .then(() => test_utils.openChatBoxFor(_converse, contact_jid))
-            .then(() => {
-                chatview = _converse.chatboxviews.get(contact_jid);
-                expect(u.isVisible(chatview.el)).toBeTruthy();
-                expect(chatview.model.get('minimized')).toBeFalsy();
-                chatview.el.querySelector('.toggle-chatbox-button').click();
-                expect(chatview.model.get('minimized')).toBeTruthy();
-                var message = 'This message is sent to a minimized chatbox';
-                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var msg = $msg({
-                    from: sender_jid,
+            await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+            await test_utils.openChatBoxFor(_converse, contact_jid);
+            const chatview = await _converse.api.chatviews.get(contact_jid);
+            expect(u.isVisible(chatview.el)).toBeTruthy();
+            expect(chatview.model.get('minimized')).toBeFalsy();
+            chatview.el.querySelector('.toggle-chatbox-button').click();
+            expect(chatview.model.get('minimized')).toBeTruthy();
+            var message = 'This message is sent to a minimized chatbox';
+            var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            var msg = $msg({
+                from: sender_jid,
+                to: _converse.connection.jid,
+                type: 'chat',
+                id: (new Date()).getTime()
+            }).c('body').t(message).up()
+            .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
+            _converse.chatboxes.onMessage(msg);
+
+            await test_utils.waitUntil(() => chatview.model.messages.length);
+            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+            const trimmed_chatboxes = _converse.minimized_chats;
+            const trimmedview = trimmed_chatboxes.get(contact_jid);
+            let count = trimmedview.el.querySelector('.message-count');
+            expect(u.isVisible(chatview.el)).toBeFalsy();
+            expect(trimmedview.model.get('minimized')).toBeTruthy();
+            expect(u.isVisible(count)).toBeTruthy();
+            expect(count.textContent).toBe('1');
+            _converse.chatboxes.onMessage(
+                $msg({
+                    from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                     to: _converse.connection.jid,
                     type: 'chat',
                     id: (new Date()).getTime()
-                }).c('body').t(message).up()
-                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                _converse.chatboxes.onMessage(msg);
-                return test_utils.waitUntil(() => chatview.model.messages.length);
-            }).then(() => {
-                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                trimmed_chatboxes = _converse.minimized_chats;
-                trimmedview = trimmed_chatboxes.get(contact_jid);
-                $count = $(trimmedview.el).find('.message-count');
-                expect(u.isVisible(chatview.el)).toBeFalsy();
-                expect(trimmedview.model.get('minimized')).toBeTruthy();
-                expect(u.isVisible($count[0])).toBeTruthy();
-                expect($count.html()).toBe('1');
-                _converse.chatboxes.onMessage(
-                    $msg({
-                        from: mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
-                        to: _converse.connection.jid,
-                        type: 'chat',
-                        id: (new Date()).getTime()
-                    }).c('body').t('This message is also sent to a minimized chatbox').up()
-                    .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
-                );
-                return test_utils.waitUntil(() => chatview.model.messages.length);
-            }).then(() => {
-                expect(u.isVisible(chatview.el)).toBeFalsy();
-                expect(trimmedview.model.get('minimized')).toBeTruthy();
-                $count = $(trimmedview.el).find('.message-count');
-                expect(u.isVisible($count[0])).toBeTruthy();
-                expect($count.html()).toBe('2');
-                trimmedview.el.querySelector('.restore-chat').click();
-                expect(trimmed_chatboxes.keys().length).toBe(0);
-                done();
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL))
+                }).c('body').t('This message is also sent to a minimized chatbox').up()
+                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
+            );
+
+            await test_utils.waitUntil(() => (chatview.model.messages.length > 1));
+            expect(u.isVisible(chatview.el)).toBeFalsy();
+            expect(trimmedview.model.get('minimized')).toBeTruthy();
+            count = trimmedview.el.querySelector('.message-count');
+            expect(u.isVisible(count)).toBeTruthy();
+            expect(count.textContent).toBe('2');
+            trimmedview.el.querySelector('.restore-chat').click();
+            expect(trimmed_chatboxes.keys().length).toBe(0);
+            done();
         }));
 
         it("will indicate when it has a time difference of more than a day between it and its predecessor",
@@ -1916,41 +1913,38 @@
             }));
 
             it("will render images from oob URLs",
-                    mock.initConverseWithPromises(
-                        null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        function (done, _converse) {
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
 
                 const base_url = 'https://conversejs.org';
                 test_utils.createContacts(_converse, 'current');
                 _converse.emit('rosterContactsFetched');
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                let view;
-                test_utils.openChatBoxFor(_converse, contact_jid)
-                .then(() => {
-                    view = _converse.chatboxviews.get(contact_jid);
-                    spyOn(view.model, 'sendMessage').and.callThrough();
-                    const url = base_url+"/logo/conversejs-filled.svg";
+                await test_utils.openChatBoxFor(_converse, contact_jid)
+                const view = await _converse.api.chatviews.get(contact_jid);
+                spyOn(view.model, 'sendMessage').and.callThrough();
+                const url = base_url+"/logo/conversejs-filled.svg";
 
-                    const stanza = Strophe.xmlHtmlNode(
-                        "<message from='"+contact_jid+"'"+
-                        "         type='chat'"+
-                        "         to='dummy@localhost/resource'>"+
-                        "    <body>Have you seen this funny image?</body>"+
-                        "    <x xmlns='jabber:x:oob'><url>"+url+"</url></x>"+
-                        "</message>").firstChild;
-                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    return test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg img').length, 2000);
-                }).then(function () {
-                    const msg = view.el.querySelector('.chat-msg .chat-msg__text');
-                    expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you seen this funny image?</div>');
-                    const media = view.el.querySelector('.chat-msg .chat-msg__media');
-                    expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
-                        `<!-- src/templates/image.html -->`+
-                        `<a href="${base_url}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
-                            `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg">`+
-                        `</a>`);
-                    done();
-                }).catch(_.partial(console.error, _));
+                const stanza = Strophe.xmlHtmlNode(
+                    "<message from='"+contact_jid+"'"+
+                    "         type='chat'"+
+                    "         to='dummy@localhost/resource'>"+
+                    "    <body>Have you seen this funny image?</body>"+
+                    "    <x xmlns='jabber:x:oob'><url>"+url+"</url></x>"+
+                    "</message>").firstChild;
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg img').length, 2000);
+
+                const msg = view.el.querySelector('.chat-msg .chat-msg__text');
+                expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you seen this funny image?</div>');
+                const media = view.el.querySelector('.chat-msg .chat-msg__media');
+                expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
+                    `<!-- src/templates/image.html -->`+
+                    `<a href="${base_url}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
+                        `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg">`+
+                    `</a>`);
+                done();
             }));
         });
     });

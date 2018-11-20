@@ -1223,7 +1223,7 @@
                 .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
             _converse.chatboxes.onMessage(msg);
             const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_stanzas[0].tree()).pop();
-            expect(receipt.outerHTML).toBe(`<received xmlns="${Strophe.NS.RECEIPTS}" id="${msg_id}"/>`);
+            expect(Strophe.serialize(receipt)).toBe(`<received id="${msg_id}" xmlns="${Strophe.NS.RECEIPTS}"/>`);
             done();
         }));
 

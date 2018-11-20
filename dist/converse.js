@@ -61677,9 +61677,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'id': message.get('edited') && _converse.connection.getUniqueId() || message.get('msgid')
         }).c('body').t(message.get('message')).up().c(_converse.ACTIVE, {
           'xmlns': Strophe.NS.CHATSTATES
-        }).up().c('request', {
-          'xmlns': Strophe.NS.RECEIPTS
         }).up();
+
+        if (message.get('type') === 'chat') {
+          stanza.c('request', {
+            'xmlns': Strophe.NS.RECEIPTS
+          }).up();
+        }
 
         if (message.get('is_spoiler')) {
           if (message.get('spoiler_hint')) {

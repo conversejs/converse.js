@@ -461,7 +461,6 @@
                                 `xmlns="jabber:client">`+
                                     `<body>${message}</body>`+
                                     `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                                    `<request xmlns="urn:xmpp:receipts"/>`+
                                     `<x xmlns="jabber:x:oob">`+
                                         `<url>${message}</url>`+
                                     `</x>`+

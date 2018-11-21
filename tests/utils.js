@@ -61,8 +61,10 @@
         return this;
     };
 
-    utils.openControlBox = function () {
-        const toggle = document.querySelector(".toggle-controlbox");
+    utils.openControlBox = async function (_converse) {
+        const model = await _converse.api.chats.open('controlbox');
+        await utils.waitUntil(() => model.get('connected'));
+        var toggle = document.querySelector(".toggle-controlbox");
         if (!u.isVisible(document.querySelector("#controlbox"))) {
             if (!u.isVisible(toggle)) {
                 u.removeClass('hidden', toggle);

@@ -33,12 +33,12 @@
                 // `sendPresence`.
                 _converse.connection.connected = false;
 
-                _converse.api.roomviews.close('lounge@localhost');
+                await _converse.api.roomviews.close('lounge@localhost');
                 expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                 expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
                 expect(u.isVisible(_converse.chatboxviews.get('news@localhost').el)).toBeTruthy();
 
-                _converse.api.roomviews.close(['leisure@localhost', 'news@localhost']);
+                await _converse.api.roomviews.close(['leisure@localhost', 'news@localhost']);
                 expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                 expect(_converse.chatboxviews.get('leisure@localhost')).toBeUndefined();
                 expect(_converse.chatboxviews.get('news@localhost')).toBeUndefined();
@@ -89,7 +89,7 @@
                 expect(room instanceof Object).toBeTruthy();
                 view = _converse.chatboxviews.get(jid.toLowerCase());
                 expect(u.isVisible(view.el)).toBeTruthy();
-                view.close();
+                await view.close();
 
                 // Non-existing room
                 jid = 'lounge2@localhost';
@@ -127,7 +127,7 @@
                 chatroomview = _converse.chatboxviews.get(jid);
                 expect(chatroomview.is_chatroom).toBeTruthy();
                 expect(u.isVisible(chatroomview.el)).toBeTruthy();
-                chatroomview.close();
+                await chatroomview.close();
 
                 // Test with mixed case in JID
                 jid = 'Leisure@localhost';
@@ -147,7 +147,7 @@
                 expect(room instanceof Backbone.Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
                 expect(u.isVisible(chatroomview.el)).toBeTruthy();
-                chatroomview.close();
+                await chatroomview.close();
 
                 _converse.muc_instant_rooms = false;
                 var sendIQ = _converse.connection.sendIQ;

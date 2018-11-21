@@ -85,7 +85,7 @@ converse.plugins.add('converse-muc', {
             const { _converse } = this.__super__,
                   groupchats = this.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
 
-            _.each(groupchats, gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
+            _.each(groupchats, gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}, {'patch': true}));
             this.__super__.tearDown.call(this, arguments);
         },
 
@@ -291,7 +291,7 @@ converse.plugins.add('converse-muc', {
                 if (password) {
                     stanza.cnode(Strophe.xmlElement("password", [], password));
                 }
-                this.save('connection_status', converse.ROOMSTATUS.CONNECTING);
+                this.save({'connection_status': converse.ROOMSTATUS.CONNECTING}, {'patch': true});
                 _converse.api.send(stanza);
                 return this;
             },
@@ -314,7 +314,7 @@ converse.plugins.add('converse-muc', {
                 if (_converse.connection.connected) {
                     this.sendUnavailablePresence(exit_msg);
                 }
-                u.safeSave(this, {'connection_status': converse.ROOMSTATUS.DISCONNECTED});
+                u.safeSave(this, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}, {'patch': true});
                 this.removeHandlers();
             },
 
@@ -420,7 +420,7 @@ converse.plugins.add('converse-muc', {
                  * For example: groupchat@conference.example.org/nickname
                  */
                 if (nick) {
-                    this.save({'nick': nick});
+                    this.save({'nick': nick}, {'patch': true});
                 } else {
                     nick = this.get('nick');
                 }
@@ -515,7 +515,7 @@ converse.plugins.add('converse-muc', {
                     attrs[fieldname.replace('muc_', '')] = true;
                 });
                 attrs.description = _.get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value');
-                this.save(attrs);
+                this.save(attrs, {'patch': true});
             },
 
             requestMemberList (affiliation) {
@@ -678,14 +678,10 @@ converse.plugins.add('converse-muc', {
                     const affiliation = item.getAttribute('affiliation');
                     const role = item.getAttribute('role');
                     if (affiliation) {
-                        this.save(
-                            {'affiliation': affiliation},
-                            {'wait': true, 'patch': true});
+                        this.save({'affiliation': affiliation}, {'patch': true});
                     }
                     if (role) {
-                        this.save(
-                            {'role': role},
-                            {'wait': true, 'patch': true});
+                        this.save({'role': role}, {'patch': true});
                     }
                 }
             },
@@ -806,7 +802,7 @@ converse.plugins.add('converse-muc', {
                 this.save({
                     'reserved_nick': nick,
                     'nick': nick
-                }, {'silent': true});
+                }, {'patch': true, 'silent': true});
                 return iq;
             },
 
@@ -943,7 +939,7 @@ converse.plugins.add('converse-muc', {
                 if (msgid) {
                     const msg = this.messages.findWhere({'msgid': msgid, 'from': jid});
                     if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
-                        msg.save({'received': moment().format()});
+                        msg.save({'received': moment().format()}, {'patch': true});
                     }
                     return msg;
                 }
@@ -997,7 +993,7 @@ converse.plugins.add('converse-muc', {
                     }
                     const msg = await this.createMessage(stanza, original_stanza);
                     if (forwarded && msg && msg.get('sender')  === 'me') {
-                        msg.save({'received': moment().format()});
+                        msg.save({'received': moment().format()}, {'patch': true});
                     }
                     this.incrementUnreadMsgCounter(msg);
                 }
@@ -1007,31 +1003,28 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            async onPresence (pres) {
+            onPresence (pres) {
                 /* Handles all MUC presence stanzas.
                  *
                  * Parameters:
                  *  (XMLElement) pres: The stanza
                  */
                 if (pres.getAttribute('type') === 'error') {
-                    this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                    this.save({'connection_status': converse.ROOMSTATUS.DISCONNECTED}, {'patch': true});
                     return;
                 }
                 const is_self = pres.querySelector("status[code='110']");
                 if (is_self && pres.getAttribute('type') !== 'unavailable') {
-                    await this.onOwnPresence(pres);
+                    this.onOwnPresence(pres);
                 }
                 this.updateOccupantsOnPresence(pres);
 
                 if (this.get('role') !== 'none' && this.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
-                    await new Promise((success, error) => this.save(
-                        {'connection_status': converse.ROOMSTATUS.CONNECTED},
-                        {'patch': true, 'wait': true, success, error}
-                    ));
+                    this.save({'connection_status': converse.ROOMSTATUS.CONNECTED}, {'patch': true});
                 }
             },
 
-            async onOwnPresence (pres) {
+            onOwnPresence (pres) {
                 /* Handles a received presence relating to the current
                  * user.
                  *
@@ -1072,10 +1065,7 @@ converse.plugins.add('converse-muc', {
                         this.getRoomFeatures();
                     }
                 }
-                await new Promise((success, error) => this.save(
-                    {'connection_status': converse.ROOMSTATUS.ENTERED},
-                    {'patch': true, 'wait': true, success, error}
-                ));
+                this.save({'connection_status': converse.ROOMSTATUS.ENTERED}, {'patch': true});
             },
 
             isUserMentioned (message) {
@@ -1118,7 +1108,7 @@ converse.plugins.add('converse-muc', {
                 u.safeSave(this, {
                     'num_unread': 0,
                     'num_unread_general': 0
-                });
+                }, {'patch': true});
             }
         });
 
@@ -1336,7 +1326,7 @@ converse.plugins.add('converse-muc', {
              */
             _converse.chatboxes.each(function (model) {
                 if (model.get('type') === _converse.CHATROOMS_TYPE) {
-                    model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                    model.save({'connection_status': converse.ROOMSTATUS.DISCONNECTED}, {'patch': true});
                 }
             });
         }

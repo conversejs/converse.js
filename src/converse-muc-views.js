@@ -667,7 +667,6 @@ converse.plugins.add('converse-muc-views', {
                  */
                 if (u.isPersistableModel(this.model)) {
                     this.model.clearUnreadMsgCounter();
-                    this.model.save();
                 }
                 this.occupantsview.setOccupantsHeight();
                 this.scrollDown();

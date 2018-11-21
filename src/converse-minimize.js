@@ -52,21 +52,21 @@ converse.plugins.add('converse-minimize', {
                 this.save({
                     'minimized': this.get('minimized') || false,
                     'time_minimized': this.get('time_minimized') || moment(),
-                });
+                }, {'patch': true});
             },
 
             maximize () {
                 u.safeSave(this, {
                     'minimized': false,
                     'time_opened': moment().valueOf()
-                });
+                }, {'patch': true});
             },
 
             minimize () {
                 u.safeSave(this, {
                     'minimized': true,
                     'time_minimized': moment().format()
-                });
+                }, {'patch': true});
             },
         },
 
@@ -140,7 +140,7 @@ converse.plugins.add('converse-minimize', {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 // save the scroll position to restore it on maximize
                 if (this.model.collection && this.model.collection.browserStorage) {
-                    this.model.save({'scroll': this.content.scrollTop});
+                    this.model.save({'scroll': this.content.scrollTop}, {'patch': true});
                 } else {
                     this.model.set({'scroll': this.content.scrollTop});
                 }
@@ -424,7 +424,10 @@ converse.plugins.add('converse-minimize', {
 
             toggle (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                this.toggleview.model.save({'collapsed': !this.toggleview.model.get('collapsed')});
+                this.toggleview.model.save(
+                    {'collapsed': !this.toggleview.model.get('collapsed')},
+                    {'patch': true}
+                );
                 u.slideToggleElement(this.el.querySelector('.minimized-chats-flyout'), 200);
             },
 
@@ -469,7 +472,7 @@ converse.plugins.add('converse-minimize', {
             },
 
             updateUnreadMessagesCounter () {
-                this.toggleview.model.save({'num_unread': _.sum(this.model.pluck('num_unread'))});
+                this.toggleview.model.save({'num_unread': _.sum(this.model.pluck('num_unread'))}, {'patch': true});
                 this.render();
             }
         });

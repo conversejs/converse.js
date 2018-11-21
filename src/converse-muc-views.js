@@ -2056,6 +2056,40 @@ converse.plugins.add('converse-muc-views', {
              */
             'roomviews': {
                 /**
+                 * Retrieves a groupchat (aka chatroom) view. The chat should already be open.
+                 *
+                 * @method _converse.api.roomviews.get
+                 * @param {String|string[]} name - e.g. 'coven@conference.shakespeare.lit' or
+                 *  ['coven@conference.shakespeare.lit', 'cave@conference.shakespeare.lit']
+                 * @returns {Backbone.View} Backbone.View representing the groupchat
+                 *
+                 * @example
+                 * // To return a single view, provide the JID of the groupchat
+                 * const view = _converse.api.roomviews.get('coven@conference.shakespeare.lit');
+                 *
+                 * @example
+                 * // To return an array of views, provide an array of JIDs:
+                 * const views = _converse.api.roomviews.get(['coven@conference.shakespeare.lit', 'cave@conference.shakespeare.lit']);
+                 *
+                 * @example
+                 * // To return views of all open groupchats, call the method without any parameters::
+                 * const views = _converse.api.roomviews.get();
+                 *
+                 */
+                get (jids) {
+                    if (_.isArray(jids)) {
+                        const views = _converse.api.chatviews.get(jids);
+                        return views.filter(v => v.model.get('type') === _converse.CHATROOMS_TYPE)
+                    } else {
+                        const view = _converse.api.chatviews.get(jids);
+                        if (view.model.get('type') === _converse.CHATROOMS_TYPE) {
+                            return view;
+                        } else {
+                            return null;
+                        } 
+                    }
+                },
+                /**
                  * Lets you close open chatrooms.
                  *
                  * You can call this method without any arguments to close

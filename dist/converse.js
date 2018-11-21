@@ -53246,7 +53246,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         this.roomspanel = new _converse.RoomsPanel({
           'model': new (_converse.RoomsPanelModel.extend({
             'id': `converse.roomspanel${_converse.bare_jid}`,
-            // Required by web storage 
+            // Required by web storage
             'browserStorage': new Backbone.BrowserStorage[_converse.config.get('storage')](`converse.roomspanel${_converse.bare_jid}`)
           }))()
         });
@@ -55392,6 +55392,43 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
        * @memberOf _converse.api
        */
       'roomviews': {
+        /**
+         * Retrieves a groupchat (aka chatroom) view. The chat should already be open.
+         *
+         * @method _converse.api.roomviews.get
+         * @param {String|string[]} name - e.g. 'coven@conference.shakespeare.lit' or
+         *  ['coven@conference.shakespeare.lit', 'cave@conference.shakespeare.lit']
+         * @returns {Backbone.View} Backbone.View representing the groupchat
+         *
+         * @example
+         * // To return a single view, provide the JID of the groupchat
+         * const view = _converse.api.roomviews.get('coven@conference.shakespeare.lit');
+         *
+         * @example
+         * // To return an array of views, provide an array of JIDs:
+         * const views = _converse.api.roomviews.get(['coven@conference.shakespeare.lit', 'cave@conference.shakespeare.lit']);
+         *
+         * @example
+         * // To return views of all open groupchats, call the method without any parameters::
+         * const views = _converse.api.roomviews.get();
+         *
+         */
+        get(jids) {
+          if (_.isArray(jids)) {
+            const views = _converse.api.chatviews.get(jids);
+
+            return views.filter(v => v.model.get('type') === _converse.CHATROOMS_TYPE);
+          } else {
+            const view = _converse.api.chatviews.get(jids);
+
+            if (view.model.get('type') === _converse.CHATROOMS_TYPE) {
+              return view;
+            } else {
+              return null;
+            }
+          }
+        },
+
         /**
          * Lets you close open chatrooms.
          *

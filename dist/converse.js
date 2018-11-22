@@ -56091,7 +56091,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
               api = _converse.api;
         ev.preventDefault();
 
-        if (confirm(__("Are you sure you want to generate new OMEMO keys?" + "This will remove your old keys and all previously encrypted messages will no longer be ecryptable on this device."))) {
+        if (confirm(__("Are you sure you want to generate new OMEMO keys? " + "This will remove your old keys and all previously encrypted messages will no longer be ecryptable on this device."))) {
           api.omemo.bundle.generate();
         }
       }

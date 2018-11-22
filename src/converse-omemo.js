@@ -129,7 +129,7 @@ converse.plugins.add('converse-omemo', {
                       { __, api } = _converse;
                 ev.preventDefault();
                 if (confirm(__(
-                    "Are you sure you want to generate new OMEMO keys?" +
+                    "Are you sure you want to generate new OMEMO keys? " +
                     "This will remove your old keys and all previously encrypted messages will no longer be ecryptable on this device.")
                 )) {
                     api.omemo.bundle.generate();

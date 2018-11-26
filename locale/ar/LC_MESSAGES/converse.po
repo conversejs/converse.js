@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-15 12:25+0100\n"
-"PO-Revision-Date: 2018-11-04 12:23+0000\n"
-"Last-Translator: Atef Ben Ali <atef.bettaib@gmail.com>\n"
+"PO-Revision-Date: 2018-11-27 16:07+0000\n"
+"Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
 "Language: ar\n"
@@ -118,7 +118,7 @@ msgstr "هل أنت متأكد أنك تريد حذف هذا المراسل ؟"
 #: dist/converse-no-dependencies.js:41518
 #, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr "حدث خطأ أثناء محاولة إزالة جهة اتصال s%1$."
+msgstr "عذرا، لقد حدث خطأ أثناء محاولة إزالة %1$s كمراسل."
 
 #: dist/converse-no-dependencies.js:31816
 #: dist/converse-no-dependencies.js:31858

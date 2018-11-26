@@ -37,7 +37,7 @@
             it("can be used to add contact and it checks for case-sensivity", 
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 spyOn(_converse, 'emit');
                 spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -55,14 +55,11 @@
                     ask: 'subscribe',
                     fullname: mock.pend_names[0]
                 });
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group li:visible').length;
-                }, 700).then(function () {
-                    // Checking that only one entry is created because both JID is same (Case sensitive check)
-                    expect($(_converse.rosterview.el).find('li:visible').length).toBe(1);
-                    expect(_converse.rosterview.update).toHaveBeenCalled();
-                    done();
-                });
+                await test_utils.waitUntil(() => $(_converse.rosterview.el).find('.roster-group li:visible').length, 700);
+                // Checking that only one entry is created because both JID is same (Case sensitive check)
+                expect($(_converse.rosterview.el).find('li:visible').length).toBe(1);
+                expect(_converse.rosterview.update).toHaveBeenCalled();
+                done();
             }));
 
             it("shows the number of unread mentions received",
@@ -130,7 +127,7 @@
             it("can be used to set the current user's chat status",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.openControlBox();
 
@@ -138,48 +135,42 @@
                 cbview.el.querySelector('.change-status').click()
                 var modal = _converse.xmppstatusview.status_modal;
 
-                test_utils.waitUntil(function () {
-                    return u.isVisible(modal.el);
-                }, 1000).then(function () {
-                    var view = _converse.xmppstatusview;
-                    spyOn(_converse, 'emit');
-                    modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
-                    modal.el.querySelector('[type="submit"]').click();
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                const view = _converse.xmppstatusview;
+                spyOn(_converse, 'emit');
+                modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
+                modal.el.querySelector('[type="submit"]').click();
 
-                    expect(_converse.emit).toHaveBeenCalledWith('statusChanged', 'dnd');
-                    expect($(view.el).find('.xmpp-status span:first-child').hasClass('online')).toBe(false);
-                    expect($(view.el).find('.xmpp-status span:first-child').hasClass('dnd')).toBe(true);
-                    expect(view.el.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe('I am busy');
-                    done();
-                });
+                expect(_converse.emit).toHaveBeenCalledWith('statusChanged', 'dnd');
+                expect($(view.el).find('.xmpp-status span:first-child').hasClass('online')).toBe(false);
+                expect($(view.el).find('.xmpp-status span:first-child').hasClass('dnd')).toBe(true);
+                expect(view.el.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe('I am busy');
+                done();
             }));
 
             it("can be used to set a custom status message",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.openControlBox();
 
-                var cbview = _converse.chatboxviews.get('controlbox');
+                const cbview = _converse.chatboxviews.get('controlbox');
                 cbview.el.querySelector('.change-status').click()
-                var modal = _converse.xmppstatusview.status_modal;
+                const modal = _converse.xmppstatusview.status_modal;
 
-                test_utils.waitUntil(function () {
-                    return u.isVisible(modal.el);
-                }, 1000).then(function () {
-                    var view = _converse.xmppstatusview;
-                    spyOn(_converse, 'emit');
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                const view = _converse.xmppstatusview;
+                spyOn(_converse, 'emit');
 
-                    var msg = 'I am happy';
-                    modal.el.querySelector('input[name="status_message"]').value = msg;
-                    modal.el.querySelector('[type="submit"]').click();
+                const msg = 'I am happy';
+                modal.el.querySelector('input[name="status_message"]').value = msg;
+                modal.el.querySelector('[type="submit"]').click();
 
-                    expect(_converse.emit).toHaveBeenCalledWith('statusMessageChanged', msg);
-                    expect($(view.el).find('.xmpp-status span:first-child').hasClass('online')).toBe(true);
-                    expect(view.el.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe(msg);
-                    done();
-                });
+                expect(_converse.emit).toHaveBeenCalledWith('statusMessageChanged', msg);
+                expect($(view.el).find('.xmpp-status span:first-child').hasClass('online')).toBe(true);
+                expect(view.el.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe(msg);
+                done();
             }));
         });
     });
@@ -189,40 +180,37 @@
         it("opens up an add modal when you click on it",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
-                function (done, _converse) {
+                async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'all').openControlBox();
 
-            var panel = _converse.chatboxviews.get('controlbox').contactspanel;
-            var cbview = _converse.chatboxviews.get('controlbox');
+            const panel = _converse.chatboxviews.get('controlbox').contactspanel;
+            const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
-            var modal = _converse.rosterview.add_contact_modal;
-            return test_utils.waitUntil(function () {
-                return u.isVisible(modal.el);
-            }, 1000).then(function () {
-                var sendIQ = _converse.connection.sendIQ;
-                var sent_stanza, IQ_id;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_stanza = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
-
-                expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
-                var input_jid = modal.el.querySelector('input[name="jid"]');
-                var input_name = modal.el.querySelector('input[name="name"]');
-                input_jid.value = 'someone@';
-                var evt = new Event('input');
-                input_jid.dispatchEvent(evt);
-                expect(modal.el.querySelector('.awesomplete li').textContent).toBe('someone@localhost');
-                input_jid.value = 'someone@localhost';
-                input_name.value = 'Someone';
-                modal.el.querySelector('button[type="submit"]').click();
-                expect(sent_stanza.toLocaleString()).toEqual(
-                `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="jabber:iq:roster"><item jid="someone@localhost" name="Someone"/></query>`+
-                `</iq>`);
-                done();
+            const modal = _converse.rosterview.add_contact_modal;
+            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            const sendIQ = _converse.connection.sendIQ;
+            let sent_stanza, IQ_id;
+            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                sent_stanza = iq;
+                IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
+
+            expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
+            const input_jid = modal.el.querySelector('input[name="jid"]');
+            const input_name = modal.el.querySelector('input[name="name"]');
+            input_jid.value = 'someone@';
+            const evt = new Event('input');
+            input_jid.dispatchEvent(evt);
+            expect(modal.el.querySelector('.awesomplete li').textContent).toBe('someone@localhost');
+            input_jid.value = 'someone@localhost';
+            input_name.value = 'Someone';
+            modal.el.querySelector('button[type="submit"]').click();
+            expect(sent_stanza.toLocaleString()).toEqual(
+            `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                `<query xmlns="jabber:iq:roster"><item jid="someone@localhost" name="Someone"/></query>`+
+            `</iq>`);
+            done();
         }));
 
 
@@ -232,7 +220,7 @@
                 { 'xhr_user_search': true,
                   'xhr_user_search_url': 'http://example.org/'
                 },
-                function (done, _converse) {
+                async function (done, _converse) {
 
             var xhr = {
                 'open': _.noop,
@@ -255,46 +243,40 @@
             var cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
             var modal = _converse.rosterview.add_contact_modal;
-            return test_utils.waitUntil(function () {
-                return u.isVisible(modal.el);
-            }, 1000).then(function () {
-                input_el = modal.el.querySelector('input[name="name"]');
-                input_el.value = 'marty';
-                var evt = new Event('input');
-                input_el.dispatchEvent(evt);
-                return test_utils.waitUntil(function () {
-                    return modal.el.querySelector('.awesomplete li');
-                }, 1000);
-            }).then(function () {
-                var sendIQ = _converse.connection.sendIQ;
-                var sent_stanza, IQ_id;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_stanza = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
-                expect(modal.el.querySelectorAll('.awesomplete li').length).toBe(1);
-                const suggestion = modal.el.querySelector('.awesomplete li');
-                expect(suggestion.textContent).toBe('Marty McFly');
-
-                // Can't trigger "mousedown" event so trigger the Awesomplete
-                // custom event which would have been triggered upon mousedown.
-                var evt = document.createEvent("HTMLEvents");
-                evt.initEvent('awesomplete-selectcomplete', true, true );
-                evt.text = {
-                    'label': 'Marty McFly',
-                    'value': 'marty@mcfly.net'
-                }
-                modal.el.dispatchEvent(evt);
-                expect(input_el.value).toBe('Marty McFly');
-                expect(modal.el.querySelector('input[name="jid"]').value).toBe('marty@mcfly.net');
-                modal.el.querySelector('button[type="submit"]').click();
-                expect(sent_stanza.toLocaleString()).toEqual(
-                `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
-                    `<query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"/></query>`+
-                `</iq>`);
-                window.XMLHttpRequest = XMLHttpRequestBackup;
-                done();
+            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            input_el = modal.el.querySelector('input[name="name"]');
+            input_el.value = 'marty';
+            var evt = new Event('input');
+            input_el.dispatchEvent(evt);
+            await test_utils.waitUntil(() => modal.el.querySelector('.awesomplete li'), 1000);
+            var sendIQ = _converse.connection.sendIQ;
+            var sent_stanza, IQ_id;
+            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                sent_stanza = iq;
+                IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
+            expect(modal.el.querySelectorAll('.awesomplete li').length).toBe(1);
+            const suggestion = modal.el.querySelector('.awesomplete li');
+            expect(suggestion.textContent).toBe('Marty McFly');
+
+            // Can't trigger "mousedown" event so trigger the Awesomplete
+            // custom event which would have been triggered upon mousedown.
+            evt = document.createEvent("HTMLEvents");
+            evt.initEvent('awesomplete-selectcomplete', true, true );
+            evt.text = {
+                'label': 'Marty McFly',
+                'value': 'marty@mcfly.net'
+            }
+            modal.el.dispatchEvent(evt);
+            expect(input_el.value).toBe('Marty McFly');
+            expect(modal.el.querySelector('input[name="jid"]').value).toBe('marty@mcfly.net');
+            modal.el.querySelector('button[type="submit"]').click();
+            expect(sent_stanza.toLocaleString()).toEqual(
+            `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                `<query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"/></query>`+
+            `</iq>`);
+            window.XMLHttpRequest = XMLHttpRequestBackup;
+            done();
         }));
     });
 }));

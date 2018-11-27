@@ -21,8 +21,7 @@
     }
 
     .set-xmpp-status,
-    .xmpp-status,
-    .roster-contacts {
+    .xmpp-status {
         .chat-status--online {
             color: var(--chat-status-online);
         }

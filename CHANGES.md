@@ -19,6 +19,7 @@
 
 - #129: Add support for [XEP-0156: Disovering Alternative XMPP Connection Methods](https://xmpp.org/extensions/xep-0156.html). Only XML is supported for now.
 - #1105: Support for storing persistent data in IndexedDB
+- #1322 Display occupants’ avatars in the occupants list
 - #1640: Add the ability to resize the occupants sidebar in MUCs
 - #1666: Allow scrolling of the OMEMO fingerprints list
 - #1691: Fix `collection.chatbox is undefined` errors

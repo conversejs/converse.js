@@ -28,7 +28,7 @@ const u = converse.env.utils;
 
 converse.plugins.add('converse-rosterview', {
 
-    dependencies: ["converse-roster", "converse-modal"],
+    dependencies: ["converse-roster", "converse-modal", "converse-chatboxviews"],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is
@@ -326,7 +326,8 @@ converse.plugins.add('converse-rosterview', {
             }
         });
 
-        _converse.RosterContactView = Backbone.NativeView.extend({
+
+        _converse.RosterContactView = _converse.ViewWithAvatar.extend({
             tagName: 'li',
             className: 'list-item d-flex hidden controlbox-padded',
 
@@ -398,7 +399,7 @@ converse.plugins.add('converse-rosterview', {
                     this.el.classList.add('pending-xmpp-contact');
                     this.el.innerHTML = tpl_pending_contact(
                         Object.assign(this.model.toJSON(), {
-                            'display_name': display_name,
+                            display_name,
                             'desc_remove': __('Click to remove %1$s as a contact', display_name),
                             'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
                         })
@@ -408,7 +409,7 @@ converse.plugins.add('converse-rosterview', {
                     this.el.classList.add('requesting-xmpp-contact');
                     this.el.innerHTML = tpl_requesting_contact(
                         Object.assign(this.model.toJSON(), {
-                            'display_name': display_name,
+                            display_name,
                             'desc_accept': __("Click to accept the contact request from %1$s", display_name),
                             'desc_decline': __("Click to decline the contact request from %1$s", display_name),
                             'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
@@ -437,29 +438,34 @@ converse.plugins.add('converse-rosterview', {
             },
 
             renderRosterItem (item) {
-                let status_icon = 'fa fa-times-circle';
                 const show = item.presence.get('show') || 'offline';
+                let status_icon;
                 if (show === 'online') {
                     status_icon = 'fa fa-circle chat-status chat-status--online';
                 } else if (show === 'away') {
                     status_icon = 'fa fa-circle chat-status chat-status--away';
                 } else if (show === 'xa') {
-                    status_icon = 'far fa-circle chat-status';
+                    status_icon = 'far fa-circle chat-status chat-status-xa';
                 } else if (show === 'dnd') {
                     status_icon = 'fa fa-minus-circle chat-status chat-status--busy';
+                } else {
+                    status_icon = 'fa fa-times-circle chat-status chat-status--offline';
                 }
                 const display_name = item.getDisplayName();
                 this.el.innerHTML = tpl_roster_item(
                     Object.assign(item.toJSON(), {
-                        'display_name': display_name,
+                        show,
+                        display_name,
+                        status_icon,
                         'desc_status': STATUSES[show],
-                        'status_icon': status_icon,
                         'desc_chat': __('Click to chat with %1$s (JID: %2$s)', display_name, item.get('jid')),
                         'desc_remove': __('Click to remove %1$s as a contact', display_name),
                         'allow_contact_removal': _converse.allow_contact_removal,
-                        'num_unread': item.get('num_unread') || 0
+                        'num_unread': item.get('num_unread') || 0,
+                        classes: ''
                     })
                 );
+                this.renderAvatar();
                 return this;
             },
 

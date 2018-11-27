@@ -5,6 +5,7 @@
 - Don't render http (i.e. non-TLS) resources
 - #1331 Fix missing checkmarks in old muc messages
 - #1333 Don't send receipt requests in MUCs
+- #1322 Display occupants’ avatars in the occupants list
 
 ## 4.0.5 (2018-11-15)
 

@@ -119,7 +119,9 @@
 
                     .avatar {
                         float: left;
-                        display: inline-block;
+                        //display: inline-block;
+                        margin-right: 0.5em;
+                        //margin-top: -4px;
                     }
                 }
                 &.current-xmpp-contact span {

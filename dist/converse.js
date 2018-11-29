@@ -63781,7 +63781,7 @@ _converse.initialize = function (settings, callback) {
   } else {
     _i18n__WEBPACK_IMPORTED_MODULE_6__["default"].fetchTranslations(_converse.locale, _converse.locales, _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
       'locale': _converse.locale
-    })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).then(finishInitialization).catch(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.log, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL));
+    })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).finally(finishInitialization);
   }
 
   return init_promise;

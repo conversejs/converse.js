@@ -51392,7 +51392,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         // We let the render method of ControlBoxView decide whether
         // the ControlBox or the Toggle must be shown. This prevents
         // artifacts (i.e. on page load the toggle is shown only to then
-        // seconds later be hidden in favor of the control box).
+        // seconds later be hidden in favor of the controlbox).
         this.el.innerHTML = templates_controlbox_toggle_html__WEBPACK_IMPORTED_MODULE_9___default()({
           'label_toggle': _converse.connection.connected ? __('Chat Contacts') : __('Toggle chat')
         });
@@ -51505,6 +51505,32 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     _converse.on('disconnected', () => disconnect().renderLoginPanel());
 
     _converse.on('will-reconnect', disconnect);
+    /************************ BEGIN API ************************/
+
+
+    _.extend(_converse.api, {
+      /**
+       * The "controlbox" namespace groups methods pertaining to the
+       * controlbox view
+       *
+       * @namespace _converse.api.controlbox
+       * @memberOf _converse.api
+       */
+      'controlbox': {
+        /**
+         * Retrieves the controlbox view.
+         *
+         * @example
+         * const view = _converse.api.controlbox.get();
+         *
+         * @returns {Backbone.View} View representing the controlbox
+         */
+        get() {
+          return _converse.chatboxviews.get('controlbox');
+        }
+
+      }
+    });
   }
 
 });

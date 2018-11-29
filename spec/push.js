@@ -114,7 +114,7 @@
                 `<iq id="${stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                     '<disable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>'+
                 '</iq>'
-            )
+            );
             _converse.connection._dataRecv(test_utils.createRequest($iq({
                 'to': _converse.connection.jid,
                 'type': 'result',

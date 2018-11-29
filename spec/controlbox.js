@@ -21,7 +21,7 @@
             expect($("div#controlbox").is(':visible')).toBe(false);
             spyOn(_converse.controlboxtoggle, 'onClick').and.callThrough();
             spyOn(_converse.controlboxtoggle, 'showControlBox').and.callThrough();
-            spyOn(_converse, 'emit');
+            spyOn(_converse, 'emit').and.callThrough();
             // Redelegate so that the spies are now registered as the event handlers (specifically for 'onClick')
             _converse.controlboxtoggle.delegateEvents();
             document.querySelector('.toggle-controlbox').click();
@@ -39,9 +39,9 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                spyOn(_converse, 'emit');
+                spyOn(_converse, 'emit').and.callThrough();
                 spyOn(_converse.rosterview, 'update').and.callThrough();
-                test_utils.openControlBox();
+                await test_utils.openControlBox(_converse);
                 // Adding two contacts one with Capital initials and one with small initials of same JID (Case sensitive check)
                 _converse.roster.create({
                     jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
@@ -67,14 +67,15 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'all').openControlBox();
+                await test_utils.createContacts(_converse, 'all')
+                await test_utils.openControlBox(_converse);
                 _converse.emit('rosterContactsFetched');
 
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.openChatBoxFor(_converse, sender_jid);
                 await test_utils.waitUntil(() => _converse.chatboxes.length);
-                const chatview = _converse.chatboxviews.get(sender_jid);
-                chatview.model.set({'minimized': true});
+                const view = _converse.api.chatviews.get(sender_jid);
+                view.model.set({'minimized': true});
 
                 expect(_.isNull(_converse.chatboxviews.el.querySelector('.restore-chat .message-count'))).toBeTruthy();
                 expect(_.isNull(_converse.rosterview.el.querySelector('.msgs-indicator'))).toBeTruthy();
@@ -88,7 +89,7 @@
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll(".msgs-indicator").length);
-                spyOn(chatview.model, 'incrementUnreadMsgCounter').and.callThrough();
+                spyOn(view.model, 'incrementUnreadMsgCounter').and.callThrough();
                 expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('1');
                 expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('1');
 
@@ -100,10 +101,10 @@
                     }).c('body').t('hello again').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 _converse.chatboxes.onMessage(msg);
-                await test_utils.waitUntil(() => chatview.model.incrementUnreadMsgCounter.calls.count());
+                await test_utils.waitUntil(() => view.model.incrementUnreadMsgCounter.calls.count());
                 expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('2');
                 expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('2');
-                chatview.model.set({'minimized': false});
+                view.model.set({'minimized': false});
                 expect(_.isNull(_converse.chatboxviews.el.querySelector('.restore-chat .message-count'))).toBeTruthy();
                 expect(_.isNull(_converse.rosterview.el.querySelector('.msgs-indicator'))).toBeTruthy();
                 done();
@@ -117,7 +118,7 @@
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
-                test_utils.openControlBox();
+                test_utils.openControlBox(_converse);
                 var view = _converse.xmppstatusview;
                 expect($(view.el).find('.xmpp-status span:first-child').hasClass('online')).toBe(true);
                 expect(view.el.querySelector('.xmpp-status span.online').textContent.trim()).toBe('I am online');
@@ -129,15 +130,14 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.openControlBox();
-
+                await test_utils.openControlBox(_converse);
                 var cbview = _converse.chatboxviews.get('controlbox');
                 cbview.el.querySelector('.change-status').click()
                 var modal = _converse.xmppstatusview.status_modal;
 
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
                 const view = _converse.xmppstatusview;
-                spyOn(_converse, 'emit');
+                spyOn(_converse, 'emit').and.callThrough();
                 modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
                 modal.el.querySelector('[type="submit"]').click();
 
@@ -153,15 +153,14 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.openControlBox();
-
+                await test_utils.openControlBox(_converse);
                 const cbview = _converse.chatboxviews.get('controlbox');
                 cbview.el.querySelector('.change-status').click()
                 const modal = _converse.xmppstatusview.status_modal;
 
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
                 const view = _converse.xmppstatusview;
-                spyOn(_converse, 'emit');
+                spyOn(_converse, 'emit').and.callThrough();
 
                 const msg = 'I am happy';
                 modal.el.querySelector('input[name="status_message"]').value = msg;
@@ -182,7 +181,8 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'all').openControlBox();
+            await test_utils.createContacts(_converse, 'all')
+            await test_utils.openControlBox(_converse);
 
             const panel = _converse.chatboxviews.get('controlbox').contactspanel;
             const cbview = _converse.chatboxviews.get('controlbox');

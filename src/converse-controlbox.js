@@ -114,18 +114,6 @@ converse.plugins.add('converse-controlbox', {
         },
 
         ChatBoxViews: {
-            closeAllChatBoxes () {
-                const { _converse } = this.__super__;
-                this.each(function (view) {
-                    if (view.model.get('id') === 'controlbox' &&
-                            (_converse.disconnection_cause !== _converse.LOGOUT || _converse.show_controlbox_by_default)) {
-                        return;
-                    }
-                    view.close();
-                });
-                return this;
-            },
-
             getChatBoxWidth (view) {
                 const { _converse } = this.__super__;
                 const controlbox = this.get('controlbox');
@@ -332,13 +320,23 @@ converse.plugins.add('converse-controlbox', {
                 )
             },
 
-            close (ev) {
+            async close (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
+                if (ev.name === 'closeAllChatBoxes' &&
+                        (_converse.disconnection_cause !== _converse.LOGOUT ||
+                         _converse.show_controlbox_by_default)) {
+                    return;
+                }
                 if (_converse.sticky_controlbox) {
                     return;
                 }
                 if (_converse.connection.connected && !_converse.connection.disconnecting) {
-                    this.model.save({'closed': true});
+                    await new Promise((resolve, reject) => {
+                        return this.model.save(
+                            {'closed': true},
+                            {'success': resolve, 'error': reject}
+                        );
+                    });
                 } else {
                     this.model.trigger('hide');
                 }

@@ -16,16 +16,17 @@
                     it("is shown when a new private message is received",
                         mock.initConverseWithPromises(
                             null, ['rosterGroupsFetched'], {},
-                            function (done, _converse) {
+                            async function (done, _converse) {
 
                         // TODO: not yet testing show_desktop_notifications setting
                         test_utils.createContacts(_converse, 'current');
+                        await test_utils.createContacts(_converse, 'current');
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
-                        
-                        var message = 'This message will show a desktop notification';
-                        var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
+
+                        const message = 'This message will show a desktop notification';
+                        const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                             msg = $msg({
                                 from: sender_jid,
                                 to: _converse.connection.jid,
@@ -34,6 +35,7 @@
                             }).c('body').t(message).up()
                             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                         _converse.chatboxes.onMessage(msg); // This will emit 'message'
+                        await test_utils.waitUntil(() => _converse.api.chatviews.get(sender_jid));
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(_converse.showMessageNotification).toHaveBeenCalled();
                         done();
@@ -42,40 +44,42 @@
                     it("is shown when you are mentioned in a chat room",
                         mock.initConverseWithPromises(
                             null, ['rosterGroupsFetched'], {},
-                            function (done, _converse) {
+                            async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current');
-                        test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                            var view = _converse.chatboxviews.get('lounge@localhost');
-                            if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
-                            var no_notification = false;
-                            if (typeof window.Notification === 'undefined') {
-                                no_notification = true;
-                                window.Notification = function () {
-                                    return {
-                                        'close': function () {}
-                                    };
+                        await test_utils.createContacts(_converse, 'current');
+                        await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                        const view = _converse.api.roomviews.get('lounge@localhost');
+                        if (!view.el.querySelectorAll('.chat-area').length) {
+                            view.renderChatArea();
+                        }
+                        let no_notification = false;
+                        if (typeof window.Notification === 'undefined') {
+                            no_notification = true;
+                            window.Notification = function () {
+                                return {
+                                    'close': function () {}
                                 };
-                            }
-                            spyOn(_converse, 'showMessageNotification').and.callThrough();
-                            spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
-                            
-                            var message = 'dummy: This message will show a desktop notification';
-                            var nick = mock.chatroom_names[0],
-                                msg = $msg({
-                                    from: 'lounge@localhost/'+nick,
-                                    id: (new Date()).getTime(),
-                                    to: 'dummy@localhost',
-                                    type: 'groupchat'
-                                }).c('body').t(message).tree();
-                            _converse.chatboxes.onMessage(msg); // This will emit 'message'
-                            expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
-                            expect(_converse.showMessageNotification).toHaveBeenCalled();
-                            if (no_notification) {
-                                delete window.Notification;
-                            }
-                            done();
-                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                            };
+                        }
+                        spyOn(_converse, 'showMessageNotification').and.callThrough();
+                        spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+
+                        const message = 'dummy: This message will show a desktop notification';
+                        const nick = mock.chatroom_names[0],
+                            msg = $msg({
+                                from: 'lounge@localhost/'+nick,
+                                id: (new Date()).getTime(),
+                                to: 'dummy@localhost',
+                                type: 'groupchat'
+                            }).c('body').t(message).tree();
+                        _converse.chatboxes.onMessage(msg); // This will emit 'message'
+                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
+                        expect(_converse.showMessageNotification).toHaveBeenCalled();
+                        if (no_notification) {
+                            delete window.Notification;
+                        }
+                        done();
                     }));
 
                     it("is shown for headline messages",

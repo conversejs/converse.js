@@ -275,32 +275,32 @@
                 null, ['rosterInitialized', 'chatBoxesInitialized'], {},
                 async function (done, _converse) {
 
-                test_utils.openControlBox();
+                test_utils.openControlBox(_converse);
                 test_utils.createContacts(_converse, 'current', 2);
                 _converse.emit('rosterContactsFetched');
 
                 // Test on chat that doesn't exist.
-                expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
+                let box = _converse.api.chats.get('non-existing@jabber.org')
+                expect(box).toBeFalsy();
                 const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                 // Test on chat that's not open
-                let box = _converse.api.chats.get(jid);
+                box = _converse.api.chats.get(jid);
                 expect(typeof box === 'undefined').toBeTruthy();
                 expect(_converse.chatboxes.length).toBe(1);
 
                 // Test for one JID
                 test_utils.openChatBoxFor(_converse, jid);
-                await test_utils.waitUntil(() => _converse.chatboxes.length == 1);
+                await test_utils.waitUntil(() => _converse.chatboxes.length > 1);
                 box = _converse.api.chats.get(jid);
                 expect(box instanceof Object).toBeTruthy();
                 expect(box.get('box_id')).toBe(b64_sha1(jid));
 
-                const chatboxview = _converse.chatboxviews.get(jid);
+                const chatboxview = _converse.api.chatviews.get(jid);
                 expect(u.isVisible(chatboxview.el)).toBeTruthy();
                 // Test for multiple JIDs
-                test_utils.openChatBoxFor(_converse, jid2);
-                await test_utils.waitUntil(() => _converse.chatboxes.length == 2);
+                await test_utils.openChatBoxFor(_converse, jid2);
                 const list = _converse.api.chats.get([jid, jid2]);
                 expect(_.isArray(list)).toBeTruthy();
                 expect(list[0].get('box_id')).toBe(b64_sha1(jid));
@@ -312,7 +312,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesInitialized'], {},
                 async function (done, _converse) {
 
-                test_utils.openControlBox();
+                test_utils.openControlBox(_converse);
                 test_utils.createContacts(_converse, 'current', 2);
                 _converse.emit('rosterContactsFetched');
 

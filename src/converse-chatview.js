@@ -1154,7 +1154,6 @@ converse.plugins.add('converse-chatview', {
                 }
                 this.remove();
                 _converse.emit('chatBoxClosed', this);
-                return this;
             },
 
             renderEmojiPicker () {

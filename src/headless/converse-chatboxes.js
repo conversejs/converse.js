@@ -316,7 +316,7 @@ converse.plugins.add('converse-chatboxes', {
                         'references': this.getReferencesFromStanza(stanza),
                         'older_versions': older_versions,
                         'edited': moment().format()
-                    });
+                    }, {'wait': true});
                     return true;
                 }
                 return false;
@@ -599,7 +599,7 @@ converse.plugins.add('converse-chatboxes', {
                     // TODO: handle <subject> messages (currently being done by ChatRoom)
                     return;
                 } else {
-                    return this.messages.create(attrs);
+                    return new Promise((success, error) => this.messages.create(attrs, {success, error, 'wait': true}));
                 }
             },
 
@@ -719,7 +719,7 @@ converse.plugins.add('converse-chatboxes', {
                     _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
                     _converse.log(message, Strophe.LogLevel.ERROR);
                 }
-                chatbox.createMessage(message, message);
+                await chatbox.createMessage(message, message);
                 return true;
             },
 

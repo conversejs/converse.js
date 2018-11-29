@@ -13,7 +13,11 @@
 
     describe("A headlines box", function () {
 
-        it("will not open nor display non-headline messages", mock.initConverse(function (_converse) {
+        it("will not open nor display non-headline messages",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+        
             /* XMPP spam message:
              *
              *  <message xmlns="jabber:client"
@@ -25,7 +29,7 @@
              *  </message
              */
             sinon.spy(utils, 'isHeadlineMessage');
-            var stanza = $msg({
+            const stanza = $msg({
                     'xmlns': 'jabber:client',
                     'to': 'dummy@localhost',
                     'type': 'chat',
@@ -34,9 +38,11 @@
                 .c('nick', {'xmlns': "http://jabber.org/protocol/nick"}).t("-wwdmz").up()
                 .c('body').t('SORRY FOR THIS ADVERT');
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.api.chats.get().length);
             expect(utils.isHeadlineMessage.called).toBeTruthy();
             expect(utils.isHeadlineMessage.returned(false)).toBeTruthy();
             utils.isHeadlineMessage.restore();
+            done();
         }));
 
         it("will open and display headline messages", mock.initConverseWithPromises(
@@ -84,7 +90,9 @@
         }));
 
         it("will not show a headline messages from a full JID if allow_non_roster_messaging is false",
-            mock.initConverse(function (_converse) {
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                function (done, _converse) {
 
             _converse.allow_non_roster_messaging = false;
             sinon.spy(utils, 'isHeadlineMessage');
@@ -101,6 +109,7 @@
             expect(utils.isHeadlineMessage.called).toBeTruthy();
             expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
             utils.isHeadlineMessage.restore(); // unwraps
+            done();
         }));
     });
 }));

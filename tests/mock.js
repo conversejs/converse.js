@@ -158,9 +158,7 @@
         };
     }();
 
-    function initConverse (settings, spies, promises) {
-        window.localStorage.clear();
-        window.sessionStorage.clear();
+    async function initConverse (settings, spies, promises) {
         const el = document.querySelector('#conversejs');
         if (el) {
             el.parentElement.removeChild(el);
@@ -173,7 +171,7 @@
             });
         }
 
-        const _converse = converse.initialize(_.extend({
+        const _converse = await converse.initialize(_.extend({
             'i18n': 'en',
             'auto_subscribe': false,
             'play_sounds': false,
@@ -196,19 +194,19 @@
                 } else if (!model.get('vcard_updated') || force) {
                     jid = model.get('jid') || model.get('muc_jid');
                 }
-                var fullname;
+                let fullname;
                 if (!jid || jid == 'dummy@localhost') {
                     jid = 'dummy@localhost';
                     fullname = 'Max Mustermann' ;
                 } else {
-                    var name = jid.split('@')[0].replace(/\./g, ' ').split(' ');
-                    var last = name.length-1;
+                    const name = jid.split('@')[0].replace(/\./g, ' ').split(' ');
+                    const last = name.length-1;
                     name[0] =  name[0].charAt(0).toUpperCase()+name[0].slice(1);
                     name[last] = name[last].charAt(0).toUpperCase()+name[last].slice(1);
                     fullname = name.join(' ');
                 }
-                var vcard = $iq().c('vCard').c('FN').t(fullname).nodeTree;
-                var result = {
+                const vcard = $iq().c('vCard').c('FN').t(fullname).nodeTree;
+                const result = {
                     'vcard': vcard,
                     'fullname': _.get(vcard.querySelector('FN'), 'textContent'),
                     'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
@@ -232,39 +230,35 @@
 
     mock.initConverseWithPromises = function (spies, promise_names, settings, func) {
         return function (done) {
-            const _converse = initConverse(settings, spies);
-            const promises = _.map(promise_names, _converse.api.waitUntil);
-            Promise.all(promises)
-                .then(_.partial(func, done, _converse))
-                .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            initConverse(settings, spies).then(_converse => {
+                const promises = _.map(promise_names, _converse.api.waitUntil);
+                Promise.all(promises)
+                    .then(_.partial(func, done, _converse))
+                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            });
         }
     };
 
     mock.initConverseWithConnectionSpies = function (spies, settings, func) {
-        return function (done) {
-            return func(done, initConverse(settings, spies));
-        };
+        return (done) => initConverse(settings).then(_converse => func(done, _converse));
     };
 
     mock.initConverseWithAsync = function (settings, func) {
         if (_.isFunction(settings)) {
-            var _func = settings;
+            const _func = settings;
             settings = func;
             func = _func;
         }
-        return function (done) {
-            return func(done, initConverse(settings));
-        };
+        return (done) => initConverse(settings).then(_converse => func(done, _converse));
     };
+
     mock.initConverse = function (settings, func) {
         if (_.isFunction(settings)) {
-            var _func = settings;
+            const _func = settings;
             settings = func;
             func = _func;
         }
-        return function () {
-            return func(initConverse(settings));
-        };
+        return () => initConverse(settings).then(_converse => func(_converse));
     };
     return mock;
 }));

@@ -68929,7 +68929,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
 
     _converse.initVCardCollection = function () {
       _converse.vcards = new _converse.VCards();
-      const id = b64_sha1(`converse.vcards`);
+      const id = b64_sha1(`${_converse.bare_jid}-converse.vcards`);
       _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.config.get('storage')](id);
 
       _converse.vcards.fetch();

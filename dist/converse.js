@@ -51392,7 +51392,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         // We let the render method of ControlBoxView decide whether
         // the ControlBox or the Toggle must be shown. This prevents
         // artifacts (i.e. on page load the toggle is shown only to then
-        // seconds later be hidden in favor of the control box).
+        // seconds later be hidden in favor of the controlbox).
         this.el.innerHTML = templates_controlbox_toggle_html__WEBPACK_IMPORTED_MODULE_9___default()({
           'label_toggle': _converse.connection.connected ? __('Chat Contacts') : __('Toggle chat')
         });
@@ -51505,6 +51505,32 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     _converse.on('disconnected', () => disconnect().renderLoginPanel());
 
     _converse.on('will-reconnect', disconnect);
+    /************************ BEGIN API ************************/
+
+
+    _.extend(_converse.api, {
+      /**
+       * The "controlbox" namespace groups methods pertaining to the
+       * controlbox view
+       *
+       * @namespace _converse.api.controlbox
+       * @memberOf _converse.api
+       */
+      'controlbox': {
+        /**
+         * Retrieves the controlbox view.
+         *
+         * @example
+         * const view = _converse.api.controlbox.get();
+         *
+         * @returns {Backbone.View} View representing the controlbox
+         */
+        get() {
+          return _converse.chatboxviews.get('controlbox');
+        }
+
+      }
+    });
   }
 
 });
@@ -56091,7 +56117,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
               api = _converse.api;
         ev.preventDefault();
 
-        if (confirm(__("Are you sure you want to generate new OMEMO keys?" + "This will remove your old keys and all previously encrypted messages will no longer be ecryptable on this device."))) {
+        if (confirm(__("Are you sure you want to generate new OMEMO keys? " + "This will remove your old keys and all previously encrypted messages will no longer be ecryptable on this device."))) {
           api.omemo.bundle.generate();
         }
       }
@@ -57650,19 +57676,21 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       const enabled_services = _.reject(_converse.push_app_servers, 'disable');
 
+      const disabled_services = _.filter(_converse.push_app_servers, 'disable');
+
       try {
-        await Promise.all(_.map(enabled_services, _.partial(enablePushAppServer, domain)));
+        const enabled = _.map(enabled_services, _.partial(enablePushAppServer, domain));
+
+        const disabled = _.map(disabled_services, _.partial(disablePushAppServer, domain));
+
+        await Promise.all(enabled.concat(disabled));
       } catch (e) {
-        _converse.log('Could not enable push App Server', Strophe.LogLevel.ERROR);
+        _converse.log('Could not enable or disable push App Server', Strophe.LogLevel.ERROR);
 
         if (e) _converse.log(e, Strophe.LogLevel.ERROR);
       } finally {
         push_enabled.push(domain);
       }
-
-      const disabled_services = _.filter(_converse.push_app_servers, 'disable');
-
-      _.each(disabled_services, _.partial(disablePushAppServer, domain));
 
       _converse.session.save('push_enabled', push_enabled);
     }
@@ -61677,9 +61705,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'id': message.get('edited') && _converse.connection.getUniqueId() || message.get('msgid')
         }).c('body').t(message.get('message')).up().c(_converse.ACTIVE, {
           'xmlns': Strophe.NS.CHATSTATES
-        }).up().c('request', {
-          'xmlns': Strophe.NS.RECEIPTS
         }).up();
+
+        if (message.get('type') === 'chat') {
+          stanza.c('request', {
+            'xmlns': Strophe.NS.RECEIPTS
+          }).up();
+        }
 
         if (message.get('is_spoiler')) {
           if (message.get('spoiler_hint')) {
@@ -63777,7 +63809,7 @@ _converse.initialize = function (settings, callback) {
   } else {
     _i18n__WEBPACK_IMPORTED_MODULE_6__["default"].fetchTranslations(_converse.locale, _converse.locales, _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
       'locale': _converse.locale
-    })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).then(finishInitialization).catch(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.log, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL));
+    })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).finally(finishInitialization);
   }
 
   return init_promise;
@@ -94990,7 +95022,7 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].isAudioURL = funct
 
   const filename = url.filename().toLowerCase();
 
-  if (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.includes(["https", "http"], url.protocol().toLowerCase())) {
+  if (url.protocol().toLowerCase() !== "https") {
     return false;
   }
 
@@ -95004,7 +95036,7 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].isImageURL = funct
 
   const filename = url.filename().toLowerCase();
 
-  if (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.includes(["https", "http"], url.protocol().toLowerCase())) {
+  if (url.protocol().toLowerCase() !== "https") {
     return false;
   }
 
@@ -95018,7 +95050,7 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].isVideoURL = funct
 
   const filename = url.filename().toLowerCase();
 
-  if (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.includes(["https", "http"], url.protocol().toLowerCase())) {
+  if (url.protocol().toLowerCase() !== "https") {
     return false;
   }
 

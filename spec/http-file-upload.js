@@ -271,6 +271,8 @@
                     it("is uploaded and sent out", mock.initConverseWithAsync(
                         async function (done, _converse) {
 
+                        const base_url = 'https://conversejs.org';
+
                         await test_utils.waitUntilDiscoConfirmed(
                             _converse, _converse.domain,
                             [{'category': 'server', 'type':'IM'}],
@@ -310,7 +312,6 @@
                                 `xmlns="urn:xmpp:http:upload:0"/>`+
                             `</iq>`);
 
-                        var base_url = document.URL.split(window.location.pathname)[0];
                         var message = base_url+"/logo/conversejs-filled.svg";
 
                         var stanza = Strophe.xmlHtmlNode(
@@ -366,8 +367,8 @@
                         // Check that the image renders
                         expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
                             `<!-- src/templates/image.html -->\n`+
-                            `<a href="${window.location.origin}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
-                                `<img class="chat-image img-thumbnail" src="${window.location.origin}/logo/conversejs-filled.svg">`+
+                            `<a href="${base_url}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
+                                `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg">`+
                             `</a>`);
                         XMLHttpRequest.prototype.send = send_backup;
                         done();
@@ -376,6 +377,7 @@
                     it("is uploaded and sent out from a groupchat", mock.initConverseWithAsync(
                         async function (done, _converse) {
 
+                        const base_url = 'https://conversejs.org';
                         await test_utils.waitUntilDiscoConfirmed(
                             _converse, _converse.domain,
                             [{'category': 'server', 'type':'IM'}],
@@ -412,7 +414,6 @@
                                 `xmlns="urn:xmpp:http:upload:0"/>`+
                             `</iq>`);
 
-                        var base_url = document.URL.split(window.location.pathname)[0];
                         var message = base_url+"/logo/conversejs-filled.svg";
 
                         var stanza = Strophe.xmlHtmlNode(
@@ -460,7 +461,6 @@
                                 `xmlns="jabber:client">`+
                                     `<body>${message}</body>`+
                                     `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                                    `<request xmlns="urn:xmpp:receipts"/>`+
                                     `<x xmlns="jabber:x:oob">`+
                                         `<url>${message}</url>`+
                                     `</x>`+
@@ -469,8 +469,8 @@
                         // Check that the image renders
                         expect(view.el.querySelector('.chat-msg .chat-msg__media').innerHTML.trim()).toEqual(
                             `<!-- src/templates/image.html -->\n`+
-                            `<a href="${window.location.origin}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
-                                `<img class="chat-image img-thumbnail" src="${window.location.origin}/logo/conversejs-filled.svg">`+
+                            `<a href="${base_url}/logo/conversejs-filled.svg" target="_blank" rel="noopener">`+
+                                `<img class="chat-image img-thumbnail" src="${base_url}/logo/conversejs-filled.svg">`+
                             `</a>`);
                         XMLHttpRequest.prototype.send = send_backup;
                         done();
@@ -642,7 +642,7 @@
                             `xmlns="urn:xmpp:http:upload:0"/>`+
                         `</iq>`);
 
-                    const base_url = document.URL.split(window.location.pathname)[0];
+                    const base_url = 'https://conversejs.org';
                     const message = base_url+"/logo/conversejs-filled.svg";
                     const stanza = Strophe.xmlHtmlNode(
                         "<iq from='upload.montague.tld'"+

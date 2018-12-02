@@ -106,16 +106,17 @@ converse.plugins.add('converse-push', {
                 return;
             }
             const enabled_services = _.reject(_converse.push_app_servers, 'disable');
+            const disabled_services = _.filter(_converse.push_app_servers, 'disable');
             try {
-                await Promise.all(_.map(enabled_services, _.partial(enablePushAppServer, domain)))
+                const enabled = _.map(enabled_services, _.partial(enablePushAppServer, domain));
+                const disabled = _.map(disabled_services, _.partial(disablePushAppServer, domain));
+                await Promise.all(enabled.concat(disabled));
             } catch (e) {
-                _converse.log('Could not enable push App Server', Strophe.LogLevel.ERROR);
+                _converse.log('Could not enable or disable push App Server', Strophe.LogLevel.ERROR);
                 if (e) _converse.log(e, Strophe.LogLevel.ERROR);
             } finally {
                 push_enabled.push(domain);
             }
-            const disabled_services = _.filter(_converse.push_app_servers, 'disable');
-            _.each(disabled_services, _.partial(disablePushAppServer, domain));
             _converse.session.save('push_enabled', push_enabled);
         }
 

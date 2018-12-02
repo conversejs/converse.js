@@ -2,7 +2,9 @@
 
 ## 4.0.6 (unreleased)
 
+- Don't render http (i.e. non-TLS) resources
 - #1331 Fix missing checkmarks in old muc messages
+- #1333 Don't send receipt requests in MUCs
 
 ## 4.0.5 (2018-11-15)
 

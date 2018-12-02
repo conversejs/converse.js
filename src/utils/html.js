@@ -78,7 +78,7 @@ u.isAudioURL = function (url) {
         url = new URI(url);
     }
     const filename = url.filename().toLowerCase();
-    if (!_.includes(["https", "http"], url.protocol().toLowerCase())) {
+    if (url.protocol().toLowerCase() !== "https") {
         return false;
     }
     return filename.endsWith('.ogg') || filename.endsWith('.mp3') || filename.endsWith('.m4a');
@@ -90,7 +90,7 @@ u.isImageURL = function (url) {
         url = new URI(url);
     }
     const filename = url.filename().toLowerCase();
-    if (!_.includes(["https", "http"], url.protocol().toLowerCase())) {
+    if (url.protocol().toLowerCase() !== "https") {
         return false;
     }
     return filename.endsWith('.jpg') || filename.endsWith('.jpeg') ||
@@ -105,7 +105,7 @@ u.isVideoURL = function (url) {
         url = new URI(url);
     }
     const filename = url.filename().toLowerCase();
-    if (!_.includes(["https", "http"], url.protocol().toLowerCase())) {
+    if (url.protocol().toLowerCase() !== "https") {
         return false;
     }
     return filename.endsWith('.mp4') || filename.endsWith('.webm');

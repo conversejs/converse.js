@@ -14,4 +14,3 @@ before_install:
 install: make stamp-npm
 before_script: make serve_bg
 script: make check
-sudo: false

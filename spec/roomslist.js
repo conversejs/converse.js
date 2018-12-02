@@ -58,31 +58,28 @@
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we
                                      // have to mock stanza traffic.
-            }, function (done, _converse) {
+            }, async function (done, _converse) {
 
             spyOn(_converse, 'isSingleton').and.callFake(() => true);
 
             let room_els, item;
             test_utils.openControlBox();
-            _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'})
-            .then(() => {
-                room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom");
-                expect(room_els.length).toBe(1);
+            await _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
+            room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom");
+            expect(room_els.length).toBe(1);
 
-                item = room_els[0];
-                expect(u.hasClass('open', item)).toBe(true);
-                expect(item.textContent.trim()).toBe('coven@chat.shakespeare.lit');
-                return _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'});
-            }).then(() => {
-                room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                expect(room_els.length).toBe(2);
+            item = room_els[0];
+            expect(u.hasClass('open', item)).toBe(true);
+            expect(item.textContent.trim()).toBe('coven@chat.shakespeare.lit');
+            await _converse.api.rooms.open('balcony@chat.shakespeare.lit', {'nick': 'some1'});
+            room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(2);
 
-                room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom.open");
-                expect(room_els.length).toBe(1);
-                item = room_els[0];
-                expect(item.textContent.trim()).toBe('balcony@chat.shakespeare.lit');
-                done();
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom.open");
+            expect(room_els.length).toBe(1);
+            item = room_els[0];
+            expect(item.textContent.trim()).toBe('balcony@chat.shakespeare.lit');
+            done();
         }));
 
         it("has an info icon which opens a details modal when clicked", mock.initConverseWithPromises(
@@ -195,94 +192,82 @@
         it("can be closed", mock.initConverseWithPromises(
             null, ['rosterGroupsFetched'],
             { whitelisted_plugins: ['converse-roomslist'],
-              allow_bookmarks: false // Makes testing easier, otherwise we
-                                     // have to mock stanza traffic.
+              allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
             },
-            function (done, _converse) {
+            async function (done, _converse) {
 
             spyOn(window, 'confirm').and.callFake(() => true);
             expect(_converse.chatboxes.length).toBe(1);
-            test_utils.openChatRoom(_converse, 'lounge', 'conference.shakespeare.lit', 'JC')
-            .then(() => {
-                expect(_converse.chatboxes.length).toBe(2);
-                var room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                expect(room_els.length).toBe(1);
-                var close_el = _converse.rooms_list_view.el.querySelector(".close-room");
-                close_el.click();
-                expect(window.confirm).toHaveBeenCalledWith(
-                    'Are you sure you want to leave the groupchat lounge@conference.shakespeare.lit?');
-                room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
-                expect(room_els.length).toBe(0);
-                expect(_converse.chatboxes.length).toBe(1);
-                done();
-            });
+            await test_utils.openChatRoom(_converse, 'lounge', 'conference.shakespeare.lit', 'JC');
+            expect(_converse.chatboxes.length).toBe(2);
+            var room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(1);
+            var close_el = _converse.rooms_list_view.el.querySelector(".close-room");
+            close_el.click();
+            expect(window.confirm).toHaveBeenCalledWith(
+                'Are you sure you want to leave the groupchat lounge@conference.shakespeare.lit?');
+            room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
+            expect(room_els.length).toBe(0);
+            expect(_converse.chatboxes.length).toBe(1);
+            done();
         }));
 
         it("shows unread messages directed at the user", mock.initConverseWithAsync(
-                { whitelisted_plugins: ['converse-roomslist'],
-                  allow_bookmarks: false // Makes testing easier, otherwise we
-                                         // have to mock stanza traffic.
-                }, function (done, _converse) {
+            { whitelisted_plugins: ['converse-roomslist'],
+                allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
+            }, async function (done, _converse) {
 
-            let view, nick;
             const room_jid = 'kitchen@conference.shakespeare.lit';
+            await test_utils.waitUntil(() => !_.isUndefined(_converse.rooms_list_view), 500);
+            await  test_utils.openAndEnterChatRoom(_converse, 'kitchen', 'conference.shakespeare.lit', 'romeo');
+            const view = _converse.chatboxviews.get(room_jid);
+            view.model.set({'minimized': true});
+            const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const nick = mock.chatroom_names[0];
+            view.model.onMessage(
+                $msg({
+                    from: room_jid+'/'+nick,
+                    id: (new Date()).getTime(),
+                    to: 'dummy@localhost',
+                    type: 'groupchat'
+                }).c('body').t('foo').tree());
 
-            test_utils.waitUntil(() => !_.isUndefined(_converse.rooms_list_view), 500)
-            .then(() => test_utils.openAndEnterChatRoom(_converse, 'kitchen', 'conference.shakespeare.lit', 'romeo'))
-            .then(() => {
-                view = _converse.chatboxviews.get(room_jid);
-                view.model.set({'minimized': true});
-                const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
-                nick = mock.chatroom_names[0];
-                view.model.onMessage(
-                    $msg({
-                        from: room_jid+'/'+nick,
-                        id: (new Date()).getTime(),
-                        to: 'dummy@localhost',
-                        type: 'groupchat'
-                    }).c('body').t('foo').tree());
+            // If the user isn't mentioned, the counter doesn't get incremented, but the text of the groupchat is bold
+            let room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
+            expect(_.includes(room_el.classList, 'unread-msgs'));
 
-                // If the user isn't mentioned, the counter doesn't get incremented, but the text of the groupchat is bold
-                var room_el = _converse.rooms_list_view.el.querySelector(
-                    ".available-chatroom"
-                );
-                expect(_.includes(room_el.classList, 'unread-msgs'));
+            // If the user is mentioned, the counter also gets updated
+            view.model.onMessage(
+                $msg({
+                    from: room_jid+'/'+nick,
+                    id: (new Date()).getTime(),
+                    to: 'dummy@localhost',
+                    type: 'groupchat'
+                }).c('body').t('romeo: Your attention is required').tree()
+            );
+            await test_utils.waitUntil(() => _converse.rooms_list_view.el.querySelectorAll(".msgs-indicator").length);
+            spyOn(view.model, 'incrementUnreadMsgCounter').and.callThrough();
+            let indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
+            expect(indicator_el.textContent).toBe('1');
+            view.model.onMessage(
+                $msg({
+                    from: room_jid+'/'+nick,
+                    id: (new Date()).getTime(),
+                    to: 'dummy@localhost',
+                    type: 'groupchat'
+                }).c('body').t('romeo: and another thing...').tree()
+            );
+            await test_utils.waitUntil(() => view.model.incrementUnreadMsgCounter.calls.count());
+            indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
+            expect(indicator_el.textContent).toBe('2');
 
-                // If the user is mentioned, the counter also gets updated
-                view.model.onMessage(
-                    $msg({
-                        from: room_jid+'/'+nick,
-                        id: (new Date()).getTime(),
-                        to: 'dummy@localhost',
-                        type: 'groupchat'
-                    }).c('body').t('romeo: Your attention is required').tree()
-                );
-                return test_utils.waitUntil(() => _converse.rooms_list_view.el.querySelectorAll(".msgs-indicator").length);
-            }).then(() => {
-                spyOn(view.model, 'incrementUnreadMsgCounter').and.callThrough();
-                const indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
-                expect(indicator_el.textContent).toBe('1');
-                view.model.onMessage(
-                    $msg({
-                        from: room_jid+'/'+nick,
-                        id: (new Date()).getTime(),
-                        to: 'dummy@localhost',
-                        type: 'groupchat'
-                    }).c('body').t('romeo: and another thing...').tree()
-                );
-                return test_utils.waitUntil(() => view.model.incrementUnreadMsgCounter.calls.count());
-            }).then(() => {
-                let indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
-                expect(indicator_el.textContent).toBe('2');
-
-                // When the chat gets maximized again, the unread indicators are removed
-                view.model.set({'minimized': false});
-                indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
-                expect(_.isNull(indicator_el));
-                const room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
-                expect(_.includes(room_el.classList, 'unread-msgs')).toBeFalsy();
-                done();
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            // When the chat gets maximized again, the unread indicators are removed
+            view.model.set({'minimized': false});
+            indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
+            expect(_.isNull(indicator_el));
+            room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
+            expect(_.includes(room_el.classList, 'unread-msgs')).toBeFalsy();
+            done();
         }));
     });
 }));

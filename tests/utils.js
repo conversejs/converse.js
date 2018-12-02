@@ -15,34 +15,30 @@
     }
     utils.waitUntil = waitUntilPromise.default;
 
-    utils.waitUntilDiscoConfirmed = function (_converse, entity_jid, identities, features, items, type) {
-        if (_.isNil(type)) {
-            type = 'info';
-        }
-        return utils.waitUntil(() => {
+    utils.waitUntilDiscoConfirmed = async function (_converse, entity_jid, identities, features, items, type='info') {
+        const iq = await utils.waitUntil(() => {
             return _.filter(
                 _converse.connection.IQ_stanzas,
                 (iq) => sizzle(`iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`, iq.nodeTree).length
             ).pop();
-        }, 300).then(iq => {
-            const stanza = $iq({
-                'type': 'result',
-                'from': entity_jid,
-                'to': 'dummy@localhost/resource',
-                'id': iq.nodeTree.getAttribute('id'), 
-            }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#'+type});
+        }, 300);
+        const stanza = $iq({
+            'type': 'result',
+            'from': entity_jid,
+            'to': 'dummy@localhost/resource',
+            'id': iq.nodeTree.getAttribute('id'),
+        }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#'+type});
 
-            _.forEach(identities, function (identity) {
-                stanza.c('identity', {'category': identity.category, 'type': identity.type}).up()
-            });
-            _.forEach(features, function (feature) {
-                stanza.c('feature', {'var': feature}).up();
-            });
-            _.forEach(items, function (item) {
-                stanza.c('item', {'jid': item}).up();
-            });
-            _converse.connection._dataRecv(utils.createRequest(stanza));
-        }).catch(_.partial(console.error, _));
+        _.forEach(identities, function (identity) {
+            stanza.c('identity', {'category': identity.category, 'type': identity.type}).up()
+        });
+        _.forEach(features, function (feature) {
+            stanza.c('feature', {'var': feature}).up();
+        });
+        _.forEach(items, function (item) {
+            stanza.c('item', {'jid': item}).up();
+        });
+        _converse.connection._dataRecv(utils.createRequest(stanza));
     }
 
     utils.createRequest = function (iq) {
@@ -123,7 +119,7 @@
     utils.openAndEnterChatRoom = function (_converse, room, server, nick) {
         let view;
         const room_jid = `${room}@${server}`.toLowerCase();
-        const stanzas = _converse.connection.IQ_stanzas; 
+        const stanzas = _converse.connection.IQ_stanzas;
 
         return _converse.api.rooms.open(room_jid).then(() => {
             view = _converse.chatboxviews.get(room_jid);
@@ -175,7 +171,7 @@
                 'type': 'result',
                 'id': IQ_id,
                 'from': view.model.get('jid'),
-                'to': _converse.connection.jid 
+                'to': _converse.connection.jid
             }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
                 .c('identity', {'category': 'conference', 'name': nick, 'type': 'text'});
             _converse.connection._dataRecv(utils.createRequest(stanza));
@@ -256,7 +252,7 @@
                 converse.roster.create({
                     'ask': ask,
                     'fullname': names[i],
-                    'jid': jid, 
+                    'jid': jid,
                     'requesting': requesting,
                     'subscription': subscription
                 });

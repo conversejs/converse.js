@@ -42758,6 +42758,7 @@ Strophe.Websocket.prototype = {
 });
 //# sourceMappingURL=strophe.js.map
 
+
 /***/ }),
 
 /***/ "./node_modules/strophejs-plugin-ping/strophe.ping.js":
@@ -50737,8 +50738,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
             'silent': true
           });
           this.model.sendChatState();
-
-          _converse.connection.flush();
         }
       }
 

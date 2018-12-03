@@ -3,6 +3,7 @@
 ## 4.0.6 (unreleased)
 
 - Don't render http (i.e. non-TLS) resources
+- Bugfix: Converse caused `RID out of range` errors on Prosody
 - #1331 Fix missing checkmarks in old muc messages
 - #1333 Don't send receipt requests in MUCs
 

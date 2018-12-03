@@ -11197,7 +11197,7 @@ body.reset {
           text-overflow: ellipsis;
           padding: 0;
           margin: 0;
-          max-width: 90%;
+          max-width: 85%;
           float: none;
           height: 100%; }
           #conversejs #converse-roster .roster-contacts .roster-group li .open-chat .contact-name.unread-msgs {

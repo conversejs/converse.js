@@ -113,6 +113,9 @@ converse.plugins.add('converse-chatboxviews', {
                 const body = document.querySelector('body');
                 body.classList.add(`converse-${_converse.view_mode}`);
                 this.el.classList.add(`converse-${_converse.view_mode}`);
+                if (_converse.singleton) {
+                    this.el.classList.add(`converse-singleton`);
+                }
                 this.render();
             },
 

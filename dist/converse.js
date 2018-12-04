@@ -49277,6 +49277,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         const body = document.querySelector('body');
         body.classList.add(`converse-${_converse.view_mode}`);
         this.el.classList.add(`converse-${_converse.view_mode}`);
+
+        if (_converse.singleton) {
+          this.el.classList.add(`converse-singleton`);
+        }
+
         this.render();
       },
 
@@ -50903,7 +50908,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
   dependencies: ["converse-modal", "converse-chatboxes", "converse-rosterview", "converse-chatview"],
 
   enabled(_converse) {
-    return _converse.view_mode !== 'embedded';
+    return !_converse.singleton;
   },
 
   overrides: {
@@ -50979,7 +50984,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         const _converse = this.__super__._converse;
 
         if (attrs.type === _converse.CONTROLBOX_TYPE) {
-          if (_converse.view_mode === 'embedded') {
+          if (_converse.view_mode === 'embedded' && _converse.singleton) {
             return 'Controlbox not relevant in embedded view mode';
           }
 
@@ -51992,60 +51997,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins
 
 /***/ }),
 
-/***/ "./src/converse-embedded.js":
-/*!**********************************!*\
-  !*** ./src/converse-embedded.js ***!
-  \**********************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _converse_headless_converse_muc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @converse/headless/converse-muc */ "./src/headless/converse-muc.js");
-/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
-// Converse.js
-// http://conversejs.org
-//
-// Copyright (c) 2013-2018, the Converse.js developers
-// Licensed under the Mozilla Public License (MPLv2)
-
-
-const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].env,
-      Backbone = _converse$env.Backbone,
-      _ = _converse$env._;
-_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-embedded', {
-  enabled(_converse) {
-    return _converse.view_mode === 'embedded';
-  },
-
-  initialize() {
-    /* The initialize function gets called as soon as the plugin is
-     * loaded by converse.js's plugin machinery.
-     */
-    this._converse.api.settings.update({
-      'allow_logout': false,
-      // No point in logging out when we have auto_login as true.
-      'allow_muc_invitations': false,
-      // Doesn't make sense to allow because only
-      // roster contacts can be invited
-      'hide_muc_server': true
-    });
-
-    const _converse = this._converse;
-
-    if (!_.isArray(_converse.auto_join_rooms) && !_.isArray(_converse.auto_join_private_chats)) {
-      throw new Error("converse-embedded: auto_join_rooms must be an Array");
-    }
-
-    if (_converse.auto_join_rooms.length > 1 && _converse.auto_join_private_chats.length > 1) {
-      throw new Error("converse-embedded: It doesn't make " + "sense to have the auto_join_rooms setting more then one, " + "since only one chat room can be open at any time.");
-    }
-  }
-
-});
-
-/***/ }),
-
 /***/ "./src/converse-fullscreen.js":
 /*!************************************!*\
   !*** ./src/converse-fullscreen.js ***!
@@ -52079,7 +52030,7 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       _ = _converse$env._;
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins.add('converse-fullscreen', {
   enabled(_converse) {
-    return _.includes(['fullscreen', 'embedded'], _converse.view_mode);
+    return _converse.isUniView();
   },
 
   overrides: {
@@ -54096,6 +54047,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
          */
         return templates_chatroom_head_html__WEBPACK_IMPORTED_MODULE_13___default()(_.extend(this.model.toJSON(), {
           'Strophe': Strophe,
+          '_converse': _converse,
           'info_close': __('Close and leave this groupchat'),
           'info_configure': __('Configure this groupchat'),
           'info_details': __('Show more details about this groupchat'),
@@ -60154,8 +60106,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var converse_chatview__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js");
-/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
+/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 // Converse.js
 // http://conversejs.org
 //
@@ -60165,12 +60116,72 @@ __webpack_require__.r(__webpack_exports__);
 /* converse-singleton
  * ******************
  *
+ * A plugin which restricts Converse to only one chat.
+ */
+
+const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env,
+      _ = _converse$env._,
+      Strophe = _converse$env.Strophe;
+const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
+_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-singleton', {
+  enabled(_converse) {
+    return _converse.singleton;
+  },
+
+  initialize() {
+    /* The initialize function gets called as soon as the plugin is
+     * loaded by converse.js's plugin machinery.
+     */
+    this._converse.api.settings.update({
+      'allow_logout': false,
+      // No point in logging out when we have auto_login as true.
+      'allow_muc_invitations': false,
+      // Doesn't make sense to allow because only
+      // roster contacts can be invited
+      'hide_muc_server': true
+    });
+
+    const _converse = this._converse;
+
+    if (!_.isArray(_converse.auto_join_rooms) && !_.isArray(_converse.auto_join_private_chats)) {
+      throw new Error("converse-singleton: auto_join_rooms must be an Array");
+    }
+
+    if (_converse.auto_join_rooms.length > 1 || _converse.auto_join_private_chats.length > 1) {
+      throw new Error("It doesn't make sense to have singleton set to true and " + "auto_join_rooms or auto_join_private_chats set to more then one, " + "since only one chat room may be open at any time.");
+    }
+  }
+
+});
+
+/***/ }),
+
+/***/ "./src/converse-uniview.js":
+/*!*********************************!*\
+  !*** ./src/converse-uniview.js ***!
+  \*********************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var converse_chatview__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js");
+/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
+// Converse.js
+// http://conversejs.org
+//
+// Copyright (c) 2013-2018, the Converse.js developers
+// Licensed under the Mozilla Public License (MPLv2)
+
+/* converse-uniview
+ * ****************
+ *
  * A plugin which ensures that only one chat (private or groupchat) is
  * visible at any one time. All other ongoing chats are hidden and kept in the
  * background.
  *
- * This plugin makes sense in mobile or fullscreen chat environments (as
- * configured by the `view_mode` setting).
+ * This plugin makes sense in mobile, embedded or fullscreen chat environments
+ * (as configured by the `view_mode` setting).
  */
 
 
@@ -60190,12 +60201,10 @@ function hideChat(view) {
   view.hide();
 }
 
-_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-singleton', {
+_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-uniview', {
   // It's possible however to make optional dependencies non-optional.
   // If the setting "strict_plugin_dependencies" is set to true,
   // an error will be raised if the plugin is not found.
-  //
-  // NB: These plugins need to have already been loaded via require.js.
   dependencies: ['converse-chatboxes', 'converse-muc', 'converse-muc-views', 'converse-controlbox', 'converse-rosterview'],
   overrides: {
     // overrides mentioned here will be picked up by converse.js's
@@ -60307,18 +60316,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var converse_chatview__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js");
 /* harmony import */ var converse_controlbox__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! converse-controlbox */ "./src/converse-controlbox.js");
 /* harmony import */ var converse_dragresize__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! converse-dragresize */ "./src/converse-dragresize.js");
-/* harmony import */ var converse_embedded__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! converse-embedded */ "./src/converse-embedded.js");
-/* harmony import */ var converse_fullscreen__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! converse-fullscreen */ "./src/converse-fullscreen.js");
-/* harmony import */ var converse_headline__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! converse-headline */ "./src/converse-headline.js");
-/* harmony import */ var converse_minimize__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! converse-minimize */ "./src/converse-minimize.js");
-/* harmony import */ var converse_muc_views__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! converse-muc-views */ "./src/converse-muc-views.js");
-/* harmony import */ var converse_notification__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! converse-notification */ "./src/converse-notification.js");
-/* harmony import */ var converse_omemo__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! converse-omemo */ "./src/converse-omemo.js");
-/* harmony import */ var converse_push__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! converse-push */ "./src/converse-push.js");
-/* harmony import */ var converse_register__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! converse-register */ "./src/converse-register.js");
-/* harmony import */ var converse_roomslist__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! converse-roomslist */ "./src/converse-roomslist.js");
-/* harmony import */ var converse_rosterview__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! converse-rosterview */ "./src/converse-rosterview.js");
-/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
+/* harmony import */ var converse_fullscreen__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! converse-fullscreen */ "./src/converse-fullscreen.js");
+/* harmony import */ var converse_headline__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! converse-headline */ "./src/converse-headline.js");
+/* harmony import */ var converse_minimize__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! converse-minimize */ "./src/converse-minimize.js");
+/* harmony import */ var converse_muc_views__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! converse-muc-views */ "./src/converse-muc-views.js");
+/* harmony import */ var converse_notification__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! converse-notification */ "./src/converse-notification.js");
+/* harmony import */ var converse_omemo__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! converse-omemo */ "./src/converse-omemo.js");
+/* harmony import */ var converse_push__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! converse-push */ "./src/converse-push.js");
+/* harmony import */ var converse_register__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! converse-register */ "./src/converse-register.js");
+/* harmony import */ var converse_roomslist__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! converse-roomslist */ "./src/converse-roomslist.js");
+/* harmony import */ var converse_rosterview__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! converse-rosterview */ "./src/converse-rosterview.js");
+/* harmony import */ var converse_singleton__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! converse-singleton */ "./src/converse-singleton.js");
+/* harmony import */ var converse_uniview__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! converse-uniview */ "./src/converse-uniview.js");
+/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* START: Removable components
  * --------------------
  * Any of the following components may be removed if they're not needed.
@@ -60343,7 +60353,6 @@ __webpack_require__.r(__webpack_exports__);
  // Allows chat boxes to be resized by dragging them
 
 
-
  // Support for headline messages
 
  // Allows chat boxes to be minimized
@@ -60360,14 +60369,16 @@ __webpack_require__.r(__webpack_exports__);
  // Show currently open chat rooms
 
 
+
+
 /* END: Removable components */
 
 
-const WHITELISTED_PLUGINS = ['converse-autocomplete', 'converse-bookmarks', 'converse-caps', 'converse-chatboxviews', 'converse-chatview', 'converse-controlbox', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc-views', 'converse-notification', 'converse-oauth', 'converse-omemo', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton'];
-const initialize = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_21__["default"].initialize;
+const WHITELISTED_PLUGINS = ['converse-autocomplete', 'converse-bookmarks', 'converse-caps', 'converse-chatboxviews', 'converse-chatview', 'converse-controlbox', 'converse-dragresize', 'converse-fullscreen', 'converse-headline', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc-views', 'converse-notification', 'converse-oauth', 'converse-omemo', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton', 'converse-uniview'];
+const initialize = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_22__["default"].initialize;
 
-_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_21__["default"].initialize = function (settings, callback) {
-  if (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_21__["default"].env._.isArray(settings.whitelisted_plugins)) {
+_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_22__["default"].initialize = function (settings, callback) {
+  if (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_22__["default"].env._.isArray(settings.whitelisted_plugins)) {
     settings.whitelisted_plugins = settings.whitelisted_plugins.concat(WHITELISTED_PLUGINS);
   } else {
     settings.whitelisted_plugins = WHITELISTED_PLUGINS;
@@ -60376,7 +60387,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_21__["default"].initia
   return initialize(settings, callback);
 };
 
-/* harmony default export */ __webpack_exports__["default"] = (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_21__["default"]);
+/* harmony default export */ __webpack_exports__["default"] = (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_22__["default"]);
 
 /***/ }),
 
@@ -62879,6 +62890,7 @@ _converse.default_settings = {
   rid: undefined,
   root: window.document,
   sid: undefined,
+  singleton: false,
   strict_plugin_dependencies: false,
   trusted: true,
   view_mode: 'overlayed',
@@ -63001,7 +63013,7 @@ function initPlugins() {
 
   const whitelist = _converse.core_plugins.concat(_converse.whitelisted_plugins);
 
-  if (_converse.view_mode === 'embedded') {
+  if (_converse.singleton) {
     _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.forEach([// eslint-disable-line lodash/prefer-map
     "converse-bookmarks", "converse-controlbox", "converse-headline", "converse-register"], name => {
       _converse.blacklisted_plugins.push(name);
@@ -92874,11 +92886,15 @@ __e( o.Strophe.getDomainFromJid(o.jid) ) +
  } ;
 __p += '\n    </div>\n    <!-- Sanitized in converse-muc-views. We want to render links. -->\n    <p class="chatroom-description">' +
 ((__t = (o.description)) == null ? '' : __t) +
-'</p>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="' +
+'</p>\n</div>\n<div class="chatbox-buttons row no-gutters">\n    ';
+ if (!o._converse.singleton) { ;
+__p += '\n        <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="' +
 __e(o.info_close) +
 '"></a>\n    ';
+ } ;
+__p += '\n    ';
  if (o.affiliation == 'owner') { ;
-__p += '\n    <a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="' +
+__p += '\n        <a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="' +
 __e(o.info_configure) +
 ' "></a>\n    ';
  } ;

@@ -74,7 +74,7 @@ converse.plugins.add('converse-controlbox', {
     dependencies: ["converse-modal", "converse-chatboxes", "converse-rosterview", "converse-chatview"],
 
     enabled (_converse) {
-        return _converse.view_mode !== 'embedded';
+        return !_converse.singleton;
     },
 
     overrides: {
@@ -148,7 +148,7 @@ converse.plugins.add('converse-controlbox', {
             validate (attrs, options) {
                 const { _converse } = this.__super__;
                 if (attrs.type === _converse.CONTROLBOX_TYPE) {
-                    if (_converse.view_mode === 'embedded')  {
+                    if (_converse.view_mode === 'embedded' && _converse.singleton)  {
                         return 'Controlbox not relevant in embedded view mode';
                     }
                     return;

@@ -303,7 +303,6 @@ converse.plugins.add('converse-chatview', {
 
             initialize () {
                 this.initDebounced();
-
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.messages.on('rendered', this.scrollDown, this);
 

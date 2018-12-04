@@ -7,109 +7,39 @@
 /* converse-singleton
  * ******************
  *
- * A plugin which ensures that only one chat (private or groupchat) is
- * visible at any one time. All other ongoing chats are hidden and kept in the
- * background.
- *
- * This plugin makes sense in mobile or fullscreen chat environments (as
- * configured by the `view_mode` setting).
+ * A plugin which restricts Converse to only one chat.
  */
 
-import "converse-chatview";
 import converse from "@converse/headless/converse-core";
 
 const { _, Strophe } = converse.env;
 const u = converse.env.utils;
 
 
-function hideChat (view) {
-    if (view.model.get('id') === 'controlbox') { return; }
-    u.safeSave(view.model, {'hidden': true});
-    view.hide();
-}
-
-
 converse.plugins.add('converse-singleton', {
-    // It's possible however to make optional dependencies non-optional.
-    // If the setting "strict_plugin_dependencies" is set to true,
-    // an error will be raised if the plugin is not found.
-    //
-    // NB: These plugins need to have already been loaded via require.js.
-    dependencies: ['converse-chatboxes', 'converse-muc', 'converse-muc-views', 'converse-controlbox', 'converse-rosterview'],
 
-    overrides: {
-        // overrides mentioned here will be picked up by converse.js's
-        // plugin architecture they will replace existing methods on the
-        // relevant objects or classes.
-        //
-        // new functions which don't exist yet can also be added.
-        ChatBoxes: {
+    enabled (_converse) {
+        return _converse.singleton;
+    },
 
-            chatBoxMayBeShown (chatbox) {
-                const { _converse } = this.__super__;
-                if (chatbox.get('id') === 'controlbox') {
-                    return true;
-                }
-                if (_converse.isUniView()) {
-                    const any_chats_visible = _converse.chatboxes
-                        .filter(cb => cb.get('id') != 'controlbox')
-                        .filter(cb => !cb.get('hidden')).length > 0;
-
-                    if (any_chats_visible) {
-                        return !chatbox.get('hidden');
-                    } else {
-                        return true;
-                    }
-                } else {
-                    return this.__super__.chatBoxMayBeShown.apply(this, arguments);
-                }
-            },
-
-            createChatBox (jid, attrs) {
-                /* Make sure new chat boxes are hidden by default. */
-                const { _converse } = this.__super__;
-                if (_converse.isUniView()) {
-                    attrs = attrs || {};
-                    attrs.hidden = true;
-                }
-                return this.__super__.createChatBox.call(this, jid, attrs);
-            }
-        },
-
-        ChatBoxView: {
-            shouldShowOnTextMessage () {
-                const { _converse } = this.__super__;
-                if (_converse.isUniView()) {
-                    return false;
-                } else { 
-                    return this.__super__.shouldShowOnTextMessage.apply(this, arguments);
-                }
-            },
-
-            _show (focus) {
-                /* We only have one chat visible at any one
-                 * time. So before opening a chat, we make sure all other
-                 * chats are hidden.
-                 */
-                const { _converse } = this.__super__;
-                if (_converse.isUniView()) {
-                    _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
-                    u.safeSave(this.model, {'hidden': false});
-                }
-                return this.__super__._show.apply(this, arguments);
-            }
-        },
-
-        ChatRoomView: {
-            show (focus) {
-                const { _converse } = this.__super__;
-                if (_converse.isUniView()) {
-                    _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
-                    u.safeSave(this.model, {'hidden': false});
-                }
-                return this.__super__.show.apply(this, arguments);
-            }
+    initialize () {
+        /* The initialize function gets called as soon as the plugin is
+         * loaded by converse.js's plugin machinery.
+         */
+        this._converse.api.settings.update({
+            'allow_logout': false, // No point in logging out when we have auto_login as true.
+            'allow_muc_invitations': false, // Doesn't make sense to allow because only
+                                            // roster contacts can be invited
+            'hide_muc_server': true
+        });
+        const { _converse } = this;
+        if (!_.isArray(_converse.auto_join_rooms) && !_.isArray(_converse.auto_join_private_chats)) {
+            throw new Error("converse-singleton: auto_join_rooms must be an Array");
+        }
+        if (_converse.auto_join_rooms.length > 1 || _converse.auto_join_private_chats.length > 1) {
+            throw new Error("It doesn't make sense to have singleton set to true and " +
+                "auto_join_rooms or auto_join_private_chats set to more then one, " +
+                "since only one chat room may be open at any time.");
         }
     }
 });
-

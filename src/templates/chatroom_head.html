@@ -11,9 +11,11 @@
     <p class="chatroom-description">{{o.description}}</p>
 </div>
 <div class="chatbox-buttons row no-gutters">
-    <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="{{{o.info_close}}}"></a>
+    {[ if (!o._converse.singleton) { ]}
+        <a class="chatbox-btn close-chatbox-button fa fa-sign-out-alt" title="{{{o.info_close}}}"></a>
+    {[ } ]}
     {[ if (o.affiliation == 'owner') { ]}
-    <a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="{{{o.info_configure}}} "></a>
+        <a class="chatbox-btn configure-chatroom-button fa fa-wrench" title="{{{o.info_configure}}} "></a>
     {[ } ]}
     <a class="chatbox-btn show-room-details-modal fa fa-info-circle" title="{{{o.info_details}}}"></a>
 </div>

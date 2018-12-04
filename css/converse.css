@@ -12220,8 +12220,6 @@ body.converse-fullscreen {
     #conversejs.converse-embedded .chatbox .chat-title {
       padding: 0.3em;
       font-size: 120%; }
-  #conversejs.converse-embedded .chatbox-btn {
-    display: none; }
   #conversejs.converse-embedded .chatroom {
     margin: 0;
     width: 100%; }

@@ -21,6 +21,9 @@ pip-selfcheck.json
 3rdparty/libsignal-protocol-javascript/
 *.map
 
+locale.zip
+sounds.zip
+
 analytics.js
 
 # virtualenv/python/buildout

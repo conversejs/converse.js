@@ -221,6 +221,7 @@ _converse.default_settings = {
     rid: undefined,
     root: window.document,
     sid: undefined,
+    singleton: false,
     strict_plugin_dependencies: false,
     trusted: true,
     view_mode: 'overlayed', // Choices are 'overlayed', 'fullscreen', 'mobile'
@@ -337,7 +338,7 @@ function initPlugins() {
     const whitelist = _converse.core_plugins.concat(
         _converse.whitelisted_plugins);
 
-    if (_converse.view_mode === 'embedded') {
+    if (_converse.singleton) {
         _.forEach([ // eslint-disable-line lodash/prefer-map
             "converse-bookmarks",
             "converse-controlbox",

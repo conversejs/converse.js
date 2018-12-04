@@ -429,6 +429,7 @@
     }
 }
 
+
 #conversejs.converse-fullscreen {
     .chatroom {
         .box-flyout {
@@ -462,6 +463,7 @@
     }
 }
 
+#conversejs.converse-embedded,
 #conversejs.converse-fullscreen,
 #conversejs.converse-mobile {
 
@@ -514,6 +516,45 @@
             span {
                 .invited-contact {
                     margin: 0 0 0.5em -1px;
+                }
+            }
+        }
+    }
+}
+
+#conversejs.converse-embedded {
+    .chatroom {
+        margin: 0;
+        width: 100%;
+        .box-flyout {
+            .occupants-heading {
+                font-size: 120%;
+            }
+            .chat-content {
+                .chat-message {
+                    margin: 0.5em;
+                    font-size: 120%;
+                }
+            }
+            .sendXMPPMessage {
+                .chat-textarea {
+                    padding: 0.5em;
+                    font-size: 110%;
+                }
+            }
+            .chatroom-body {
+                height: 100%;
+                .chatroom-form-container {
+                    height: 100%;
+                    position: relative;
+                }
+            }
+            .occupants {
+                .occupant-list {
+                    padding-left: 0.3em;
+                    li.occupant {
+                        font-size: 120%;
+                    }
                 }
             }
         }

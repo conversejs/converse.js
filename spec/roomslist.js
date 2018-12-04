@@ -115,15 +115,11 @@
 
         it("is highlighted if its currently open", mock.initConverse(
             null, ['rosterGroupsFetched', 'chatBoxesFetched'],
-            { whitelisted_plugins: ['converse-roomslist'],
-              allow_bookmarks: false // Makes testing easier, otherwise we
-                                     // have to mock stanza traffic.
+            { view_mode: 'fullscreen',
+              allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
             }, async function (done, _converse) {
 
-            spyOn(_converse, 'isUniView').and.callFake(() => true);
-
             let room_els, item;
-            test_utils.openControlBox();
             await _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
             room_els = _converse.rooms_list_view.el.querySelectorAll(".available-chatroom");
             expect(room_els.length).toBe(1);
@@ -139,6 +135,8 @@
             expect(room_els.length).toBe(1);
             item = room_els[0];
             expect(item.textContent.trim()).toBe('balcony@chat.shakespeare.lit');
+            const conv_el = document.querySelector('#conversejs');
+            conv_el.parentElement.removeChild(conv_el);
             done();
         }));
 

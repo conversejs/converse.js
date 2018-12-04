@@ -720,8 +720,8 @@ converse.plugins.add('converse-muc-views', {
                  */
                 return tpl_chatroom_head(
                     Object.assign(this.model.toJSON(), {
-                        '_converse': _converse,
                         'Strophe': Strophe,
+                        '_converse': _converse,
                         'info_close': __('Close and leave this groupchat'),
                         'info_configure': __('Configure this groupchat'),
                         'info_details': __('Show more details about this groupchat'),

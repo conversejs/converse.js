@@ -1383,6 +1383,21 @@ show_send_button
 
 If set to ``true``, a button will be visible which can be clicked to send a message.
 
+singleton
+---------
+
+* Default:  ``false``
+
+If set to ``true``, then only one chat (one-on-one or groupchat) will be allowed.
+
+The chat must be specified with the `auto_join_rooms`_ or `auto_join_private_chats`_ options.
+
+This setting is useful together with `view_mode`_ set to ``embedded``, when you
+want to embed a chat into the page.
+
+Alternatively you could use it with `view_mode`_ set to ``overlayed`` to create
+a single helpdesk-type chat.
+
 sounds_path
 -----------
 

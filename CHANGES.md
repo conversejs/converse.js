@@ -13,6 +13,10 @@
 - Replace `moment` with [DayJS](https://github.com/iamkun/dayjs).
 - New API method [\_converse.api.disco.features.get](https://conversejs.org/docs/html/api/-_converse.api.disco.features.html#.get)
 - New config setting [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
+- New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton).
+  By setting this option to `false` and `view_mode` to `'embedded'`, it's now possible to
+  "embed" the full app and not just a single chat. To embed just a single chat,
+  it's now necessary to explicitly set `singleton` to `true`.
 - New event: `chatBoxBlurred`.
 - New event: [chatBoxBlurred](https://conversejs.org/docs/html/api/-_converse.html#event:chatBoxBlurred)
 - New event: [chatReconnected](https://conversejs.org/docs/html/api/-_converse.html#event:chatReconnected)

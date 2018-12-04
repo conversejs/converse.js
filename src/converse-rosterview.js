@@ -392,7 +392,7 @@ converse.plugins.add('converse-rosterview', {
                 this.el.setAttribute('data-status', show);
                 this.highlight();
 
-                if (_converse.isSingleton()) {
+                if (_converse.isUniView()) {
                     const chatbox = _converse.chatboxes.get(this.model.get('jid'));
                     if (chatbox) {
                         if (chatbox.get('hidden')) {
@@ -447,7 +447,7 @@ converse.plugins.add('converse-rosterview', {
             highlight () {
                 /* If appropriate, highlight the contact (by adding the 'open' class).
                  */
-                if (_converse.isSingleton()) {
+                if (_converse.isUniView()) {
                     const chatbox = _converse.chatboxes.get(this.model.get('jid'));
                     if (chatbox) {
                         if (chatbox.get('hidden')) {

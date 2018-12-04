@@ -312,7 +312,12 @@ _converse.emit = function (name) {
     }
 };
 
-_converse.isSingleton = function () {
+_converse.isUniView = function () {
+    /* We distinguish between UniView and MultiView instances.
+     *
+     * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
+     * MultiView means that multiple chats may be visible simultaneously.
+     */
     return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
 }
 

@@ -55729,7 +55729,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     };
 
     _converse.isMessageToHiddenChat = function (message) {
-      if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
+      if (_converse.isUniView()) {
         const jid = Strophe.getBareJidFromJid(message.getAttribute('from')),
               view = _converse.chatboxviews.get(jid);
 
@@ -58624,7 +58624,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           // supported by the XMPP server. So we can use it
           // as a check for support (other ways of checking are async).
           'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
-          'currently_open': _converse.isSingleton() && !this.model.get('hidden'),
+          'currently_open': _converse.isUniView() && !this.model.get('hidden'),
           'info_leave_room': __('Leave this groupchat'),
           'info_remove_bookmark': __('Unbookmark this groupchat'),
           'info_add_bookmark': __('Bookmark this groupchat'),
@@ -59291,7 +59291,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.el.setAttribute('data-status', show);
         this.highlight();
 
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           const chatbox = _converse.chatboxes.get(this.model.get('jid'));
 
           if (chatbox) {
@@ -59344,7 +59344,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       highlight() {
         /* If appropriate, highlight the contact (by adding the 'open' class).
          */
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           const chatbox = _converse.chatboxes.get(this.model.get('jid'));
 
           if (chatbox) {
@@ -60043,7 +60043,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
           return true;
         }
 
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           const any_chats_visible = _converse.chatboxes.filter(cb => cb.get('id') != 'controlbox').filter(cb => !cb.get('hidden')).length > 0;
 
           if (any_chats_visible) {
@@ -60060,7 +60060,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         /* Make sure new chat boxes are hidden by default. */
         const _converse = this.__super__._converse;
 
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           attrs = attrs || {};
           attrs.hidden = true;
         }
@@ -60073,7 +60073,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       shouldShowOnTextMessage() {
         const _converse = this.__super__._converse;
 
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           return false;
         } else {
           return this.__super__.shouldShowOnTextMessage.apply(this, arguments);
@@ -60087,7 +60087,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
          */
         const _converse = this.__super__._converse;
 
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
 
           u.safeSave(this.model, {
@@ -60103,7 +60103,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       show(focus) {
         const _converse = this.__super__._converse;
 
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
 
           u.safeSave(this.model, {
@@ -62796,7 +62796,12 @@ _converse.emit = function (name) {
   }
 };
 
-_converse.isSingleton = function () {
+_converse.isUniView = function () {
+  /* We distinguish between UniView and MultiView instances.
+   *
+   * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
+   * MultiView means that multiple chats may be visible simultaneously.
+   */
   return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
 };
 

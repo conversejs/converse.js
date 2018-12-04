@@ -74,7 +74,7 @@ converse.plugins.add('converse-notification', {
         };
 
         _converse.isMessageToHiddenChat = function (message) {
-            if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
+            if (_converse.isUniView()) {
                 const jid = Strophe.getBareJidFromJid(message.getAttribute('from')),
                       view = _converse.chatboxviews.get(jid);
 

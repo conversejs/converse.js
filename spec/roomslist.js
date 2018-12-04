@@ -60,7 +60,7 @@
                                      // have to mock stanza traffic.
             }, async function (done, _converse) {
 
-            spyOn(_converse, 'isSingleton').and.callFake(() => true);
+            spyOn(_converse, 'isUniView').and.callFake(() => true);
 
             let room_els, item;
             test_utils.openControlBox();

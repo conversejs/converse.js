@@ -131,13 +131,13 @@ dev: stamp-npm
 css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/font-awesome.css
 
 css/converse.css:: dev sass
-	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/converse.scss css/converse.css
+	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/converse.scss css/converse.css
 
 css/website.css:: dev sass
-	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
+	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
 
 css/font-awesome.css:: dev sass
-	$(SASS) --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@
+	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@
 
 css/%.min.css:: css/%.css
 	make dev
@@ -145,7 +145,7 @@ css/%.min.css:: css/%.css
 
 .PHONY: watchcss
 watchcss: dev
-	$(SASS) --watch --include-path $(BOURBON) --include-path $(BOOTSTRAP) -o ./css/ ./sass/
+	$(SASS) --watch --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) -o ./css/ ./sass/
 
 .PHONY: watchjs
 watchjs: dev dist/converse-headless.js

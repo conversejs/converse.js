@@ -444,6 +444,7 @@
     }
 }
 
+#conversejs.converse-embedded,
 #conversejs.converse-fullscreen,
 #conversejs.converse-mobile {
     #controlbox {
@@ -555,7 +556,7 @@
 
 @include media-breakpoint-down(sm) {
 
-    #conversejs:not(.converse-embedded)  {
+    #conversejs {
         left: 0;
         right: 0;
         padding-left: env(safe-area-inset-left);

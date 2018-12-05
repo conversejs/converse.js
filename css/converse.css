@@ -9589,6 +9589,19 @@ body.converse-fullscreen {
     left: -15px; }
   #conversejs.converse-overlayed {
     height: 3em; }
+  #conversejs.converse-embedded {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    bottom: auto;
+    height: 100%;
+    position: relative;
+    right: auto;
+    width: 100%; }
+    #conversejs.converse-embedded *, #conversejs.converse-embedded *:before, #conversejs.converse-embedded *:after {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box; }
   #conversejs .brand-heading-container {
     text-align: center; }
   #conversejs .brand-heading {
@@ -10458,9 +10471,6 @@ body.converse-fullscreen {
       left: 0; }
 
 /* ******************* Overlay and embedded styles *************************** */
-#conversejs.converse-embedded .chat-textarea {
-  max-height: var(--fullpage-max-chat-textarea-height); }
-
 #conversejs.converse-embedded .chat-head,
 #conversejs.converse-overlayed .chat-head {
   border-top-left-radius: var(--chatbox-border-radius);
@@ -10533,41 +10543,14 @@ body.converse-fullscreen {
     #conversejs.converse-overlayed > .row.no-gutters {
       margin: -1em; } }
 
-/* ******************* Fullpage styles *************************** */
-#conversejs.converse-fullscreen .flyout {
-  border-radius: 0;
-  border-top: 0.8em solid var(--chat-head-color);
-  border: var(--flyout-padding) solid var(--chat-head-color);
-  bottom: 0; }
+#conversejs.converse-embedded.converse-singleton .flyout {
+  border: none !important; }
 
-#conversejs.converse-fullscreen .chatbox-btn {
-  font-size: var(--fullpage-chatbox-button-size);
-  margin: 0 0.3em; }
-
-#conversejs.converse-fullscreen .chat-head {
+#conversejs.converse-embedded.converse-singleton .chat-head {
   height: var(--fullpage-chat-head-height);
-  font-size: var(--font-size-huge);
-  padding: 0; }
-  #conversejs.converse-fullscreen .chat-head .user-custom-message {
-    font-size: 70%;
-    height: auto;
-    line-height: var(--line-height); }
-  #conversejs.converse-fullscreen .chat-head .chatbox-title {
-    flex: 0 0 83.33333%;
-    max-width: 83.33333%; }
-  #conversejs.converse-fullscreen .chat-head .chatbox-buttons {
-    flex: 0 0 16.66667%;
-    max-width: 16.66667%; }
+  padding: 0.5em; }
 
-#conversejs.converse-fullscreen .chat-textarea {
-  max-height: var(--fullpage-max-chat-textarea-height); }
-
-#conversejs.converse-fullscreen .emoji-picker {
-  height: var(--fullpage-emoji-picker-height); }
-
-#conversejs.converse-fullscreen .chatbox {
-  width: 100%;
-  height: 100%;
+#conversejs.converse-embedded.converse-singleton .chatbox {
   margin: 0;
   position: relative;
   width: 100%;
@@ -10575,42 +10558,138 @@ body.converse-fullscreen {
   padding-right: 15px;
   padding-left: 15px; }
   @media (min-width: 768px) {
+    #conversejs.converse-embedded.converse-singleton .chatbox {
+      flex: 0 0 100%;
+      max-width: 100%; } }
+  @media (min-width: 992px) {
+    #conversejs.converse-embedded.converse-singleton .chatbox {
+      flex: 0 0 100%;
+      max-width: 100%; } }
+  @media (min-width: 1200px) {
+    #conversejs.converse-embedded.converse-singleton .chatbox {
+      flex: 0 0 100%;
+      max-width: 100%; } }
+
+#conversejs.converse-embedded .flyout,
+#conversejs.converse-fullscreen .flyout {
+  border-radius: 0;
+  border-top: 0.8em solid var(--chat-head-color);
+  border: var(--flyout-padding) solid var(--chat-head-color);
+  bottom: 0; }
+
+#conversejs.converse-embedded .chat-head,
+#conversejs.converse-fullscreen .chat-head {
+  height: var(--fullpage-chat-head-height);
+  padding: 0; }
+  #conversejs.converse-embedded .chat-head .user-custom-message,
+  #conversejs.converse-fullscreen .chat-head .user-custom-message {
+    font-size: 70%;
+    height: auto;
+    line-height: var(--line-height); }
+  #conversejs.converse-embedded .chat-head .chatbox-title,
+  #conversejs.converse-fullscreen .chat-head .chatbox-title {
+    flex: 0 0 83.33333%;
+    max-width: 83.33333%; }
+  #conversejs.converse-embedded .chat-head .chatbox-buttons,
+  #conversejs.converse-fullscreen .chat-head .chatbox-buttons {
+    flex: 0 0 16.66667%;
+    max-width: 16.66667%; }
+
+#conversejs.converse-embedded .chatbox,
+#conversejs.converse-fullscreen .chatbox {
+  margin: 0;
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px; }
+  @media (min-width: 768px) {
+    #conversejs.converse-embedded .chatbox,
     #conversejs.converse-fullscreen .chatbox {
       flex: 0 0 66.66667%;
       max-width: 66.66667%; } }
   @media (min-width: 992px) {
+    #conversejs.converse-embedded .chatbox,
     #conversejs.converse-fullscreen .chatbox {
       flex: 0 0 75%;
       max-width: 75%; } }
   @media (min-width: 1200px) {
+    #conversejs.converse-embedded .chatbox,
     #conversejs.converse-fullscreen .chatbox {
       flex: 0 0 83.33333%;
       max-width: 83.33333%; } }
+  #conversejs.converse-embedded .chatbox .box-flyout,
   #conversejs.converse-fullscreen .chatbox .box-flyout {
-    background-color: var(--chat-head-color);
     box-shadow: none;
-    height: var(--fullpage-chat-height);
-    min-height: calc(var(--fullpage-chat-height) / 2);
-    width: var(--fullpage-chat-width);
     overflow: hidden; }
-  #conversejs.converse-fullscreen .chatbox .chat-body {
-    height: calc(100% - var(--fullpage-chat-head-height));
-    background-color: var(--chat-head-color);
-    border-top-left-radius: var(--chatbox-border-radius);
-    border-top-right-radius: var(--chatbox-border-radius); }
-  #conversejs.converse-fullscreen .chatbox .chat-content {
-    border-top-left-radius: var(--chatbox-border-radius);
-    border-top-right-radius: var(--chatbox-border-radius); }
-  #conversejs.converse-fullscreen .chatbox .chat-title {
-    font-size: var(--font-size-huge);
-    line-height: var(--line-height-huge); }
-  #conversejs.converse-fullscreen .chatbox .sendXMPPMessage ul {
-    width: 100%; }
-  #conversejs.converse-fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category-picker {
-    margin-right: 5em; }
-  #conversejs.converse-fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category {
-    padding-left: 10px;
-    padding-right: 10px; }
+
+#conversejs.converse-embedded .converse-chatboxes {
+  z-index: 1031;
+  position: inherit;
+  flex-wrap: nowrap;
+  bottom: auto;
+  height: 100%;
+  width: 100%;
+  margin-left: -15px; }
+
+#conversejs.converse-embedded .chatbox .box-flyout {
+  bottom: 0;
+  height: 100%;
+  min-width: auto;
+  width: 100%; }
+
+#conversejs.converse-embedded .chatbox .chat-title {
+  padding: 0.3em;
+  font-size: 120%; }
+
+#conversejs.converse-embedded .chat-textarea {
+  max-height: var(--fullpage-max-chat-textarea-height); }
+
+/* ******************* Fullpage styles *************************** */
+#conversejs.converse-fullscreen .chatbox-btn {
+  font-size: var(--fullpage-chatbox-button-size);
+  margin: 0 0.3em; }
+
+#conversejs.converse-fullscreen .chat-head {
+  font-size: var(--font-size-huge); }
+
+#conversejs.converse-fullscreen .chat-textarea {
+  max-height: var(--fullpage-max-chat-textarea-height); }
+
+#conversejs.converse-fullscreen .emoji-picker {
+  height: var(--fullpage-emoji-picker-height); }
+
+#conversejs.converse-fullscreen .chatbox .box-flyout {
+  background-color: var(--chat-head-color);
+  box-shadow: none;
+  height: var(--fullpage-chat-height);
+  min-height: calc(var(--fullpage-chat-height) / 2);
+  width: var(--fullpage-chat-width);
+  overflow: hidden; }
+
+#conversejs.converse-fullscreen .chatbox .chat-body {
+  height: calc(100% - var(--fullpage-chat-head-height));
+  background-color: var(--chat-head-color);
+  border-top-left-radius: var(--chatbox-border-radius);
+  border-top-right-radius: var(--chatbox-border-radius); }
+
+#conversejs.converse-fullscreen .chatbox .chat-content {
+  border-top-left-radius: var(--chatbox-border-radius);
+  border-top-right-radius: var(--chatbox-border-radius); }
+
+#conversejs.converse-fullscreen .chatbox .chat-title {
+  font-size: var(--font-size-huge);
+  line-height: var(--line-height-huge); }
+
+#conversejs.converse-fullscreen .chatbox .sendXMPPMessage ul {
+  width: 100%; }
+
+#conversejs.converse-fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category-picker {
+  margin-right: 5em; }
+
+#conversejs.converse-fullscreen .chatbox .sendXMPPMessage .toggle-smiley ul.emoji-toolbar .emoji-category {
+  padding-left: 10px;
+  padding-right: 10px; }
 
 @media (max-width: 767.98px) {
   #conversejs:not(.converse-embedded) > .row {
@@ -10961,6 +11040,7 @@ body.converse-fullscreen {
   #conversejs.converse-overlayed #controlbox .controlbox-panes {
     border-radius: var(--chatbox-border-radius); }
 
+#conversejs.converse-embedded #controlbox,
 #conversejs.converse-fullscreen #controlbox,
 #conversejs.converse-mobile #controlbox {
   position: relative;
@@ -10970,45 +11050,56 @@ body.converse-fullscreen {
   padding-left: 15px;
   margin: 0; }
   @media (min-width: 768px) {
+    #conversejs.converse-embedded #controlbox,
     #conversejs.converse-fullscreen #controlbox,
     #conversejs.converse-mobile #controlbox {
       flex: 0 0 33.33333%;
       max-width: 33.33333%; } }
   @media (min-width: 992px) {
+    #conversejs.converse-embedded #controlbox,
     #conversejs.converse-fullscreen #controlbox,
     #conversejs.converse-mobile #controlbox {
       flex: 0 0 25%;
       max-width: 25%; } }
   @media (min-width: 1200px) {
+    #conversejs.converse-embedded #controlbox,
     #conversejs.converse-fullscreen #controlbox,
     #conversejs.converse-mobile #controlbox {
       flex: 0 0 16.66667%;
       max-width: 16.66667%; } }
+  #conversejs.converse-embedded #controlbox.logged-out,
   #conversejs.converse-fullscreen #controlbox.logged-out,
   #conversejs.converse-mobile #controlbox.logged-out {
     flex: 0 0 100%;
     max-width: 100%; }
+  #conversejs.converse-embedded #controlbox .controlbox-pane,
   #conversejs.converse-fullscreen #controlbox .controlbox-pane,
   #conversejs.converse-mobile #controlbox .controlbox-pane {
     border-radius: 0; }
+  #conversejs.converse-embedded #controlbox .flyout,
   #conversejs.converse-fullscreen #controlbox .flyout,
   #conversejs.converse-mobile #controlbox .flyout {
     border-radius: 0; }
+  #conversejs.converse-embedded #controlbox #converse-login-panel,
   #conversejs.converse-fullscreen #controlbox #converse-login-panel,
   #conversejs.converse-mobile #controlbox #converse-login-panel {
     border-radius: 0; }
+    #conversejs.converse-embedded #controlbox #converse-login-panel .converse-form,
     #conversejs.converse-fullscreen #controlbox #converse-login-panel .converse-form,
     #conversejs.converse-mobile #controlbox #converse-login-panel .converse-form {
       padding: 3em 2em 3em; }
+  #conversejs.converse-embedded #controlbox .toggle-register-login,
   #conversejs.converse-fullscreen #controlbox .toggle-register-login,
   #conversejs.converse-mobile #controlbox .toggle-register-login {
     line-height: var(--line-height-huge); }
+  #conversejs.converse-embedded #controlbox .brand-heading-container,
   #conversejs.converse-fullscreen #controlbox .brand-heading-container,
   #conversejs.converse-mobile #controlbox .brand-heading-container {
     flex: 0 0 100%;
     max-width: 100%;
     margin-bottom: 1em;
     text-align: center; }
+    #conversejs.converse-embedded #controlbox .brand-heading-container .brand-heading,
     #conversejs.converse-fullscreen #controlbox .brand-heading-container .brand-heading,
     #conversejs.converse-mobile #controlbox .brand-heading-container .brand-heading {
       font-size: 150%;
@@ -11016,14 +11107,17 @@ body.converse-fullscreen {
       padding: 0.7em 0 0 0;
       opacity: 0.8;
       color: var(--brand-heading-color); }
+    #conversejs.converse-embedded #controlbox .brand-heading-container .brand-subtitle,
     #conversejs.converse-fullscreen #controlbox .brand-heading-container .brand-subtitle,
     #conversejs.converse-mobile #controlbox .brand-heading-container .brand-subtitle {
       font-size: 90%;
       padding: 0.5em; }
     @media screen and (max-width: 480px) {
+      #conversejs.converse-embedded #controlbox .brand-heading-container .brand-heading,
       #conversejs.converse-fullscreen #controlbox .brand-heading-container .brand-heading,
       #conversejs.converse-mobile #controlbox .brand-heading-container .brand-heading {
         font-size: 400%; } }
+  #conversejs.converse-embedded #controlbox.logged-out,
   #conversejs.converse-fullscreen #controlbox.logged-out,
   #conversejs.converse-mobile #controlbox.logged-out {
     flex: 0 0 100%;
@@ -11043,19 +11137,24 @@ body.converse-fullscreen {
     -moz-animation-timing-function: ease;
     animation-timing-function: ease;
     width: 100%; }
+    #conversejs.converse-embedded #controlbox.logged-out .box-flyout,
     #conversejs.converse-fullscreen #controlbox.logged-out .box-flyout,
     #conversejs.converse-mobile #controlbox.logged-out .box-flyout {
       width: 100%; }
+  #conversejs.converse-embedded #controlbox .box-flyout,
   #conversejs.converse-fullscreen #controlbox .box-flyout,
   #conversejs.converse-mobile #controlbox .box-flyout {
     border: 0;
     width: 100%;
     z-index: 1;
     background-color: var(--controlbox-head-color); }
+    #conversejs.converse-embedded #controlbox .box-flyout .controlbox-head,
     #conversejs.converse-fullscreen #controlbox .box-flyout .controlbox-head,
     #conversejs.converse-mobile #controlbox .box-flyout .controlbox-head {
       display: none; }
-  #conversejs.converse-fullscreen #controlbox #converse-register, #conversejs.converse-fullscreen #controlbox #converse-login,
+  #conversejs.converse-embedded #controlbox #converse-register, #conversejs.converse-embedded #controlbox #converse-login,
+  #conversejs.converse-fullscreen #controlbox #converse-register,
+  #conversejs.converse-fullscreen #controlbox #converse-login,
   #conversejs.converse-mobile #controlbox #converse-register,
   #conversejs.converse-mobile #controlbox #converse-login {
     position: relative;
@@ -11067,34 +11166,48 @@ body.converse-fullscreen {
     max-width: 66.66667%;
     margin-left: 16.66667%; }
     @media (min-width: 576px) {
-      #conversejs.converse-fullscreen #controlbox #converse-register, #conversejs.converse-fullscreen #controlbox #converse-login,
+      #conversejs.converse-embedded #controlbox #converse-register, #conversejs.converse-embedded #controlbox #converse-login,
+      #conversejs.converse-fullscreen #controlbox #converse-register,
+      #conversejs.converse-fullscreen #controlbox #converse-login,
       #conversejs.converse-mobile #controlbox #converse-register,
       #conversejs.converse-mobile #controlbox #converse-login {
         flex: 0 0 66.66667%;
         max-width: 66.66667%;
         margin-left: 16.66667%; } }
     @media (min-width: 768px) {
-      #conversejs.converse-fullscreen #controlbox #converse-register, #conversejs.converse-fullscreen #controlbox #converse-login,
+      #conversejs.converse-embedded #controlbox #converse-register, #conversejs.converse-embedded #controlbox #converse-login,
+      #conversejs.converse-fullscreen #controlbox #converse-register,
+      #conversejs.converse-fullscreen #controlbox #converse-login,
       #conversejs.converse-mobile #controlbox #converse-register,
       #conversejs.converse-mobile #controlbox #converse-login {
         flex: 0 0 66.66667%;
         max-width: 66.66667%;
         margin-left: 16.66667%; } }
     @media (min-width: 992px) {
-      #conversejs.converse-fullscreen #controlbox #converse-register, #conversejs.converse-fullscreen #controlbox #converse-login,
+      #conversejs.converse-embedded #controlbox #converse-register, #conversejs.converse-embedded #controlbox #converse-login,
+      #conversejs.converse-fullscreen #controlbox #converse-register,
+      #conversejs.converse-fullscreen #controlbox #converse-login,
       #conversejs.converse-mobile #controlbox #converse-register,
       #conversejs.converse-mobile #controlbox #converse-login {
         flex: 0 0 50%;
         max-width: 50%;
         margin-left: 25%; } }
-    #conversejs.converse-fullscreen #controlbox #converse-register .title, #conversejs.converse-fullscreen #controlbox #converse-register .instructions, #conversejs.converse-fullscreen #controlbox #converse-login .title, #conversejs.converse-fullscreen #controlbox #converse-login .instructions,
+    #conversejs.converse-embedded #controlbox #converse-register .title, #conversejs.converse-embedded #controlbox #converse-register .instructions, #conversejs.converse-embedded #controlbox #converse-login .title, #conversejs.converse-embedded #controlbox #converse-login .instructions,
+    #conversejs.converse-fullscreen #controlbox #converse-register .title,
+    #conversejs.converse-fullscreen #controlbox #converse-register .instructions,
+    #conversejs.converse-fullscreen #controlbox #converse-login .title,
+    #conversejs.converse-fullscreen #controlbox #converse-login .instructions,
     #conversejs.converse-mobile #controlbox #converse-register .title,
     #conversejs.converse-mobile #controlbox #converse-register .instructions,
     #conversejs.converse-mobile #controlbox #converse-login .title,
     #conversejs.converse-mobile #controlbox #converse-login .instructions {
       margin: 1em 0; }
+    #conversejs.converse-embedded #controlbox #converse-register input[type=submit],
+    #conversejs.converse-embedded #controlbox #converse-register input[type=button], #conversejs.converse-embedded #controlbox #converse-login input[type=submit],
+    #conversejs.converse-embedded #controlbox #converse-login input[type=button],
     #conversejs.converse-fullscreen #controlbox #converse-register input[type=submit],
-    #conversejs.converse-fullscreen #controlbox #converse-register input[type=button], #conversejs.converse-fullscreen #controlbox #converse-login input[type=submit],
+    #conversejs.converse-fullscreen #controlbox #converse-register input[type=button],
+    #conversejs.converse-fullscreen #controlbox #converse-login input[type=submit],
     #conversejs.converse-fullscreen #controlbox #converse-login input[type=button],
     #conversejs.converse-mobile #controlbox #converse-register input[type=submit],
     #conversejs.converse-mobile #controlbox #converse-register input[type=button],
@@ -11103,34 +11216,34 @@ body.converse-fullscreen {
       width: auto; }
 
 @media (max-width: 767.98px) {
-  #conversejs:not(.converse-embedded) {
+  #conversejs {
     left: 0;
     right: 0;
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right); }
-    #conversejs:not(.converse-embedded) .converse-chatboxes {
+    #conversejs .converse-chatboxes {
       margin: 0 !important;
       flex-direction: row !important;
       justify-content: space-between; }
-      #conversejs:not(.converse-embedded) .converse-chatboxes .converse-chatroom {
+      #conversejs .converse-chatboxes .converse-chatroom {
         font-size: 14px; }
-      #conversejs:not(.converse-embedded) .converse-chatboxes .chatbox .box-flyout {
+      #conversejs .converse-chatboxes .chatbox .box-flyout {
         margin-left: 15px;
         left: 0;
         bottom: 0;
         border-radius: 0;
         width: 100vw !important;
         height: 100vh !important; }
-      #conversejs:not(.converse-embedded) .converse-chatboxes #controlbox {
+      #conversejs .converse-chatboxes #controlbox {
         width: 100vw !important; }
-        #conversejs:not(.converse-embedded) .converse-chatboxes #controlbox .box-flyout {
+        #conversejs .converse-chatboxes #controlbox .box-flyout {
           width: 100vw !important;
           height: 100vh !important; }
-        #conversejs:not(.converse-embedded) .converse-chatboxes #controlbox .sidebar {
+        #conversejs .converse-chatboxes #controlbox .sidebar {
           display: block; }
-      #conversejs:not(.converse-embedded) .converse-chatboxes.sidebar-open .chatbox:not(#controlbox) {
+      #conversejs .converse-chatboxes.sidebar-open .chatbox:not(#controlbox) {
         display: none; }
-      #conversejs:not(.converse-embedded) .converse-chatboxes.sidebar-open #controlbox .controlbox-pane {
+      #conversejs .converse-chatboxes.sidebar-open #controlbox .controlbox-pane {
         display: block; }
   #conversejs.converse-overlayed .converse-chatboxes .chatbox .box-flyout {
     margin-left: 30px; } }
@@ -11720,44 +11833,76 @@ body.converse-fullscreen {
       flex: 0 0 25%;
       max-width: 25%; } }
 
+#conversejs.converse-embedded .chatroom .box-flyout,
 #conversejs.converse-fullscreen .chatroom .box-flyout,
 #conversejs.converse-mobile .chatroom .box-flyout {
   background-color: var(--chatroom-head-color);
   border: var(--flyout-padding) solid var(--chatroom-head-color);
   border-top: 0.8em solid var(--chatroom-head-color);
   width: 100%; }
+  #conversejs.converse-embedded .chatroom .box-flyout .chatbox-title .chatroom-description,
   #conversejs.converse-fullscreen .chatroom .box-flyout .chatbox-title .chatroom-description,
   #conversejs.converse-mobile .chatroom .box-flyout .chatbox-title .chatroom-description {
     font-size: 70%; }
+  #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body,
   #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body,
   #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body {
     border-top-radius: var(--chatbox-border-radius); }
+    #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container,
     #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .chatroom-form-container,
     #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .chatroom-form-container {
       border-radius: var(--chatbox-border-radius); }
+    #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chat-area,
     #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .chat-area,
     #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .chat-area {
       border-top-left-radius: var(--chatbox-border-radius); }
+      #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chat-area .chat-content,
       #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .chat-area .chat-content,
       #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .chat-area .chat-content {
         border-top-left-radius: var(--chatbox-border-radius); }
+      #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chat-area.full .new-msgs-indicator,
       #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .chat-area.full .new-msgs-indicator,
       #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .chat-area.full .new-msgs-indicator {
         max-width: 100%; }
+    #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants,
     #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .occupants,
     #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .occupants {
       border-top-right-radius: var(--chatbox-border-radius);
       padding: var(--occupants-padding); }
+      #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .occupants-heading,
       #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .occupants .occupants-heading,
       #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .occupants .occupants-heading {
         font-size: var(--font-size-large); }
+      #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list li,
       #conversejs.converse-fullscreen .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list li,
       #conversejs.converse-mobile .chatroom .box-flyout .chatroom-body .occupants ul.occupant-list li {
         font-size: var(--font-size-small); }
 
+#conversejs.converse-embedded .chatroom .room-invite span .invited-contact,
 #conversejs.converse-fullscreen .chatroom .room-invite span .invited-contact,
 #conversejs.converse-mobile .chatroom .room-invite span .invited-contact {
   margin: 0 0 0.5em -1px; }
+
+#conversejs.converse-embedded .chatroom {
+  margin: 0;
+  width: 100%; }
+  #conversejs.converse-embedded .chatroom .box-flyout .occupants-heading {
+    font-size: 120%; }
+  #conversejs.converse-embedded .chatroom .box-flyout .chat-content .chat-message {
+    margin: 0.5em;
+    font-size: 120%; }
+  #conversejs.converse-embedded .chatroom .box-flyout .sendXMPPMessage .chat-textarea {
+    padding: 0.5em;
+    font-size: 110%; }
+  #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body {
+    height: 100%; }
+    #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container {
+      height: 100%;
+      position: relative; }
+  #conversejs.converse-embedded .chatroom .box-flyout .occupants .occupant-list {
+    padding-left: 0.3em; }
+    #conversejs.converse-embedded .chatroom .box-flyout .occupants .occupant-list li.occupant {
+      font-size: 120%; }
 
 #conversejs .chatbox.headlines .chat-head.chat-head-chatbox {
   background-color: var(--headline-head-color); }
@@ -12187,58 +12332,5 @@ body.converse-fullscreen {
 
 #conversejs.converse-overlayed .suggestion-box__results--above {
   bottom: 5.5em; }
-
-#conversejs.converse-embedded {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  bottom: auto;
-  height: 100%;
-  position: relative;
-  right: auto;
-  width: 100%; }
-  #conversejs.converse-embedded *, #conversejs.converse-embedded *:before, #conversejs.converse-embedded *:after {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box; }
-  #conversejs.converse-embedded .converse-chatboxes {
-    z-index: 1031;
-    position: inherit;
-    bottom: auto;
-    height: 100%;
-    width: 100%; }
-  #conversejs.converse-embedded .chatbox {
-    margin: 0;
-    height: 100%;
-    width: 100%; }
-    #conversejs.converse-embedded .chatbox .flyout.box-flyout {
-      bottom: 0;
-      box-shadow: none;
-      height: 100%;
-      min-width: auto;
-      width: 100%; }
-    #conversejs.converse-embedded .chatbox .chat-title {
-      padding: 0.3em;
-      font-size: 120%; }
-  #conversejs.converse-embedded .chatroom {
-    margin: 0;
-    width: 100%; }
-    #conversejs.converse-embedded .chatroom .box-flyout .occupants-heading {
-      font-size: 120%; }
-    #conversejs.converse-embedded .chatroom .box-flyout .chat-content .chat-message {
-      margin: 0.5em;
-      font-size: 120%; }
-    #conversejs.converse-embedded .chatroom .box-flyout .sendXMPPMessage .chat-textarea {
-      padding: 0.5em;
-      font-size: 110%; }
-    #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body {
-      height: 100%; }
-      #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container {
-        height: 100%;
-        position: relative; }
-    #conversejs.converse-embedded .chatroom .box-flyout .occupants .occupant-list {
-      padding-left: 0.3em; }
-      #conversejs.converse-embedded .chatroom .box-flyout .occupants .occupant-list li.occupant {
-        font-size: 120%; }
 
 /*# sourceMappingURL=converse.css.map */

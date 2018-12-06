@@ -23,7 +23,7 @@ import tpl_search_contact from "templates/search_contact.html";
 const { Backbone, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
 const u = converse.env.utils;
 
-// this is copied from converse-chatbowviews.js
+// // this is copied from converse-chatbowviews.js
 const AvatarMixin = {
 
     renderAvatar (el) {
@@ -507,10 +507,7 @@ converse.plugins.add('converse-rosterview', {
                         'desc_remove': __('Click to remove %1$s as a contact', display_name),
                         'allow_contact_removal': _converse.allow_contact_removal,
                         'num_unread': item.get('num_unread') || 0,
-                        classes: '',
-                        width: '24',
-                        height: '24',
-                        image: ''
+                        classes: ''
                     })
                 );
                 return this;

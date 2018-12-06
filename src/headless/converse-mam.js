@@ -133,20 +133,10 @@ converse.plugins.add('converse-mam', {
         // New functions which don't exist yet can also be added.
         ChatBox: {
 
-            getMessageAttributesFromStanza (message, original_stanza) {
-                function _process (attrs) {
-                    const archive_id = getMessageArchiveID(original_stanza);
-                    if (archive_id) {
-                        attrs.archive_id = archive_id;
-                    }
-                    return attrs;
-                }
-                const result = this.__super__.getMessageAttributesFromStanza.apply(this, arguments)
-                if (result instanceof Promise) {
-                    return new Promise((resolve, reject) => result.then((attrs) => resolve(_process(attrs))).catch(reject));
-                } else {
-                    return _process(result);
-                }
+            async getMessageAttributesFromStanza (message, original_stanza) {
+                const attrs = await this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+                attrs.archive_id = getMessageArchiveID(original_stanza);
+                return attrs;
             }
         },
 

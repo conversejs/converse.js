@@ -331,10 +331,10 @@ converse.plugins.add('converse-omemo', {
                 }
             },
 
-            getMessageAttributesFromStanza (stanza, original_stanza) {
+            async getMessageAttributesFromStanza (stanza, original_stanza) {
                 const { _converse } = this.__super__,
                       encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
-                      attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+                      attrs = await this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
 
                 if (!encrypted || !_converse.config.get('trusted')) {
                     return attrs;

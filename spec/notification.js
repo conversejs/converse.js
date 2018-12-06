@@ -20,7 +20,7 @@
 
                         // TODO: not yet testing show_desktop_notifications setting
                         test_utils.createContacts(_converse, 'current');
-                        spyOn(_converse, 'showMessageNotification');
+                        spyOn(_converse, 'showMessageNotification').and.callThrough();
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
                         

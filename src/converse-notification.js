@@ -138,6 +138,9 @@ converse.plugins.add('converse-notification', {
             /* Shows an HTML5 Notification to indicate that a new chat
              * message was received.
              */
+            if (!_converse.areDesktopNotificationsEnabled()) {
+                return;
+            }
             let title, roster_item;
             const full_from_jid = message.getAttribute('from'),
                   from_jid = Strophe.getBareJidFromJid(full_from_jid);
@@ -259,9 +262,7 @@ converse.plugins.add('converse-notification', {
                 return false;
             }
             _converse.playSoundNotification();
-            if (_converse.areDesktopNotificationsEnabled()) {
-                _converse.showMessageNotification(message);
-            }
+            _converse.showMessageNotification(message);
         };
 
         _converse.handleContactRequestNotification = function (contact) {

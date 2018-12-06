@@ -55787,6 +55787,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       /* Shows an HTML5 Notification to indicate that a new chat
        * message was received.
        */
+      if (!_converse.areDesktopNotificationsEnabled()) {
+        return;
+      }
+
       let title, roster_item;
       const full_from_jid = message.getAttribute('from'),
             from_jid = Strophe.getBareJidFromJid(full_from_jid);
@@ -55918,9 +55922,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       _converse.playSoundNotification();
 
-      if (_converse.areDesktopNotificationsEnabled()) {
-        _converse.showMessageNotification(message);
-      }
+      _converse.showMessageNotification(message);
     };
 
     _converse.handleContactRequestNotification = function (contact) {

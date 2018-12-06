@@ -53105,16 +53105,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       },
 
       updateUnreadMessagesCounter() {
-        const ls = this.model.pluck('num_unread');
-        let count = 0,
-            i;
-
-        for (i = 0; i < ls.length; i++) {
-          count += ls[i];
-        }
-
         this.toggleview.model.save({
-          'num_unread': count
+          'num_unread': _.sum(this.model.pluck('num_unread'))
         });
         this.render();
       }

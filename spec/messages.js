@@ -1571,7 +1571,7 @@
                         .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                             .t('Server-to-server connection failed: Connecting failed: connection timeout');
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    await test_utils.waitUntil(() => view.model.messages.length);
+                    await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                     expect(chat_content.querySelector('.chat-error').textContent).toEqual(error_txt);
                     stanza = $msg({
                             'to': _converse.connection.jid,
@@ -1584,7 +1584,7 @@
                         .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                             .t('Server-to-server connection failed: Connecting failed: connection timeout');
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    await test_utils.waitUntil(() => view.model.messages.length > 1);
+                    await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                     expect(chat_content.querySelectorAll('.chat-error').length).toEqual(2);
 
                     // We don't render duplicates
@@ -1599,7 +1599,6 @@
                         .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                             .t('Server-to-server connection failed: Connecting failed: connection timeout');
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    await test_utils.waitUntil(() => view.model.messages.length > 2);
                     expect(chat_content.querySelectorAll('.chat-error').length).toEqual(2);
 
                     // We send another message, for which an error will
@@ -1630,7 +1629,7 @@
                         .c('text', { 'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas" })
                             .t('Something else went wrong as well');
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                    await test_utils.waitUntil(() => view.model.messages.length > 3);
+                    await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                     expect(chat_content.querySelectorAll('.chat-error').length).toEqual(3);
                     done();
                 }));

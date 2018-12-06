@@ -15,7 +15,7 @@
 
         describe("Archived Messages", function () {
 
-           it("aren't shown as duplicates", 
+           it("aren't shown as duplicates by comparing their stanza-id attribute", 
                 mock.initConverseWithPromises(
                     null, ['discoInitialized'], {},
                     async function (done, _converse) {
@@ -57,7 +57,67 @@
                 done();
             }));
 
+           it("aren't shown as duplicates by comparing their queryid attribute", 
+                mock.initConverseWithPromises(
+                    null, ['discoInitialized'], {},
+                    async function (done, _converse) {
 
+                await test_utils.openAndEnterChatRoom(_converse, 'discuss', 'conference.conversejs.org', 'dummy');
+                const view = _converse.chatboxviews.get('discuss@conference.conversejs.org');
+                let stanza = Strophe.xmlHtmlNode(
+                    `<message xmlns="jabber:client"
+                              to="discuss@conference.conversejs.org"
+                              type="groupchat" xml:lang="en"
+                              from="discuss@conference.conversejs.org/prezel">
+                        <stanza-id xmlns="urn:xmpp:sid:0" id="7a9fde91-4387-4bf8-b5d3-978dab8f6bf3" by="discuss@conference.conversejs.org"/>
+                        <body>looks like omemo fails completely with "bundle is undefined" when there is a device in the devicelist that has no keys published</body>
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <item affiliation="none" jid="prezel@blubber.im" role="participant"/>
+                        </x>
+                    </message>`).firstElementChild;
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
+
+                stanza = Strophe.xmlHtmlNode(
+                    `<message xmlns="jabber:client" to="dummy@localhost/resource" from="discuss@conference.conversejs.org">
+                        <result xmlns="urn:xmpp:mam:2" queryid="06fea9ca-97c9-48c4-8583-009ff54ea2e8" id="7a9fde91-4387-4bf8-b5d3-978dab8f6bf3">
+                            <forwarded xmlns="urn:xmpp:forward:0">
+                                <delay xmlns="urn:xmpp:delay" stamp="2018-12-05T04:53:12Z"/>
+                                <message xmlns="jabber:client" to="discuss@conference.conversejs.org" type="groupchat" xml:lang="en" from="discuss@conference.conversejs.org/prezel">
+                                    <body>looks like omemo fails completely with "bundle is undefined" when there is a device in the devicelist that has no keys published</body>
+                                    <x xmlns="http://jabber.org/protocol/muc#user">
+                                        <item affiliation="none" jid="prezel@blubber.im" role="participant"/>
+                                    </x>
+                                </message>
+                            </forwarded>
+                        </result>
+                    </message>`).firstElementChild;
+
+                spyOn(view.model, 'isDuplicate').and.callThrough();
+                view.model.onMessage(stanza);
+                await test_utils.waitUntil(() => view.model.isDuplicate.calls.count());
+                expect(view.model.isDuplicate.calls.count()).toBe(1);
+                expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
+
+                stanza = Strophe.xmlHtmlNode(
+                    `<message xmlns="jabber:client" to="dummy@localhost/resource" from="discuss@conference.conversejs.org">
+                        <result xmlns="urn:xmpp:mam:2" queryid="06fea9ca-97c9-48c4-8583-009ff54ea2e8" id="7a9fde91-4387-4bf8-b5d3-978dab8f6bf3">
+                            <forwarded xmlns="urn:xmpp:forward:0">
+                                <delay xmlns="urn:xmpp:delay" stamp="2018-12-05T04:53:12Z"/>
+                                <message xmlns="jabber:client" to="discuss@conference.conversejs.org" type="groupchat" xml:lang="en" from="discuss@conference.conversejs.org/prezel">
+                                    <body>looks like omemo fails completely with "bundle is undefined" when there is a device in the devicelist that has no keys published</body>
+                                    <x xmlns="http://jabber.org/protocol/muc#user">
+                                        <item affiliation="none" jid="prezel@blubber.im" role="participant"/>
+                                    </x>
+                                </message>
+                            </forwarded>
+                        </result>
+                    </message>`).firstElementChild;
+                view.model.onMessage(stanza);
+                expect(view.model.isDuplicate.calls.count()).toBe(2);
+                expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
+                done();
+            }))
         });
 
         describe("The archive.query API", function () {

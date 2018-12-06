@@ -915,7 +915,8 @@ converse.plugins.add('converse-muc', {
                 return data;
             },
 
-            isDuplicate (message) {
+            isDuplicate (message, original_stanza) {
+                // XXX: original_stanza is not used here, but in converse-mam
                 const msgid = message.getAttribute('id'),
                       jid = message.getAttribute('from');
 
@@ -958,7 +959,7 @@ converse.plugins.add('converse-muc', {
                 if (forwarded) {
                     stanza = forwarded.querySelector('message');
                 }
-                if (this.isDuplicate(stanza)) {
+                if (this.isDuplicate(stanza, original_stanza)) {
                     return;
                 }
                 const jid = stanza.getAttribute('from'),

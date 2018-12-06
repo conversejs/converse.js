@@ -61,7 +61,7 @@
     "jed": "1.1.1",
     "jquery": "3.2.1",
     "jsdoc": "^3.5.5",
-    "lerna": "^3.4.3",
+    "lerna": "^3.5.1",
     "lodash-template-loader": "^2.0.0",
     "lodash-template-webpack-loader": "jcbrand/lodash-template-webpack-loader",
     "long": "^3.1.0",

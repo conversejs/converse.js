@@ -55920,6 +55920,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return false;
       }
 
+      _converse.api.emit('messageNotification', message);
+
       _converse.playSoundNotification();
 
       _converse.showMessageNotification(message);

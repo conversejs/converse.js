@@ -261,6 +261,7 @@ converse.plugins.add('converse-notification', {
             if (!_converse.shouldNotifyOfMessage(message)) {
                 return false;
             }
+            _converse.api.emit('messageNotification', message);
             _converse.playSoundNotification();
             _converse.showMessageNotification(message);
         };

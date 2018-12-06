@@ -259,6 +259,22 @@ as a `message` attribute which refers to the Message model.
         // The original chatbox is at `data.chatbox`.
     });
 
+
+messageNotification
+~~~~~~~~~~~~~~~~~~~
+
+Emitted just before an HTML5 message notification will be sent out.
+
+.. code-block:: javascript
+
+    _converse.api.listen.on('messageNotification', stanza => {
+
+        const body = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, message).length ?
+                        __('OMEMO Message received') :
+                        _.get(message.querySelector('body'), 'textContent');
+        alert(body);
+    });
+
 messageSend
 ~~~~~~~~~~~
 

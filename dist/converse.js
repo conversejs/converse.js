@@ -56317,10 +56317,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
       },
 
-      getMessageAttributesFromStanza(stanza, original_stanza) {
+      async getMessageAttributesFromStanza(stanza, original_stanza) {
         const _converse = this.__super__._converse,
               encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
-              attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+              attrs = await this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
 
         if (!encrypted || !_converse.config.get('trusted')) {
           return attrs;
@@ -61947,35 +61947,22 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return attrs;
       },
 
-      createMessage(message, original_stanza) {
+      async createMessage(message, original_stanza) {
         /* Create a Backbone.Message object inside this chat box
          * based on the identified message stanza.
          */
-        const that = this;
+        const attrs = await this.getMessageAttributesFromStanza(message, original_stanza),
+              is_csn = u.isOnlyChatStateNotification(attrs);
 
-        function _create(attrs) {
-          const is_csn = u.isOnlyChatStateNotification(attrs);
-
-          if (is_csn && (attrs.is_delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == that.get('nick'))) {
-            // XXX: MUC leakage
-            // No need showing delayed or our own CSN messages
-            return;
-          } else if (!is_csn && !attrs.file && !attrs.plaintext && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
-            // TODO: handle <subject> messages (currently being done by ChatRoom)
-            return;
-          } else {
-            return that.messages.create(attrs);
-          }
-        }
-
-        const result = this.getMessageAttributesFromStanza(message, original_stanza);
-
-        if (typeof result.then === "function") {
-          return new Promise((resolve, reject) => result.then(attrs => resolve(_create(attrs))));
+        if (is_csn && (attrs.is_delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick'))) {
+          // XXX: MUC leakage
+          // No need showing delayed or our own CSN messages
+          return;
+        } else if (!is_csn && !attrs.file && !attrs.plaintext && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
+          // TODO: handle <subject> messages (currently being done by ChatRoom)
+          return;
         } else {
-          const message = _create(result);
-
-          return Promise.resolve(message);
+          return this.messages.create(attrs);
         }
       },
 
@@ -65336,24 +65323,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
     //
     // New functions which don't exist yet can also be added.
     ChatBox: {
-      getMessageAttributesFromStanza(message, original_stanza) {
-        function _process(attrs) {
-          const archive_id = getMessageArchiveID(original_stanza);
-
-          if (archive_id) {
-            attrs.archive_id = archive_id;
-          }
-
-          return attrs;
-        }
-
-        const result = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
-
-        if (result instanceof Promise) {
-          return new Promise((resolve, reject) => result.then(attrs => resolve(_process(attrs))).catch(reject));
-        } else {
-          return _process(result);
-        }
+      async getMessageAttributesFromStanza(message, original_stanza) {
+        const attrs = await this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+        attrs.archive_id = getMessageArchiveID(original_stanza);
+        return attrs;
       }
 
     },
@@ -66898,7 +66871,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         return data;
       },
 
-      isDuplicate(message) {
+      isDuplicate(message, original_stanza) {
+        // XXX: original_stanza is not used here, but in converse-mam
         const msgid = message.getAttribute('id'),
               jid = message.getAttribute('from');
 
@@ -66947,7 +66921,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           stanza = forwarded.querySelector('message');
         }
 
-        if (this.isDuplicate(stanza)) {
+        if (this.isDuplicate(stanza, original_stanza)) {
           return;
         }
 

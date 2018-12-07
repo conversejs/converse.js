@@ -466,6 +466,10 @@ body.reset {
         border-color: var(--primary-color-dark);
     }
 
+    .badge {
+        text-shadow: none;
+    }
+
     .btn-primary, .button-primary, .badge-primary {
         color: white;
         background-color: var(--primary-color);

@@ -7,6 +7,7 @@
 - Bugfix: MUC messages sometimes appear twice after resync.
 - #1331 Fix missing checkmarks in old muc messages
 - #1333 Don't send receipt requests in MUCs
+- #1348 Font gets cut off in Firefox #1348
 
 ## 4.0.5 (2018-11-15)
 

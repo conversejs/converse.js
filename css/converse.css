@@ -3804,6 +3804,10 @@ readers do not read off random characters that represent icons */
   position: static;
   width: auto; }
 
+/* Apparent font-awesome bug? The circle has some kind of bottom margin */
+#conversejs .fa-info-circle {
+  height: 1em; }
+
 #conversejs :root {
   --blue: #007bff;
   --indigo: #6610f2;
@@ -9311,7 +9315,6 @@ readers do not read off random characters that represent icons */
   --send-button-height: 27px;
   --send-button-margin: 3px;
   --roster-height: 194px;
-  --roster-group-toggle-hover-color: #585B51;
   --flyout-padding: 1.2em;
   --chat-head-color: #3AA569;
   --chat-head-color-lighten-50-percent: #e7f7ee;
@@ -9401,8 +9404,8 @@ readers do not read off random characters that represent icons */
   --overlayed-emoji-picker-height: 100px;
   --overlayed-max-chat-textarea-height: 200px;
   --overlayed-badge-color: #818479;
-  --list-toggle-color: #585B51;
-  --list-toggle-hover-color: #818479;
+  --list-toggle-color: #818479;
+  --list-toggle-hover-color: #585B51;
   --list-toggle-font-weight: normal;
   --list-item-action-color: #e3eef3;
   --list-item-link-color: inherit;
@@ -9894,6 +9897,8 @@ body.reset {
   #conversejs .list-group-item.active {
     background-color: var(--primary-color);
     border-color: var(--primary-color-dark); }
+  #conversejs .badge {
+    text-shadow: none; }
   #conversejs .btn-primary, #conversejs .button-primary, #conversejs .badge-primary {
     color: white;
     background-color: var(--primary-color);
@@ -10780,7 +10785,7 @@ body.reset {
     color: var(--controlbox-heading-color);
     font-weight: var(--controlbox-heading-font-weight);
     padding: 0;
-    margin: 0.75em 0;
+    margin: 1em 0 0.5em 0;
     font-size: 1.1em;
     text-transform: uppercase; }
   #conversejs #controlbox .controlbox-section .controlbox-heading__btn {
@@ -11164,13 +11169,10 @@ body.reset {
       margin: 0.75em 0 0.75em 0; }
       #conversejs #converse-roster .roster-contacts .roster-group .group-toggle {
         font-family: var(--heading-font);
-        color: var(--text-color);
         display: block;
         width: 100%;
         padding-top: 0;
         padding-bottom: 0.3rem; }
-        #conversejs #converse-roster .roster-contacts .roster-group .group-toggle:hover {
-          color: var(--roster-group-toggle-hover-color); }
       #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a {
         line-height: var(--line-height); }
         #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a.far, #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a.fas, #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a.fa {
@@ -11232,10 +11234,10 @@ body.reset {
     font-family: var(--heading-font);
     font-weight: var(--list-toggle-font-weight);
     display: block;
-    color: var(--text-color);
+    color: var(--list-toggle-color);
     padding: 0 0 0.5rem 0; }
     #conversejs .list-container .list-toggle:hover {
-      color: var(--list-toggle-color); }
+      color: var(--list-toggle-hover-color); }
 
 #conversejs .items-list {
   text-align: left; }
@@ -11243,22 +11245,26 @@ body.reset {
     border: none;
     clear: both;
     color: var(--text-color);
-    display: block;
-    height: 2em;
     overflow: hidden;
-    padding-top: 0.5em;
+    padding: 0.5em 0;
     text-shadow: 0 1px 0 var(--text-shadow-color);
     word-wrap: break-word; }
     #conversejs .items-list .list-item .list-item-link {
       color: var(--list-item-link-color);
+      margin: auto;
       font-size: var(--font-size);
-      line-height: var(--font-size);
-      padding-right: 0.5em;
       overflow: hidden;
       white-space: nowrap;
-      text-overflow: ellipsis; }
+      text-overflow: ellipsis;
+      vertical-align: baseline; }
       #conversejs .items-list .list-item .list-item-link:hover {
         color: var(--list-item-link-hover-color); }
+    #conversejs .items-list .list-item .list-item-badge {
+      opacity: 1;
+      border-radius: 25%;
+      color: white;
+      font-size: var(--font-size-small);
+      line-height: var(--font-size-small); }
     #conversejs .items-list .list-item .list-item-action {
       opacity: 0;
       font-size: var(--font-size-tiny);
@@ -11300,13 +11306,10 @@ body.reset {
       background-color: var(--controlbox-head-color-lighten-45-percent); }
       #conversejs .items-list .list-item:hover .fa, #conversejs .items-list .list-item:hover .far, #conversejs .items-list .list-item:hover .fas {
         opacity: 1; }
-    #conversejs .items-list .list-item.unread-msgs .msgs-indicator {
-      border-radius: 10%;
-      opacity: 1; }
-    #conversejs .items-list .list-item.unread-msgs .available-room,
-    #conversejs .items-list .list-item.unread-msgs .open-room {
-      width: 100%;
-      font-weight: bold; }
+
+#conversejs.converse-embedded .badge-room-color,
+#conversejs .badge-room-color {
+  background-color: var(--chatroom-head-color); }
 
 #conversejs.converse-embedded .add-chatroom input[type="submit"],
 #conversejs.converse-embedded .add-chatroom input[type="button"],

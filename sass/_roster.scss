@@ -60,11 +60,7 @@
             margin: 0.75em 0 0.75em 0;
 
             .group-toggle {
-                &:hover {
-                    color: var(--roster-group-toggle-hover-color);
-                }
                 font-family: var(--heading-font);
-                color: var(--text-color);
                 display: block;
                 width: 100%;
                 padding-top: 0;

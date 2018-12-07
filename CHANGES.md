@@ -2,6 +2,7 @@
 
 ## 4.0.6 (unreleased)
 
+- Updated translations: ar, cs, de, es, eu, fr, gl, hu, id, it, ja, nb, pt_BR
 - Don't render http (i.e. non-TLS) resources
 - Bugfix: Converse caused `RID out of range` errors on Prosody
 - Bugfix: MUC messages sometimes appear twice after resync.

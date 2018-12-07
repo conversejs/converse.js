@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-15 12:25+0100\n"
-"PO-Revision-Date: 2018-12-01 11:09+0000\n"
-"Last-Translator: Douglas Dayan <ddayan22@gmail.com>\n"
+"PO-Revision-Date: 2018-12-07 11:25+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "conversejs/translations/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.3\n"
+"X-Generator: Weblate 3.4-dev\n"
 "domain: converse\n"
 "lang: pt_BR\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -168,23 +168,23 @@ msgstr "Tem certeza que deseja limpar as mensagens dessa conversa?"
 #: dist/converse-no-dependencies.js:32663
 #, javascript-format
 msgid "%1$s has gone offline"
-msgstr "está offline"
+msgstr "%1$s está offline"
 
 #: dist/converse-no-dependencies.js:32665
 #: dist/converse-no-dependencies.js:34554
 #, javascript-format
 msgid "%1$s has gone away"
-msgstr "está ausente"
+msgstr "%1$s está ausente"
 
 #: dist/converse-no-dependencies.js:32667
 #, javascript-format
 msgid "%1$s is busy"
-msgstr "está ocupado"
+msgstr "%1$s está ocupado"
 
 #: dist/converse-no-dependencies.js:32669
 #, javascript-format
 msgid "%1$s is online"
-msgstr "está online"
+msgstr "%1$s está online"
 
 #: dist/converse-no-dependencies.js:33364
 msgid "Username"

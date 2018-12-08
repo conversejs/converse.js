@@ -2,8 +2,9 @@
     {[ if (o.currently_open) { ]} open {[ } ]}
     {[ if (o.num_unread_general) { ]} unread-msgs {[ } ]}"
     data-room-jid="{{{o.jid}}}">
+
 {[ if (o.num_unread) { ]}
-    <span class="msgs-indicator badge badge-info">{{{ o.num_unread }}}</span>
+    <span class="list-item-badge badge badge-room-color msgs-indicator">{{{ o.num_unread }}}</span>
 {[ } ]}
 <a class="list-item-link open-room available-room w-100"
     data-room-jid="{{{o.jid}}}"

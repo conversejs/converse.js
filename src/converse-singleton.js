@@ -50,7 +50,7 @@ converse.plugins.add('converse-singleton', {
                 if (chatbox.get('id') === 'controlbox') {
                     return true;
                 }
-                if (_converse.isSingleton()) {
+                if (_converse.isUniView()) {
                     const any_chats_visible = _converse.chatboxes
                         .filter(cb => cb.get('id') != 'controlbox')
                         .filter(cb => !cb.get('hidden')).length > 0;
@@ -68,7 +68,7 @@ converse.plugins.add('converse-singleton', {
             createChatBox (jid, attrs) {
                 /* Make sure new chat boxes are hidden by default. */
                 const { _converse } = this.__super__;
-                if (_converse.isSingleton()) {
+                if (_converse.isUniView()) {
                     attrs = attrs || {};
                     attrs.hidden = true;
                 }
@@ -79,7 +79,7 @@ converse.plugins.add('converse-singleton', {
         ChatBoxView: {
             shouldShowOnTextMessage () {
                 const { _converse } = this.__super__;
-                if (_converse.isSingleton()) {
+                if (_converse.isUniView()) {
                     return false;
                 } else { 
                     return this.__super__.shouldShowOnTextMessage.apply(this, arguments);
@@ -92,7 +92,7 @@ converse.plugins.add('converse-singleton', {
                  * chats are hidden.
                  */
                 const { _converse } = this.__super__;
-                if (_converse.isSingleton()) {
+                if (_converse.isUniView()) {
                     _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
                     u.safeSave(this.model, {'hidden': false});
                 }
@@ -103,7 +103,7 @@ converse.plugins.add('converse-singleton', {
         ChatRoomView: {
             show (focus) {
                 const { _converse } = this.__super__;
-                if (_converse.isSingleton()) {
+                if (_converse.isUniView()) {
                     _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
                     u.safeSave(this.model, {'hidden': false});
                 }

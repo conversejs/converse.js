@@ -2,9 +2,13 @@
 
 ## 4.0.6 (unreleased)
 
+- Updated translations: ar, cs, de, es, eu, fr, gl, hu, id, it, ja, nb, pt_BR
 - Don't render http (i.e. non-TLS) resources
+- Bugfix: Converse caused `RID out of range` errors on Prosody
+- Bugfix: MUC messages sometimes appear twice after resync.
 - #1331 Fix missing checkmarks in old muc messages
 - #1333 Don't send receipt requests in MUCs
+- #1348 Font gets cut off in Firefox #1348
 
 ## 4.0.5 (2018-11-15)
 

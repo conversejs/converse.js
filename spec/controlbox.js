@@ -87,7 +87,7 @@
                     }).c('body').t('hello').up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
                 _converse.chatboxes.onMessage(msg);
-                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll(".msgs-indicator"));
+                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll(".msgs-indicator").length);
                 spyOn(chatview.model, 'incrementUnreadMsgCounter').and.callThrough();
                 expect(_converse.chatboxviews.el.querySelector('.restore-chat .message-count').textContent).toBe('1');
                 expect(_converse.rosterview.el.querySelector('.msgs-indicator').textContent).toBe('1');

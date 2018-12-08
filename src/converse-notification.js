@@ -74,7 +74,7 @@ converse.plugins.add('converse-notification', {
         };
 
         _converse.isMessageToHiddenChat = function (message) {
-            if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
+            if (_converse.isUniView()) {
                 const jid = Strophe.getBareJidFromJid(message.getAttribute('from')),
                       view = _converse.chatboxviews.get(jid);
 
@@ -138,6 +138,9 @@ converse.plugins.add('converse-notification', {
             /* Shows an HTML5 Notification to indicate that a new chat
              * message was received.
              */
+            if (!_converse.areDesktopNotificationsEnabled()) {
+                return;
+            }
             let title, roster_item;
             const full_from_jid = message.getAttribute('from'),
                   from_jid = Strophe.getBareJidFromJid(full_from_jid);
@@ -258,10 +261,9 @@ converse.plugins.add('converse-notification', {
             if (!_converse.shouldNotifyOfMessage(message)) {
                 return false;
             }
+            _converse.api.emit('messageNotification', message);
             _converse.playSoundNotification();
-            if (_converse.areDesktopNotificationsEnabled()) {
-                _converse.showMessageNotification(message);
-            }
+            _converse.showMessageNotification(message);
         };
 
         _converse.handleContactRequestNotification = function (contact) {

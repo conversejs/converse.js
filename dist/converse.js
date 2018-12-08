@@ -42758,6 +42758,7 @@ Strophe.Websocket.prototype = {
 });
 //# sourceMappingURL=strophe.js.map
 
+
 /***/ }),
 
 /***/ "./node_modules/strophejs-plugin-ping/strophe.ping.js":
@@ -50737,8 +50738,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
             'silent': true
           });
           this.model.sendChatState();
-
-          _converse.connection.flush();
         }
       }
 
@@ -53106,16 +53105,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       },
 
       updateUnreadMessagesCounter() {
-        const ls = this.model.pluck('num_unread');
-        let count = 0,
-            i;
-
-        for (i = 0; i < ls.length; i++) {
-          count += ls[i];
-        }
-
         this.toggleview.model.save({
-          'num_unread': count
+          'num_unread': _.sum(this.model.pluck('num_unread'))
         });
         this.render();
       }
@@ -55730,7 +55721,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     };
 
     _converse.isMessageToHiddenChat = function (message) {
-      if (_.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode)) {
+      if (_converse.isUniView()) {
         const jid = Strophe.getBareJidFromJid(message.getAttribute('from')),
               view = _converse.chatboxviews.get(jid);
 
@@ -55796,6 +55787,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       /* Shows an HTML5 Notification to indicate that a new chat
        * message was received.
        */
+      if (!_converse.areDesktopNotificationsEnabled()) {
+        return;
+      }
+
       let title, roster_item;
       const full_from_jid = message.getAttribute('from'),
             from_jid = Strophe.getBareJidFromJid(full_from_jid);
@@ -55925,11 +55920,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return false;
       }
 
+      _converse.api.emit('messageNotification', message);
+
       _converse.playSoundNotification();
 
-      if (_converse.areDesktopNotificationsEnabled()) {
-        _converse.showMessageNotification(message);
-      }
+      _converse.showMessageNotification(message);
     };
 
     _converse.handleContactRequestNotification = function (contact) {
@@ -56326,10 +56321,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
       },
 
-      getMessageAttributesFromStanza(stanza, original_stanza) {
+      async getMessageAttributesFromStanza(stanza, original_stanza) {
         const _converse = this.__super__._converse,
               encrypted = sizzle(`encrypted[xmlns="${Strophe.NS.OMEMO}"]`, original_stanza).pop(),
-              attrs = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+              attrs = await this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
 
         if (!encrypted || !_converse.config.get('trusted')) {
           return attrs;
@@ -58625,7 +58620,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           // supported by the XMPP server. So we can use it
           // as a check for support (other ways of checking are async).
           'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
-          'currently_open': _converse.isSingleton() && !this.model.get('hidden'),
+          'currently_open': _converse.isUniView() && !this.model.get('hidden'),
           'info_leave_room': __('Leave this groupchat'),
           'info_remove_bookmark': __('Unbookmark this groupchat'),
           'info_add_bookmark': __('Bookmark this groupchat'),
@@ -59292,7 +59287,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.el.setAttribute('data-status', show);
         this.highlight();
 
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           const chatbox = _converse.chatboxes.get(this.model.get('jid'));
 
           if (chatbox) {
@@ -59345,7 +59340,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       highlight() {
         /* If appropriate, highlight the contact (by adding the 'open' class).
          */
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           const chatbox = _converse.chatboxes.get(this.model.get('jid'));
 
           if (chatbox) {
@@ -60044,7 +60039,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
           return true;
         }
 
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           const any_chats_visible = _converse.chatboxes.filter(cb => cb.get('id') != 'controlbox').filter(cb => !cb.get('hidden')).length > 0;
 
           if (any_chats_visible) {
@@ -60061,7 +60056,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         /* Make sure new chat boxes are hidden by default. */
         const _converse = this.__super__._converse;
 
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           attrs = attrs || {};
           attrs.hidden = true;
         }
@@ -60074,7 +60069,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       shouldShowOnTextMessage() {
         const _converse = this.__super__._converse;
 
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           return false;
         } else {
           return this.__super__.shouldShowOnTextMessage.apply(this, arguments);
@@ -60088,7 +60083,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
          */
         const _converse = this.__super__._converse;
 
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
 
           u.safeSave(this.model, {
@@ -60104,7 +60099,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       show(focus) {
         const _converse = this.__super__._converse;
 
-        if (_converse.isSingleton()) {
+        if (_converse.isUniView()) {
           _.each(this.__super__._converse.chatboxviews.xget(this.model.get('id')), hideChat);
 
           u.safeSave(this.model, {
@@ -61956,35 +61951,22 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return attrs;
       },
 
-      createMessage(message, original_stanza) {
+      async createMessage(message, original_stanza) {
         /* Create a Backbone.Message object inside this chat box
          * based on the identified message stanza.
          */
-        const that = this;
+        const attrs = await this.getMessageAttributesFromStanza(message, original_stanza),
+              is_csn = u.isOnlyChatStateNotification(attrs);
 
-        function _create(attrs) {
-          const is_csn = u.isOnlyChatStateNotification(attrs);
-
-          if (is_csn && (attrs.is_delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == that.get('nick'))) {
-            // XXX: MUC leakage
-            // No need showing delayed or our own CSN messages
-            return;
-          } else if (!is_csn && !attrs.file && !attrs.plaintext && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
-            // TODO: handle <subject> messages (currently being done by ChatRoom)
-            return;
-          } else {
-            return that.messages.create(attrs);
-          }
-        }
-
-        const result = this.getMessageAttributesFromStanza(message, original_stanza);
-
-        if (typeof result.then === "function") {
-          return new Promise((resolve, reject) => result.then(attrs => resolve(_create(attrs))));
+        if (is_csn && (attrs.is_delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick'))) {
+          // XXX: MUC leakage
+          // No need showing delayed or our own CSN messages
+          return;
+        } else if (!is_csn && !attrs.file && !attrs.plaintext && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
+          // TODO: handle <subject> messages (currently being done by ChatRoom)
+          return;
         } else {
-          const message = _create(result);
-
-          return Promise.resolve(message);
+          return this.messages.create(attrs);
         }
       },
 
@@ -62570,7 +62552,7 @@ const _converse = {
   'templates': {},
   'promises': {}
 };
-_converse.VERSION_NAME = "v4.0.5";
+_converse.VERSION_NAME = "v4.0.6";
 
 _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.extend(_converse, Backbone.Events); // Make converse pluggable
 
@@ -62797,7 +62779,12 @@ _converse.emit = function (name) {
   }
 };
 
-_converse.isSingleton = function () {
+_converse.isUniView = function () {
+  /* We distinguish between UniView and MultiView instances.
+   *
+   * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
+   * MultiView means that multiple chats may be visible simultaneously.
+   */
   return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
 };
 
@@ -65340,24 +65327,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
     //
     // New functions which don't exist yet can also be added.
     ChatBox: {
-      getMessageAttributesFromStanza(message, original_stanza) {
-        function _process(attrs) {
-          const archive_id = getMessageArchiveID(original_stanza);
-
-          if (archive_id) {
-            attrs.archive_id = archive_id;
-          }
-
-          return attrs;
-        }
-
-        const result = this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
-
-        if (result instanceof Promise) {
-          return new Promise((resolve, reject) => result.then(attrs => resolve(_process(attrs))).catch(reject));
-        } else {
-          return _process(result);
-        }
+      async getMessageAttributesFromStanza(message, original_stanza) {
+        const attrs = await this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
+        attrs.archive_id = getMessageArchiveID(original_stanza);
+        return attrs;
       }
 
     },
@@ -66902,7 +66875,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         return data;
       },
 
-      isDuplicate(message) {
+      isDuplicate(message, original_stanza) {
+        // XXX: original_stanza is not used here, but in converse-mam
         const msgid = message.getAttribute('id'),
               jid = message.getAttribute('from');
 
@@ -66951,7 +66925,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           stanza = forwarded.querySelector('message');
         }
 
-        if (this.isDuplicate(stanza)) {
+        if (this.isDuplicate(stanza, original_stanza)) {
           return;
         }
 
@@ -68929,7 +68903,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
 
     _converse.initVCardCollection = function () {
       _converse.vcards = new _converse.VCards();
-      const id = b64_sha1(`converse.vcards`);
+      const id = b64_sha1(`${_converse.bare_jid}-converse.vcards`);
       _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.config.get('storage')](id);
 
       _converse.vcards.fetch();
@@ -93133,7 +93107,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/group_header.html -->\n<a href="#" class="group-toggle controlbox-padded" title="' +
+__p += '<!-- src/templates/group_header.html -->\n<a href="#" class="list-toggle group-toggle controlbox-padded" title="' +
 __e(o.desc_group_toggle) +
 '">\n    <span class="fa ';
  if (o.toggle_state === o._converse.OPENED) { ;
@@ -94202,9 +94176,9 @@ __p += ' unread-msgs ';
  } ;
 __p += '"\n    data-room-jid="' +
 __e(o.jid) +
-'">\n';
+'">\n\n';
  if (o.num_unread) { ;
-__p += '\n    <span class="msgs-indicator badge badge-info">' +
+__p += '\n    <span class="list-item-badge badge badge-room-color msgs-indicator">' +
 __e( o.num_unread ) +
 '</span>\n';
  } ;
@@ -94293,7 +94267,7 @@ __p += '\n        <a class="controlbox-heading__btn add-contact fa fa-user-plus"
 __e(o.title_add_contact) +
 '"\n           data-toggle="modal"\n           data-target="#add-contact-modal"></a>\n    ';
  } ;
-__p += '\n</div>\n\n<form class="roster-filter-form"></form>\n\n<div class="roster-contacts"></div>\n';
+__p += '\n</div>\n\n<form class="roster-filter-form"></form>\n\n<div class="list-container roster-contacts"></div>\n';
 return __p
 };
 

@@ -60,11 +60,7 @@
             margin: 0.75em 0 0.75em 0;
 
             .group-toggle {
-                &:hover {
-                    color: var(--roster-group-toggle-hover-color);
-                }
                 font-family: var(--heading-font);
-                color: var(--text-color);
                 display: block;
                 width: 100%;
                 padding-top: 0;
@@ -109,7 +105,7 @@
                         text-overflow: ellipsis;
                         padding: 0;
                         margin: 0;
-                        max-width: 90%;
+                        max-width: 85%;
                         float: none;
                         height: 100%;
                         &.unread-msgs {

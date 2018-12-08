@@ -32,24 +32,25 @@
 
 <div id="chatrooms" class="controlbox-section">
     <div class="d-flex controlbox-padded">
-        <span class="w-100 controlbox-heading">Group Chats</span>
+        <span class="w-100 controlbox-heading">Groupchats</span>
 
         <a class="controlbox-heading__btn show-list-muc-modal fa fa-list-ul" title="Query for groupchats" data-toggle="modal" data-target="#list-chatrooms-modal"></a> 
         <a class="controlbox-heading__btn fa fa-plus" title="Click to add a new room" data-toggle="modal" data-target="#chatroomsModal"></a>
     </div>
     <div class="list-container items-list-container">
-        <div class="items-list">
-            <div class="controlbox-padded list-item available-chatroom d-flex flex-row open">
+        <div class="items-list rooms-list">
+            <div class="list-item controlbox-padded room-item available-chatroom d-flex flex-row open">
                 <a class="list-item-link open-room available-room w-100" data-room-jid="public@conference.test.com" title="Click to open this room" href="chatroom.html">Capulet's orchard</a>
-                <!-- <span class="badge badge-info msgs-indicator">1</span> -->
                 <a href="#"
                    class="list-item-action room-info fa fa-info-circle" data-container="body" data-toggle="popover" title="Room info"
                    data-html="true" data-content="<b>Room Address (JID): </b><br/>public@conference.test.com<br/><b>Discussions: </b><br/>Public discussions<br/><b>Participants: </b>1<br/><b>Features: </b><br/>Non-anonymous">
                    &nbsp;</a>
                 <a href="#" class="list-item-action fa fa-bookmark" title="Click to bookmark this room">&nbsp;</a>
             </div>
-            <div class="controlbox-padded list-item available-chatroom d-flex flex-row">
-                <a class="list-item-link open-room available-room w-100" data-room-jid="team@conference.test.com" title="Click to open this room" href="chatroom.html">Juliet's Balcony</a>
+            <div class="list-item controlbox-padded room-item available-chatroom d-flex flex-row">
+                <span class="list-item-badge badge badge-room-color msgs-indicator">18</span>
+                <a class="list-item-link open-room available-room w-100" data-room-jid="team@conference.test.com" title="Click to open this room" href="chatroom.html">
+                    Juliet's Balcony</a>
                 <a href="#"
                    class="list-item-action room-info fa fa-info-circle" data-container="body" data-toggle="popover" title="Room info"
                     data-html="true" data-content="<b>Room Address (JID): </b><br/>public@conference.test.com<br/><b>Discussions: </b><br/>Public discussions<br/><b>Participants: </b>1<br/><b>Features: </b><br/>Non-anonymous">
@@ -65,17 +66,16 @@
         <span class="w-100 controlbox-heading">Bookmarks</span>
     </div>
     <div class="list-container items-list-container">
-        <div class="items-list">
-            <div class="controlbox-padded list-item available-chatroom d-flex flex-row">
+        <div class="items-list rooms-list">
+            <div class="list-item controlbox-padded room-item available-chatroom d-flex flex-row">
                 <a class="list-item-link open-room available-room w-100" data-room-jid="public@conference.test.com" title="Click to open this room" href="chatroom.html">Capulet's orchard</a>
-                <!-- <span class="badge badge-info msgs-indicator">1</span> -->
                 <a href="#"
                    class="list-item-action room-info fa fa-info-circle" data-container="body" data-toggle="popover" title="Room info"
                    data-html="true" data-content="<b>Room Address (JID): </b><br/>public@conference.test.com<br/><b>Discussions: </b><br/>Public discussions<br/><b>Participants: </b>1<br/><b>Features: </b><br/>Non-anonymous">
                    &nbsp;</a>
                 <a href="#" class="list-item-action fa fa-bookmark" title="Click to bookmark this room">&nbsp;</a>
             </div>
-            <div class="controlbox-padded list-item available-chatroom d-flex flex-row">
+            <div class="list-item controlbox-padded room-item available-chatroom d-flex flex-row">
                 <a class="list-item-link open-room available-room w-100" data-room-jid="team@conference.test.com" title="Click to open this room" href="chatroom.html">Juliet's Balcony</a>
                 <a href="#"
                    class="list-item-action room-info fa fa-info-circle" data-container="body" data-toggle="popover" title="Room info"
@@ -107,7 +107,7 @@
         </div>
     </form>
 
-    <div class="roster-contacts">
+    <div class="list-container roster-contacts">
         <div class="roster-group" id="xmpp-contact-requests">
             <a href="#" class="group-toggle controlbox-padded " title="Click to hide these contacts">
                 <span class="fa fa-caret-down"></span> Contact Requests</a>
@@ -126,7 +126,7 @@
         </div>
 
         <div class="roster-group" data-group="Colleagues">
-            <a href="#" data-group="Colleagues" class="group-toggle controlbox-padded " title="Click to hide these contacts">
+            <a href="#" data-group="Colleagues" class="list-toggle group-toggle controlbox-padded " title="Click to hide these contacts">
                 <span class="fa fa-caret-down"></span> Colleagues</a>
             <ul class="items-list roster-group-contacts">
                 <li class="list-item controlbox-padded away current-xmpp-contact d-flex">
@@ -143,7 +143,7 @@
         </div>
 
         <div class="roster-group" data-group="Family">
-            <a href="#" data-group="Family" class="group-toggle controlbox-padded " title="Click to hide these contacts">
+            <a href="#" data-group="Family" class="list-toggle group-toggle controlbox-padded" title="Click to hide these contacts">
                 <span class="fa fa-caret-down"></span> Family</a>
             <ul class="items-list roster-group-contacts">
                 <li class="list-item controlbox-padded online current-xmpp-contact d-flex">
@@ -165,7 +165,7 @@
         </div>
 
         <div class="roster-group" data-group="Friends">
-            <a href="#" data-group="Friends" class="group-toggle controlbox-padded " title="Click to hide these contacts">
+            <a href="#" data-group="Friends" class="list-toggle group-toggle controlbox-padded" title="Click to hide these contacts">
                 <span class="fa fa-caret-down"></span> Friends</a>
             <ul class="items-list roster-group-contacts">
                 <li class="list-item controlbox-padded online current-xmpp-contact d-flex">
@@ -177,7 +177,7 @@
         </div>
 
         <div class="roster-group" data-group="Ungrouped">
-            <a href="#" class="group-toggle controlbox-padded " title="Click to hide these contacts">
+            <a href="#" class="list-toggle group-toggle controlbox-padded" title="Click to hide these contacts">
                 <span class="fa fa-caret-down"></span> Ungrouped</a>
             <ul class="items-list roster-group-contacts">
                 <li class="list-item controlbox-padded online current-xmpp-contact d-flex">
@@ -199,7 +199,7 @@
         </div>
 
         <div class="roster-group" id="pending-xmpp-contacts">
-            <a href="#" class="group-toggle controlbox-padded " title="Click to hide these contacts">
+            <a href="#" class="list-toggle group-toggle controlbox-padded" title="Click to hide these contacts">
                 <span class="fa fa-caret-down"></span> Pending Contacts</a>
             <ul class="items-list roster-group-contacts">
                 <li class="list-item controlbox-padded offline pending-xmpp-contact d-flex">

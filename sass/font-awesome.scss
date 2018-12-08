@@ -70,3 +70,10 @@
 @import "@fortawesome/fontawesome-free/scss/stacked";
 @import "@fortawesome/fontawesome-free/scss/icons";
 @import "@fortawesome/fontawesome-free/scss/screen-reader";
+
+/* Apparent font-awesome bug? The circle has some kind of bottom margin */
+#conversejs {
+    .fa-info-circle {
+        height: 1em;
+    }
+}

@@ -72,7 +72,7 @@ const _converse = {
     'promises': {}
 }
 
-_converse.VERSION_NAME = "v4.0.5";
+ _converse.VERSION_NAME = "v4.0.6";
 
 _.extend(_converse, Backbone.Events);
 
@@ -312,7 +312,12 @@ _converse.emit = function (name) {
     }
 };
 
-_converse.isSingleton = function () {
+_converse.isUniView = function () {
+    /* We distinguish between UniView and MultiView instances.
+     *
+     * UniView means that only one chat is visible, even though there might be multiple ongoing chats.
+     * MultiView means that multiple chats may be visible simultaneously.
+     */
     return _.includes(['mobile', 'fullscreen', 'embedded'], _converse.view_mode);
 }
 

@@ -1,5 +1,11 @@
 #conversejs.converse-embedded,
 #conversejs {
+
+
+    .badge-room-color {
+        background-color: var(--chatroom-head-color);
+    }
+
     .add-chatroom {
         input[type="submit"],
         input[type="button"] {

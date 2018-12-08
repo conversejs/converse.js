@@ -557,31 +557,22 @@ converse.plugins.add('converse-chatboxes', {
                 return attrs;
             },
 
-            createMessage (message, original_stanza) {
+            async createMessage (message, original_stanza) {
                 /* Create a Backbone.Message object inside this chat box
                  * based on the identified message stanza.
                  */
-                const that = this;
-                function _create (attrs) {
-                    const is_csn = u.isOnlyChatStateNotification(attrs);
-                    if (is_csn && (attrs.is_delayed ||
-                            (attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == that.get('nick')))) {
-                        // XXX: MUC leakage
-                        // No need showing delayed or our own CSN messages
-                        return;
-                    } else if (!is_csn && !attrs.file && !attrs.plaintext && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
-                        // TODO: handle <subject> messages (currently being done by ChatRoom)
-                        return;
-                    } else {
-                        return that.messages.create(attrs);
-                    }
-                }
-                const result = this.getMessageAttributesFromStanza(message, original_stanza)
-                if (typeof result.then === "function") {
-                    return new Promise((resolve, reject) => result.then(attrs => resolve(_create(attrs))));
+                const attrs = await this.getMessageAttributesFromStanza(message, original_stanza),
+                      is_csn = u.isOnlyChatStateNotification(attrs);
+
+                if (is_csn && (attrs.is_delayed || (attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick')))) {
+                    // XXX: MUC leakage
+                    // No need showing delayed or our own CSN messages
+                    return;
+                } else if (!is_csn && !attrs.file && !attrs.plaintext && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
+                    // TODO: handle <subject> messages (currently being done by ChatRoom)
+                    return;
                 } else {
-                    const message = _create(result)
-                    return Promise.resolve(message);
+                    return this.messages.create(attrs);
                 }
             },
 

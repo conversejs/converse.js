@@ -1056,18 +1056,19 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
+
                 test_utils.createContacts(_converse, 'current', 1);
+                _converse.emit('rosterContactsFetched');
                 test_utils.openControlBox();
 
-                spyOn(_converse, 'emit');
                 expect(_converse.msg_counter).toBe(0);
-                spyOn(_converse, 'incrementMsgCounter').and.callThrough();
-                spyOn(_converse, 'clearMsgCounter').and.callThrough();
+
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const view = await test_utils.openChatBoxFor(_converse, sender_jid)
 
                 const previous_state = _converse.windowState;
                 const message = 'This message will increment the message counter';
-                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
-                    msg = $msg({
+                const msg = $msg({
                         from: sender_jid,
                         to: _converse.connection.jid,
                         type: 'chat',
@@ -1075,8 +1076,13 @@
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                 _converse.windowState = 'hidden';
+
+                spyOn(_converse, 'emit').and.callThrough();
+                spyOn(_converse, 'incrementMsgCounter').and.callThrough();
+                spyOn(_converse, 'clearMsgCounter').and.callThrough();
+
                 _converse.chatboxes.onMessage(msg);
-                await test_utils.waitUntil(() => _converse.api.chats.get().length)
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 expect(_converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
                 expect(_converse.msg_counter).toBe(1);
@@ -1321,7 +1327,7 @@
 
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
                 _converse.chatboxes.onMessage(msg);
-                await test_utils.waitUntil(() => chatbox.messages.length);
+                await test_utils.waitUntil(() => chatbox.messages.length > 1);
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('2');
                 done();
@@ -1352,7 +1358,7 @@
 
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
                 _converse.chatboxes.onMessage(msg);
-                await test_utils.waitUntil(() => chatbox.messages.length);
+                await test_utils.waitUntil(() => chatbox.messages.length > 1);
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('2');
                 done();
@@ -1378,7 +1384,7 @@
                 await test_utils.waitUntil(() => chatbox.messages.length);
                 expect(select_msgs_indicator().text()).toBe('1');
                 _converse.chatboxes.onMessage(msgFactory());
-                await test_utils.waitUntil(() => chatbox.messages.length);
+                await test_utils.waitUntil(() => chatbox.messages.length > 1);
                 expect(select_msgs_indicator().text()).toBe('2');
                 view.maximize();
                 expect(select_msgs_indicator().length).toBe(0);

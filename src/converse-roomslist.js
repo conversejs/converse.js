@@ -116,7 +116,7 @@ converse.plugins.add('converse-roomslist', {
                         // supported by the XMPP server. So we can use it
                         // as a check for support (other ways of checking are async).
                         'allow_bookmarks': _converse.allow_bookmarks && _converse.bookmarks,
-                        'currently_open': _converse.isSingleton() && !this.model.get('hidden'),
+                        'currently_open': _converse.isUniView() && !this.model.get('hidden'),
                         'info_leave_room': __('Leave this groupchat'),
                         'info_remove_bookmark': __('Unbookmark this groupchat'),
                         'info_add_bookmark': __('Bookmark this groupchat'),

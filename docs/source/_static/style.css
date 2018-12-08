@@ -35,6 +35,12 @@ h5 {
 
 .sidebar-title {
     padding-left: 15px;
+    color: #716b7a;
+}
+
+.sponsors-list {
+    overflow-y: hidden !important;
+    overflow-x: hidden;
 }
 
 .bs-sidenav .sponsors-list li a:hover {
@@ -42,7 +48,12 @@ h5 {
     border: none;
 }
 
+.sponsors-list li {
+    padding: 0.5em 0;
+}
+
 .sponsors-list li a {
+    background-color: transparent;
     text-align: center;
 }
 
@@ -54,6 +65,7 @@ h5 {
 
 .patreon-link-container {
     margin: 0.5em 0 1em 0;
+    padding: 0;
 }
 
 .patreon-link-container a {

@@ -9314,6 +9314,7 @@ readers do not read off random characters that represent icons */
   --chat-textarea-height: 60px;
   --send-button-height: 27px;
   --send-button-margin: 3px;
+  --controlbox-heading-top-margin: 0.75em;
   --inline-action-margin: 0.75em;
   --roster-height: 194px;
   --flyout-padding: 1.2em;
@@ -10786,7 +10787,7 @@ body.reset {
     color: var(--controlbox-heading-color);
     font-weight: var(--controlbox-heading-font-weight);
     padding: 0;
-    margin: 1em 0 0.5em 0;
+    margin: var(--controlbox-heading-top-margin) 0 0.5em 0;
     font-size: 1.1em;
     text-transform: uppercase; }
   #conversejs #controlbox .controlbox-section .controlbox-heading__btn {
@@ -10794,7 +10795,7 @@ body.reset {
     align-self: flex-start;
     font-size: 1em;
     padding: 0;
-    margin: 0.75em 0 var(--inline-action-margin) 0.75em; }
+    margin: var(--controlbox-heading-top-margin) 0 var(--inline-action-margin) 0.75em; }
     #conversejs #controlbox .controlbox-section .controlbox-heading__btn.fa-vcard {
       margin-top: 1em; }
   #conversejs #controlbox .dropdown a {

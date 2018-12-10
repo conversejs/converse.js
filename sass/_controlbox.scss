@@ -218,7 +218,7 @@
                 color: var(--controlbox-heading-color);
                 font-weight: var(--controlbox-heading-font-weight);
                 padding: 0;
-                margin: 1em 0 0.5em 0;
+                margin: var(--controlbox-heading-top-margin) 0 0.5em 0;
                 font-size: 1.1em;
                 text-transform: uppercase;
             }
@@ -228,7 +228,7 @@
                 align-self: flex-start;
                 font-size: 1em;
                 padding: 0;
-                margin: 0.75em 0 var(--inline-action-margin) 0.75em;
+                margin: var(--controlbox-heading-top-margin) 0 var(--inline-action-margin) 0.75em;
                 &.fa-vcard {
                     margin-top: 1em;
                 }

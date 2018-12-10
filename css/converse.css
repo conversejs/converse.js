@@ -9354,6 +9354,7 @@ readers do not read off random characters that represent icons */
   --heading-display: block;
   --heading-color: white;
   --chatroom-head-color: #E77051;
+  --chatroom-head-color-dark: #D24E2B;
   --chatroom-head-color-lighten-25-percent: #f6ccc1;
   --chatroom-head-button-color: var(--chatroom-head-color);
   --chatroom-head-title-font-weight: normal;
@@ -9902,8 +9903,9 @@ body.reset {
     border-color: var(--primary-color-dark); }
   #conversejs .badge {
     text-shadow: none; }
+  #conversejs .badge {
+    color: white; }
   #conversejs .btn-primary, #conversejs .button-primary, #conversejs .badge-primary {
-    color: white;
     background-color: var(--primary-color);
     border-color: transparent; }
     #conversejs .btn-primary:hover, #conversejs .button-primary:hover, #conversejs .badge-primary:hover {
@@ -9912,8 +9914,16 @@ body.reset {
     #conversejs .btn-primary.active, #conversejs .button-primary.active, #conversejs .badge-primary.active {
       background-color: var(--primary-color-dark) !important;
       border-color: transparent !important; }
+  #conversejs .badge-groupchat {
+    background-color: var(--chatroom-head-color);
+    border-color: transparent; }
+    #conversejs .badge-groupchat:hover {
+      background-color: var(--chatroom-head-color-dark);
+      border-color: transparent; }
+    #conversejs .badge-groupchat.active {
+      background-color: var(--chatroom-head-color-dark) !important;
+      border-color: transparent !important; }
   #conversejs .btn-info, #conversejs .badge-info {
-    color: white;
     background-color: var(--primary-color);
     border-color: var(--primary-color); }
     #conversejs .btn-info:hover, #conversejs .badge-info:hover {

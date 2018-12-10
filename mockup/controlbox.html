@@ -40,12 +40,15 @@
     <div class="list-container items-list-container">
         <div class="items-list rooms-list">
             <div class="list-item controlbox-padded room-item available-chatroom d-flex flex-row open">
-                <a class="list-item-link open-room available-room w-100" data-room-jid="public@conference.test.com" title="Click to open this room" href="chatroom.html">Capulet's orchard</a>
+                <a class="list-item-link open-room available-room w-100" data-room-jid="public@conference.test.com" title="Click to open this room" href="chatroom.html">
+                    Capulet's Orchard</a>
                 <a href="#"
                    class="list-item-action room-info fa fa-info-circle" data-container="body" data-toggle="popover" title="Room info"
                    data-html="true" data-content="<b>Room Address (JID): </b><br/>public@conference.test.com<br/><b>Discussions: </b><br/>Public discussions<br/><b>Participants: </b>1<br/><b>Features: </b><br/>Non-anonymous">
                    &nbsp;</a>
                 <a href="#" class="list-item-action fa fa-bookmark" title="Click to bookmark this room">&nbsp;</a>
+                <a class="list-item-action fa fa-sign-out-alt close-room" data-room-jid="public@conference.test.com" data-room-name="Capulet's Orchard"
+                   title="Leave this groupchat" href="#"></a>
             </div>
             <div class="list-item controlbox-padded room-item available-chatroom d-flex flex-row">
                 <span class="list-item-badge badge badge-room-color msgs-indicator">18</span>
@@ -56,6 +59,8 @@
                     data-html="true" data-content="<b>Room Address (JID): </b><br/>public@conference.test.com<br/><b>Discussions: </b><br/>Public discussions<br/><b>Participants: </b>1<br/><b>Features: </b><br/>Non-anonymous">
                     &nbsp;</a>
                 <a href="#" class="list-item-action fa fa-bookmark" title="Click to bookmark this room">&nbsp;</a>
+                <a class="list-item-action fa fa-sign-out-alt close-room" data-room-jid="team@conference.test.com" data-room-name="Juliet's Balcony"
+                   title="Leave this groupchat" href="#"></a>
             </div>
         </div>
     </div>
@@ -131,12 +136,12 @@
             <ul class="items-list roster-group-contacts">
                 <li class="list-item controlbox-padded away current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-circle-o" title="this contact is away"></span> Balthasar</a>
+                        <span class="fa fa-circle chat-status--online" title="this contact is away"></span> Balthasar</a>
                     <a class="list-item-action remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
                 <li class="list-item controlbox-padded dnd current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-minus-circle" title="This contact is busy"></span> Escalus, Prince of Verona</a>
+                        <span class="fa fa-minus-circle chat-status--busy" title="This contact is busy"></span> Escalus, Prince of Verona</a>
                     <a class="list-item-action remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
             </li>
@@ -148,12 +153,12 @@
             <ul class="items-list roster-group-contacts">
                 <li class="list-item controlbox-padded online current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-circle" title="This contact is online"></span> Benvolio Montague</a>
+                        <span class="fa fa-circle chat-status--online" title="This contact is online"></span> Benvolio Montague</a>
                     <a class="list-item-action remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
                 <li class="list-item controlbox-padded offline current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-circle chat-status chat-status--offline" title="This contact is offline"></span> Montague</a>
+                        <span class="fa fa-circle chat-status chat-status--away" title="This contact is offline"></span> Montague</a>
                     <a class="list-item-action remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
                 <li class="list-item controlbox-padded offline current-xmpp-contact d-flex">
@@ -170,7 +175,7 @@
             <ul class="items-list roster-group-contacts">
                 <li class="list-item controlbox-padded online current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-circle" title="This contact is online"></span> Mercutio</a>
+                        <span class="fa fa-circle chat-status--away" title="This contact is online"></span> Mercutio</a>
                     <a class="list-item-action remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
             </ul>
@@ -182,7 +187,7 @@
             <ul class="items-list roster-group-contacts">
                 <li class="list-item controlbox-padded online current-xmpp-contact d-flex">
                     <a class="open-chat w-100" title="Click to chat with this contact" href="chatbox.html">
-                        <span class="fa fa-circle" title="This contact is online"></span> Gregory</a>
+                        <span class="fa fa-circle chat-status--online" title="This contact is online"></span> Gregory</a>
                     <a class="list-item-action remove-xmpp-contact fa fa-trash" title="Click to remove this contact" href="#"></a>
                 </li>
                 <li class="list-item controlbox-padded online current-xmpp-contact d-flex">

@@ -54300,12 +54300,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       },
 
       parseMessageForCommands(text) {
-        if (_converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments)) {
-          return true;
-        }
-
         if (_converse.muc_disable_moderator_commands) {
-          return false;
+          return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
         }
 
         const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
@@ -54463,7 +54459,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
             break;
 
           default:
-            return false;
+            return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
         }
 
         return true;

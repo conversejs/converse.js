@@ -859,11 +859,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             parseMessageForCommands (text) {
-                if (_converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments)) {
-                    return true;
-                }
                 if (_converse.muc_disable_moderator_commands) {
-                    return false;
+                    return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
                 }
                 const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                       args = match[2] && match[2].splitOnce(' ').filter(s => s) || [],
@@ -1026,7 +1023,7 @@ converse.plugins.add('converse-muc-views', {
                                 undefined, this.onCommandError.bind(this));
                         break;
                     default:
-                        return false;
+                        return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
                 }
                 return true;
             },

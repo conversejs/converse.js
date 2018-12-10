@@ -1,6 +1,10 @@
 # Changelog
 
-## 4.0.6 (unreleased)
+## 4.0.7 (Unreleased)
+
+- Bugfix: MUC commands were being ignored
+
+## 4.0.6 (2018-12-07)
 
 - Updated translations: ar, cs, de, es, eu, fr, gl, hu, id, it, ja, nb, pt_BR
 - Don't render http (i.e. non-TLS) resources

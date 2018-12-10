@@ -10805,6 +10805,7 @@ body.reset {
     padding: 0;
     margin: var(--controlbox-heading-top-margin) 0 0.5em 0;
     font-size: 1.1em;
+    line-height: 1.1em;
     text-transform: uppercase; }
   #conversejs #controlbox .controlbox-section .controlbox-heading--groupchats {
     color: var(--chatroom-head-color); }

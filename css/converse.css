@@ -9320,6 +9320,7 @@ readers do not read off random characters that represent icons */
   --flyout-padding: 1.2em;
   --chat-head-color: #3AA569;
   --chat-head-color-dark: #1E9652;
+  --chat-head-color-darker: #0E763B;
   --chat-head-color-lighten-50-percent: #e7f7ee;
   --chat-head-text-color: white;
   --chat-correcting-color: var(--chat-head-color-lighten-50-percent);
@@ -10690,6 +10691,10 @@ body.reset {
 
 #conversejs #controlbox {
   margin-right: calc(3 * var(--chat-gutter)); }
+  #conversejs #controlbox .open-rooms-toggle, #conversejs #controlbox .open-rooms-toggle .fa {
+    color: var(--chatroom-head-color) !important; }
+    #conversejs #controlbox .open-rooms-toggle:hover, #conversejs #controlbox .open-rooms-toggle .fa:hover {
+      color: var(--chatroom-head-color-dark) !important; }
   #conversejs #controlbox .box-flyout {
     background-color: white; }
   #conversejs #controlbox.logged-out .box-flyout .controlbox-pane {
@@ -11190,6 +11195,10 @@ body.reset {
         width: 100%;
         padding-top: 0;
         padding-bottom: 0.3rem; }
+      #conversejs #converse-roster .roster-contacts .roster-group .group-toggle, #conversejs #converse-roster .roster-contacts .roster-group .group-toggle .fa {
+        color: var(--chat-head-color-dark) !important; }
+        #conversejs #converse-roster .roster-contacts .roster-group .group-toggle:hover, #conversejs #converse-roster .roster-contacts .roster-group .group-toggle .fa:hover {
+          color: var(--chat-head-color-darker) !important; }
       #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a {
         line-height: var(--line-height); }
       #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact .req-contact-name {
@@ -12012,6 +12021,11 @@ body.reset {
   #conversejs.converse-overlayed #minimized-chats .unread-message-count-hidden,
   #conversejs.converse-overlayed #minimized-chats .chat-head-message-count-hidden {
     display: none; }
+
+#conversejs #controlbox .bookmarks-toggle, #conversejs #controlbox .bookmarks-toggle .fa {
+  color: var(--chatroom-head-color) !important; }
+  #conversejs #controlbox .bookmarks-toggle:hover, #conversejs #controlbox .bookmarks-toggle .fa:hover {
+    color: var(--chatroom-head-color-dark) !important; }
 
 #conversejs.fullscreen #controlbox #chatrooms .bookmarks-list dl.rooms-list.bookmarks dd.available-chatroom a.open-room {
   width: 80%; }

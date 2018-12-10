@@ -1,3 +1,14 @@
+#conversejs {
+    #controlbox {
+        .bookmarks-toggle, .bookmarks-toggle .fa {
+            color: var(--chatroom-head-color) !important;
+            &:hover {
+                color: var(--chatroom-head-color-dark) !important;
+            }
+        }
+    }
+}
+
 #conversejs.fullscreen {
     #controlbox {
         #chatrooms {

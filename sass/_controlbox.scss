@@ -61,6 +61,14 @@
     }
 
     #controlbox {
+
+        .open-rooms-toggle, .open-rooms-toggle .fa {
+            color: var(--chatroom-head-color) !important;
+            &:hover {
+                color: var(--chatroom-head-color-dark) !important;
+            }
+        }
+
         .box-flyout {
             background-color: white;
         }

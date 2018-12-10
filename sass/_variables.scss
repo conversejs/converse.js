@@ -46,7 +46,8 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     --flyout-padding: 1.2em;
 
     --chat-head-color: #3AA569; // $green
-    --chat-head-color-dark: #1E9652; // $green
+    --chat-head-color-dark: #1E9652;
+    --chat-head-color-darker: #0E763B;
     --chat-head-color-lighten-50-percent: #e7f7ee; // lighten($green, 50%)
     --chat-head-text-color: white;
     --chat-correcting-color: var(--chat-head-color-lighten-50-percent);

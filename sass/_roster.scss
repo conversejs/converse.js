@@ -67,6 +67,13 @@
                 padding-bottom: 0.3rem;
             }
 
+            .group-toggle, .group-toggle .fa {
+                color: var(--chat-head-color-dark) !important;
+                &:hover {
+                    color: var(--chat-head-color-darker) !important;
+                }
+            }
+
             li {
                 &.requesting-xmpp-contact {
                     a {

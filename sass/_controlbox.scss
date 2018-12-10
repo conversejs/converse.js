@@ -223,6 +223,14 @@
                 text-transform: uppercase;
             }
 
+            .controlbox-heading--groupchats {
+                color: var(--chatroom-head-color);
+            }
+
+            .controlbox-heading--contacts {
+                color: var(--chat-head-color-dark);
+            }
+
             .controlbox-heading__btn {
                 cursor: pointer;
                 align-self: flex-start;

@@ -11176,8 +11176,6 @@ body.reset {
         padding-bottom: 0.3rem; }
       #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a {
         line-height: var(--line-height); }
-        #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a.far, #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a.fas, #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact a.fa {
-          width: 1.5em; }
       #conversejs #converse-roster .roster-contacts .roster-group li.requesting-xmpp-contact .req-contact-name {
         padding: 0 0.2em 0 0; }
       #conversejs #converse-roster .roster-contacts .roster-group li .open-chat {
@@ -11271,7 +11269,7 @@ body.reset {
       font-size: var(--font-size-tiny);
       padding: 0;
       margin: 0 0 0 var(--inline-action-margin);
-      width: 1.6em;
+      width: 2em;
       color: var(--subdued-color); }
       #conversejs .items-list .list-item .list-item-action:before {
         font-size: var(--font-size); }
@@ -11282,6 +11280,8 @@ body.reset {
       #conversejs .items-list .list-item .list-item-action:hover {
         color: var(--list-toggle-hover-color);
         opacity: 1; }
+    #conversejs .items-list .list-item .list-item-action--visible {
+      opacity: 1 !important; }
     #conversejs .items-list .list-item.open {
       background-color: var(--list-item-open-color); }
       #conversejs .items-list .list-item.open:hover {

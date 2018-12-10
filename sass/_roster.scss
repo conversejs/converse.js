@@ -71,9 +71,6 @@
                 &.requesting-xmpp-contact {
                     a {
                         line-height: var(--line-height);
-                        &.far, &.fas, &.fa {
-                            width: 1.5em;
-                        }
                     }
                     .req-contact-name {
                         padding: 0 0.2em 0 0;

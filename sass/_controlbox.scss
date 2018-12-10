@@ -228,7 +228,7 @@
                 align-self: flex-start;
                 font-size: 1em;
                 padding: 0;
-                margin: 0.75em 0 0.75em 0.75em;
+                margin: 0.75em 0 var(--inline-action-margin) 0.75em;
                 &.fa-vcard {
                     margin-top: 1em;
                 }

@@ -52,7 +52,7 @@
                 opacity: 0;
                 font-size: var(--font-size-tiny);
                 padding: 0;
-                margin: 0 0 0 0.4em;
+                margin: 0 0 0 var(--inline-action-margin);
                 width: 1.6em;
                 &:before {
                     font-size: var(--font-size);

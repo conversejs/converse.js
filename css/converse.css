@@ -10803,7 +10803,6 @@ body.reset {
     color: var(--controlbox-heading-color);
     font-weight: var(--controlbox-heading-font-weight);
     padding: 0;
-    margin: var(--controlbox-heading-top-margin) 0 0.5em 0;
     font-size: 1.1em;
     line-height: 1.1em;
     text-transform: uppercase; }
@@ -10813,10 +10812,11 @@ body.reset {
     color: var(--chat-head-color-dark); }
   #conversejs #controlbox .controlbox-section .controlbox-heading__btn {
     cursor: pointer;
-    align-self: flex-start;
     font-size: 1em;
     padding: 0;
-    margin: var(--controlbox-heading-top-margin) 0 var(--inline-action-margin) 0.75em; }
+    margin: var(--controlbox-heading-top-margin) 0 var(--inline-action-margin) 0;
+    min-width: 25px;
+    text-align: center; }
     #conversejs #controlbox .controlbox-section .controlbox-heading__btn.fa-vcard {
       margin-top: 1em; }
   #conversejs #controlbox .dropdown a {
@@ -10868,7 +10868,13 @@ body.reset {
     padding: 1em 0 1em 0; }
     #conversejs #controlbox .controlbox-pane .controlbox-padded {
       padding-left: 1em;
-      padding-right: 1em; }
+      padding-right: 1em;
+      align-items: center;
+      line-height: normal; }
+      #conversejs #controlbox .controlbox-pane .controlbox-padded .change-status {
+        min-width: 25px;
+        text-align: center;
+      }
     #conversejs #controlbox .controlbox-pane .add-converse-contact {
       margin: 0 0 0.75em 0; }
     #conversejs #controlbox .controlbox-pane .chatbox-btn {
@@ -11170,7 +11176,9 @@ body.reset {
       padding: 0.2em; }
     #conversejs #converse-roster .roster-filter-form span {
       padding: 0.3em;
-      cursor: pointer; }
+      cursor: pointer;
+      min-width: 25px;
+      text-align: center; }
     #conversejs #converse-roster .roster-filter-form .roster-filter {
       width: 100%;
       margin: 0.2em;
@@ -11234,8 +11242,8 @@ body.reset {
           display: inline-block; }
       #conversejs #converse-roster .roster-contacts .roster-group li.current-xmpp-contact span {
         font-size: var(--font-size);
-        float: left;
-        margin-right: 0.5em; }
+        margin-right: 0.3em;
+        vertical-align: middle; }
       #conversejs #converse-roster .roster-contacts .roster-group li.odd {
         background-color: #DCEAC5;
         /* Make this difference */ }

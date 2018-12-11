@@ -32,6 +32,8 @@
         span {
             padding: 0.3em;
             cursor: pointer;
+            min-width: 25px;
+            text-align: center;
         }
 
         .roster-filter {
@@ -124,8 +126,8 @@
                 }
                 &.current-xmpp-contact span {
                     font-size: var(--font-size);
-                    float: left;
-                    margin-right: 0.5em;
+                    margin-right: 0.3em;
+                    vertical-align: middle;
                 }
                 &.odd {
                     background-color: #DCEAC5;

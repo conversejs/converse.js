@@ -84,7 +84,6 @@ po2json:
 
 .PHONY: release
 release:
-
 	$(SED) -ri 's/_converse.VERSION_NAME = "v[0-9]+\.[0-9]+\.[0-9]+";/ _converse.VERSION_NAME = "v$(VERSION)";/' src/headless/converse-core.js
 	$(SED) -ri s/Version:\ [0-9]\+\.[0-9]\+\.[0-9]\+/Version:\ $(VERSION)/ COPYRIGHT
 	$(SED) -ri s/Project-Id-Version:\ Converse\.js\ [0-9]\+\.[0-9]\+\.[0-9]\+/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
@@ -120,6 +119,7 @@ clean:
 	rm css/website.min.css
 	rm css/converse.min.css
 	rm css/*.map
+	rm *.zip
 
 .PHONY: dev
 dev: stamp-npm
@@ -214,7 +214,7 @@ css/webfonts.zip: css/webfonts/*
 	zip -r css/webfonts.zip css/webfonts
 
 locale.zip:
-	zip -r locale.zip locale --exclude *.pot --exclude *.po
+	zip -r locale.zip locale --exclude *.pot --exclude *.po --exclude *.po~
 
 sounds.zip:
 	zip -r sounds.zip sounds

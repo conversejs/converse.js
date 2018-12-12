@@ -234,6 +234,17 @@ converse.plugins.add('converse-chatboxes', {
 
             initialize () {
                 const jid = this.get('jid');
+                if (!jid) {
+                    // XXX: The `validate` method will prevent this model
+                    // from being persisted if there's no jid, but that gets
+                    // called after model instantiation, so we have to deal
+                    // with invalid models here also.
+                    //
+                    // This happens when the controlbox is in browser storage,
+                    // but we're in embedded mode.
+                    return;
+                }
+
                 this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
                 // XXX: this creates a dependency on converse-roster, which we
                 // probably shouldn't have here, so we should probably move
@@ -254,13 +265,22 @@ converse.plugins.add('converse-chatboxes', {
 
                 this.on('change:chat_state', this.sendChatState, this);
 
-                this.save({
+                // Models get saved immediately after creation, so no need to
+                // call `save` here.
+                this.set({
                     // The chat_state will be set to ACTIVE once the chat box is opened
                     // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
                     'box_id' : b64_sha1(this.get('jid')),
                     'time_opened': this.get('time_opened') || moment().valueOf(),
                     'user_id' : Strophe.getNodeFromJid(this.get('jid'))
                 });
+            },
+
+            validate (attrs, options) {
+                const { _converse } = this.__super__;
+                if (!attrs.jid) {
+                    return 'Ignored ChatBox without JID';
+                }
             },
 
             getDisplayName () {

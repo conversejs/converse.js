@@ -50894,6 +50894,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
    * NB: These plugins need to have already been loaded via require.js.
    */
   dependencies: ["converse-modal", "converse-chatboxes", "converse-rosterview", "converse-chatview"],
+
+  enabled(_converse) {
+    return _converse.view_mode !== 'embedded';
+  },
+
   overrides: {
     // Overrides mentioned here will be picked up by converse.js's
     // plugin architecture they will replace existing methods on the
@@ -50915,6 +50920,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     },
 
     ChatBoxes: {
+      model(attrs, options) {
+        const _converse = this.__super__._converse;
+
+        if (attrs.id == 'controlbox') {
+          return new _converse.ControlBox(attrs, options);
+        } else {
+          return this.__super__.model.apply(this, arguments);
+        }
+      },
+
       chatBoxMayBeShown(chatbox) {
         return this.__super__.chatBoxMayBeShown.apply(this, arguments) && chatbox.get('id') !== 'controlbox';
       }
@@ -50953,6 +50968,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
     },
     ChatBox: {
+      validate(attrs, options) {
+        const _converse = this.__super__._converse;
+
+        if (_converse.view_mode === 'embedded' && attrs.type === _converse.CONTROLBOX_TYPE) {
+          return 'Controlbox not relevant in embedded view mode';
+        }
+      },
+
       initialize() {
         if (this.get('id') === 'controlbox') {
           this.set({
@@ -50997,15 +51020,28 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
     _converse.api.promises.add('controlboxInitialized');
 
-    _converse.addControlBox = () => {
-      return _converse.chatboxes.add({
-        'id': 'controlbox',
-        'box_id': 'controlbox',
-        'type': _converse.CONTROLBOX_TYPE,
-        'closed': !_converse.show_controlbox_by_default
-      });
-    };
+    const addControlBox = () => _converse.chatboxes.add({
+      'id': 'controlbox'
+    });
 
+    _converse.ControlBox = _converse.ChatBox.extend({
+      defaults: {
+        'bookmarked': false,
+        'box_id': 'controlbox',
+        'chat_state': undefined,
+        'closed': !_converse.show_controlbox_by_default,
+        'num_unread': 0,
+        'type': _converse.CONTROLBOX_TYPE,
+        'url': ''
+      },
+
+      initialize() {
+        u.safeSave(this, {
+          'time_opened': this.get('time_opened') || moment().valueOf()
+        });
+      }
+
+    });
     _converse.ControlBoxView = _converse.ChatBoxView.extend({
       tagName: 'div',
       className: 'chatbox',
@@ -51395,7 +51431,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         let controlbox = _converse.chatboxes.get('controlbox');
 
         if (!controlbox) {
-          controlbox = _converse.addControlBox();
+          controlbox = addControlBox();
         }
 
         if (_converse.connection.connected) {
@@ -51462,11 +51498,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       }
     });
 
-    Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxViewsInitialized')]).then(_converse.addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+    Promise.all([_converse.api.waitUntil('connectionInitialized'), _converse.api.waitUntil('chatBoxViewsInitialized')]).then(addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
     _converse.on('chatBoxesFetched', () => {
-      const controlbox = _converse.chatboxes.get('controlbox') || _converse.addControlBox();
-
+      const controlbox = _converse.chatboxes.get('controlbox') || addControlBox();
       controlbox.save({
         connected: true
       });
@@ -61571,6 +61606,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
       initialize() {
         const jid = this.get('jid');
+
+        if (!jid) {
+          // XXX: The `validate` method will prevent this model
+          // from being persisted if there's no jid, but that gets
+          // called after model instantiation, so we have to deal
+          // with invalid models here also.
+          //
+          // This happens when the controlbox is in browser storage,
+          // but we're in embedded mode.
+          return;
+        }
+
         this.vcard = _converse.vcards.findWhere({
           'jid': jid
         }) || _converse.vcards.create({
@@ -61595,14 +61642,24 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             this.sendMessageStanza(this.createMessageStanza(message));
           }
         });
-        this.on('change:chat_state', this.sendChatState, this);
-        this.save({
+        this.on('change:chat_state', this.sendChatState, this); // Models get saved immediately after creation, so no need to
+        // call `save` here.
+
+        this.set({
           // The chat_state will be set to ACTIVE once the chat box is opened
           // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
           'box_id': b64_sha1(this.get('jid')),
           'time_opened': this.get('time_opened') || moment().valueOf(),
           'user_id': Strophe.getNodeFromJid(this.get('jid'))
         });
+      },
+
+      validate(attrs, options) {
+        const _converse = this.__super__._converse;
+
+        if (!attrs.jid) {
+          return 'Ignored ChatBox without JID';
+        }
       },
 
       getDisplayName() {

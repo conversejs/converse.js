@@ -49303,21 +49303,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     });
     /************************ BEGIN Event Handlers ************************/
 
-    _converse.api.waitUntil('rosterContactsFetched').then(() => {
-      _converse.roster.on('add', contact => {
-        /* When a new contact is added, check if we already have a
-         * chatbox open for it, and if so attach it to the chatbox.
-         */
-        const chatbox = _converse.chatboxes.findWhere({
-          'jid': contact.get('jid')
-        });
-
-        if (chatbox) {
-          chatbox.addRelatedContact(contact);
-        }
-      });
-    });
-
     _converse.api.listen.on('chatBoxesInitialized', () => {
       _converse.chatboxviews = new _converse.ChatBoxViews({
         'model': _converse.chatboxes
@@ -61571,7 +61556,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       model: _converse.Message,
       comparator: 'time'
     });
-    _converse.ChatBox = _converse.ModelWithVCardAndPresence.extend({
+    _converse.ChatBox = Backbone.Model.extend({
       defaults() {
         return {
           'bookmarked': false,
@@ -61585,19 +61570,25 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       },
 
       initialize() {
-        _converse.ModelWithVCardAndPresence.prototype.initialize.apply(this, arguments);
+        const jid = this.get('jid');
+        this.vcard = _converse.vcards.findWhere({
+          'jid': jid
+        }) || _converse.vcards.create({
+          'jid': jid
+        }); // XXX: this creates a dependency on converse-roster, which we
+        // probably shouldn't have here, so we should probably move
+        // ChatBox out of converse-chatboxes
 
-        _converse.api.waitUntil('rosterContactsFetched').then(() => {
-          this.addRelatedContact(_converse.roster.findWhere({
-            'jid': this.get('jid')
-          }));
+        this.presence = _converse.presences.findWhere({
+          'jid': jid
+        }) || _converse.presences.create({
+          'jid': jid
         });
-
         this.messages = new _converse.Messages();
 
         const storage = _converse.config.get('storage');
 
-        this.messages.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
+        this.messages.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.messages${jid}${_converse.bare_jid}`));
         this.messages.chatbox = this;
         this.messages.on('change:upload', message => {
           if (message.get('upload') === _converse.SUCCESS) {
@@ -61612,13 +61603,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'time_opened': this.get('time_opened') || moment().valueOf(),
           'user_id': Strophe.getNodeFromJid(this.get('jid'))
         });
-      },
-
-      addRelatedContact(contact) {
-        if (!_.isUndefined(contact)) {
-          this.contact = contact;
-          this.trigger('contactAdded', contact);
-        }
       },
 
       getDisplayName() {
@@ -62268,21 +62252,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
 
     _converse.on('chatBoxesFetched', autoJoinChats);
-
-    _converse.api.waitUntil('rosterContactsFetched').then(() => {
-      _converse.roster.on('add', contact => {
-        /* When a new contact is added, check if we already have a
-         * chatbox open for it, and if so attach it to the chatbox.
-         */
-        const chatbox = _converse.chatboxes.findWhere({
-          'jid': contact.get('jid')
-        });
-
-        if (chatbox) {
-          chatbox.addRelatedContact(contact);
-        }
-      });
-    });
 
     _converse.on('addClientFeatures', () => {
       _converse.api.disco.own.features.add(Strophe.NS.MESSAGE_CORRECT);
@@ -63791,7 +63760,7 @@ _converse.initialize = function (settings, callback) {
   } else {
     _i18n__WEBPACK_IMPORTED_MODULE_6__["default"].fetchTranslations(_converse.locale, _converse.locales, _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
       'locale': _converse.locale
-    })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).finally(finishInitialization);
+    })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).finally(finishInitialization).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL));
   }
 
   return init_promise;
@@ -68597,6 +68566,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     /********** Event Handlers *************/
 
 
+    function addRelatedContactToChatbox(chatbox, contact) {
+      if (!_.isUndefined(contact)) {
+        chatbox.contact = contact;
+        chatbox.trigger('contactAdded', contact);
+      }
+    }
+
     function updateUnreadCounter(chatbox) {
       const contact = _converse.roster.findWhere({
         'jid': chatbox.get('jid')
@@ -68611,9 +68587,31 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     _converse.api.listen.on('chatBoxesInitialized', () => {
       _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
+
+      _converse.chatboxes.on('add', async chatbox => {
+        await _converse.api.waitUntil('rosterContactsFetched');
+        addRelatedContactToChatbox(chatbox, _converse.roster.findWhere({
+          'jid': chatbox.get('jid')
+        }));
+      });
     });
 
     _converse.api.listen.on('beforeTearDown', _converse.unregisterPresenceHandler());
+
+    _converse.api.waitUntil('rosterContactsFetched').then(() => {
+      _converse.roster.on('add', contact => {
+        /* When a new contact is added, check if we already have a
+         * chatbox open for it, and if so attach it to the chatbox.
+         */
+        const chatbox = _converse.chatboxes.findWhere({
+          'jid': contact.get('jid')
+        });
+
+        if (chatbox) {
+          addRelatedContactToChatbox(chatbox, contact);
+        }
+      });
+    });
 
     _converse.api.listen.on('afterTearDown', () => {
       if (_converse.presences) {

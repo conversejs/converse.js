@@ -1237,7 +1237,8 @@ _converse.initialize = function (settings, callback) {
             _converse.locales,
             u.interpolate(_converse.locales_url, {'locale': _converse.locale}))
         .catch(e => _converse.log(e.message, Strophe.LogLevel.FATAL))
-        .finally(finishInitialization);
+        .finally(finishInitialization)
+        .catch(e => _converse.log(e.message, Strophe.LogLevel.FATAL));
     }
     return init_promise;
 };

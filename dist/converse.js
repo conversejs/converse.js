@@ -42758,7 +42758,6 @@ Strophe.Websocket.prototype = {
 });
 //# sourceMappingURL=strophe.js.map
 
-
 /***/ }),
 
 /***/ "./node_modules/strophejs-plugin-ping/strophe.ping.js":
@@ -94190,7 +94189,7 @@ __p += '\n<a class="list-item-action fa ';
  if (o.bookmarked) { ;
 __p += ' fa-bookmark remove-bookmark button-on ';
  } else { ;
-__p += ' add-bookmark fa-bookmark-o ';
+__p += ' add-bookmark fa-bookmark ';
  } ;
 __p += '"\n   data-room-jid="' +
 __e(o.jid) +

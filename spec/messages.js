@@ -1224,6 +1224,65 @@
             done();
         }));
 
+        it("carbon received does not emit a message delivery receipt",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+            test_utils.createContacts(_converse, 'current', 1);
+            const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const msg_id = u.getUniqueId();
+            const sent_stanzas = [];
+            spyOn(_converse.chatboxes, 'sendReceiptStanza').and.callThrough();
+            const msg = $msg({
+                    'from': sender_jid,
+                    'to': _converse.connection.jid,
+                    'type': 'chat',
+                    'id': u.getUniqueId(),
+                }).c('received', {'xmlns': 'urn:xmpp:carbons:2'})
+                .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                .c('message', {
+                        'xmlns': 'jabber:client',
+                        'from': sender_jid,
+                        'to': _converse.bare_jid+'/another-resource',
+                        'type': 'chat',
+                        'id': msg_id
+                }).c('body').t('Message!').up()
+                .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
+            _converse.chatboxes.onMessage(msg);
+            await test_utils.waitUntil(() => _converse.api.chats.get().length);
+            expect(_converse.chatboxes.sendReceiptStanza).not.toHaveBeenCalled();
+            done();
+        }));
+
+        it("forwarded does not emit a message delivery receipt if it's mine",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+            test_utils.createContacts(_converse, 'current', 1);
+            const recipient_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const msg_id = u.getUniqueId();
+            const sent_stanzas = [];
+            spyOn(_converse.chatboxes, 'sendReceiptStanza').and.callThrough();
+            const msg = $msg({
+                    'from': converse.bare_jid,
+                    'to': _converse.connection.jid,
+                    'type': 'chat',
+                    'id': u.getUniqueId(),
+                }).c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
+                .c('message', {
+                        'xmlns': 'jabber:client',
+                        'from': _converse.bare_jid+'/another-resource',
+                        'to': recipient_jid,
+                        'type': 'chat',
+                        'id': msg_id
+                }).c('body').t('Message!').up()
+                .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
+            _converse.chatboxes.onMessage(msg);
+            await test_utils.waitUntil(() => _converse.api.chats.get().length);
+            expect(_converse.chatboxes.sendReceiptStanza).not.toHaveBeenCalled();
+            done();
+        }));
+
         it("delivery can be acknowledged by a receipt",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},

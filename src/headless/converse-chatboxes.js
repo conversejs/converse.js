@@ -746,14 +746,15 @@ converse.plugins.add('converse-chatboxes', {
                     return true;
                 }
 
-                let from_jid = stanza.getAttribute('from');
+                let from_jid = stanza.getAttribute('from'),
+                    is_carbon = false;
                 const forwarded = stanza.querySelector('forwarded'),
                       original_stanza = stanza;
 
                 if (!_.isNull(forwarded)) {
                     const forwarded_message = forwarded.querySelector('message'),
-                          forwarded_from = forwarded_message.getAttribute('from'),
-                          is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
+                          forwarded_from = forwarded_message.getAttribute('from');
+                    is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
 
                     if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
                         // Prevent message forging via carbons
@@ -765,14 +766,14 @@ converse.plugins.add('converse-chatboxes', {
                     to_jid = stanza.getAttribute('to');
                 }
 
-                const requests_receipt = !_.isUndefined(sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
-                if (requests_receipt) {
-                    this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
-                }
-
                 const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
                       from_resource = Strophe.getResourceFromJid(from_jid),
                       is_me = from_bare_jid === _converse.bare_jid;
+
+                const requests_receipt = !_.isUndefined(sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
+                if (requests_receipt && !is_carbon && !is_me) {
+                    this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
+                }
 
                 let contact_jid;
                 if (is_me) {

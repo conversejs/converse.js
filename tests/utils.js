@@ -116,7 +116,7 @@
         return _converse.api.rooms.open(`${room}@${server}`);
     };
 
-    utils.openAndEnterChatRoom = async function (_converse, room, server, nick) {
+    utils.openAndEnterChatRoom = async function (_converse, room, server, nick, features=[]) {
         const room_jid = `${room}@${server}`.toLowerCase();
         const stanzas = _converse.connection.IQ_stanzas;
         await _converse.api.rooms.open(room_jid);
@@ -137,22 +137,25 @@
                 'category': 'conference',
                 'name': room[0].toUpperCase() + room.slice(1),
                 'type': 'text'
-            }).up()
-            .c('feature', {'var': 'http://jabber.org/protocol/muc'}).up()
-            .c('feature', {'var': 'jabber:iq:register'}).up()
-            .c('feature', {'var': 'muc_passwordprotected'}).up()
-            .c('feature', {'var': 'muc_hidden'}).up()
-            .c('feature', {'var': 'muc_temporary'}).up()
-            .c('feature', {'var': 'muc_open'}).up()
-            .c('feature', {'var': 'muc_unmoderated'}).up()
-            .c('feature', {'var': 'muc_nonanonymous'})
-            .c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
-                .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
-                    .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
-                .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
-                    .c('value').t('This is the description').up().up()
-                .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
-                    .c('value').t(0);
+            }).up();
+        features = features || [
+            'http://jabber.org/protocol/muc',
+            'jabber:iq:register',
+            'muc_passwordprotected',
+            'muc_hidden',
+            'muc_temporary',
+            'muc_open',
+            'muc_unmoderated',
+            'muc_nonanonymous']
+        features.forEach(f => features_stanza.c('feature', {'var': f}).up());
+        features_stanza.c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
+            .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
+                .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
+            .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
+                .c('value').t('This is the description').up().up()
+            .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
+                .c('value').t(0);
+
         _converse.connection._dataRecv(utils.createRequest(features_stanza));
         const iq = await utils.waitUntil(() => _.filter(
             stanzas,

@@ -38,6 +38,23 @@ converse.ROOM_FEATURES = [
     'moderated', 'unmoderated', 'mam_enabled'
 ];
 
+// No longer used in code, but useful as reference.
+//
+// const ROOM_FEATURES_MAP = {
+//     'passwordprotected': 'unsecured',
+//     'unsecured': 'passwordprotected',
+//     'hidden': 'publicroom',
+//     'publicroom': 'hidden',
+//     'membersonly': 'open',
+//     'open': 'membersonly',
+//     'persistent': 'temporary',
+//     'temporary': 'persistent',
+//     'nonanonymous': 'semianonymous',
+//     'semianonymous': 'nonanonymous',
+//     'moderated': 'unmoderated',
+//     'unmoderated': 'moderated'
+// };
+
 converse.ROOMSTATUS = {
     CONNECTED: 0,
     CONNECTING: 1,

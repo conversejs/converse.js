@@ -56433,13 +56433,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         this.model.on('change:omemo_active', this.renderOMEMOToolbarButton, this);
         this.model.on('change:omemo_supported', this.onOMEMOSupportedDetermined, this);
-        this.checkOMEMOSupported();
-      },
-
-      async checkOMEMOSupported() {
-        const _converse = this.__super__._converse;
-        const supported = await _converse.contactHasOMEMOSupport(this.model.get('jid'));
-        this.model.set('omemo_supported', supported);
       },
 
       showMessage(message) {
@@ -56486,6 +56479,33 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         });
       }
 
+    },
+    ChatRoomView: {
+      events: {
+        'click .toggle-omemo': 'toggleOMEMO'
+      },
+
+      initialize() {
+        this.__super__.initialize.apply(this, arguments);
+
+        this.model.on('change:omemo_active', this.renderOMEMOToolbarButton, this);
+        this.model.on('change:omemo_supported', this.onOMEMOSupportedDetermined, this);
+      },
+
+      toggleOMEMO(ev) {
+        const _converse = this.__super__._converse,
+              __ = _converse.__;
+
+        if (!this.model.get('omemo_supported')) {
+          return _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [__('Cannot use end-to-end encryption in this groupchat, ' + 'either the groupchat has some anonymity or not all participants support OMEMO.')]);
+        }
+
+        ev.preventDefault();
+        this.model.save({
+          'omemo_active': !this.model.get('omemo_active')
+        });
+      }
+
     }
   },
 
@@ -56493,7 +56513,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     /* The initialize function gets called as soon as the plugin is
      * loaded by Converse.js's plugin machinery.
      */
-    const _converse = this._converse;
+    const _converse = this._converse,
+          __ = _converse.__;
 
     _converse.api.promises.add(['OMEMOInitialized']);
 
@@ -57133,6 +57154,49 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       _converse.devicelists.browserStorage = new Backbone.BrowserStorage[storage](id);
       fetchOwnDevices().then(() => restoreOMEMOSession()).then(() => _converse.omemo_store.publishBundle()).then(() => _converse.emit('OMEMOInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
     }
+
+    async function onOccupantAdded(chatroom, occupant) {
+      if (occupant.isSelf() || !chatroom.get('nonanonymous')) {
+        return;
+      }
+
+      if (chatroom.get('omemo_active')) {
+        const supported = await _converse.contactHasOMEMOSupport(occupant.get('jid'));
+
+        if (!supported) {
+          chatroom.messages.create({
+            'message': __("%1$s doesn't appear to have a client that supports OMEMO. " + "Encrypted chat will no longer be possible in this grouchat.", occupant.get('nick')),
+            'type': 'error'
+          });
+          chatroom.save({
+            'omemo_active': false,
+            'omemo_supported': false
+          });
+        }
+      }
+    }
+
+    async function checkOMEMOSupported(chatbox) {
+      let supported;
+
+      if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+        supported = chatbox.get('nonanonymous') && chatbox.get('membersonly');
+      } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+        supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));
+      }
+
+      chatbox.set('omemo_supported', supported);
+    }
+
+    _converse.api.waitUntil('chatBoxesInitialized').then(() => _converse.chatboxes.on('add', chatbox => {
+      checkOMEMOSupported(chatbox);
+
+      if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+        chatbox.occupants.on('add', o => onOccupantAdded(chatbox, o));
+        chatbox.on('change:nonanonymous', checkOMEMOSupported);
+        chatbox.on('change:membersonly', checkOMEMOSupported);
+      }
+    }));
 
     _converse.api.listen.on('afterTearDown', () => {
       if (_converse.devicelists) {
@@ -65885,7 +65949,23 @@ Strophe.addNamespace('MUC_REGISTER', "jabber:iq:register");
 Strophe.addNamespace('MUC_ROOMCONF', Strophe.NS.MUC + "#roomconfig");
 Strophe.addNamespace('MUC_USER', Strophe.NS.MUC + "#user");
 _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].MUC_NICK_CHANGED_CODE = "303";
-_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES = ['passwordprotected', 'unsecured', 'hidden', 'publicroom', 'membersonly', 'open', 'persistent', 'temporary', 'nonanonymous', 'semianonymous', 'moderated', 'unmoderated', 'mam_enabled'];
+_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES = ['passwordprotected', 'unsecured', 'hidden', 'publicroom', 'membersonly', 'open', 'persistent', 'temporary', 'nonanonymous', 'semianonymous', 'moderated', 'unmoderated', 'mam_enabled']; // No longer used in code, but useful as reference.
+//
+// const ROOM_FEATURES_MAP = {
+//     'passwordprotected': 'unsecured',
+//     'unsecured': 'passwordprotected',
+//     'hidden': 'publicroom',
+//     'publicroom': 'hidden',
+//     'membersonly': 'open',
+//     'open': 'membersonly',
+//     'persistent': 'temporary',
+//     'temporary': 'persistent',
+//     'nonanonymous': 'semianonymous',
+//     'semianonymous': 'nonanonymous',
+//     'moderated': 'unmoderated',
+//     'unmoderated': 'moderated'
+// };
+
 _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS = {
   CONNECTED: 0,
   CONNECTING: 1,

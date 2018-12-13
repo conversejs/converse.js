@@ -1,12 +1,8 @@
 (function (root, factory) {
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
-    var Strophe = converse.env.Strophe;
-    var b64_sha1 = converse.env.b64_sha1;
-    var $iq = converse.env.$iq;
-    var $msg = converse.env.$msg;
-    var _ = converse.env._;
-    var u = converse.env.utils;
+    const { $iq, $pres, $msg, _, Strophe } = converse.env;
+    const u = converse.env.utils;
 
 
     function deviceListFetched (_converse, jid) {
@@ -228,7 +224,6 @@
                 .toBe('Another received encrypted message without fallback');
             done();
         }));
-
 
         it("can receive a PreKeySignalMessage",
             mock.initConverseWithPromises(
@@ -821,6 +816,187 @@
             expect(u.hasClass('fa-lock', toggle)).toBe(false);
             expect(u.hasClass('fa-unlock', toggle)).toBe(true);
             expect(u.hasClass('disabled', toggle)).toBe(false);
+            done();
+        }));
+
+        it("adds a toolbar button for starting an encrypted groupchat session",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
+                async function (done, _converse) {
+
+            // MEMO encryption works only in members-only conferences that are non-anonymous. 
+            const features = [
+                'http://jabber.org/protocol/muc',
+                'jabber:iq:register',
+                'muc_passwordprotected',
+                'muc_hidden',
+                'muc_temporary',
+                'muc_membersonly',
+                'muc_unmoderated',
+                'muc_nonanonymous'
+            ];
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy', features);
+            const view = _converse.chatboxviews.get('lounge@localhost');
+            await test_utils.waitUntil(() => initializedOMEMO(_converse));
+
+            const toolbar = view.el.querySelector('.chat-toolbar');
+            let toggle = toolbar.querySelector('.toggle-omemo');
+            expect(view.model.get('omemo_active')).toBe(undefined);
+            expect(_.isNull(toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('disabled', toggle)).toBe(false);
+            expect(view.model.get('omemo_supported')).toBe(true);
+
+            toggle.click();
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(view.model.get('omemo_active')).toBe(true);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(false);
+            expect(u.hasClass('fa-lock', toggle)).toBe(true);
+            expect(u.hasClass('disabled', toggle)).toBe(false);
+            expect(view.model.get('omemo_supported')).toBe(true);
+
+            let contact_jid = 'newguy@localhost';
+            let stanza = $pres({
+                    to: 'dummy@localhost/resource',
+                    from: 'lounge@localhost/newguy'
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': 'newguy@localhost/_converse.js-290929789',
+                    'role': 'participant'
+                }).tree();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
+            expect(iq_stanza.toLocaleString()).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+                    `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                        `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
+                    `</pubsub>`+
+                `</iq>`);
+
+            stanza = $iq({
+                'from': contact_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result',
+            }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                    .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                        .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                            .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
+                            .c('device', {'id': 'ae890ac52d0df67ed7cfdf51b644e901'});
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.omemo_store);
+            expect(_converse.devicelists.length).toBe(2);
+
+            const devicelist = _converse.devicelists.get(contact_jid);
+            expect(devicelist.devices.length).toBe(2);
+            expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
+            expect(devicelist.devices.at(1).get('id')).toBe('ae890ac52d0df67ed7cfdf51b644e901');
+
+            expect(view.model.get('omemo_active')).toBe(true);
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(_.isNull(toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(false);
+            expect(u.hasClass('fa-lock', toggle)).toBe(true);
+            expect(u.hasClass('disabled', toggle)).toBe(false);
+            expect(view.model.get('omemo_supported')).toBe(true);
+
+            // Test that the button gets disabled when the room becomes
+            // anonymous or semi-anonymous
+            view.model.save({'nonanonymous': false, 'semianonymous': true});
+            await test_utils.waitUntil(() => !view.model.get('omemo_supported'));
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(_.isNull(toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('disabled', toggle)).toBe(true);
+            expect(view.model.get('omemo_supported')).toBe(false);
+
+            view.model.save({'nonanonymous': true, 'semianonymous': false});
+            await test_utils.waitUntil(() => view.model.get('omemo_supported'));
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(_.isNull(toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('disabled', toggle)).toBe(false);
+
+            // Test that the button gets disabled when the room becomes open
+            view.model.save({'membersonly': false, 'open': true});
+            await test_utils.waitUntil(() => !view.model.get('omemo_supported'));
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(_.isNull(toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('disabled', toggle)).toBe(true);
+            expect(view.model.get('omemo_supported')).toBe(false);
+
+            view.model.save({'membersonly': true, 'open': false});
+            await test_utils.waitUntil(() => view.model.get('omemo_supported'));
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(_.isNull(toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('disabled', toggle)).toBe(false);
+            expect(view.model.get('omemo_supported')).toBe(true);
+            expect(view.model.get('omemo_active')).toBe(false);
+
+            toggle.click();
+            expect(view.model.get('omemo_active')).toBe(true);
+
+            // Someone enters the room who doesn't have OMEMO support, while we
+            // have OMEMO activated...
+            contact_jid = 'oldguy@localhost';
+            stanza = $pres({
+                    to: 'dummy@localhost/resource',
+                    from: 'lounge@localhost/oldguy'
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': `${contact_jid}/_converse.js-290929788`,
+                    'role': 'participant'
+                }).tree();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
+            expect(iq_stanza.toLocaleString()).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+                    `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                        `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
+                    `</pubsub>`+
+                `</iq>`);
+
+            stanza = $iq({
+                'from': contact_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'error'
+            }).c('error', {'type': 'cancel'})
+                .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            await test_utils.waitUntil(() => !view.model.get('omemo_supported'));
+
+            expect(view.el.querySelector('.chat-error').textContent).toBe(
+                "oldguy doesn't appear to have a client that supports OMEMO. "+
+                "Encrypted chat will no longer be possible in this grouchat."
+            );
+
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(_.isNull(toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('disabled', toggle)).toBe(true);
+
+            expect( _converse.chatboxviews.el.querySelector('.modal-body p')).toBe(null);
+            toggle.click();
+            const msg = _converse.chatboxviews.el.querySelector('.modal-body p');
+            expect(msg.textContent).toBe(
+                'Cannot use end-to-end encryption in this groupchat, '+
+                'either the groupchat has some anonymity or not all participants support OMEMO.');
             done();
         }));
 

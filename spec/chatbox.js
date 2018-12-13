@@ -421,7 +421,7 @@
                     expect(view).toBeDefined();
                     const toolbar = view.el.querySelector('ul.chat-toolbar');
                     expect(_.isElement(toolbar)).toBe(true);
-                    expect(toolbar.querySelectorAll(':scope > li').length).toBe(1);
+                    expect(toolbar.querySelectorAll(':scope > li').length).toBe(2);
                     done();
                 }));
 

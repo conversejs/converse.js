@@ -454,6 +454,19 @@ converse.plugins.add('converse-omemo', {
                 'click .toggle-omemo': 'toggleOMEMO'
             },
 
+            initialize () {
+                this.__super__.initialize.apply(this, arguments);
+                this.model.on('change:omemo_active', this.renderOMEMOToolbarButton, this);
+                this.model.on('change:omemo_supported', this.onOMEMOSupportedDetermined, this);
+                this.checkOMEMOSupported();
+            },
+
+            async checkOMEMOSupported () {
+                const { _converse } = this.__super__;
+                const supported = await _converse.contactHasOMEMOSupport(this.model.get('jid'));
+                this.model.set('omemo_supported', supported);
+            },
+
             showMessage (message) {
                 // We don't show a message if it's only keying material
                 if (!message.get('is_only_key')) {
@@ -461,24 +474,40 @@ converse.plugins.add('converse-omemo', {
                 }
             },
 
-            async renderOMEMOToolbarButton () {
-                const { _converse } = this.__super__, { __ } = _converse;
-                const support = await _converse.contactHasOMEMOSupport(this.model.get('jid'));
-                if (support) {
-                    const icon = this.el.querySelector('.toggle-omemo'),
-                          html = tpl_toolbar_omemo(_.extend(this.model.toJSON(), {'__': __}));
-                    if (icon) {
-                        icon.outerHTML = html;
-                    } else {
-                        this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', html);
-                    }
+            onOMEMOSupportedDetermined () {
+                if (!this.model.get('omemo_supported') && this.model.get('omemo_active')) {
+                    this.model.set('omemo_active', false); // Will cause render
+                } else {
+                    this.renderOMEMOToolbarButton();
+                }
+            },
+
+            renderOMEMOToolbarButton () {
+                const { _converse } = this.__super__,
+                      { __ } = _converse,
+                      icon = this.el.querySelector('.toggle-omemo'),
+                      html = tpl_toolbar_omemo(_.extend(this.model.toJSON(), {'__': __}));
+
+                if (icon) {
+                    icon.outerHTML = html;
+                } else {
+                    this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', html);
                 }
             },
 
             toggleOMEMO (ev) {
+                const { _converse } = this.__super__, { __ } = _converse;
+                if (!this.model.get('omemo_supported')) {
+                    return _converse.api.alert.show(
+                        Strophe.LogLevel.ERROR,
+                        __('Error'),
+                        [__(`Cannot use end-to-end encryption because %1$s uses a client that doesn't support OMEMO.`,
+                            this.model.contact.getDisplayName()
+                           )] 
+                    )
+                }
                 ev.preventDefault();
                 this.model.save({'omemo_active': !this.model.get('omemo_active')});
-                this.renderOMEMOToolbarButton();
             }
         }
     },

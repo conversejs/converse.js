@@ -56472,6 +56472,20 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         'click .toggle-omemo': 'toggleOMEMO'
       },
 
+      initialize() {
+        this.__super__.initialize.apply(this, arguments);
+
+        this.model.on('change:omemo_active', this.renderOMEMOToolbarButton, this);
+        this.model.on('change:omemo_supported', this.onOMEMOSupportedDetermined, this);
+        this.checkOMEMOSupported();
+      },
+
+      async checkOMEMOSupported() {
+        const _converse = this.__super__._converse;
+        const supported = await _converse.contactHasOMEMOSupport(this.model.get('jid'));
+        this.model.set('omemo_supported', supported);
+      },
+
       showMessage(message) {
         // We don't show a message if it's only keying material
         if (!message.get('is_only_key')) {
@@ -56479,31 +56493,41 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
       },
 
-      async renderOMEMOToolbarButton() {
+      onOMEMOSupportedDetermined() {
+        if (!this.model.get('omemo_supported') && this.model.get('omemo_active')) {
+          this.model.set('omemo_active', false); // Will cause render
+        } else {
+          this.renderOMEMOToolbarButton();
+        }
+      },
+
+      renderOMEMOToolbarButton() {
         const _converse = this.__super__._converse,
-              __ = _converse.__;
-        const support = await _converse.contactHasOMEMOSupport(this.model.get('jid'));
+              __ = _converse.__,
+              icon = this.el.querySelector('.toggle-omemo'),
+              html = templates_toolbar_omemo_html__WEBPACK_IMPORTED_MODULE_1___default()(_.extend(this.model.toJSON(), {
+          '__': __
+        }));
 
-        if (support) {
-          const icon = this.el.querySelector('.toggle-omemo'),
-                html = templates_toolbar_omemo_html__WEBPACK_IMPORTED_MODULE_1___default()(_.extend(this.model.toJSON(), {
-            '__': __
-          }));
-
-          if (icon) {
-            icon.outerHTML = html;
-          } else {
-            this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', html);
-          }
+        if (icon) {
+          icon.outerHTML = html;
+        } else {
+          this.el.querySelector('.chat-toolbar').insertAdjacentHTML('beforeend', html);
         }
       },
 
       toggleOMEMO(ev) {
+        const _converse = this.__super__._converse,
+              __ = _converse.__;
+
+        if (!this.model.get('omemo_supported')) {
+          return _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [__(`Cannot use end-to-end encryption because %1$s uses a client that doesn't support OMEMO.`, this.model.contact.getDisplayName())]);
+        }
+
         ev.preventDefault();
         this.model.save({
           'omemo_active': !this.model.get('omemo_active')
         });
-        this.renderOMEMOToolbarButton();
       }
 
     }
@@ -67162,6 +67186,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
       isMember() {
         return _.includes(['admin', 'owner', 'member'], this.get('affiliation'));
+      },
+
+      isSelf() {
+        return this.get('states').includes('110');
       }
 
     });
@@ -94708,13 +94736,17 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/toolbar_omemo.html -->\n<li class="toggle-omemo fa ';
+__p += '<!-- src/templates/toolbar_omemo.html -->\n<li class="toggle-omemo fa \n        ';
+ if (!o.omemo_supported) { ;
+__p += ' disabled ';
+ } ;
+__p += '\n        ';
  if (o.omemo_active) { ;
 __p += ' fa-lock ';
  } else { ;
 __p += ' fa-unlock ';
  } ;
-__p += '" title="' +
+__p += '"\n    title="' +
 __e(o.__('Messages are being sent in plaintext')) +
 '"></li>\n';
 return __p

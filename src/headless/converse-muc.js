@@ -1131,6 +1131,10 @@ converse.plugins.add('converse-muc', {
 
             isMember () {
                 return _.includes(['admin', 'owner', 'member'], this.get('affiliation'));
+            },
+
+            isSelf () {
+                return this.get('states').includes('110');
             }
         });
 

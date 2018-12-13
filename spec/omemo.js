@@ -809,6 +809,18 @@
                 preventDefault: _.noop,
                 keyCode: 13
             });
+
+            view.model.save({'omemo_supported': false});
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('disabled', toggle)).toBe(true);
+
+            view.model.save({'omemo_supported': true});
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('disabled', toggle)).toBe(false);
             done();
         }));
 

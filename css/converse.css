@@ -10331,6 +10331,8 @@ body.reset {
       #conversejs .chatbox .sendXMPPMessage .chat-toolbar .fas, #conversejs .chatbox .sendXMPPMessage .chat-toolbar .fas:hover {
         color: var(--chat-head-color);
         font-size: var(--font-size-large); }
+      #conversejs .chatbox .sendXMPPMessage .chat-toolbar .disabled {
+        color: var(--text-color-lighten-15-percent) !important; }
       #conversejs .chatbox .sendXMPPMessage .chat-toolbar .unencrypted a,
       #conversejs .chatbox .sendXMPPMessage .chat-toolbar .unencrypted {
         color: var(--text-color); }
@@ -10873,8 +10875,7 @@ body.reset {
       line-height: normal; }
       #conversejs #controlbox .controlbox-pane .controlbox-padded .change-status {
         min-width: 25px;
-        text-align: center;
-      }
+        text-align: center; }
     #conversejs #controlbox .controlbox-pane .add-converse-contact {
       margin: 0 0 0.75em 0; }
     #conversejs #controlbox .controlbox-pane .chatbox-btn {

@@ -631,11 +631,11 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             registerMessageHandler () {
-                _converse.connection.addHandler((stanza) => {
+                _converse.connection.addHandler(stanza => {
                     this.onMessage(stanza);
                     return true;
                 }, null, 'message', 'chat');
-                _converse.connection.addHandler((stanza) => {
+                _converse.connection.addHandler(stanza => {
                     this.onErrorMessage(stanza);
                     return true;
                 }, null, 'message', 'error');

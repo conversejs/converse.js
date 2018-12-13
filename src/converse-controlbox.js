@@ -145,13 +145,6 @@ converse.plugins.add('converse-controlbox', {
         },
 
         ChatBox: {
-            validate (attrs, options) {
-                const { _converse } = this.__super__;
-                if (_converse.view_mode === 'embedded' && attrs.type === _converse.CONTROLBOX_TYPE) {
-                    return 'Controlbox not relevant in embedded view mode';
-                }
-            },
-
             initialize () {
                 if (this.get('id') === 'controlbox') {
                     this.set({'time_opened': moment(0).valueOf()});

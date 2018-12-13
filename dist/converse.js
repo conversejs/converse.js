@@ -50971,9 +50971,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       validate(attrs, options) {
         const _converse = this.__super__._converse;
 
-        if (_converse.view_mode === 'embedded' && attrs.type === _converse.CONTROLBOX_TYPE) {
-          return 'Controlbox not relevant in embedded view mode';
+        if (attrs.type === _converse.CONTROLBOX_TYPE) {
+          if (_converse.view_mode === 'embedded') {
+            return 'Controlbox not relevant in embedded view mode';
+          }
+
+          return;
         }
+
+        return this.__super__.validate.apply(this, arguments);
       },
 
       initialize() {

@@ -138,7 +138,8 @@
                 'name': room[0].toUpperCase() + room.slice(1),
                 'type': 'text'
             }).up();
-        features = features || [
+
+        features = features.length ? features : [
             'http://jabber.org/protocol/muc',
             'jabber:iq:register',
             'muc_passwordprotected',
@@ -155,8 +156,8 @@
                 .c('value').t('This is the description').up().up()
             .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
                 .c('value').t(0);
-
         _converse.connection._dataRecv(utils.createRequest(features_stanza));
+
         const iq = await utils.waitUntil(() => _.filter(
             stanzas,
             s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s.nodeTree).length

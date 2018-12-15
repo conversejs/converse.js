@@ -53176,15 +53176,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       _converse.emit('minimizedChatsInitialized');
     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
-    _converse.on('registeredGlobalEventHandlers', function () {
-      window.addEventListener("resize", _.debounce(function (ev) {
-        if (_converse.connection.connected) {
-          _converse.chatboxviews.trimChats();
-        }
-      }, 200));
-    });
+    const debouncedTrim = _.debounce(ev => {
+      if (_converse.connection.connected) {
+        _converse.chatboxviews.trimChats();
+      }
+    }, 200);
 
-    _converse.on('controlBoxOpened', function (chatbox) {
+    _converse.api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrim));
+
+    _converse.api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrim));
+
+    _converse.api.listen.on('controlBoxOpened', function (chatbox) {
       // Wrapped in anon method because at scan time, chatboxviews
       // attr not set yet.
       if (_converse.connection.connected) {
@@ -62951,7 +62953,7 @@ function finishInitialization() {
 function unregisterGlobalEventHandlers() {
   document.removeEventListener("visibilitychange", _converse.saveWindowState);
 
-  _converse.emit('registeredGlobalEventHandlers');
+  _converse.emit('unregisteredGlobalEventHandlers');
 }
 
 function cleanup() {

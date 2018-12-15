@@ -435,7 +435,7 @@ function finishInitialization () {
 
 function unregisterGlobalEventHandlers () {
     document.removeEventListener("visibilitychange", _converse.saveWindowState);
-    _converse.emit('registeredGlobalEventHandlers');
+    _converse.emit('unregisteredGlobalEventHandlers');
 }
 
 function cleanup () {

@@ -517,15 +517,15 @@ converse.plugins.add('converse-minimize', {
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
 
-        _converse.on('registeredGlobalEventHandlers', function () {
-            window.addEventListener("resize", _.debounce(function (ev) {
-                if (_converse.connection.connected) {
-                    _converse.chatboxviews.trimChats();
-                }
-            }, 200));
-        });
+        const debouncedTrim = _.debounce(ev => {
+            if (_converse.connection.connected) {
+                _converse.chatboxviews.trimChats();
+            }
+        }, 200);
+        _converse.api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrim));
+        _converse.api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrim));
 
-        _converse.on('controlBoxOpened', function (chatbox) {
+        _converse.api.listen.on('controlBoxOpened', function (chatbox) {
             // Wrapped in anon method because at scan time, chatboxviews
             // attr not set yet.
             if (_converse.connection.connected) {

@@ -817,7 +817,7 @@ _converse.initialize = function (settings, callback) {
         _converse.emit('logout');
     };
 
-    this.saveWindowState = function (ev, hidden) {
+    this.saveWindowState = function (ev) {
         // XXX: eventually we should be able to just use
         // document.visibilityState (when we drop support for older
         // browsers).
@@ -834,7 +834,7 @@ _converse.initialize = function (settings, callback) {
         if (ev.type in event_map) {
             state = event_map[ev.type];
         } else {
-            state = document[hidden] ? "hidden" : "visible";
+            state = document.hidden ? "hidden" : "visible";
         }
         if (state  === 'visible') {
             _converse.clearMsgCounter();
@@ -844,29 +844,10 @@ _converse.initialize = function (settings, callback) {
     };
 
     this.registerGlobalEventHandlers = function () {
-        // Taken from:
-        // http://stackoverflow.com/questions/1060008/is-there-a-way-to-detect-if-a-browser-window-is-not-currently-active
-        let hidden = "hidden";
-        // Standards:
-        if (hidden in document) {
-            document.addEventListener("visibilitychange", _.partial(_converse.saveWindowState, _, hidden));
-        } else if ((hidden = "mozHidden") in document) {
-            document.addEventListener("mozvisibilitychange", _.partial(_converse.saveWindowState, _, hidden));
-        } else if ((hidden = "webkitHidden") in document) {
-            document.addEventListener("webkitvisibilitychange", _.partial(_converse.saveWindowState, _, hidden));
-        } else if ((hidden = "msHidden") in document) {
-            document.addEventListener("msvisibilitychange", _.partial(_converse.saveWindowState, _, hidden));
-        } else if ("onfocusin" in document) {
-            // IE 9 and lower:
-            document.onfocusin = document.onfocusout = _.partial(_converse.saveWindowState, _, hidden);
-        } else {
-            // All others:
-            window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _.partial(_converse.saveWindowState, _, hidden);
-        }
-        // set the initial state (but only if browser supports the Page Visibility API)
-        if( document[hidden] !== undefined ) {
-            _.partial(_converse.saveWindowState, _, hidden)({type: document[hidden] ? "blur" : "focus"});
-        }
+        document.addEventListener("visibilitychange", _converse.saveWindowState);
+
+        // set the initial state
+        _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"});
         _converse.emit('registeredGlobalEventHandlers');
     };
 

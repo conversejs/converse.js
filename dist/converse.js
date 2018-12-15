@@ -63394,7 +63394,7 @@ _converse.initialize = function (settings, callback) {
     _converse.emit('logout');
   };
 
-  this.saveWindowState = function (ev, hidden) {
+  this.saveWindowState = function (ev) {
     // XXX: eventually we should be able to just use
     // document.visibilityState (when we drop support for older
     // browsers).
@@ -63412,7 +63412,7 @@ _converse.initialize = function (settings, callback) {
     if (ev.type in event_map) {
       state = event_map[ev.type];
     } else {
-      state = document[hidden] ? "hidden" : "visible";
+      state = document.hidden ? "hidden" : "visible";
     }
 
     if (state === 'visible') {
@@ -63427,32 +63427,11 @@ _converse.initialize = function (settings, callback) {
   };
 
   this.registerGlobalEventHandlers = function () {
-    // Taken from:
-    // http://stackoverflow.com/questions/1060008/is-there-a-way-to-detect-if-a-browser-window-is-not-currently-active
-    let hidden = "hidden"; // Standards:
+    document.addEventListener("visibilitychange", _converse.saveWindowState); // set the initial state
 
-    if (hidden in document) {
-      document.addEventListener("visibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden));
-    } else if ((hidden = "mozHidden") in document) {
-      document.addEventListener("mozvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden));
-    } else if ((hidden = "webkitHidden") in document) {
-      document.addEventListener("webkitvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden));
-    } else if ((hidden = "msHidden") in document) {
-      document.addEventListener("msvisibilitychange", _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden));
-    } else if ("onfocusin" in document) {
-      // IE 9 and lower:
-      document.onfocusin = document.onfocusout = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden);
-    } else {
-      // All others:
-      window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden);
-    } // set the initial state (but only if browser supports the Page Visibility API)
-
-
-    if (document[hidden] !== undefined) {
-      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.saveWindowState, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a, hidden)({
-        type: document[hidden] ? "blur" : "focus"
-      });
-    }
+    _converse.saveWindowState({
+      'type': document.hidden ? "blur" : "focus"
+    });
 
     _converse.emit('registeredGlobalEventHandlers');
   };

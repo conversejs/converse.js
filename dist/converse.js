@@ -62948,6 +62948,12 @@ function finishInitialization() {
   }
 }
 
+function unregisterGlobalEventHandlers() {
+  document.removeEventListener("visibilitychange", _converse.saveWindowState);
+
+  _converse.emit('registeredGlobalEventHandlers');
+}
+
 function cleanup() {
   // Looks like _converse.initialized was called again without logging
   // out or disconnecting in the previous session.
@@ -62956,6 +62962,7 @@ function cleanup() {
 
   _converse.chatboxviews.closeAllChatBoxes();
 
+  unregisterGlobalEventHandlers();
   window.localStorage.clear();
   window.sessionStorage.clear();
 

@@ -15,7 +15,7 @@
     }
     utils.waitUntil = waitUntilPromise.default;
 
-    utils.waitUntilDiscoConfirmed = async function (_converse, entity_jid, identities, features, items, type='info') {
+    utils.waitUntilDiscoConfirmed = async function (_converse, entity_jid, identities, features=[], items=[], type='info') {
         const iq = await utils.waitUntil(() => {
             return _.filter(
                 _converse.connection.IQ_stanzas,

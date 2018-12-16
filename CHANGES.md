@@ -5,7 +5,8 @@
 - Bugfix: MUC commands were being ignored
 - UI: Always show the OMEMO lock icon (grayed out if not available).
 - #1374 Can't load embedded chat when changing `view_mode` between page reloads
-- Bugfix: Message Delivery Receipts were being sent for carbons and own messages
+- #1376 Fixed some alignment issues in the sidebar
+- #1378 Message Delivery Receipts were being sent for carbons and own messages
 
 ## 4.0.6 (2018-12-07)
 

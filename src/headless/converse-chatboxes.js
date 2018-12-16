@@ -634,7 +634,7 @@ converse.plugins.add('converse-chatboxes', {
                 _converse.connection.addHandler(stanza => {
                     this.onMessage(stanza);
                     return true;
-                }, null, 'message', 'chat');
+                }, null, 'message');
                 _converse.connection.addHandler(stanza => {
                     this.onErrorMessage(stanza);
                     return true;
@@ -764,6 +764,15 @@ converse.plugins.add('converse-chatboxes', {
                     stanza = forwarded_message;
                     from_jid = stanza.getAttribute('from');
                     to_jid = stanza.getAttribute('to');
+                }
+
+                const isReceipt = !_.isUndefined(sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
+                if ((stanza.getAttribute('type') !== 'chat') && !isReceipt) {
+                    _converse.log(
+                        `onMessage: Ignoring incoming message !== type 'chat' from JID: ${stanza.getAttribute('from')} which is not a receipt`,
+                        Strophe.LogLevel.INFO
+                    );
+                    return true;
                 }
 
                 const from_bare_jid = Strophe.getBareJidFromJid(from_jid),

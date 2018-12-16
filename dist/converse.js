@@ -54367,7 +54367,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
             break;
 
           case 'help':
-            this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this room")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`]);
+            this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this groupchat")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`]);
             break;
 
           case 'kick':
@@ -62084,7 +62084,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         _converse.connection.addHandler(stanza => {
           this.onMessage(stanza);
           return true;
-        }, null, 'message', 'chat');
+        }, null, 'message');
 
         _converse.connection.addHandler(stanza => {
           this.onErrorMessage(stanza);
@@ -62226,6 +62226,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           stanza = forwarded_message;
           from_jid = stanza.getAttribute('from');
           to_jid = stanza.getAttribute('to');
+        }
+
+        const isReceipt = !_.isUndefined(sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
+
+        if (stanza.getAttribute('type') !== 'chat' && !isReceipt) {
+          _converse.log(`onMessage: Ignoring incoming message !== type 'chat' from JID: ${stanza.getAttribute('from')} which is not a receipt`, Strophe.LogLevel.INFO);
+
+          return true;
         }
 
         const from_bare_jid = Strophe.getBareJidFromJid(from_jid),

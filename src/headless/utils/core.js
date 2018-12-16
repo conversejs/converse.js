@@ -88,12 +88,12 @@ u.isOnlyChatStateNotification = function (attrs) {
 };
 
 u.isHeadlineMessage = function (_converse, message) {
-    var from_jid = message.getAttribute('from');
+    const from_jid = message.getAttribute('from');
     if (message.getAttribute('type') === 'headline') {
         return true;
     }
     const chatbox = _converse.chatboxes.get(Strophe.getBareJidFromJid(from_jid));
-    if (chatbox && chatbox.get('type') === 'chatroom') {
+    if (chatbox && chatbox.get('type') === _converse.CHATROOMS_TYPE) {
         return false;
     }
     if (message.getAttribute('type') !== 'error' &&

@@ -54367,7 +54367,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
             break;
 
           case 'help':
-            this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this room")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`]);
+            this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this groupchat")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`]);
             break;
 
           case 'kick':
@@ -61415,7 +61415,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       'send_chat_state_notifications': true
     });
 
-    _converse.api.promises.add(['chatBoxesFetched', 'chatBoxesInitialized', 'privateChatsAutoJoined']);
+    _converse.api.promises.add(['chatBoxesFetched', 'ehatBoxesInitialized', 'privateChatsAutoJoined']);
 
     function openChat(jid) {
       if (!utils.isValidJID(jid)) {
@@ -62087,6 +62087,20 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }, null, 'message', 'chat');
 
         _converse.connection.addHandler(stanza => {
+          // Message receipts are usually without the `type` attribute. See #1353
+          if (!_.isNull(stanza.getAttribute('type'))) {
+            // TODO: currently Strophe has no way to register a handler
+            // for stanzas without a `type` attribute.
+            // We could update it to accept null to mean no attribute,
+            // but that would be a backward-incompatible chnge
+            return true; // Gets handled above.
+          }
+
+          this.onMessage(stanza);
+          return true;
+        }, Strophe.NS.RECEIPTS, 'message');
+
+        _converse.connection.addHandler(stanza => {
           this.onErrorMessage(stanza);
           return true;
         }, null, 'message', 'error');
@@ -62202,7 +62216,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           // XXX: Ideally we wouldn't have to check for headline
           // messages, but Prosody sends headline messages with the
           // wrong type ('chat'), so we need to filter them out here.
-          _converse.log(`onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ${stanza.getAttribute('from')}`, Strophe.LogLevel.INFO);
+          _converse.log(`onMessage: Ignoring incoming headline message from JID: ${stanza.getAttribute('from')}`, Strophe.LogLevel.INFO);
 
           return true;
         }
@@ -69597,7 +69611,7 @@ u.isOnlyChatStateNotification = function (attrs) {
 };
 
 u.isHeadlineMessage = function (_converse, message) {
-  var from_jid = message.getAttribute('from');
+  const from_jid = message.getAttribute('from');
 
   if (message.getAttribute('type') === 'headline') {
     return true;
@@ -69605,7 +69619,7 @@ u.isHeadlineMessage = function (_converse, message) {
 
   const chatbox = _converse.chatboxes.get(strophe_js__WEBPACK_IMPORTED_MODULE_2__["Strophe"].getBareJidFromJid(from_jid));
 
-  if (chatbox && chatbox.get('type') === 'chatroom') {
+  if (chatbox && chatbox.get('type') === _converse.CHATROOMS_TYPE) {
     return false;
   }
 

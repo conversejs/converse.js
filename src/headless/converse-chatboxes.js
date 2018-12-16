@@ -40,7 +40,7 @@ converse.plugins.add('converse-chatboxes', {
         });
         _converse.api.promises.add([
             'chatBoxesFetched',
-            'chatBoxesInitialized',
+            'ehatBoxesInitialized',
             'privateChatsAutoJoined'
         ]);
 
@@ -635,6 +635,20 @@ converse.plugins.add('converse-chatboxes', {
                     this.onMessage(stanza);
                     return true;
                 }, null, 'message', 'chat');
+
+                _converse.connection.addHandler(stanza => {
+                    // Message receipts are usually without the `type` attribute. See #1353
+                    if (!_.isNull(stanza.getAttribute('type'))) {
+                        // TODO: currently Strophe has no way to register a handler
+                        // for stanzas without a `type` attribute.
+                        // We could update it to accept null to mean no attribute,
+                        // but that would be a backward-incompatible chnge
+                        return true; // Gets handled above.
+                    }
+                    this.onMessage(stanza);
+                    return true;
+                }, Strophe.NS.RECEIPTS, 'message');
+
                 _converse.connection.addHandler(stanza => {
                     this.onErrorMessage(stanza);
                     return true;
@@ -740,7 +754,7 @@ converse.plugins.add('converse-chatboxes', {
                     // messages, but Prosody sends headline messages with the
                     // wrong type ('chat'), so we need to filter them out here.
                     _converse.log(
-                        `onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ${stanza.getAttribute('from')}`,
+                        `onMessage: Ignoring incoming headline message from JID: ${stanza.getAttribute('from')}`,
                         Strophe.LogLevel.INFO
                     );
                     return true;

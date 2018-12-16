@@ -851,9 +851,7 @@ _converse.initialize = function (settings, callback) {
 
     this.registerGlobalEventHandlers = function () {
         document.addEventListener("visibilitychange", _converse.saveWindowState);
-
-        // set the initial state
-        _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"});
+        _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
         _converse.emit('registeredGlobalEventHandlers');
     };
 

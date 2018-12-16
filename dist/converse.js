@@ -53177,6 +53177,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
     const debouncedTrim = _.debounce(ev => {
+      if (_converse.view_mode !== 'overlayed') {
+        return;
+      }
+
       if (_converse.connection.connected) {
         _converse.chatboxviews.trimChats();
       }
@@ -63451,11 +63455,12 @@ _converse.initialize = function (settings, callback) {
   };
 
   this.registerGlobalEventHandlers = function () {
-    document.addEventListener("visibilitychange", _converse.saveWindowState); // set the initial state
+    document.addEventListener("visibilitychange", _converse.saveWindowState);
 
     _converse.saveWindowState({
       'type': document.hidden ? "blur" : "focus"
-    });
+    }); // Set initial state
+
 
     _converse.emit('registeredGlobalEventHandlers');
   };

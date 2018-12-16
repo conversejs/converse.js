@@ -518,6 +518,9 @@ converse.plugins.add('converse-minimize', {
 
 
         const debouncedTrim = _.debounce(ev => {
+            if (_converse.view_mode !== 'overlayed') {
+                return;
+            }
             if (_converse.connection.connected) {
                 _converse.chatboxviews.trimChats();
             }

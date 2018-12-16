@@ -729,7 +729,9 @@ converse.plugins.add('converse-chatboxes', {
                     'from': _converse.connection.jid,
                     'id': _converse.connection.getUniqueId(),
                     'to': to_jid,
-                }).c('received', {'xmlns': Strophe.NS.RECEIPTS, 'id': id}).up();
+                    'type': 'chat',
+                }).c('received', {'xmlns': Strophe.NS.RECEIPTS, 'id': id}).up()
+                .c('store', {'xmlns': Strophe.NS.HINTS}).up();
                 _converse.api.send(receipt_stanza);
             },
 

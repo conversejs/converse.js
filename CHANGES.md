@@ -9,6 +9,7 @@
 - #1376 Fixed some alignment issues in the sidebar
 - #1378 Message Delivery Receipts were being sent for carbons and own messages
 - #1379 MUC unread messages indicator is failing
+- #1382 Message Delivery Receipts: Set store hint and type='chat'
 
 ## 4.0.6 (2018-12-07)
 

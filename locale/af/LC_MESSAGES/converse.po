@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-07 12:32+0100\n"
-"PO-Revision-Date: 2018-11-04 12:23+0000\n"
+"POT-Creation-Date: 2018-11-15 12:25+0100\n"
+"PO-Revision-Date: 2018-12-16 09:33+0100\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/conversejs/"
 "translations/af/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.3-dev\n"
+"X-Generator: Weblate 3.4-dev\n"
 "domain: converse\n"
 "lang: af\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -107,10 +107,9 @@ msgstr "Boekmerke"
 msgid "Close this chat box"
 msgstr "Sluit hierdie kletskas"
 
-#: dist/converse-no-dependencies.js:31732
-#, fuzzy
+#: dist/converse-no-dependencies.js:31731
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr "Jammer, 'n fout het voorgekom tydens storing van u boekmerk."
+msgstr "Jammer, 'n fout het voorgekom tydens verfrissing"
 
 #: dist/converse-no-dependencies.js:31748
 #: dist/converse-no-dependencies.js:41523
@@ -234,7 +233,7 @@ msgstr "%1$s het opgehou tik"
 
 #: dist/converse-no-dependencies.js:34616
 msgid "Unencryptable OMEMO message"
-msgstr ""
+msgstr "Onversleutelbare OMEMO-boodskap"
 
 #: dist/converse-no-dependencies.js:34855
 #: dist/converse-no-dependencies.js:34901
@@ -311,8 +310,7 @@ msgstr ""
 "Jy is vanuit die groepgesprek verwyder omdat die groepgesprek nou slegs tot "
 "lede beperk word en jy nie 'n lid is nie"
 
-#: dist/converse-no-dependencies.js:35653
-#, fuzzy
+#: dist/converse-no-dependencies.js:35636
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
@@ -457,10 +455,9 @@ msgstr "groepgesprekke.voorbeeld.org"
 msgid "No groupchats found"
 msgstr "Geen groepgesprekke gevind"
 
-#: dist/converse-no-dependencies.js:35827
-#, fuzzy
+#: dist/converse-no-dependencies.js:35810
 msgid "Groupchats found:"
-msgstr "groepgesprekke gevind:"
+msgstr "Groepgesprekke gevind:"
 
 #: dist/converse-no-dependencies.js:35883
 msgid "Enter a new Groupchat"
@@ -488,41 +485,41 @@ msgstr "Betree"
 msgid "Groupchat info for %1$s"
 msgstr "Kennisgewing van %1$s"
 
-#: dist/converse-no-dependencies.js:36125
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:36108
+#, javascript-format
 msgid "%1$s is no longer an admin of this groupchat"
-msgstr "%1$s het die groepgesprek bygetree en weer verlaat"
+msgstr "%1$s is nie meer 'n admin van hierdie groepgesprek nie"
 
-#: dist/converse-no-dependencies.js:36127
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:36110
+#, javascript-format
 msgid "%1$s is no longer an owner of this groupchat"
-msgstr "Verleen eienaarskap van hierdie groepgesprek"
+msgstr "%1$s is nie meer eienaar van hierdie groepgesprek nie"
 
-#: dist/converse-no-dependencies.js:36129
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:36112
+#, javascript-format
 msgid "%1$s is no longer banned from this groupchat"
-msgstr "Jy is uit die groepgesprek verban"
+msgstr "%1$s is nie meer verban uit hierdie groepgesprek nie"
 
-#: dist/converse-no-dependencies.js:36133
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:36116
+#, javascript-format
 msgid "%1$s is no longer a permanent member of this groupchat"
-msgstr "Jy is nie op die ledelys van hierdie groepgesprek nie."
+msgstr "%1$s is nie meer 'n permanente lid van hierdie groepgesprek nie"
 
-#: dist/converse-no-dependencies.js:36137
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:36120
+#, javascript-format
 msgid "%1$s is now a permanent member of this groupchat"
-msgstr "Jy is nie op die ledelys van hierdie groepgesprek nie."
+msgstr "%1$s is nou permanente lid van hierdie groepgesprek"
 
-#: dist/converse-no-dependencies.js:36139
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:36122
+#, javascript-format
 msgid "%1$s has been banned from this groupchat"
-msgstr "Jy is uit die groepgesprek verban"
+msgstr "%1$s is uit hierdie groepgesprek verban"
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
-#: dist/converse-no-dependencies.js:36142
-#, fuzzy, javascript-format
+#: dist/converse-no-dependencies.js:36125
+#, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s  het die groepgesprek verlaat"
+msgstr "%1$s is nou 'n %2$s van hierdie groepgesprek"
 
 #: dist/converse-no-dependencies.js:36154
 #, javascript-format
@@ -562,12 +559,13 @@ msgstr "Verskuil die lys van deelnemers"
 
 #: dist/converse-no-dependencies.js:36355
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "Geen toestemming: jy het nie die benodigde rol om dit te doen nie."
 
 #: dist/converse-no-dependencies.js:36368
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
 msgstr ""
+"Geen toestemming: jy het nie die benodigde affiliasie om dit te doen nie."
 
 #: dist/converse-no-dependencies.js:36380
 #, javascript-format
@@ -581,7 +579,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:36389
 #, javascript-format
 msgid "Error: couldn't find a groupchat participant \"%1$s\""
-msgstr ""
+msgstr "Fout: kan gespreksdeelnemer \"%1$s\" nie vind nie"
 
 #: dist/converse-no-dependencies.js:36399
 msgid ""
@@ -629,10 +627,9 @@ msgstr "Verleen moderator rol aan gebruiker"
 msgid "Grant ownership of this groupchat"
 msgstr "Verleen eienaarskap van hierdie groepgesprek"
 
-#: dist/converse-no-dependencies.js:36447
-#, fuzzy
+#: dist/converse-no-dependencies.js:36430
 msgid "Register a nickname for this room"
-msgstr "Die naam vir hierdie boekmerk:"
+msgstr "Registreer 'n naam vir hierdie groepgesprek"
 
 #: dist/converse-no-dependencies.js:36447
 msgid "Revoke user's membership"
@@ -652,7 +649,7 @@ msgstr "Laat stilgemaakte gebruiker toe om weer boodskappe te plaas"
 
 #: dist/converse-no-dependencies.js:36524
 msgid "Error: invalid number of arguments"
-msgstr ""
+msgstr "Fout: ongeldige aantal argumente"
 
 #: dist/converse-no-dependencies.js:36775
 msgid ""

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-12-19 05:50+0100\n"
-"PO-Revision-Date: 2018-11-27 16:07+0000\n"
+"PO-Revision-Date: 2018-12-19 05:54+0100\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.3-dev\n"
+"X-Generator: Weblate 3.4-dev\n"
 "domain: converse\n"
 "lang: de\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -629,8 +629,7 @@ msgstr "Benutzer Moderatorrechte gewähren"
 msgid "Grant ownership of this groupchat"
 msgstr "Besitzrechte an diesem Raum vergeben"
 
-#: dist/converse-no-dependencies.js:36462
-#, fuzzy
+#: dist/converse-no-dependencies.js:36470
 msgid "Register a nickname for this groupchat"
 msgstr "Registrieren Sie einen Spitznamen für diesen Raum"
 
@@ -902,16 +901,15 @@ msgstr ""
 "Tut mir leid, es ist beim Versuch, die Geräte zu entfernen, ein Fehler "
 "aufgetreten."
 
-#: dist/converse-no-dependencies.js:38192
-#, fuzzy
+#: dist/converse-no-dependencies.js:38238
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
-"Sind Sie sicher, dass Sie neue OMEMO-Schlüssel generieren möchten? Dann "
-"werden Ihre alten Schlüssel entfernt und alle zuvor verschlüsselten "
-"Nachrichten sind auf diesem Gerät nicht mehr entschlüsselbar."
+"Sind Sie sicher, dass Sie neue OMEMO-Schlüssel erzeugen möchten? Dann werden "
+"Ihre alten Schlüssel entfernt und alle zuvor verschlüsselten Nachrichten "
+"sind auf diesem Gerät nicht mehr entschlüsselbar."
 
 #: dist/converse-no-dependencies.js:38321
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -1414,10 +1412,9 @@ msgstr "Dieser Client erlaubt keine Anwesenheitsabonnements"
 msgid "Click to hide these contacts"
 msgstr "Hier klicken, um diese Kontakte auszublenden"
 
-#: dist/converse-no-dependencies.js:74273
-#, fuzzy
+#: dist/converse-no-dependencies.js:74309
 msgid "This groupchat no longer exists"
-msgstr "Dieser Raum existiert nicht mehr"
+msgstr "Dieser Gruppenchat existiert nicht mehr"
 
 #: dist/converse-no-dependencies.js:74279
 msgid "The conversation has moved. Click below to enter."

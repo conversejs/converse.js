@@ -277,6 +277,7 @@
                 allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
             }, async function (done, _converse) {
 
+            test_utils.openControlBox();
             const room_jid = 'kitchen@conference.shakespeare.lit';
             await test_utils.waitUntil(() => !_.isUndefined(_converse.rooms_list_view), 500);
             await  test_utils.openAndEnterChatRoom(_converse, 'kitchen', 'conference.shakespeare.lit', 'romeo');
@@ -292,9 +293,10 @@
                     type: 'groupchat'
                 }).c('body').t('foo').tree());
 
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             // If the user isn't mentioned, the counter doesn't get incremented, but the text of the groupchat is bold
             let room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
-            expect(_.includes(room_el.classList, 'unread-msgs'));
+            expect(_.includes(room_el.classList, 'unread-msgs')).toBeTruthy();
 
             // If the user is mentioned, the counter also gets updated
             view.model.onMessage(

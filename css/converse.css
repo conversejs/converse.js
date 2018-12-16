@@ -11284,6 +11284,8 @@ body.reset {
     text-shadow: 0 1px 0 var(--text-shadow-color);
     word-wrap: break-word;
     height: 2.5em; }
+    #conversejs .items-list .list-item.unread-msgs {
+      font-weight: bold; }
     #conversejs .items-list .list-item .list-item-link {
       color: var(--list-item-link-color);
       margin: auto;

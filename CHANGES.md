@@ -8,6 +8,7 @@
 - #1374 Can't load embedded chat when changing `view_mode` between page reloads
 - #1376 Fixed some alignment issues in the sidebar
 - #1378 Message Delivery Receipts were being sent for carbons and own messages
+- #1379 MUC unread messages indicator is failing
 
 ## 4.0.6 (2018-12-07)
 

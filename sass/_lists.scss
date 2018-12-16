@@ -28,6 +28,10 @@
             word-wrap: break-word;
             height: 2.5em;
 
+            &.unread-msgs {
+                font-weight: bold;
+            }
+
             .list-item-link {
                 color: var(--list-item-link-color);
                 &:hover {

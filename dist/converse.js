@@ -62143,10 +62143,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const receipt_stanza = $msg({
           'from': _converse.connection.jid,
           'id': _converse.connection.getUniqueId(),
-          'to': to_jid
+          'to': to_jid,
+          'type': 'chat'
         }).c('received', {
           'xmlns': Strophe.NS.RECEIPTS,
           'id': id
+        }).up().c('store', {
+          'xmlns': Strophe.NS.HINTS
         }).up();
 
         _converse.api.send(receipt_stanza);

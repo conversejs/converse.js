@@ -1611,7 +1611,7 @@
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-msg').textContent)
-                    .toBe('This room no longer exists');
+                    .toBe('This groupchat no longer exists');
                 expect(view.el.querySelector('.chatroom-body .destroyed-reason').textContent)
                     .toBe(`"We didn't like the name"`);
                 expect(view.el.querySelector('.chatroom-body .moved-label').textContent.trim())
@@ -2423,7 +2423,7 @@
                 expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                 expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
                 expect(info_messages.pop().textContent).toBe('/revoke: Revoke user\'s membership');
-                expect(info_messages.pop().textContent).toBe('/register: Register a nickname for this room');
+                expect(info_messages.pop().textContent).toBe('/register: Register a nickname for this groupchat');
                 expect(info_messages.pop().textContent).toBe('/owner: Grant ownership of this groupchat');
                 expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
                 expect(info_messages.pop().textContent).toBe('/nick: Change your nickname');

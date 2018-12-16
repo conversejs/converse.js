@@ -92192,7 +92192,7 @@ module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/chatroom_destroyed.html -->\n<div class="alert alert-danger">\n    <h3 class="alert-heading disconnect-msg">' +
-__e(o.__('This room no longer exists')) +
+__e(o.__('This groupchat no longer exists')) +
 '</h3>\n\n    <p class="destroyed-reason">' +
 __e(o.reason) +
 '</p>\n\n    ';

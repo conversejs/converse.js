@@ -912,7 +912,7 @@ converse.plugins.add('converse-muc-views', {
                             `<strong>/nick</strong>: ${__('Change your nickname')}`,
                             `<strong>/op</strong>: ${__('Grant moderator role to user')}`,
                             `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`,
-                            `<strong>/register</strong>: ${__("Register a nickname for this room")}`,
+                            `<strong>/register</strong>: ${__("Register a nickname for this groupchat")}`,
                             `<strong>/revoke</strong>: ${__("Revoke user's membership")}`,
                             `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
                             `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,

@@ -52638,7 +52638,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
   dependencies: ["converse-chatview", "converse-controlbox", "converse-muc", "converse-muc-views", "converse-headline"],
 
   enabled(_converse) {
-    return _converse.view_mode == 'overlayed';
+    return _converse.view_mode === 'overlayed';
   },
 
   overrides: {
@@ -53177,7 +53177,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
     }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
     const debouncedTrim = _.debounce(ev => {
-      if (_converse.view_mode !== 'overlayed') {
+      if (_converse.view_mode !== 'overlayed' || !_converse.chatboxviews.trimChats) {
         return;
       }
 

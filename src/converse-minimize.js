@@ -31,7 +31,7 @@ converse.plugins.add('converse-minimize', {
     dependencies: ["converse-chatview", "converse-controlbox", "converse-muc", "converse-muc-views", "converse-headline"],
 
     enabled (_converse) {
-        return _converse.view_mode == 'overlayed';
+        return _converse.view_mode === 'overlayed';
     },
 
     overrides: {
@@ -518,7 +518,7 @@ converse.plugins.add('converse-minimize', {
 
 
         const debouncedTrim = _.debounce(ev => {
-            if (_converse.view_mode !== 'overlayed') {
+            if (_converse.view_mode !== 'overlayed' || !_converse.chatboxviews.trimChats) {
                 return;
             }
             if (_converse.connection.connected) {

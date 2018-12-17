@@ -452,12 +452,14 @@ function cleanup () {
     }
     delete _converse.controlboxtoggle;
     delete _converse.chatboxviews;
+
     _converse.connection.reset();
-    _converse.stopListening();
     _converse.tearDown();
+    _converse.stopListening();
+    _converse.off();
+
     delete _converse.config;
     initClientConfig();
-    _converse.off();
 }
 
 

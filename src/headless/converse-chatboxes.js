@@ -40,7 +40,7 @@ converse.plugins.add('converse-chatboxes', {
         });
         _converse.api.promises.add([
             'chatBoxesFetched',
-            'ehatBoxesInitialized',
+            'chatBoxesInitialized',
             'privateChatsAutoJoined'
         ]);
 

@@ -61419,7 +61419,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       'send_chat_state_notifications': true
     });
 
-    _converse.api.promises.add(['chatBoxesFetched', 'ehatBoxesInitialized', 'privateChatsAutoJoined']);
+    _converse.api.promises.add(['chatBoxesFetched', 'chatBoxesInitialized', 'privateChatsAutoJoined']);
 
     function openChat(jid) {
       if (!utils.isValidJID(jid)) {

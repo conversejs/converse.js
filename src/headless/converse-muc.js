@@ -483,10 +483,10 @@ converse.plugins.add('converse-muc', {
                 const features = await _converse.api.disco.getFeatures(this.get('jid')),
                       fields = await _converse.api.disco.getFields(this.get('jid')),
                       identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid')),
-                      attrs = {
-                          'features_fetched': moment().format(),
-                          'name': identity && identity.get('name')
-                      };
+                      attrs = _.extend(_.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)), {
+                            'features_fetched': moment().format(),
+                            'name': identity && identity.get('name')
+                      });
 
                 features.each(feature => {
                     const fieldname = feature.get('var');

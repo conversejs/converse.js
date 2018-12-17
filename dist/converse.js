@@ -53445,20 +53445,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       $msg = _converse$env.$msg,
       $pres = _converse$env.$pres;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].env.utils;
-const ROOM_FEATURES_MAP = {
-  'passwordprotected': 'unsecured',
-  'unsecured': 'passwordprotected',
-  'hidden': 'publicroom',
-  'publicroom': 'hidden',
-  'membersonly': 'open',
-  'open': 'membersonly',
-  'persistent': 'temporary',
-  'temporary': 'persistent',
-  'nonanonymous': 'semianonymous',
-  'semianonymous': 'nonanonymous',
-  'moderated': 'unmoderated',
-  'unmoderated': 'moderated'
-};
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc-views', {
   /* Dependencies are other plugins which might be
    * overridden or relied upon, and therefore need to be loaded before
@@ -54586,9 +54572,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           fieldset_el.insertAdjacentHTML('beforeend', `<p class="form-help">${instructions}</p>`);
         }
 
-        _.each(fields, function (field) {
-          fieldset_el.insertAdjacentHTML('beforeend', u.xForm2webForm(field, stanza));
-        }); // Render save/cancel buttons
+        _.each(fields, field => fieldset_el.insertAdjacentHTML('beforeend', u.xForm2webForm(field, stanza))); // Render save/cancel buttons
 
 
         const last_fieldset_el = document.createElement('fieldset');
@@ -55346,19 +55330,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         this.chatroomview = this.model.chatroomview;
         this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
         this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
-        this.chatroomview.model.on('change:hidden', this.onFeatureChanged, this);
-        this.chatroomview.model.on('change:mam_enabled', this.onFeatureChanged, this);
-        this.chatroomview.model.on('change:membersonly', this.onFeatureChanged, this);
-        this.chatroomview.model.on('change:moderated', this.onFeatureChanged, this);
-        this.chatroomview.model.on('change:nonanonymous', this.onFeatureChanged, this);
-        this.chatroomview.model.on('change:open', this.onFeatureChanged, this);
-        this.chatroomview.model.on('change:passwordprotected', this.onFeatureChanged, this);
-        this.chatroomview.model.on('change:persistent', this.onFeatureChanged, this);
-        this.chatroomview.model.on('change:publicroom', this.onFeatureChanged, this);
-        this.chatroomview.model.on('change:semianonymous', this.onFeatureChanged, this);
-        this.chatroomview.model.on('change:temporary', this.onFeatureChanged, this);
-        this.chatroomview.model.on('change:unmoderated', this.onFeatureChanged, this);
-        this.chatroomview.model.on('change:unsecured', this.onFeatureChanged, this);
+        this.chatroomview.model.on('change', () => {
+          if (_.intersection(_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOM_FEATURES, Object.keys(this.chatroomview.model.changed)).length === 0) {
+            return;
+          }
+
+          this.renderRoomFeatures();
+        }, this);
         this.render();
         this.model.fetch({
           'add': true,
@@ -55410,36 +55388,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         }));
         this.setOccupantsHeight();
         return this;
-      },
-
-      onFeatureChanged(model) {
-        /* When a feature has been changed, it's logical opposite
-         * must be set to the opposite value.
-         *
-         * So for example, if "temporary" was set to "false", then
-         * "persistent" will be set to "true" in this method.
-         *
-         * Additionally a debounced render method is called to make
-         * sure the features widget gets updated.
-         */
-        if (_.isUndefined(this.debouncedRenderRoomFeatures)) {
-          this.debouncedRenderRoomFeatures = _.debounce(this.renderRoomFeatures, 100, {
-            'leading': false
-          });
-        }
-
-        const changed_features = {};
-
-        _.each(_.keys(model.changed), function (k) {
-          if (!_.isNil(ROOM_FEATURES_MAP[k])) {
-            changed_features[ROOM_FEATURES_MAP[k]] = !model.changed[k];
-          }
-        });
-
-        this.chatroomview.model.save(changed_features, {
-          'silent': true
-        });
-        this.debouncedRenderRoomFeatures();
       },
 
       setOccupantsHeight() {
@@ -66439,10 +66387,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         const features = await _converse.api.disco.getFeatures(this.get('jid')),
               fields = await _converse.api.disco.getFields(this.get('jid')),
               identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid')),
-              attrs = {
+              attrs = _.extend(_.zipObject(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.map(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.stubFalse)), {
           'features_fetched': moment().format(),
           'name': identity && identity.get('name')
-        };
+        });
+
         features.each(feature => {
           const fieldname = feature.get('var');
 

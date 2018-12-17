@@ -58,3 +58,11 @@ running::
 The HTMl files will be located in ``./docs/html``
 
 .. warning:: When contributing, please don't commit any generated html files.
+
+Serving the documentation
+-------------------------
+
+To view the generated docs, you can run ``make serve`` and then open
+http://localhost:8000/docs/html/index.html in your browser.
+
+

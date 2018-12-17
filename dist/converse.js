@@ -69716,7 +69716,8 @@ u.matchesSelector = function (el, selector) {
    *      (DOMElement) el - The DOM element
    *      (String) selector - The selector
    */
-  return (el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector).call(el, selector);
+  const match = el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector;
+  return match ? match.call(el, selector) : false;
 };
 
 u.queryChildren = function (el, selector) {

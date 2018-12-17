@@ -134,13 +134,14 @@ converse.plugins.add('converse-disco', {
                 }
             },
 
-            queryInfo () {
-                _converse.api.disco.info(this.get('jid'), null)
-                    .then(stanza => this.onInfo(stanza))
-                    .catch(iq => {
-                        this.waitUntilFeaturesDiscovered.resolve(this);
-                        _converse.log(iq, Strophe.LogLevel.ERROR);
-                    });
+            async queryInfo () {
+                try {
+                    const stanza = await _converse.api.disco.info(this.get('jid'), null);
+                    this.onInfo(stanza);
+                } catch(iq) {
+                    this.waitUntilFeaturesDiscovered.resolve(this);
+                    _converse.log(iq, Strophe.LogLevel.ERROR);
+                }
             },
 
             onDiscoItems (stanza) {

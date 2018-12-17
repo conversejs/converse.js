@@ -62996,14 +62996,14 @@ function cleanup() {
 
   _converse.connection.reset();
 
+  _converse.tearDown();
+
   _converse.stopListening();
 
-  _converse.tearDown();
+  _converse.off();
 
   delete _converse.config;
   initClientConfig();
-
-  _converse.off();
 }
 
 _converse.initialize = function (settings, callback) {
@@ -64575,12 +64575,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         }
       },
 
-      queryInfo() {
-        _converse.api.disco.info(this.get('jid'), null).then(stanza => this.onInfo(stanza)).catch(iq => {
+      async queryInfo() {
+        try {
+          const stanza = await _converse.api.disco.info(this.get('jid'), null);
+          this.onInfo(stanza);
+        } catch (iq) {
           this.waitUntilFeaturesDiscovered.resolve(this);
 
           _converse.log(iq, Strophe.LogLevel.ERROR);
-        });
+        }
       },
 
       onDiscoItems(stanza) {

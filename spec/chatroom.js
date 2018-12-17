@@ -1626,26 +1626,19 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                let sent_IQ, IQ_id;
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
                 const sendIQ = _converse.connection.sendIQ;
                 const room_jid = 'lounge@localhost';
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    if (iq.nodeTree.getAttribute('to') === 'lounge@localhost') {
-                        sent_IQ = iq;
-                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                    } else {
-                        sendIQ.bind(this)(iq, callback, errback);
-                    }
-                });
 
                 await test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+
                 let stanza = await test_utils.waitUntil(() => _.get(_.filter(
                     IQ_stanzas,
                     iq => iq.nodeTree.querySelector(
                         `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                     )).pop(), 'nodeTree')
                 );
+
                 // We pretend this is a new room, so no disco info is returned.
                 const features_stanza = $iq({
                         from: 'lounge@localhost',
@@ -1693,7 +1686,7 @@
                  */
                 stanza = $iq({
                     'type': 'result',
-                    'id': IQ_id,
+                    'id': node.nodeTree.getAttribute('id'),
                     'from': view.model.get('jid'),
                     'to': _converse.connection.jid
                 }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})

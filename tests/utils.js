@@ -147,7 +147,7 @@
             'muc_temporary',
             'muc_open',
             'muc_unmoderated',
-            'muc_nonanonymous']
+            'muc_anonymous']
         features.forEach(f => features_stanza.c('feature', {'var': f}).up());
         features_stanza.c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
             .c('field', {'var':'FORM_TYPE', 'type':'hidden'})

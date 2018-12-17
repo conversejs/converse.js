@@ -52691,7 +52691,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       _show() {
         const _converse = this.__super__._converse;
 
-        if (!this.model.get('minimized')) {
+        if (_converse.view_mode !== 'overlayed') {
+          return this.__super__._show.apply(this, arguments);
+        } else if (!this.model.get('minimized')) {
           this.__super__._show.apply(this, arguments);
 
           _converse.chatboxviews.trimChats(this);

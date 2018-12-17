@@ -82,7 +82,9 @@ converse.plugins.add('converse-minimize', {
 
             _show () {
                 const { _converse } = this.__super__;
-                if (!this.model.get('minimized')) {
+                if (_converse.view_mode !== 'overlayed') {
+                    return this.__super__._show.apply(this, arguments);
+                } else if (!this.model.get('minimized')) {
                     this.__super__._show.apply(this, arguments);
                     _converse.chatboxviews.trimChats(this);
                 } else {

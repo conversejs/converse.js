@@ -67110,7 +67110,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
     });
     _converse.ChatRoomOccupant = Backbone.Model.extend({
       defaults: {
-        'show': 'offline'
+        'show': 'offline',
+        'states': []
       },
 
       initialize(attributes) {

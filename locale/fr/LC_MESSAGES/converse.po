@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-19 05:50+0100\n"
-"PO-Revision-Date: 2018-11-18 23:13+0000\n"
-"Last-Translator: Jean-Baptiste <jean-baptiste@holcroft.fr>\n"
+"POT-Creation-Date: 2018-12-16 11:20+0100\n"
+"PO-Revision-Date: 2018-12-19 05:54+0100\n"
+"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.3-dev\n"
+"X-Generator: Weblate 3.4-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -635,8 +635,7 @@ msgstr "Changer le rôle de l’utilisateur en modérateur"
 msgid "Grant ownership of this groupchat"
 msgstr "Accorder la propriété à ce salon"
 
-#: dist/converse-no-dependencies.js:36462
-#, fuzzy
+#: dist/converse-no-dependencies.js:36470
 msgid "Register a nickname for this groupchat"
 msgstr "Enregistrer un pseudo pour ce salon"
 
@@ -1415,8 +1414,7 @@ msgstr "Ce client ne permet pas les mises à jour de disponibilité"
 msgid "Click to hide these contacts"
 msgstr "Cliquez pour cacher ces contacts"
 
-#: dist/converse-no-dependencies.js:74273
-#, fuzzy
+#: dist/converse-no-dependencies.js:74309
 msgid "This groupchat no longer exists"
 msgstr "Ce salon n’existe plus"
 

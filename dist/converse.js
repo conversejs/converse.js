@@ -56122,54 +56122,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     },
     ChatBox: {
-      getBundlesAndBuildSessions() {
-        const _converse = this.__super__._converse;
-        let devices;
-        return _converse.getDevicesForContact(this.get('jid')).then(their_devices => {
-          const device_id = _converse.omemo_store.get('device_id'),
-                devicelist = _converse.devicelists.get(_converse.bare_jid),
-                own_devices = devicelist.devices.filter(device => device.get('id') !== device_id);
-
-          devices = _.concat(own_devices, their_devices.models);
-          return Promise.all(devices.map(device => device.getBundle()));
-        }).then(() => this.buildSessions(devices));
-      },
-
-      async buildSession(device) {
-        const _converse = this.__super__._converse,
-              address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
-              sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
-              prekey = device.getRandomPreKey(),
-              bundle = await device.getBundle();
-        return sessionBuilder.processPreKey({
-          'registrationId': parseInt(device.get('id'), 10),
-          'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
-          'signedPreKey': {
-            'keyId': bundle.signed_prekey.id,
-            // <Number>
-            'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
-            'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
-          },
-          'preKey': {
-            'keyId': prekey.id,
-            // <Number>
-            'publicKey': u.base64ToArrayBuffer(prekey.key)
-          }
-        });
-      },
-
-      getSession(device) {
-        const _converse = this.__super__._converse,
-              address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
-        return _converse.omemo_store.loadSession(address.toString()).then(session => {
-          if (session) {
-            return Promise.resolve();
-          } else {
-            return this.buildSession(device);
-          }
-        });
-      },
-
       async encryptMessage(plaintext) {
         // The client MUST use fresh, randomly generated key/IV pairs
         // with AES-128 in Galois/Counter Mode (GCM).
@@ -56310,10 +56262,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
       },
 
-      buildSessions(devices) {
-        return Promise.all(devices.map(device => this.getSession(device))).then(() => devices);
-      },
-
       getSessionCipher(jid, id) {
         const _converse = this.__super__._converse,
               address = new libsignal.SignalProtocolAddress(jid, id);
@@ -56328,95 +56276,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }));
       },
 
-      addKeysToMessageStanza(stanza, dicts, iv) {
-        for (var i in dicts) {
-          if (Object.prototype.hasOwnProperty.call(dicts, i)) {
-            const payload = dicts[i].payload,
-                  device = dicts[i].device,
-                  prekey = 3 == parseInt(payload.type, 10);
-            stanza.c('key', {
-              'rid': device.get('id')
-            }).t(btoa(payload.body));
-
-            if (prekey) {
-              stanza.attrs({
-                'prekey': prekey
-              });
-            }
-
-            stanza.up();
-
-            if (i == dicts.length - 1) {
-              stanza.c('iv').t(iv).up().up();
-            }
-          }
-        }
-
-        return Promise.resolve(stanza);
-      },
-
-      createOMEMOMessageStanza(message, devices) {
-        const _converse = this.__super__._converse,
-              __ = _converse.__;
-
-        const body = __("This is an OMEMO encrypted message which your client doesn’t seem to support. " + "Find more information on https://conversations.im/omemo");
-
-        if (!message.get('message')) {
-          throw new Error("No message body to encrypt!");
-        }
-
-        const stanza = $msg({
-          'from': _converse.connection.jid,
-          'to': this.get('jid'),
-          'type': this.get('message_type'),
-          'id': message.get('msgid')
-        }).c('body').t(body).up().c('request', {
-          'xmlns': Strophe.NS.RECEIPTS
-        }).up() // An encrypted header is added to the message for
-        // each device that is supposed to receive it.
-        // These headers simply contain the key that the
-        // payload message is encrypted with,
-        // and they are separately encrypted using the
-        // session corresponding to the counterpart device.
-        .c('encrypted', {
-          'xmlns': Strophe.NS.OMEMO
-        }).c('header', {
-          'sid': _converse.omemo_store.get('device_id')
-        });
-        return this.encryptMessage(message.get('message')).then(obj => {
-          // The 16 bytes key and the GCM authentication tag (The tag
-          // SHOULD have at least 128 bit) are concatenated and for each
-          // intended recipient device, i.e. both own devices as well as
-          // devices associated with the contact, the result of this
-          // concatenation is encrypted using the corresponding
-          // long-standing SignalProtocol session.
-          const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => this.encryptKey(obj.key_and_tag, device));
-          return Promise.all(promises).then(dicts => this.addKeysToMessageStanza(stanza, dicts, obj.iv)).then(stanza => {
-            stanza.c('payload').t(obj.payload).up().up();
-            stanza.c('store', {
-              'xmlns': Strophe.NS.HINTS
-            });
-            return stanza;
-          });
-        });
-      },
-
-      sendMessage(attrs) {
+      async sendMessage(attrs) {
         const _converse = this.__super__._converse,
               __ = _converse.__;
 
         if (this.get('omemo_active') && attrs.message) {
           attrs['is_encrypted'] = true;
           attrs['plaintext'] = attrs.message;
-          const message = this.messages.create(attrs);
-          this.getBundlesAndBuildSessions().then(devices => this.createOMEMOMessageStanza(message, devices)).then(stanza => this.sendMessageStanza(stanza)).catch(e => {
+          const devices = await _converse.getBundlesAndBuildSessions(this);
+          const stanza = await _converse.createOMEMOMessageStanza(this, this.messages.create(attrs), devices);
+
+          try {
+            this.sendMessageStanza(stanza);
+          } catch (e) {
             this.messages.create({
               'message': __("Sorry, could not send the message due to an error.") + ` ${e.message}`,
               'type': 'error'
             });
 
             _converse.log(e, Strophe.LogLevel.ERROR);
-          });
+          }
         } else {
           return this.__super__.sendMessage.apply(this, arguments);
         }
@@ -56532,15 +56411,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     }
 
     _converse.generateFingerprints = async function (jid) {
-      const devices = await _converse.getDevicesForContact(jid);
+      const devices = await getDevicesForContact(jid);
       return Promise.all(devices.map(d => generateFingerprint(d)));
     };
 
     _converse.getDeviceForContact = function (jid, device_id) {
-      return _converse.getDevicesForContact(jid).then(devices => devices.get(device_id));
+      return getDevicesForContact(jid).then(devices => devices.get(device_id));
     };
 
-    _converse.getDevicesForContact = async function (jid) {
+    async function getDevicesForContact(jid) {
       await _converse.api.waitUntil('OMEMOInitialized');
 
       const devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({
@@ -56549,11 +56428,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       await devicelist.fetchDevices();
       return devicelist.devices;
-    };
+    }
 
     _converse.contactHasOMEMOSupport = async function (jid) {
       /* Checks whether the contact advertises any OMEMO-compatible devices. */
-      const devices = await _converse.getDevicesForContact(jid);
+      const devices = await getDevicesForContact(jid);
       return devices.length > 0;
     };
 
@@ -56575,6 +56454,140 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       return device_id.toString();
     }
+
+    async function buildSession(device) {
+      const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id')),
+            sessionBuilder = new libsignal.SessionBuilder(_converse.omemo_store, address),
+            prekey = device.getRandomPreKey(),
+            bundle = await device.getBundle();
+      return sessionBuilder.processPreKey({
+        'registrationId': parseInt(device.get('id'), 10),
+        'identityKey': u.base64ToArrayBuffer(bundle.identity_key),
+        'signedPreKey': {
+          'keyId': bundle.signed_prekey.id,
+          // <Number>
+          'publicKey': u.base64ToArrayBuffer(bundle.signed_prekey.public_key),
+          'signature': u.base64ToArrayBuffer(bundle.signed_prekey.signature)
+        },
+        'preKey': {
+          'keyId': prekey.id,
+          // <Number>
+          'publicKey': u.base64ToArrayBuffer(prekey.key)
+        }
+      });
+    }
+
+    function getSession(device) {
+      const address = new libsignal.SignalProtocolAddress(device.get('jid'), device.get('id'));
+      return _converse.omemo_store.loadSession(address.toString()).then(session => {
+        if (session) {
+          return Promise.resolve();
+        } else {
+          return buildSession(device);
+        }
+      });
+    }
+
+    _converse.getBundlesAndBuildSessions = async function (chatbox) {
+      let devices;
+
+      const id = _converse.omemo_store.get('device_id');
+
+      if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+        const collections = await Promise.all(chatbox.occupants.map(o => getDevicesForContact(o.get('jid'))));
+        devices = collections.reduce((a, b) => _.concat(a, b.models), []);
+      } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+        const their_devices = await getDevicesForContact(chatbox.get('jid')),
+              devicelist = _converse.devicelists.get(_converse.bare_jid),
+              own_devices = devicelist.devices.filter(d => d.get('id') !== id);
+
+        devices = _.concat(own_devices, their_devices.models);
+      } // Filter out our own device
+
+
+      devices = devices.filter(d => d.get('id') !== id);
+      await Promise.all(devices.map(d => d.getBundle()));
+      await Promise.all(devices.map(d => getSession(d)));
+      return devices;
+    };
+
+    function addKeysToMessageStanza(stanza, dicts, iv) {
+      for (var i in dicts) {
+        if (Object.prototype.hasOwnProperty.call(dicts, i)) {
+          const payload = dicts[i].payload,
+                device = dicts[i].device,
+                prekey = 3 == parseInt(payload.type, 10);
+          stanza.c('key', {
+            'rid': device.get('id')
+          }).t(btoa(payload.body));
+
+          if (prekey) {
+            stanza.attrs({
+              'prekey': prekey
+            });
+          }
+
+          stanza.up();
+
+          if (i == dicts.length - 1) {
+            stanza.c('iv').t(iv).up().up();
+          }
+        }
+      }
+
+      return Promise.resolve(stanza);
+    }
+
+    _converse.createOMEMOMessageStanza = function (chatbox, message, devices) {
+      const __ = _converse.__;
+
+      const body = __("This is an OMEMO encrypted message which your client doesn’t seem to support. " + "Find more information on https://conversations.im/omemo");
+
+      if (!message.get('message')) {
+        throw new Error("No message body to encrypt!");
+      }
+
+      const stanza = $msg({
+        'from': _converse.connection.jid,
+        'to': chatbox.get('jid'),
+        'type': chatbox.get('message_type'),
+        'id': message.get('msgid')
+      }).c('body').t(body).up();
+
+      if (message.get('type') === 'chat') {
+        stanza.c('request', {
+          'xmlns': Strophe.NS.RECEIPTS
+        }).up();
+      } // An encrypted header is added to the message for
+      // each device that is supposed to receive it.
+      // These headers simply contain the key that the
+      // payload message is encrypted with,
+      // and they are separately encrypted using the
+      // session corresponding to the counterpart device.
+
+
+      stanza.c('encrypted', {
+        'xmlns': Strophe.NS.OMEMO
+      }).c('header', {
+        'sid': _converse.omemo_store.get('device_id')
+      });
+      return chatbox.encryptMessage(message.get('message')).then(obj => {
+        // The 16 bytes key and the GCM authentication tag (The tag
+        // SHOULD have at least 128 bit) are concatenated and for each
+        // intended recipient device, i.e. both own devices as well as
+        // devices associated with the contact, the result of this
+        // concatenation is encrypted using the corresponding
+        // long-standing SignalProtocol session.
+        const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => chatbox.encryptKey(obj.key_and_tag, device));
+        return Promise.all(promises).then(dicts => addKeysToMessageStanza(stanza, dicts, obj.iv)).then(stanza => {
+          stanza.c('payload').t(obj.payload).up().up();
+          stanza.c('store', {
+            'xmlns': Strophe.NS.HINTS
+          });
+          return stanza;
+        });
+      });
+    };
 
     _converse.OMEMOStore = Backbone.Model.extend({
       Direction: {
@@ -56872,7 +56885,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return bundle.prekeys[u.getRandomInt(bundle.prekeys.length)];
       },
 
-      fetchBundleFromServer() {
+      async fetchBundleFromServer() {
         const stanza = $iq({
           'type': 'get',
           'from': _converse.bare_jid,
@@ -56882,15 +56895,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }).c('items', {
           'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}`
         });
-        return _converse.api.sendIQ(stanza).then(iq => {
-          const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, iq).pop(),
-                bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop(),
-                bundle = parseBundle(bundle_el);
-          this.save('bundle', bundle);
-          return bundle;
-        }).catch(iq => {
-          _converse.log(iq.outerHTML, Strophe.LogLevel.ERROR);
-        });
+        let iq;
+
+        try {
+          iq = await _converse.api.sendIQ(stanza);
+        } catch (iq) {
+          return _converse.log(iq.outerHTML, Strophe.LogLevel.ERROR);
+        }
+
+        const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, iq).pop(),
+              bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop(),
+              bundle = parseBundle(bundle_el);
+        this.save('bundle', bundle);
+        return bundle;
       },
 
       getBundle() {

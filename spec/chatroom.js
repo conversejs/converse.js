@@ -2185,6 +2185,7 @@
                 expect(chatroomview.model.get('temporary')).toBe(true);
                 expect(chatroomview.model.get('unmoderated')).toBe(true);
                 expect(chatroomview.model.get('unsecured')).toBe(false);
+                expect(chatroomview.el.querySelector('.chat-title').textContent.trim()).toBe('Room');
 
                 chatroomview.el.querySelector('.configure-chatroom-button').click();
 
@@ -2211,7 +2212,7 @@
                             <value>Room information</value>
                         </field>
                         <field var="muc#roomconfig_roomname" type="text-single" label="Title">
-                            <value>Example Room</value>
+                            <value>Room</value>
                         </field>
                         <field var="muc#roomconfig_roomdesc" type="text-single" label="Description">
                             <desc>A brief description of the room</desc>
@@ -2265,6 +2266,7 @@
                 const el = await test_utils.waitUntil(() => document.querySelector('.chatroom-form legend'));
                 expect(el.textContent).toBe("Configuration for room@conference.example.org");
                 sizzle('[name="muc#roomconfig_membersonly"]', chatroomview.el).pop().click();
+                sizzle('[name="muc#roomconfig_roomname"]', chatroomview.el).pop().value = "New room name"
                 chatroomview.el.querySelector('.btn-primary').click();
 
                 iq = await test_utils.waitUntil(() => _.filter(IQs, iq => u.matchesSelector(iq.nodeTree, `iq[to="${jid}"][type="set"]`)).pop());
@@ -2293,7 +2295,7 @@
                 }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
                     .c('identity', {
                         'category': 'conference',
-                        'name': 'Room',
+                        'name': 'New room name',
                         'type': 'text'
                     }).up();
                 features = [
@@ -2335,6 +2337,7 @@
                 expect(chatroomview.model.get('temporary')).toBe(true);
                 expect(chatroomview.model.get('unmoderated')).toBe(true);
                 expect(chatroomview.model.get('unsecured')).toBe(false);
+                expect(chatroomview.el.querySelector('.chat-title').textContent.trim()).toBe('New room name');
                 done();
             }));
 

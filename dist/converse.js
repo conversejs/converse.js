@@ -55970,6 +55970,7 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Strophe = _converse$env.Strophe,
       moment = _converse$env.moment,
       sizzle = _converse$env.sizzle,
+      $build = _converse$env.$build,
       $iq = _converse$env.$iq,
       $msg = _converse$env.$msg,
       _ = _converse$env._,
@@ -56758,24 +56759,21 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       publishBundle() {
         const signed_prekey = this.get('signed_prekey');
-        const stanza = $iq({
-          'from': _converse.bare_jid,
-          'type': 'set'
-        }).c('pubsub', {
-          'xmlns': Strophe.NS.PUBSUB
-        }).c('publish', {
-          'node': `${Strophe.NS.OMEMO_BUNDLES}:${this.get('device_id')}`
-        }).c('item').c('bundle', {
+        const node = `${Strophe.NS.OMEMO_BUNDLES}:${this.get('device_id')}`;
+        const item = $build('item').c('bundle', {
           'xmlns': Strophe.NS.OMEMO
         }).c('signedPreKeyPublic', {
           'signedPreKeyId': signed_prekey.id
         }).t(signed_prekey.pubKey).up().c('signedPreKeySignature').t(signed_prekey.signature).up().c('identityKey').t(this.get('identity_keypair').pubKey).up().c('prekeys');
 
-        _.forEach(this.get('prekeys'), (prekey, id) => stanza.c('preKeyPublic', {
+        _.forEach(this.get('prekeys'), (prekey, id) => item.c('preKeyPublic', {
           'preKeyId': id
         }).t(prekey.pubKey).up());
 
-        return _converse.api.sendIQ(stanza);
+        const options = {
+          'pubsub#access_model': 'open'
+        };
+        return _converse.api.pubsub.publish(null, node, item, options);
       },
 
       generateMissingPreKeys() {
@@ -57013,20 +57011,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       publishDevices() {
-        const stanza = $iq({
-          'from': _converse.bare_jid,
-          'type': 'set'
-        }).c('pubsub', {
-          'xmlns': Strophe.NS.PUBSUB
-        }).c('publish', {
-          'node': Strophe.NS.OMEMO_DEVICELIST
-        }).c('item').c('list', {
+        const item = $build('item').c('list', {
           'xmlns': Strophe.NS.OMEMO
         });
-        this.devices.each(device => stanza.c('device', {
-          'id': device.get('id')
+        this.devices.each(d => item.c('device', {
+          'id': d.get('id')
         }).up());
-        return _converse.api.sendIQ(stanza);
+        const options = {
+          'pubsub#access_model': 'open'
+        };
+        return _converse.api.pubsub.publish(null, Strophe.NS.OMEMO_DEVICELIST, item, options, false);
       },
 
       removeOwnDevices(device_ids) {

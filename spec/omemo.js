@@ -34,6 +34,11 @@
     }
 
     async function initializedOMEMO (_converse) {
+        await test_utils.waitUntilDiscoConfirmed(
+            _converse, _converse.bare_jid,
+            [{'category': 'pubsub', 'type': 'pep'}],
+            ['http://jabber.org/protocol/pubsub#publish-options']
+        );
         let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
         let stanza = $iq({
             'from': _converse.bare_jid,
@@ -427,6 +432,7 @@
             _converse.connection.IQ_stanzas = [];
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => _converse.omemo_store);
+
             iq_stanza = await test_utils.waitUntil(() => bundleHasBeenPublished(_converse));
             expect(iq_stanza.toLocaleString()).toBe(
                 `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" type="set" xmlns="jabber:client">`+
@@ -447,6 +453,16 @@
                                 `</bundle>`+
                             `</item>`+
                         `</publish>`+
+                        `<publish-options>`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE">`+
+                                    `<value>http://jabber.org/protocol/pubsub#publish-options</value>`+
+                                `</field>`+
+                                `<field var="pubsub#access_model">`+
+                                    `<value>open</value>`+
+                                `</field>`+
+                            `</x>`+
+                        `</publish-options>`+
                     `</pubsub>`+
                 `</iq>`)
             const own_device = _converse.devicelists.get(_converse.bare_jid).devices.get(_converse.omemo_store.get('device_id'));
@@ -460,6 +476,12 @@
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
+
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
 
             test_utils.createContacts(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -592,6 +614,16 @@
                                 `</list>`+
                             `</item>`+
                         `</publish>`+
+                        `<publish-options>`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE">`+
+                                    `<value>http://jabber.org/protocol/pubsub#publish-options</value>`+
+                                `</field>`+
+                                `<field var="pubsub#access_model">`+
+                                    `<value>open</value>`+
+                                `</field>`+
+                            `</x>`+
+                        `</publish-options>`+
                     `</pubsub>`+
                 `</iq>`);
             expect(_converse.devicelists.length).toBe(2);
@@ -608,6 +640,12 @@
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
+
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
 
             test_utils.createContacts(_converse, 'current');
             const contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -753,6 +791,12 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
+
             _converse.NUM_PREKEYS = 2; // Restrict to 2, otherwise the resulting stanza is too large to easily test
 
             test_utils.createContacts(_converse, 'current', 1);
@@ -797,6 +841,16 @@
                                 `</bundle>`+
                             `</item>`+
                         `</publish>`+
+                        `<publish-options>`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE">`+
+                                    `<value>http://jabber.org/protocol/pubsub#publish-options</value>`+
+                                `</field>`+
+                                `<field var="pubsub#access_model">`+
+                                    `<value>open</value>`+
+                                `</field>`+
+                            `</x>`+
+                        `</publish-options>`+
                     `</pubsub>`+
                 `</iq>`)
 
@@ -815,6 +869,12 @@
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
+
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
 
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
@@ -858,7 +918,17 @@
                                 `</list>`+
                             `</item>`+
                         `</publish>`+
-                `</pubsub>`+
+                        `<publish-options>`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE">`+
+                                    `<value>http://jabber.org/protocol/pubsub#publish-options</value>`+
+                                `</field>`+
+                                `<field var="pubsub#access_model">`+
+                                    `<value>open</value>`+
+                                `</field>`+
+                            `</x>`+
+                        `</publish-options>`+
+                    `</pubsub>`+
                 `</iq>`);
 
             stanza = $iq({
@@ -964,6 +1034,12 @@
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
                 async function (done, _converse) {
+
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
 
             // MEMO encryption works only in members-only conferences that are non-anonymous. 
             const features = [
@@ -1146,6 +1222,12 @@
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
+
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
 
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-12-19 05:50+0100\n"
-"PO-Revision-Date: 2018-12-16 09:32+0100\n"
+"PO-Revision-Date: 2018-12-20 10:08+0000\n"
 "Last-Translator: sergio <srg.dev@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
@@ -173,7 +173,7 @@ msgstr "Mostrar este menú"
 
 #: dist/converse-no-dependencies.js:32526
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr "¿Está seguro de que quieres limpiar los mensajes de esta conversación?"
+msgstr "¿Estás seguro de que quieres limpiar los mensajes de esta conversación?"
 
 #: dist/converse-no-dependencies.js:32648
 #, javascript-format
@@ -194,7 +194,7 @@ msgstr "%1$s está ocupado"
 #: dist/converse-no-dependencies.js:32654
 #, javascript-format
 msgid "%1$s is online"
-msgstr "%1$s está en línea"
+msgstr "%1$s está conectado"
 
 #: dist/converse-no-dependencies.js:33389
 msgid "Username"
@@ -539,7 +539,7 @@ msgstr "%1$s ya no es moderador"
 #: dist/converse-no-dependencies.js:36177
 #, javascript-format
 msgid "%1$s has been given a voice again"
-msgstr "A %1$s le han dado voz otra vez"
+msgstr "A %1$s le han permitido voz otra vez"
 
 #: dist/converse-no-dependencies.js:36181
 #, javascript-format
@@ -589,8 +589,7 @@ msgstr ""
 #, javascript-format
 msgid "Error: couldn't find a groupchat participant \"%1$s\""
 msgstr ""
-"Error: no se puede encontrar el participante \"%1$s\" en esta conversación "
-"en grupo"
+"Error: no se encontró al participante \"%1$s\" en esta conversación en grupo"
 
 #: dist/converse-no-dependencies.js:36418
 msgid ""
@@ -641,9 +640,8 @@ msgid "Grant ownership of this groupchat"
 msgstr "Conceder propiedad de esta conversación en grupo"
 
 #: dist/converse-no-dependencies.js:36462
-#, fuzzy
 msgid "Register a nickname for this groupchat"
-msgstr "Ingrese un apodo para esta conversación en grupo"
+msgstr "Ingresa un apodo para esta conversación en grupo"
 
 #: dist/converse-no-dependencies.js:36462
 msgid "Revoke user's membership"
@@ -663,7 +661,7 @@ msgstr "Permitir a usuario silenciado publicar mensajes"
 
 #: dist/converse-no-dependencies.js:36539
 msgid "Error: invalid number of arguments"
-msgstr "Error: número inválido de argumentos"
+msgstr "Error: número de argumentos inválido"
 
 #: dist/converse-no-dependencies.js:36788
 msgid ""
@@ -913,14 +911,13 @@ msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "Lo sentimos, ocurrió un error mientras se eliminaban los dispositivos."
 
 #: dist/converse-no-dependencies.js:38192
-#, fuzzy
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
 "¿Estás seguro que quieres generar nuevas claves OMEMO? Esto eliminará tus "
-"antiguas claves y todos los mensajes previamente cifrados no será legibles "
+"antiguas claves y todos los mensajes previamente cifrados no serán legibles "
 "en este dispositivo."
 
 #: dist/converse-no-dependencies.js:38321
@@ -935,7 +932,7 @@ msgid ""
 "support. Find more information on https://conversations.im/omemo"
 msgstr ""
 "Esto es un mensaje cifrado con OMEMO el cual tu cliente parece no soportar. "
-"Encuentre más información en https://conversations.im/omemo"
+"Encuentra más información en https://conversations.im/omemo"
 
 #: dist/converse-no-dependencies.js:38514
 msgid "Sorry, could not send the message due to an error."
@@ -947,6 +944,8 @@ msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
 msgstr ""
+"No se puede usar cifrado punto a punto porque %1$s usa un cliente que no "
+"soporta OMEMO."
 
 #: dist/converse-no-dependencies.js:39404
 msgid "Your avatar image"
@@ -1002,8 +1001,8 @@ msgstr ""
 #: dist/converse-no-dependencies.js:39443
 msgid "You can check your browser's developer console for any error output."
 msgstr ""
-"Puedes comprobar en tu consola de desarrollador del navegador para cualquier "
-"salida de error."
+"Puedes comprobar cualquier error en la consola de desarrollador del "
+"navegador."
 
 #: dist/converse-no-dependencies.js:39492
 #: dist/converse-no-dependencies.js:41232
@@ -1380,8 +1379,8 @@ msgstr ""
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
-"No puedes registrar tu apodo en esta conversación en grupo, formato de datos "
-"inválido suministrado."
+"No puedes registrar tu apodo en esta conversación en grupo, se han "
+"proporcionado datos inválidos."
 
 #: dist/converse-no-dependencies.js:49364
 #, javascript-format
@@ -1421,13 +1420,12 @@ msgid "Click to hide these contacts"
 msgstr "Haz clic para ocultar estos contactos"
 
 #: dist/converse-no-dependencies.js:74273
-#, fuzzy
 msgid "This groupchat no longer exists"
 msgstr "Esta conversación en grupo ya no existe"
 
 #: dist/converse-no-dependencies.js:74279
 msgid "The conversation has moved. Click below to enter."
-msgstr "La conversación se ha trasladado. Haz clic debajo para entrar."
+msgstr "La conversación se ha movido. Haz clic debajo para entrar."
 
 #: dist/converse-no-dependencies.js:74306
 msgid "Name"
@@ -1600,12 +1598,12 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
-"Para mejorar el rendimiento, guardamos tu datos en la caché del navegador. "
-"Desmarque esta opción si este es un ordenador público o si quiere que sus "
-"datos sean borrados cuando se desconecte. Es importante que salga "
-"explícitamente, de lo contrario todos los datos de caché podrían no ser "
-"borrados. Por favor, tenga en cuenta que cuando esté usando un dispositivo "
-"que no es de confianza, el cifrado OMEMO no está disponible."
+"Para mejorar el rendimiento, guardamos tus datos en la caché del navegador. "
+"Desmarca esta opción si este es un ordenador público o si quieres que tus "
+"datos sean borrados cuando te desconectes. Es importante que cierres la "
+"sesión explícitamente, de lo contrario podrían no borrarse todos los datos "
+"almacenados en la caché. Por favor, ten en cuenta que cuando estés usando un "
+"dispositivo que no es de confianza, el cifrado OMEMO no está disponible."
 
 #: dist/converse-no-dependencies.js:75475
 msgid "Log in"
@@ -1629,7 +1627,7 @@ msgstr "Versiones del mensaje"
 
 #: dist/converse-no-dependencies.js:75852
 msgid "Save and close"
-msgstr "Grabar y cerrar"
+msgstr "Guardar y cerrar"
 
 #: dist/converse-no-dependencies.js:75856
 msgid "This device's OMEMO fingerprint"
@@ -1646,7 +1644,7 @@ msgstr "Seleccionar todo"
 #: dist/converse-no-dependencies.js:75872
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
 msgstr ""
-"Seleccionar para elegir las huellas digitales de otros dispositivos OMEMO"
+"Casilla para seleccionar las huellas digitales de otros dispositivos OMEMO"
 
 #: dist/converse-no-dependencies.js:75874
 msgid "Other OMEMO-enabled devices"
@@ -1655,7 +1653,7 @@ msgstr "Otros dispositivos habilitados para OMEMO"
 #: dist/converse-no-dependencies.js:75882
 #: dist/converse-no-dependencies.js:75890
 msgid "Checkbox for selecting the following fingerprint"
-msgstr "Selecciona para elegir las siguientes huellas digitales"
+msgstr "Casilla para seleccionar las siguientes huellas digitales"
 
 #: dist/converse-no-dependencies.js:75892
 msgid "Device without a fingerprint"
@@ -1663,7 +1661,7 @@ msgstr "Dispositivo sin huella digital"
 
 #: dist/converse-no-dependencies.js:75898
 msgid "Remove checked devices and close"
-msgstr "Eliminar los dispositivos marcados y cerrar"
+msgstr "Eliminar los dispositivos seleccionados y cerrar"
 
 #: dist/converse-no-dependencies.js:75978
 msgid "Don't have a chat account?"
@@ -1709,7 +1707,7 @@ msgstr "Espera, estamos recuperando el formulario de registro…"
 
 #: dist/converse-no-dependencies.js:76813
 msgid "Messages are being sent in plaintext"
-msgstr "Los mensajes están siendo enviados en texto plano"
+msgstr "Los mensajes se envían en texto plano"
 
 #: dist/converse-no-dependencies.js:76865
 msgid "The User's Profile Image"
@@ -1762,17 +1760,17 @@ msgstr "Eliminar de tu lista de contactos"
 #: dist/converse-no-dependencies.js:77192
 #, javascript-format
 msgid "Download audio file \"%1$s\""
-msgstr "Descargue archivo de audio \"%1$s\""
+msgstr "Descargar archivo de audio \"%1$s\""
 
 #: dist/converse-no-dependencies.js:77210
 #, javascript-format
 msgid "Download file \"%1$s\""
-msgstr "Descargue archivo \"%1$s\""
+msgstr "Descargar archivo \"%1$s\""
 
 #: dist/converse-no-dependencies.js:77225
 #, javascript-format
 msgid "Download image \"%1$s\""
-msgstr "Descargue imagen \"%1$s\""
+msgstr "Descargar imagen \"%1$s\""
 
 #: dist/converse-no-dependencies.js:77255
 msgid "Download"

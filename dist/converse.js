@@ -56089,7 +56089,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
               api = _converse.api;
         ev.preventDefault();
 
-        if (confirm(__("Are you sure you want to generate new OMEMO keys? " + "This will remove your old keys and all previously encrypted messages will no longer be ecryptable on this device."))) {
+        if (confirm(__("Are you sure you want to generate new OMEMO keys? " + "This will remove your old keys and all previously encrypted messages will no longer be decryptable on this device."))) {
           api.omemo.bundle.generate();
         }
       }
@@ -56477,7 +56477,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
               __ = _converse.__;
 
         if (!this.model.get('omemo_supported')) {
-          return _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [__(`Cannot use end-to-end encryption because %1$s uses a client that doesn't support OMEMO.`, this.model.contact.getDisplayName())]);
+          return _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [__("Cannot use end-to-end encryption because %1$s uses a client that doesn't support OMEMO.", this.model.contact.getDisplayName())]);
         }
 
         ev.preventDefault();

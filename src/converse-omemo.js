@@ -130,7 +130,7 @@ converse.plugins.add('converse-omemo', {
                 ev.preventDefault();
                 if (confirm(__(
                     "Are you sure you want to generate new OMEMO keys? " +
-                    "This will remove your old keys and all previously encrypted messages will no longer be ecryptable on this device.")
+                    "This will remove your old keys and all previously encrypted messages will no longer be decryptable on this device.")
                 )) {
                     api.omemo.bundle.generate();
                 }
@@ -501,7 +501,7 @@ converse.plugins.add('converse-omemo', {
                     return _converse.api.alert.show(
                         Strophe.LogLevel.ERROR,
                         __('Error'),
-                        [__(`Cannot use end-to-end encryption because %1$s uses a client that doesn't support OMEMO.`,
+                        [__("Cannot use end-to-end encryption because %1$s uses a client that doesn't support OMEMO.",
                             this.model.contact.getDisplayName()
                            )] 
                     )

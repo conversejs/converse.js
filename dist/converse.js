@@ -60203,31 +60203,40 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var converse_autocomplete__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! converse-autocomplete */ "./src/converse-autocomplete.js");
-/* harmony import */ var converse_bookmarks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! converse-bookmarks */ "./src/converse-bookmarks.js");
-/* harmony import */ var converse_caps__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! converse-caps */ "./src/converse-caps.js");
-/* harmony import */ var converse_chatview__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js");
-/* harmony import */ var converse_controlbox__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! converse-controlbox */ "./src/converse-controlbox.js");
-/* harmony import */ var converse_dragresize__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! converse-dragresize */ "./src/converse-dragresize.js");
-/* harmony import */ var converse_embedded__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! converse-embedded */ "./src/converse-embedded.js");
-/* harmony import */ var converse_fullscreen__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! converse-fullscreen */ "./src/converse-fullscreen.js");
-/* harmony import */ var converse_push__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! converse-push */ "./src/converse-push.js");
-/* harmony import */ var converse_headline__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! converse-headline */ "./src/converse-headline.js");
-/* harmony import */ var _converse_headless_converse_mam__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @converse/headless/converse-mam */ "./src/headless/converse-mam.js");
-/* harmony import */ var converse_minimize__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! converse-minimize */ "./src/converse-minimize.js");
-/* harmony import */ var converse_muc_views__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! converse-muc-views */ "./src/converse-muc-views.js");
-/* harmony import */ var converse_notification__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! converse-notification */ "./src/converse-notification.js");
-/* harmony import */ var converse_omemo__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! converse-omemo */ "./src/converse-omemo.js");
-/* harmony import */ var _converse_headless_converse_ping__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @converse/headless/converse-ping */ "./src/headless/converse-ping.js");
-/* harmony import */ var converse_register__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! converse-register */ "./src/converse-register.js");
-/* harmony import */ var converse_roomslist__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! converse-roomslist */ "./src/converse-roomslist.js");
-/* harmony import */ var converse_rosterview__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! converse-rosterview */ "./src/converse-rosterview.js");
-/* harmony import */ var _converse_headless_converse_vcard__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! @converse/headless/converse-vcard */ "./src/headless/converse-vcard.js");
-/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
+/* harmony import */ var _converse_headless_converse_mam__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @converse/headless/converse-mam */ "./src/headless/converse-mam.js");
+/* harmony import */ var _converse_headless_converse_ping__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @converse/headless/converse-ping */ "./src/headless/converse-ping.js");
+/* harmony import */ var _converse_headless_converse_pubsub__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @converse/headless/converse-pubsub */ "./src/headless/converse-pubsub.js");
+/* harmony import */ var _converse_headless_converse_vcard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @converse/headless/converse-vcard */ "./src/headless/converse-vcard.js");
+/* harmony import */ var converse_autocomplete__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! converse-autocomplete */ "./src/converse-autocomplete.js");
+/* harmony import */ var converse_bookmarks__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! converse-bookmarks */ "./src/converse-bookmarks.js");
+/* harmony import */ var converse_caps__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! converse-caps */ "./src/converse-caps.js");
+/* harmony import */ var converse_chatview__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js");
+/* harmony import */ var converse_controlbox__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! converse-controlbox */ "./src/converse-controlbox.js");
+/* harmony import */ var converse_dragresize__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! converse-dragresize */ "./src/converse-dragresize.js");
+/* harmony import */ var converse_embedded__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! converse-embedded */ "./src/converse-embedded.js");
+/* harmony import */ var converse_fullscreen__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! converse-fullscreen */ "./src/converse-fullscreen.js");
+/* harmony import */ var converse_headline__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! converse-headline */ "./src/converse-headline.js");
+/* harmony import */ var converse_minimize__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! converse-minimize */ "./src/converse-minimize.js");
+/* harmony import */ var converse_muc_views__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! converse-muc-views */ "./src/converse-muc-views.js");
+/* harmony import */ var converse_notification__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! converse-notification */ "./src/converse-notification.js");
+/* harmony import */ var converse_omemo__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! converse-omemo */ "./src/converse-omemo.js");
+/* harmony import */ var converse_push__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! converse-push */ "./src/converse-push.js");
+/* harmony import */ var converse_register__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! converse-register */ "./src/converse-register.js");
+/* harmony import */ var converse_roomslist__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! converse-roomslist */ "./src/converse-roomslist.js");
+/* harmony import */ var converse_rosterview__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! converse-rosterview */ "./src/converse-rosterview.js");
+/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* START: Removable components
  * --------------------
  * Any of the following components may be removed if they're not needed.
  */
+ // XEP-0313 Message Archive Management
+
+ // XEP-0199 XMPP Ping
+
+ // XEP-0060 PubSub
+
+ // XEP-0054 VCard-temp
+
 
  // XEP-0048 Bookmarks
 
@@ -60241,11 +60250,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- // XEP-0357 Push Notifications
-
  // Support for headline messages
-
- // XEP-0313 Message Archive Management
 
  // Allows chat boxes to be minimized
 
@@ -60254,23 +60259,21 @@ __webpack_require__.r(__webpack_exports__);
  // HTML5 Notifications
 
 
- // XEP-0199 XMPP Ping
+ // XEP-0357 Push Notifications
 
  // XEP-0077 In-band registration
 
  // Show currently open chat rooms
 
 
- // XEP-0054 VCard-temp
-
 /* END: Removable components */
 
 
 const WHITELISTED_PLUGINS = ['converse-autocomplete', 'converse-bookmarks', 'converse-caps', 'converse-chatboxviews', 'converse-chatview', 'converse-controlbox', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc-views', 'converse-notification', 'converse-oauth', 'converse-omemo', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton'];
-const initialize = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_20__["default"].initialize;
+const initialize = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_21__["default"].initialize;
 
-_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_20__["default"].initialize = function (settings, callback) {
-  if (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_20__["default"].env._.isArray(settings.whitelisted_plugins)) {
+_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_21__["default"].initialize = function (settings, callback) {
+  if (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_21__["default"].env._.isArray(settings.whitelisted_plugins)) {
     settings.whitelisted_plugins = settings.whitelisted_plugins.concat(WHITELISTED_PLUGINS);
   } else {
     settings.whitelisted_plugins = WHITELISTED_PLUGINS;
@@ -60279,7 +60282,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_20__["default"].initia
   return initialize(settings, callback);
 };
 
-/* harmony default export */ __webpack_exports__["default"] = (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_20__["default"]);
+/* harmony default export */ __webpack_exports__["default"] = (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_21__["default"]);
 
 /***/ }),
 
@@ -62663,7 +62666,7 @@ pluggable_js_dist_pluggable__WEBPACK_IMPORTED_MODULE_8___default.a.enable(_conve
 // These are just the @converse/headless plugins, for the full converse,
 // the other plugins are whitelisted in src/converse.js
 
-_converse.core_plugins = ['converse-chatboxes', 'converse-core', 'converse-disco', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-roster', 'converse-vcard'];
+_converse.core_plugins = ['converse-chatboxes', 'converse-core', 'converse-disco', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-pubsub', 'converse-roster', 'converse-vcard'];
 _converse.keycodes = {
   TAB: 9,
   ENTER: 13,
@@ -67802,6 +67805,111 @@ _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-pin
     _converse.on('connected', onConnected);
 
     _converse.on('reconnected', onConnected);
+  }
+
+});
+
+/***/ }),
+
+/***/ "./src/headless/converse-pubsub.js":
+/*!*****************************************!*\
+  !*** ./src/headless/converse-pubsub.js ***!
+  \*****************************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _converse_disco__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./converse-disco */ "./src/headless/converse-disco.js");
+/* harmony import */ var _converse_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./converse-core */ "./src/headless/converse-core.js");
+// Converse.js
+// http://conversejs.org
+//
+// Copyright (c) 2018, the Converse.js developers
+// Licensed under the Mozilla Public License (MPLv2)
+
+
+const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].env,
+      Strophe = _converse$env.Strophe,
+      Backbone = _converse$env.Backbone,
+      Promise = _converse$env.Promise,
+      $iq = _converse$env.$iq,
+      $build = _converse$env.$build,
+      $msg = _converse$env.$msg,
+      $pres = _converse$env.$pres,
+      b64_sha1 = _converse$env.b64_sha1,
+      f = _converse$env.f,
+      moment = _converse$env.moment,
+      _ = _converse$env._;
+Strophe.addNamespace('PUBSUB_ERROR', Strophe.NS.PUBSUB + "#errors");
+_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-pubsub', {
+  dependencies: ["converse-disco"],
+
+  initialize() {
+    /* The initialize function gets called as soon as the plugin is
+     * loaded by converse.js's plugin machinery.
+     */
+    const _converse = this._converse,
+          __ = _converse.__;
+    /************************ BEGIN API ************************/
+    // We extend the default converse.js API to add methods specific to MUC groupchats.
+
+    _.extend(_converse.api, {
+      /**
+       * The "pubsub" namespace groups methods relevant to PubSub
+       *
+       * @namespace _converse.api.pubsub
+       * @memberOf _converse.api
+       */
+      'pubsub': {
+        /**
+         * Publshes an item to a PubSub node
+         *
+         * @method _converse.api.pubsub.publish
+         * @param {string} jid The JID of the pubsub service where the node resides.
+         * @param {string} node The node being published to
+         * @param {Strophe.Builder} item The Strophe.Builder representation of the XML element being published
+         * @param {object} options An object representing the publisher options
+         *                         (see https://xmpp.org/extensions/xep-0060.html#publisher-publish-options)
+         */
+        async 'publish'(jid, node, item, options) {
+          const stanza = $iq({
+            'from': _converse.bare_jid,
+            'type': 'set',
+            'to': jid
+          }).c('pubsub', {
+            'xmlns': Strophe.NS.PUBSUB
+          }).c('publish', {
+            'node': node
+          }).cnode(item.tree()).up().up();
+
+          if (options) {
+            jid = jid || _converse.bare_jid;
+            const result = await _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', jid);
+
+            if (result.length) {
+              stanza.c('publish-options').c('x', {
+                'xmlns': Strophe.NS.XFORM,
+                'type': 'submit'
+              }).c('field', {
+                'var': 'FORM_TYPE',
+                'type': 'hidden'
+              }).c('value').t('http://jabber.org/protocol/pubsub#publish-options').up().up();
+              Object.keys(options).forEach(k => stanza.c('field', {
+                'var': k
+              }).c('value').t(options[k]).up().up());
+            } else {
+              _converse.log(`_converse.api.publish: ${jid} does not support #publish-options, ` + `so we didn't set them even though they were provided.`);
+            }
+          }
+
+          return _converse.api.sendIQ(stanza);
+        }
+
+      }
+    });
+    /************************ END API ************************/
+
   }
 
 });

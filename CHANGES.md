@@ -4,6 +4,8 @@
 
 - Bugfix: MUC commands were being ignored
 - UI: Always show the OMEMO lock icon (grayed out if not available).
+- Use `publish-options` with `pubsub#access_model` set to `open` when publishing OMEMO public keys and devices
+- Add a new `converse-pubsub` plugin, for generic PubSub operations
 - #1353 Message Delivery Receipts not working because of the message "type" attribute
 - #1374 Can't load embedded chat when changing `view_mode` between page reloads
 - #1376 Fixed some alignment issues in the sidebar

@@ -89,6 +89,7 @@ _converse.core_plugins = [
     'converse-mam',
     'converse-muc',
     'converse-ping',
+    'converse-pubsub',
     'converse-roster',
     'converse-vcard'
 ];

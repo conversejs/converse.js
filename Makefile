@@ -234,8 +234,17 @@ check: eslint
 ########################################################################
 ## Documentation
 
+./bin/activate:
+	virtualenv .
+
+.installed.cfg: requirements.txt buildout.cfg
+	./bin/pip install -r requirements.txt
+	./bin/buildout -v
+
+docsdev: ./bin/activate .installed.cfg
+
 .PHONY: html
-html: apidoc
+html: docsdev apidoc
 	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	make apidoc

@@ -371,6 +371,134 @@
             done();
         }));
 
+        it("gracefully handles auth errors when trying to send encrypted groupchat messages",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            // MEMO encryption works only in members only conferences
+            // that are non-anonymous.
+            const features = [
+                'http://jabber.org/protocol/muc',
+                'jabber:iq:register',
+                'muc_passwordprotected',
+                'muc_hidden',
+                'muc_temporary',
+                'muc_membersonly',
+                'muc_unmoderated',
+                'muc_nonanonymous'
+            ];
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy', features);
+            const view = _converse.chatboxviews.get('lounge@localhost');
+            await test_utils.waitUntil(() => initializedOMEMO(_converse));
+
+            const contact_jid = 'newguy@localhost';
+            let stanza = $pres({
+                    'to': 'dummy@localhost/resource',
+                    'from': 'lounge@localhost/newguy'
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': 'newguy@localhost/_converse.js-290929789',
+                    'role': 'participant'
+                }).tree();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            const toolbar = view.el.querySelector('.chat-toolbar');
+            const toggle = toolbar.querySelector('.toggle-omemo');
+            toggle.click();
+            expect(view.model.get('omemo_active')).toBe(true);
+            expect(view.model.get('omemo_supported')).toBe(true);
+
+            const textarea = view.el.querySelector('.chat-textarea');
+            textarea.value = 'This message will be encrypted';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
+            expect(iq_stanza.toLocaleString()).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+                    `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                        `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
+                    `</pubsub>`+
+                `</iq>`);
+
+            stanza = $iq({
+                'from': contact_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result',
+            }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                    .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                        .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                            .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
+
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.omemo_store);
+            expect(_converse.devicelists.length).toBe(2);
+
+            const devicelist = _converse.devicelists.get(contact_jid);
+            expect(devicelist.devices.length).toBe(1);
+            expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
+
+            iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
+            stanza = $iq({
+                'from': _converse.bare_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result',
+            }).c('pubsub', {
+                'xmlns': 'http://jabber.org/protocol/pubsub'
+                }).c('items', {'node': "eu.siacs.conversations.axolotl.bundles:482886413b977930064a5888b92134fe"})
+                    .c('item')
+                        .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                            .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t(btoa('100000')).up()
+                            .c('signedPreKeySignature').t(btoa('200000')).up()
+                            .c('identityKey').t(btoa('300000')).up()
+                            .c('prekeys')
+                                .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1991')).up()
+                                .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1992')).up()
+                                .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1993'));
+            iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'));
+
+            /* <iq xmlns="jabber:client" to="jc@opkode.com/converse.js-34183907" type="error" id="945c8ab3-b561-4d8a-92da-77c226bb1689:sendIQ" from="joris@konuro.net">
+             *     <pubsub xmlns="http://jabber.org/protocol/pubsub">
+             *         <items node="eu.siacs.conversations.axolotl.bundles:7580"/>
+             *     </pubsub>
+             *     <error code="401" type="auth">
+             *         <presence-subscription-required xmlns="http://jabber.org/protocol/pubsub#errors"/>
+             *         <not-authorized xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+             *     </error>
+             * </iq>
+             */
+            stanza = $iq({
+                'from': contact_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result',
+            }).c('pubsub', {'xmlns': 'http://jabber.org/protocol/pubsub'})
+                .c('items', {'node': "eu.siacs.conversations.axolotl.bundles:4e30f35051b7b8b42abe083742187228"}).up().up()
+            .c('error', {'code': '401', 'type': 'auth'})
+                .c('presence-subscription-required', {'xmlns':"http://jabber.org/protocol/pubsub#errors" }).up()
+                .c('not-authorized', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            await test_utils.waitUntil(() => document.querySelectorAll('.alert-danger').length, 2000);
+            const header = document.querySelector('.alert-danger .modal-title');
+            expect(header.textContent).toBe("Error");
+            expect(u.ancestor(header, '.modal-content').querySelector('.modal-body p').textContent.trim())
+                .toBe("Sorry, we're unable to send an encrypted message because newguy@localhost requires you "+
+                      "to be subscribed to their presence in order to see their OMEMO information");
+
+            expect(view.model.get('omemo_supported')).toBe(false);
+            expect(view.el.querySelector('.chat-textarea').value).toBe('This message will be encrypted');
+            done();
+        }));
+
         it("can receive a PreKeySignalMessage",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},

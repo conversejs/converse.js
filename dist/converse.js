@@ -55980,6 +55980,15 @@ const KEY_ALGO = {
   'length': 128
 };
 
+class IQError extends Error {
+  constructor(message, iq) {
+    super(message, iq);
+    this.name = 'IQError';
+    this.iq = iq;
+  }
+
+}
+
 function parseBundle(bundle_el) {
   /* Given an XML element representing a user's OMEMO bundle, parse it
    * and return a map.
@@ -56011,7 +56020,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     return !_.isNil(window.libsignal) && !f.includes('converse-omemo', _converse.blacklisted_plugins);
   },
 
-  dependencies: ["converse-chatview"],
+  dependencies: ["converse-chatview", "converse-pubsub"],
   overrides: {
     ProfileModal: {
       events: {
@@ -56267,6 +56276,31 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }));
       },
 
+      handleMessageSendError(e) {
+        const _converse = this.__super__._converse,
+              __ = _converse.__;
+
+        if (e.name === 'IQError') {
+          this.save('omemo_supported', false);
+          const err_msgs = [];
+
+          if (sizzle(`presence-subscription-required[xmlns="${Strophe.NS.PUBSUB_ERROR}"]`, e.iq).length) {
+            err_msgs.push(__("Sorry, we're unable to send an encrypted message because %1$s " + "requires you to be subscribed to their presence in order to see their OMEMO information", e.iq.getAttribute('from')));
+          } else if (sizzle(`remote-server-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]`, e.iq).length) {
+            err_msgs.push(__("Sorry, we're unable to send an encrypted message because the remote server for %1$s could not be found", e.iq.getAttribute('from')));
+          } else {
+            err_msgs.push(__("Unable to send an encrypted message due to an unexpected error."));
+            err_msgs.push(e.iq.outerHTML);
+          }
+
+          _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), err_msgs);
+
+          _converse.log(e, Strophe.LogLevel.ERROR);
+        } else {
+          throw e;
+        }
+      },
+
       async sendMessage(attrs) {
         const _converse = this.__super__._converse,
               __ = _converse.__;
@@ -56274,19 +56308,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         if (this.get('omemo_active') && attrs.message) {
           attrs['is_encrypted'] = true;
           attrs['plaintext'] = attrs.message;
-          const devices = await _converse.getBundlesAndBuildSessions(this);
-          const stanza = await _converse.createOMEMOMessageStanza(this, this.messages.create(attrs), devices);
 
           try {
+            const devices = await _converse.getBundlesAndBuildSessions(this);
+            const stanza = await _converse.createOMEMOMessageStanza(this, this.messages.create(attrs), devices);
             this.sendMessageStanza(stanza);
           } catch (e) {
-            this.messages.create({
-              'message': __("Sorry, could not send the message due to an error.") + ` ${e.message}`,
-              'type': 'error'
-            });
-
-            _converse.log(e, Strophe.LogLevel.ERROR);
-
+            this.handleMessageSendError(e);
             return false;
           }
 
@@ -56770,7 +56798,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return _converse.api.pubsub.publish(null, node, item, options);
       },
 
-      generateMissingPreKeys() {
+      async generateMissingPreKeys() {
         const current_keys = this.getPreKeys(),
               missing_keys = _.difference(_.invokeMap(_.range(0, _converse.NUM_PREKEYS), Number.prototype.toString), _.keys(current_keys));
 
@@ -56780,20 +56808,21 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           return Promise.resolve();
         }
 
-        return Promise.all(_.map(missing_keys, id => libsignal.KeyHelper.generatePreKey(parseInt(id, 10)))).then(keys => {
-          _.forEach(keys, k => this.storePreKey(k.keyId, k.keyPair));
+        const keys = await Promise.all(_.map(missing_keys, id => libsignal.KeyHelper.generatePreKey(parseInt(id, 10))));
 
-          const marshalled_keys = _.map(this.getPreKeys(), k => ({
-            'id': k.keyId,
-            'key': u.arrayBufferToBase64(k.pubKey)
-          })),
-                devicelist = _converse.devicelists.get(_converse.bare_jid),
-                device = devicelist.devices.get(this.get('device_id'));
+        _.forEach(keys, k => this.storePreKey(k.keyId, k.keyPair));
 
-          return device.getBundle().then(bundle => device.save('bundle', _.extend(bundle, {
-            'prekeys': marshalled_keys
-          })));
-        });
+        const marshalled_keys = _.map(this.getPreKeys(), k => ({
+          'id': k.keyId,
+          'key': u.arrayBufferToBase64(k.pubKey)
+        })),
+              devicelist = _converse.devicelists.get(_converse.bare_jid),
+              device = devicelist.devices.get(this.get('device_id'));
+
+        const bundle = await device.getBundle();
+        device.save('bundle', _.extend(bundle, {
+          'prekeys': marshalled_keys
+        }));
       },
 
       async generateBundle() {
@@ -56892,7 +56921,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         try {
           iq = await _converse.api.sendIQ(stanza);
         } catch (iq) {
-          return _converse.log(iq.outerHTML, Strophe.LogLevel.ERROR);
+          throw new IQError("Could not fetch bundle", iq);
+        }
+
+        if (iq.querySelector('error')) {
+          throw new IQError("Could not fetch bundle", iq);
         }
 
         const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, iq).pop(),

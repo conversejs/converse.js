@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-12-16 11:20+0100\n"
-"PO-Revision-Date: 2018-12-19 05:54+0100\n"
+"PO-Revision-Date: 2018-12-20 10:08+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -907,15 +907,14 @@ msgstr ""
 "Désolé, une erreur est survenue en tentant de supprimer les clients OMEMO."
 
 #: dist/converse-no-dependencies.js:38192
-#, fuzzy
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
-"Voulez-vous vraiment générer de nouvelles clefs OMEMO ? Ceci retirera vos "
+"Voulez-vous vraiment générer de nouvelles clefs OMEMO ? Ceci retirera vos "
 "anciennes clefs et tous les messages déjà chiffrés ne seront plus "
-"chiffrables sur ce périphérique."
+"déchiffrables sur ce client."
 
 #: dist/converse-no-dependencies.js:38321
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -942,6 +941,8 @@ msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
 msgstr ""
+"Impossible d’utiliser le chiffrement bout à bout parce que %1$s utilise un "
+"client qui ne gère pas OMEMO."
 
 #: dist/converse-no-dependencies.js:39404
 msgid "Your avatar image"

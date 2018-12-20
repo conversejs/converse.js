@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-12-19 05:50+0100\n"
-"PO-Revision-Date: 2018-11-17 15:07+0000\n"
+"PO-Revision-Date: 2018-12-21 11:08+0000\n"
 "Last-Translator: Xosé M <xosem@disroot.org>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/conversejs/"
 "translations/gl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.3-dev\n"
+"X-Generator: Weblate 3.4-dev\n"
 
 #: dist/converse-no-dependencies.js:30588
 #: dist/converse-no-dependencies.js:30645
@@ -627,9 +627,8 @@ msgid "Grant ownership of this groupchat"
 msgstr "Conceder a propiedade de esta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:36462
-#, fuzzy
 msgid "Register a nickname for this groupchat"
-msgstr "Rexistrar un alcume para esta sala"
+msgstr "Rexistrar un alcume para esta conversa en grupo"
 
 #: dist/converse-no-dependencies.js:36462
 msgid "Revoke user's membership"
@@ -896,14 +895,14 @@ msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "Lamentámolo, algo fallou ao intentar eliminar os dispositivos."
 
 #: dist/converse-no-dependencies.js:38192
-#, fuzzy
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
 "Realmente quere xerar unhas novas chaves OMEMO? Esto eliminará as antigas e "
-"todas as mensaxes anteriores cifradas non se poderán ler neste dispositivo."
+"todas as mensaxes anteriores cifradas con elas non se poderán ler neste "
+"dispositivo."
 
 #: dist/converse-no-dependencies.js:38321
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -927,6 +926,8 @@ msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
 msgstr ""
+"Non se puido utilizar o cifrado extremo-a-extremo porque %1$s utilizar un "
+"cliente que non soporta OMEMO."
 
 #: dist/converse-no-dependencies.js:39404
 msgid "Your avatar image"
@@ -1392,9 +1393,8 @@ msgid "Click to hide these contacts"
 msgstr "Pulse para ocultar estos contactos"
 
 #: dist/converse-no-dependencies.js:74273
-#, fuzzy
 msgid "This groupchat no longer exists"
-msgstr "Esta sala xa non existe"
+msgstr "Esta conversa en grupo xa non existe"
 
 #: dist/converse-no-dependencies.js:74279
 msgid "The conversation has moved. Click below to enter."

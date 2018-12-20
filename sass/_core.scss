@@ -115,6 +115,10 @@ body.reset {
     direction: ltr;
     z-index: 1031; // One more than bootstrap navbar
 
+    textarea:disabled {
+        background-color: #EEE !important;
+    }
+
     .nopadding {
         padding: 0 !important;
     }

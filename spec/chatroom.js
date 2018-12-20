@@ -2535,7 +2535,6 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 var textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = '/help This is the groupchat subject';
                 view.keyPressed({
@@ -2544,7 +2543,6 @@
                     keyCode: 13
                 });
 
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_messages.length).toBe(18);
                 expect(info_messages.pop().textContent).toBe('/voice: Allow muted user to post messages');
@@ -2723,7 +2721,6 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view, 'clearMessages');
                 let sent_stanza;
                 spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
@@ -2737,7 +2734,6 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(_converse.connection.send).toHaveBeenCalled();
                 expect(sent_stanza.textContent).toBe('This is the groupchat subject');
 
@@ -2777,7 +2773,6 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view, 'clearMessages');
                 const textarea = view.el.querySelector('.chat-textarea')
                 textarea.value = '/clear';
@@ -2786,7 +2781,6 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.clearMessages).toHaveBeenCalled();
                 done();
             }));
@@ -2805,7 +2799,6 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view.model, 'setAffiliation').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'validateRoleChangeCommand').and.callThrough();
@@ -2830,22 +2823,27 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
+                // XXX: Calling onFormSubmitted directly, trying
+                // again via triggering Event doesn't work for some weird
+                // reason.
+                textarea.value = '/owner nobody You\'re responsible';
+                view.onFormSubmitted(new Event('submit'));
 
-                view.onMessageSubmitted('/owner nobody You\'re responsible');
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     'Error: couldn\'t find a groupchat participant "nobody"');
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
 
-                // Call now with the correct amount of arguments.
-                // XXX: Calling onMessageSubmitted directly, trying
+                // Call now with the correct of arguments.
+                // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onMessageSubmitted('/owner annoyingGuy You\'re responsible');
+                textarea.value = '/owner annoyingGuy You\'re responsible';
+                view.onFormSubmitted(new Event('submit'));
+
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
                 expect(view.model.setAffiliation).toHaveBeenCalled();
                 expect(view.showErrorMessage.calls.count()).toBe(2);
@@ -2889,7 +2887,6 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view.model, 'setAffiliation').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'validateRoleChangeCommand').and.callThrough();
@@ -2914,17 +2911,17 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
-
-                // XXX: Calling onMessageSubmitted directly, trying
+                // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onMessageSubmitted('/ban annoyingGuy You\'re annoying');
+                textarea.value = '/ban annoyingGuy You\'re annoying';
+                view.onFormSubmitted(new Event('submit'));
+
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.model.setAffiliation).toHaveBeenCalled();
@@ -2970,7 +2967,6 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view, 'modifyRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'validateRoleChangeCommand').and.callThrough();
@@ -2995,16 +2991,17 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"kick\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.modifyRole).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
-                // XXX: Calling onMessageSubmitted directly, trying
+                // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onMessageSubmitted('/kick annoyingGuy You\'re annoying');
+                textarea.value = '/kick annoyingGuy You\'re annoying';
+                view.onFormSubmitted(new Event('submit'));
+
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.modifyRole).toHaveBeenCalled();
@@ -3058,7 +3055,6 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 var view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view, 'modifyRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'showChatEvent').and.callThrough();
@@ -3097,17 +3093,18 @@
                     keyCode: 13
                 });
 
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"op\" command takes two arguments, the user's nickname and optionally a reason.");
 
                 expect(view.modifyRole).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
-                // XXX: Calling onMessageSubmitted directly, trying
+                // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onMessageSubmitted('/op trustworthyguy You\'re trustworthy');
+                textarea.value = '/op trustworthyguy You\'re trustworthy';
+                view.onFormSubmitted(new Event('submit'));
+
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.modifyRole).toHaveBeenCalled();
@@ -3143,8 +3140,13 @@
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_msgs.pop().textContent).toBe("trustworthyguy is now a moderator");
+                // Call now with the correct amount of arguments.
+                // XXX: Calling onFormSubmitted directly, trying
+                // again via triggering Event doesn't work for some weird
+                // reason.
+                textarea.value = '/deop trustworthyguy Perhaps not';
+                view.onFormSubmitted(new Event('submit'));
 
-                view.onMessageSubmitted('/deop trustworthyguy Perhaps not');
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
                 expect(view.showChatEvent.calls.count()).toBe(1);
                 expect(view.modifyRole).toHaveBeenCalled();
@@ -3195,7 +3197,6 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 var view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view, 'modifyRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'showChatEvent').and.callThrough();
@@ -3226,7 +3227,7 @@
                 var info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_msgs.pop().textContent).toBe("annoyingGuy has entered the groupchat");
 
-                var textarea = view.el.querySelector('.chat-textarea')
+                const textarea = view.el.querySelector('.chat-textarea')
                 textarea.value = '/mute';
                 view.keyPressed({
                     target: textarea,
@@ -3234,16 +3235,17 @@
                     keyCode: 13
                 });
 
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"mute\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.modifyRole).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
-                // XXX: Calling onMessageSubmitted directly, trying
+                // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onMessageSubmitted('/mute annoyingGuy You\'re annoying');
+                textarea.value = '/mute annoyingGuy You\'re annoying';
+                view.onFormSubmitted(new Event('submit'));
+
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.modifyRole).toHaveBeenCalled();
@@ -3280,7 +3282,13 @@
                 info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_msgs.pop().textContent).toBe("annoyingGuy has been muted");
 
-                view.onMessageSubmitted('/voice annoyingGuy Now you can talk again');
+                // Call now with the correct of arguments.
+                // XXX: Calling onFormSubmitted directly, trying
+                // again via triggering Event doesn't work for some weird
+                // reason.
+                textarea.value = '/voice annoyingGuy Now you can talk again';
+                view.onFormSubmitted(new Event('submit'));
+
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
                 expect(view.showChatEvent.calls.count()).toBe(1);
                 expect(view.modifyRole).toHaveBeenCalled();

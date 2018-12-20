@@ -284,7 +284,7 @@
                 done();
             }));
 
-            it("can be closed by clicking a DOM element with class 'close-chatbox-button'",
+           it("can be closed by clicking a DOM element with class 'close-chatbox-button'",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
@@ -1024,21 +1024,23 @@
                 await test_utils.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
                 let message = 'This message is another sent from this chatbox';
-                // Lets make sure there is at least one message already
-                // (e.g for when this test is run on its own).
-                test_utils.sendMessage(view, message);
+                await test_utils.sendMessage(view, message);
+
                 expect(view.model.messages.length > 0).toBeTruthy();
                 expect(view.model.messages.browserStorage.records.length > 0).toBeTruthy();
-                expect(_converse.emit).toHaveBeenCalledWith('messageSend', message);
+                await test_utils.waitUntil(() => view.el.querySelector('.chat-msg'));
 
                 message = '/clear';
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view, 'clearMessages').and.callThrough();
                 spyOn(window, 'confirm').and.callFake(function () {
                     return true;
                 });
-                test_utils.sendMessage(view, message);
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
+                view.el.querySelector('.chat-textarea').value = message;
+                view.keyPressed({
+                    target: view.el.querySelector('textarea.chat-textarea'),
+                    preventDefault: _.noop,
+                    keyCode: 13
+                });
                 expect(view.clearMessages).toHaveBeenCalled();
                 expect(window.confirm).toHaveBeenCalled();
                 expect(view.model.messages.length, 0); // The messages must be removed from the chatbox

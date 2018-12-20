@@ -326,7 +326,9 @@ converse.plugins.add('converse-omemo', {
                             'type': 'error',
                         });
                         _converse.log(e, Strophe.LogLevel.ERROR);
+                        return false;
                     }
+                    return true;
                 } else {
                     return this.__super__.sendMessage.apply(this, arguments);
                 }

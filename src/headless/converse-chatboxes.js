@@ -433,7 +433,8 @@ converse.plugins.add('converse-chatboxes', {
                 } else {
                     message = this.messages.create(attrs);
                 }
-                return this.sendMessageStanza(this.createMessageStanza(message));
+                this.sendMessageStanza(this.createMessageStanza(message));
+                return true;
             },
 
             sendChatState () {

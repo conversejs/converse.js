@@ -9583,6 +9583,8 @@ body.reset {
   font-size: var(--font-size);
   direction: ltr;
   z-index: 1031; }
+  #conversejs textarea:disabled {
+    background-color: #EEE !important; }
   #conversejs .nopadding {
     padding: 0 !important; }
   #conversejs.converse-overlayed > .row {

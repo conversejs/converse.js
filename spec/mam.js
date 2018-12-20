@@ -1,7 +1,8 @@
 (function (root, factory) {
     define(["jasmine", "mock", "test-utils"], factory);
-} (this, function (jasmine, mock, test_utils) {
+} (this, function (_jasmine, mock, test_utils) {
     "use strict";
+    const jasmine = _jasmine.default;
     const _ = converse.env._;
     const Backbone = converse.env.Backbone;
     const Strophe = converse.env.Strophe;
@@ -15,7 +16,7 @@
 
         describe("Archived Messages", function () {
 
-           it("aren't shown as duplicates by comparing their stanza-id attribute", 
+           it("aren't shown as duplicates by comparing their stanza-id attribute",
                 mock.initConverseWithPromises(
                     null, ['discoInitialized'], {},
                     async function (done, _converse) {
@@ -57,7 +58,7 @@
                 done();
             }));
 
-           it("aren't shown as duplicates by comparing their queryid attribute", 
+           it("aren't shown as duplicates by comparing their queryid attribute",
                 mock.initConverseWithPromises(
                     null, ['discoInitialized'], {},
                     async function (done, _converse) {

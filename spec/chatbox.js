@@ -5,8 +5,9 @@
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, jasmine, mock, test_utils) {
+} (this, function ($, _jasmine, mock, test_utils) {
     "use strict";
+    const jasmine = _jasmine.default;
     const _ = converse.env._;
     const $iq = converse.env.$iq;
     const $msg = converse.env.$msg;

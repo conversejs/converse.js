@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define("mock", [], factory);
+    define("mock", ["converse.js"], factory);
 }(this, function () {
     var _ = converse.env._;
     var Promise = converse.env.Promise;
@@ -19,7 +19,7 @@
             this.encrypt = () => Promise.resolve({
                 'type': 1,
                 'body': 'c1ph3R73X7',
-                'registrationId': '1337' 
+                'registrationId': '1337'
             });
             this.decryptPreKeyWhisperMessage = (key_and_tag) => {
                 return Promise.resolve(key_and_tag);

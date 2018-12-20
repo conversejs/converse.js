@@ -54,7 +54,7 @@
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
-            
+
             // _converse.show_only_online_users = true;
             _converse.roster_groups = true;
             test_utils.openControlBox();

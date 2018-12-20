@@ -5,8 +5,9 @@
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, jasmine, mock, test_utils) {
+} (this, function ($, _jasmine, mock, test_utils) {
     "use strict";
+    const jasmine = _jasmine.default;
     const { Backbone, Promise, Strophe, $iq, $msg, $pres, b64_sha1, moment, sizzle, _ } = converse.env;
     const u = converse.env.utils;
 
@@ -528,7 +529,7 @@
             const chatbox = _converse.chatboxes.get(sender_jid);
             const view = _converse.chatboxviews.get(sender_jid);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                
+
             expect(chatbox).toBeDefined();
             expect(view).toBeDefined();
             // Check that the message was received and check the message parameters
@@ -1163,7 +1164,7 @@
                         'from': _converse.bare_jid+"/some-other-resource",
                         'type': 'chat'})
                     .c('body').t("A carbon message 4 minutes later")
-                    .tree()); 
+                    .tree());
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             expect(chat_content.querySelectorAll('.message').length).toBe(8);

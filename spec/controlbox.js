@@ -1,6 +1,7 @@
 (function (root, factory) {
     define(["jquery", "jasmine", "mock", "test-utils"], factory);
-} (this, function ($, jasmine, mock, test_utils) {
+} (this, function ($, _jasmine, mock, test_utils) {
+    const jasmine = _jasmine.default;
     const _ = converse.env._,
           $pres = converse.env.$pres,
           $msg = converse.env.$msg,
@@ -34,7 +35,7 @@
 
         describe("The \"Contacts\" section", function () {
 
-            it("can be used to add contact and it checks for case-sensivity", 
+            it("can be used to add contact and it checks for case-sensivity",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -214,7 +215,7 @@
         }));
 
 
-        it("integrates with xhr_user_search_url to search for contacts", 
+        it("integrates with xhr_user_search_url to search for contacts",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'],
                 { 'xhr_user_search': true,

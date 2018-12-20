@@ -4,8 +4,9 @@
         "jquery",
         "mock",
         "test-utils"], factory);
-} (this, function (jasmine, $, mock, test_utils) {
+} (this, function (_jasmine, $, mock, test_utils) {
     "use strict";
+    const jasmine = _jasmine.default;
     var Strophe = converse.env.Strophe;
     var $iq = converse.env.$iq;
     var $pres = converse.env.$pres;
@@ -362,7 +363,7 @@
                 expect($contacts.hasClass('to')).toBeFalsy();
                 expect($contacts.hasClass('both')).toBeTruthy();
                 done();
-                
+
             }));
 
             it("Alternate Flow: Contact Declines Subscription Request",
@@ -472,7 +473,7 @@
                 });
                 const $header = $('a:contains("My contacts")');
                 await test_utils.waitUntil(() => $header.parent().find('li').length);
-                        
+
                 // remove the first user
                 $header.parent().find('li .remove-xmpp-contact').get(0).click();
                 expect(window.confirm).toHaveBeenCalled();

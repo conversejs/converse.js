@@ -229,6 +229,7 @@ eslint: stamp-npm
 
 .PHONY: check
 check: eslint
+	$(NPX) webpack --config webpack.tests.config.js
 	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
 
 ########################################################################

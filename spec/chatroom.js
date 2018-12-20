@@ -1,6 +1,7 @@
 (function (root, factory) {
     define(["jasmine", "mock", "test-utils" ], factory);
-} (this, function (jasmine, mock, test_utils) {
+} (this, function (_jasmine, mock, test_utils) {
+    const jasmine = _jasmine.default;
     const _ = converse.env._,
           $pres = converse.env.$pres,
           $iq = converse.env.$iq,

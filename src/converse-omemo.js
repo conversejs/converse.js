@@ -443,6 +443,17 @@ converse.plugins.add('converse-omemo', {
                 }
                 ev.preventDefault();
                 this.model.save({'omemo_active': !this.model.get('omemo_active')});
+            },
+
+            renderOMEMOToolbarButton () {
+                if (this.model.get('membersonly') && this.model.get('nonanonymous')) {
+                    this.__super__.renderOMEMOToolbarButton.apply(arguments);
+                } else {
+                    const icon = this.el.querySelector('.toggle-omemo');
+                    if (icon) {
+                        icon.parentElement.removeChild(icon);
+                    }
+                }
             }
         }
     },
@@ -1121,7 +1132,7 @@ converse.plugins.add('converse-omemo', {
         }
 
         async function onOccupantAdded (chatroom, occupant) {
-            if (occupant.isSelf() || !chatroom.get('nonanonymous')) {
+            if (occupant.isSelf() || !chatroom.get('nonanonymous') || !chatroom.get('membersonly')) {
                 return;
             }
             if (chatroom.get('omemo_active')) {

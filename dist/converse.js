@@ -56406,6 +56406,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         this.model.save({
           'omemo_active': !this.model.get('omemo_active')
         });
+      },
+
+      renderOMEMOToolbarButton() {
+        if (this.model.get('membersonly') && this.model.get('nonanonymous')) {
+          this.__super__.renderOMEMOToolbarButton.apply(arguments);
+        } else {
+          const icon = this.el.querySelector('.toggle-omemo');
+
+          if (icon) {
+            icon.parentElement.removeChild(icon);
+          }
+        }
       }
 
     }
@@ -57194,7 +57206,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     }
 
     async function onOccupantAdded(chatroom, occupant) {
-      if (occupant.isSelf() || !chatroom.get('nonanonymous')) {
+      if (occupant.isSelf() || !chatroom.get('nonanonymous') || !chatroom.get('membersonly')) {
         return;
       }
 

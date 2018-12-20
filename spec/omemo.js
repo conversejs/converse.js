@@ -1255,10 +1255,7 @@
             view.model.save({'nonanonymous': false, 'semianonymous': true});
             await test_utils.waitUntil(() => !view.model.get('omemo_supported'));
             toggle = toolbar.querySelector('.toggle-omemo');
-            expect(_.isNull(toggle)).toBe(false);
-            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
-            expect(u.hasClass('fa-lock', toggle)).toBe(false);
-            expect(u.hasClass('disabled', toggle)).toBe(true);
+            expect(_.isNull(toggle)).toBe(true);
             expect(view.model.get('omemo_supported')).toBe(false);
 
             view.model.save({'nonanonymous': true, 'semianonymous': false});
@@ -1273,11 +1270,7 @@
             view.model.save({'membersonly': false, 'open': true});
             await test_utils.waitUntil(() => !view.model.get('omemo_supported'));
             toggle = toolbar.querySelector('.toggle-omemo');
-            expect(_.isNull(toggle)).toBe(false);
-            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
-            expect(u.hasClass('fa-lock', toggle)).toBe(false);
-            expect(u.hasClass('disabled', toggle)).toBe(true);
-            expect(view.model.get('omemo_supported')).toBe(false);
+            expect(_.isNull(toggle)).toBe(true);
 
             view.model.save({'membersonly': true, 'open': false});
             await test_utils.waitUntil(() => view.model.get('omemo_supported'));

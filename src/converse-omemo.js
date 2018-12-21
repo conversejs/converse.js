@@ -1028,19 +1028,16 @@ converse.plugins.add('converse-omemo', {
 
 
         function fetchDeviceLists () {
-            return new Promise((resolve, reject) => _converse.devicelists.fetch({
-                'success': resolve
-            }));
+            return new Promise((success, error) => _converse.devicelists.fetch({success, error}));
         }
 
-        function fetchOwnDevices () {
-            return fetchDeviceLists().then(() => {
-                let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
-                if (_.isNil(own_devicelist)) {
-                    own_devicelist = _converse.devicelists.create({'jid': _converse.bare_jid});
-                }
-                return own_devicelist.fetchDevices();
-            });
+        async function fetchOwnDevices () {
+            await fetchDeviceLists();
+            let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
+            if (_.isNil(own_devicelist)) {
+                own_devicelist = _converse.devicelists.create({'jid': _converse.bare_jid});
+            }
+            return own_devicelist.fetchDevices();
         }
 
         function updateBundleFromStanza (stanza) {
@@ -1115,7 +1112,7 @@ converse.plugins.add('converse-omemo', {
             return _converse.omemo_store.fetchSession();
         }
 
-        function initOMEMO () {
+        async function initOMEMO () {
             if (!_converse.config.get('trusted')) {
                 return;
             }
@@ -1124,11 +1121,10 @@ converse.plugins.add('converse-omemo', {
                   id = `converse.devicelists-${_converse.bare_jid}`;
             _converse.devicelists.browserStorage = new Backbone.BrowserStorage[storage](id);
 
-            fetchOwnDevices()
-                .then(() => restoreOMEMOSession())
-                .then(() => _converse.omemo_store.publishBundle())
-                .then(() => _converse.emit('OMEMOInitialized'))
-                .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+            await fetchOwnDevices();
+            await restoreOMEMOSession();
+            await _converse.omemo_store.publishBundle();
+            _converse.emit('OMEMOInitialized');
         }
 
         async function onOccupantAdded (chatroom, occupant) {

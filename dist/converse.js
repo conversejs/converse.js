@@ -57078,23 +57078,24 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     });
 
     function fetchDeviceLists() {
-      return new Promise((resolve, reject) => _converse.devicelists.fetch({
-        'success': resolve
+      return new Promise((success, error) => _converse.devicelists.fetch({
+        success,
+        error
       }));
     }
 
-    function fetchOwnDevices() {
-      return fetchDeviceLists().then(() => {
-        let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
+    async function fetchOwnDevices() {
+      await fetchDeviceLists();
 
-        if (_.isNil(own_devicelist)) {
-          own_devicelist = _converse.devicelists.create({
-            'jid': _converse.bare_jid
-          });
-        }
+      let own_devicelist = _converse.devicelists.get(_converse.bare_jid);
 
-        return own_devicelist.fetchDevices();
-      });
+      if (_.isNil(own_devicelist)) {
+        own_devicelist = _converse.devicelists.create({
+          'jid': _converse.bare_jid
+        });
+      }
+
+      return own_devicelist.fetchDevices();
     }
 
     function updateBundleFromStanza(stanza) {
@@ -57191,7 +57192,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       return _converse.omemo_store.fetchSession();
     }
 
-    function initOMEMO() {
+    async function initOMEMO() {
       if (!_converse.config.get('trusted')) {
         return;
       }
@@ -57202,7 +57203,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
             id = `converse.devicelists-${_converse.bare_jid}`;
 
       _converse.devicelists.browserStorage = new Backbone.BrowserStorage[storage](id);
-      fetchOwnDevices().then(() => restoreOMEMOSession()).then(() => _converse.omemo_store.publishBundle()).then(() => _converse.emit('OMEMOInitialized')).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+      await fetchOwnDevices();
+      await restoreOMEMOSession();
+      await _converse.omemo_store.publishBundle();
+
+      _converse.emit('OMEMOInitialized');
     }
 
     async function onOccupantAdded(chatroom, occupant) {

@@ -5208,14 +5208,24 @@ section h4 {
   font-size: 1.5em; }
 
 .brand-heading {
-  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
-  font-weight: normal;
-  font-size: 2em;
-  text-align: center;
-  margin-top: 1.5em; }
-
-.brand-heading .icon-conversejs {
-  font-size: 60%; }
+  display: inline-flex;
+  align-items: flex-end;
+  font-family: 'Baumans', cursive;
+  font-size: 6em;
+  margin-top: 1em;
+  color: white; }
+  .brand-heading .converse-svg-logo {
+    height: 1.2em;
+    margin-right: 0.25em; }
+    .brand-heading .converse-svg-logo .cls-1 {
+      isolation: isolate; }
+    .brand-heading .converse-svg-logo .cls-2 {
+      opacity: 0.5;
+      mix-blend-mode: multiply; }
+    .brand-heading .converse-svg-logo .cls-3 {
+      fill: white; }
+    .brand-heading .converse-svg-logo .cls-4 {
+      fill: white; }
 
 .brand-heading-embedded {
   margin-top: 1.5em; }
@@ -5227,8 +5237,6 @@ section h4 {
 @media (min-width: 767px) {
   .intro {
     padding: 0; }
-  .brand-heading {
-    font-size: 80px; }
   .intro-text {
     font-size: 25px; } }
 

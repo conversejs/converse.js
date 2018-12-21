@@ -161,6 +161,7 @@ a:hover, a:focus {
     margin-top: -4em;
     height: calc(100vh + 4em);
     background: url(images/header.jpg) no-repeat bottom center scroll;
+    // background: url('images/bgtr.svg') top right no-repeat, url('images/bgbl.svg') bottom left no-repeat, url('images/overlay.png'), linear-gradient(45deg, #384955, #655361, #85505f);
     background-color: #211018;
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -191,14 +192,30 @@ section {
 }
 
 .brand-heading {
-    font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
-    font-weight: normal;
-    font-size: 2em;
-    text-align: center;
-    margin-top: 1.5em;
-}
-.brand-heading .icon-conversejs {
-    font-size: 60%;
+    display: inline-flex;
+    align-items: flex-end;
+    font-family: 'Baumans', cursive;
+    font-size: 6em;
+    margin-top: 1em;
+    color: white;
+
+    .converse-svg-logo {
+        height: 1.2em;
+        margin-right: 0.25em;
+        .cls-1 {
+            isolation: isolate;
+        }
+        .cls-2 {
+            opacity: 0.5;
+            mix-blend-mode: multiply;
+        }
+        .cls-3{
+            fill: white;
+        }
+        .cls-4{
+            fill: white;
+        }
+    }
 }
 
 .brand-heading-embedded {
@@ -211,9 +228,6 @@ section {
 @media (min-width: 767px) {
   .intro {
     padding: 0;
-  }
-  .brand-heading {
-    font-size: 80px;
   }
   .intro-text {
     font-size: 25px;

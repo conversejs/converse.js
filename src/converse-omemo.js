@@ -1147,6 +1147,7 @@ converse.plugins.add('converse-omemo', {
         async function checkOMEMOSupported (chatbox) {
             let supported;
             if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
+                await _converse.api.waitUntil('OMEMOInitialized');
                 supported = chatbox.get('nonanonymous') && chatbox.get('membersonly');
             } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                 supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));

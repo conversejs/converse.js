@@ -56981,7 +56981,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
             this.devices.fetch({
               'success': async collection => {
                 if (collection.length === 0) {
-                  const ids = await this.fetchDevicesFromServer();
+                  let ids;
+
+                  try {
+                    ids = await this.fetchDevicesFromServer();
+                  } catch (e) {
+                    _converse.log(`Could not fetch devices for ${this.get('jid')}`);
+
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+
+                    this.destroy();
+                    return resolve(e);
+                  }
+
                   await this.publishCurrentDevice(ids);
                 }
 
@@ -56990,7 +57002,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
               'error': e => {
                 _converse.log(e, Strophe.LogLevel.ERROR);
 
-                resolve();
+                resolve(e);
               }
             });
           });

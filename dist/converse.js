@@ -56807,7 +56807,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         const options = {
           'pubsub#access_model': 'open'
         };
-        return _converse.api.pubsub.publish(null, node, item, options);
+        return _converse.api.pubsub.publish(null, node, item, options, false);
       },
 
       async generateMissingPreKeys() {
@@ -67910,9 +67910,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-pub
          * @param {string} node The node being published to
          * @param {Strophe.Builder} item The Strophe.Builder representation of the XML element being published
          * @param {object} options An object representing the publisher options
-         *                         (see https://xmpp.org/extensions/xep-0060.html#publisher-publish-options)
+         *      (see https://xmpp.org/extensions/xep-0060.html#publisher-publish-options)
+         * @param {boolean} strict_options Indicates whether the publisher
+         *      options are a strict requirement or not. If they're NOT
+         *      strict, then Converse will publish to the node even if
+         *      the publish options precondication cannot be met.
          */
-        async 'publish'(jid, node, item, options) {
+        async 'publish'(jid, node, item, options, strict_options = true) {
           const stanza = $iq({
             'from': _converse.bare_jid,
             'type': 'set',
@@ -67934,7 +67938,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-pub
               }).c('field', {
                 'var': 'FORM_TYPE',
                 'type': 'hidden'
-              }).c('value').t('http://jabber.org/protocol/pubsub#publish-options').up().up();
+              }).c('value').t(`${Strophe.NS.PUBSUB}#publish-options`).up().up();
               Object.keys(options).forEach(k => stanza.c('field', {
                 'var': k
               }).c('value').t(options[k]).up().up());
@@ -67943,7 +67947,22 @@ _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-pub
             }
           }
 
-          return _converse.api.sendIQ(stanza);
+          try {
+            _converse.api.sendIQ(stanza);
+          } catch (iq) {
+            if (iq instanceof Element && strict_options && iq.querySelector(`precondition-not-met[xmlns="${Strophe.NS.PUBSUB_ERROR}"]`)) {
+              // The publish-options precondition couldn't be
+              // met. We re-publish but without publish-options.
+              const el = stanza.nodeTree;
+              el.querySelector('publish-options').outerHTML = '';
+
+              _converse.log(`PubSub: Republishing without publish options. ${el.outerHTML}`, Strophe.LogLevel.WARN);
+
+              _converse.api.sendIQ(el);
+            } else {
+              throw iq;
+            }
+          }
         }
 
       }

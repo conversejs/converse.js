@@ -805,7 +805,7 @@ converse.plugins.add('converse-omemo', {
                     (prekey, id) => item.c('preKeyPublic', {'preKeyId': id}).t(prekey.pubKey).up()
                 );
                 const options = {'pubsub#access_model': 'open'};
-                return _converse.api.pubsub.publish(null, node, item, options);
+                return _converse.api.pubsub.publish(null, node, item, options, false);
             },
 
             async generateMissingPreKeys () {

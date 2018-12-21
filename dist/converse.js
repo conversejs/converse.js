@@ -56968,7 +56968,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       initialize() {
         this.devices = new _converse.Devices();
         const id = `converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`;
-        this.devices.browserStorage = new Backbone.BrowserStorage.session(id);
+
+        const storage = _converse.config.get('storage');
+
+        this.devices.browserStorage = new Backbone.BrowserStorage[storage](id);
         this.fetchDevices();
       },
 

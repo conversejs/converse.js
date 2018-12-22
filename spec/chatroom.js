@@ -2544,7 +2544,7 @@
                 });
 
                 const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_messages.length).toBe(18);
+                expect(info_messages.length).toBe(19);
                 expect(info_messages.pop().textContent).toBe('/voice: Allow muted user to post messages');
                 expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                 expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
@@ -2558,6 +2558,7 @@
                 expect(info_messages.pop().textContent).toBe('/me: Write in 3rd person');
                 expect(info_messages.pop().textContent).toBe('/kick: Kick user from groupchat');
                 expect(info_messages.pop().textContent).toBe('/help: Show this menu');
+                expect(info_messages.pop().textContent).toBe('/destroy: Destroy room');
                 expect(info_messages.pop().textContent).toBe('/deop: Change user role to participant');
                 expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
                 expect(info_messages.pop().textContent).toBe('/ban: Ban user from groupchat');
@@ -3324,6 +3325,54 @@
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_msgs.pop().textContent).toBe("annoyingGuy has been given a voice again");
+                done();
+            }));
+
+            it("takes /destroy to destroy a muc",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                let sent_IQ, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                const view = _converse.chatboxviews.get('lounge@localhost');
+                const textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = '/destroy bored';
+                view.onFormSubmitted(new Event('submit'));
+                expect(sent_IQ.toLocaleString()).toBe(
+                    `<iq id="${IQ_id}" to="lounge@localhost" type="set" xmlns="jabber:client">`+
+                        `<query xmlns="http://jabber.org/protocol/muc#owner">`+
+                            `<destroy>`+
+                                `<reason>`+
+                                    `bored`+
+                                `</reason>`+
+                            `</destroy>`+
+                        `</query>`+
+                    `</iq>`);
+
+                /* <iq from="lounge@localhost"
+                 *  id="${IQ_id}"
+                 *  to="dummy@localhost/resource"
+                 *  type="result"
+                 *  xmlns="jabber:client"/>
+                */
+                const result_stanza = $iq({
+                    'type': 'result',
+                    'id': IQ_id,
+                    'from': view.model.get('jid'),
+                    'to': _converse.connection.jid
+                });
+                spyOn(view, 'close').and.callThrough();
+                spyOn(_converse, 'emit');
+                _converse.connection._dataRecv(test_utils.createRequest(result_stanza));
+                await test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));
+                expect(view.close).toHaveBeenCalled();
+                expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 done();
             }));
         });

@@ -1,5 +1,5 @@
 (function (root, factory) {
-    define("mock", ["converse.js"], factory);
+    define("mock", ["@converse/headless/converse-core"], factory);
 }(this, function () {
     var _ = converse.env._;
     var Promise = converse.env.Promise;

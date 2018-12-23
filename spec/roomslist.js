@@ -1,17 +1,13 @@
 (function (root, factory) {
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
-    var _ = converse.env._;
-    var $msg = converse.env.$msg;
-    var $iq = converse.env.$iq;
-    var $pres = converse.env.$pres;
-    var Promise = converse.env.Promise;
-    var Strophe = converse.env.Strophe;
-    var u = converse.env.utils;
+    const { Backbone, Promise, Strophe, $iq, $msg, $pres, b64_sha1, sizzle, _ } = converse.env;
+    const u = converse.env.utils;
 
-    describe("A list of open rooms", function () {
 
-        it("is shown in the \"Rooms\" panel", mock.initConverseWithPromises(
+    describe("A list of open groupchats", function () {
+
+        it("is shown in controlbox", mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'],
                 { allow_bookmarks: false // Makes testing easier, otherwise we
                                         // have to mock stanza traffic.
@@ -49,6 +45,70 @@
             done();
             }
         ));
+
+        it("uses bookmarks to determine groupchat names",
+            mock.initConverseWithPromises(
+                ['send'], ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
+                async function (done, _converse) {
+
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+            const view = _converse.chatboxviews.get('lounge@localhost');
+
+            const contact_jid = 'newguy@localhost';
+            let stanza = $pres({
+                    to: 'dummy@localhost/resource',
+                    from: 'lounge@localhost/newguy'
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': 'newguy@localhost/_converse.js-290929789',
+                    'role': 'participant'
+                }).tree();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            spyOn(_converse.Bookmarks.prototype, 'fetchBookmarks').and.callThrough();
+
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type':'pep'}],
+                [`${Strophe.NS.PUBSUB}#publish-options`]
+            );
+
+            const call = await test_utils.waitUntil(() =>
+                _.filter(
+                    _converse.connection.send.calls.all(),
+                    c => sizzle('items[node="storage:bookmarks"]', c.args[0]).length
+                ).pop()
+            );
+            expect(Strophe.serialize(call.args[0])).toBe(
+                `<iq from="dummy@localhost/resource" id="${call.args[0].getAttribute('id')}" type="get" xmlns="jabber:client">`+
+                '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
+                    '<items node="storage:bookmarks"/>'+
+                '</pubsub>'+
+                '</iq>');
+
+            stanza = $iq({'to': _converse.connection.jid, 'type':'result', 'id':call.args[0].getAttribute('id')})
+                .c('pubsub', {'xmlns': Strophe.NS.PUBSUB})
+                    .c('items', {'node': 'storage:bookmarks'})
+                        .c('item', {'id': 'current'})
+                            .c('storage', {'xmlns': 'storage:bookmarks'})
+                                .c('conference', {
+                                    'name': 'Bookmarked Lounge',
+                                    'jid': 'lounge@localhost'
+                                });
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            await _converse.api.waitUntil('roomsListInitialized');
+            const controlbox = _converse.chatboxviews.get('controlbox');
+            const list = controlbox.el.querySelector('div.rooms-list-container');
+            expect(_.includes(list.classList, 'hidden')).toBeFalsy();
+            const items = list.querySelectorAll('.list-item');
+            expect(items.length).toBe(1);
+            expect(items[0].textContent.trim()).toBe('Bookmarked Lounge');
+            expect(_converse.bookmarks.fetchBookmarks).toHaveBeenCalled();
+            done();
+        }));
     });
 
     describe("A groupchat shown in the groupchats list", function () {
@@ -217,6 +277,7 @@
                 allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
             }, async function (done, _converse) {
 
+            test_utils.openControlBox();
             const room_jid = 'kitchen@conference.shakespeare.lit';
             await test_utils.waitUntil(() => !_.isUndefined(_converse.rooms_list_view), 500);
             await  test_utils.openAndEnterChatRoom(_converse, 'kitchen', 'conference.shakespeare.lit', 'romeo');
@@ -232,9 +293,10 @@
                     type: 'groupchat'
                 }).c('body').t('foo').tree());
 
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             // If the user isn't mentioned, the counter doesn't get incremented, but the text of the groupchat is bold
             let room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
-            expect(_.includes(room_el.classList, 'unread-msgs'));
+            expect(_.includes(room_el.classList, 'unread-msgs')).toBeTruthy();
 
             // If the user is mentioned, the counter also gets updated
             view.model.onMessage(

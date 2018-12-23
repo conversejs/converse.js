@@ -1,12 +1,8 @@
 (function (root, factory) {
     define(["jasmine", "mock", "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
-    var Strophe = converse.env.Strophe;
-    var b64_sha1 = converse.env.b64_sha1;
-    var $iq = converse.env.$iq;
-    var $msg = converse.env.$msg;
-    var _ = converse.env._;
-    var u = converse.env.utils;
+    const { $iq, $pres, $msg, _, Strophe } = converse.env;
+    const u = converse.env.utils;
 
 
     function deviceListFetched (_converse, jid) {
@@ -38,6 +34,11 @@
     }
 
     async function initializedOMEMO (_converse) {
+        await test_utils.waitUntilDiscoConfirmed(
+            _converse, _converse.bare_jid,
+            [{'category': 'pubsub', 'type': 'pep'}],
+            ['http://jabber.org/protocol/pubsub#publish-options']
+        );
         let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
         let stanza = $iq({
             'from': _converse.bare_jid,
@@ -229,6 +230,274 @@
             done();
         }));
 
+        it("enables encrypted groupchat messages to be sent and received",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            // MEMO encryption works only in members only conferences
+            // that are non-anonymous.
+            const features = [
+                'http://jabber.org/protocol/muc',
+                'jabber:iq:register',
+                'muc_passwordprotected',
+                'muc_hidden',
+                'muc_temporary',
+                'muc_membersonly',
+                'muc_unmoderated',
+                'muc_nonanonymous'
+            ];
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy', features);
+            const view = _converse.chatboxviews.get('lounge@localhost');
+            await test_utils.waitUntil(() => initializedOMEMO(_converse));
+
+            const toolbar = view.el.querySelector('.chat-toolbar');
+            let toggle = toolbar.querySelector('.toggle-omemo');
+            toggle.click();
+            expect(view.model.get('omemo_active')).toBe(true);
+
+            const contact_jid = 'newguy@localhost';
+            let stanza = $pres({
+                    'to': 'dummy@localhost/resource',
+                    'from': 'lounge@localhost/newguy'
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': 'newguy@localhost/_converse.js-290929789',
+                    'role': 'participant'
+                }).tree();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
+            expect(iq_stanza.toLocaleString()).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+                    `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                        `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
+                    `</pubsub>`+
+                `</iq>`);
+
+            stanza = $iq({
+                'from': contact_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result',
+            }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                    .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                        .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                            .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.omemo_store);
+            expect(_converse.devicelists.length).toBe(2);
+
+            const devicelist = _converse.devicelists.get(contact_jid);
+            expect(devicelist.devices.length).toBe(1);
+            expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
+
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(view.model.get('omemo_active')).toBe(true);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(false);
+            expect(u.hasClass('fa-lock', toggle)).toBe(true);
+
+            const textarea = view.el.querySelector('.chat-textarea');
+            textarea.value = 'This message will be encrypted';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'));
+            stanza = $iq({
+                'from': contact_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result',
+            }).c('pubsub', {
+                'xmlns': 'http://jabber.org/protocol/pubsub'
+                }).c('items', {'node': "eu.siacs.conversations.axolotl.bundles:4e30f35051b7b8b42abe083742187228"})
+                    .c('item')
+                        .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                            .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t(btoa('1111')).up()
+                            .c('signedPreKeySignature').t(btoa('2222')).up()
+                            .c('identityKey').t(btoa('3333')).up()
+                            .c('prekeys')
+                                .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1001')).up()
+                                .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1002')).up()
+                                .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
+            stanza = $iq({
+                'from': _converse.bare_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result',
+            }).c('pubsub', {
+                'xmlns': 'http://jabber.org/protocol/pubsub'
+                }).c('items', {'node': "eu.siacs.conversations.axolotl.bundles:482886413b977930064a5888b92134fe"})
+                    .c('item')
+                        .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                            .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t(btoa('100000')).up()
+                            .c('signedPreKeySignature').t(btoa('200000')).up()
+                            .c('identityKey').t(btoa('300000')).up()
+                            .c('prekeys')
+                                .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1991')).up()
+                                .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1992')).up()
+                                .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1993'));
+
+            spyOn(_converse.connection, 'send');
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.connection.send.calls.count());
+            const sent_stanza = _converse.connection.send.calls.all()[0].args[0];
+
+            expect(Strophe.serialize(sent_stanza)).toBe(
+                `<message from="dummy@localhost/resource" `+
+                         `id="${sent_stanza.nodeTree.getAttribute("id")}" `+
+                         `to="lounge@localhost" `+
+                         `type="groupchat" `+
+                         `xmlns="jabber:client">`+
+                    `<body>This is an OMEMO encrypted message which your client doesn’t seem to support. Find more information on https://conversations.im/omemo</body>`+
+                    `<encrypted xmlns="eu.siacs.conversations.axolotl">`+
+                        `<header sid="123456789">`+
+                            `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+
+                            `<key rid="4e30f35051b7b8b42abe083742187228">YzFwaDNSNzNYNw==</key>`+
+                            `<iv>${sent_stanza.nodeTree.querySelector("iv").textContent}</iv>`+
+                        `</header>`+
+                        `<payload>${sent_stanza.nodeTree.querySelector("payload").textContent}</payload>`+
+                    `</encrypted>`+
+                    `<store xmlns="urn:xmpp:hints"/>`+
+                `</message>`);
+            done();
+        }));
+
+        it("gracefully handles auth errors when trying to send encrypted groupchat messages",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            // MEMO encryption works only in members only conferences
+            // that are non-anonymous.
+            const features = [
+                'http://jabber.org/protocol/muc',
+                'jabber:iq:register',
+                'muc_passwordprotected',
+                'muc_hidden',
+                'muc_temporary',
+                'muc_membersonly',
+                'muc_unmoderated',
+                'muc_nonanonymous'
+            ];
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy', features);
+            const view = _converse.chatboxviews.get('lounge@localhost');
+            await test_utils.waitUntil(() => initializedOMEMO(_converse));
+
+            const contact_jid = 'newguy@localhost';
+            let stanza = $pres({
+                    'to': 'dummy@localhost/resource',
+                    'from': 'lounge@localhost/newguy'
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': 'newguy@localhost/_converse.js-290929789',
+                    'role': 'participant'
+                }).tree();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            const toolbar = view.el.querySelector('.chat-toolbar');
+            const toggle = toolbar.querySelector('.toggle-omemo');
+            toggle.click();
+            expect(view.model.get('omemo_active')).toBe(true);
+            expect(view.model.get('omemo_supported')).toBe(true);
+
+            const textarea = view.el.querySelector('.chat-textarea');
+            textarea.value = 'This message will be encrypted';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
+            expect(iq_stanza.toLocaleString()).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+                    `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                        `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
+                    `</pubsub>`+
+                `</iq>`);
+
+            stanza = $iq({
+                'from': contact_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result',
+            }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                    .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                        .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                            .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
+
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.omemo_store);
+            expect(_converse.devicelists.length).toBe(2);
+
+            const devicelist = _converse.devicelists.get(contact_jid);
+            expect(devicelist.devices.length).toBe(1);
+            expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
+
+            iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
+            stanza = $iq({
+                'from': _converse.bare_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result',
+            }).c('pubsub', {
+                'xmlns': 'http://jabber.org/protocol/pubsub'
+                }).c('items', {'node': "eu.siacs.conversations.axolotl.bundles:482886413b977930064a5888b92134fe"})
+                    .c('item')
+                        .c('bundle', {'xmlns': 'eu.siacs.conversations.axolotl'})
+                            .c('signedPreKeyPublic', {'signedPreKeyId': '4223'}).t(btoa('100000')).up()
+                            .c('signedPreKeySignature').t(btoa('200000')).up()
+                            .c('identityKey').t(btoa('300000')).up()
+                            .c('prekeys')
+                                .c('preKeyPublic', {'preKeyId': '1'}).t(btoa('1991')).up()
+                                .c('preKeyPublic', {'preKeyId': '2'}).t(btoa('1992')).up()
+                                .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1993'));
+            iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'));
+
+            /* <iq xmlns="jabber:client" to="jc@opkode.com/converse.js-34183907" type="error" id="945c8ab3-b561-4d8a-92da-77c226bb1689:sendIQ" from="joris@konuro.net">
+             *     <pubsub xmlns="http://jabber.org/protocol/pubsub">
+             *         <items node="eu.siacs.conversations.axolotl.bundles:7580"/>
+             *     </pubsub>
+             *     <error code="401" type="auth">
+             *         <presence-subscription-required xmlns="http://jabber.org/protocol/pubsub#errors"/>
+             *         <not-authorized xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+             *     </error>
+             * </iq>
+             */
+            stanza = $iq({
+                'from': contact_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result',
+            }).c('pubsub', {'xmlns': 'http://jabber.org/protocol/pubsub'})
+                .c('items', {'node': "eu.siacs.conversations.axolotl.bundles:4e30f35051b7b8b42abe083742187228"}).up().up()
+            .c('error', {'code': '401', 'type': 'auth'})
+                .c('presence-subscription-required', {'xmlns':"http://jabber.org/protocol/pubsub#errors" }).up()
+                .c('not-authorized', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            await test_utils.waitUntil(() => document.querySelectorAll('.alert-danger').length, 2000);
+            const header = document.querySelector('.alert-danger .modal-title');
+            expect(header.textContent).toBe("Error");
+            expect(u.ancestor(header, '.modal-content').querySelector('.modal-body p').textContent.trim())
+                .toBe("Sorry, we're unable to send an encrypted message because newguy@localhost requires you "+
+                      "to be subscribed to their presence in order to see their OMEMO information");
+
+            expect(view.model.get('omemo_supported')).toBe(false);
+            expect(view.el.querySelector('.chat-textarea').value).toBe('This message will be encrypted');
+            done();
+        }));
 
         it("can receive a PreKeySignalMessage",
             mock.initConverseWithPromises(
@@ -291,6 +560,7 @@
             _converse.connection.IQ_stanzas = [];
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => _converse.omemo_store);
+
             iq_stanza = await test_utils.waitUntil(() => bundleHasBeenPublished(_converse));
             expect(iq_stanza.toLocaleString()).toBe(
                 `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" type="set" xmlns="jabber:client">`+
@@ -311,6 +581,16 @@
                                 `</bundle>`+
                             `</item>`+
                         `</publish>`+
+                        `<publish-options>`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE">`+
+                                    `<value>http://jabber.org/protocol/pubsub#publish-options</value>`+
+                                `</field>`+
+                                `<field var="pubsub#access_model">`+
+                                    `<value>open</value>`+
+                                `</field>`+
+                            `</x>`+
+                        `</publish-options>`+
                     `</pubsub>`+
                 `</iq>`)
             const own_device = _converse.devicelists.get(_converse.bare_jid).devices.get(_converse.omemo_store.get('device_id'));
@@ -324,6 +604,12 @@
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
+
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
 
             test_utils.createContacts(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -456,6 +742,16 @@
                                 `</list>`+
                             `</item>`+
                         `</publish>`+
+                        `<publish-options>`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE">`+
+                                    `<value>http://jabber.org/protocol/pubsub#publish-options</value>`+
+                                `</field>`+
+                                `<field var="pubsub#access_model">`+
+                                    `<value>open</value>`+
+                                `</field>`+
+                            `</x>`+
+                        `</publish-options>`+
                     `</pubsub>`+
                 `</iq>`);
             expect(_converse.devicelists.length).toBe(2);
@@ -472,6 +768,12 @@
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
+
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
 
             test_utils.createContacts(_converse, 'current');
             const contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -617,6 +919,12 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
+
             _converse.NUM_PREKEYS = 2; // Restrict to 2, otherwise the resulting stanza is too large to easily test
 
             test_utils.createContacts(_converse, 'current', 1);
@@ -661,6 +969,16 @@
                                 `</bundle>`+
                             `</item>`+
                         `</publish>`+
+                        `<publish-options>`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE">`+
+                                    `<value>http://jabber.org/protocol/pubsub#publish-options</value>`+
+                                `</field>`+
+                                `<field var="pubsub#access_model">`+
+                                    `<value>open</value>`+
+                                `</field>`+
+                            `</x>`+
+                        `</publish-options>`+
                     `</pubsub>`+
                 `</iq>`)
 
@@ -679,6 +997,12 @@
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
+
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
 
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
@@ -722,7 +1046,17 @@
                                 `</list>`+
                             `</item>`+
                         `</publish>`+
-                `</pubsub>`+
+                        `<publish-options>`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE">`+
+                                    `<value>http://jabber.org/protocol/pubsub#publish-options</value>`+
+                                `</field>`+
+                                `<field var="pubsub#access_model">`+
+                                    `<value>open</value>`+
+                                `</field>`+
+                            `</x>`+
+                        `</publish-options>`+
+                    `</pubsub>`+
                 `</iq>`);
 
             stanza = $iq({
@@ -809,6 +1143,198 @@
                 preventDefault: _.noop,
                 keyCode: 13
             });
+
+            view.model.save({'omemo_supported': false});
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('disabled', toggle)).toBe(true);
+
+            view.model.save({'omemo_supported': true});
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('disabled', toggle)).toBe(false);
+            done();
+        }));
+
+        it("adds a toolbar button for starting an encrypted groupchat session",
+            mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
+                async function (done, _converse) {
+
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
+
+            // MEMO encryption works only in members-only conferences that are non-anonymous. 
+            const features = [
+                'http://jabber.org/protocol/muc',
+                'jabber:iq:register',
+                'muc_passwordprotected',
+                'muc_hidden',
+                'muc_temporary',
+                'muc_membersonly',
+                'muc_unmoderated',
+                'muc_nonanonymous'
+            ];
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy', features);
+            const view = _converse.chatboxviews.get('lounge@localhost');
+            await test_utils.waitUntil(() => initializedOMEMO(_converse));
+
+            const toolbar = view.el.querySelector('.chat-toolbar');
+            let toggle = toolbar.querySelector('.toggle-omemo');
+            expect(view.model.get('omemo_active')).toBe(undefined);
+            expect(_.isNull(toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('disabled', toggle)).toBe(false);
+            expect(view.model.get('omemo_supported')).toBe(true);
+
+            toggle.click();
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(view.model.get('omemo_active')).toBe(true);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(false);
+            expect(u.hasClass('fa-lock', toggle)).toBe(true);
+            expect(u.hasClass('disabled', toggle)).toBe(false);
+            expect(view.model.get('omemo_supported')).toBe(true);
+
+            let contact_jid = 'newguy@localhost';
+            let stanza = $pres({
+                    to: 'dummy@localhost/resource',
+                    from: 'lounge@localhost/newguy'
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': 'newguy@localhost/_converse.js-290929789',
+                    'role': 'participant'
+                }).tree();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
+            expect(iq_stanza.toLocaleString()).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+                    `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                        `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
+                    `</pubsub>`+
+                `</iq>`);
+
+            stanza = $iq({
+                'from': contact_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'result',
+            }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                    .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                        .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                            .c('device', {'id': '4e30f35051b7b8b42abe083742187228'}).up()
+                            .c('device', {'id': 'ae890ac52d0df67ed7cfdf51b644e901'});
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.omemo_store);
+            expect(_converse.devicelists.length).toBe(2);
+
+            const devicelist = _converse.devicelists.get(contact_jid);
+            expect(devicelist.devices.length).toBe(2);
+            expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
+            expect(devicelist.devices.at(1).get('id')).toBe('ae890ac52d0df67ed7cfdf51b644e901');
+
+            expect(view.model.get('omemo_active')).toBe(true);
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(_.isNull(toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(false);
+            expect(u.hasClass('fa-lock', toggle)).toBe(true);
+            expect(u.hasClass('disabled', toggle)).toBe(false);
+            expect(view.model.get('omemo_supported')).toBe(true);
+
+            // Test that the button gets disabled when the room becomes
+            // anonymous or semi-anonymous
+            view.model.save({'nonanonymous': false, 'semianonymous': true});
+            await test_utils.waitUntil(() => !view.model.get('omemo_supported'));
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(_.isNull(toggle)).toBe(true);
+            expect(view.model.get('omemo_supported')).toBe(false);
+
+            view.model.save({'nonanonymous': true, 'semianonymous': false});
+            await test_utils.waitUntil(() => view.model.get('omemo_supported'));
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(_.isNull(toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('disabled', toggle)).toBe(false);
+
+            // Test that the button gets disabled when the room becomes open
+            view.model.save({'membersonly': false, 'open': true});
+            await test_utils.waitUntil(() => !view.model.get('omemo_supported'));
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(_.isNull(toggle)).toBe(true);
+
+            view.model.save({'membersonly': true, 'open': false});
+            await test_utils.waitUntil(() => view.model.get('omemo_supported'));
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(_.isNull(toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('disabled', toggle)).toBe(false);
+            expect(view.model.get('omemo_supported')).toBe(true);
+            expect(view.model.get('omemo_active')).toBe(false);
+
+            toggle.click();
+            expect(view.model.get('omemo_active')).toBe(true);
+
+            // Someone enters the room who doesn't have OMEMO support, while we
+            // have OMEMO activated...
+            contact_jid = 'oldguy@localhost';
+            stanza = $pres({
+                    to: 'dummy@localhost/resource',
+                    from: 'lounge@localhost/oldguy'
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': `${contact_jid}/_converse.js-290929788`,
+                    'role': 'participant'
+                }).tree();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
+            expect(iq_stanza.toLocaleString()).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+                    `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                        `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
+                    `</pubsub>`+
+                `</iq>`);
+
+            stanza = $iq({
+                'from': contact_jid,
+                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'to': _converse.bare_jid,
+                'type': 'error'
+            }).c('error', {'type': 'cancel'})
+                .c('item-not-found', {'xmlns': "urn:ietf:params:xml:ns:xmpp-stanzas"});
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+            await test_utils.waitUntil(() => !view.model.get('omemo_supported'));
+
+            expect(view.el.querySelector('.chat-error').textContent).toBe(
+                "oldguy doesn't appear to have a client that supports OMEMO. "+
+                "Encrypted chat will no longer be possible in this grouchat."
+            );
+
+            toggle = toolbar.querySelector('.toggle-omemo');
+            expect(_.isNull(toggle)).toBe(false);
+            expect(u.hasClass('fa-unlock', toggle)).toBe(true);
+            expect(u.hasClass('fa-lock', toggle)).toBe(false);
+            expect(u.hasClass('disabled', toggle)).toBe(true);
+
+            expect( _converse.chatboxviews.el.querySelector('.modal-body p')).toBe(null);
+            toggle.click();
+            const msg = _converse.chatboxviews.el.querySelector('.modal-body p');
+            expect(msg.textContent).toBe(
+                'Cannot use end-to-end encryption in this groupchat, '+
+                'either the groupchat has some anonymity or not all participants support OMEMO.');
             done();
         }));
 
@@ -817,6 +1343,12 @@
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
+
+            await test_utils.waitUntilDiscoConfirmed(
+                _converse, _converse.bare_jid,
+                [{'category': 'pubsub', 'type': 'pep'}],
+                ['http://jabber.org/protocol/pubsub#publish-options']
+            );
 
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');

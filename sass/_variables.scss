@@ -38,11 +38,16 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     --send-button-height: 27px;
     --send-button-margin: 3px;
 
+	--controlbox-heading-top-margin: 0.75em;
+	--inline-action-margin: 0.75em;
+
     --roster-height: 194px;
 
     --flyout-padding: 1.2em;
 
     --chat-head-color: #3AA569; // $green
+    --chat-head-color-dark: #1E9652;
+    --chat-head-color-darker: #0E763B;
     --chat-head-color-lighten-50-percent: #e7f7ee; // lighten($green, 50%)
     --chat-head-text-color: white;
     --chat-correcting-color: var(--chat-head-color-lighten-50-percent);
@@ -93,7 +98,8 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     --heading-display: block;
     --heading-color: white;
 
-    --chatroom-head-color: #E77051; // $red
+    --chatroom-head-color: #E77051; // $orange
+    --chatroom-head-color-dark: #D24E2B; // $red
     --chatroom-head-color-lighten-25-percent: #f6ccc1; // lighten($red, 25%)
     --chatroom-head-button-color: var(--chatroom-head-color);
     --chatroom-head-title-font-weight: normal;
@@ -108,7 +114,7 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     --chatroom-correcting-color: #fadfd7; // lighten($red, 30%)
 
     --headline-head-color: #E7A151; // $orange
-    --headline-message-color: #D2842B; // $dark-orange
+    --headline-message-color: #D2842B;
 
     --chatbox-button-size: 14px;
     --fullpage-chatbox-button-size: 16px;

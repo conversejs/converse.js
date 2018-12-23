@@ -307,6 +307,9 @@
                     color: var(--chat-head-color);
                     font-size: var(--font-size-large);
                 }
+                .disabled {
+                    color: var(--text-color-lighten-15-percent) !important;
+                }
                 .unencrypted a,
                 .unencrypted {
                     color: var(--text-color);

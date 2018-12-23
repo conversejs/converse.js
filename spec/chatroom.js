@@ -1611,7 +1611,7 @@
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(view.el.querySelector('.chatroom-body .disconnect-msg').textContent)
-                    .toBe('This room no longer exists');
+                    .toBe('This groupchat no longer exists');
                 expect(view.el.querySelector('.chatroom-body .destroyed-reason').textContent)
                     .toBe(`"We didn't like the name"`);
                 expect(view.el.querySelector('.chatroom-body .moved-label').textContent.trim())
@@ -1626,26 +1626,19 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                let sent_IQ, IQ_id;
                 const IQ_stanzas = _converse.connection.IQ_stanzas;
                 const sendIQ = _converse.connection.sendIQ;
                 const room_jid = 'lounge@localhost';
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    if (iq.nodeTree.getAttribute('to') === 'lounge@localhost') {
-                        sent_IQ = iq;
-                        IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                    } else {
-                        sendIQ.bind(this)(iq, callback, errback);
-                    }
-                });
 
                 await test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+
                 let stanza = await test_utils.waitUntil(() => _.get(_.filter(
                     IQ_stanzas,
                     iq => iq.nodeTree.querySelector(
                         `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                     )).pop(), 'nodeTree')
                 );
+
                 // We pretend this is a new room, so no disco info is returned.
                 const features_stanza = $iq({
                         from: 'lounge@localhost',
@@ -1693,7 +1686,7 @@
                  */
                 stanza = $iq({
                     'type': 'result',
-                    'id': IQ_id,
+                    'id': node.nodeTree.getAttribute('id'),
                     'from': view.model.get('jid'),
                     'to': _converse.connection.jid
                 }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
@@ -2163,53 +2156,188 @@
                     null, ['rosterGroupsFetched'], {'view_mode': 'fullscreen'},
                     async function (done, _converse) {
 
-                var sent_IQ, IQ_id;
-                var sendIQ = _converse.connection.sendIQ;
-                await test_utils.openAndEnterChatRoom(_converse, 'room', 'conference.example.org', 'dummy');
-                var view = _converse.chatboxviews.get('room@conference.example.org');
-                view.model.set({
-                    'passwordprotected': false,
-                    'unsecured': true,
-                    'hidden': false,
-                    'public': true,
-                    'membersonly': false,
-                    'open': true,
-                    'persistent': false,
-                    'temporary': true,
-                    'nonanonymous': true,
-                    'semianonymous': false,
-                    'moderated': false,
-                    'unmoderated': true
+                let features = [
+                    'http://jabber.org/protocol/muc',
+                    'jabber:iq:register',
+                    'muc_passwordprotected',
+                    'muc_publicroom',
+                    'muc_temporary',
+                    'muc_open',
+                    'muc_unmoderated',
+                    'muc_nonanonymous'
+                ];
+                await test_utils.openAndEnterChatRoom(_converse, 'room', 'conference.example.org', 'dummy', features);
+                const jid = 'room@conference.example.org';
+                const chatroomview = _converse.chatboxviews.get(jid);
+                let features_list = chatroomview.el.querySelector('.features-list');
+                let features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
+                expect(_.difference(["Password protected", "Open", "Temporary", "Not anonymous", "Not moderated"], features_shown).length).toBe(0);
+                expect(chatroomview.model.get('hidden')).toBe(false);
+                expect(chatroomview.model.get('mam_enabled')).toBe(false);
+                expect(chatroomview.model.get('membersonly')).toBe(false);
+                expect(chatroomview.model.get('moderated')).toBe(false);
+                expect(chatroomview.model.get('nonanonymous')).toBe(true);
+                expect(chatroomview.model.get('open')).toBe(true);
+                expect(chatroomview.model.get('passwordprotected')).toBe(true);
+                expect(chatroomview.model.get('persistent')).toBe(false);
+                expect(chatroomview.model.get('publicroom')).toBe(true);
+                expect(chatroomview.model.get('semianonymous')).toBe(false);
+                expect(chatroomview.model.get('temporary')).toBe(true);
+                expect(chatroomview.model.get('unmoderated')).toBe(true);
+                expect(chatroomview.model.get('unsecured')).toBe(false);
+                expect(chatroomview.el.querySelector('.chat-title').textContent.trim()).toBe('Room');
+
+                chatroomview.el.querySelector('.configure-chatroom-button').click();
+
+                const IQs = _converse.connection.IQ_stanzas;
+                let iq = await test_utils.waitUntil(() => _.filter(
+                    IQs,
+                    iq => iq.nodeTree.querySelector(
+                        `iq[to="${jid}"] query[xmlns="${Strophe.NS.MUC_OWNER}"]`
+                    )).pop());
+
+                const response = Strophe.xmlHtmlNode(
+                   `<iq xmlns="jabber:client"
+                         type="result"
+                         to="dummy@localhost/pda"
+                         from="room@conference.example.org" id="${iq.nodeTree.getAttribute('id')}">
+                     <query xmlns="http://jabber.org/protocol/muc#owner">
+                         <x xmlns="jabber:x:data" type="form">
+                         <title>Configuration for room@conference.example.org</title>
+                         <instructions>Complete and submit this form to configure the room.</instructions>
+                         <field var="FORM_TYPE" type="hidden">
+                            <value>http://jabber.org/protocol/muc#roomconfig</value>
+                        </field>
+                        <field type="fixed">
+                            <value>Room information</value>
+                        </field>
+                        <field var="muc#roomconfig_roomname" type="text-single" label="Title">
+                            <value>Room</value>
+                        </field>
+                        <field var="muc#roomconfig_roomdesc" type="text-single" label="Description">
+                            <desc>A brief description of the room</desc>
+                            <value>This room is used in tests</value>
+                        </field>
+                        <field var="muc#roomconfig_lang" type="text-single" label="Language tag for room (e.g. 'en', 'de', 'fr' etc.)">
+                            <desc>Indicate the primary language spoken in this room</desc>
+                            <value>en</value>
+                        </field>
+                        <field var="muc#roomconfig_persistentroom" type="boolean" label="Persistent (room should remain even when it is empty)">
+                            <desc>Rooms are automatically deleted when they are empty, unless this option is enabled</desc>
+                            <value>1</value>
+                        </field>
+                        <field var="muc#roomconfig_publicroom" type="boolean" label="Include room information in public lists">
+                            <desc>Enable this to allow people to find the room</desc>
+                            <value>1</value>
+                        </field>
+                        <field type="fixed"><value>Access to the room</value></field>
+                        <field var="muc#roomconfig_roomsecret" type="text-private" label="Password"><value/></field>
+                        <field var="muc#roomconfig_membersonly" type="boolean" label="Only allow members to join">
+                            <desc>Enable this to only allow access for room owners, admins and members</desc>
+                        </field>
+                        <field var="{http://prosody.im/protocol/muc}roomconfig_allowmemberinvites" type="boolean" label="Allow members to invite new members"/>
+                            <field type="fixed"><value>Permissions in the room</value>
+                        </field>
+                        <field var="muc#roomconfig_changesubject" type="boolean" label="Allow anyone to set the room's subject">
+                            <desc>Choose whether anyone, or only moderators, may set the room's subject</desc>
+                        </field>
+                        <field var="muc#roomconfig_moderatedroom" type="boolean" label="Moderated (require permission to speak)">
+                            <desc>In moderated rooms occupants must be given permission to speak by a room moderator</desc>
+                        </field>
+                        <field var="muc#roomconfig_whois" type="list-single" label="Addresses (JIDs) of room occupants may be viewed by:">
+                            <option label="Moderators only"><value>moderators</value></option>
+                            <option label="Anyone"><value>anyone</value></option>
+                            <value>anyone</value>
+                        </field>
+                        <field type="fixed"><value>Other options</value></field>
+                        <field var="muc#roomconfig_historylength" type="text-single" label="Maximum number of history messages returned by room">
+                            <desc>Specify the maximum number of previous messages that should be sent to users when they join the room</desc>
+                            <value>50</value>
+                        </field>
+                        <field var="muc#roomconfig_defaulthistorymessages" type="text-single" label="Default number of history messages returned by room">
+                            <desc>Specify the number of previous messages sent to new users when they join the room</desc>
+                            <value>20</value>
+                        </field>
+                     </x>
+                     </query>
+                     </iq>`);
+                const response_el = response.firstElementChild;
+                _converse.connection._dataRecv(test_utils.createRequest(response_el));
+                const el = await test_utils.waitUntil(() => document.querySelector('.chatroom-form legend'));
+                expect(el.textContent).toBe("Configuration for room@conference.example.org");
+                sizzle('[name="muc#roomconfig_membersonly"]', chatroomview.el).pop().click();
+                sizzle('[name="muc#roomconfig_roomname"]', chatroomview.el).pop().value = "New room name"
+                chatroomview.el.querySelector('.btn-primary').click();
+
+                iq = await test_utils.waitUntil(() => _.filter(IQs, iq => u.matchesSelector(iq.nodeTree, `iq[to="${jid}"][type="set"]`)).pop());
+                const result = $iq({
+                    "xmlns": "jabber:client",
+                    "type": "result",
+                    "to": "dummy@localhost/resource",
+                    "from": "lounge@muc.localhost",
+                    "id": iq.nodeTree.getAttribute('id')
                 });
-                expect(view.model.get('persistent')).toBe(false);
-                expect(view.model.get('temporary')).toBe(true);
-                view.model.set({'persistent': true});
-                expect(view.model.get('persistent')).toBe(true);
-                expect(view.model.get('temporary')).toBe(false);
 
-                expect(view.model.get('unsecured')).toBe(true);
-                expect(view.model.get('passwordprotected')).toBe(false);
-                view.model.set({'passwordprotected': true});
-                expect(view.model.get('unsecured')).toBe(false);
-                expect(view.model.get('passwordprotected')).toBe(true);
+                IQs.length = 0; // Empty the array
+                _converse.connection._dataRecv(test_utils.createRequest(result));
 
-                expect(view.model.get('unmoderated')).toBe(true);
-                expect(view.model.get('moderated')).toBe(false);
-                view.model.set({'moderated': true});
-                expect(view.model.get('unmoderated')).toBe(false);
-                expect(view.model.get('moderated')).toBe(true);
+                iq = await test_utils.waitUntil(() => _.filter(
+                    IQs,
+                    iq => iq.nodeTree.querySelector(
+                        `iq[to="${jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
+                    )).pop());
 
-                expect(view.model.get('nonanonymous')).toBe(true);
-                expect(view.model.get('semianonymous')).toBe(false);
-                view.model.set({'nonanonymous': false});
-                expect(view.model.get('nonanonymous')).toBe(false);
-                expect(view.model.get('semianonymous')).toBe(true);
+                const features_stanza = $iq({
+                    'from': jid,
+                    'id': iq.nodeTree.getAttribute('id'),
+                    'to': 'dummy@localhost/desktop',
+                    'type': 'result'
+                }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
+                    .c('identity', {
+                        'category': 'conference',
+                        'name': 'New room name',
+                        'type': 'text'
+                    }).up();
+                features = [
+                    'http://jabber.org/protocol/muc',
+                    'jabber:iq:register',
+                    'muc_passwordprotected',
+                    'muc_hidden',
+                    'muc_temporary',
+                    'muc_open',
+                    'muc_unmoderated',
+                    'muc_nonanonymous'
+                ];
+                features.forEach(f => features_stanza.c('feature', {'var': f}).up());
+                features_stanza.c('x', { 'xmlns':'jabber:x:data', 'type':'result'})
+                    .c('field', {'var':'FORM_TYPE', 'type':'hidden'})
+                        .c('value').t('http://jabber.org/protocol/muc#roominfo').up().up()
+                    .c('field', {'type':'text-single', 'var':'muc#roominfo_description', 'label':'Description'})
+                        .c('value').t('This is the description').up().up()
+                    .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
+                        .c('value').t(0);
+                _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
-                expect(view.model.get('open')).toBe(true);
-                expect(view.model.get('membersonly')).toBe(false);
-                view.model.set({'membersonly': true});
-                expect(view.model.get('open')).toBe(false);
-                expect(view.model.get('membersonly')).toBe(true);
+                spyOn(chatroomview.occupantsview, 'renderRoomFeatures').and.callThrough();
+
+                await test_utils.waitUntil(() => chatroomview.occupantsview.renderRoomFeatures.calls.count());
+                features_list = chatroomview.el.querySelector('.features-list');
+                features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
+                expect(_.difference(["Password protected", "Hidden", "Open", "Temporary", "Not anonymous", "Not moderated"], features_shown).length).toBe(0);
+                expect(chatroomview.model.get('hidden')).toBe(true);
+                expect(chatroomview.model.get('mam_enabled')).toBe(false);
+                expect(chatroomview.model.get('membersonly')).toBe(false);
+                expect(chatroomview.model.get('moderated')).toBe(false);
+                expect(chatroomview.model.get('nonanonymous')).toBe(true);
+                expect(chatroomview.model.get('open')).toBe(true);
+                expect(chatroomview.model.get('passwordprotected')).toBe(true);
+                expect(chatroomview.model.get('persistent')).toBe(false);
+                expect(chatroomview.model.get('publicroom')).toBe(false);
+                expect(chatroomview.model.get('semianonymous')).toBe(false);
+                expect(chatroomview.model.get('temporary')).toBe(true);
+                expect(chatroomview.model.get('unmoderated')).toBe(true);
+                expect(chatroomview.model.get('unsecured')).toBe(false);
+                expect(chatroomview.el.querySelector('.chat-title').textContent.trim()).toBe('New room name');
                 done();
             }));
 
@@ -2407,7 +2535,6 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 var textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = '/help This is the groupchat subject';
                 view.keyPressed({
@@ -2416,14 +2543,13 @@
                     keyCode: 13
                 });
 
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_messages.length).toBe(18);
                 expect(info_messages.pop().textContent).toBe('/voice: Allow muted user to post messages');
                 expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                 expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
                 expect(info_messages.pop().textContent).toBe('/revoke: Revoke user\'s membership');
-                expect(info_messages.pop().textContent).toBe('/register: Register a nickname for this room');
+                expect(info_messages.pop().textContent).toBe('/register: Register a nickname for this groupchat');
                 expect(info_messages.pop().textContent).toBe('/owner: Grant ownership of this groupchat');
                 expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
                 expect(info_messages.pop().textContent).toBe('/nick: Change your nickname');
@@ -2595,7 +2721,6 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view, 'clearMessages');
                 let sent_stanza;
                 spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
@@ -2609,7 +2734,6 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(_converse.connection.send).toHaveBeenCalled();
                 expect(sent_stanza.textContent).toBe('This is the groupchat subject');
 
@@ -2649,7 +2773,6 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view, 'clearMessages');
                 const textarea = view.el.querySelector('.chat-textarea')
                 textarea.value = '/clear';
@@ -2658,7 +2781,6 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.clearMessages).toHaveBeenCalled();
                 done();
             }));
@@ -2677,7 +2799,6 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view.model, 'setAffiliation').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'validateRoleChangeCommand').and.callThrough();
@@ -2702,22 +2823,27 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
+                // XXX: Calling onFormSubmitted directly, trying
+                // again via triggering Event doesn't work for some weird
+                // reason.
+                textarea.value = '/owner nobody You\'re responsible';
+                view.onFormSubmitted(new Event('submit'));
 
-                view.onMessageSubmitted('/owner nobody You\'re responsible');
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     'Error: couldn\'t find a groupchat participant "nobody"');
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
 
-                // Call now with the correct amount of arguments.
-                // XXX: Calling onMessageSubmitted directly, trying
+                // Call now with the correct of arguments.
+                // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onMessageSubmitted('/owner annoyingGuy You\'re responsible');
+                textarea.value = '/owner annoyingGuy You\'re responsible';
+                view.onFormSubmitted(new Event('submit'));
+
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
                 expect(view.model.setAffiliation).toHaveBeenCalled();
                 expect(view.showErrorMessage.calls.count()).toBe(2);
@@ -2761,7 +2887,6 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view.model, 'setAffiliation').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'validateRoleChangeCommand').and.callThrough();
@@ -2786,17 +2911,17 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
-
-                // XXX: Calling onMessageSubmitted directly, trying
+                // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onMessageSubmitted('/ban annoyingGuy You\'re annoying');
+                textarea.value = '/ban annoyingGuy You\'re annoying';
+                view.onFormSubmitted(new Event('submit'));
+
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.model.setAffiliation).toHaveBeenCalled();
@@ -2842,7 +2967,6 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view, 'modifyRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'validateRoleChangeCommand').and.callThrough();
@@ -2867,16 +2991,17 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"kick\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.modifyRole).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
-                // XXX: Calling onMessageSubmitted directly, trying
+                // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onMessageSubmitted('/kick annoyingGuy You\'re annoying');
+                textarea.value = '/kick annoyingGuy You\'re annoying';
+                view.onFormSubmitted(new Event('submit'));
+
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.modifyRole).toHaveBeenCalled();
@@ -2930,7 +3055,6 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 var view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view, 'modifyRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'showChatEvent').and.callThrough();
@@ -2969,17 +3093,18 @@
                     keyCode: 13
                 });
 
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"op\" command takes two arguments, the user's nickname and optionally a reason.");
 
                 expect(view.modifyRole).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
-                // XXX: Calling onMessageSubmitted directly, trying
+                // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onMessageSubmitted('/op trustworthyguy You\'re trustworthy');
+                textarea.value = '/op trustworthyguy You\'re trustworthy';
+                view.onFormSubmitted(new Event('submit'));
+
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.modifyRole).toHaveBeenCalled();
@@ -3015,8 +3140,13 @@
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_msgs.pop().textContent).toBe("trustworthyguy is now a moderator");
+                // Call now with the correct amount of arguments.
+                // XXX: Calling onFormSubmitted directly, trying
+                // again via triggering Event doesn't work for some weird
+                // reason.
+                textarea.value = '/deop trustworthyguy Perhaps not';
+                view.onFormSubmitted(new Event('submit'));
 
-                view.onMessageSubmitted('/deop trustworthyguy Perhaps not');
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
                 expect(view.showChatEvent.calls.count()).toBe(1);
                 expect(view.modifyRole).toHaveBeenCalled();
@@ -3067,7 +3197,6 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 var view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'onMessageSubmitted').and.callThrough();
                 spyOn(view, 'modifyRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'showChatEvent').and.callThrough();
@@ -3098,7 +3227,7 @@
                 var info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_msgs.pop().textContent).toBe("annoyingGuy has entered the groupchat");
 
-                var textarea = view.el.querySelector('.chat-textarea')
+                const textarea = view.el.querySelector('.chat-textarea')
                 textarea.value = '/mute';
                 view.keyPressed({
                     target: textarea,
@@ -3106,16 +3235,17 @@
                     keyCode: 13
                 });
 
-                expect(view.onMessageSubmitted).toHaveBeenCalled();
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"mute\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.modifyRole).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
-                // XXX: Calling onMessageSubmitted directly, trying
+                // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                view.onMessageSubmitted('/mute annoyingGuy You\'re annoying');
+                textarea.value = '/mute annoyingGuy You\'re annoying';
+                view.onFormSubmitted(new Event('submit'));
+
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.modifyRole).toHaveBeenCalled();
@@ -3152,7 +3282,13 @@
                 info_msgs = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_msgs.pop().textContent).toBe("annoyingGuy has been muted");
 
-                view.onMessageSubmitted('/voice annoyingGuy Now you can talk again');
+                // Call now with the correct of arguments.
+                // XXX: Calling onFormSubmitted directly, trying
+                // again via triggering Event doesn't work for some weird
+                // reason.
+                textarea.value = '/voice annoyingGuy Now you can talk again';
+                view.onFormSubmitted(new Event('submit'));
+
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
                 expect(view.showChatEvent.calls.count()).toBe(1);
                 expect(view.modifyRole).toHaveBeenCalled();

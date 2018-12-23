@@ -2,6 +2,7 @@
  * --------------------
  * Any of the following components may be removed if they're not needed.
  */
+import "./converse-pubsub";      // XEP-0199 XMPP Ping
 import "./converse-chatboxes";   // Backbone Collection and Models for chat boxes
 import "./converse-disco";       // Service discovery plugin
 import "./converse-mam";         // XEP-0313 Message Archive Management

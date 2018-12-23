@@ -31,7 +31,7 @@ converse.plugins.add('converse-minimize', {
     dependencies: ["converse-chatview", "converse-controlbox", "converse-muc", "converse-muc-views", "converse-headline"],
 
     enabled (_converse) {
-        return _converse.view_mode == 'overlayed';
+        return _converse.view_mode === 'overlayed';
     },
 
     overrides: {
@@ -82,7 +82,9 @@ converse.plugins.add('converse-minimize', {
 
             _show () {
                 const { _converse } = this.__super__;
-                if (!this.model.get('minimized')) {
+                if (_converse.view_mode !== 'overlayed') {
+                    return this.__super__._show.apply(this, arguments);
+                } else if (!this.model.get('minimized')) {
                     this.__super__._show.apply(this, arguments);
                     _converse.chatboxviews.trimChats(this);
                 } else {
@@ -517,15 +519,18 @@ converse.plugins.add('converse-minimize', {
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
 
-        _converse.on('registeredGlobalEventHandlers', function () {
-            window.addEventListener("resize", _.debounce(function (ev) {
-                if (_converse.connection.connected) {
-                    _converse.chatboxviews.trimChats();
-                }
-            }, 200));
-        });
+        const debouncedTrim = _.debounce(ev => {
+            if (_converse.view_mode !== 'overlayed' || !_converse.chatboxviews.trimChats) {
+                return;
+            }
+            if (_converse.connection.connected) {
+                _converse.chatboxviews.trimChats();
+            }
+        }, 200);
+        _converse.api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrim));
+        _converse.api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrim));
 
-        _converse.on('controlBoxOpened', function (chatbox) {
+        _converse.api.listen.on('controlBoxOpened', function (chatbox) {
             // Wrapped in anon method because at scan time, chatboxviews
             // attr not set yet.
             if (_converse.connection.connected) {

@@ -818,29 +818,6 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
-            onMessageSubmitted (text, spoiler_hint) {
-                /* This method gets called once the user has typed a message
-                 * and then pressed enter in a chat box.
-                 *
-                 *  Parameters:
-                 *    (String) text - The chat message text.
-                 *    (String) spoiler_hint - A hint in case the message
-                 *      text is a hidden/spoiler message. See XEP-0382
-                 */
-                if (!_converse.connection.authenticated) {
-                    return this.showHelpMessages(
-                        ['Sorry, the connection has been lost, '+
-                            'and your message could not be sent'],
-                        'error'
-                    );
-                }
-                if (this.parseMessageForCommands(text)) {
-                    return;
-                }
-                const attrs = this.model.getOutgoingMessageAttributes(text, spoiler_hint);
-                this.model.sendMessage(attrs);
-            },
-
             setChatState (state, options) {
                 /* Mutator for setting the chat state of this chat session.
                  * Handles clearing of any chat state notification timeouts and
@@ -873,7 +850,7 @@ converse.plugins.add('converse-chatview', {
                 return this;
             },
 
-            onFormSubmitted (ev) {
+            async onFormSubmitted (ev) {
                 ev.preventDefault();
                 const textarea = this.el.querySelector('.chat-textarea'),
                       message = textarea.value;
@@ -881,22 +858,34 @@ converse.plugins.add('converse-chatview', {
                 if (!message.replace(/\s/g, '').length) {
                     return;
                 }
-                let spoiler_hint;
-                if (this.model.get('composing_spoiler')) {
-                    const hint_el = this.el.querySelector('form.sendXMPPMessage input.spoiler-hint');
-                    spoiler_hint = hint_el.value;
-                    hint_el.value = '';
+                if (!_converse.connection.authenticated) {
+                    this.showHelpMessages(
+                        ['Sorry, the connection has been lost, and your message could not be sent'],
+                        'error'
+                    );
+                    return;
                 }
-                textarea.value = '';
-                u.removeClass('correcting', textarea);
-                textarea.focus();
-                // Trigger input event, so that the textarea resizes
-                const event = document.createEvent('Event');
-                event.initEvent('input', true, true);
-                textarea.dispatchEvent(event);
+                let spoiler_hint, hint_el = {};
+                if (this.model.get('composing_spoiler')) {
+                    hint_el = this.el.querySelector('form.sendXMPPMessage input.spoiler-hint');
+                    spoiler_hint = hint_el.value;
+                }
+                u.addClass('disabled', textarea);
+                textarea.setAttribute('disabled', 'disabled');
+                if (this.parseMessageForCommands(message) ||
+                    await this.model.sendMessage(this.model.getOutgoingMessageAttributes(message, spoiler_hint))) {
 
-                this.onMessageSubmitted(message, spoiler_hint);
-                _converse.emit('messageSend', message);
+                    hint_el.value = '';
+                    textarea.value = '';
+                    u.removeClass('correcting', textarea);
+                    textarea.focus();
+                    // Trigger input event, so that the textarea resizes
+                    const event = document.createEvent('Event');
+                    event.initEvent('input', true, true);
+                    textarea.dispatchEvent(event);
+                    _converse.emit('messageSend', message);
+                }
+                textarea.removeAttribute('disabled');
                 // Suppress events, otherwise superfluous CSN gets set
                 // immediately after the message, causing rate-limiting issues.
                 this.setChatState(_converse.ACTIVE, {'silent': true});

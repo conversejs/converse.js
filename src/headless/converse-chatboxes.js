@@ -219,7 +219,7 @@ converse.plugins.add('converse-chatboxes', {
         });
 
 
-        _converse.ChatBox = _converse.ModelWithVCardAndPresence.extend({
+        _converse.ChatBox = Backbone.Model.extend({
             defaults () {
                 return {
                     'bookmarked': false,
@@ -233,15 +233,28 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             initialize () {
-                _converse.ModelWithVCardAndPresence.prototype.initialize.apply(this, arguments);
+                const jid = this.get('jid');
+                if (!jid) {
+                    // XXX: The `validate` method will prevent this model
+                    // from being persisted if there's no jid, but that gets
+                    // called after model instantiation, so we have to deal
+                    // with invalid models here also.
+                    //
+                    // This happens when the controlbox is in browser storage,
+                    // but we're in embedded mode.
+                    return;
+                }
 
-                _converse.api.waitUntil('rosterContactsFetched').then(() => {
-                    this.addRelatedContact(_converse.roster.findWhere({'jid': this.get('jid')}));
-                });
+                this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
+                // XXX: this creates a dependency on converse-roster, which we
+                // probably shouldn't have here, so we should probably move
+                // ChatBox out of converse-chatboxes
+                this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
+
                 this.messages = new _converse.Messages();
                 const storage = _converse.config.get('storage');
                 this.messages.browserStorage = new Backbone.BrowserStorage[storage](
-                    b64_sha1(`converse.messages${this.get('jid')}${_converse.bare_jid}`));
+                    b64_sha1(`converse.messages${jid}${_converse.bare_jid}`));
                 this.messages.chatbox = this;
 
                 this.messages.on('change:upload', (message) => {
@@ -252,7 +265,9 @@ converse.plugins.add('converse-chatboxes', {
 
                 this.on('change:chat_state', this.sendChatState, this);
 
-                this.save({
+                // Models get saved immediately after creation, so no need to
+                // call `save` here.
+                this.set({
                     // The chat_state will be set to ACTIVE once the chat box is opened
                     // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
                     'box_id' : b64_sha1(this.get('jid')),
@@ -261,10 +276,10 @@ converse.plugins.add('converse-chatboxes', {
                 });
             },
 
-            addRelatedContact (contact) {
-                if (!_.isUndefined(contact)) {
-                    this.contact = contact;
-                    this.trigger('contactAdded', contact);
+            validate (attrs, options) {
+                const { _converse } = this.__super__;
+                if (!attrs.jid) {
+                    return 'Ignored ChatBox without JID';
                 }
             },
 
@@ -418,7 +433,8 @@ converse.plugins.add('converse-chatboxes', {
                 } else {
                     message = this.messages.create(attrs);
                 }
-                return this.sendMessageStanza(this.createMessageStanza(message));
+                this.sendMessageStanza(this.createMessageStanza(message));
+                return true;
             },
 
             sendChatState () {
@@ -616,11 +632,25 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             registerMessageHandler () {
-                _converse.connection.addHandler((stanza) => {
+                _converse.connection.addHandler(stanza => {
                     this.onMessage(stanza);
                     return true;
                 }, null, 'message', 'chat');
-                _converse.connection.addHandler((stanza) => {
+
+                _converse.connection.addHandler(stanza => {
+                    // Message receipts are usually without the `type` attribute. See #1353
+                    if (!_.isNull(stanza.getAttribute('type'))) {
+                        // TODO: currently Strophe has no way to register a handler
+                        // for stanzas without a `type` attribute.
+                        // We could update it to accept null to mean no attribute,
+                        // but that would be a backward-incompatible chnge
+                        return true; // Gets handled above.
+                    }
+                    this.onMessage(stanza);
+                    return true;
+                }, Strophe.NS.RECEIPTS, 'message');
+
+                _converse.connection.addHandler(stanza => {
                     this.onErrorMessage(stanza);
                     return true;
                 }, null, 'message', 'error');
@@ -632,7 +662,7 @@ converse.plugins.add('converse-chatboxes', {
 
             onChatBoxesFetched (collection) {
                 /* Show chat boxes upon receiving them from sessionStorage */
-                collection.each((chatbox) => {
+                collection.each(chatbox => {
                     if (this.chatBoxMayBeShown(chatbox)) {
                         chatbox.trigger('show');
                     }
@@ -700,7 +730,9 @@ converse.plugins.add('converse-chatboxes', {
                     'from': _converse.connection.jid,
                     'id': _converse.connection.getUniqueId(),
                     'to': to_jid,
-                }).c('received', {'xmlns': Strophe.NS.RECEIPTS, 'id': id}).up();
+                    'type': 'chat',
+                }).c('received', {'xmlns': Strophe.NS.RECEIPTS, 'id': id}).up()
+                .c('store', {'xmlns': Strophe.NS.HINTS}).up();
                 _converse.api.send(receipt_stanza);
             },
 
@@ -725,20 +757,21 @@ converse.plugins.add('converse-chatboxes', {
                     // messages, but Prosody sends headline messages with the
                     // wrong type ('chat'), so we need to filter them out here.
                     _converse.log(
-                        `onMessage: Ignoring incoming headline message sent with type 'chat' from JID: ${stanza.getAttribute('from')}`,
+                        `onMessage: Ignoring incoming headline message from JID: ${stanza.getAttribute('from')}`,
                         Strophe.LogLevel.INFO
                     );
                     return true;
                 }
 
-                let from_jid = stanza.getAttribute('from');
+                let from_jid = stanza.getAttribute('from'),
+                    is_carbon = false;
                 const forwarded = stanza.querySelector('forwarded'),
                       original_stanza = stanza;
 
                 if (!_.isNull(forwarded)) {
                     const forwarded_message = forwarded.querySelector('message'),
-                          forwarded_from = forwarded_message.getAttribute('from'),
-                          is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
+                          forwarded_from = forwarded_message.getAttribute('from');
+                    is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
 
                     if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
                         // Prevent message forging via carbons
@@ -750,14 +783,14 @@ converse.plugins.add('converse-chatboxes', {
                     to_jid = stanza.getAttribute('to');
                 }
 
-                const requests_receipt = !_.isUndefined(sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
-                if (requests_receipt) {
-                    this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
-                }
-
                 const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
                       from_resource = Strophe.getResourceFromJid(from_jid),
                       is_me = from_bare_jid === _converse.bare_jid;
+
+                const requests_receipt = !_.isUndefined(sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
+                if (requests_receipt && !is_carbon && !is_me) {
+                    this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
+                }
 
                 let contact_jid;
                 if (is_me) {
@@ -844,19 +877,6 @@ converse.plugins.add('converse-chatboxes', {
 
         /************************ BEGIN Event Handlers ************************/
         _converse.on('chatBoxesFetched', autoJoinChats);
-
-
-        _converse.api.waitUntil('rosterContactsFetched').then(() => {
-            _converse.roster.on('add', (contact) => {
-                /* When a new contact is added, check if we already have a
-                 * chatbox open for it, and if so attach it to the chatbox.
-                 */
-                const chatbox = _converse.chatboxes.findWhere({'jid': contact.get('jid')});
-                if (chatbox) {
-                    chatbox.addRelatedContact(contact);
-                }
-            });
-        });
 
 
         _converse.on('addClientFeatures', () => {

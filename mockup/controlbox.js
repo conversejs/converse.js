@@ -8,7 +8,7 @@ const UserPanel = Backbone.NativeView.extend({
 
     render () {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'user-panel.html', true);
+        xhr.open('GET', 'controlbox.html', true);
         xhr.onload = () => {
             this.el.innerHTML = xhr.responseText;
             this.modals = _.map(this.el.querySelectorAll('[data-toggle="modal"]'), (modal_el) => 

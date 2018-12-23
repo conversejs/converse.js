@@ -44,7 +44,7 @@ If you've checked the "This is not a trusted device" checkbox when logging in,
 then `sessionStorage <https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage>`_
 is used instead of localStorage and all data is cleared when you log out.
 
-For this reason, OMEMO cannot be used when you've indicated that you're using
+For this reason, OMEMO is disabled when you've indicated that you're using
 an untrusted device. You would in any case not be able to decrypt previously
 received OMEMO messages, due to the Signal Protocol's forward secrecy and the
 fact that you don't have a pre-existing session.
@@ -92,6 +92,16 @@ articles:
 
 * `What's wrong with webcrypto? <https://tonyarcieri.com/whats-wrong-with-webcrypto>`_
 * `Heartbleed and JavaScript crypto <https://tankredhase.com/2014/04/13/heartbleed-and-javascript-crypto/>`_
+
+OMEMO in Multi-user chats (MUC)
+-------------------------------
+
+Converse supports OMEMO encryption in groupchats, but only if the groupchat is
+set to `members only` and `non-anonymous`. This is the same criteria used by
+the popular Android XMPP client `Conversations <https://conversations.im/>`_.
+
+If the groupchat is configured properly, you'll see the lock icon in the
+toolbar.
 
 
 Open chats via URL

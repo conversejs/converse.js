@@ -89,6 +89,7 @@ _converse.core_plugins = [
     'converse-mam',
     'converse-muc',
     'converse-ping',
+    'converse-pubsub',
     'converse-roster',
     'converse-vcard'
 ];
@@ -433,12 +434,18 @@ function finishInitialization () {
 }
 
 
+function unregisterGlobalEventHandlers () {
+    document.removeEventListener("visibilitychange", _converse.saveWindowState);
+    _converse.emit('unregisteredGlobalEventHandlers');
+}
+
 function cleanup () {
     // Looks like _converse.initialized was called again without logging
     // out or disconnecting in the previous session.
     // This happens in tests. We therefore first clean up.
     Backbone.history.stop();
     _converse.chatboxviews.closeAllChatBoxes();
+    unregisterGlobalEventHandlers();
     window.localStorage.clear();
     window.sessionStorage.clear();
     if (_converse.bookmarks) {
@@ -446,12 +453,14 @@ function cleanup () {
     }
     delete _converse.controlboxtoggle;
     delete _converse.chatboxviews;
+
     _converse.connection.reset();
-    _converse.stopListening();
     _converse.tearDown();
+    _converse.stopListening();
+    _converse.off();
+
     delete _converse.config;
     initClientConfig();
-    _converse.off();
 }
 
 
@@ -817,7 +826,7 @@ _converse.initialize = function (settings, callback) {
         _converse.emit('logout');
     };
 
-    this.saveWindowState = function (ev, hidden) {
+    this.saveWindowState = function (ev) {
         // XXX: eventually we should be able to just use
         // document.visibilityState (when we drop support for older
         // browsers).
@@ -834,7 +843,7 @@ _converse.initialize = function (settings, callback) {
         if (ev.type in event_map) {
             state = event_map[ev.type];
         } else {
-            state = document[hidden] ? "hidden" : "visible";
+            state = document.hidden ? "hidden" : "visible";
         }
         if (state  === 'visible') {
             _converse.clearMsgCounter();
@@ -844,29 +853,8 @@ _converse.initialize = function (settings, callback) {
     };
 
     this.registerGlobalEventHandlers = function () {
-        // Taken from:
-        // http://stackoverflow.com/questions/1060008/is-there-a-way-to-detect-if-a-browser-window-is-not-currently-active
-        let hidden = "hidden";
-        // Standards:
-        if (hidden in document) {
-            document.addEventListener("visibilitychange", _.partial(_converse.saveWindowState, _, hidden));
-        } else if ((hidden = "mozHidden") in document) {
-            document.addEventListener("mozvisibilitychange", _.partial(_converse.saveWindowState, _, hidden));
-        } else if ((hidden = "webkitHidden") in document) {
-            document.addEventListener("webkitvisibilitychange", _.partial(_converse.saveWindowState, _, hidden));
-        } else if ((hidden = "msHidden") in document) {
-            document.addEventListener("msvisibilitychange", _.partial(_converse.saveWindowState, _, hidden));
-        } else if ("onfocusin" in document) {
-            // IE 9 and lower:
-            document.onfocusin = document.onfocusout = _.partial(_converse.saveWindowState, _, hidden);
-        } else {
-            // All others:
-            window.onpageshow = window.onpagehide = window.onfocus = window.onblur = _.partial(_converse.saveWindowState, _, hidden);
-        }
-        // set the initial state (but only if browser supports the Page Visibility API)
-        if( document[hidden] !== undefined ) {
-            _.partial(_converse.saveWindowState, _, hidden)({type: document[hidden] ? "blur" : "focus"});
-        }
+        document.addEventListener("visibilitychange", _converse.saveWindowState);
+        _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
         _converse.emit('registeredGlobalEventHandlers');
     };
 
@@ -1237,7 +1225,8 @@ _converse.initialize = function (settings, callback) {
             _converse.locales,
             u.interpolate(_converse.locales_url, {'locale': _converse.locale}))
         .catch(e => _converse.log(e.message, Strophe.LogLevel.FATAL))
-        .finally(finishInitialization);
+        .finally(finishInitialization)
+        .catch(e => _converse.log(e.message, Strophe.LogLevel.FATAL));
     }
     return init_promise;
 };

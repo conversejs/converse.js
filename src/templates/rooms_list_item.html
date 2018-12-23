@@ -11,7 +11,7 @@
     title="{{{o.open_title}}}" href="#">{{{o.name || o.jid}}}</a>
 
 {[ if (o.allow_bookmarks) { ]}
-<a class="list-item-action fa {[ if (o.bookmarked) { ]} fa-bookmark remove-bookmark button-on {[ } else { ]} add-bookmark fa-bookmark-o {[ } ]}"
+<a class="list-item-action fa {[ if (o.bookmarked) { ]} fa-bookmark remove-bookmark button-on {[ } else { ]} add-bookmark fa-bookmark {[ } ]}"
    data-room-jid="{{{o.jid}}}" data-bookmark-name="{{{o.name}}}"
    title="{[ if (o.bookmarked) { ]} {{{o.info_remove_bookmark}}} {[ } else { ]} {{{o.info_add_bookmark}}} {[ } ]}"
    href="#"></a>
@@ -20,7 +20,7 @@
 <a class="list-item-action room-info fa fa-info-circle" data-room-jid="{{{o.jid}}}"
    title="{{{o.info_title}}}" href="#"></a>
 
-<a class="list-item-action fa fa-times close-room"
+<a class="list-item-action fa fa-sign-out-alt close-room"
    data-room-jid="{{{o.jid}}}"
    data-room-name="{{{o.name || o.jid}}}"
    title="{{{o.info_leave_room}}}" href="#"></a>

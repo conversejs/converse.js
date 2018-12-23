@@ -102,7 +102,6 @@
             await test_utils.openChatBoxFor(_converse, contact_jid);
             await test_utils.waitUntilDiscoConfirmed(_converse, contact_jid+'/phone', [], [Strophe.NS.SPOILER]);
             const view = _converse.chatboxviews.get(contact_jid);
-            spyOn(view, 'onMessageSubmitted').and.callThrough();
             spyOn(_converse.connection, 'send');
 
             await test_utils.waitUntil(() => view.el.querySelector('.toggle-compose-spoiler'));
@@ -116,7 +115,6 @@
                 preventDefault: _.noop,
                 keyCode: 13
             });
-            expect(view.onMessageSubmitted).toHaveBeenCalled();
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             /* Test the XML stanza 
@@ -184,7 +182,6 @@
             let spoiler_toggle = view.el.querySelector('.toggle-compose-spoiler');
             spoiler_toggle.click();
 
-            spyOn(view, 'onMessageSubmitted').and.callThrough();
             spyOn(_converse.connection, 'send');
 
             const textarea = view.el.querySelector('.chat-textarea');
@@ -197,7 +194,6 @@
                 preventDefault: _.noop,
                 keyCode: 13
             });
-            expect(view.onMessageSubmitted).toHaveBeenCalled();
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             /* Test the XML stanza 

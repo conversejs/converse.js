@@ -32,6 +32,8 @@
         span {
             padding: 0.3em;
             cursor: pointer;
+            min-width: 25px;
+            text-align: center;
         }
 
         .roster-filter {
@@ -67,13 +69,17 @@
                 padding-bottom: 0.3rem;
             }
 
+            .group-toggle, .group-toggle .fa {
+                color: var(--chat-head-color-dark) !important;
+                &:hover {
+                    color: var(--chat-head-color-darker) !important;
+                }
+            }
+
             li {
                 &.requesting-xmpp-contact {
                     a {
                         line-height: var(--line-height);
-                        &.far, &.fas, &.fa {
-                            width: 1.5em;
-                        }
                     }
                     .req-contact-name {
                         padding: 0 0.2em 0 0;
@@ -120,8 +126,8 @@
                 }
                 &.current-xmpp-contact span {
                     font-size: var(--font-size);
-                    float: left;
-                    margin-right: 0.5em;
+                    margin-right: 0.3em;
+                    vertical-align: middle;
                 }
                 &.odd {
                     background-color: #DCEAC5;

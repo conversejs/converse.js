@@ -61,6 +61,14 @@
     }
 
     #controlbox {
+
+        .open-rooms-toggle, .open-rooms-toggle .fa {
+            color: var(--chatroom-head-color) !important;
+            &:hover {
+                color: var(--chatroom-head-color-dark) !important;
+            }
+        }
+
         .box-flyout {
             background-color: white;
         }
@@ -218,17 +226,26 @@
                 color: var(--controlbox-heading-color);
                 font-weight: var(--controlbox-heading-font-weight);
                 padding: 0;
-                margin: 1em 0 0.5em 0;
                 font-size: 1.1em;
+                line-height: 1.1em;
                 text-transform: uppercase;
+            }
+
+            .controlbox-heading--groupchats {
+                color: var(--chatroom-head-color);
+            }
+
+            .controlbox-heading--contacts {
+                color: var(--chat-head-color-dark);
             }
 
             .controlbox-heading__btn {
                 cursor: pointer;
-                align-self: flex-start;
                 font-size: 1em;
                 padding: 0;
-                margin: 0.75em 0 0.75em 0.75em;
+                margin: var(--controlbox-heading-top-margin) 0 var(--inline-action-margin) 0;
+                min-width: 25px;
+                text-align: center;
                 &.fa-vcard {
                     margin-top: 1em;
                 }
@@ -303,8 +320,14 @@
             padding: 1em 0 1em 0;
 
             .controlbox-padded {
-               padding-left: 1em;
-               padding-right: 1em;
+                padding-left: 1em;
+                padding-right: 1em;
+                align-items: center;
+                line-height: normal;
+                .change-status {
+                    min-width: 25px;
+                    text-align: center;
+                }
             }
 
             .add-converse-contact {

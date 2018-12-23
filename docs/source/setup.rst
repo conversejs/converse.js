@@ -180,8 +180,18 @@ Nginx
         server {
             listen       80
             server_name  mysite.com;
+
+            location = / {
+                root    /path/to/converse.js/;  # Properly set the path here
+                index   index.html;
+            }
             location ~ ^/http-bind/ {
                 proxy_pass http://someothersite.com;
+            }
+            # CORS
+            location ~ .(ttf|ttc|otf|eot|woff|woff2|font.css|css|js)$ {
+                add_header Access-Control-Allow-Origin "*"; # Decide here whether you want to allow all or only a particular domain
+                root   /path/to/converse.js/;  # Properly set the path here
             }
         }
     }

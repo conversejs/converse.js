@@ -19,7 +19,7 @@
             <span class="occupant-nick">{{{o.nick || o.jid}}}</span>
             <span class="occupant-badges">
                 {[ if (o.affiliation === "owner") { ]}
-                    <span class="badge badge-primary">{{{o.label_owner}}}</span>
+                    <span class="badge badge-groupchat">{{{o.label_owner}}}</span>
                 {[ } ]}
                 {[ if (o.affiliation === "admin") { ]}
                     <span class="badge badge-info">{{{o.label_admin}}}</span>

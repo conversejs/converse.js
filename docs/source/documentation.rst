@@ -30,29 +30,26 @@ under ``docs/source``.
 How to generate HTML from the source files?
 ===========================================
 
-Install Dependencies
---------------------
-
-In order to generate HTML from the source files, you need to have Sphinx and
-the `Sphinx Bootstrap Theme <http://ryan-roemer.github.io/sphinx-bootstrap-theme>`_
-installed.
-
-We use `zc.buildout <http://www.buildout.org/en/latest/>`_ to install Sphinx
-and the theme.
-
-To install Sphinx, do the following::
-
-    python bootstrap.py
-    ./bin/buildout
-
 Generate the HTML
 -----------------
 
-After installing the dependencies, you can generate the HTML by simply
-running::
+After installing the dependencies, you can generate the HTML by running::
 
     make html
 
 The HTMl files will be located in ``./docs/html``
 
+What ``make html`` does for you is it installs `zc.buildout <http://www.buildout.org/en/latest/>`_
+which is used to install Sphinx and all its dependencies.
+
+You'll need to have Python and `Virtualenv <https://virtualenv.pypa.io/en/latest/>`_ available on your computer.
+
 .. warning:: When contributing, please don't commit any generated html files.
+
+Serving the documentation
+-------------------------
+
+To view the generated docs, you can run ``make serve`` and then open
+http://localhost:8000/docs/html/index.html in your browser.
+
+

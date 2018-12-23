@@ -40,6 +40,9 @@ converse.plugins.add('converse-roomslist', {
         const { _converse } = this,
               { __ } = _converse;
 
+        // Promises exposed by this plugin
+        _converse.api.promises.add('roomsListInitialized');
+
 
         _converse.OpenRooms = Backbone.Collection.extend({
 
@@ -266,17 +269,14 @@ converse.plugins.add('converse-roomslist', {
 
             model.browserStorage = new Backbone.BrowserStorage[storage](id);
             _converse.rooms_list_view = new _converse.RoomsListView({'model': model});
+            _converse.api.emit('roomsListInitialized');
         };
 
         if (_converse.allow_bookmarks) {
-            u.onMultipleEvents([
-                    {'object': _converse, 'event': 'chatBoxesFetched'},
-                    {'object': _converse, 'event': 'roomsPanelRendered'},
-                    {'object': _converse, 'event': 'bookmarksInitialized'}
-                ], initRoomsListView);
+            _converse.api.waitUntil('bookmarksInitialized').then(initRoomsListView);
         } else {
             u.onMultipleEvents([
-                    {'object': _converse, 'event': 'chatBoxesFetched'},
+                    {'object': _converse, 'event': 'chatBoxesInitialized'},
                     {'object': _converse, 'event': 'roomsPanelRendered'}
                 ], initRoomsListView);
         }

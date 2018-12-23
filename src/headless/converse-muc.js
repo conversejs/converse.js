@@ -38,6 +38,23 @@ converse.ROOM_FEATURES = [
     'moderated', 'unmoderated', 'mam_enabled'
 ];
 
+// No longer used in code, but useful as reference.
+//
+// const ROOM_FEATURES_MAP = {
+//     'passwordprotected': 'unsecured',
+//     'unsecured': 'passwordprotected',
+//     'hidden': 'publicroom',
+//     'publicroom': 'hidden',
+//     'membersonly': 'open',
+//     'open': 'membersonly',
+//     'persistent': 'temporary',
+//     'temporary': 'persistent',
+//     'nonanonymous': 'semianonymous',
+//     'semianonymous': 'nonanonymous',
+//     'moderated': 'unmoderated',
+//     'unmoderated': 'moderated'
+// };
+
 converse.ROOMSTATUS = {
     CONNECTED: 0,
     CONNECTING: 1,
@@ -483,10 +500,10 @@ converse.plugins.add('converse-muc', {
                 const features = await _converse.api.disco.getFeatures(this.get('jid')),
                       fields = await _converse.api.disco.getFields(this.get('jid')),
                       identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid')),
-                      attrs = {
-                          'features_fetched': moment().format(),
-                          'name': identity && identity.get('name')
-                      };
+                      attrs = _.extend(_.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)), {
+                            'features_fetched': moment().format(),
+                            'name': identity && identity.get('name')
+                      });
 
                 features.each(feature => {
                     const fieldname = feature.get('var');
@@ -1099,7 +1116,8 @@ converse.plugins.add('converse-muc', {
         _converse.ChatRoomOccupant = Backbone.Model.extend({
 
             defaults: {
-                'show': 'offline'
+                'show': 'offline',
+                'states': []
             },
 
             initialize (attributes) {
@@ -1131,6 +1149,10 @@ converse.plugins.add('converse-muc', {
 
             isMember () {
                 return _.includes(['admin', 'owner', 'member'], this.get('affiliation'));
+            },
+
+            isSelf () {
+                return this.get('states').includes('110');
             }
         });
 

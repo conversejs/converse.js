@@ -92953,7 +92953,7 @@ __p += '<!-- src/templates/client_info_modal.html -->\n<!-- Change status Modal 
 __e(o.modal_title) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
-'">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <div class="container brand-heading-container">\n                    <h6 class="brand-heading"><i class="icon-conversejs"></i>Converse</h6>\n                    <p class="brand-subtitle">' +
+'">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <div class="container brand-heading-container">\n                    <h6 class="brand-heading">Converse</h6>\n                    <p class="brand-subtitle">' +
 __e(o.version_name) +
 '</p>\n                    <p class="brand-subtitle">' +
 ((__t = (o.first_subtitle)) == null ? '' : __t) +

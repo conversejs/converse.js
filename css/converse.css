@@ -9483,23 +9483,6 @@ readers do not read off random characters that represent icons */
 body.reset {
   margin: 0; }
 
-.icon-conversejs {
-  padding-right: 0.5em;
-  font-family: 'Converse-js';
-  font-size: 80%;
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; }
-
-.icon-conversejs:before {
-  content: "\e600"; }
-
 .converse-brand {
   display: flex;
   justify-content: space-between;
@@ -9566,8 +9549,6 @@ body.reset {
   margin: auto;
   margin-top: 10%;
   text-align: center; }
-  .converse-brand__text .icon-conversejs {
-    font-size: 60%; }
 
 .converse-brand__byline {
   font-size: var(--font-size-small);

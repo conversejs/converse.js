@@ -1,8 +1,6 @@
 $mobile_landscape_height: 450px !default;
 $mobile_portrait_length: 480px !default;
 
-$font-path: "webfonts/icomoon/fonts/" !default;
-
 #conversejs, .converse-content {
     --subdued-color: #A8ABA1;
     --subdued-color-lighten-25-percent: #e6e7e4; // lighten(#A8ABA1, 25%)
@@ -94,7 +92,7 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     // --font-path: "webfonts/icomoon/fonts/";
 
     --normal-font: "Helvetica", "Arial", sans-serif;
-    --heading-font: futura, 'Century Gothic', 'URW Gothic L', Verdana, sans-serif;
+    --heading-font: 'Baumans', cursive;
     --heading-display: block;
     --heading-color: white;
 

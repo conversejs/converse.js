@@ -12,6 +12,12 @@
   src: local("Baumans Regular"), local("Baumans-Regular"), url(webfonts/baumans.ttf) format("truetype"); }
 
 @font-face {
+  font-family: 'Muli';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Muli Regular"), local("Muli-Regular"), url(webfonts/muli.ttf) format("truetype"); }
+
+@font-face {
   font-family: 'ConverseFontAwesomeBrands';
   font-style: normal;
   font-weight: normal;
@@ -9357,7 +9363,8 @@ readers do not read off random characters that represent icons */
   --mobile-chat-width: 100%;
   --mobile-chat-height: 400px;
   --normal-font: "Helvetica", "Arial", sans-serif;
-  --heading-font: 'Baumans', cursive;
+  --heading-font: 'Muli', normal;
+  --branding-font: 'Baumans', cursive;
   --heading-display: block;
   --heading-color: white;
   --chatroom-head-color: #E77051;
@@ -9553,7 +9560,7 @@ body.reset {
       max-width: 83.33333%; } }
 
 .converse-brand__text {
-  font-family: var(--heading-font);
+  font-family: var(--branding-font);
   font-weight: normal;
   width: 50%;
   margin: auto;
@@ -9599,7 +9606,7 @@ body.reset {
     font-size: 200%;
     display: inline-flex;
     align-items: flex-end;
-    font-family: var(--heading-font); }
+    font-family: var(--branding-font); }
     #conversejs .brand-heading:hover .brand-name {
       color: var(--link-color); }
     #conversejs .brand-heading .converse-svg-logo {
@@ -11943,7 +11950,8 @@ body.reset {
       text-overflow: ellipsis;
       white-space: nowrap;
       font-family: var(--heading-font);
-      font-size: 115%; }
+      font-size: 115%;
+      font-weight: bold; }
       #conversejs .message.chat-msg .chat-msg__heading .chat-msg__author .badge {
         font-size: 80%;
         font-family: var(--normal_font); }

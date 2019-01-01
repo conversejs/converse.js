@@ -71,7 +71,7 @@ body.reset {
 }
 
 .converse-brand__text {
-    font-family: var(--heading-font);
+    font-family: var(--branding-font);
     font-weight: normal;
     width: 50%;
     margin: auto;
@@ -138,7 +138,7 @@ body.reset {
         font-size: 200%;
         display: inline-flex;
         align-items: flex-end;
-        font-family: var(--heading-font);
+        font-family: var(--branding-font);
         &:hover {
             .brand-name {
                 color: var(--link-color);

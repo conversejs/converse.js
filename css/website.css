@@ -5091,7 +5091,7 @@ img::-moz-selection {
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0 0 35px;
-  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
+  font-family: 'Muli', sans-serif;
   font-weight: normal;
   letter-spacing: 1px; }
 
@@ -5127,10 +5127,10 @@ a {
     word-spacing: 50px; }
 
 .byline {
-  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
+  font-family: 'Muli', sans-serif;
   font-size: 28px;
-  opacity: 0.6;
-  margin-bottom: 3em; }
+  opacity: 0.5;
+  margin-bottom: 2em; }
 
 #about p {
   opacity: 0.9; }
@@ -5139,7 +5139,7 @@ a {
   font-weight: 400; }
 
 .navbar {
-  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
+  font-family: 'Muli', sans-serif;
   margin-bottom: 0;
   background: transparent;
   font-size: 95%;
@@ -5337,7 +5337,7 @@ section h4 {
     padding: 100px 0; } }
 
 .btn {
-  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
+  font-family: 'Muli', sans-serif;
   font-weight: 400;
   -webkit-transition: all 0.3s ease-in-out;
   -moz-transition: all 0.3s ease-in-out;

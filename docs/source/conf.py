@@ -102,7 +102,7 @@ html_static_path = ['_static']
 
 # (Optional) Logo. Should be small enough to fit the navbar (ideally 24x24).
 # Path should be relative to the ``_static`` files directory.
-html_logo = "_static/conversejs_small.png"
+html_logo = "_static/logo.svg"
 
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.

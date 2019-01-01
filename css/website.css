@@ -5072,37 +5072,28 @@ html {
   height: 100%; }
 
 body {
+  webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
   width: 100%;
   height: 100%;
   font-family: "Lora", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #ffffff;
   background-color: #211018; }
 
+::-moz-selection,
+::selection {
+  text-shadow: none;
+  background: #fcfcfc;
+  background: rgba(255, 255, 255, 0.2); }
+
+img::selection,
+img::-moz-selection {
+  background: transparent; }
+
 h1, h2, h3, h4, h5, h6 {
   margin: 0 0 35px;
   font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
   font-weight: normal;
   letter-spacing: 1px; }
-
-.hidden {
-  display: none !important; }
-
-.indiechat {
-  font-size: 100px !important;
-  margin-bottom: 0 !important; }
-  .indiechat .subdued {
-    opacity: 0.15;
-    font-size: 95%;
-    word-spacing: 50px; }
-
-#about p {
-  opacity: 0.9; }
-
-.byline {
-  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
-  font-size: 28px;
-  opacity: 0.6;
-  margin-bottom: 3em; }
 
 p {
   margin: 0 0 25px;
@@ -5120,10 +5111,29 @@ a {
   -webkit-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out; }
+  a:hover, a:focus {
+    text-decoration: none;
+    color: #00aaff; }
 
-a:hover, a:focus {
-  text-decoration: none;
-  color: #00aaff; }
+.hidden {
+  display: none !important; }
+
+.indiechat {
+  font-size: 100px !important;
+  margin-bottom: 0 !important; }
+  .indiechat .subdued {
+    opacity: 0.15;
+    font-size: 95%;
+    word-spacing: 50px; }
+
+.byline {
+  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
+  font-size: 28px;
+  opacity: 0.6;
+  margin-bottom: 3em; }
+
+#about p {
+  opacity: 0.9; }
 
 .light {
   font-weight: 400; }
@@ -5297,10 +5307,15 @@ section h4 {
   padding-top: 100px;
   padding-top: 100px;
   min-height: 100vh; }
+  .content-section.account-hosting {
+    font-size: 80%; }
   .content-section .privacy-policy {
     padding-top: 2em; }
     .content-section .privacy-policy h4 {
-      padding-top: 1.5em; }
+      padding: 0;
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+      font-size: 2em; }
     .content-section .privacy-policy p {
       font-size: 1.2em;
       padding-bottom: 0;
@@ -5350,25 +5365,6 @@ section h4 {
     padding: 0.15em; }
     .banner-social-buttons a i {
       font-size: 115%; }
-
-::-moz-selection {
-  text-shadow: none;
-  background: #fcfcfc;
-  background: rgba(255, 255, 255, 0.2); }
-
-::selection {
-  text-shadow: none;
-  background: #fcfcfc;
-  background: rgba(255, 255, 255, 0.2); }
-
-img::selection {
-  background: transparent; }
-
-img::-moz-selection {
-  background: transparent; }
-
-body {
-  webkit-tap-highlight-color: rgba(255, 255, 255, 0.2); }
 
 ul.contact,
 ul.integration,

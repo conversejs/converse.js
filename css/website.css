@@ -5084,6 +5084,26 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: normal;
   letter-spacing: 1px; }
 
+.hidden {
+  display: none !important; }
+
+.indiechat {
+  font-size: 100px !important;
+  margin-bottom: 0 !important; }
+  .indiechat .subdued {
+    opacity: 0.15;
+    font-size: 95%;
+    word-spacing: 50px; }
+
+#about p {
+  opacity: 0.9; }
+
+.byline {
+  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
+  font-size: 28px;
+  opacity: 0.6;
+  margin-bottom: 3em; }
+
 p {
   margin: 0 0 25px;
   font-size: 18px;
@@ -5230,15 +5250,9 @@ section h4 {
 .brand-heading-embedded {
   margin-top: 1.5em; }
 
-.intro-text {
-  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
-  font-size: 18px; }
-
 @media (min-width: 767px) {
   .intro {
-    padding: 0; }
-  .intro-text {
-    font-size: 25px; } }
+    padding: 0; } }
 
 .btn-circle {
   width: 70px;

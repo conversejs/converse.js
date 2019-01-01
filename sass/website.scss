@@ -22,6 +22,19 @@
 @import "bootstrap/scss/close";
 @import "bootstrap/scss/utilities";
 
+@import "bourbon";
+@mixin fade-in {
+    opacity: 0;  /* make things invisible upon start */
+    @include animation-name(fadein);
+    @include animation-fill-mode(forwards);
+    @include animation-duration(1s);
+    @include animation-timing-function(ease);
+}
+
+.fade-in {
+    @include fade-in;
+}
+
 html {
     width: 100%;
     height: 100%;
@@ -84,15 +97,6 @@ a {
     display: none !important;
 }
 
-.indiechat {
-    font-size: 100px !important;
-    margin-bottom: 0 !important;
-    .subdued {
-        opacity: 0.15;
-        font-size: 95%;
-        word-spacing: 50px;
-    }
-}
 .byline {
     font-family: 'Muli', sans-serif;
     font-size: 28px;
@@ -236,7 +240,14 @@ section {
     font-family: 'Baumans', cursive;
     font-size: 6em;
     margin-top: 1em;
+    margin-bottom: 0;
     color: white;
+
+    .subdued {
+        opacity: 0.15;
+        font-size: 95%;
+        word-spacing: 50px;
+    }
 
     .converse-svg-logo {
         height: 1.2em;

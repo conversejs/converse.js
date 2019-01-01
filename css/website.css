@@ -5134,12 +5134,6 @@ a {
 .hidden {
   display: none !important; }
 
-.byline {
-  font-family: 'Muli', sans-serif;
-  font-size: 28px;
-  opacity: 0.5;
-  margin-bottom: 2em; }
-
 #about p {
   opacity: 0.9; }
 
@@ -5247,19 +5241,26 @@ section h4 {
 
 .brand-heading {
   display: inline-flex;
-  align-items: flex-end;
+  align-items: center;
   font-family: 'Baumans', cursive;
   font-size: 6em;
   margin-top: 1em;
-  margin-bottom: 0;
+  margin-bottom: 0.5em;
   color: white; }
+  .brand-heading .byline {
+    font-family: 'Muli', sans-serif;
+    font-size: 20px;
+    opacity: 0.5;
+    margin-bottom: 2em;
+    margin-left: -75px; }
   .brand-heading .subdued {
     opacity: 0.15;
     font-size: 95%;
     word-spacing: 50px; }
   .brand-heading .converse-svg-logo {
     height: 1.2em;
-    margin-right: 0.25em; }
+    margin-right: 0.25em;
+    margin-bottom: 0.1em; }
     .brand-heading .converse-svg-logo .cls-1 {
       isolation: isolate; }
     .brand-heading .converse-svg-logo .cls-2 {
@@ -5270,12 +5271,24 @@ section h4 {
     .brand-heading .converse-svg-logo .cls-4 {
       fill: white; }
 
+.brand-heading__text {
+  font-size: 0.9em;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center; }
+
 .brand-heading-embedded {
   margin-top: 1.5em; }
 
 @media (min-width: 767px) {
   .intro {
     padding: 0; } }
+
+.intro-text {
+  font-size: 1.1em;
+  opacity: 0.8;
+  margin-bottom: 0;
+  padding-bottom: 1em; }
 
 .btn-circle {
   width: 70px;

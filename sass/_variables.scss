@@ -1,7 +1,7 @@
 $mobile_landscape_height: 450px !default;
 $mobile_portrait_length: 480px !default;
 
-#conversejs, .converse-content {
+#conversejs, #conversejs-bg, .converse-fullscreen {
     --subdued-color: #A8ABA1;
     --subdued-color-lighten-25-percent: #e6e7e4; // lighten(#A8ABA1, 25%)
 
@@ -19,7 +19,7 @@ $mobile_portrait_length: 480px !default;
     --link-color-darken-20-percent: #345566; // darken($light-blue, 20%)
     --link-color-lighten-10-percent: #79a5ba; // lighten($light-blue, 10%)
     --dark-link-color: #206485; // $dark-blue
-    --global-background-color: #578EA9; // $light-blue
+    --global-background-color: #397491; // dark blue
 
     --inverse-link-color: white;
     --text-shadow-color: #FAFAFA;

@@ -49153,13 +49153,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var templates_avatar_svg__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! templates/avatar.svg */ "./src/templates/avatar.svg");
 /* harmony import */ var templates_avatar_svg__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(templates_avatar_svg__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html");
-/* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var templates_background_logo_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/background_logo.html */ "./src/templates/background_logo.html");
+/* harmony import */ var templates_background_logo_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_background_logo_html__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html");
+/* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6__);
 // Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
+
 
 
 
@@ -49259,17 +49262,25 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
 
       initialize() {
         this.model.on("destroy", this.removeChat, this);
+        const bg = document.getElementById('conversejs-bg');
+
+        if (bg && !bg.innerHTML.trim()) {
+          bg.innerHTML = templates_background_logo_html__WEBPACK_IMPORTED_MODULE_5___default()();
+        }
+
+        const body = document.querySelector('body');
+        body.classList.add(`converse-${_converse.view_mode}`);
         this.el.classList.add(`converse-${_converse.view_mode}`);
         this.render();
       },
 
       render() {
         try {
-          this.el.innerHTML = templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5___default()();
+          this.el.innerHTML = templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6___default()();
         } catch (e) {
           this._ensureElement();
 
-          this.el.innerHTML = templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5___default()();
+          this.el.innerHTML = templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6___default()();
         }
 
         this.row_el = this.el.querySelector('.row');
@@ -92074,6 +92085,22 @@ __e(o.height) +
 '" preserveAspectRatio="xMidYMid meet" xlink:href="' +
 __e(o.image) +
 '"/>\n</svg>\n';
+return __p
+};
+
+/***/ }),
+
+/***/ "./src/templates/background_logo.html":
+/*!********************************************!*\
+  !*** ./src/templates/background_logo.html ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
+module.exports = function(o) {
+var __t, __p = '';
+__p += '<!-- src/templates/background_logo.html -->\n<div class="inner-content converse-brand row">\n    <div class="converse-brand__padding"></div>\n    <div class="converse-brand__heading">\n        <svg height="200px"\n            xmlns="http://www.w3.org/2000/svg"\n            xmlns:xlink="http://www.w3.org/1999/xlink"\n            viewBox="0 0 364 364"\n            version="1.1">\n            <title>Logo Converse</title>\n            <defs>\n                <linearGradient id="gradient" x1="92.14" y1="27.64" x2="267.65" y2="331.62" gradientUnits="userSpaceOnUse">\n                    <stop offset="0" stop-color="#fff1d1"/>\n                    <stop offset="0.05" stop-color="#fae8c1"/>\n                    <stop offset="0.15" stop-color="#f0d5a1"/>\n                    <stop offset="0.27" stop-color="#e7c687"/>\n                    <stop offset="0.4" stop-color="#e1bb72"/>\n                    <stop offset="0.54" stop-color="#dcb264"/>\n                    <stop offset="0.71" stop-color="#daad5c"/>\n                    <stop offset="1" stop-color="#d9ac59"/>\n                </linearGradient>\n                <filter id="shadow">\n                    <feGaussianBlur in="SourceAlpha" stdDeviation="2.3" result="blur1"/>\n                    <feOffset in="blur1" dx="3" dy="3" result="blur2"/>\n                    <feColorMatrix in="blur2" type="matrix" result="blur3"\n                        values="1 0 0 0 0.1\n                                0 1 0 0 0.1\n                                0 0 1 0 0.1\n                                0 0 0 1 0"/>\n                    <feMerge>\n                        <feMergeNode in="blur3"/>\n                        <feMergeNode in="SourceGraphic"/>\n                    </feMerge>\n                </filter>\n            </defs>\n            <g filter="url(#shadow)">\n                <path d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" fill="#d9ac59"/>\n                <path d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" fill="url(#gradient)"/>\n            </g>\n        </svg>\n        <span class="converse-brand__text">\n            <span>converse<span class="subdued">.js</span></span>\n            <p class="byline">messaging freedom</p>\n        </span>\n    </div>\n</div>\n';
 return __p
 };
 

@@ -9,6 +9,7 @@ import "backbone.nativeview";
 import "backbone.overview";
 import converse from "@converse/headless/converse-core";
 import tpl_avatar from "templates/avatar.svg";
+import tpl_background_logo from "templates/background_logo.html";
 import tpl_chatboxes from "templates/chatboxes.html";
 
 const { Backbone, _, utils } = converse.env;
@@ -105,6 +106,12 @@ converse.plugins.add('converse-chatboxviews', {
 
             initialize () {
                 this.model.on("destroy", this.removeChat, this);
+                const bg = document.getElementById('conversejs-bg');
+                if (bg && !bg.innerHTML.trim()) {
+                    bg.innerHTML = tpl_background_logo();
+                }
+                const body = document.querySelector('body');
+                body.classList.add(`converse-${_converse.view_mode}`);
                 this.el.classList.add(`converse-${_converse.view_mode}`);
                 this.render();
             },

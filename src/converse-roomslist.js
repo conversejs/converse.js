@@ -245,7 +245,7 @@ converse.plugins.add('converse-roomslist', {
 
             toggleRoomsList (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                const icon_el = ev.target.querySelector('.fa');
+                const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
                 if (icon_el.classList.contains("fa-caret-down")) {
                     u.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
                         this.list_model.save({'toggle-state': _converse.CLOSED});

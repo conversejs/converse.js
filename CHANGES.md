@@ -8,11 +8,13 @@
 - Add a new `converse-pubsub` plugin, for generic PubSub operations
 - #1180 It's now possible to use OMEMO in a MUC (if it's members-only and non-anonymous)
 - #1353 Message Delivery Receipts not working because of the message "type" attribute
+- #1356 Make triangle icon usable 
 - #1374 Can't load embedded chat when changing `view_mode` between page reloads
 - #1376 Fixed some alignment issues in the sidebar
 - #1378 Message Delivery Receipts were being sent for carbons and own messages
 - #1379 MUC unread messages indicator is failing
 - #1382 Message Delivery Receipts: Set store hint and type='chat'
+
 
 ## 4.0.6 (2018-12-07)
 

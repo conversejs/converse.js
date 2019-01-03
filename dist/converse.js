@@ -48985,7 +48985,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           ev.preventDefault();
         }
 
-        const icon_el = ev.target.querySelector('.fa');
+        const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
 
         if (u.hasClass('fa-caret-down', icon_el)) {
           u.slideIn(this.el.querySelector('.bookmarks'));
@@ -58913,7 +58913,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           ev.preventDefault();
         }
 
-        const icon_el = ev.target.querySelector('.fa');
+        const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
 
         if (icon_el.classList.contains("fa-caret-down")) {
           u.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
@@ -59748,7 +59748,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           ev.preventDefault();
         }
 
-        const icon_el = ev.target.querySelector('.fa');
+        const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
 
         if (_.includes(icon_el.classList, "fa-caret-down")) {
           this.model.save({

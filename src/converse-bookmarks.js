@@ -507,7 +507,7 @@ converse.plugins.add('converse-bookmarks', {
 
             toggleBookmarksList (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                const icon_el = ev.target.querySelector('.fa');
+                const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
                 if (u.hasClass('fa-caret-down', icon_el)) {
                     u.slideIn(this.el.querySelector('.bookmarks'));
                     this.list_model.save({'toggle-state': _converse.CLOSED});

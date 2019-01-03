@@ -690,8 +690,6 @@ fullname
 If you are using prebinding, can specify the fullname of the currently
 logged in user, otherwise the user's vCard will be fetched.
 
-.. _`hide_muc_server`:
-
 geouri_regex
 ----------------
 
@@ -706,15 +704,6 @@ geouri_replacement
 
 String used to replace geo-URIs with. Ought to be a link to osm or similar. ``$1`` and ``$2`` is replaced by
 latitude and longitude respectively.
-
-hide_muc_server
----------------
-
-* Default:  ``false``
-
-Hide the ``server`` input field of the form inside the ``Room`` panel of the
-controlbox. Useful if you want to restrict users to a specific XMPP server of
-your choosing.
 
 hide_offline_users
 ------------------
@@ -939,7 +928,7 @@ The MUC (multi-user chat) domain that should be used. By default Converse
 will attempt to get the MUC domain from the XMPP host of the currently logged in
 user.
 
-This setting will override that. You might want to combine this setting with `hide_muc_server`_.
+This setting will override that.
 
 muc_history_max_stanzas
 -----------------------

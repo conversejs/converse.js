@@ -307,7 +307,7 @@
                 preventDefault: _.noop,
                 keyCode: 13 // Enter
             });
-            iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'));
+            iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, contact_jid, '4e30f35051b7b8b42abe083742187228'), 1000);
             console.log("Bundle fetched 4e30f35051b7b8b42abe083742187228");
             stanza = $iq({
                 'from': contact_jid,
@@ -328,7 +328,7 @@
                                 .c('preKeyPublic', {'preKeyId': '3'}).t(btoa('1003'));
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-            iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
+            iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'), 1000);
             console.log("Bundle fetched 482886413b977930064a5888b92134fe");
             stanza = $iq({
                 'from': _converse.bare_jid,

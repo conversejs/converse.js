@@ -49007,8 +49007,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     });
 
     _converse.checkBookmarksSupport = async function () {
-      const args = await Promise.all([_converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid), _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid)]);
-      return args[0] && (args[1].length || _converse.allow_public_bookmarks);
+      const identity = await _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid);
+
+      if (_converse.allow_public_bookmarks) {
+        return !!identity;
+      } else {
+        const supported = await _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid);
+        return !!supported.length;
+      }
     };
 
     const initBookmarks = async function initBookmarks() {

@@ -9595,9 +9595,8 @@ body.converse-fullscreen {
     font-size: 200%;
     display: inline-flex;
     align-items: flex-end;
-    font-family: var(--branding-font); }
-    #conversejs .brand-heading:hover .brand-name {
-      color: var(--link-color); }
+    font-family: var(--branding-font);
+    color: var(--link-color); }
     #conversejs .brand-heading .converse-svg-logo {
       height: 1.2em;
       margin-right: 0.25em;

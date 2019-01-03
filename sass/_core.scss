@@ -127,11 +127,8 @@ body.converse-fullscreen {
         display: inline-flex;
         align-items: flex-end;
         font-family: var(--branding-font);
-        &:hover {
-            .brand-name {
-                color: var(--link-color);
-            }
-        }
+        color: var(--link-color);
+
         .converse-svg-logo {
             height: 1.2em;
             margin-right: 0.25em;

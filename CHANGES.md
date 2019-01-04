@@ -1,5 +1,12 @@
 # Changelog
 
+## 5.0.0 (Unreleased)
+
+- New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton).
+  By setting this option to `false` and `view_mode` to `'embedded'`, it's now possible to
+  "embed" the full app and not just a single chat. To embed just a single chat,
+  it's now necessary to explicitly set `singleton` to `true`.
+
 ## 4.0.7 (Unreleased)
 
 - Bugfix: MUC commands were being ignored

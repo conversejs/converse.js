@@ -688,7 +688,7 @@ converse.plugins.add('converse-rosterview', {
 
             async toggle (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                const icon_el = ev.target.querySelector('.fa');
+                const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
                 if (_.includes(icon_el.classList, "fa-caret-down")) {
                     this.model.save({state: _converse.CLOSED});
                     await this.collapse();

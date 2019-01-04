@@ -1,9 +1,7 @@
 $mobile_landscape_height: 450px !default;
 $mobile_portrait_length: 480px !default;
 
-$font-path: "webfonts/icomoon/fonts/" !default;
-
-#conversejs, .converse-content {
+#conversejs, #conversejs-bg, .converse-fullscreen {
     --subdued-color: #A8ABA1;
     --subdued-color-lighten-25-percent: #e6e7e4; // lighten(#A8ABA1, 25%)
 
@@ -21,7 +19,7 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     --link-color-darken-20-percent: #345566; // darken($light-blue, 20%)
     --link-color-lighten-10-percent: #79a5ba; // lighten($light-blue, 10%)
     --dark-link-color: #206485; // $dark-blue
-    --global-background-color: #578EA9; // $light-blue
+    --global-background-color: #397491; // dark blue
 
     --inverse-link-color: white;
     --text-shadow-color: #FAFAFA;
@@ -82,7 +80,7 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     --controlbox-head-color-lighten-45-percent: #eff4f7; // lighten($light-blue, 45%)
     --controlbox-pane-background-color: white;
     --controlbox-heading-color: inherit;
-    --controlbox-heading-font-weight: normal;
+    --controlbox-heading-font-weight: bold;
 
     --chat-gutter: 0.5em;
     --minimized-chats-width: 130px;
@@ -94,7 +92,8 @@ $font-path: "webfonts/icomoon/fonts/" !default;
     // --font-path: "webfonts/icomoon/fonts/";
 
     --normal-font: "Helvetica", "Arial", sans-serif;
-    --heading-font: futura, 'Century Gothic', 'URW Gothic L', Verdana, sans-serif;
+    --heading-font: 'Muli', normal;
+    --branding-font: 'Baumans', cursive;
     --heading-display: block;
     --heading-color: white;
 

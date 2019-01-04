@@ -99,7 +99,6 @@ converse.plugins.add('converse-muc-views', {
         // configuration settings.
         _converse.api.settings.update({
             'auto_list_rooms': false,
-            'hide_muc_server': false, // TODO: no longer implemented...
             'muc_disable_moderator_commands': false,
             'visible_toolbar_buttons': {
                 'toggle_occupants': true
@@ -797,6 +796,13 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
+            destroy (groupchat, reason, onSuccess, onError) {
+                const destroy = $build("destroy");
+                const iq = $iq({to: groupchat, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_OWNER}).cnode(destroy.node);
+                if (reason && reason.length > 0) { iq.c("reason", reason); }
+                return _converse.api.sendIQ(iq);
+            },
+
             modifyRole (groupchat, nick, role, reason, onSuccess, onError) {
                 const item = $build("item", {nick, role});
                 const iq = $iq({to: groupchat, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
@@ -884,12 +890,21 @@ converse.plugins.add('converse-muc-views', {
                                 this.model.get('jid'), args[0], 'participant', args[1],
                                 undefined, this.onCommandError.bind(this));
                         break;
+                    case 'destroy':
+                        if (!this.verifyAffiliations(['owner'])) {
+                            break;
+                        }
+                        this.destroy(this.model.get('jid'), args[0])
+                            .then(() => this.close())
+                            .catch(e => this.onCommandError(e));
+                        break;
                     case 'help':
                         this.showHelpMessages([
                             `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
                             `<strong>/ban</strong>: ${__('Ban user from groupchat')}`,
                             `<strong>/clear</strong>: ${__('Remove messages')}`,
                             `<strong>/deop</strong>: ${__('Change user role to participant')}`,
+                            `<strong>/destroy</strong>: ${__('Destroy room')}`,
                             `<strong>/help</strong>: ${__('Show this menu')}`,
                             `<strong>/kick</strong>: ${__('Kick user from groupchat')}`,
                             `<strong>/me</strong>: ${__('Write in 3rd person')}`,

@@ -12,6 +12,7 @@
 .idea
 .su?
 .sass-cache
+pip-selfcheck.json
 
 3rdparty/libsignal-protocol-javascript/
 *.map

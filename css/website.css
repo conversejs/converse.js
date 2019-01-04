@@ -5067,20 +5067,47 @@ a.text-dark:hover, a.text-dark:focus {
 .invisible {
   visibility: hidden !important; }
 
+.fade-in {
+  opacity: 0;
+  /* make things invisible upon start */
+  -webkit-animation-name: fadein;
+  -moz-animation-name: fadein;
+  animation-name: fadein;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  -webkit-animation-duration: 1s;
+  -moz-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-timing-function: ease;
+  -moz-animation-timing-function: ease;
+  animation-timing-function: ease; }
+
 html {
   width: 100%;
   height: 100%; }
 
 body {
+  webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
   width: 100%;
   height: 100%;
   font-family: "Lora", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #ffffff;
   background-color: #211018; }
 
+::-moz-selection,
+::selection {
+  text-shadow: none;
+  background: #fcfcfc;
+  background: rgba(255, 255, 255, 0.2); }
+
+img::selection,
+img::-moz-selection {
+  background: transparent; }
+
 h1, h2, h3, h4, h5, h6 {
   margin: 0 0 35px;
-  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
+  font-family: 'Muli', sans-serif;
   font-weight: normal;
   letter-spacing: 1px; }
 
@@ -5100,16 +5127,21 @@ a {
   -webkit-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out; }
+  a:hover, a:focus {
+    text-decoration: none;
+    color: #00aaff; }
 
-a:hover, a:focus {
-  text-decoration: none;
-  color: #00aaff; }
+.hidden {
+  display: none !important; }
+
+#about p {
+  opacity: 0.9; }
 
 .light {
   font-weight: 400; }
 
 .navbar {
-  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
+  font-family: 'Muli', sans-serif;
   margin-bottom: 0;
   background: transparent;
   font-size: 95%;
@@ -5208,29 +5240,55 @@ section h4 {
   font-size: 1.5em; }
 
 .brand-heading {
-  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
-  font-weight: normal;
-  font-size: 2em;
-  text-align: center;
-  margin-top: 1.5em; }
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Baumans', cursive;
+  font-size: 6em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  color: white; }
+  .brand-heading .byline {
+    font-family: 'Muli', sans-serif;
+    font-size: 20px;
+    opacity: 0.5;
+    margin-bottom: 2em;
+    margin-left: -75px; }
+  .brand-heading .subdued {
+    opacity: 0.15;
+    font-size: 95%;
+    word-spacing: 50px; }
+  .brand-heading .converse-svg-logo {
+    height: 1.2em;
+    margin-right: 0.25em;
+    margin-bottom: 0.1em; }
+    .brand-heading .converse-svg-logo .cls-1 {
+      isolation: isolate; }
+    .brand-heading .converse-svg-logo .cls-2 {
+      opacity: 0.5;
+      mix-blend-mode: multiply; }
+    .brand-heading .converse-svg-logo .cls-3 {
+      fill: white; }
+    .brand-heading .converse-svg-logo .cls-4 {
+      fill: white; }
 
-.brand-heading .icon-conversejs {
-  font-size: 60%; }
+.brand-heading__text {
+  font-size: 0.9em;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center; }
 
 .brand-heading-embedded {
   margin-top: 1.5em; }
 
-.intro-text {
-  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
-  font-size: 18px; }
-
 @media (min-width: 767px) {
   .intro {
-    padding: 0; }
-  .brand-heading {
-    font-size: 80px; }
-  .intro-text {
-    font-size: 25px; } }
+    padding: 0; } }
+
+.intro-text {
+  font-size: 1.1em;
+  opacity: 0.8;
+  margin-bottom: 0;
+  padding-bottom: 1em; }
 
 .btn-circle {
   width: 70px;
@@ -5275,10 +5333,15 @@ section h4 {
   padding-top: 100px;
   padding-top: 100px;
   min-height: 100vh; }
+  .content-section.account-hosting {
+    font-size: 80%; }
   .content-section .privacy-policy {
     padding-top: 2em; }
     .content-section .privacy-policy h4 {
-      padding-top: 1.5em; }
+      padding: 0;
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+      font-size: 2em; }
     .content-section .privacy-policy p {
       font-size: 1.2em;
       padding-bottom: 0;
@@ -5300,7 +5363,7 @@ section h4 {
     padding: 100px 0; } }
 
 .btn {
-  font-family: Futura,Helvetica,Trebuchet MS,Arial,sans-serif;
+  font-family: 'Muli', sans-serif;
   font-weight: 400;
   -webkit-transition: all 0.3s ease-in-out;
   -moz-transition: all 0.3s ease-in-out;
@@ -5328,25 +5391,6 @@ section h4 {
     padding: 0.15em; }
     .banner-social-buttons a i {
       font-size: 115%; }
-
-::-moz-selection {
-  text-shadow: none;
-  background: #fcfcfc;
-  background: rgba(255, 255, 255, 0.2); }
-
-::selection {
-  text-shadow: none;
-  background: #fcfcfc;
-  background: rgba(255, 255, 255, 0.2); }
-
-img::selection {
-  background: transparent; }
-
-img::-moz-selection {
-  background: transparent; }
-
-body {
-  webkit-tap-highlight-color: rgba(255, 255, 255, 0.2); }
 
 ul.contact,
 ul.integration,

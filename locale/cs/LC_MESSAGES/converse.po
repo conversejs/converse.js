@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-12-19 05:50+0100\n"
-"PO-Revision-Date: 2018-11-22 18:07+0000\n"
+"PO-Revision-Date: 2018-12-25 19:08+0000\n"
 "Last-Translator: Lorem Ipsum <aditoo@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
 "translations/cs/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 3.3-dev\n"
+"X-Generator: Weblate 3.4-dev\n"
 
 #: dist/converse-no-dependencies.js:30588
 #: dist/converse-no-dependencies.js:30645
@@ -626,9 +626,8 @@ msgid "Grant ownership of this groupchat"
 msgstr "Poskytnout vlastnictví tohoto skupinového chatu"
 
 #: dist/converse-no-dependencies.js:36462
-#, fuzzy
 msgid "Register a nickname for this groupchat"
-msgstr "Registrujte si přezdívku pro tuto místnost"
+msgstr "Registrujte si přezdívku pro tento skupinový chat"
 
 #: dist/converse-no-dependencies.js:36462
 msgid "Revoke user's membership"
@@ -897,7 +896,6 @@ msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr "Omlouváme se, při pokusu o odstranění zařízení se vyskytla chyba."
 
 #: dist/converse-no-dependencies.js:38192
-#, fuzzy
 msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
@@ -929,6 +927,8 @@ msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
 msgstr ""
+"Nelze použít šivrování end-to-end, protože %1$s používá klienta, který "
+"nepodporuje OMEMO."
 
 #: dist/converse-no-dependencies.js:39404
 msgid "Your avatar image"
@@ -1398,9 +1398,8 @@ msgid "Click to hide these contacts"
 msgstr "Kliknutím skryjete tyto kontakty"
 
 #: dist/converse-no-dependencies.js:74273
-#, fuzzy
 msgid "This groupchat no longer exists"
-msgstr "Tato místnost již neexistuje"
+msgstr "Tento skupinový chat již neexistuje"
 
 #: dist/converse-no-dependencies.js:74279
 msgid "The conversation has moved. Click below to enter."

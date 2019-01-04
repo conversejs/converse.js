@@ -874,11 +874,9 @@ converse.plugins.add('converse-chatview', {
                 textarea.setAttribute('disabled', 'disabled');
                 if (this.parseMessageForCommands(message) ||
                     await this.model.sendMessage(this.model.getOutgoingMessageAttributes(message, spoiler_hint))) {
-
                     hint_el.value = '';
                     textarea.value = '';
                     u.removeClass('correcting', textarea);
-                    textarea.focus();
                     // Trigger input event, so that the textarea resizes
                     const event = document.createEvent('Event');
                     event.initEvent('input', true, true);
@@ -886,6 +884,7 @@ converse.plugins.add('converse-chatview', {
                     _converse.emit('messageSend', message);
                 }
                 textarea.removeAttribute('disabled');
+                textarea.focus();
                 // Suppress events, otherwise superfluous CSN gets set
                 // immediately after the message, causing rate-limiting issues.
                 this.setChatState(_converse.ACTIVE, {'silent': true});

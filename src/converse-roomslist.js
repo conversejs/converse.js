@@ -212,14 +212,15 @@ converse.plugins.add('converse-roomslist', {
                 u.showElement(this.el);
             },
 
-            openRoom (ev) {
+            async openRoom (ev) {
                 ev.preventDefault();
                 const name = ev.target.textContent;
                 const jid = ev.target.getAttribute('data-room-jid');
                 const data = {
                     'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
                 }
-                _converse.api.rooms.open(jid, data);
+                await _converse.api.rooms.open(jid, data);
+                _converse.api.chatviews.get(jid).focus();
             },
 
             closeRoom (ev) {
@@ -245,7 +246,7 @@ converse.plugins.add('converse-roomslist', {
 
             toggleRoomsList (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                const icon_el = ev.target.querySelector('.fa');
+                const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
                 if (icon_el.classList.contains("fa-caret-down")) {
                     u.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
                         this.list_model.save({'toggle-state': _converse.CLOSED});

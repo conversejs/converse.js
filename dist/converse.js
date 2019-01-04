@@ -48985,7 +48985,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           ev.preventDefault();
         }
 
-        const icon_el = ev.target.querySelector('.fa');
+        const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
 
         if (u.hasClass('fa-caret-down', icon_el)) {
           u.slideIn(this.el.querySelector('.bookmarks'));
@@ -49007,8 +49007,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     });
 
     _converse.checkBookmarksSupport = async function () {
-      const args = await Promise.all([_converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid), _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid)]);
-      return args[0] && (args[1].length || _converse.allow_public_bookmarks);
+      const identity = await _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid);
+
+      if (_converse.allow_public_bookmarks) {
+        return !!identity;
+      } else {
+        const supported = await _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', _converse.bare_jid);
+        return !!supported.length;
+      }
     };
 
     const initBookmarks = async function initBookmarks() {
@@ -49153,13 +49159,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var templates_avatar_svg__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! templates/avatar.svg */ "./src/templates/avatar.svg");
 /* harmony import */ var templates_avatar_svg__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(templates_avatar_svg__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html");
-/* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var templates_background_logo_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/background_logo.html */ "./src/templates/background_logo.html");
+/* harmony import */ var templates_background_logo_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_background_logo_html__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html");
+/* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6__);
 // Converse.js
 // http://conversejs.org
 //
 // Copyright (c) 2012-2018, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
+
 
 
 
@@ -49259,17 +49268,25 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
 
       initialize() {
         this.model.on("destroy", this.removeChat, this);
+        const bg = document.getElementById('conversejs-bg');
+
+        if (bg && !bg.innerHTML.trim()) {
+          bg.innerHTML = templates_background_logo_html__WEBPACK_IMPORTED_MODULE_5___default()();
+        }
+
+        const body = document.querySelector('body');
+        body.classList.add(`converse-${_converse.view_mode}`);
         this.el.classList.add(`converse-${_converse.view_mode}`);
         this.render();
       },
 
       render() {
         try {
-          this.el.innerHTML = templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5___default()();
+          this.el.innerHTML = templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6___default()();
         } catch (e) {
           this._ensureElement();
 
-          this.el.innerHTML = templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_5___default()();
+          this.el.innerHTML = templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6___default()();
         }
 
         this.row_el = this.el.querySelector('.row');
@@ -50254,8 +50271,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         if (this.parseMessageForCommands(message) || (await this.model.sendMessage(this.model.getOutgoingMessageAttributes(message, spoiler_hint)))) {
           hint_el.value = '';
           textarea.value = '';
-          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea);
-          textarea.focus(); // Trigger input event, so that the textarea resizes
+          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea); // Trigger input event, so that the textarea resizes
 
           const event = document.createEvent('Event');
           event.initEvent('input', true, true);
@@ -50264,7 +50280,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           _converse.emit('messageSend', message);
         }
 
-        textarea.removeAttribute('disabled'); // Suppress events, otherwise superfluous CSN gets set
+        textarea.removeAttribute('disabled');
+        textarea.focus(); // Suppress events, otherwise superfluous CSN gets set
         // immediately after the message, causing rate-limiting issues.
 
         this.setChatState(_converse.ACTIVE, {
@@ -53499,8 +53516,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
 
     _converse.api.settings.update({
       'auto_list_rooms': false,
-      'hide_muc_server': false,
-      // TODO: no longer implemented...
       'muc_disable_moderator_commands': false,
       'visible_toolbar_buttons': {
         'toggle_occupants': true
@@ -54236,6 +54251,22 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         }
       },
 
+      destroy(groupchat, reason, onSuccess, onError) {
+        const destroy = $build("destroy");
+        const iq = $iq({
+          to: groupchat,
+          type: "set"
+        }).c("query", {
+          xmlns: Strophe.NS.MUC_OWNER
+        }).cnode(destroy.node);
+
+        if (reason && reason.length > 0) {
+          iq.c("reason", reason);
+        }
+
+        return _converse.api.sendIQ(iq);
+      },
+
       modifyRole(groupchat, nick, role, reason, onSuccess, onError) {
         const item = $build("item", {
           nick,
@@ -54348,8 +54379,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
             this.modifyRole(this.model.get('jid'), args[0], 'participant', args[1], undefined, this.onCommandError.bind(this));
             break;
 
+          case 'destroy':
+            if (!this.verifyAffiliations(['owner'])) {
+              break;
+            }
+
+            this.destroy(this.model.get('jid'), args[0]).then(() => this.close()).catch(e => this.onCommandError(e));
+            break;
+
           case 'help':
-            this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this groupchat")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`]);
+            this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/destroy</strong>: ${__('Destroy room')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this groupchat")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`]);
             break;
 
           case 'kick':
@@ -58864,15 +58903,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         u.showElement(this.el);
       },
 
-      openRoom(ev) {
+      async openRoom(ev) {
         ev.preventDefault();
         const name = ev.target.textContent;
         const jid = ev.target.getAttribute('data-room-jid');
         const data = {
           'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
         };
+        await _converse.api.rooms.open(jid, data);
 
-        _converse.api.rooms.open(jid, data);
+        _converse.api.chatviews.get(jid).focus();
       },
 
       closeRoom(ev) {
@@ -58902,7 +58942,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           ev.preventDefault();
         }
 
-        const icon_el = ev.target.querySelector('.fa');
+        const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
 
         if (icon_el.classList.contains("fa-caret-down")) {
           u.slideIn(this.el.querySelector('.open-rooms-list')).then(() => {
@@ -59737,7 +59777,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           ev.preventDefault();
         }
 
-        const icon_el = ev.target.querySelector('.fa');
+        const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
 
         if (_.includes(icon_el.classList, "fa-caret-down")) {
           this.model.save({
@@ -92079,6 +92119,22 @@ return __p
 
 /***/ }),
 
+/***/ "./src/templates/background_logo.html":
+/*!********************************************!*\
+  !*** ./src/templates/background_logo.html ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
+module.exports = function(o) {
+var __t, __p = '';
+__p += '<!-- src/templates/background_logo.html -->\n<div class="inner-content converse-brand row">\n    <div class="converse-brand__padding"></div>\n    <div class="converse-brand__heading">\n        <svg height="200px"\n            xmlns="http://www.w3.org/2000/svg"\n            xmlns:xlink="http://www.w3.org/1999/xlink"\n            viewBox="0 0 364 364"\n            version="1.1">\n            <title>Logo Converse</title>\n            <defs>\n                <linearGradient id="gradient" x1="92.14" y1="27.64" x2="267.65" y2="331.62" gradientUnits="userSpaceOnUse">\n                    <stop offset="0" stop-color="#fff1d1"/>\n                    <stop offset="0.05" stop-color="#fae8c1"/>\n                    <stop offset="0.15" stop-color="#f0d5a1"/>\n                    <stop offset="0.27" stop-color="#e7c687"/>\n                    <stop offset="0.4" stop-color="#e1bb72"/>\n                    <stop offset="0.54" stop-color="#dcb264"/>\n                    <stop offset="0.71" stop-color="#daad5c"/>\n                    <stop offset="1" stop-color="#d9ac59"/>\n                </linearGradient>\n                <filter id="shadow">\n                    <feGaussianBlur in="SourceAlpha" stdDeviation="2.3" result="blur1"/>\n                    <feOffset in="blur1" dx="3" dy="3" result="blur2"/>\n                    <feColorMatrix in="blur2" type="matrix" result="blur3"\n                        values="1 0 0 0 0.1\n                                0 1 0 0 0.1\n                                0 0 1 0 0.1\n                                0 0 0 1 0"/>\n                    <feMerge>\n                        <feMergeNode in="blur3"/>\n                        <feMergeNode in="SourceGraphic"/>\n                    </feMerge>\n                </filter>\n            </defs>\n            <g filter="url(#shadow)">\n                <path d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" fill="#d9ac59"/>\n                <path d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" fill="url(#gradient)"/>\n            </g>\n        </svg>\n        <span class="converse-brand__text">\n            <span>converse<span class="subdued">.js</span></span>\n            <p class="byline">messaging freedom</p>\n        </span>\n    </div>\n</div>\n';
+return __p
+};
+
+/***/ }),
+
 /***/ "./src/templates/bookmark.html":
 /*!*************************************!*\
   !*** ./src/templates/bookmark.html ***!
@@ -92953,7 +93009,7 @@ __p += '<!-- src/templates/client_info_modal.html -->\n<!-- Change status Modal 
 __e(o.modal_title) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
-'">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <div class="container brand-heading-container">\n                    <h6 class="brand-heading"><i class="icon-conversejs"></i>Converse</h6>\n                    <p class="brand-subtitle">' +
+'">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <div class="container brand-heading-container">\n                    <h6 class="brand-heading">Converse</h6>\n                    <p class="brand-subtitle">' +
 __e(o.version_name) +
 '</p>\n                    <p class="brand-subtitle">' +
 ((__t = (o.first_subtitle)) == null ? '' : __t) +
@@ -93014,7 +93070,7 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '';
-__p += '<!-- src/templates/converse_brand_heading.html -->\n<span class="brand-heading-container">\n    <div class="brand-heading">\n        <a href="https://conversejs.org" target="_blank" rel="noopener">\n            <i class="icon-conversejs"></i><span class="brand-name">converse</span>\n        </a>\n    </div>\n</span>\n';
+__p += '<!-- src/templates/converse_brand_heading.html -->\n<span class="brand-heading-container">\n    <div class="brand-heading">\n        <a href="https://conversejs.org" target="_blank" rel="noopener">\n            <svg class="converse-svg-logo"\n                xmlns:svg="http://www.w3.org/2000/svg"\n                xmlns="http://www.w3.org/2000/svg"\n                xmlns:xlink="http://www.w3.org/1999/xlink"\n                viewBox="0 0 364 364">\n                <title>Converse</title>\n                <g class="cls-1" id="g904">\n                    <g data-name="Layer 2">\n                        <g data-name="Layer 7">\n                            <path\n                                class="cls-3"\n                                d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" />\n                            <path\n                                class="cls-4"\n                                d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" />\n                        </g>\n                    </g>\n                </g>\n            </svg>\n            <span class="brand-name">converse</span>\n        </a>\n    </div>\n</span>\n';
 return __p
 };
 
@@ -93561,7 +93617,7 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/inverse_brand_heading.html -->\n<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse</h1>\n        <p class="brand-subtitle">' +
+__p += '<!-- src/templates/inverse_brand_heading.html -->\n<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading brand-heading--inverse">\n            <svg class="converse-svg-logo"\n                xmlns:svg="http://www.w3.org/2000/svg"\n                xmlns="http://www.w3.org/2000/svg"\n                xmlns:xlink="http://www.w3.org/1999/xlink"\n                viewBox="0 0 364 364">\n                <title>Converse</title>\n                <g class="cls-1" id="g904">\n                    <g data-name="Layer 2">\n                        <g data-name="Layer 7">\n                            <path\n                                class="cls-3"\n                                d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" />\n                            <path\n                                class="cls-4"\n                                d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" />\n                        </g>\n                    </g>\n                </g>\n            </svg>\n            <span class="brand-name">converse</span>\n        </h1>\n        <p class="brand-subtitle">' +
 __e(o.version_name) +
 '</p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client brought to you by <a target="_blank" rel="nofollow" href="https://opkode.com">Opkode</a> </p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> it into your own language</p>\n    </div>\n</div>\n';
 return __p

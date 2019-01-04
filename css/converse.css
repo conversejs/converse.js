@@ -6,6 +6,18 @@
  * Licensed under the Mozilla Public License
  */
 @font-face {
+  font-family: 'Baumans';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Baumans Regular"), local("Baumans-Regular"), url(webfonts/baumans.ttf) format("truetype"); }
+
+@font-face {
+  font-family: 'Muli';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Muli Regular"), local("Muli-Regular"), url(webfonts/muli.ttf) format("truetype"); }
+
+@font-face {
   font-family: 'ConverseFontAwesomeBrands';
   font-style: normal;
   font-weight: normal;
@@ -9287,7 +9299,7 @@ readers do not read off random characters that represent icons */
 #conversejs .invisible {
   visibility: hidden !important; }
 
-#conversejs, .converse-content {
+#conversejs, #conversejs-bg, .converse-fullscreen {
   --subdued-color: #A8ABA1;
   --subdued-color-lighten-25-percent: #e6e7e4;
   --chat-status-online: #3AA569;
@@ -9301,7 +9313,7 @@ readers do not read off random characters that represent icons */
   --link-color-darken-20-percent: #345566;
   --link-color-lighten-10-percent: #79a5ba;
   --dark-link-color: #206485;
-  --global-background-color: #578EA9;
+  --global-background-color: #397491;
   --inverse-link-color: white;
   --text-shadow-color: #FAFAFA;
   --text-color: #666;
@@ -9345,13 +9357,14 @@ readers do not read off random characters that represent icons */
   --controlbox-head-color-lighten-45-percent: #eff4f7;
   --controlbox-pane-background-color: white;
   --controlbox-heading-color: inherit;
-  --controlbox-heading-font-weight: normal;
+  --controlbox-heading-font-weight: bold;
   --chat-gutter: 0.5em;
   --minimized-chats-width: 130px;
   --mobile-chat-width: 100%;
   --mobile-chat-height: 400px;
   --normal-font: "Helvetica", "Arial", sans-serif;
-  --heading-font: futura, 'Century Gothic', 'URW Gothic L', Verdana, sans-serif;
+  --heading-font: 'Muli', normal;
+  --branding-font: 'Baumans', cursive;
   --heading-display: block;
   --heading-color: white;
   --chatroom-head-color: #E77051;
@@ -9467,50 +9480,28 @@ readers do not read off random characters that represent icons */
   --list-item-open-color: #444;
   --list-item-open-hover-color: #444; }
 
-body.reset {
-  margin: 0; }
+body.converse-fullscreen {
+  margin: 0;
+  background-color: var(--global-background-color); }
 
-@font-face {
-  font-family: 'Converse-js';
-  src: url("webfonts/icomoon/fonts/icomoon.eot?wvi0ht");
-  src: url("webfonts/icomoon/fonts/icomoon.eot?wvi0ht#iefix") format("embedded-opentype"), url("webfonts/icomoon/fonts/icomoon.ttf?wvi0ht") format("truetype"), url("webfonts/icomoon/fonts/icomoon.woff?wvi0ht") format("woff"), url("webfonts/icomoon/fonts/icomoon.svg?wvi0ht#icomoon") format("svg");
-  font-weight: normal;
-  font-style: normal; }
-
-.icon-conversejs {
-  padding-right: 0.5em;
-  font-family: 'Converse-js';
-  font-size: 80%;
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; }
-
-.icon-conversejs:before {
-  content: "\e600"; }
-
-.converse-brand {
+#conversejs-bg .converse-brand {
   display: flex;
   justify-content: space-between;
+  margin-top: 15vh;
   -webkit-animation-name: fadein;
   -moz-animation-name: fadein;
   animation-name: fadein;
   -webkit-animation-fill-mode: forwards;
   -moz-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
-  -webkit-animation-duration: 750ms;
-  -moz-animation-duration: 750ms;
-  animation-duration: 750ms;
+  -webkit-animation-duration: 5s;
+  -moz-animation-duration: 5s;
+  animation-duration: 5s;
   -webkit-animation-timing-function: ease;
   -moz-animation-timing-function: ease;
   animation-timing-function: ease; }
 
-.converse-brand__padding {
+#conversejs-bg .converse-brand__padding {
   position: relative;
   width: 100%;
   min-height: 1px;
@@ -9518,59 +9509,63 @@ body.reset {
   padding-left: 15px;
   padding: 0; }
   @media (min-width: 768px) {
-    .converse-brand__padding {
+    #conversejs-bg .converse-brand__padding {
       flex: 0 0 33.33333%;
       max-width: 33.33333%; } }
   @media (min-width: 992px) {
-    .converse-brand__padding {
+    #conversejs-bg .converse-brand__padding {
       flex: 0 0 25%;
       max-width: 25%; } }
   @media (min-width: 1200px) {
-    .converse-brand__padding {
+    #conversejs-bg .converse-brand__padding {
       flex: 0 0 16.66667%;
       max-width: 16.66667%; } }
 
-.converse-brand__heading {
+#conversejs-bg .converse-brand__heading {
   position: relative;
   width: 100%;
   min-height: 1px;
   padding-right: 15px;
   padding-left: 15px;
-  padding: 0; }
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  margin: auto; }
   @media (min-width: 768px) {
-    .converse-brand__heading {
+    #conversejs-bg .converse-brand__heading {
       font-size: 4em;
       flex: 0 0 66.66667%;
       max-width: 66.66667%; } }
   @media (min-width: 992px) {
-    .converse-brand__heading {
+    #conversejs-bg .converse-brand__heading {
       font-size: 5em;
       flex: 0 0 75%;
       max-width: 75%; } }
   @media (min-width: 1200px) {
-    .converse-brand__heading {
+    #conversejs-bg .converse-brand__heading {
       font-size: 6em;
       flex: 0 0 83.33333%;
       max-width: 83.33333%; } }
+  #conversejs-bg .converse-brand__heading svg {
+    margin-top: 0.3em; }
 
-.converse-brand__text {
-  font-family: var(--heading-font);
+#conversejs-bg .converse-brand__text {
+  color: #ffffff;
+  font-family: var(--branding-font);
   font-weight: normal;
-  width: 50%;
-  margin: auto;
-  margin-top: 10%;
-  text-align: center; }
-  .converse-brand__text .icon-conversejs {
-    font-size: 60%; }
-
-.converse-brand__byline {
-  font-size: var(--font-size-small);
-  width: 50%;
-  margin: auto;
-  text-align: center; }
-  .converse-brand__byline a {
-    text-decoration: none;
-    color: var(--chatroom-head-color-lighten-25-percent); }
+  text-align: center;
+  font-size: 140%;
+  margin-left: 0.2em; }
+  #conversejs-bg .converse-brand__text .byline {
+    margin: 0;
+    font-family: var(--heading-font);
+    font-size: 0.3em;
+    opacity: 0.55;
+    margin-bottom: 2em;
+    margin-left: -2.7em;
+    word-spacing: 5px; }
+  #conversejs-bg .converse-brand__text .subdued {
+    opacity: 0.25; }
 
 #conversejs {
   bottom: 0;
@@ -9598,7 +9593,25 @@ body.reset {
     text-align: center; }
   #conversejs .brand-heading {
     font-size: 200%;
-    font-family: var(--heading-font); }
+    display: inline-flex;
+    align-items: flex-end;
+    font-family: var(--branding-font);
+    color: var(--link-color); }
+    #conversejs .brand-heading .converse-svg-logo {
+      height: 1.2em;
+      margin-right: 0.25em;
+      margin-bottom: -0.3em; }
+      #conversejs .brand-heading .converse-svg-logo .cls-1 {
+        isolation: isolate; }
+      #conversejs .brand-heading .converse-svg-logo .cls-2 {
+        opacity: 0.5;
+        mix-blend-mode: multiply; }
+      #conversejs .brand-heading .converse-svg-logo .cls-3 {
+        fill: var(--link-color); }
+      #conversejs .brand-heading .converse-svg-logo .cls-4 {
+        fill: var(--link-color); }
+  #conversejs .brand-heading--inverse .converse-svg-logo {
+    margin-bottom: 0em; }
   #conversejs .popover {
     position: fixed; }
   #conversejs .converse-chatboxes {
@@ -9700,7 +9713,6 @@ body.reset {
     font-weight: normal;
     font-size: 90%; }
   #conversejs .btn {
-    font-family: var(--heading-font);
     font-weight: normal;
     color: #fff; }
     #conversejs .btn .fa, #conversejs .btn .far, #conversejs .btn .fas {
@@ -11926,7 +11938,8 @@ body.reset {
       text-overflow: ellipsis;
       white-space: nowrap;
       font-family: var(--heading-font);
-      font-size: 115%; }
+      font-size: 115%;
+      font-weight: bold; }
       #conversejs .message.chat-msg .chat-msg__heading .chat-msg__author .badge {
         font-size: 80%;
         font-family: var(--normal_font); }

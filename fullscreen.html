@@ -8,19 +8,11 @@
     <script type="text/javascript" src="inverse-analytics.js"></script>
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=5" style="border:0;" alt="" /></p></noscript>
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="css/fullpage.css" />
     <script src="3rdparty/libsignal-protocol.js"></script>
     <script src="dist/converse.js"></script>
 </head>
-<body class="reset">
-    <div class="converse-content" style="display:none">
-        <div class="inner-content converse-brand row">
-            <div class="converse-brand__padding"></div>
-            <div class="converse-brand__heading">
-                <div class="converse-brand__text"><i class="icon-conversejs"></i>Converse</div>
-            </div>
-        </div>
-    </div>
+<body class="converse-fullscreen">
+<div id="conversejs-bg"></div>
 <script>
     /*
     @licstart
@@ -49,7 +41,6 @@
 
     For more information, please refer to <http://unlicense.org/>
     @licend
-
     */
     converse.initialize({
         authentication: 'login',
@@ -58,10 +49,6 @@
         bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
         message_archiving: 'always',
         view_mode: 'fullscreen'
-    }).then(function () {
-        setTimeout(function () {
-            document.querySelector('.converse-content').style = '';
-        }, 1000);
     });
 </script>
 </body>

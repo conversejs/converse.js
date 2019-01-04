@@ -34,7 +34,7 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarTogglerDemo01">
 			<span class="page-scroll">
-				<a class="navbar-brand" href="#intro"><span class="converse-brand-heading"><i class="icon-conversejs"></i>Converse</span></a>
+				<a class="navbar-brand" href="#intro"><span class="converse-brand-heading">Converse</span></a>
 			</span>
 			<ul class="navbar-nav mt-2 mt-lg-0">
 				<!-- Hidden li included to remove active class from about link when scrolled up past about section -->
@@ -69,14 +69,38 @@
     <section id="intro" class="intro" class="container">
         <div class="row">
             <div class="col-md-12 col-md-offset-2">
-                <h1 class="brand-heading converse-brand-heading"><i class="icon-conversejs"></i>Converse</h1>
+                <h1 class="brand-heading fade-in">
+                    <svg class="converse-svg-logo"
+                        xmlns:svg="http://www.w3.org/2000/svg"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        viewBox="0 0 364 364">
+                    <title>Converse</title>
+                    <g class="cls-1" id="g904">
+                        <g data-name="Layer 2">
+                            <g data-name="Layer 7">
+                                <path
+                                    class="cls-3"
+                                    d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" />
+                                <path
+                                    class="cls-4"
+                                    d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" />
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+                <span class="brand-heading__text">
+                    <span>converse<span class="subdued">.js</span></span>
+                    <p class="byline">messaging freedom</p>
+                </span>
+                </h1>
+
                 <p class="intro-text">A free and open-source XMPP chat client in your browser</p>
-                <p>Try out the <a href="/fullscreen.html">fullpage</a> version</p>
-                <p>
+                <p class="intro-text">Try the <a href="/fullscreen.html">fullpage</a> version</p>
+                <p style="padding-top: 1.5em">
                 <a href="https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org"
                    target="_blank" rel="noopener"><img src="https://inverse.chat/badge.svg?room=discuss@conference.conversejs.org"/></a>
                 </p>
-
                 <div class="page-scroll">
                     <a href="#about" class="btn btn-default btn-lg"><span class="btn-text">Learn More</span></a>
                 </div>
@@ -96,19 +120,22 @@
     <section id="about" class="container content-section text-center">
         <div class="row">
             <div class="col-lg-12 col-lg-offset-2">
+                <h2>What is Converse?</h2>
+                <p>Converse is a free and open-source XMPP chat client that runs in a web browser.</p>
+
                 <h2>Converse is easy to set up</h2>
-                <p class="text-left">You can start using it here immediately, or you can <a href="/docs/html/index.html">integrate it into your own website</a>.</p>
-                <p class="text-left">Take a look at the <a href="/demo">demo page</a> for other examples of how Converse can be configured and used.</a>
-                <p class="text-left">You can connect to any publically accessible <a href="https://xmpp.org" target="_blank" rel="noopener">XMPP/Jabber</a> server.</p>
+                <p>You can use it here, host it yourself, or <a href="/docs/html/index.html">integrate it into your own website</a>.
+                   It's possible to connect to any publically accessible <a href="https://xmpp.org" target="_blank" rel="noopener">XMPP/Jabber</a> server.
+                   Take a look at the <a href="/demo">demo page</a> for other examples of how Converse can be configured and used.</a>
+                </p>
 
                 <h3>Need an XMPP/Jabber account?</h3>
-                <p class="text-left">No problem! With Converse you can register an account on any public XMPP server that allows in-band registration,
+                <p>No problem! With Converse you can register an account on any public XMPP server that allows in-band registration,
 				   including our own at <span style="color: #89B7CD">conversejs.org</span>.</p>
 
                 <h2>Converse is a community</h2>
-				<p class="text-left">Over 130 people have contributed features, bugfixes and translations, and many more have integrated it into their own websites or applications.</p>
-				<p class="text-left">Come and chat with us at <a href="https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org" class="xmpp JSnocheck" title="Converse chat room">discuss@conference.conversejs.org</a>.</p>
-
+				<p>Over 130 people have contributed features, bugfixes and translations, and many more have integrated it into their own websites or applications.</p>
+				<p>Come and chat with us at <a href="https://inverse.chat/#converse/room?jid=discuss@conference.conversejs.org" class="xmpp JSnocheck" title="Converse chat room">discuss@conference.conversejs.org</a>.</p>
             </div>
         </div>
     </section>
@@ -232,16 +259,13 @@
                        <a href="https://liberapay.com/jcbrand" target="_blank" rel="noopener">Liberapay</a> or
                        <a href="https://opkode.com/contact.html" target="_blank" rel="noopener">contact us</a>.
                     </p>
-                    <p>Sponsorships of €50 or more will appear on this website and the online
-                       <a href="/docs/html/index.html">Converse documentation</a>.
-                    </p>
                 </div>
             </div>
         </div>
     </section>
 </body>
 
-    <section class="outro content-section text-center" id="hosting">
+    <section class="outro account-hosting content-section text-center" id="hosting">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 col-lg-offset-2" style="margin-top: 3em">

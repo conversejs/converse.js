@@ -1,4 +1,18 @@
 @font-face {
+  font-family: 'Baumans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Baumans Regular'), local('Baumans-Regular'), url(webfonts/baumans.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Muli';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Muli Regular'), local('Muli-Regular'), url(webfonts/muli.ttf) format('truetype');
+}
+
+@font-face {
   font-family: 'ConverseFontAwesomeBrands';
   font-style: normal;
   font-weight: normal;

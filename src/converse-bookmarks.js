@@ -507,7 +507,7 @@ converse.plugins.add('converse-bookmarks', {
 
             toggleBookmarksList (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
-                const icon_el = ev.target.querySelector('.fa');
+                const icon_el = ev.target.matches('.fa') ? ev.target : ev.target.querySelector('.fa');
                 if (u.hasClass('fa-caret-down', icon_el)) {
                     u.slideIn(this.el.querySelector('.bookmarks'));
                     this.list_model.save({'toggle-state': _converse.CLOSED});
@@ -523,11 +523,13 @@ converse.plugins.add('converse-bookmarks', {
         });
 
         _converse.checkBookmarksSupport = async function () {
-            const args = await Promise.all([
-                _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid),
-                _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid)
-            ]);
-            return args[0] && (args[1].length || _converse.allow_public_bookmarks);
+            const identity = await _converse.api.disco.getIdentity('pubsub', 'pep', _converse.bare_jid);
+            if (_converse.allow_public_bookmarks) {
+                return !!identity;
+            } else {
+                const supported = await _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid);
+                return !!supported.length;
+            }
         }
 
         const initBookmarks = async function () {

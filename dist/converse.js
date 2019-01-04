@@ -58903,15 +58903,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         u.showElement(this.el);
       },
 
-      openRoom(ev) {
+      async openRoom(ev) {
         ev.preventDefault();
         const name = ev.target.textContent;
         const jid = ev.target.getAttribute('data-room-jid');
         const data = {
           'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
         };
+        await _converse.api.rooms.open(jid, data);
 
-        _converse.api.rooms.open(jid, data);
+        _converse.api.chatviews.get(jid).focus();
       },
 
       closeRoom(ev) {

@@ -350,7 +350,7 @@
 
             spyOn(_converse.connection, 'send');
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.connection.send.calls.count());
+            await test_utils.waitUntil(() => _converse.connection.send.calls.count(), 1000);
             const sent_stanza = _converse.connection.send.calls.all()[0].args[0];
 
             expect(Strophe.serialize(sent_stanza)).toBe(

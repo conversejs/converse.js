@@ -61826,10 +61826,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       },
 
       validate(attrs, options) {
-        const _converse = this.__super__._converse;
-
         if (!attrs.jid) {
           return 'Ignored ChatBox without JID';
+        }
+
+        const auto_join = _converse.auto_join_private_chats.concat(_converse.auto_join_rooms);
+
+        if (_converse.singleton && !_.includes(auto_join, attrs.jid)) {
+          return "Ignored ChatBox that's not being auto joined in singleton mode";
         }
       },
 
@@ -62256,11 +62260,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
       onChatBoxesFetched(collection) {
         /* Show chat boxes upon receiving them from sessionStorage */
+        const to_destroy = [];
         collection.each(chatbox => {
-          if (this.chatBoxMayBeShown(chatbox)) {
+          if (!chatbox.isValid()) {
+            to_destroy.push(chatbox);
+          } else if (this.chatBoxMayBeShown(chatbox)) {
             chatbox.trigger('show');
           }
         });
+        to_destroy.forEach(c => c.destroy());
 
         _converse.emit('chatBoxesFetched');
       },
@@ -62270,7 +62278,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         this.registerMessageHandler();
         this.fetch({
           'add': true,
-          'success': this.onChatBoxesFetched.bind(this)
+          'success': c => this.onChatBoxesFetched(c)
         });
       },
 

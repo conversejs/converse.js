@@ -277,9 +277,12 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             validate (attrs, options) {
-                const { _converse } = this.__super__;
                 if (!attrs.jid) {
                     return 'Ignored ChatBox without JID';
+                }
+                const auto_join = _converse.auto_join_private_chats.concat(_converse.auto_join_rooms);
+                if (_converse.singleton && !_.includes(auto_join, attrs.jid)) {
+                    return "Ignored ChatBox that's not being auto joined in singleton mode";
                 }
             },
 
@@ -662,11 +665,15 @@ converse.plugins.add('converse-chatboxes', {
 
             onChatBoxesFetched (collection) {
                 /* Show chat boxes upon receiving them from sessionStorage */
+                const to_destroy = [];
                 collection.each(chatbox => {
-                    if (this.chatBoxMayBeShown(chatbox)) {
+                    if (!chatbox.isValid()) {
+                        to_destroy.push(chatbox);
+                    } else if (this.chatBoxMayBeShown(chatbox)) {
                         chatbox.trigger('show');
                     }
                 });
+                to_destroy.forEach(c => c.destroy());
                 _converse.emit('chatBoxesFetched');
             },
 
@@ -676,7 +683,7 @@ converse.plugins.add('converse-chatboxes', {
                 this.registerMessageHandler();
                 this.fetch({
                     'add': true,
-                    'success': this.onChatBoxesFetched.bind(this)
+                    'success': c => this.onChatBoxesFetched(c)
                 });
             },
 

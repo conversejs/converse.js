@@ -1138,7 +1138,7 @@ converse.plugins.add('converse-muc', {
 
                 _.forEach(_.filter(vcards, undefined), (vcard) => {
                     if (hash && vcard.get('image_hash') !== hash) {
-                        _converse.api.vcard.update(vcard);
+                        _converse.api.vcard.update(vcard, true);
                     }
                 });
             },

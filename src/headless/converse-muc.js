@@ -441,7 +441,7 @@ converse.plugins.add('converse-muc', {
                  * as taken from the 'chat_state' attribute of the chat box.
                  * See XEP-0085 Chat State Notifications.
                  */
-                if (this.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
+                if (!_converse.send_chat_state_notifications || this.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                     return;
                 }
                 const chat_state = this.get('chat_state');

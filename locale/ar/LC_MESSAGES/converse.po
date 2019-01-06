@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-12-19 05:50+0100\n"
-"PO-Revision-Date: 2018-11-27 16:07+0000\n"
+"PO-Revision-Date: 2019-01-07 18:06+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
 "translations/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 3.3-dev\n"
+"X-Generator: Weblate 3.4-dev\n"
 
 #: dist/converse-no-dependencies.js:30588
 #: dist/converse-no-dependencies.js:30645
@@ -617,9 +617,8 @@ msgid "Grant ownership of this groupchat"
 msgstr "منح صفة ملكية فريق المحادثة للمستخدِم"
 
 #: dist/converse-no-dependencies.js:36462
-#, fuzzy
 msgid "Register a nickname for this groupchat"
-msgstr "قم بتسجيل اسم مستعار على هذه الغرفة"
+msgstr "قم بتسجيل اسم مستعار خاص بفريق المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:36462
 msgid "Revoke user's membership"
@@ -1034,9 +1033,8 @@ msgid "Log out"
 msgstr "الخروج"
 
 #: dist/converse-no-dependencies.js:39570
-#, fuzzy
 msgid "Show details about this chat client"
-msgstr "عرض المزيد مِن التفاصيل عن فريق المحادثة هذا"
+msgstr "عرض المزيد مِن التفاصيل عن برنامج المحادثة هذا"
 
 #: dist/converse-no-dependencies.js:39571
 msgid "Your profile"
@@ -1257,9 +1255,8 @@ msgid "Add a contact"
 msgstr "إضافة مراسل"
 
 #: dist/converse-no-dependencies.js:41828
-#, fuzzy
 msgid "Re-sync your contacts"
-msgstr "جهات إتصالي"
+msgstr "أعد مزامنة قائمة مراسليك"
 
 #: dist/converse-no-dependencies.js:43606
 msgid "Sorry, could not determine upload URL."
@@ -1344,7 +1341,6 @@ msgid "Error: the groupchat %1$s does not exist."
 msgstr "فريق المحادثة هذا ليس له وُجود بعد."
 
 #: dist/converse-no-dependencies.js:49459
-#, fuzzy
 msgid "Sorry, you're not allowed to register in this groupchat"
 msgstr "المعذرة، لا يُسمح لك بتسجيل نفسك في فريق المحادثة هذا"
 
@@ -1362,9 +1358,8 @@ msgid "Click to hide these contacts"
 msgstr "أْنقُر لإخفاء هؤلاء المراسلين"
 
 #: dist/converse-no-dependencies.js:74273
-#, fuzzy
 msgid "This groupchat no longer exists"
-msgstr "فريق المحادثة هذا ليس له وُجود بعد."
+msgstr "فريق المحادثة هذا لم يعد موجودا"
 
 #: dist/converse-no-dependencies.js:74279
 msgid "The conversation has moved. Click below to enter."
@@ -1643,33 +1638,28 @@ msgid "The User's Profile Image"
 msgstr "الصورة الشخصية للمستخدم"
 
 #: dist/converse-no-dependencies.js:76875
-#, fuzzy
 msgid "Full Name:"
-msgstr "الإسم الكامل"
+msgstr "الإسم الكامل:"
 
 #: dist/converse-no-dependencies.js:76881
-#, fuzzy
 msgid "XMPP Address:"
-msgstr "عنوان XMPP"
+msgstr "عنوان XMPP:"
 
 #: dist/converse-no-dependencies.js:76889
-#, fuzzy
 msgid "Nickname:"
-msgstr "الإسم المُستعار"
+msgstr "الإسم المُستعار:"
 
 #: dist/converse-no-dependencies.js:76897
 msgid "URL:"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:76907
-#, fuzzy
 msgid "Email:"
-msgstr "البريد الإلكتروني"
+msgstr "البريد الإلكتروني:"
 
 #: dist/converse-no-dependencies.js:76917
-#, fuzzy
 msgid "Role:"
-msgstr "الدور"
+msgstr "الدور:"
 
 #: dist/converse-no-dependencies.js:76925
 msgid "OMEMO Fingerprints"

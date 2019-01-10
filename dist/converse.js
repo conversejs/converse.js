@@ -64630,25 +64630,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         this.items.fetch();
       },
 
-      getIdentity(category, type) {
+      async getIdentity(category, type) {
         /* Returns a Promise which resolves with a map indicating
-         * whether a given identity is provided.
+         * whether a given identity is provided by this entity.
          *
          * Parameters:
          *    (String) category - The identity category
          *    (String) type - The identity type
          */
-        const entity = this;
-        return new Promise((resolve, reject) => {
-          function fulfillPromise() {
-            const model = entity.identities.findWhere({
-              'category': category,
-              'type': type
-            });
-            resolve(model);
-          }
-
-          entity.waitUntilFeaturesDiscovered.then(fulfillPromise).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        await this.waitUntilFeaturesDiscovered;
+        return this.identities.findWhere({
+          'category': category,
+          'type': type
         });
       },
 
@@ -66590,26 +66583,26 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         return this.getRoomFeatures();
       },
 
-      async getRoomIdentity() {
-        const _ref = await Promise.all([_converse.api.disco.getIdentity('conference', 'text', this.get('jid')), _converse.api.disco.getFields(this.get('jid'))]),
-              _ref2 = _slicedToArray(_ref, 2),
-              identity = _ref2[0],
-              fields = _ref2[1];
+      async getRoomFeatures() {
+        let identity;
 
+        try {
+          identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid'));
+        } catch (e) {
+          // Getting the identity probably failed because this room doesn't exist yet.
+          return _converse.log(e, Strophe.LogLevel.ERROR);
+        }
+
+        const fields = await _converse.api.disco.getFields(this.get('jid'));
         this.save({
           'name': identity && identity.get('name'),
           'description': _.get(fields.findWhere({
             'var': "muc#roominfo_description"
           }), 'attributes.value')
         });
-      },
+        const features = await _converse.api.disco.getFeatures(this.get('jid'));
 
-      async getRoomFeatures() {
-        // XXX: not sure whet the right place is to get the room identitiy
-        this.getRoomIdentity();
-
-        const features = await _converse.api.disco.getFeatures(this.get('jid')),
-              attrs = _.extend(_.zipObject(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.map(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.stubFalse)), {
+        const attrs = _.extend(_.zipObject(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.map(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.stubFalse)), {
           'fetched': moment().format()
         });
 

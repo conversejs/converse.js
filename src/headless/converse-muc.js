@@ -502,26 +502,25 @@ converse.plugins.add('converse-muc', {
                 return this.getRoomFeatures();
             },
 
-            async getRoomIdentity () {
-                const [identity, fields] = await Promise.all([
-                    _converse.api.disco.getIdentity('conference', 'text', this.get('jid')),
-                    _converse.api.disco.getFields(this.get('jid'))
-                ]);
+            async getRoomFeatures () {
+                let identity;
+                try {
+                    identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid'));
+                } catch (e) {
+                    // Getting the identity probably failed because this room doesn't exist yet.
+                    return _converse.log(e, Strophe.LogLevel.ERROR);
+                }
+                const fields = await _converse.api.disco.getFields(this.get('jid'));
                 this.save({
                     'name': identity && identity.get('name'),
                     'description': _.get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value')
                 });
-            },
 
-            async getRoomFeatures () {
-                // XXX: not sure whet the right place is to get the room identitiy
-                this.getRoomIdentity();
-                const features = await _converse.api.disco.getFeatures(this.get('jid')),
-                      attrs = _.extend(
-                            _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)),
-                            {'fetched': moment().format()}
-                      );
-
+                const features = await _converse.api.disco.getFeatures(this.get('jid'));
+                const attrs = _.extend(
+                    _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)),
+                    {'fetched': moment().format()}
+                );
                 features.each(feature => {
                     const fieldname = feature.get('var');
                     if (!fieldname.startsWith('muc_')) {

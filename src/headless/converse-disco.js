@@ -64,26 +64,18 @@ converse.plugins.add('converse-disco', {
                 this.items.fetch();
             },
 
-            getIdentity (category, type) {
+            async getIdentity (category, type) {
                 /* Returns a Promise which resolves with a map indicating
-                 * whether a given identity is provided.
+                 * whether a given identity is provided by this entity.
                  *
                  * Parameters:
                  *    (String) category - The identity category
                  *    (String) type - The identity type
                  */
-                const entity = this;
-                return new Promise((resolve, reject) => {
-                    function fulfillPromise () {
-                        const model = entity.identities.findWhere({
-                            'category': category,
-                            'type': type
-                        });
-                        resolve(model);
-                    }
-                    entity.waitUntilFeaturesDiscovered
-                        .then(fulfillPromise)
-                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                await this.waitUntilFeaturesDiscovered;
+                return this.identities.findWhere({
+                    'category': category,
+                    'type': type
                 });
             },
 
@@ -138,8 +130,8 @@ converse.plugins.add('converse-disco', {
                 try {
                     const stanza = await _converse.api.disco.info(this.get('jid'), null);
                     this.onInfo(stanza);
-                } catch(iq) {
-                    this.waitUntilFeaturesDiscovered.resolve(this);
+                } catch (iq) {
+                    this.waitUntilFeaturesDiscovered.reject(iq);
                     _converse.log(iq, Strophe.LogLevel.ERROR);
                 }
             },

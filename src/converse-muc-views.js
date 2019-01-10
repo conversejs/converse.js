@@ -236,7 +236,7 @@ converse.plugins.add('converse-muc-views', {
         function toggleRoomInfo (ev) {
             /* Show/hide extra information about a groupchat in a listing. */
             const parent_el = u.ancestor(ev.target, '.room-item'),
-                    div_el = parent_el.querySelector('div.room-info');
+                  div_el = parent_el.querySelector('div.room-info');
             if (div_el) {
                 u.slideIn(div_el).then(u.removeElement)
                 parent_el.querySelector('a.room-info').classList.remove('selected');
@@ -439,9 +439,10 @@ converse.plugins.add('converse-muc-views', {
                     this.model.toJSON(), {
                         '_': _,
                         '__': __,
-                        'topic': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {'whiteList': {}})),
                         'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
-                        'num_occupants': this.model.occupants.length
+                        'features': this.model.features.toJSON(),
+                        'num_occupants': this.model.occupants.length,
+                        'topic': u.addHyperlinks(xss.filterXSS(_.get(this.model.get('subject'), 'text'), {'whiteList': {}}))
                     })
                 );
             }
@@ -1831,12 +1832,7 @@ converse.plugins.add('converse-muc-views', {
                 this.chatroomview = this.model.chatroomview;
                 this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
                 this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
-                this.chatroomview.model.on('change', () => {
-                    if (_.intersection(converse.ROOM_FEATURES, Object.keys(this.chatroomview.model.changed)).length === 0) {
-                        return;
-                    }
-                    this.renderRoomFeatures();
-                }, this);
+                this.chatroomview.model.features.on('change', this.renderRoomFeatures, this);
 
                 this.render();
                 this.model.fetch({
@@ -1882,16 +1878,15 @@ converse.plugins.add('converse-muc-views', {
             },
 
             renderRoomFeatures () {
-                const picks = _.pick(this.chatroomview.model.attributes, converse.ROOM_FEATURES),
-                    iteratee = (a, v) => a || v,
-                    el = this.el.querySelector('.chatroom-features');
+                const features = this.chatroomview.model.features,
+                      picks = _.pick(features.attributes, converse.ROOM_FEATURES),
+                      iteratee = (a, v) => a || v;
 
-                el.innerHTML = tpl_chatroom_features(
-                        _.extend(this.chatroomview.model.toJSON(), {
-                            '__': __,
-                            'has_features': _.reduce(_.values(picks), iteratee)
-                        }));
-                this.setOccupantsHeight();
+                if (_.reduce(_.values(picks), iteratee)) {
+                    const el = this.el.querySelector('.chatroom-features');
+                    el.innerHTML = tpl_chatroom_features(_.extend(features.toJSON(), {__}));
+                    this.setOccupantsHeight();
+                }
                 return this;
             },
 

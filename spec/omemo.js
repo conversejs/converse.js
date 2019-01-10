@@ -1254,13 +1254,13 @@
 
             // Test that the button gets disabled when the room becomes
             // anonymous or semi-anonymous
-            view.model.save({'nonanonymous': false, 'semianonymous': true});
+            view.model.features.save({'nonanonymous': false, 'semianonymous': true});
             await test_utils.waitUntil(() => !view.model.get('omemo_supported'));
             toggle = toolbar.querySelector('.toggle-omemo');
             expect(_.isNull(toggle)).toBe(true);
             expect(view.model.get('omemo_supported')).toBe(false);
 
-            view.model.save({'nonanonymous': true, 'semianonymous': false});
+            view.model.features.save({'nonanonymous': true, 'semianonymous': false});
             await test_utils.waitUntil(() => view.model.get('omemo_supported'));
             toggle = toolbar.querySelector('.toggle-omemo');
             expect(_.isNull(toggle)).toBe(false);
@@ -1269,12 +1269,12 @@
             expect(u.hasClass('disabled', toggle)).toBe(false);
 
             // Test that the button gets disabled when the room becomes open
-            view.model.save({'membersonly': false, 'open': true});
+            view.model.features.save({'membersonly': false, 'open': true});
             await test_utils.waitUntil(() => !view.model.get('omemo_supported'));
             toggle = toolbar.querySelector('.toggle-omemo');
             expect(_.isNull(toggle)).toBe(true);
 
-            view.model.save({'membersonly': true, 'open': false});
+            view.model.features.save({'membersonly': true, 'open': false});
             await test_utils.waitUntil(() => view.model.get('omemo_supported'));
             toggle = toolbar.querySelector('.toggle-omemo');
             expect(_.isNull(toggle)).toBe(false);

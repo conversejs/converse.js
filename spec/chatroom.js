@@ -2141,13 +2141,13 @@
                 let view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 await test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
                 view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
-                expect(view.model.get('features_fetched')).toBeTruthy();
-                expect(view.model.get('passwordprotected')).toBe(true);
-                expect(view.model.get('hidden')).toBe(true);
-                expect(view.model.get('temporary')).toBe(true);
-                expect(view.model.get('open')).toBe(true);
-                expect(view.model.get('unmoderated')).toBe(true);
-                expect(view.model.get('nonanonymous')).toBe(true);
+                expect(view.model.features.get('fetched')).toBeTruthy();
+                expect(view.model.features.get('passwordprotected')).toBe(true);
+                expect(view.model.features.get('hidden')).toBe(true);
+                expect(view.model.features.get('temporary')).toBe(true);
+                expect(view.model.features.get('open')).toBe(true);
+                expect(view.model.features.get('unmoderated')).toBe(true);
+                expect(view.model.features.get('nonanonymous')).toBe(true);
                 done();
             }));
 
@@ -2172,19 +2172,19 @@
                 let features_list = chatroomview.el.querySelector('.features-list');
                 let features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
                 expect(_.difference(["Password protected", "Open", "Temporary", "Not anonymous", "Not moderated"], features_shown).length).toBe(0);
-                expect(chatroomview.model.get('hidden')).toBe(false);
-                expect(chatroomview.model.get('mam_enabled')).toBe(false);
-                expect(chatroomview.model.get('membersonly')).toBe(false);
-                expect(chatroomview.model.get('moderated')).toBe(false);
-                expect(chatroomview.model.get('nonanonymous')).toBe(true);
-                expect(chatroomview.model.get('open')).toBe(true);
-                expect(chatroomview.model.get('passwordprotected')).toBe(true);
-                expect(chatroomview.model.get('persistent')).toBe(false);
-                expect(chatroomview.model.get('publicroom')).toBe(true);
-                expect(chatroomview.model.get('semianonymous')).toBe(false);
-                expect(chatroomview.model.get('temporary')).toBe(true);
-                expect(chatroomview.model.get('unmoderated')).toBe(true);
-                expect(chatroomview.model.get('unsecured')).toBe(false);
+                expect(chatroomview.model.features.get('hidden')).toBe(false);
+                expect(chatroomview.model.features.get('mam_enabled')).toBe(false);
+                expect(chatroomview.model.features.get('membersonly')).toBe(false);
+                expect(chatroomview.model.features.get('moderated')).toBe(false);
+                expect(chatroomview.model.features.get('nonanonymous')).toBe(true);
+                expect(chatroomview.model.features.get('open')).toBe(true);
+                expect(chatroomview.model.features.get('passwordprotected')).toBe(true);
+                expect(chatroomview.model.features.get('persistent')).toBe(false);
+                expect(chatroomview.model.features.get('publicroom')).toBe(true);
+                expect(chatroomview.model.features.get('semianonymous')).toBe(false);
+                expect(chatroomview.model.features.get('temporary')).toBe(true);
+                expect(chatroomview.model.features.get('unmoderated')).toBe(true);
+                expect(chatroomview.model.features.get('unsecured')).toBe(false);
                 expect(chatroomview.el.querySelector('.chat-title').textContent.trim()).toBe('Room');
 
                 chatroomview.el.querySelector('.configure-chatroom-button').click();
@@ -2304,7 +2304,7 @@
                     'muc_passwordprotected',
                     'muc_hidden',
                     'muc_temporary',
-                    'muc_open',
+                    'muc_membersonly',
                     'muc_unmoderated',
                     'muc_nonanonymous'
                 ];
@@ -2316,27 +2316,26 @@
                         .c('value').t('This is the description').up().up()
                     .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
                         .c('value').t(0);
+
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
-                spyOn(chatroomview.occupantsview, 'renderRoomFeatures').and.callThrough();
-
-                await test_utils.waitUntil(() => chatroomview.occupantsview.renderRoomFeatures.calls.count());
+                await test_utils.waitUntil(() => new Promise(success => chatroomview.model.features.on('change', success)));
                 features_list = chatroomview.el.querySelector('.features-list');
                 features_shown = features_list.textContent.split('\n').map(s => s.trim()).filter(s => s);
-                expect(_.difference(["Password protected", "Hidden", "Open", "Temporary", "Not anonymous", "Not moderated"], features_shown).length).toBe(0);
-                expect(chatroomview.model.get('hidden')).toBe(true);
-                expect(chatroomview.model.get('mam_enabled')).toBe(false);
-                expect(chatroomview.model.get('membersonly')).toBe(false);
-                expect(chatroomview.model.get('moderated')).toBe(false);
-                expect(chatroomview.model.get('nonanonymous')).toBe(true);
-                expect(chatroomview.model.get('open')).toBe(true);
-                expect(chatroomview.model.get('passwordprotected')).toBe(true);
-                expect(chatroomview.model.get('persistent')).toBe(false);
-                expect(chatroomview.model.get('publicroom')).toBe(false);
-                expect(chatroomview.model.get('semianonymous')).toBe(false);
-                expect(chatroomview.model.get('temporary')).toBe(true);
-                expect(chatroomview.model.get('unmoderated')).toBe(true);
-                expect(chatroomview.model.get('unsecured')).toBe(false);
+                expect(_.difference(["Password protected", "Hidden", "Members only", "Temporary", "Not anonymous", "Not moderated"], features_shown).length).toBe(0);
+                expect(chatroomview.model.features.get('hidden')).toBe(true);
+                expect(chatroomview.model.features.get('mam_enabled')).toBe(false);
+                expect(chatroomview.model.features.get('membersonly')).toBe(true);
+                expect(chatroomview.model.features.get('moderated')).toBe(false);
+                expect(chatroomview.model.features.get('nonanonymous')).toBe(true);
+                expect(chatroomview.model.features.get('open')).toBe(false);
+                expect(chatroomview.model.features.get('passwordprotected')).toBe(true);
+                expect(chatroomview.model.features.get('persistent')).toBe(false);
+                expect(chatroomview.model.features.get('publicroom')).toBe(false);
+                expect(chatroomview.model.features.get('semianonymous')).toBe(false);
+                expect(chatroomview.model.features.get('temporary')).toBe(true);
+                expect(chatroomview.model.features.get('unmoderated')).toBe(true);
+                expect(chatroomview.model.features.get('unsecured')).toBe(false);
                 expect(chatroomview.el.querySelector('.chat-title').textContent.trim()).toBe('New room name');
                 done();
             }));
@@ -3708,7 +3707,7 @@
                         .c('feature', {'var': 'muc_membersonly'}).up();
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
                 await test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING));
-                expect(view.model.get('membersonly')).toBeTruthy();
+                expect(view.model.features.get('membersonly')).toBeTruthy();
 
                 test_utils.createContacts(_converse, 'current');
 

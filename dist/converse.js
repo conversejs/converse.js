@@ -48817,7 +48817,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       createBookmarksFromStanza(stanza) {
-        const bookmarks = sizzle('items[node="storage:bookmarks"] ' + 'item#current ' + 'storage[xmlns="storage:bookmarks"] ' + 'conference', stanza);
+        const bookmarks = sizzle(`items[node="storage:bookmarks"] item storage[xmlns="storage:bookmarks"] conference`, stanza);
 
         _.forEach(bookmarks, bookmark => {
           const jid = bookmark.getAttribute('jid');
@@ -53857,11 +53857,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         return templates_chatroom_details_modal_html__WEBPACK_IMPORTED_MODULE_9___default()(_.extend(this.model.toJSON(), {
           '_': _,
           '__': __,
+          'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
+          'features': this.model.features.toJSON(),
+          'num_occupants': this.model.occupants.length,
           'topic': u.addHyperlinks(xss__WEBPACK_IMPORTED_MODULE_26___default.a.filterXSS(_.get(this.model.get('subject'), 'text'), {
             'whiteList': {}
-          })),
-          'display_name': __('Groupchat info for %1$s', this.model.getDisplayName()),
-          'num_occupants': this.model.occupants.length
+          }))
         }));
       }
 
@@ -55361,13 +55362,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         this.chatroomview = this.model.chatroomview;
         this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
         this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
-        this.chatroomview.model.on('change', () => {
-          if (_.intersection(_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOM_FEATURES, Object.keys(this.chatroomview.model.changed)).length === 0) {
-            return;
-          }
-
-          this.renderRoomFeatures();
-        }, this);
+        this.chatroomview.model.features.on('change', this.renderRoomFeatures, this);
         this.render();
         this.model.fetch({
           'add': true,
@@ -55409,15 +55404,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       },
 
       renderRoomFeatures() {
-        const picks = _.pick(this.chatroomview.model.attributes, _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOM_FEATURES),
-              iteratee = (a, v) => a || v,
-              el = this.el.querySelector('.chatroom-features');
+        const features = this.chatroomview.model.features,
+              picks = _.pick(features.attributes, _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOM_FEATURES),
+              iteratee = (a, v) => a || v;
 
-        el.innerHTML = templates_chatroom_features_html__WEBPACK_IMPORTED_MODULE_11___default()(_.extend(this.chatroomview.model.toJSON(), {
-          '__': __,
-          'has_features': _.reduce(_.values(picks), iteratee)
-        }));
-        this.setOccupantsHeight();
+        if (_.reduce(_.values(picks), iteratee)) {
+          const el = this.el.querySelector('.chatroom-features');
+          el.innerHTML = templates_chatroom_features_html__WEBPACK_IMPORTED_MODULE_11___default()(_.extend(features.toJSON(), {
+            __
+          }));
+          this.setOccupantsHeight();
+        }
+
         return this;
       },
 
@@ -56448,7 +56446,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       renderOMEMOToolbarButton() {
-        if (this.model.get('membersonly') && this.model.get('nonanonymous')) {
+        if (this.model.features.get('membersonly') && this.model.features.get('nonanonymous')) {
           this.__super__.renderOMEMOToolbarButton.apply(arguments);
         } else {
           const icon = this.el.querySelector('.toggle-omemo');
@@ -57265,7 +57263,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     }
 
     async function onOccupantAdded(chatroom, occupant) {
-      if (occupant.isSelf() || !chatroom.get('nonanonymous') || !chatroom.get('membersonly')) {
+      if (occupant.isSelf() || !chatroom.features.get('nonanonymous') || !chatroom.features.get('membersonly')) {
         return;
       }
 
@@ -57290,7 +57288,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
         await _converse.api.waitUntil('OMEMOInitialized');
-        supported = chatbox.get('nonanonymous') && chatbox.get('membersonly');
+        supported = chatbox.features.get('nonanonymous') && chatbox.features.get('membersonly');
       } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
         supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));
       }
@@ -57303,8 +57301,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
         chatbox.occupants.on('add', o => onOccupantAdded(chatbox, o));
-        chatbox.on('change:nonanonymous', checkOMEMOSupported);
-        chatbox.on('change:membersonly', checkOMEMOSupported);
+        chatbox.features.on('change', () => checkOMEMOSupported(chatbox));
       }
     }));
 
@@ -63515,7 +63512,7 @@ _converse.initialize = function (settings, callback) {
   };
 
   this.initSession = function () {
-    const id = b64_sha1('converse.bosh-session');
+    const id = 'converse.bosh-session';
     _converse.session = new Backbone.Model({
       id
     });
@@ -64633,25 +64630,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         this.items.fetch();
       },
 
-      getIdentity(category, type) {
+      async getIdentity(category, type) {
         /* Returns a Promise which resolves with a map indicating
-         * whether a given identity is provided.
+         * whether a given identity is provided by this entity.
          *
          * Parameters:
          *    (String) category - The identity category
          *    (String) type - The identity type
          */
-        const entity = this;
-        return new Promise((resolve, reject) => {
-          function fulfillPromise() {
-            const model = entity.identities.findWhere({
-              'category': category,
-              'type': type
-            });
-            resolve(model);
-          }
-
-          entity.waitUntilFeaturesDiscovered.then(fulfillPromise).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+        await this.waitUntilFeaturesDiscovered;
+        return this.identities.findWhere({
+          'category': category,
+          'type': type
         });
       },
 
@@ -64712,7 +64702,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
           const stanza = await _converse.api.disco.info(this.get('jid'), null);
           this.onInfo(stanza);
         } catch (iq) {
-          this.waitUntilFeaturesDiscovered.resolve(this);
+          this.waitUntilFeaturesDiscovered.reject(iq);
 
           _converse.log(iq, Strophe.LogLevel.ERROR);
         }
@@ -66188,7 +66178,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
     _converse.ChatRoom = _converse.ChatBox.extend({
       defaults() {
-        return _.assign(_.clone(_converse.ChatBox.prototype.defaults), _.zipObject(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.map(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.stubFalse)), {
+        return _.assign(_.clone(_converse.ChatBox.prototype.defaults), {
           // For group chats, we distinguish between generally unread
           // messages and those ones that specifically mention the
           // user.
@@ -66203,7 +66193,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           'name': '',
           'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
           'description': '',
-          'features_fetched': false,
           'roomconfig': {},
           'type': _converse.CHATROOMS_TYPE,
           'message_type': 'groupchat'
@@ -66214,6 +66203,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         this.constructor.__super__.initialize.apply(this, arguments);
 
         this.on('change:connection_status', this.onConnectionStatusChanged, this);
+
+        const storage = _converse.config.get('storage');
+
+        const id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
+        this.features = new Backbone.Model(_.assign({
+          id
+        }, _.zipObject(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.map(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.stubFalse))));
+        this.features.browserStorage = new Backbone.BrowserStorage.session(id);
+        this.features.fetch();
         this.occupants = new _converse.ChatRoomOccupants();
         this.occupants.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`));
         this.occupants.chatroom = this;
@@ -66342,6 +66340,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          *  (String) exit_msg: Optional message to indicate your
          *      reason for leaving.
          */
+        this.features.destroy();
+
         this.occupants.browserStorage._clear();
 
         this.occupants.reset();
@@ -66584,12 +66584,26 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
       },
 
       async getRoomFeatures() {
-        const features = await _converse.api.disco.getFeatures(this.get('jid')),
-              fields = await _converse.api.disco.getFields(this.get('jid')),
-              identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid')),
-              attrs = _.extend(_.zipObject(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.map(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.stubFalse)), {
-          'features_fetched': moment().format(),
-          'name': identity && identity.get('name')
+        let identity;
+
+        try {
+          identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid'));
+        } catch (e) {
+          // Getting the identity probably failed because this room doesn't exist yet.
+          return _converse.log(e, Strophe.LogLevel.ERROR);
+        }
+
+        const fields = await _converse.api.disco.getFields(this.get('jid'));
+        this.save({
+          'name': identity && identity.get('name'),
+          'description': _.get(fields.findWhere({
+            'var': "muc#roominfo_description"
+          }), 'attributes.value')
+        });
+        const features = await _converse.api.disco.getFeatures(this.get('jid'));
+
+        const attrs = _.extend(_.zipObject(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.map(_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOM_FEATURES, _.stubFalse)), {
+          'fetched': moment().format()
         });
 
         features.each(feature => {
@@ -66605,10 +66619,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
           attrs[fieldname.replace('muc_', '')] = true;
         });
-        attrs.description = _.get(fields.findWhere({
-          'var': "muc#roominfo_description"
-        }), 'attributes.value');
-        this.save(attrs);
+        this.features.save(attrs);
       },
 
       requestMemberList(affiliation) {
@@ -67225,12 +67236,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
             this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
           } else if (_converse.muc_instant_rooms) {
             // Accept default configuration
-            this.saveConfiguration().then(() => this.getRoomFeatures());
+            this.saveConfiguration().then(() => this.refreshRoomFeatures());
           } else {
             this.trigger('configurationNeeded');
             return; // We haven't yet entered the groupchat, so bail here.
           }
-        } else if (!this.get('features_fetched')) {
+        } else if (!this.features.get('fetched')) {
           // The features for this groupchat weren't fetched.
           // That must mean it's a new groupchat without locking
           // (in which case Prosody doesn't send a 201 status),
@@ -92568,7 +92579,7 @@ __e(o.num_occupants) +
 '</p>\n                    <p class="room-info"><strong>' +
 __e(o.__('Features')) +
 '</strong>:\n                        <div class="chatroom-features">\n                        <ul class="features-list">\n                        ';
- if (o.passwordprotected) { ;
+ if (o.features.passwordprotected) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-lock"></span>' +
 __e( o.__('Password protected') ) +
 ' - <em>' +
@@ -92576,7 +92587,7 @@ __e( o.__('This groupchat requires a password before entry') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
- if (o.unsecured) { ;
+ if (o.features.unsecured) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-unlock"></span>' +
 __e( o.__('No password required') ) +
 ' - <em>' +
@@ -92584,7 +92595,7 @@ __e( o.__('This groupchat does not require a password upon entry') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
- if (o.hidden) { ;
+ if (o.features.hidden) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-eye-slash"></span>' +
 __e( o.__('Hidden') ) +
 ' - <em>' +
@@ -92592,7 +92603,7 @@ __e( o.__('This groupchat is not publicly searchable') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
- if (o.public_room) { ;
+ if (o.features.public_room) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-eye"></span>' +
 __e( o.__('Public') ) +
 ' - <em>' +
@@ -92600,7 +92611,7 @@ __e( o.__('This groupchat is publicly searchable') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
- if (o.membersonly) { ;
+ if (o.features.membersonly) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-address-book"></span>' +
 __e( o.__('Members only') ) +
 ' - <em>' +
@@ -92608,7 +92619,7 @@ __e( o.__('This groupchat is restricted to members only') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
- if (o.open) { ;
+ if (o.features.open) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-globe"></span>' +
 __e( o.__('Open') ) +
 ' - <em>' +
@@ -92616,7 +92627,7 @@ __e( o.__('Anyone can join this groupchat') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
- if (o.persistent) { ;
+ if (o.features.persistent) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-save"></span>' +
 __e( o.__('Persistent') ) +
 ' - <em>' +
@@ -92624,7 +92635,7 @@ __e( o.__('This groupchat persists even if it\'s unoccupied') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
- if (o.temporary) { ;
+ if (o.features.temporary) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-snowflake-o"></span>' +
 __e( o.__('Temporary') ) +
 ' - <em>' +
@@ -92632,7 +92643,7 @@ __e( o.__('This groupchat will disappear once the last person leaves') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
- if (o.nonanonymous) { ;
+ if (o.features.nonanonymous) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-id-card"></span>' +
 __e( o.__('Not anonymous') ) +
 ' - <em>' +
@@ -92640,7 +92651,7 @@ __e( o.__('All other groupchat participants can see your XMPP username') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
- if (o.semianonymous) { ;
+ if (o.features.semianonymous) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-user-secret"></span>' +
 __e( o.__('Semi-anonymous') ) +
 ' - <em>' +
@@ -92648,7 +92659,7 @@ __e( o.__('Only moderators can see your XMPP username') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
- if (o.moderated) { ;
+ if (o.features.moderated) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-gavel"></span>' +
 __e( o.__('Moderated') ) +
 ' - <em>' +
@@ -92656,7 +92667,7 @@ __e( o.__('Participants entering this groupchat need to request permission to wr
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
- if (o.unmoderated) { ;
+ if (o.features.unmoderated) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-info-circle"></span>' +
 __e( o.__('Not moderated') ) +
 ' - <em>' +
@@ -92664,7 +92675,7 @@ __e( o.__('Participants entering this groupchat can write right away') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
- if (o.mam_enabled) { ;
+ if (o.features.mam_enabled) { ;
 __p += '\n                        <li class="feature" ><span class="fa fa-database"></span>' +
 __e( o.__('Message archiving') ) +
 ' - <em>' +
@@ -92715,13 +92726,9 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/chatroom_features.html -->\n';
- if (o.has_features) { ;
-__p += '\n<p class="occupants-heading">' +
+__p += '<!-- src/templates/chatroom_features.html -->\n<p class="occupants-heading">' +
 __e(o.__('Features')) +
-'</p>\n';
- } ;
-__p += '\n<ul class="features-list">\n';
+'</p>\n<ul class="features-list">\n';
  if (o.passwordprotected) { ;
 __p += '\n<li class="feature" title="' +
 __e( o.__('This groupchat requires a password before entry') ) +
@@ -92781,7 +92788,7 @@ __p += '\n';
  if (o.temporary) { ;
 __p += '\n<li class="feature" title="' +
 __e( o.__('This groupchat will disappear once the last person leaves') ) +
-'"><span class="fa fa-snowflake-o"></span>' +
+'"><span class="fa fa-snowflake"></span>' +
 __e( o.__('Temporary') ) +
 '</li>\n';
  } ;

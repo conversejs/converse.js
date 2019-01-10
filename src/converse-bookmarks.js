@@ -351,12 +351,9 @@ converse.plugins.add('converse-bookmarks', {
 
             createBookmarksFromStanza (stanza) {
                 const bookmarks = sizzle(
-                    'items[node="storage:bookmarks"] '+
-                    'item#current '+
-                    'storage[xmlns="storage:bookmarks"] '+
-                    'conference',
+                    `items[node="storage:bookmarks"] item storage[xmlns="storage:bookmarks"] conference`,
                     stanza
-                )
+                );
                 _.forEach(bookmarks, (bookmark) => {
                     const jid = bookmark.getAttribute('jid');
                     this.create({

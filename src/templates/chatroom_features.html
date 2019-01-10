@@ -1,6 +1,4 @@
-{[ if (o.has_features) { ]}
 <p class="occupants-heading">{{{o.__('Features')}}}</p>
-{[ } ]}
 <ul class="features-list">
 {[ if (o.passwordprotected) { ]}
 <li class="feature" title="{{{ o.__('This groupchat requires a password before entry') }}}"><span class="fa fa-lock"></span>{{{ o.__('Password protected') }}}</li>
@@ -24,7 +22,7 @@
 <li class="feature" title="{{{ o.__('This groupchat persists even if it\'s unoccupied') }}}"><span class="fa fa-save"></span>{{{ o.__('Persistent') }}}</li>
 {[ } ]}
 {[ if (o.temporary) { ]}
-<li class="feature" title="{{{ o.__('This groupchat will disappear once the last person leaves') }}}"><span class="fa fa-snowflake-o"></span>{{{ o.__('Temporary') }}}</li>
+<li class="feature" title="{{{ o.__('This groupchat will disappear once the last person leaves') }}}"><span class="fa fa-snowflake"></span>{{{ o.__('Temporary') }}}</li>
 {[ } ]}
 {[ if (o.nonanonymous) { ]}
 <li class="feature" title="{{{ o.__('All other groupchat participants can see your XMPP username') }}}"><span class="fa fa-id-card"></span>{{{ o.__('Not anonymous') }}}</li>

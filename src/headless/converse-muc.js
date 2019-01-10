@@ -159,9 +159,7 @@ converse.plugins.add('converse-muc', {
 
             defaults () {
                 return _.assign(
-                    _.clone(_converse.ChatBox.prototype.defaults),
-                    _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)),
-                    {
+                    _.clone(_converse.ChatBox.prototype.defaults), {
                       // For group chats, we distinguish between generally unread
                       // messages and those ones that specifically mention the
                       // user.
@@ -177,7 +175,6 @@ converse.plugins.add('converse-muc', {
                       'name': '',
                       'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
                       'description': '',
-                      'features_fetched': false,
                       'roomconfig': {},
                       'type': _converse.CHATROOMS_TYPE,
                       'message_type': 'groupchat'
@@ -188,6 +185,14 @@ converse.plugins.add('converse-muc', {
             initialize() {
                 this.constructor.__super__.initialize.apply(this, arguments);
                 this.on('change:connection_status', this.onConnectionStatusChanged, this);
+
+                const storage = _converse.config.get('storage');
+                const id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
+                this.features = new Backbone.Model(
+                    _.assign({id}, _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)))
+                );
+                this.features.browserStorage = new Backbone.BrowserStorage.session(id);
+                this.features.fetch();
 
                 this.occupants = new _converse.ChatRoomOccupants();
                 this.occupants.browserStorage = new Backbone.BrowserStorage.session(
@@ -304,6 +309,7 @@ converse.plugins.add('converse-muc', {
                  *  (String) exit_msg: Optional message to indicate your
                  *      reason for leaving.
                  */
+                this.features.destroy();
                 this.occupants.browserStorage._clear();
                 this.occupants.reset();
                 if (_converse.disco_entities) {
@@ -496,14 +502,25 @@ converse.plugins.add('converse-muc', {
                 return this.getRoomFeatures();
             },
 
+            async getRoomIdentity () {
+                const [identity, fields] = await Promise.all([
+                    _converse.api.disco.getIdentity('conference', 'text', this.get('jid')),
+                    _converse.api.disco.getFields(this.get('jid'))
+                ]);
+                this.save({
+                    'name': identity && identity.get('name'),
+                    'description': _.get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value')
+                });
+            },
+
             async getRoomFeatures () {
+                // XXX: not sure whet the right place is to get the room identitiy
+                this.getRoomIdentity();
                 const features = await _converse.api.disco.getFeatures(this.get('jid')),
-                      fields = await _converse.api.disco.getFields(this.get('jid')),
-                      identity = await _converse.api.disco.getIdentity('conference', 'text', this.get('jid')),
-                      attrs = _.extend(_.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)), {
-                            'features_fetched': moment().format(),
-                            'name': identity && identity.get('name')
-                      });
+                      attrs = _.extend(
+                            _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)),
+                            {'fetched': moment().format()}
+                      );
 
                 features.each(feature => {
                     const fieldname = feature.get('var');
@@ -515,8 +532,7 @@ converse.plugins.add('converse-muc', {
                     }
                     attrs[fieldname.replace('muc_', '')] = true;
                 });
-                attrs.description = _.get(fields.findWhere({'var': "muc#roominfo_description"}), 'attributes.value');
-                this.save(attrs);
+                this.features.save(attrs);
             },
 
             requestMemberList (affiliation) {
@@ -1053,7 +1069,7 @@ converse.plugins.add('converse-muc', {
                         this.trigger('configurationNeeded');
                         return; // We haven't yet entered the groupchat, so bail here.
                     }
-                } else if (!this.get('features_fetched')) {
+                } else if (!this.features.get('fetched')) {
                     // The features for this groupchat weren't fetched.
                     // That must mean it's a new groupchat without locking
                     // (in which case Prosody doesn't send a 201 status),

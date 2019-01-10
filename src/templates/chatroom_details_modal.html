@@ -18,43 +18,43 @@
                     <p class="room-info"><strong>{{{o.__('Features')}}}</strong>:
                         <div class="chatroom-features">
                         <ul class="features-list">
-                        {[ if (o.passwordprotected) { ]}
+                        {[ if (o.features.passwordprotected) { ]}
                         <li class="feature" ><span class="fa fa-lock"></span>{{{ o.__('Password protected') }}} - <em>{{{ o.__('This groupchat requires a password before entry') }}}</em></li>
                         {[ } ]}
-                        {[ if (o.unsecured) { ]}
+                        {[ if (o.features.unsecured) { ]}
                         <li class="feature" ><span class="fa fa-unlock"></span>{{{ o.__('No password required') }}} - <em>{{{ o.__('This groupchat does not require a password upon entry') }}}</em></li>
                         {[ } ]}
-                        {[ if (o.hidden) { ]}
+                        {[ if (o.features.hidden) { ]}
                         <li class="feature" ><span class="fa fa-eye-slash"></span>{{{ o.__('Hidden') }}} - <em>{{{ o.__('This groupchat is not publicly searchable') }}}</em></li>
                         {[ } ]}
-                        {[ if (o.public_room) { ]}
+                        {[ if (o.features.public_room) { ]}
                         <li class="feature" ><span class="fa fa-eye"></span>{{{ o.__('Public') }}} - <em>{{{ o.__('This groupchat is publicly searchable') }}}</em></li>
                         {[ } ]}
-                        {[ if (o.membersonly) { ]}
+                        {[ if (o.features.membersonly) { ]}
                         <li class="feature" ><span class="fa fa-address-book"></span>{{{ o.__('Members only') }}} - <em>{{{ o.__('This groupchat is restricted to members only') }}}</em></li>
                         {[ } ]}
-                        {[ if (o.open) { ]}
+                        {[ if (o.features.open) { ]}
                         <li class="feature" ><span class="fa fa-globe"></span>{{{ o.__('Open') }}} - <em>{{{ o.__('Anyone can join this groupchat') }}}</em></li>
                         {[ } ]}
-                        {[ if (o.persistent) { ]}
+                        {[ if (o.features.persistent) { ]}
                         <li class="feature" ><span class="fa fa-save"></span>{{{ o.__('Persistent') }}} - <em>{{{ o.__('This groupchat persists even if it\'s unoccupied') }}}</em></li>
                         {[ } ]}
-                        {[ if (o.temporary) { ]}
+                        {[ if (o.features.temporary) { ]}
                         <li class="feature" ><span class="fa fa-snowflake-o"></span>{{{ o.__('Temporary') }}} - <em>{{{ o.__('This groupchat will disappear once the last person leaves') }}}</em></li>
                         {[ } ]}
-                        {[ if (o.nonanonymous) { ]}
+                        {[ if (o.features.nonanonymous) { ]}
                         <li class="feature" ><span class="fa fa-id-card"></span>{{{ o.__('Not anonymous') }}} - <em>{{{ o.__('All other groupchat participants can see your XMPP username') }}}</em></li>
                         {[ } ]}
-                        {[ if (o.semianonymous) { ]}
+                        {[ if (o.features.semianonymous) { ]}
                         <li class="feature" ><span class="fa fa-user-secret"></span>{{{ o.__('Semi-anonymous') }}} - <em>{{{ o.__('Only moderators can see your XMPP username') }}}</em></li>
                         {[ } ]}
-                        {[ if (o.moderated) { ]}
+                        {[ if (o.features.moderated) { ]}
                         <li class="feature" ><span class="fa fa-gavel"></span>{{{ o.__('Moderated') }}} - <em>{{{ o.__('Participants entering this groupchat need to request permission to write') }}}</em></li>
                         {[ } ]}
-                        {[ if (o.unmoderated) { ]}
+                        {[ if (o.features.unmoderated) { ]}
                         <li class="feature" ><span class="fa fa-info-circle"></span>{{{ o.__('Not moderated') }}} - <em>{{{ o.__('Participants entering this groupchat can write right away') }}}</em></li>
                         {[ } ]}
-                        {[ if (o.mam_enabled) { ]}
+                        {[ if (o.features.mam_enabled) { ]}
                         <li class="feature" ><span class="fa fa-database"></span>{{{ o.__('Message archiving') }}} - <em>{{{ o.__('Messages are archived on the server') }}}</em></li>
                         {[ } ]}
                         </ul>

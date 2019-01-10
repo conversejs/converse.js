@@ -446,7 +446,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             renderOMEMOToolbarButton () {
-                if (this.model.get('membersonly') && this.model.get('nonanonymous')) {
+                if (this.model.features.get('membersonly') && this.model.features.get('nonanonymous')) {
                     this.__super__.renderOMEMOToolbarButton.apply(arguments);
                 } else {
                     const icon = this.el.querySelector('.toggle-omemo');
@@ -1137,7 +1137,7 @@ converse.plugins.add('converse-omemo', {
         }
 
         async function onOccupantAdded (chatroom, occupant) {
-            if (occupant.isSelf() || !chatroom.get('nonanonymous') || !chatroom.get('membersonly')) {
+            if (occupant.isSelf() || !chatroom.features.get('nonanonymous') || !chatroom.features.get('membersonly')) {
                 return;
             }
             if (chatroom.get('omemo_active')) {
@@ -1157,7 +1157,7 @@ converse.plugins.add('converse-omemo', {
             let supported;
             if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
                 await _converse.api.waitUntil('OMEMOInitialized');
-                supported = chatbox.get('nonanonymous') && chatbox.get('membersonly');
+                supported = chatbox.features.get('nonanonymous') && chatbox.features.get('membersonly');
             } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                 supported = await _converse.contactHasOMEMOSupport(chatbox.get('jid'));
             }
@@ -1169,8 +1169,7 @@ converse.plugins.add('converse-omemo', {
                 checkOMEMOSupported(chatbox);
                 if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
                     chatbox.occupants.on('add', o => onOccupantAdded(chatbox, o));
-                    chatbox.on('change:nonanonymous', checkOMEMOSupported);
-                    chatbox.on('change:membersonly', checkOMEMOSupported);
+                    chatbox.features.on('change', () => checkOMEMOSupported(chatbox));
                 }
             })
         );

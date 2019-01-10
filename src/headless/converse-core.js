@@ -795,7 +795,7 @@ _converse.initialize = function (settings, callback) {
 
 
     this.initSession = function () {
-        const id = b64_sha1('converse.bosh-session');
+        const id = 'converse.bosh-session';
         _converse.session = new Backbone.Model({id});
         _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
         _converse.session.fetch();

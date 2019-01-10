@@ -64702,7 +64702,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
           const stanza = await _converse.api.disco.info(this.get('jid'), null);
           this.onInfo(stanza);
         } catch (iq) {
-          this.waitUntilFeaturesDiscovered.resolve(this);
+          this.waitUntilFeaturesDiscovered.reject(iq);
 
           _converse.log(iq, Strophe.LogLevel.ERROR);
         }

@@ -67236,7 +67236,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
             this.autoConfigureChatRoom().then(() => this.refreshRoomFeatures());
           } else if (_converse.muc_instant_rooms) {
             // Accept default configuration
-            this.saveConfiguration().then(() => this.getRoomFeatures());
+            this.saveConfiguration().then(() => this.refreshRoomFeatures());
           } else {
             this.trigger('configurationNeeded');
             return; // We haven't yet entered the groupchat, so bail here.

@@ -809,7 +809,7 @@ converse.plugins.add('converse-chatboxes', {
                     'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
                 }
                 // Get chat box, but only create a new one when the message has a body.
-                const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`).length > 0;
+                const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
                 const chatbox = this.getChatBox(contact_jid, attrs, has_body);
                 if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza)) {
                     const msgid = stanza.getAttribute('id'),

@@ -140,6 +140,44 @@
                 done();
             }));
 
+            it("opens when a new message is received", mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
+                async function (done, _converse) {
+
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const stanza = Strophe.xmlHtmlNode(
+                    "<message from='"+sender_jid+"'"+
+                    "         type='chat'"+
+                    "         to='dummy@localhost/resource'>"+
+                    "    <body>Hey\nHave you heard the news?</body>"+
+                    "</message>").firstChild;
+
+                const message_promise = new Promise(resolve => _converse.api.listen.on('message', resolve));
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await test_utils.waitUntil(() => message_promise);
+                expect(_converse.chatboxviews.keys().length).toBe(2);
+                done();
+            }));
+
+            it("doesn't open when a message without body is received", mock.initConverseWithPromises(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+                test_utils.createContacts(_converse, 'current', 1);
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const stanza = Strophe.xmlHtmlNode(`
+                    <message from="${sender_jid}"
+                             type="chat"
+                             to="dummy@localhost/resource">
+                        <composing xmlns="http://jabber.org/protocol/chatstates"/>
+                    </message>`).firstChild;
+                const message_promise = new Promise(resolve => _converse.api.listen.on('message', resolve))
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await test_utils.waitUntil(() => message_promise);
+                expect(_converse.chatboxviews.keys().length).toBe(1);
+                done();
+            }));
+
             it("can be trimmed to conserve space",
                 mock.initConverseWithPromises(null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {

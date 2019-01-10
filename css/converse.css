@@ -9321,6 +9321,8 @@ readers do not read off random characters that represent icons */
   --message-text-color: #555;
   --message-receipt-color: #3AA569;
   --save-button-color: #3AA569;
+  --message-avatar-width: 36px;
+  --message-avatar-height: 36px;
   --chat-textarea-color: #666;
   --chat-textarea-background-color: white;
   --chat-textarea-height: 60px;
@@ -11837,7 +11839,8 @@ body.converse-fullscreen {
   font-style: italic; }
 
 #conversejs .message.chat-msg {
-  display: flex;
+  display: inline-flex;
+  width: 100%;
   flex-direction: row;
   overflow: auto;
   padding: 0.25rem 1rem; }
@@ -11870,7 +11873,7 @@ body.converse-fullscreen {
     justify-content: space-between;
     align-items: stretch;
     margin-left: 0.5rem;
-    width: 100%; }
+    width: calc(100% - var(--message-avatar-width)); }
   #conversejs .message.chat-msg .chat-msg__content--action {
     margin-left: 0; }
   #conversejs .message.chat-msg .chat-msg__body {
@@ -11879,9 +11882,10 @@ body.converse-fullscreen {
     justify-content: space-between;
     width: 100%; }
   #conversejs .message.chat-msg .chat-msg__message {
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
-    width: 100%; }
+    width: 100%;
+    overflow-wrap: break-word; }
   #conversejs .message.chat-msg .chat-msg__edit-modal {
     cursor: pointer;
     padding-right: 0.5em; }
@@ -11923,16 +11927,16 @@ body.converse-fullscreen {
   #conversejs .message.chat-msg .chat-msg__avatar {
     margin-top: 0.5em;
     vertical-align: middle;
-    height: 36px;
-    width: 36px;
-    min-height: 36px;
-    min-width: 36px; }
+    height: var(--message-avatar-height);
+    width: var(--message-avatar-width);
+    min-height: var(--message-avatar-height);
+    min-width: var(--message-avatar-width); }
   #conversejs .message.chat-msg .chat-msg__heading {
     width: 100%;
     margin-top: 0.5em;
     padding-right: 0.25rem;
     padding-bottom: 0.25rem;
-    display: block; }
+    display: flex; }
     #conversejs .message.chat-msg .chat-msg__heading .chat-msg__author {
       overflow: hidden;
       text-overflow: ellipsis;

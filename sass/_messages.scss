@@ -68,7 +68,8 @@
         }
 
         &.chat-msg {
-            display: flex;
+            display: inline-flex;
+            width: 100%;
             flex-direction: row;
             overflow: auto; // Ensures that content stays inside
             padding: 0.25rem 1rem;
@@ -118,7 +119,7 @@
                 justify-content: space-between;
                 align-items: stretch;
                 margin-left: 0.5rem;
-                width: 100%;
+                width: calc(100% - var(--message-avatar-width));
             }
             .chat-msg__content--action {
                 margin-left: 0;
@@ -132,9 +133,10 @@
             }
 
             .chat-msg__message {
-                display: flex;
+                display: inline-flex;
                 flex-direction: column;
                 width: 100%;
+                overflow-wrap: break-word;
             }
 
             .chat-msg__edit-modal {
@@ -199,10 +201,10 @@
             .chat-msg__avatar {
                 margin-top: 0.5em;
                 vertical-align: middle;
-                height: 36px;
-                width: 36px;
-                min-height: 36px;
-                min-width: 36px;
+                height: var(--message-avatar-height);
+                width: var(--message-avatar-width);
+                min-height: var(--message-avatar-height);
+                min-width: var(--message-avatar-width);
             }
 
             .chat-msg__heading {
@@ -210,7 +212,7 @@
                 margin-top: 0.5em;
                 padding-right: 0.25rem;
                 padding-bottom: 0.25rem;
-                display: block;
+                display: flex;
 
                 .chat-msg__author {
                     overflow: hidden;

@@ -247,8 +247,7 @@ converse.plugins.add('converse-notification', {
              * Will show an HTML5 notification to indicate that the chat
              * status has changed.
              */
-            if (_converse.areDesktopNotificationsEnabled() &&
-                    _converse.show_chatstate_notifications) {
+            if (_converse.areDesktopNotificationsEnabled() && _converse.show_chatstate_notifications) {
                 _converse.showChatStateNotification(contact);
             }
         };

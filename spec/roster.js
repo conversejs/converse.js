@@ -376,7 +376,7 @@
             it("can be used to organize existing contacts",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _converse.roster_groups = true;
                 spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -387,36 +387,34 @@
                 test_utils.createGroupedContacts(_converse);
                 // Check that the groups appear alphabetically and that
                 // requesting and pending contacts are last.
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group:visible a.group-toggle').length;
-                }, 500).then(function () {
-                    var group_titles = $.map(
-                        $(_converse.rosterview.el).find('.roster-group:visible a.group-toggle'),
-                        function (o) { return $(o).text().trim(); }
-                    );
-                    expect(group_titles).toEqual([
-                        "Contact requests",
-                        "colleagues",
-                        "Family",
-                        "friends & acquaintences",
-                        "ænemies",
-                        "Ungrouped",
-                        "Pending contacts"
-                    ]);
-                    // Check that usernames appear alphabetically per group
-                    _.each(_.keys(mock.groups), function (name) {
-                        var $contacts = $(_converse.rosterview.el).find('.roster-group[data-group="'+name+'"] ul');
-                        var names = $.map($contacts, function (o) { return $(o).text().trim(); });
-                        expect(names).toEqual(_.clone(names).sort());
-                    });
-                    done();
+                await test_utils.waitUntil(() => sizzle('.roster-group a.group-toggle', _converse.rosterview.el).length);
+                const group_titles = _.map(
+                    sizzle('.roster-group a.group-toggle', _converse.rosterview.el),
+                    o => o.textContent.trim()
+                );
+                expect(group_titles).toEqual([
+                    "Contact requests",
+                    "colleagues",
+                    "Family",
+                    "friends & acquaintences",
+                    "ænemies",
+                    "Ungrouped",
+                    "Pending contacts"
+                ]);
+                // Check that usernames appear alphabetically per group
+                let names;
+                _.each(_.keys(mock.groups), function (name) {
+                    const contacts = sizzle('.roster-group[data-group="'+name+'"] ul', _converse.rosterview.el);
+                    const names = _.map(contacts, o => o.textContent.trim());
+                    expect(names).toEqual(_.clone(names).sort());
                 });
+                done();
             }));
 
             it("gets created when a contact's \"groups\" attribute changes",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _converse.roster_groups = true;
                 spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -434,28 +432,28 @@
 
                 // Check that the groups appear alphabetically and that
                 // requesting and pending contacts are last.
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group:visible a.group-toggle').length;
-                }, 500).then(function () {
-                    var group_titles = $.map(
-                        $(_converse.rosterview.el).find('.roster-group:visible a.group-toggle'),
-                        function (o) { return $(o).text().trim(); }
-                    );
-                    expect(group_titles).toEqual(['firstgroup']);
+                let group_titles = await test_utils.waitUntil(() => {
+                    const toggles = sizzle('.roster-group a.group-toggle', _converse.rosterview.el);
+                    if (_.reduce(toggles, (result, t) => result && u.isVisible(t), true)) {
+                        return _.map(toggles, o => o.textContent.trim());
+                    } else {
+                        return false;
+                    }
+                }, 1000);
+                expect(group_titles).toEqual(['firstgroup']);
 
-                    var contact = _converse.roster.get('groupchanger@localhost');
-                    contact.set({'groups': ['secondgroup']});
-                    return test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('.roster-group[data-group="secondgroup"]:visible a.group-toggle').length;
-                    }, 500);
-                }).then(function () {
-                    var group_titles = $.map(
-                        $(_converse.rosterview.el).find('.roster-group:visible a.group-toggle'),
-                        function (o) { return $(o).text().trim(); }
-                    );
-                    expect(group_titles).toEqual(['secondgroup']);
-                    done();
-                });
+                const contact = _converse.roster.get('groupchanger@localhost');
+                contact.set({'groups': ['secondgroup']});
+                group_titles = await test_utils.waitUntil(() => {
+                    const toggles = sizzle('.roster-group[data-group="secondgroup"] a.group-toggle', _converse.rosterview.el);
+                    if (_.reduce(toggles, (result, t) => result && u.isVisible(t), true)) {
+                        return _.map(toggles, o => o.textContent.trim());
+                    } else {
+                        return false;
+                    }
+                }, 1000);
+                expect(group_titles).toEqual(['secondgroup']);
+                done();
             }));
 
             it("can share contacts with other roster groups", 
@@ -570,21 +568,18 @@
             it("are shown in the roster when show_only_online_users", 
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _converse.show_only_online_users = true;
                 test_utils.openControlBox();
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 _addContacts(_converse);
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('li:visible').length;
-                }, 700).then(function () {
-                    expect($(_converse.rosterview.el).is(':visible')).toEqual(true);
-                    expect(_converse.rosterview.update).toHaveBeenCalled();
-                    expect($(_converse.rosterview.el).find('li:visible').length).toBe(3);
-                    expect($(_converse.rosterview.el).find('ul.roster-group-contacts:visible').length).toBe(1);
-                    done();
-                });
+                await test_utils.waitUntil(() => _.reduce(_converse.rosterview.el.querySelectorAll('li'), (result, el) => result && u.isVisible(el), true), 500);
+                expect(u.isVisible(_converse.rosterview.el)).toEqual(true);
+                expect(_converse.rosterview.update).toHaveBeenCalled();
+                expect(_converse.rosterview.el.querySelectorAll('li').length).toBe(3);
+                expect(_.filter(_converse.rosterview.el.querySelectorAll('ul.roster-group-contacts'), u.isVisible).length).toBe(1);
+                done();
             }));
 
             it("are shown in the roster when hide_offline_users", 

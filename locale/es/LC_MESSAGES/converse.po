@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2018-12-20 10:08+0000\n"
+"PO-Revision-Date: 2019-01-14 13:20+0000\n"
 "Last-Translator: sergio <srg.dev@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
@@ -615,9 +615,8 @@ msgid "Change user role to participant"
 msgstr "Cambiar rol del usuario a participante"
 
 #: dist/converse-no-dependencies.js:36496
-#, fuzzy
 msgid "Destroy room"
-msgstr "Sala temporal"
+msgstr "Destruir conversación en grupo"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Kick user from groupchat"
@@ -940,6 +939,9 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
+"Lo sentimos, no se puede enviar el mensaje cifrado porque %1$s requiere que "
+"estés suscrito a sus actualizaciones de presencia para ver su información "
+"OMEMO"
 
 #: dist/converse-no-dependencies.js:38431
 #, javascript-format
@@ -947,9 +949,10 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
+"Lo sentimos, no se puede enviar el mensaje cifrado porque el servidor remoto "
+"para %1$s no se ha encontrado"
 
 #: dist/converse-no-dependencies.js:38433
-#, fuzzy
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr "Lo sentimos, no se puede enviar el mensaje debido a un error."
 
@@ -963,13 +966,13 @@ msgstr ""
 "soporta OMEMO."
 
 #: dist/converse-no-dependencies.js:38543
-#, fuzzy
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
 msgstr ""
-"No se puede usar cifrado punto a punto porque %1$s usa un cliente que no "
-"soporta OMEMO."
+"No se puede usar cifrado punto a punto en esta conversación en grupo porque, "
+"o bien la conversación es anónima, o bien no todos los participantes "
+"soportan OMEMO."
 
 #: dist/converse-no-dependencies.js:38720
 msgid ""
@@ -985,6 +988,8 @@ msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
 "will no longer be possible in this grouchat."
 msgstr ""
+"%1$s no parece tener un cliente que soporte OMEMO. El cifrado ya no será "
+"posible en esta conversación en grupo."
 
 #: dist/converse-no-dependencies.js:39579
 msgid "Your avatar image"

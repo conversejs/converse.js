@@ -50420,9 +50420,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       inputChanged(ev) {
-        ev.target.style.height = 'auto'; // Fixes weirdness
+        const new_height = ev.target.scrollHeight + 'px';
 
-        ev.target.style.height = ev.target.scrollHeight + 'px';
+        if (ev.target.style.height !== new_height) {
+          ev.target.style.height = 'auto'; // Fixes weirdness
+
+          ev.target.style.height = new_height;
+        }
       },
 
       clearMessages(ev) {

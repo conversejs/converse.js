@@ -5,6 +5,7 @@
 - Bugfix: MUC commands were being ignored
 - Bugfix: Multiple rooms shown active in the rooms list
 - Bugfix: Don't open chats when receiving messages without a `body`
+- Bugfix: Typing in the textarea can become very slow in large MUCs
 - UI: Always show the OMEMO lock icon (grayed out if not available).
 - Use `publish-options` with `pubsub#access_model` set to `open` when publishing OMEMO public keys and devices
 - Add a new `converse-pubsub` plugin, for generic PubSub operations

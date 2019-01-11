@@ -1008,8 +1008,11 @@ converse.plugins.add('converse-chatview', {
             },
 
             inputChanged (ev) {
-                ev.target.style.height = 'auto'; // Fixes weirdness
-                ev.target.style.height = (ev.target.scrollHeight) + 'px';
+                const new_height = ev.target.scrollHeight + 'px';
+                if (ev.target.style.height !== new_height) {
+                    ev.target.style.height = 'auto'; // Fixes weirdness
+                    ev.target.style.height = new_height;
+                }
             },
 
             clearMessages (ev) {

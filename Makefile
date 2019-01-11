@@ -65,7 +65,7 @@ serve_bg: dev
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=4.0.6 -c
+GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=4.1.0 -c
 
 .PHONY: pot
 pot: dist/converse-no-dependencies-es2015.js
@@ -116,9 +116,9 @@ stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 clean:
 	rm -rf node_modules stamp-npm
 	rm dist/*.min.js
-	rm css/website.min.css
-	rm css/converse.min.css
+	rm css/*.min.css
 	rm css/*.map
+	rm css/*.zip
 	rm *.zip
 
 .PHONY: dev

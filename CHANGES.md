@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0.7 (Unreleased)
+## 4.1.0 (2019-01-11)
 
 - Bugfix: MUC commands were being ignored
 - Bugfix: Multiple rooms shown active in the rooms list

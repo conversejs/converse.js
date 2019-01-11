@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2018-12-20 10:08+0000\n"
+"PO-Revision-Date: 2019-01-14 13:20+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
@@ -958,6 +958,8 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
+"Kunne ikke sende kryptert melding fordi %1$s krever at du må abonnere på "
+"deres tilstedeværelse for å kunne se deres OMEMO-info."
 
 #: dist/converse-no-dependencies.js:38431
 #, javascript-format
@@ -965,6 +967,8 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
+"Kunne ikke sende kryptert melding fordi fjerntjeneren for %1$s ikke ble "
+"funnet."
 
 #: dist/converse-no-dependencies.js:38433
 #, fuzzy
@@ -1003,6 +1007,8 @@ msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
 "will no longer be possible in this grouchat."
 msgstr ""
+"%1$s ser ikke ut til å være en klient som støtter OMEMO. Krypter sludring "
+"vil ikke lenger være mulig i denne gruppesludringen."
 
 #: dist/converse-no-dependencies.js:39579
 msgid "Your avatar image"

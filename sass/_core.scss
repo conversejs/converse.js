@@ -146,16 +146,6 @@ body.converse-fullscreen {
             vertical-align: text-bottom;
         }
 
-        .byline {
-            margin: 0;
-            font-family: var(--heading-font);
-            font-size: 0.25em;
-            opacity: 0.55;
-            margin-left: -4em;
-            word-spacing: 5px;
-            margin-top: -15px;
-        }
-
         .converse-svg-logo {
             color: var(--link-color);
             height: 1.5em;
@@ -180,6 +170,15 @@ body.converse-fullscreen {
     .brand-heading--inverse {
         .converse-svg-logo {
             margin-bottom: 0em;
+            margin-top: -0.2em;
+        }
+        .byline {
+            margin: 0;
+            font-family: var(--heading-font);
+            font-size: 0.25em;
+            opacity: 0.55;
+            margin-left: -7em;
+            word-spacing: 5px;
         }
     }
 

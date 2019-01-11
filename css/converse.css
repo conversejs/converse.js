@@ -9610,14 +9610,6 @@ body.converse-fullscreen {
     #conversejs .brand-heading .brand-name__text {
       font-size: 120%;
       vertical-align: text-bottom; }
-    #conversejs .brand-heading .byline {
-      margin: 0;
-      font-family: var(--heading-font);
-      font-size: 0.25em;
-      opacity: 0.55;
-      margin-left: -4em;
-      word-spacing: 5px;
-      margin-top: -15px; }
     #conversejs .brand-heading .converse-svg-logo {
       color: var(--link-color);
       height: 1.5em;
@@ -9633,7 +9625,15 @@ body.converse-fullscreen {
       #conversejs .brand-heading .converse-svg-logo .cls-4 {
         fill: var(--link-color); }
   #conversejs .brand-heading--inverse .converse-svg-logo {
-    margin-bottom: 0em; }
+    margin-bottom: 0em;
+    margin-top: -0.2em; }
+  #conversejs .brand-heading--inverse .byline {
+    margin: 0;
+    font-family: var(--heading-font);
+    font-size: 0.25em;
+    opacity: 0.55;
+    margin-left: -7em;
+    word-spacing: 5px; }
   #conversejs .popover {
     position: fixed; }
   #conversejs .converse-chatboxes {

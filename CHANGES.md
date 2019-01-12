@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.1.1 (unreleased)
+
+- #1408 new config option `roomconfig_whitelist`
+
 ## 4.1.0 (2019-01-11)
 
 - Bugfix: MUC commands were being ignored

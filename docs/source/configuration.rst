@@ -1169,6 +1169,23 @@ For example:
             }]
         });
 
+
+.. _`roomconfig_whitelist`:
+
+roomconfig_whitelist
+--------------------
+
+* Default: ``[]``
+
+A list of room config-option names. If this list is non-empty, only the corresponding room
+config-options will be shown in the room configuration form. The default will show all options.
+
+In the following example the user can only see (and thus change) the roomname and nothing else:
+
+.. code-block:: javascript
+
+    roomconfig_whitelist: ['muc#roomconfig_roomname'],
+
 root
 ----
 

@@ -35,7 +35,7 @@ import xss from "xss";
 
 const { Backbone, Promise, Strophe, b64_sha1, moment, f, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
 const u = converse.env.utils;
-
+const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
 
 converse.plugins.add('converse-muc-views', {
     /* Dependencies are other plugins which might be
@@ -841,7 +841,9 @@ converse.plugins.add('converse-muc-views', {
                     );
                     return false;
                 }
-                if (!this.model.occupants.findWhere({'nick': args[0]}) && !this.model.occupants.findWhere({'jid': args[0]})) {
+                if (!(_.includes(AFFILIATION_CHANGE_COMANDS, command) && u.isValidJID(args[0])) &&
+                        !this.model.occupants.findWhere({'nick': args[0]}) &&
+                            !this.model.occupants.findWhere({'jid': args[0]})) {
                     this.showErrorMessage(__('Error: couldn\'t find a groupchat participant "%1$s"', args[0]));
                     return false;
                 }
@@ -953,10 +955,10 @@ converse.plugins.add('converse-muc-views', {
                         const occupant = this.model.occupants.findWhere({'nick': args[0]}) ||
                                          this.model.occupants.findWhere({'jid': args[0]}),
                               attrs = {
-                                'jid': occupant.get('jid'),
+                                'jid': occupant ? occupant.get('jid') : args[0],
                                 'reason': args[1]
                               };
-                        if (_converse.auto_register_muc_nickname) {
+                        if (_converse.auto_register_muc_nickname && occupant) {
                             attrs['nick'] = occupant.get('nick');
                         }
                         this.model.setAffiliation('member', [attrs])

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2019-01-14 13:20+0000\n"
+"PO-Revision-Date: 2019-01-15 12:03+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -1560,14 +1560,13 @@ msgstr ""
 # לא-עלום
 #: dist/converse-no-dependencies.js:74752
 #: dist/converse-no-dependencies.js:74904
-#, fuzzy
 msgid "Not anonymous"
-msgstr "לא-אנונימי"
+msgstr "לא אלמוני"
 
 #: dist/converse-no-dependencies.js:74754
 #: dist/converse-no-dependencies.js:74902
 msgid "All other groupchat participants can see your XMPP username"
-msgstr ""
+msgstr "כל שאר המשתתפים בהתכתבות הקבוצתית יכולים לצפות בשם המשתמש שלך ב־XMPP"
 
 #: dist/converse-no-dependencies.js:74762
 #: dist/converse-no-dependencies.js:74910
@@ -1641,7 +1640,6 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75821
-#, fuzzy
 msgid "Log in"
 msgstr "כניסה"
 
@@ -1650,9 +1648,8 @@ msgid "Click here to log in anonymously"
 msgstr "לחץ כאן כדי להתחבר באופן אנונימי"
 
 #: dist/converse-no-dependencies.js:75922
-#, fuzzy
 msgid "This message has been edited"
-msgstr "משתמש זה הינו אחראי"
+msgstr "ההודעה נערכה"
 
 #: dist/converse-no-dependencies.js:75948
 msgid "Edit this message"
@@ -1718,16 +1715,16 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76367
 #: dist/converse-no-dependencies.js:76406
 msgid "Already have a chat account?"
-msgstr ""
+msgstr "כבר יש לך חשבון להתכתבות?"
 
 #: dist/converse-no-dependencies.js:76369
 #: dist/converse-no-dependencies.js:76408
 msgid "Log in here"
-msgstr ""
+msgstr "כניסה מכאן"
 
 #: dist/converse-no-dependencies.js:76390
 msgid "Account Registration:"
-msgstr ""
+msgstr "רישום חשבון:"
 
 #: dist/converse-no-dependencies.js:76398
 msgid "Register"
@@ -1735,19 +1732,19 @@ msgstr "הירשם"
 
 #: dist/converse-no-dependencies.js:76402
 msgid "Choose a different provider"
-msgstr ""
+msgstr "נא לבחור בספק אחר"
 
 #: dist/converse-no-dependencies.js:76427
 msgid "Hold tight, we're fetching the registration form…"
-msgstr ""
+msgstr "להחזיק חזק, אנחנו מביאים את טופס ההרשמה…"
 
 #: dist/converse-no-dependencies.js:77159
 msgid "Messages are being sent in plaintext"
-msgstr ""
+msgstr "ההודעות נשלחות כטקסט פשוט"
 
 #: dist/converse-no-dependencies.js:77211
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "תמונת הפרופיל של המשתמש"
 
 #: dist/converse-no-dependencies.js:77221
 msgid "Full Name:"
@@ -1755,7 +1752,7 @@ msgstr "שם מלא:"
 
 #: dist/converse-no-dependencies.js:77227
 msgid "XMPP Address:"
-msgstr ""
+msgstr "כתובת XMPP:"
 
 #: dist/converse-no-dependencies.js:77235
 msgid "Nickname:"
@@ -1763,31 +1760,31 @@ msgstr "כינוי:"
 
 #: dist/converse-no-dependencies.js:77243
 msgid "URL:"
-msgstr ""
+msgstr "כתובת:"
 
 #: dist/converse-no-dependencies.js:77253
 msgid "Email:"
-msgstr ""
+msgstr "דוא״ל:"
 
 #: dist/converse-no-dependencies.js:77263
 msgid "Role:"
-msgstr ""
+msgstr "תפקיד:"
 
 #: dist/converse-no-dependencies.js:77271
 msgid "OMEMO Fingerprints"
-msgstr ""
+msgstr "טביעות אצבע OMEMO"
 
 #: dist/converse-no-dependencies.js:77295
 msgid "Trusted"
-msgstr ""
+msgstr "מהימן"
 
 #: dist/converse-no-dependencies.js:77309
 msgid "Untrusted"
-msgstr ""
+msgstr "בלתי מהימן"
 
 #: dist/converse-no-dependencies.js:77323
 msgid "Refresh"
-msgstr ""
+msgstr "רענון"
 
 #: dist/converse-no-dependencies.js:77327
 msgid "Remove as contact"
@@ -1796,26 +1793,26 @@ msgstr "הסרה כאיש קשר"
 #: dist/converse-no-dependencies.js:77538
 #, javascript-format
 msgid "Download audio file \"%1$s\""
-msgstr ""
+msgstr "הורדת קובץ השמע „%1$s”"
 
 #: dist/converse-no-dependencies.js:77556
 #, javascript-format
 msgid "Download file \"%1$s\""
-msgstr ""
+msgstr "הורדת הקובץ „%1$s”"
 
 #: dist/converse-no-dependencies.js:77571
 #, javascript-format
 msgid "Download image \"%1$s\""
-msgstr ""
+msgstr "הורדת התמונה „%1$s”"
 
 #: dist/converse-no-dependencies.js:77601
 msgid "Download"
-msgstr ""
+msgstr "הורדה"
 
 #: dist/converse-no-dependencies.js:77618
 #, javascript-format
 msgid "Download video file \"%1$s\""
-msgstr ""
+msgstr "הורדת קובץ הווידאו „%1$s”"
 
 #, fuzzy
 #~ msgid "Click to write as a normal (non-spoiler) message"

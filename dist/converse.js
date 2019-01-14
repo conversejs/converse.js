@@ -53223,6 +53223,7 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       $msg = _converse$env.$msg,
       $pres = _converse$env.$pres;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].env.utils;
+const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc-views', {
   /* Dependencies are other plugins which might be
    * overridden or relied upon, and therefore need to be loaded before
@@ -54093,7 +54094,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           return false;
         }
 
-        if (!this.model.occupants.findWhere({
+        if (!(_.includes(AFFILIATION_CHANGE_COMANDS, command) && u.isValidJID(args[0])) && !this.model.occupants.findWhere({
           'nick': args[0]
         }) && !this.model.occupants.findWhere({
           'jid': args[0]
@@ -54196,11 +54197,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
                 'jid': args[0]
               }),
                     attrs = {
-                'jid': occupant.get('jid'),
+                'jid': occupant ? occupant.get('jid') : args[0],
                 'reason': args[1]
               };
 
-              if (_converse.auto_register_muc_nickname) {
+              if (_converse.auto_register_muc_nickname && occupant) {
                 attrs['nick'] = occupant.get('nick');
               }
 

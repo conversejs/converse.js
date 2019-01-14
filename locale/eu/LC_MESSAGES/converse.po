@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2018-11-22 18:07+0000\n"
-"Last-Translator: JC Brand <jc@opkode.com>\n"
+"PO-Revision-Date: 2019-01-15 12:02+0000\n"
+"Last-Translator: aitzol berasategi <aitzol@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
 "translations/eu/>\n"
 "Language: eu\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.3-dev\n"
+"X-Generator: Weblate 3.4-dev\n"
 
 #: dist/converse-no-dependencies.js:30588
 #: dist/converse-no-dependencies.js:30645
@@ -597,9 +597,8 @@ msgid "Change user role to participant"
 msgstr "Ezarri erabiltzailearen rola parte-hartzaile gisa"
 
 #: dist/converse-no-dependencies.js:36496
-#, fuzzy
 msgid "Destroy room"
-msgstr "Aldi baterako gela"
+msgstr "Gela deuseztatu"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Kick user from groupchat"
@@ -630,9 +629,8 @@ msgid "Grant ownership of this groupchat"
 msgstr "Eman gela honen jabetza"
 
 #: dist/converse-no-dependencies.js:36496
-#, fuzzy
 msgid "Register a nickname for this groupchat"
-msgstr "Erregistratu gela honentzako ezizen bat"
+msgstr "Erregistratu gela honetarako ezizen bat"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Revoke user's membership"
@@ -906,6 +904,9 @@ msgid ""
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
+"Ziur al zaude OMEMO gako berriak sortu nahi  dituzula? Honek zure gako "
+"zaharrak ezabatuko ditu eta aurretiaz enkriptaturiko mezu guztiak ezingo "
+"dira irakurri gailu honetan."
 
 #: dist/converse-no-dependencies.js:38314
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -917,6 +918,9 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
+"Barkatu, ez gara gai enkriptaturiko mezua bidaltzeko %1$s -(e)k beraien "
+"presentzia eguneraketetara izen emanda egotea behar duelako beraien OMEMO "
+"informazioa ikusi ahal izateko."
 
 #: dist/converse-no-dependencies.js:38431
 #, javascript-format
@@ -924,9 +928,10 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
+"Barkatu, ez gara gai enkriptaturiko mezua bidaltzeko %1$s -rentzako urruneko "
+"zerbitzaria ezin delako topatu."
 
 #: dist/converse-no-dependencies.js:38433
-#, fuzzy
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr "Ezin izan da mezua bidali errore bat dela eta."
 

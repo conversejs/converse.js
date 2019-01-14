@@ -10,6 +10,7 @@
 - #1417 Margin between nickname and badge
 - #1421 fix direct invite for membersonly room
 - #1422 Resurrect the `muc_show_join_leave` option
+- #1412 muc moderator commands can be disabled selectively by config
 
 ## 4.1.0 (2019-01-11)
 

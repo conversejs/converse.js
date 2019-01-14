@@ -1219,10 +1219,9 @@ For example:
 roster_groups
 -------------
 
-* Default:  ``false``
+* Default:  ``true``
 
-If set to ``true``, Converse will show any roster groups you might have
-configured.
+If set to ``true``, Converse will show any roster groups you might have configured.
 
 .. note::
     It's currently not possible to use Converse to assign contacts to groups.

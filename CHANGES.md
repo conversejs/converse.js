@@ -14,7 +14,7 @@
 - Use `publish-options` with `pubsub#access_model` set to `open` when publishing OMEMO public keys and devices
 - Add a new `converse-pubsub` plugin, for generic PubSub operations
 - #1180 It's now possible to use OMEMO in a MUC (if it's members-only and non-anonymous)
-- #1334 Force avatar refetch when receiving vcard-temp:x:update
+- #1334 Force avatar refetch when receiving `vcard-temp:x:update`
 - #1337 `send_chat_state_notifications` doesn't work in MUCs
 - #1353 Message Delivery Receipts not working because of the message "type" attribute
 - #1356 Make triangle icon usable 

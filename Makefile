@@ -244,7 +244,7 @@ check: eslint
 docsdev: ./bin/activate .installed.cfg
 
 .PHONY: html
-html: docsdev apidoc
+html: dev docsdev apidoc
 	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	make apidoc

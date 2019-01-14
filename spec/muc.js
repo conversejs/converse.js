@@ -2581,6 +2581,42 @@
                 done();
             }));
 
+            it("takes /help to show the available commands and commands can be disabled by config",
+                mock.initConverseWithPromises(
+                    null, ['rosterGroupsFetched'], {muc_disable_moderator_commands: ['mute', 'voice']},
+                    async function (done, _converse) {
+
+                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                const view = _converse.chatboxviews.get('lounge@localhost');
+                var textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = '/help This is the groupchat subject';
+                view.keyPressed({
+                    target: textarea,
+                    preventDefault: _.noop,
+                    keyCode: 13
+                });
+
+                const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                expect(info_messages.length).toBe(17);
+                expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
+                expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
+                expect(info_messages.pop().textContent).toBe('/revoke: Revoke user\'s membership');
+                expect(info_messages.pop().textContent).toBe('/register: Register a nickname for this groupchat');
+                expect(info_messages.pop().textContent).toBe('/owner: Grant ownership of this groupchat');
+                expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
+                expect(info_messages.pop().textContent).toBe('/nick: Change your nickname');
+                expect(info_messages.pop().textContent).toBe('/member: Grant membership to a user');
+                expect(info_messages.pop().textContent).toBe('/me: Write in 3rd person');
+                expect(info_messages.pop().textContent).toBe('/kick: Kick user from groupchat');
+                expect(info_messages.pop().textContent).toBe('/help: Show this menu');
+                expect(info_messages.pop().textContent).toBe('/destroy: Destroy room');
+                expect(info_messages.pop().textContent).toBe('/deop: Change user role to participant');
+                expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
+                expect(info_messages.pop().textContent).toBe('/ban: Ban user from groupchat');
+                expect(info_messages.pop().textContent).toBe('/admin: Change user\'s affiliation to admin');
+                done();
+            }));
+
             it("takes /member to make an occupant a member",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},

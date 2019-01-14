@@ -854,12 +854,18 @@ converse.plugins.add('converse-muc-views', {
             },
 
             parseMessageForCommands (text) {
-                if (_converse.muc_disable_moderator_commands) {
+                if (_converse.muc_disable_moderator_commands &&
+                        !_.isArray(_converse.muc_disable_moderator_commands)) {
                     return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
                 }
                 const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                       args = match[2] && match[2].splitOnce(' ').filter(s => s) || [],
-                      command = match[1].toLowerCase();
+                      command = match[1].toLowerCase(),
+                      disabled_commands = _.isArray(_converse.muc_disable_moderator_commands) ?
+                        _converse.muc_disable_moderator_commands : [];
+                if (_.includes(disabled_commands, command)) {
+                    return false;
+                }
                 switch (command) {
                     case 'admin':
                         if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
@@ -902,7 +908,7 @@ converse.plugins.add('converse-muc-views', {
                             .catch(e => this.onCommandError(e));
                         break;
                     case 'help':
-                        this.showHelpMessages([
+                        this.showHelpMessages(_.filter([
                             `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
                             `<strong>/ban</strong>: ${__('Ban user from groupchat')}`,
                             `<strong>/clear</strong>: ${__('Remove messages')}`,
@@ -921,7 +927,8 @@ converse.plugins.add('converse-muc-views', {
                             `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
                             `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,
                             `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`
-                        ]);
+                        ], line => (_.every(disabled_commands, element => (!line.startsWith(element+'<', 9))))
+                        ));
                         break;
                     case 'kick':
                         if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {

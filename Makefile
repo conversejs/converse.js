@@ -26,6 +26,7 @@ UGLIFYJS		?= node_modules/.bin/uglifyjs
 
 # Internal variables.
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) ./docs/source
+VERSION_FORMAT	= [0-9]+\.[0-9]+\.[0-9]+
 
 .PHONY: all
 all: dev dist
@@ -85,18 +86,15 @@ po2json:
 
 .PHONY: release
 release:
-	$(SED) -ri 's/_converse.VERSION_NAME = "v[0-9]+\.[0-9]+\.[0-9]+";/ _converse.VERSION_NAME = "v$(VERSION)";/' src/headless/converse-core.js
-	$(SED) -ri s/Version:\ [0-9]\+\.[0-9]\+\.[0-9]\+/Version:\ $(VERSION)/ COPYRIGHT
-	$(SED) -ri s/Project-Id-Version:\ Converse\.js\ [0-9]\+\.[0-9]\+\.[0-9]\+/Project-Id-Version:\ Converse.js\ $(VERSION)/ locale/converse.pot
-	$(SED) -ri s/\"version\":\ \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\":\ \"$(VERSION)\"/ package.json
-	$(SED) -ri s/\"version\":\ \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\":\ \"$(VERSION)\"/ src/headless/package.json
-	$(SED) -ri s/--package-version=[0-9]\+\.[0-9]\+\.[0-9]\+/--package-version=$(VERSION)/ Makefile
-	$(SED) -ri s/v[0-9]\+\.[0-9]\+\.[0-9]\+\.zip/v$(VERSION)\.zip/ index.html
-	$(SED) -ri s/v[0-9]\+\.[0-9]\+\.[0-9]\+\.tar\.gz/v$(VERSION)\.tar\.gz/ index.html
-	$(SED) -ri s/version\ =\ \'[0-9]\+\.[0-9]\+\.[0-9]\+\'/version\ =\ \'$(VERSION)\'/ docs/source/conf.py
-	$(SED) -ri s/release\ =\ \'[0-9]\+\.[0-9]\+\.[0-9]\+\'/release\ =\ \'$(VERSION)\'/ docs/source/conf.py
-	$(SED) -ri "s/(Unreleased)/`date +%Y-%m-%d`/" CHANGES.md
-	$(SED) -ri "s/cdn.conversejs.org\/[0-9]+\.[0-9]+\.[0-9]+/cdn.conversejs.org\/$(VERSION)/" docs/source/quickstart.rst
+	$(SED) -i '/^_converse.VERSION_NAME =/s/=.*/= "v$(VERSION)";/' src/headless/converse-core.js
+	$(SED) -i '/Version:/s/:.*/: $(VERSION)/' COPYRIGHT
+	$(SED) -i '/Project-Id-Version:/s/:.*/: Converse.js $(VERSION)\n"/' locale/converse.pot
+	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' package.json
+	$(SED) -i '/"version":/s/:.*/: "$(VERSION)",/' src/headless/package.json
+	$(SED) -ri 's/--package-version=$(VERSION_FORMAT)/--package-version=$(VERSION)/' Makefile
+	$(SED) -i -e "/version =/s/=.*/= '$(VERSION)'/" -e "/release =/s/=.*/= '$(VERSION)'/" docs/source/conf.py
+	$(SED) -i "s/[Uu]nreleased/`date +%Y-%m-%d`/" CHANGES.md
+	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' docs/source/quickstart.rst
 	make pot
 	make po
 	make po2json

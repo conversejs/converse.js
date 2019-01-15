@@ -72,7 +72,7 @@ const _converse = {
     'promises': {}
 }
 
-  _converse.VERSION_NAME = "v4.1.0";
+_converse.VERSION_NAME = "v4.1.0";
 
 _.extend(_converse, Backbone.Events);
 
@@ -1644,7 +1644,7 @@ _converse.api = {
      */
     'send' (stanza) {
         _converse.connection.send(stanza);
-        _converse.emit('send', stanza); 
+        _converse.emit('send', stanza);
     },
 
     /**
@@ -1657,7 +1657,7 @@ _converse.api = {
     'sendIQ' (stanza, timeout) {
         return new Promise((resolve, reject) => {
             _converse.connection.sendIQ(stanza, resolve, reject, timeout || _converse.IQ_TIMEOUT);
-            _converse.emit('send', stanza); 
+            _converse.emit('send', stanza);
         });
     }
 };

@@ -9,6 +9,7 @@ ESLINT		  	?= ./node_modules/.bin/eslint
 HTTPSERVE	   	?= ./node_modules/.bin/http-server
 HTTPSERVE_PORT	?= 8000
 INKSCAPE		?= inkscape
+INSTALL		?= install
 JSDOC			?=  ./node_modules/.bin/jsdoc
 LERNA			?= ./node_modules/.bin/lerna
 OXIPNG			?= oxipng
@@ -100,6 +101,16 @@ release:
 	make po
 	make po2json
 	make build
+	mkdir -p 'converse-assets-$(VERSION)'
+	$(INSTALL) -D dist/converse.min.js 'converse-assets-$(VERSION)/converse.js'
+	$(INSTALL) -D css/converse.min.css \
+		'converse-assets-$(VERSION)/css/converse.css'
+	cp -r css/webfonts 'converse-assets-$(VERSION)/css/'
+	cp -r sounds 'converse-assets-$(VERSION)/'
+	find locale -type f -name '*.json' \
+		-exec $(INSTALL) -D '{}' 'converse-assets-$(VERSION)/{}' \;
+	zip -r 'converse-assets-$(VERSION).zip' 'converse-assets-$(VERSION)'
+	rm -rf 'converse-assets-$(VERSION)'
 
 
 ########################################################################
@@ -208,16 +219,7 @@ dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @conver
 dist:: build
 
 .PHONY: build
-build:: dev css $(BUILDS) locale.zip css/webfonts.zip sounds.zip
-
-css/webfonts.zip: css/webfonts/*
-	zip -r css/webfonts.zip css/webfonts
-
-locale.zip:
-	zip -r locale.zip locale --exclude *.pot --exclude *.po --exclude *.po~
-
-sounds.zip:
-	zip -r sounds.zip sounds
+build:: dev css $(BUILDS)
 
 ########################################################################
 ## Tests

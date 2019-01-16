@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2019-01-15 12:03+0000\n"
+"PO-Revision-Date: 2019-01-18 09:19+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -564,30 +564,32 @@ msgstr "הסתר רשימת משתתפים"
 
 #: dist/converse-no-dependencies.js:36400
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "אסור: אין לך את התפקיד המתאים כדי לבצע את הפעולה הזאת."
 
 #: dist/converse-no-dependencies.js:36413
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
-msgstr ""
+msgstr "אסור: אין לך את ההשתייכות הנדרשת כדי לבצע את הפעולה הזאת."
 
 #: dist/converse-no-dependencies.js:36425
 #, javascript-format
 msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
-msgstr ""
+msgstr "שגיאה: הפקודה „%1$s” מקבלת שני ארגומנטים, כינוי המשתמש וסיבה כרשות."
 
 #: dist/converse-no-dependencies.js:36434
 #, javascript-format
 msgid "Error: couldn't find a groupchat participant \"%1$s\""
-msgstr ""
+msgstr "שגיאה: אין אפשרות למצוא את המשתתף „%1$s” בהתכתבות הקבוצתית"
 
 #: dist/converse-no-dependencies.js:36444
 msgid ""
 "Sorry, an error happened while running the command. Check your browser's "
 "developer console for details."
 msgstr ""
+"אירעה שגיאה בעת הפעלת הפקודה. נא לבדוק פרטים נוספים במסוף הפיתוח של הדפדפן "
+"שלך, עמך הסליחה."
 
 # שייכות
 #: dist/converse-no-dependencies.js:36496
@@ -652,7 +654,7 @@ msgstr "קבע נושא חדר"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Set groupchat subject (alias for /subject)"
-msgstr ""
+msgstr "הגדרת נושא להתכתבות הקבוצתית (שם חלופי ל־‎/subject)"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Allow muted user to post messages"
@@ -660,13 +662,13 @@ msgstr "התר למשתמש מושתק לפרסם הודעות"
 
 #: dist/converse-no-dependencies.js:36573
 msgid "Error: invalid number of arguments"
-msgstr ""
+msgstr "שגיאה: מספר הארגומנטים שגוי"
 
 #: dist/converse-no-dependencies.js:36822
 msgid ""
 "The nickname you chose is reserved or currently in use, please choose a "
 "different one."
-msgstr ""
+msgstr "הכינוי שבחרת שמור או בשימוש, נא לבחור באחד אחר."
 
 #: dist/converse-no-dependencies.js:36850
 #, fuzzy
@@ -786,7 +788,7 @@ msgstr "חדר זה הגיע לסף הנוכחים המרבי שלו"
 
 #: dist/converse-no-dependencies.js:37300
 msgid "Remote server not found"
-msgstr ""
+msgstr "השרת המרוחק לא נמצא"
 
 #: dist/converse-no-dependencies.js:37305
 #, fuzzy, javascript-format
@@ -845,23 +847,23 @@ msgstr "מבוקר"
 
 #: dist/converse-no-dependencies.js:37444
 msgid "Visitor"
-msgstr ""
+msgstr "מבקר"
 
 #: dist/converse-no-dependencies.js:37445
 msgid "Owner"
-msgstr ""
+msgstr "בעלים"
 
 #: dist/converse-no-dependencies.js:37446
 msgid "Member"
-msgstr ""
+msgstr "חבר"
 
 #: dist/converse-no-dependencies.js:37447
 msgid "Admin"
-msgstr ""
+msgstr "מנהל"
 
 #: dist/converse-no-dependencies.js:37481
 msgid "Participants"
-msgstr ""
+msgstr "משתתפים"
 
 #: dist/converse-no-dependencies.js:37499
 #: dist/converse-no-dependencies.js:37556

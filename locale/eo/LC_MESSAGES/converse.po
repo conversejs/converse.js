@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
 "PO-Revision-Date: 2019-01-19 17:19+0000\n"
-"Last-Translator: Matthijs <matthijs@wirevirt.net>\n"
+"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/conversejs/"
 "translations/eo/>\n"
 "Language: eo\n"
@@ -809,19 +809,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:37444
 msgid "Visitor"
-msgstr ""
+msgstr "Vizitanto"
 
 #: dist/converse-no-dependencies.js:37445
 msgid "Owner"
-msgstr ""
+msgstr "Posedanto"
 
 #: dist/converse-no-dependencies.js:37446
 msgid "Member"
-msgstr ""
+msgstr "Ano"
 
 #: dist/converse-no-dependencies.js:37447
 msgid "Admin"
-msgstr ""
+msgstr "Administranto"
 
 #: dist/converse-no-dependencies.js:37481
 msgid "Participants"
@@ -830,7 +830,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:37499
 #: dist/converse-no-dependencies.js:37556
 msgid "Invite"
-msgstr ""
+msgstr "Inviti"
 
 #: dist/converse-no-dependencies.js:37532
 #, javascript-format
@@ -841,27 +841,27 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:37555
 msgid "Please enter a valid XMPP username"
-msgstr ""
+msgstr "Bonvolu eniri validan XMPPan uzantnomon"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37908
 #: dist/converse-no-dependencies.js:37914
 #, javascript-format
 msgid "Notification from %1$s"
-msgstr ""
+msgstr "Sciigo de %1$s"
 
 #: dist/converse-no-dependencies.js:37916
 #: dist/converse-no-dependencies.js:37927
 #: dist/converse-no-dependencies.js:37930
 #, javascript-format
 msgid "%1$s says"
-msgstr ""
+msgstr "%1$s diras"
 
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
 #: dist/converse-no-dependencies.js:37939
 msgid "OMEMO Message received"
-msgstr ""
+msgstr "OMEMOan mesaĝon ricevis"
 
 #: dist/converse-no-dependencies.js:37970
 msgid "has gone offline"
@@ -873,7 +873,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:37974
 msgid "is busy"
-msgstr ""
+msgstr "estas okupata"
 
 #: dist/converse-no-dependencies.js:37976
 msgid "has come online"
@@ -944,11 +944,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:39579
 msgid "Your avatar image"
-msgstr ""
+msgstr "Via profilbildo"
 
 #: dist/converse-no-dependencies.js:39580
 msgid "Your Profile"
-msgstr ""
+msgstr "Via profilo"
 
 #: dist/converse-no-dependencies.js:39581
 #: dist/converse-no-dependencies.js:39668
@@ -957,23 +957,23 @@ msgstr ""
 #: dist/converse-no-dependencies.js:77207
 #: dist/converse-no-dependencies.js:77321
 msgid "Close"
-msgstr ""
+msgstr "Fermi"
 
 #: dist/converse-no-dependencies.js:39582
 msgid "Email"
-msgstr ""
+msgstr "Retpoŝto"
 
 #: dist/converse-no-dependencies.js:39583
 msgid "Full Name"
-msgstr ""
+msgstr "Kompleta nomo"
 
 #: dist/converse-no-dependencies.js:39584
 msgid "XMPP Address (JID)"
-msgstr ""
+msgstr "XMPPa adreso (JIDo)"
 
 #: dist/converse-no-dependencies.js:39586
 msgid "Role"
-msgstr ""
+msgstr "Rolo"
 
 #: dist/converse-no-dependencies.js:39587
 msgid ""
@@ -983,7 +983,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:39588
 msgid "URL"
-msgstr ""
+msgstr "Ligilo"
 
 #: dist/converse-no-dependencies.js:39618
 msgid "Sorry, an error happened while trying to save your profile data."
@@ -996,12 +996,12 @@ msgstr ""
 #: dist/converse-no-dependencies.js:39667
 #: dist/converse-no-dependencies.js:41408
 msgid "Away"
-msgstr ""
+msgstr "For"
 
 #: dist/converse-no-dependencies.js:39669
 #: dist/converse-no-dependencies.js:41407
 msgid "Busy"
-msgstr ""
+msgstr "Okupite"
 
 #: dist/converse-no-dependencies.js:39671
 msgid "Custom status"
@@ -1010,12 +1010,12 @@ msgstr ""
 #: dist/converse-no-dependencies.js:39672
 #: dist/converse-no-dependencies.js:41410
 msgid "Offline"
-msgstr ""
+msgstr "Elrete"
 
 #: dist/converse-no-dependencies.js:39673
 #: dist/converse-no-dependencies.js:41405
 msgid "Online"
-msgstr ""
+msgstr "Enrete"
 
 #: dist/converse-no-dependencies.js:39675
 msgid "Away for long"
@@ -1047,7 +1047,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:39739
 #, javascript-format
 msgid "I am %1$s"
-msgstr ""
+msgstr "Mi estas %1$s"
 
 #: dist/converse-no-dependencies.js:39742
 msgid "Change settings"
@@ -1059,7 +1059,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:39744
 msgid "Log out"
-msgstr ""
+msgstr "Elsaluti"
 
 #: dist/converse-no-dependencies.js:39745
 msgid "Show details about this chat client"
@@ -1067,7 +1067,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:39746
 msgid "Your profile"
-msgstr ""
+msgstr "Via profilo"
 
 #: dist/converse-no-dependencies.js:39786
 msgid "Are you sure you want to log out?"
@@ -1076,11 +1076,11 @@ msgstr ""
 #: dist/converse-no-dependencies.js:39795
 #: dist/converse-no-dependencies.js:39805
 msgid "online"
-msgstr ""
+msgstr "enrete"
 
 #: dist/converse-no-dependencies.js:39797
 msgid "busy"
-msgstr ""
+msgstr "okupite"
 
 #: dist/converse-no-dependencies.js:39799
 msgid "away for long"
@@ -1088,15 +1088,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:39801
 msgid "away"
-msgstr ""
+msgstr "fore"
 
 #: dist/converse-no-dependencies.js:39803
 msgid "offline"
-msgstr ""
+msgstr "elrete"
 
 #: dist/converse-no-dependencies.js:40154
 msgid " e.g. conversejs.org"
-msgstr ""
+msgstr " ekz. conversejs.org"
 
 #: dist/converse-no-dependencies.js:40204
 msgid "Fetch registration form"
@@ -1108,7 +1108,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:40206
 msgid "here"
-msgstr ""
+msgstr "ĉi tie"
 
 #: dist/converse-no-dependencies.js:40254
 msgid "Sorry, we're unable to connect to your chosen provider."
@@ -1133,7 +1133,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:40471
 msgid "Registered successfully"
-msgstr ""
+msgstr "Registrita sukcese"
 
 #: dist/converse-no-dependencies.js:40578
 msgid ""
@@ -1147,7 +1147,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:40974
 msgid "Open Groupchats"
-msgstr ""
+msgstr "Enbabilejoj"
 
 #: dist/converse-no-dependencies.js:41024
 #, javascript-format
@@ -1156,15 +1156,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:41215
 msgid "This contact is busy"
-msgstr ""
+msgstr "Ĉi tiu kontakto estas okupata"
 
 #: dist/converse-no-dependencies.js:41216
 msgid "This contact is online"
-msgstr ""
+msgstr "Ĉi tiu kontakto estas enreta"
 
 #: dist/converse-no-dependencies.js:41217
 msgid "This contact is offline"
-msgstr ""
+msgstr "Ĉi tiu kontakto estas elreta"
 
 #: dist/converse-no-dependencies.js:41218
 msgid "This contact is unavailable"
@@ -1176,15 +1176,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:41220
 msgid "This contact is away"
-msgstr ""
+msgstr "Ĉi tiu kontakto estas for"
 
 #: dist/converse-no-dependencies.js:41223
 msgid "Groups"
-msgstr ""
+msgstr "Grupoj"
 
 #: dist/converse-no-dependencies.js:41225
 msgid "My contacts"
-msgstr ""
+msgstr "Miaj kontaktoj"
 
 #: dist/converse-no-dependencies.js:41227
 msgid "Pending contacts"
@@ -1200,39 +1200,39 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:41276
 msgid "Contact name"
-msgstr ""
+msgstr "Nomo de kontakto"
 
 #: dist/converse-no-dependencies.js:41279
 msgid "Add a Contact"
-msgstr ""
+msgstr "Aldoni kontakton"
 
 #: dist/converse-no-dependencies.js:41280
 msgid "XMPP Address"
-msgstr ""
+msgstr "XMPPa adreso"
 
 #: dist/converse-no-dependencies.js:41282
 msgid "name@example.org"
-msgstr ""
+msgstr "nomo@ekzemplo.org"
 
 #: dist/converse-no-dependencies.js:41283
 msgid "Add"
-msgstr ""
+msgstr "Aldoni"
 
 #: dist/converse-no-dependencies.js:41399
 msgid "Filter"
-msgstr ""
+msgstr "Filtri"
 
 #: dist/converse-no-dependencies.js:41400
 msgid "Filter by contact name"
-msgstr ""
+msgstr "Filtri laŭ kontaktnomo"
 
 #: dist/converse-no-dependencies.js:41401
 msgid "Filter by group name"
-msgstr ""
+msgstr "Filtri laŭ grupnomo"
 
 #: dist/converse-no-dependencies.js:41402
 msgid "Filter by status"
-msgstr ""
+msgstr "Filtri laŭ statuso"
 
 #: dist/converse-no-dependencies.js:41403
 msgid "Any"
@@ -1240,7 +1240,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:41404
 msgid "Unread"
-msgstr ""
+msgstr "Nelegita"
 
 #: dist/converse-no-dependencies.js:41406
 msgid "Chatty"
@@ -1277,11 +1277,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:42002
 msgid "Contacts"
-msgstr ""
+msgstr "Kontaktoj"
 
 #: dist/converse-no-dependencies.js:42003
 msgid "Add a contact"
-msgstr ""
+msgstr "Aldoni kontakton"
 
 #: dist/converse-no-dependencies.js:42004
 msgid "Re-sync your contacts"
@@ -1366,7 +1366,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:49667
 #, javascript-format
 msgid "Error: the groupchat %1$s does not exist."
-msgstr ""
+msgstr "Eraro: la %1$s babilejo ne ekzistas."
 
 #: dist/converse-no-dependencies.js:49669
 msgid "Sorry, you're not allowed to register in this groupchat"
@@ -1387,7 +1387,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:74623
 msgid "This groupchat no longer exists"
-msgstr ""
+msgstr "Ĉi tiu babilejo jam ne ekzistas"
 
 #: dist/converse-no-dependencies.js:74629
 msgid "The conversation has moved. Click below to enter."
@@ -1395,19 +1395,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:74656
 msgid "Name"
-msgstr ""
+msgstr "Nomo"
 
 #: dist/converse-no-dependencies.js:74660
 msgid "Groupchat address (JID)"
-msgstr ""
+msgstr "Adreso de babilejo (JIDo)"
 
 #: dist/converse-no-dependencies.js:74664
 msgid "Description"
-msgstr ""
+msgstr "Priskribo"
 
 #: dist/converse-no-dependencies.js:74670
 msgid "Topic"
-msgstr ""
+msgstr "Temo"
 
 #: dist/converse-no-dependencies.js:74674
 msgid "Topic author"
@@ -1454,7 +1454,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:74720
 #: dist/converse-no-dependencies.js:74872
 msgid "Members only"
-msgstr ""
+msgstr "Nur anoj"
 
 #: dist/converse-no-dependencies.js:74722
 msgid "This groupchat is restricted to members only"
@@ -1483,7 +1483,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:74752
 #: dist/converse-no-dependencies.js:74904
 msgid "Not anonymous"
-msgstr ""
+msgstr "Ne anonima"
 
 #: dist/converse-no-dependencies.js:74754
 #: dist/converse-no-dependencies.js:74902
@@ -1523,7 +1523,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:74848
 msgid "No password"
-msgstr ""
+msgstr "Neniu pasvorto"
 
 #: dist/converse-no-dependencies.js:74870
 msgid "this groupchat is restricted to members only"
@@ -1531,19 +1531,19 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:75352
 msgid "Uploading file:"
-msgstr ""
+msgstr "Alŝutado de dosiero:"
 
 #: dist/converse-no-dependencies.js:75797
 msgid "XMPP Username:"
-msgstr ""
+msgstr "XMPPa salutnomo:"
 
 #: dist/converse-no-dependencies.js:75803
 msgid "Password:"
-msgstr ""
+msgstr "Pasvorto:"
 
 #: dist/converse-no-dependencies.js:75805
 msgid "password"
-msgstr ""
+msgstr "pasvorto"
 
 #: dist/converse-no-dependencies.js:75815
 msgid "This is a trusted device"
@@ -1560,7 +1560,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:75821
 msgid "Log in"
-msgstr ""
+msgstr "Ensaluti"
 
 #: dist/converse-no-dependencies.js:75827
 msgid "Click here to log in anonymously"
@@ -1576,7 +1576,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:75973
 msgid "Message versions"
-msgstr ""
+msgstr "Eksaj versioj"
 
 #: dist/converse-no-dependencies.js:76198
 msgid "Save and close"
@@ -1592,7 +1592,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:76216
 msgid "Select all"
-msgstr ""
+msgstr "Elekti ĉiujn"
 
 #: dist/converse-no-dependencies.js:76218
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
@@ -1617,15 +1617,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:76324
 msgid "Don't have a chat account?"
-msgstr ""
+msgstr "Ne havas konversacian konton?"
 
 #: dist/converse-no-dependencies.js:76326
 msgid "Create an account"
-msgstr ""
+msgstr "Krei konton"
 
 #: dist/converse-no-dependencies.js:76347
 msgid "Create your account"
-msgstr ""
+msgstr "Krei vian konton"
 
 #: dist/converse-no-dependencies.js:76349
 msgid "Please enter the XMPP provider to register with:"
@@ -1634,12 +1634,12 @@ msgstr ""
 #: dist/converse-no-dependencies.js:76367
 #: dist/converse-no-dependencies.js:76406
 msgid "Already have a chat account?"
-msgstr ""
+msgstr "Jam havas konversacian konton?"
 
 #: dist/converse-no-dependencies.js:76369
 #: dist/converse-no-dependencies.js:76408
 msgid "Log in here"
-msgstr ""
+msgstr "Ensaluti ĉi tie"
 
 #: dist/converse-no-dependencies.js:76390
 msgid "Account Registration:"
@@ -1647,7 +1647,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:76398
 msgid "Register"
-msgstr ""
+msgstr "Registri"
 
 #: dist/converse-no-dependencies.js:76402
 msgid "Choose a different provider"
@@ -1663,15 +1663,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:77211
 msgid "The User's Profile Image"
-msgstr ""
+msgstr "Profilbildo de la uzanto"
 
 #: dist/converse-no-dependencies.js:77221
 msgid "Full Name:"
-msgstr ""
+msgstr "Kompleta nomo:"
 
 #: dist/converse-no-dependencies.js:77227
 msgid "XMPP Address:"
-msgstr ""
+msgstr "XMPPa adreso:"
 
 #: dist/converse-no-dependencies.js:77235
 msgid "Nickname:"
@@ -1679,15 +1679,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:77243
 msgid "URL:"
-msgstr ""
+msgstr "Ligilo:"
 
 #: dist/converse-no-dependencies.js:77253
 msgid "Email:"
-msgstr ""
+msgstr "Retpoŝto:"
 
 #: dist/converse-no-dependencies.js:77263
 msgid "Role:"
-msgstr ""
+msgstr "Rolo:"
 
 #: dist/converse-no-dependencies.js:77271
 msgid "OMEMO Fingerprints"
@@ -1707,7 +1707,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:77327
 msgid "Remove as contact"
-msgstr ""
+msgstr "Forigi kontakton"
 
 #: dist/converse-no-dependencies.js:77538
 #, javascript-format

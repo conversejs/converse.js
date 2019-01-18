@@ -2,6 +2,7 @@
 
 ## 4.1.1 (unreleased)
 
+- Accessibility: Tag the chat-content as an ARIA live region, for screen readers
 - #1408 new config option `roomconfig_whitelist`
 
 ## 4.1.0 (2019-01-11)

@@ -92295,7 +92295,7 @@ __p += '<!-- src/templates/chatarea.html -->\n<div class="chat-area col-md-9 col
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;
-__p += '"></div>\n    <div class="message-form-container"/>\n</div>\n';
+__p += '" aria-live="polite"></div>\n    <div class="message-form-container"/>\n</div>\n';
 return __p
 };
 
@@ -92316,7 +92316,7 @@ __p += '<!-- src/templates/chatbox.html -->\n<div class="flyout box-flyout">\n  
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;
-__p += '"></div>\n        <div class="message-form-container"></div>\n    </div>\n</div>\n';
+__p += '" aria-live="polite"></div>\n        <div class="message-form-container"></div>\n    </div>\n</div>\n';
 return __p
 };
 

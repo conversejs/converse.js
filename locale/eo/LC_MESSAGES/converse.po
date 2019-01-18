@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
 "PO-Revision-Date: 2019-01-18 16:17+0000\n"
-"Last-Translator: Matthijs <matthijs@wirevirt.net>\n"
+"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/conversejs/"
 "translations/eo/>\n"
 "Language: eo\n"
@@ -77,7 +77,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:30972
 #: dist/converse-no-dependencies.js:40903
 msgid "Leave this groupchat"
-msgstr ""
+msgstr "Lasas ĉi tiu babilejo"
 
 #: dist/converse-no-dependencies.js:30973
 msgid "Remove this bookmark"
@@ -137,7 +137,7 @@ msgstr "Mesaĝo"
 
 #: dist/converse-no-dependencies.js:31855
 msgid "Send"
-msgstr "Sendas"
+msgstr "Sendi"
 
 #: dist/converse-no-dependencies.js:31856
 msgid "Optional hint"
@@ -150,7 +150,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:32313
 #: dist/converse-no-dependencies.js:36496
 msgid "Remove messages"
-msgstr ""
+msgstr "Forigi mesaĝojn"
 
 #: dist/converse-no-dependencies.js:32313
 msgid "Write in the third person"
@@ -159,7 +159,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:32313
 #: dist/converse-no-dependencies.js:36496
 msgid "Show this menu"
-msgstr ""
+msgstr "Montras ĉi tiun menuon"
 
 #: dist/converse-no-dependencies.js:32537
 msgid "Are you sure you want to clear the messages from this conversation?"
@@ -179,12 +179,12 @@ msgstr ""
 #: dist/converse-no-dependencies.js:32663
 #, javascript-format
 msgid "%1$s is busy"
-msgstr ""
+msgstr "%1$s estas okupata"
 
 #: dist/converse-no-dependencies.js:32665
 #, javascript-format
 msgid "%1$s is online"
-msgstr ""
+msgstr "%1$s estas enreta"
 
 #: dist/converse-no-dependencies.js:33400
 msgid "Username"
@@ -192,16 +192,16 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:33400
 msgid "user@domain"
-msgstr ""
+msgstr "uzanto@domajno"
 
 #: dist/converse-no-dependencies.js:33420
 #: dist/converse-no-dependencies.js:41284
 msgid "Please enter a valid XMPP address"
-msgstr ""
+msgstr "Bonvolu eniri validan XMPPan adreson"
 
 #: dist/converse-no-dependencies.js:33533
 msgid "Chat Contacts"
-msgstr ""
+msgstr "Konversaciaj kontaktoj"
 
 #: dist/converse-no-dependencies.js:33533
 msgid "Toggle chat"
@@ -209,25 +209,25 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:34554
 msgid "Show more"
-msgstr ""
+msgstr "Montri pli"
 
 #: dist/converse-no-dependencies.js:34604
 msgid "Typing from another device"
-msgstr ""
+msgstr "Tajpanta de alia aparato"
 
 #: dist/converse-no-dependencies.js:34606
 #, javascript-format
 msgid "%1$s is typing"
-msgstr ""
+msgstr "%1$s estas tajpanta"
 
 #: dist/converse-no-dependencies.js:34610
 msgid "Stopped typing on the other device"
-msgstr ""
+msgstr "Haltis tajpanta sur la alia aparato"
 
 #: dist/converse-no-dependencies.js:34612
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr ""
+msgstr "%1$s ĉesis tajpi"
 
 #: dist/converse-no-dependencies.js:34652
 msgid "Unencryptable OMEMO message"
@@ -248,7 +248,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:35665
 msgid "This groupchat is not anonymous"
-msgstr ""
+msgstr "Ĉi tiu babilejo ne estas anonima"
 
 #: dist/converse-no-dependencies.js:35666
 msgid "This groupchat now shows unavailable members"
@@ -272,23 +272,23 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:35671
 msgid "This groupchat is now no longer anonymous"
-msgstr ""
+msgstr "Ĉi tiu babilejo estas nun malanonima"
 
 #: dist/converse-no-dependencies.js:35672
 msgid "This groupchat is now semi-anonymous"
-msgstr ""
+msgstr "Ĉi tiu babilejo estas nun malanonima"
 
 #: dist/converse-no-dependencies.js:35673
 msgid "This groupchat is now fully-anonymous"
-msgstr ""
+msgstr "Ĉi tiu babilejo estas nun anonima"
 
 #: dist/converse-no-dependencies.js:35674
 msgid "A new groupchat has been created"
-msgstr ""
+msgstr "Nova babilejo estis kreita"
 
 #: dist/converse-no-dependencies.js:35677
 msgid "You have been banned from this groupchat"
-msgstr ""
+msgstr "Vi estis malpermesita de ĉi tiu babilejo"
 
 #: dist/converse-no-dependencies.js:35678
 msgid "You have been kicked from this groupchat"
@@ -324,7 +324,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:35694
 #, javascript-format
 msgid "%1$s has been banned"
-msgstr ""
+msgstr "%1$s estis malpermesita"
 
 #: dist/converse-no-dependencies.js:35695
 #, javascript-format
@@ -362,7 +362,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:35734
 msgid "Groupchat Address (JID):"
-msgstr ""
+msgstr "Babilejo adresa (JID-o):"
 
 #: dist/converse-no-dependencies.js:35735
 msgid "Participants:"
@@ -394,13 +394,13 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:35741
 msgid "Non-anonymous"
-msgstr ""
+msgstr "Ne-anonima"
 
 #: dist/converse-no-dependencies.js:35742
 #: dist/converse-no-dependencies.js:74728
 #: dist/converse-no-dependencies.js:74880
 msgid "Open"
-msgstr ""
+msgstr "Malfermi"
 
 #: dist/converse-no-dependencies.js:35743
 msgid "Permanent"
@@ -410,7 +410,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:74712
 #: dist/converse-no-dependencies.js:74864
 msgid "Public"
-msgstr ""
+msgstr "Publika"
 
 #: dist/converse-no-dependencies.js:35745
 #: dist/converse-no-dependencies.js:74760
@@ -434,31 +434,31 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:35784
 msgid "Server address"
-msgstr ""
+msgstr "Adreso de servilo"
 
 #: dist/converse-no-dependencies.js:35785
 msgid "Show groupchats"
-msgstr ""
+msgstr "Montri babilejojn"
 
 #: dist/converse-no-dependencies.js:35786
 msgid "conference.example.org"
-msgstr ""
+msgstr "konferenco.ekzemplo.org"
 
 #: dist/converse-no-dependencies.js:35837
 msgid "No groupchats found"
-msgstr ""
+msgstr "Neniu babilejoj trovita"
 
 #: dist/converse-no-dependencies.js:35855
 msgid "Groupchats found:"
-msgstr ""
+msgstr "Babilejoj trovita:"
 
 #: dist/converse-no-dependencies.js:35911
 msgid "Enter a new Groupchat"
-msgstr ""
+msgstr "Eniri novan babilejon"
 
 #: dist/converse-no-dependencies.js:35912
 msgid "Groupchat address"
-msgstr ""
+msgstr "Adreso de babilejo"
 
 #: dist/converse-no-dependencies.js:35913
 #: dist/converse-no-dependencies.js:41276
@@ -467,11 +467,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:35914
 msgid "name@conference.example.org"
-msgstr ""
+msgstr "nomo@konferenco.ekzemplo.org"
 
 #: dist/converse-no-dependencies.js:35915
 msgid "Join"
-msgstr ""
+msgstr "Aliĝi"
 
 #: dist/converse-no-dependencies.js:35964
 #, javascript-format
@@ -506,13 +506,13 @@ msgstr ""
 #: dist/converse-no-dependencies.js:36168
 #, javascript-format
 msgid "%1$s has been banned from this groupchat"
-msgstr ""
+msgstr "%1$s estis malpermesita de ĉi tiu babilejo"
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
 #: dist/converse-no-dependencies.js:36171
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr ""
+msgstr "%1$s estas nun %2$s el ĉi tiu babilejo"
 
 #: dist/converse-no-dependencies.js:36183
 #, javascript-format
@@ -527,7 +527,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:36191
 #, javascript-format
 msgid "%1$s has been muted"
-msgstr ""
+msgstr "%1$s estis silentigita"
 
 #: dist/converse-no-dependencies.js:36195
 #, javascript-format
@@ -583,7 +583,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Ban user from groupchat"
-msgstr ""
+msgstr "Malpermesa uzanto de babilejo"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Change user role to participant"
@@ -599,7 +599,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Write in 3rd person"
-msgstr ""
+msgstr "Skribas en 3a persono"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Grant membership to a user"
@@ -662,15 +662,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:36852
 msgid "Enter groupchat"
-msgstr ""
+msgstr "Eniri babilejon"
 
 #: dist/converse-no-dependencies.js:36877
 msgid "This groupchat requires a password"
-msgstr ""
+msgstr "Ĉi tiu babilejo necesigas pasvorton"
 
 #: dist/converse-no-dependencies.js:36878
 msgid "Password: "
-msgstr ""
+msgstr "Pasvorto: "
 
 #: dist/converse-no-dependencies.js:36879
 msgid "Submit"
@@ -700,12 +700,12 @@ msgstr ""
 #: dist/converse-no-dependencies.js:37167
 #, javascript-format
 msgid "%1$s has entered the groupchat"
-msgstr ""
+msgstr "%1$s eniris la babilejon"
 
 #: dist/converse-no-dependencies.js:37169
 #, javascript-format
 msgid "%1$s has entered the groupchat. \"%2$s\""
-msgstr ""
+msgstr "%1$s eniris la babilejon. „%2$s“"
 
 #: dist/converse-no-dependencies.js:37206
 #, javascript-format
@@ -733,7 +733,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:37280
 msgid "You have been banned from this groupchat."
-msgstr ""
+msgstr "Vi estis malpermesita de ĉi tiu babilejo."
 
 #: dist/converse-no-dependencies.js:37284
 msgid "No nickname was specified."
@@ -741,7 +741,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:37288
 msgid "You are not allowed to create new groupchats."
-msgstr ""
+msgstr "Vi ne estas permesita krei novajn babilejojn."
 
 #: dist/converse-no-dependencies.js:37290
 msgid "Your nickname doesn't conform to this groupchat's policies."
@@ -749,7 +749,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:37296
 msgid "This groupchat does not (yet) exist."
-msgstr ""
+msgstr "Ĉi tiu babilejo ne (ankoraŭ) ekzistas."
 
 #: dist/converse-no-dependencies.js:37298
 msgid "This groupchat has reached its maximum number of participants."
@@ -776,11 +776,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:37394
 msgid "Groupchats"
-msgstr ""
+msgstr "Babilejoj"
 
 #: dist/converse-no-dependencies.js:37395
 msgid "Add a new groupchat"
-msgstr ""
+msgstr "Aldoni novan babilejon"
 
 #: dist/converse-no-dependencies.js:37396
 msgid "Query for groupchats"

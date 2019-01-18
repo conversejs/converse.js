@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2019-01-18 16:17+0000\n"
-"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
+"PO-Revision-Date: 2019-01-19 17:19+0000\n"
+"Last-Translator: Matthijs <matthijs@wirevirt.net>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/conversejs/"
 "translations/eo/>\n"
 "Language: eo\n"
@@ -77,7 +77,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:30972
 #: dist/converse-no-dependencies.js:40903
 msgid "Leave this groupchat"
-msgstr "Lasas ĉi tiu babilejo"
+msgstr "Lasi ĉi tiun babilejon"
 
 #: dist/converse-no-dependencies.js:30973
 msgid "Remove this bookmark"
@@ -159,7 +159,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:32313
 #: dist/converse-no-dependencies.js:36496
 msgid "Show this menu"
-msgstr "Montras ĉi tiun menuon"
+msgstr "Montri ĉi tiun menuon"
 
 #: dist/converse-no-dependencies.js:32537
 msgid "Are you sure you want to clear the messages from this conversation?"
@@ -213,7 +213,7 @@ msgstr "Montri pli"
 
 #: dist/converse-no-dependencies.js:34604
 msgid "Typing from another device"
-msgstr "Tajpanta de alia aparato"
+msgstr "Tajpas de alia aparato"
 
 #: dist/converse-no-dependencies.js:34606
 #, javascript-format
@@ -222,7 +222,7 @@ msgstr "%1$s estas tajpanta"
 
 #: dist/converse-no-dependencies.js:34610
 msgid "Stopped typing on the other device"
-msgstr "Haltis tajpanta sur la alia aparato"
+msgstr "Haltis tajpi sur la alia aparato"
 
 #: dist/converse-no-dependencies.js:34612
 #, javascript-format
@@ -276,7 +276,7 @@ msgstr "Ĉi tiu babilejo estas nun malanonima"
 
 #: dist/converse-no-dependencies.js:35672
 msgid "This groupchat is now semi-anonymous"
-msgstr "Ĉi tiu babilejo estas nun malanonima"
+msgstr "Ĉi tiu babilejo estas nun parta anonima"
 
 #: dist/converse-no-dependencies.js:35673
 msgid "This groupchat is now fully-anonymous"
@@ -284,7 +284,7 @@ msgstr "Ĉi tiu babilejo estas nun anonima"
 
 #: dist/converse-no-dependencies.js:35674
 msgid "A new groupchat has been created"
-msgstr "Nova babilejo estis kreita"
+msgstr "Kreis novan babilejon"
 
 #: dist/converse-no-dependencies.js:35677
 msgid "You have been banned from this groupchat"

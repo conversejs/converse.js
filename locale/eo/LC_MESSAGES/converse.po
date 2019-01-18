@@ -8,13 +8,16 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2019-01-18 13:49+0000\n"
+"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
+"Language-Team: Esperanto <https://hosted.weblate.org/projects/conversejs/"
+"translations/eo/>\n"
 "Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.4-dev\n"
 
 #: dist/converse-no-dependencies.js:30588
 #: dist/converse-no-dependencies.js:30645
@@ -37,7 +40,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:39670
 #: dist/converse-no-dependencies.js:76431
 msgid "Cancel"
-msgstr ""
+msgstr "Nuligas"
 
 #: dist/converse-no-dependencies.js:30681
 msgid "The name for this bookmark:"
@@ -50,7 +53,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:30683
 #: dist/converse-no-dependencies.js:39674
 msgid "Save"
-msgstr ""
+msgstr "Savas"
 
 #: dist/converse-no-dependencies.js:30761
 #, javascript-format
@@ -65,7 +68,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38543
 #: dist/converse-no-dependencies.js:39618
 msgid "Error"
-msgstr ""
+msgstr "Eraro"
 
 #: dist/converse-no-dependencies.js:30883
 msgid "Sorry, something went wrong while trying to save your bookmark."
@@ -122,7 +125,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:31818
 #: dist/converse-no-dependencies.js:31860
 msgid "You have unread messages"
-msgstr ""
+msgstr "Vi havas nelegitajn mesaĝojn"
 
 #: dist/converse-no-dependencies.js:31846
 msgid "Hidden message"
@@ -130,11 +133,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:31848
 msgid "Message"
-msgstr ""
+msgstr "Mesaĝo"
 
 #: dist/converse-no-dependencies.js:31855
 msgid "Send"
-msgstr ""
+msgstr "Sendas"
 
 #: dist/converse-no-dependencies.js:31856
 msgid "Optional hint"

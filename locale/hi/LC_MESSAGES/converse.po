@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2018-09-21 17:28+0000\n"
-"Last-Translator: John Doe <music.kashish@gmail.com>\n"
+"PO-Revision-Date: 2019-01-24 10:04+0000\n"
+"Last-Translator: Chinmay Sharma <infy.chinmaysharma@gmail.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/conversejs/"
 "translations/hi/>\n"
 "Language: hi\n"
@@ -17,20 +17,20 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.2-dev\n"
+"X-Generator: Weblate 3.4\n"
 
 #: dist/converse-no-dependencies.js:30588
 #: dist/converse-no-dependencies.js:30645
 #: dist/converse-no-dependencies.js:30678
 #: dist/converse-no-dependencies.js:40905
 msgid "Bookmark this groupchat"
-msgstr ""
+msgstr "ग्रुप चैट कौ बुकमार्क करें"
 
 #: dist/converse-no-dependencies.js:30642
 #: dist/converse-no-dependencies.js:30974
 #: dist/converse-no-dependencies.js:40904
 msgid "Unbookmark this groupchat"
-msgstr ""
+msgstr "ग्रुप चैट कौ अनबुकमार्क करें"
 
 #: dist/converse-no-dependencies.js:30679
 msgid "Would you like this groupchat to be automatically joined upon startup?"
@@ -44,7 +44,7 @@ msgstr "छोड़ें"
 
 #: dist/converse-no-dependencies.js:30681
 msgid "The name for this bookmark:"
-msgstr ""
+msgstr "इस बुकमार्क का नाम:"
 
 #: dist/converse-no-dependencies.js:30682
 msgid "What should your nickname for this groupchat be?"

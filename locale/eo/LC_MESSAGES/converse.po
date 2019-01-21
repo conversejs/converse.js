@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2019-01-20 19:19+0000\n"
+"PO-Revision-Date: 2019-01-24 10:04+0000\n"
 "Last-Translator: anubis <anubister@laposte.net>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/conversejs/"
 "translations/eo/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.4-dev\n"
+"X-Generator: Weblate 3.4\n"
 
 #: dist/converse-no-dependencies.js:30588
 #: dist/converse-no-dependencies.js:30645
@@ -242,11 +242,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:35074
 msgid "Click to restore this chat"
-msgstr ""
+msgstr "Klaku por restaŭri tiun konversacion"
 
 #: dist/converse-no-dependencies.js:35271
 msgid "Minimized"
-msgstr ""
+msgstr "Minimumigita"
 
 #: dist/converse-no-dependencies.js:35665
 msgid "This groupchat is not anonymous"
@@ -262,7 +262,7 @@ msgstr "Tiu babilejo ne afiŝas nedisponeblajn anojn"
 
 #: dist/converse-no-dependencies.js:35668
 msgid "The groupchat configuration has changed"
-msgstr ""
+msgstr "La babilejo konfiguracio ŝanĝis"
 
 #: dist/converse-no-dependencies.js:35669
 msgid "groupchat logging is now enabled"
@@ -346,7 +346,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:35698
 #, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr ""
+msgstr "%1$s estis forigita ĉar ne estanta ano"
 
 #: dist/converse-no-dependencies.js:35701
 #, javascript-format
@@ -376,7 +376,7 @@ msgstr "Funkcioj:"
 
 #: dist/converse-no-dependencies.js:35737
 msgid "Requires authentication"
-msgstr ""
+msgstr "Devigas aŭtentigon"
 
 #: dist/converse-no-dependencies.js:35738
 #: dist/converse-no-dependencies.js:74704
@@ -386,13 +386,13 @@ msgstr "Kaŝita"
 
 #: dist/converse-no-dependencies.js:35739
 msgid "Requires an invitation"
-msgstr ""
+msgstr "Devigas inviton"
 
 #: dist/converse-no-dependencies.js:35740
 #: dist/converse-no-dependencies.js:74768
 #: dist/converse-no-dependencies.js:74920
 msgid "Moderated"
-msgstr ""
+msgstr "Kontrolata"
 
 #: dist/converse-no-dependencies.js:35741
 msgid "Non-anonymous"
@@ -406,7 +406,7 @@ msgstr "Malfermi"
 
 #: dist/converse-no-dependencies.js:35743
 msgid "Permanent"
-msgstr ""
+msgstr "Konstanta"
 
 #: dist/converse-no-dependencies.js:35744
 #: dist/converse-no-dependencies.js:74712
@@ -424,15 +424,15 @@ msgstr ""
 #: dist/converse-no-dependencies.js:74744
 #: dist/converse-no-dependencies.js:74896
 msgid "Temporary"
-msgstr ""
+msgstr "Provizora"
 
 #: dist/converse-no-dependencies.js:35747
 msgid "Unmoderated"
-msgstr ""
+msgstr "Nekontrolata"
 
 #: dist/converse-no-dependencies.js:35783
 msgid "Query for Groupchats"
-msgstr ""
+msgstr "Peti babilejon"
 
 #: dist/converse-no-dependencies.js:35784
 msgid "Server address"
@@ -465,7 +465,7 @@ msgstr "Adreso de babilejo"
 #: dist/converse-no-dependencies.js:35913
 #: dist/converse-no-dependencies.js:41276
 msgid "Optional nickname"
-msgstr ""
+msgstr "Nedeviga kromnomo"
 
 #: dist/converse-no-dependencies.js:35914
 msgid "name@conference.example.org"
@@ -498,12 +498,12 @@ msgstr ""
 #: dist/converse-no-dependencies.js:36162
 #, javascript-format
 msgid "%1$s is no longer a permanent member of this groupchat"
-msgstr ""
+msgstr "%1$s ne plu estas konstanta ano de tiu babilejo"
 
 #: dist/converse-no-dependencies.js:36166
 #, javascript-format
 msgid "%1$s is now a permanent member of this groupchat"
-msgstr ""
+msgstr "%1$s nun estas konstanta ano de tiu babilejo"
 
 #: dist/converse-no-dependencies.js:36168
 #, javascript-format
@@ -538,23 +538,23 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:36204
 msgid "Close and leave this groupchat"
-msgstr ""
+msgstr "Fermi kaj eliri tiun babilejon"
 
 #: dist/converse-no-dependencies.js:36205
 msgid "Configure this groupchat"
-msgstr ""
+msgstr "Agordi tiun babilejon"
 
 #: dist/converse-no-dependencies.js:36206
 msgid "Show more details about this groupchat"
-msgstr ""
+msgstr "Afiŝi pli da informoj pri tiu babilejo"
 
 #: dist/converse-no-dependencies.js:36252
 msgid "Hide the list of participants"
-msgstr ""
+msgstr "Kaŝi liston de partoprenantoj"
 
 #: dist/converse-no-dependencies.js:36400
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "Malpermesita: vi ne havas la necesan rolon por fari tion."
 
 #: dist/converse-no-dependencies.js:36413
 msgid ""
@@ -589,11 +589,11 @@ msgstr "Malpermesi uzanton de babilejo"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Change user role to participant"
-msgstr ""
+msgstr "Ŝanĝi uzanton rolon al partoprenanto"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Destroy room"
-msgstr ""
+msgstr "Detrui ĉambron"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Kick user from groupchat"
@@ -613,7 +613,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Change your nickname"
-msgstr ""
+msgstr "Ŝanĝi vian kromnomon"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Grant moderator role to user"

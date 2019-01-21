@@ -66542,7 +66542,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          *    (String) recipient - JID of the person being invited
          *    (String) reason - Optional reason for the invitation
          */
-        if (this.get('membersonly')) {
+        if (this.features.get('membersonly')) {
           // When inviting to a members-only groupchat, we first add
           // the person to the member list by giving them an
           // affiliation of 'member' (if they're not affiliated

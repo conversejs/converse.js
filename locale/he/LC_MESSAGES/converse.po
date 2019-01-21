@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2019-01-18 09:19+0000\n"
+"PO-Revision-Date: 2019-01-24 10:04+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 3.4-dev\n"
+"X-Generator: Weblate 3.4\n"
 "X-Language: he\n"
 "X-Source-Language: en\n"
 
@@ -1531,12 +1531,11 @@ msgstr "חדר זה אינו אנונימי"
 #: dist/converse-no-dependencies.js:74720
 #: dist/converse-no-dependencies.js:74872
 msgid "Members only"
-msgstr ""
+msgstr "חברים בלבד"
 
 #: dist/converse-no-dependencies.js:74722
-#, fuzzy
 msgid "This groupchat is restricted to members only"
-msgstr "חדר זה הגיע לסף הנוכחים המרבי שלו"
+msgstr "התכתבות קבוצתית זו מוגבלת לחברים בלבד"
 
 #: dist/converse-no-dependencies.js:74730
 #: dist/converse-no-dependencies.js:74878
@@ -1583,9 +1582,8 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:74776
 #: dist/converse-no-dependencies.js:74928
-#, fuzzy
 msgid "Not moderated"
-msgstr "לא מבוקר"
+msgstr "ללא פיקוח"
 
 #: dist/converse-no-dependencies.js:74778
 #: dist/converse-no-dependencies.js:74926
@@ -1603,14 +1601,12 @@ msgid "Messages are archived on the server"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:74848
-#, fuzzy
 msgid "No password"
-msgstr "סיסמה"
+msgstr "ללא ססמה"
 
 #: dist/converse-no-dependencies.js:74870
-#, fuzzy
 msgid "this groupchat is restricted to members only"
-msgstr "חדר זה הגיע לסף הנוכחים המרבי שלו"
+msgstr "התכתבות קבוצתית זו מוגבלת לחברים בלבד"
 
 #: dist/converse-no-dependencies.js:75352
 msgid "Uploading file:"
@@ -1640,6 +1636,10 @@ msgid ""
 "cached data might be deleted. Please note, when using an untrusted device, "
 "OMEMO encryption is NOT available."
 msgstr ""
+"כדי לשפר את הביצועים, אנו שומרים את הנתונים שלך במטמון בדפדפן. יש לבטל סימון "
+"תיבה זו אם מדובר במחשב ציבורי או שברצונך שהנתונים שלך יימחקו עם היציאה "
+"מהחשבון. חשבון מאוד לצאת בצורה מפורשת אחרת יתכן שלא כל הנתונים שנשמרו "
+"יימחקו. לתשומת לבך, בעת שימוש במכשיר בלתי מהימן, אין תמיכה בהצפנת OMEMO."
 
 #: dist/converse-no-dependencies.js:75821
 msgid "Log in"
@@ -1663,32 +1663,32 @@ msgstr "גרסאות ההודעה"
 
 #: dist/converse-no-dependencies.js:76198
 msgid "Save and close"
-msgstr ""
+msgstr "לשמור ולסגור"
 
 #: dist/converse-no-dependencies.js:76202
 msgid "This device's OMEMO fingerprint"
-msgstr ""
+msgstr "טביעת אצבע מסוג ה־OMEMO של המכשיר"
 
 #: dist/converse-no-dependencies.js:76212
 msgid "Generate new keys and fingerprint"
-msgstr ""
+msgstr "יצירת מפתחות וטביעות אצבע חדשים"
 
 #: dist/converse-no-dependencies.js:76216
 msgid "Select all"
-msgstr ""
+msgstr "לבחור הכול"
 
 #: dist/converse-no-dependencies.js:76218
 msgid "Checkbox to select fingerprints of all other OMEMO devices"
-msgstr ""
+msgstr "תיבת סימון לבחירת טביעות אצבע של כל מכשירי ה־OMEMO האחרים"
 
 #: dist/converse-no-dependencies.js:76220
 msgid "Other OMEMO-enabled devices"
-msgstr ""
+msgstr "מכשירים אחרים תומכי OMEMO"
 
 #: dist/converse-no-dependencies.js:76228
 #: dist/converse-no-dependencies.js:76236
 msgid "Checkbox for selecting the following fingerprint"
-msgstr ""
+msgstr "תיבת סימון לבחירת טביעת האצבע הבאה"
 
 #: dist/converse-no-dependencies.js:76238
 msgid "Device without a fingerprint"
@@ -1696,23 +1696,23 @@ msgstr "מכשיר ללא טביעות אצבע"
 
 #: dist/converse-no-dependencies.js:76244
 msgid "Remove checked devices and close"
-msgstr ""
+msgstr "להסיר את המכשירים המסומנים ולסגור"
 
 #: dist/converse-no-dependencies.js:76324
 msgid "Don't have a chat account?"
-msgstr ""
+msgstr "אין לך חשבון התכתבות?"
 
 #: dist/converse-no-dependencies.js:76326
 msgid "Create an account"
-msgstr ""
+msgstr "יצירת חשבון"
 
 #: dist/converse-no-dependencies.js:76347
 msgid "Create your account"
-msgstr ""
+msgstr "יצירת חשבון משלך"
 
 #: dist/converse-no-dependencies.js:76349
 msgid "Please enter the XMPP provider to register with:"
-msgstr ""
+msgstr "נא להקליד את ספק ה־XMPP להרשמה מולו:"
 
 #: dist/converse-no-dependencies.js:76367
 #: dist/converse-no-dependencies.js:76406

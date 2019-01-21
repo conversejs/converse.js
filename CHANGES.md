@@ -3,6 +3,7 @@
 ## 4.1.1 (unreleased)
 
 - #1408 new config option `roomconfig_whitelist`
+- #1421 fix direct invite for membersonly room
 
 ## 4.1.0 (2019-01-11)
 

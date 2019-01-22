@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
 "PO-Revision-Date: 2019-01-24 10:04+0000\n"
-"Last-Translator: anubis <anubister@laposte.net>\n"
+"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/conversejs/"
 "translations/eo/>\n"
 "Language: eo\n"
@@ -514,7 +514,7 @@ msgstr "%1$s estis malpermesita de ĉi tiu babilejo"
 #: dist/converse-no-dependencies.js:36171
 #, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "%1$s estas nun %2$s el ĉi tiu babilejo"
+msgstr "%1$s estas nun %2$s en ĉi tiu babilejo"
 
 #: dist/converse-no-dependencies.js:36183
 #, javascript-format

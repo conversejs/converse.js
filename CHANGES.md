@@ -9,6 +9,7 @@
 - #1408 new config option `roomconfig_whitelist`
 - #1417 Margin between nickname and badge
 - #1421 fix direct invite for membersonly room
+- #1422 Resurrect the `muc_show_join_leave` option
 
 ## 4.1.0 (2019-01-11)
 

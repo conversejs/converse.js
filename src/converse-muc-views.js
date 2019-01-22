@@ -1523,7 +1523,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             showJoinNotification (occupant) {
-                if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
+                if (!_converse.muc_show_join_leave ||
+                        this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                     return;
                 }
                 const nick = occupant.get('nick'),
@@ -1576,7 +1577,9 @@ converse.plugins.add('converse-muc-views', {
             },
 
             showLeaveNotification (occupant) {
-                if (_.includes(occupant.get('states'), '303') || _.includes(occupant.get('states'), '307')) {
+                if (!_converse.muc_show_join_leave ||
+                        _.includes(occupant.get('states'), '303') ||
+                        _.includes(occupant.get('states'), '307')) {
                     return;
                 }
                 const nick = occupant.get('nick'),

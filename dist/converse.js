@@ -55035,7 +55035,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       },
 
       showJoinNotification(occupant) {
-        if (this.model.get('connection_status') !== _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.ENTERED) {
+        if (!_converse.muc_show_join_leave || this.model.get('connection_status') !== _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.ENTERED) {
           return;
         }
 
@@ -55095,7 +55095,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       },
 
       showLeaveNotification(occupant) {
-        if (_.includes(occupant.get('states'), '303') || _.includes(occupant.get('states'), '307')) {
+        if (!_converse.muc_show_join_leave || _.includes(occupant.get('states'), '303') || _.includes(occupant.get('states'), '307')) {
           return;
         }
 

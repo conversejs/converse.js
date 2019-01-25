@@ -544,8 +544,10 @@ converse.plugins.add('converse-chatboxes', {
                     'is_delayed': !_.isNil(delay),
                     'is_spoiler': !_.isNil(spoiler),
                     'message': _converse.chatboxes.getMessageBody(stanza) || undefined,
-                    'references': this.getReferencesFromStanza(stanza),
                     'msgid': stanza.getAttribute('id'),
+                    'references': this.getReferencesFromStanza(stanza),
+                    'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
+                    'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
                     'time': delay ? delay.getAttribute('stamp') : moment().format(),
                     'type': stanza.getAttribute('type')
                 };
@@ -571,25 +573,6 @@ converse.plugins.add('converse-chatboxes', {
                     attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
                 }
                 return attrs;
-            },
-
-            async createMessage (message, original_stanza) {
-                /* Create a Backbone.Message object inside this chat box
-                 * based on the identified message stanza.
-                 */
-                const attrs = await this.getMessageAttributesFromStanza(message, original_stanza),
-                      is_csn = u.isOnlyChatStateNotification(attrs);
-
-                if (is_csn && (attrs.is_delayed || (attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick')))) {
-                    // XXX: MUC leakage
-                    // No need showing delayed or our own CSN messages
-                    return;
-                } else if (!is_csn && !attrs.file && !attrs.plaintext && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
-                    // TODO: handle <subject> messages (currently being done by ChatRoom)
-                    return;
-                } else {
-                    return this.messages.create(attrs);
-                }
             },
 
             isHidden () {
@@ -680,7 +663,7 @@ converse.plugins.add('converse-chatboxes', {
                 });
             },
 
-            onErrorMessage (message) {
+            async onErrorMessage (message) {
                 /* Handler method for all incoming error message stanzas
                 */
                 const from_jid =  Strophe.getBareJidFromJid(message.getAttribute('from'));
@@ -708,8 +691,8 @@ converse.plugins.add('converse-chatboxes', {
                     _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
                     _converse.log(message, Strophe.LogLevel.ERROR);
                 }
-                chatbox.createMessage(message, message);
-                return true;
+                const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
+                chatbox.messages.create(attrs);
             },
 
             getMessageBody (stanza) {
@@ -736,7 +719,7 @@ converse.plugins.add('converse-chatboxes', {
                 _converse.api.send(receipt_stanza);
             },
 
-            onMessage (stanza) {
+            async onMessage (stanza) {
                 /* Handler method for all incoming single-user chat "message"
                  * stanzas.
                  *
@@ -816,13 +799,12 @@ converse.plugins.add('converse-chatboxes', {
                           message = msgid && chatbox.messages.findWhere({msgid});
                     if (!message) {
                         // Only create the message when we're sure it's not a duplicate
-                        chatbox.createMessage(stanza, original_stanza)
-                            .then(msg => chatbox.incrementUnreadMsgCounter(msg))
-                            .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                        const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
+                        const msg = chatbox.messages.create(attrs);
+                        chatbox.incrementUnreadMsgCounter(msg);
                     }
                 }
                 _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
-                return true;
             },
 
             getChatBox (jid, attrs={}, create) {

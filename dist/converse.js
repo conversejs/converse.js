@@ -51920,11 +51920,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       'afterShown': _.noop
     });
 
-    function onHeadlineMessage(message) {
+    async function onHeadlineMessage(message) {
       /* Handler method for all incoming messages of type "headline". */
-      const from_jid = message.getAttribute('from');
-
       if (utils.isHeadlineMessage(_converse, message)) {
+        const from_jid = message.getAttribute('from');
+
         if (_.includes(from_jid, '@') && !_converse.api.contacts.get(from_jid) && !_converse.allow_non_roster_messaging) {
           return;
         }
@@ -51942,19 +51942,21 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
           'from': from_jid
         });
 
-        chatbox.createMessage(message, message);
+        const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
+        await chatbox.messages.create(attrs);
 
         _converse.emit('message', {
           'chatbox': chatbox,
           'stanza': message
         });
       }
-
-      return true;
     }
 
     function registerHeadlineHandler() {
-      _converse.connection.addHandler(onHeadlineMessage, null, 'message');
+      _converse.connection.addHandler(message => {
+        onHeadlineMessage(message);
+        return true;
+      }, null, 'message');
     }
 
     _converse.on('connected', registerHeadlineHandler);
@@ -61803,8 +61805,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'is_delayed': !_.isNil(delay),
           'is_spoiler': !_.isNil(spoiler),
           'message': _converse.chatboxes.getMessageBody(stanza) || undefined,
-          'references': this.getReferencesFromStanza(stanza),
           'msgid': stanza.getAttribute('id'),
+          'references': this.getReferencesFromStanza(stanza),
+          'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
+          'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
           'time': delay ? delay.getAttribute('stamp') : moment().format(),
           'type': stanza.getAttribute('type')
         };
@@ -61835,25 +61839,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
 
         return attrs;
-      },
-
-      async createMessage(message, original_stanza) {
-        /* Create a Backbone.Message object inside this chat box
-         * based on the identified message stanza.
-         */
-        const attrs = await this.getMessageAttributesFromStanza(message, original_stanza),
-              is_csn = u.isOnlyChatStateNotification(attrs);
-
-        if (is_csn && (attrs.is_delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick'))) {
-          // XXX: MUC leakage
-          // No need showing delayed or our own CSN messages
-          return;
-        } else if (!is_csn && !attrs.file && !attrs.plaintext && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
-          // TODO: handle <subject> messages (currently being done by ChatRoom)
-          return;
-        } else {
-          return this.messages.create(attrs);
-        }
       },
 
       isHidden() {
@@ -61952,7 +61937,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
-      onErrorMessage(message) {
+      async onErrorMessage(message) {
         /* Handler method for all incoming error message stanzas
         */
         const from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
@@ -61990,8 +61975,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           _converse.log(message, Strophe.LogLevel.ERROR);
         }
 
-        chatbox.createMessage(message, message);
-        return true;
+        const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
+        chatbox.messages.create(attrs);
       },
 
       getMessageBody(stanza) {
@@ -62023,7 +62008,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         _converse.api.send(receipt_stanza);
       },
 
-      onMessage(stanza) {
+      async onMessage(stanza) {
         /* Handler method for all incoming single-user chat "message"
          * stanzas.
          *
@@ -62104,7 +62089,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
           if (!message) {
             // Only create the message when we're sure it's not a duplicate
-            chatbox.createMessage(stanza, original_stanza).then(msg => chatbox.incrementUnreadMsgCounter(msg)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+            const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
+            const msg = chatbox.messages.create(attrs);
+            chatbox.incrementUnreadMsgCounter(msg);
           }
         }
 
@@ -62112,8 +62099,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'stanza': original_stanza,
           'chatbox': chatbox
         });
-
-        return true;
       },
 
       getChatBox(jid, attrs = {}, create) {
@@ -65298,7 +65283,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
 
           this.addSpinner();
 
-          _converse.api.archive.query(_.extend({
+          _converse.api.archive.query( // TODO: only query from the last message we have
+          // in our history
+          _.extend({
             'groupchat': is_groupchat,
             'before': '',
             // Page backwards from the most recent message
@@ -66839,28 +66826,37 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           return;
         }
 
-        const jid = stanza.getAttribute('from'),
-              resource = Strophe.getResourceFromJid(jid),
-              sender = resource && Strophe.unescapeNode(resource) || '';
+        const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+
+        if (!attrs.nick) {
+          return;
+        }
 
         if (!this.handleMessageCorrection(stanza)) {
-          if (sender === '') {
+          if (attrs.subject && !attrs.thread && !attrs.message) {
+            // https://xmpp.org/extensions/xep-0045.html#subject-mod
+            // -----------------------------------------------------
+            // The subject is changed by sending a message of type "groupchat" to the <room@service>,
+            // where the <message/> MUST contain a <subject/> element that specifies the new subject but
+            // MUST NOT contain a <body/> element (or a <thread/> element).
+            _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].safeSave(this, {
+              'subject': {
+                'author': attrs.nick,
+                'text': attrs.subject || ''
+              }
+            });
             return;
           }
 
-          const subject_el = stanza.querySelector('subject');
+          const is_csn = _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isOnlyChatStateNotification(attrs),
+                own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
 
-          if (subject_el) {
-            const subject = _.propertyOf(subject_el)('textContent') || '';
-            _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].safeSave(this, {
-              'subject': {
-                'author': sender,
-                'text': subject
-              }
-            });
+          if (is_csn && (attrs.is_delayed || own_message)) {
+            // No need showing delayed or our own CSN messages
+            return;
           }
 
-          const msg = await this.createMessage(stanza, original_stanza);
+          const msg = await this.messages.create(attrs);
 
           if (forwarded && msg && msg.get('sender') === 'me') {
             msg.save({
@@ -66871,7 +66867,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           this.incrementUnreadMsgCounter(msg);
         }
 
-        if (sender !== this.get('nick')) {
+        if (attrs.nick !== this.get('nick')) {
           // We only emit an event if it's not our own message
           _converse.emit('message', {
             'stanza': original_stanza,

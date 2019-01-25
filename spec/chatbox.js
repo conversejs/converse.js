@@ -44,7 +44,7 @@
                         type: 'chat',
                         id: (new Date()).getTime()
                     }).c('body').t('hello world').tree();
-                _converse.chatboxes.onMessage(msg);
+                await _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
                 expect(view.content.lastElementChild.textContent.trim().indexOf('hello world')).not.toBe(-1);
                 done();
@@ -71,7 +71,7 @@
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
 
-                _converse.chatboxes.onMessage(msg);
+                await _converse.chatboxes.onMessage(msg);
                 const view = _converse.chatboxviews.get(sender_jid);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(1);
@@ -322,7 +322,7 @@
                 done();
             }));
 
-           it("can be closed by clicking a DOM element with class 'close-chatbox-button'",
+            it("can be closed by clicking a DOM element with class 'close-chatbox-button'",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
@@ -533,7 +533,7 @@
                 it("does not open a new chatbox",
                     mock.initConverseWithPromises(
                         null, ['rosterGroupsFetched'], {},
-                        function (done, _converse) {
+                        async function (done, _converse) {
 
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openControlBox();
@@ -547,7 +547,7 @@
                             'type': 'chat',
                             'id': (new Date()).getTime()
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                    _converse.chatboxes.onMessage(msg);
+                    await _converse.chatboxes.onMessage(msg);
                     expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                     done();
                 }));
@@ -660,21 +660,20 @@
 
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse, 'emit');
-                        var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openChatBoxFor(_converse, sender_jid);
 
                         // <composing> state
-                        var msg = $msg({
+                        let msg = $msg({
                                 from: sender_jid,
                                 to: _converse.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        _converse.chatboxes.onMessage(msg);
+                        await _converse.chatboxes.onMessage(msg);
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         var view = _converse.chatboxviews.get(sender_jid);
                         expect(view).toBeDefined();
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
                         await test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
                         // Check that the notification appears inside the chatbox in the DOM
@@ -689,8 +688,7 @@
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        _converse.chatboxes.onMessage(msg);
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await _converse.chatboxes.onMessage(msg);
                         events = view.el.querySelectorAll('.chat-state-notification');
                         expect(events.length).toBe(1);
                         expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
@@ -725,7 +723,7 @@
                                     'to': recipient_jid,
                                     'type': 'chat'
                             }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        _converse.chatboxes.onMessage(msg);
+                        await _converse.chatboxes.onMessage(msg);
                         await test_utils.waitUntil(() => view.model.messages.length);
                         // Check that the chatbox and its view now exist
                         var chatbox = _converse.chatboxes.get(recipient_jid);
@@ -818,7 +816,7 @@
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        _converse.chatboxes.onMessage(msg);
+                        await _converse.chatboxes.onMessage(msg);
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         const view = _converse.chatboxviews.get(sender_jid);
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -856,7 +854,7 @@
                                     'to': recipient_jid,
                                     'type': 'chat'
                             }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        _converse.chatboxes.onMessage(msg);
+                        await _converse.chatboxes.onMessage(msg);
                         await test_utils.waitUntil(() => view.model.messages.length);
                         // Check that the chatbox and its view now exist
                         var chatbox = _converse.chatboxes.get(recipient_jid);
@@ -998,7 +996,7 @@
                                 'type': 'chat'})
                             .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                             .tree();
-                        _converse.chatboxes.onMessage(msg);
+                        await _converse.chatboxes.onMessage(msg);
                         await test_utils.waitUntil(() => view.model.messages.length);
                         expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(1);
                         msg = $msg({
@@ -1007,7 +1005,7 @@
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        _converse.chatboxes.onMessage(msg);
+                        await _converse.chatboxes.onMessage(msg);
                         await test_utils.waitUntil(() => (view.model.messages.length > 1));
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(0);
@@ -1034,7 +1032,7 @@
                                 type: 'chat',
                                 id: (new Date()).getTime()
                             }).c('body').c('gone', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        _converse.chatboxes.onMessage(msg);
+                        await _converse.chatboxes.onMessage(msg);
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                         const view = _converse.chatboxviews.get(sender_jid);
                         await test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1]);
@@ -1121,7 +1119,7 @@
                 spyOn(_converse, 'incrementMsgCounter').and.callThrough();
                 spyOn(_converse, 'clearMsgCounter').and.callThrough();
 
-                _converse.chatboxes.onMessage(msg);
+                await _converse.chatboxes.onMessage(msg);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 expect(_converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
@@ -1149,7 +1147,7 @@
             it("is not incremented when the message is received and the window is focused",
                 mock.initConverseWithPromises(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
                 test_utils.openControlBox();
@@ -1157,8 +1155,8 @@
                 expect(_converse.msg_counter).toBe(0);
                 spyOn(_converse, 'incrementMsgCounter').and.callThrough();
                 _converse.saveWindowState(null, 'focus');
-                var message = 'This message will not increment the message counter';
-                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
+                const message = 'This message will not increment the message counter';
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                     msg = $msg({
                         from: sender_jid,
                         to: _converse.connection.jid,
@@ -1166,7 +1164,7 @@
                         id: (new Date()).getTime()
                     }).c('body').t(message).up()
                       .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                _converse.chatboxes.onMessage(msg);
+                await _converse.chatboxes.onMessage(msg);
                 expect(_converse.incrementMsgCounter).not.toHaveBeenCalled();
                 expect(_converse.msg_counter).toBe(0);
                 done();
@@ -1237,7 +1235,7 @@
 
                 const view = await test_utils.openChatBoxFor(_converse, sender_jid)
                 view.model.save('scrolled', true);
-                _converse.chatboxes.onMessage(msg);
+                await _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => view.model.messages.length);
                 expect(view.model.get('num_unread')).toBe(1);
                 done();
@@ -1256,7 +1254,7 @@
 
                 await test_utils.openChatBoxFor(_converse, sender_jid);
                 const chatbox = _converse.chatboxes.get(sender_jid);
-                _converse.chatboxes.onMessage(msg);
+                await _converse.chatboxes.onMessage(msg);
                 expect(chatbox.get('num_unread')).toBe(0);
                 done();
             }));
@@ -1359,14 +1357,14 @@
                 const chatbox = _converse.chatboxes.get(sender_jid);
                 chatbox.save('scrolled', true);
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
-                _converse.chatboxes.onMessage(msg);
+                await _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => chatbox.messages.length);
                 const selector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('1');
 
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
-                _converse.chatboxes.onMessage(msg);
+                await _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => chatbox.messages.length > 1);
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('2');
@@ -1390,14 +1388,14 @@
                 chatboxview.minimize();
 
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
-                _converse.chatboxes.onMessage(msg);
+                await _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => chatbox.messages.length);
                 const selector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('1');
 
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
-                _converse.chatboxes.onMessage(msg);
+                await _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => chatbox.messages.length > 1);
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('2');

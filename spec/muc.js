@@ -411,7 +411,7 @@
                         'type': 'groupchat'
                     }).c('body').t(message).tree();
 
-                view.model.onMessage(msg);
+                await view.model.onMessage(msg);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 view.el.querySelector('.chat-msg__text a').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.length === 3)
@@ -933,7 +933,7 @@
                         'type': 'groupchat'
                     }).c('body').t('Some message').tree();
 
-                view.model.onMessage(msg);
+                await view.model.onMessage(msg);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
                 let stanza = Strophe.xmlHtmlNode(
@@ -1151,7 +1151,7 @@
                         'to': 'dummy@localhost',
                         'type': 'groupchat'
                     }).c('body').t(message).tree();
-                view.model.onMessage(msg);
+                await view.model.onMessage(msg);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, '**Dyon van de Wege')).toBeTruthy();
                 expect(view.el.querySelector('.chat-msg__text').textContent).toBe('is tired');
@@ -1163,7 +1163,7 @@
                     to: 'dummy@localhost',
                     type: 'groupchat'
                 }).c('body').t(message).tree();
-                view.model.onMessage(msg);
+                await view.model.onMessage(msg);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 expect(_.includes(sizzle('.chat-msg__author:last', view.el).pop().textContent, '**Max Mustermann')).toBeTruthy();
                 expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe('is as well');
@@ -1836,7 +1836,7 @@
                     to: 'dummy@localhost',
                     type: 'groupchat'
                 }).c('body').t(text);
-                view.model.onMessage(message.nodeTree);
+                await view.model.onMessage(message.nodeTree);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 const chat_content = view.el.querySelector('.chat-content');
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
@@ -1878,7 +1878,7 @@
                     type: 'groupchat',
                     id: view.model.messages.at(0).get('msgid')
                 }).c('body').t(text);
-                view.model.onMessage(message.nodeTree);
+                await view.model.onMessage(message.nodeTree);
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(sizzle('.chat-msg__text:last').pop().textContent).toBe(text);
                 expect(view.model.messages.length).toBe(1);
@@ -1912,7 +1912,7 @@
                 // Give enough time for `markScrolled` to have been called
                 setTimeout(async () => {
                     view.content.scrollTop = 0;
-                    view.model.onMessage(
+                    await view.model.onMessage(
                         $msg({
                             from: 'lounge@localhost/someone',
                             to: 'dummy@localhost.com',
@@ -1945,6 +1945,7 @@
                     '</message>').firstChild;
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 const chat_content = view.el.querySelector('.chat-content');
                 expect(sizzle('.chat-event:last').pop().textContent).toBe('Topic set by ralphm');
                 expect(sizzle('.chat-topic:last').pop().textContent).toBe(text);
@@ -3999,7 +4000,7 @@
                 var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const nick = mock.chatroom_names[0];
 
-                view.model.onMessage($msg({
+                await view.model.onMessage($msg({
                         from: room_jid+'/'+nick,
                         id: (new Date()).getTime(),
                         to: 'dummy@localhost',
@@ -4010,7 +4011,7 @@
                 expect(roomspanel.el.querySelectorAll('.msgs-indicator').length).toBe(1);
                 expect(roomspanel.el.querySelector('.msgs-indicator').textContent).toBe('1');
 
-                view.model.onMessage($msg({
+                await view.model.onMessage($msg({
                     'from': room_jid+'/'+nick,
                     'id': (new Date()).getTime(),
                     'to': 'dummy@localhost',
@@ -4076,14 +4077,14 @@
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
 
                         // <composing> state
-                        var msg = $msg({
+                        let msg = $msg({
                                 from: room_jid+'/newguy',
                                 id: (new Date()).getTime(),
                                 to: 'dummy@localhost',
                                 type: 'groupchat'
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
 
-                        view.model.onMessage(msg);
+                        await view.model.onMessage(msg);
                         await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-state-notification').length);
 
                         // Check that the notification appears inside the chatbox in the DOM
@@ -4109,8 +4110,7 @@
                                 to: 'dummy@localhost',
                                 type: 'groupchat'
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        view.model.onMessage(msg);
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await view.model.onMessage(msg);
 
                         events = view.el.querySelectorAll('.chat-event');
                         expect(events.length).toBe(3);
@@ -4131,8 +4131,7 @@
                                 to: 'dummy@localhost',
                                 type: 'groupchat'
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        view.model.onMessage(msg);
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await view.model.onMessage(msg);
                         events = view.el.querySelectorAll('.chat-event');
                         expect(events.length).toBe(3);
                         expect(events[0].textContent).toEqual('some1 has entered the groupchat');
@@ -4153,7 +4152,7 @@
                             to: 'dummy@localhost',
                             type: 'groupchat'
                         }).c('body').t('hello world').tree();
-                        view.model.onMessage(msg);
+                        await view.model.onMessage(msg);
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
                         const messages = view.el.querySelectorAll('.message');
@@ -4259,8 +4258,7 @@
                                 to: 'dummy@localhost',
                                 type: 'groupchat'
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        view.model.onMessage(msg);
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await view.model.onMessage(msg);
 
                         // Check that the notification appears inside the chatbox in the DOM
                         var events = view.el.querySelectorAll('.chat-event');
@@ -4280,8 +4278,7 @@
                                 to: 'dummy@localhost',
                                 type: 'groupchat'
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        view.model.onMessage(msg);
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await view.model.onMessage(msg);
 
                         events = view.el.querySelectorAll('.chat-event');
                         expect(events.length).toBe(3);
@@ -4300,8 +4297,7 @@
                                 to: 'dummy@localhost',
                                 type: 'groupchat'
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        view.model.onMessage(msg);
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await view.model.onMessage(msg);
                         events = view.el.querySelectorAll('.chat-event');
                         expect(events.length).toBe(3);
                         expect(events[0].textContent).toEqual('some1 has entered the groupchat');
@@ -4320,8 +4316,7 @@
                                 to: 'dummy@localhost',
                                 type: 'groupchat'
                             }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
-                        view.model.onMessage(msg);
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        await view.model.onMessage(msg);
                         events = view.el.querySelectorAll('.chat-event');
                         expect(events.length).toBe(3);
                         expect(events[0].textContent).toEqual('some1 has entered the groupchat');

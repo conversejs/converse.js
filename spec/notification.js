@@ -16,16 +16,17 @@
                     it("is shown when a new private message is received",
                         mock.initConverseWithPromises(
                             null, ['rosterGroupsFetched'], {},
-                            function (done, _converse) {
+                            async function (done, _converse) {
 
                         // TODO: not yet testing show_desktop_notifications setting
                         test_utils.createContacts(_converse, 'current');
+                        await test_utils.createContacts(_converse, 'current');
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
-                        
-                        var message = 'This message will show a desktop notification';
-                        var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
+
+                        const message = 'This message will show a desktop notification';
+                        const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                             msg = $msg({
                                 from: sender_jid,
                                 to: _converse.connection.jid,
@@ -33,60 +34,63 @@
                                 id: (new Date()).getTime()
                             }).c('body').t(message).up()
                             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                        _converse.chatboxes.onMessage(msg); // This will emit 'message'
+                        await _converse.chatboxes.onMessage(msg); // This will emit 'message'
+                        await test_utils.waitUntil(() => _converse.api.chatviews.get(sender_jid));
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(_converse.showMessageNotification).toHaveBeenCalled();
                         done();
                     }));
 
-                    it("is shown when you are mentioned in a chat room",
+                    it("is shown when you are mentioned in a groupchat",
                         mock.initConverseWithPromises(
                             null, ['rosterGroupsFetched'], {},
-                            function (done, _converse) {
+                            async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current');
-                        test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                            var view = _converse.chatboxviews.get('lounge@localhost');
-                            if (!$(view.el).find('.chat-area').length) { view.renderChatArea(); }
-                            var no_notification = false;
-                            if (typeof window.Notification === 'undefined') {
-                                no_notification = true;
-                                window.Notification = function () {
-                                    return {
-                                        'close': function () {}
-                                    };
+                        await test_utils.createContacts(_converse, 'current');
+                        await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                        const view = _converse.api.chatviews.get('lounge@localhost');
+                        if (!view.el.querySelectorAll('.chat-area').length) {
+                            view.renderChatArea();
+                        }
+                        let no_notification = false;
+                        if (typeof window.Notification === 'undefined') {
+                            no_notification = true;
+                            window.Notification = function () {
+                                return {
+                                    'close': function () {}
                                 };
-                            }
-                            spyOn(_converse, 'showMessageNotification').and.callThrough();
-                            spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
-                            
-                            var message = 'dummy: This message will show a desktop notification';
-                            var nick = mock.chatroom_names[0],
-                                msg = $msg({
-                                    from: 'lounge@localhost/'+nick,
-                                    id: (new Date()).getTime(),
-                                    to: 'dummy@localhost',
-                                    type: 'groupchat'
-                                }).c('body').t(message).tree();
-                            _converse.chatboxes.onMessage(msg); // This will emit 'message'
-                            expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
-                            expect(_converse.showMessageNotification).toHaveBeenCalled();
-                            if (no_notification) {
-                                delete window.Notification;
-                            }
-                            done();
-                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                            };
+                        }
+                        spyOn(_converse, 'showMessageNotification').and.callThrough();
+                        spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
+
+                        const message = 'dummy: This message will show a desktop notification';
+                        const nick = mock.chatroom_names[0],
+                            msg = $msg({
+                                from: 'lounge@localhost/'+nick,
+                                id: (new Date()).getTime(),
+                                to: 'dummy@localhost',
+                                type: 'groupchat'
+                            }).c('body').t(message).tree();
+                        await _converse.chatboxes.onMessage(msg); // This will emit 'message'
+                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                        expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
+                        expect(_converse.showMessageNotification).toHaveBeenCalled();
+                        if (no_notification) {
+                            delete window.Notification;
+                        }
+                        done();
                     }));
 
                     it("is shown for headline messages",
                         mock.initConverseWithPromises(
                             null, ['rosterGroupsFetched'], {},
-                            function (done, _converse) {
+                            async function (done, _converse) {
 
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
                         spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
-                        var stanza = $msg({
+                        const stanza = $msg({
                                 'type': 'headline',
                                 'from': 'notify.example.com',
                                 'to': 'dummy@localhost',
@@ -97,6 +101,9 @@
                             .c('x', {'xmlns': 'jabber:x:oob'})
                             .c('url').t('imap://romeo@example.com/INBOX;UIDVALIDITY=385759043/;UID=18');
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                        await test_utils.waitUntil(() => _converse.chatboxviews.keys().length);
+                        const view = _converse.chatboxviews.get('notify.example.com');
+                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                         expect(
                             _.includes(_converse.chatboxviews.keys(),
                                 'notify.example.com')
@@ -156,7 +163,7 @@
         describe("When play_sounds is set to true", function () {
             describe("A notification sound", function () {
 
-                it("is played when the current user is mentioned in a chat room",
+                it("is played when the current user is mentioned in a groupchat",
                     mock.initConverseWithPromises(
                         null, ['rosterGroupsFetched'], {},
                         async function (done, _converse) {
@@ -176,8 +183,7 @@
                         to: 'dummy@localhost',
                         type: 'groupchat'
                     }).c('body').t(text);
-                    view.model.onMessage(message.nodeTree);
-
+                    await view.model.onMessage(message.nodeTree);
                     await test_utils.waitUntil(() => _converse.playSoundNotification.calls.count());
                     expect(_converse.playSoundNotification).toHaveBeenCalled();
 
@@ -188,7 +194,7 @@
                         to: 'dummy@localhost',
                         type: 'groupchat'
                     }).c('body').t(text);
-                    view.model.onMessage(message.nodeTree);
+                    await view.model.onMessage(message.nodeTree);
                     expect(_converse.playSoundNotification, 1);
                     _converse.play_sounds = false;
 
@@ -199,7 +205,7 @@
                         to: 'dummy@localhost',
                         type: 'groupchat'
                     }).c('body').t(text);
-                    view.model.onMessage(message.nodeTree);
+                    await view.model.onMessage(message.nodeTree);
                     expect(_converse.playSoundNotification, 1);
                     _converse.play_sounds = false;
                     done();

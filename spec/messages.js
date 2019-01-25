@@ -310,7 +310,7 @@
                         'type': 'chat'})
                     .c('body').t("message")
                     .tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await test_utils.waitUntil(() => _converse.api.chats.get().length);
             const view = _converse.chatboxviews.get(sender_jid);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -325,7 +325,7 @@
                         'type': 'chat'})
                     .c('body').t("Older message")
                     .tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             msg = $msg({'id': 'aeb215', 'to': _converse.bare_jid})
@@ -338,7 +338,7 @@
                         'type': 'chat'})
                     .c('body').t("Inbetween message").up()
                     .tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             msg = $msg({'id': 'aeb216', 'to': _converse.bare_jid})
@@ -351,7 +351,7 @@
                         'type': 'chat'})
                     .c('body').t("another inbetween message")
                     .tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             msg = $msg({'id': 'aeb217', 'to': _converse.bare_jid})
@@ -364,7 +364,7 @@
                         'type': 'chat'})
                     .c('body').t("An earlier message on the next day")
                     .tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             msg = $msg({'id': 'aeb218', 'to': _converse.bare_jid})
@@ -377,7 +377,7 @@
                         'type': 'chat'})
                     .c('body').t("newer message from the next day")
                     .tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             // Insert <composing> message, to also check that
@@ -391,7 +391,7 @@
                     'type': 'chat'})
                 .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                 .tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             msg = $msg({
@@ -403,7 +403,7 @@
                 .c('composing', {'xmlns': Strophe.NS.CHATSTATES}).up()
                 .c('body').t("latest message")
                 .tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             const chat_content = view.el.querySelector('.chat-content');
@@ -464,7 +464,7 @@
         it("is ignored if it's a malformed headline message",
         mock.initConverseWithPromises(
             null, ['rosterGroupsFetched'], {},
-            function (done, _converse) {
+            async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
@@ -481,7 +481,7 @@
                     type: 'chat',
                     id: (new Date()).getTime()
                 }).c('body').t("This headline message will not be shown").tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             expect(_converse.log.calledWith(
                 "onMessage: Ignoring incoming headline message from JID: localhost",
                 Strophe.LogLevel.INFO
@@ -523,7 +523,7 @@
                         'to': _converse.bare_jid+'/another-resource',
                         'type': 'chat'
                 }).c('body').t(msgtext).tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await test_utils.waitUntil(() => _converse.api.chats.get().length)
             const chatbox = _converse.chatboxes.get(sender_jid);
             const view = _converse.chatboxviews.get(sender_jid);
@@ -574,7 +574,7 @@
                         'to': recipient_jid,
                         'type': 'chat'
                 }).c('body').t(msgtext).tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await test_utils.waitUntil(() => _converse.api.chats.get().length);
             // Check that the chatbox and its view now exist
             const chatbox = _converse.chatboxes.get(recipient_jid);
@@ -598,25 +598,25 @@
         it("will be discarded if it's a malicious message meant to look like a carbon copy",
         mock.initConverseWithPromises(
             null, ['rosterGroupsFetched'], {},
-            function (done, _converse) {
+            async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
             test_utils.openControlBox();
             /* <message from="mallory@evil.example" to="b@xmpp.example">
-            *    <received xmlns='urn:xmpp:carbons:2'>
-            *      <forwarded xmlns='urn:xmpp:forward:0'>
-            *          <message from="alice@xmpp.example" to="bob@xmpp.example/client1">
-            *              <body>Please come to Creepy Valley tonight, alone!</body>
-            *          </message>
-            *      </forwarded>
-            *    </received>
-            * </message>
-            */
+             *    <received xmlns='urn:xmpp:carbons:2'>
+             *      <forwarded xmlns='urn:xmpp:forward:0'>
+             *          <message from="alice@xmpp.example" to="bob@xmpp.example/client1">
+             *              <body>Please come to Creepy Valley tonight, alone!</body>
+             *          </message>
+             *      </forwarded>
+             *    </received>
+             * </message>
+             */
             spyOn(_converse, 'log');
-            var msgtext = 'Please come to Creepy Valley tonight, alone!';
-            var sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-            var impersonated_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-            var msg = $msg({
+            const msgtext = 'Please come to Creepy Valley tonight, alone!';
+            const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const impersonated_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const msg = $msg({
                     'from': sender_jid,
                     'id': (new Date()).getTime(),
                     'to': _converse.connection.jid,
@@ -630,10 +630,10 @@
                         'to': _converse.connection.jid,
                         'type': 'chat'
                 }).c('body').t(msgtext).tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
 
             // Check that chatbox for impersonated user is not created.
-            var chatbox = _converse.chatboxes.get(impersonated_jid);
+            let chatbox = _converse.chatboxes.get(impersonated_jid);
             expect(chatbox).not.toBeDefined();
 
             // Check that the chatbox for the malicous user is not created
@@ -673,7 +673,7 @@
                 id: (new Date()).getTime()
             }).c('body').t(message).up()
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
 
             await test_utils.waitUntil(() => chatview.model.messages.length);
             expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -734,7 +734,7 @@
             }).c('body').t(message).up()
             .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: one_day_ago.format() })
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -766,7 +766,7 @@
                 id: new Date().getTime()
             }).c('body').t(message).up()
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -1196,7 +1196,7 @@
         it("received may emit a message delivery receipt",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                function (done, _converse) {
+                async function (done, _converse) {
             test_utils.createContacts(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             const msg_id = u.getUniqueId();
@@ -1211,7 +1211,7 @@
                     'id': msg_id,
                 }).c('body').t('Message!').up()
                 .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_stanzas[0].tree()).pop();
             expect(Strophe.serialize(receipt)).toBe(`<received id="${msg_id}" xmlns="${Strophe.NS.RECEIPTS}"/>`);
             done();
@@ -1241,7 +1241,7 @@
                         'id': msg_id
                 }).c('body').t('Message!').up()
                 .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await test_utils.waitUntil(() => _converse.api.chats.get().length);
             expect(_converse.chatboxes.sendReceiptStanza).not.toHaveBeenCalled();
             done();
@@ -1270,7 +1270,7 @@
                         'id': msg_id
                 }).c('body').t('Message!').up()
                 .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
-            _converse.chatboxes.onMessage(msg);
+            await _converse.chatboxes.onMessage(msg);
             await test_utils.waitUntil(() => _converse.api.chats.get().length);
             expect(_converse.chatboxes.sendReceiptStanza).not.toHaveBeenCalled();
             done();
@@ -1475,7 +1475,7 @@
                     // We don't already have an open chatbox for this user
                     expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
 
-                    _converse.chatboxes.onMessage(msg);
+                    await _converse.chatboxes.onMessage(msg);
                     await test_utils.waitUntil(() => _converse.api.chats.get().length);
                     expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
 
@@ -1527,7 +1527,7 @@
                     let chatbox = _converse.chatboxes.get(sender_jid);
                     expect(chatbox).not.toBeDefined();
                     // onMessage is a handler for received XMPP messages
-                    _converse.chatboxes.onMessage(msg);
+                    await _converse.chatboxes.onMessage(msg);
 
                     await test_utils.waitUntil(() => _converse.api.chats.get().length)
                     const view = _converse.chatboxviews.get(sender_jid);
@@ -1536,7 +1536,7 @@
                     expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                     // onMessage is a handler for received XMPP messages
                     _converse.allow_non_roster_messaging =true;
-                    _converse.chatboxes.onMessage(msg);
+                    await _converse.chatboxes.onMessage(msg);
                     await test_utils.waitUntil(() => view.model.messages.length);
                     expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
                     // Check that the chatbox and its view now exist
@@ -1824,7 +1824,7 @@
                         id: (new Date()).getTime()
                     }).c('body').t("This message will not be shown").up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                _converse.chatboxes.onMessage(msg);
+                await _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => _converse.api.chats.get().length);
                 expect(_converse.log).toHaveBeenCalledWith(
                         "onMessage: Ignoring incoming message intended for a different resource: dummy@localhost/some-other-resource",
@@ -1840,7 +1840,7 @@
                         id: '134234623462346'
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
-                _converse.chatboxes.onMessage(msg);
+                await _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => _converse.chatboxviews.keys().length > 1, 1000);
                 const view = _converse.chatboxviews.get(sender_jid);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -2043,9 +2043,9 @@
                     to: 'dummy@localhost',
                     type: 'groupchat'
                 }).c('body').t(message).tree();
-            view.model.onMessage(msg);
+            await view.model.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-            expect($(view.el).find('.chat-msg').hasClass('mentioned')).toBeTruthy();
+            expect(u.hasClass('mentioned', view.el.querySelector('.chat-msg'))).toBeTruthy();
             done();
         }));
 
@@ -2064,8 +2064,7 @@
                     to: 'dummy@localhost',
                     type: 'groupchat'
                 }).c('body').t('I wrote this message!').tree();
-            view.model.onMessage(msg);
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            await view.model.onMessage(msg);
             expect(view.model.messages.last().get('sender')).toBe('me');
             done();
         }));
@@ -2091,7 +2090,7 @@
                 }).tree();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             const msg_id = u.getUniqueId();
-            view.model.onMessage($msg({
+            await view.model.onMessage($msg({
                     'from': 'lounge@localhost/newguy',
                     'to': _converse.connection.jid,
                     'type': 'groupchat',
@@ -2102,10 +2101,10 @@
             expect(view.el.querySelector('.chat-msg__text').textContent)
                 .toBe('But soft, what light through yonder airlock breaks?');
 
-            view.model.onMessage($msg({
+            await view.model.onMessage($msg({
                     'from': 'lounge@localhost/newguy',
                     'to': _converse.connection.jid,
-                    'type': 'chat',
+                    'type': 'groupchat',
                     'id': u.getUniqueId(),
                 }).c('body').t('But soft, what light through yonder chimney breaks?').up()
                     .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
@@ -2114,10 +2113,10 @@
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
 
-            view.model.onMessage($msg({
+            await view.model.onMessage($msg({
                     'from': 'lounge@localhost/newguy',
                     'to': _converse.connection.jid,
-                    'type': 'chat',
+                    'type': 'groupchat',
                     'id': u.getUniqueId(),
                 }).c('body').t('But soft, what light through yonder window breaks?').up()
                     .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
@@ -2207,7 +2206,7 @@
             expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
 
             // Check that messages from other users are skipped
-            view.model.onMessage($msg({
+            await view.model.onMessage($msg({
                 'from': room_jid+'/someone-else',
                 'id': (new Date()).getTime(),
                 'to': 'dummy@localhost',
@@ -2264,8 +2263,7 @@
                     'to': 'dummy@localhost',
                     'type': 'groupchat',
                 }).c('body').t(body).up().tree();
-            view.model.onMessage(msg);
-            await new Promise((resolve, reject) => view.model.messages.once('rendered', resolve));
+            await view.model.onMessage(msg);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(1);
             done();
         }));
@@ -2302,7 +2300,7 @@
                         .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'6', 'end':'10', 'type':'mention', 'uri':'xmpp:z3r0@localhost'}).up()
                         .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'11', 'end':'14', 'type':'mention', 'uri':'xmpp:dummy@localhost'}).up()
                         .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@localhost'}).nodeTree;
-                view.model.onMessage(msg);
+                await view.model.onMessage(msg);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 expect(view.el.querySelectorAll('.chat-msg__text').length).toBe(1);
                 expect(view.el.querySelector('.chat-msg__text').outerHTML).toBe(

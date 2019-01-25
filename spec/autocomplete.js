@@ -62,114 +62,111 @@
         it("autocompletes when the user presses tab",
             mock.initConverseWithPromises(
                 null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-            test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy')
-            .then(() => {
-                const view = _converse.chatboxviews.get('lounge@localhost');
-                expect(view.model.occupants.length).toBe(1);
-                let presence = $pres({
-                        'to': 'dummy@localhost/resource',
-                        'from': 'lounge@localhost/some1'
-                    })
-                    .c('x', {xmlns: Strophe.NS.MUC_USER})
-                    .c('item', {
-                        'affiliation': 'none',
-                        'jid': 'some1@localhost/resource',
-                        'role': 'participant'
-                    });
-                _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.model.occupants.length).toBe(2);
-
-                const textarea = view.el.querySelector('textarea.chat-textarea');
-                textarea.value = "hello som";
-
-                // Press tab
-                const tab_event = {
-                    'target': textarea,
-                    'preventDefault': _.noop,
-                    'stopPropagation': _.noop,
-                    'keyCode': 9
-                }
-                view.keyPressed(tab_event);
-                view.keyUp(tab_event);
-                expect(view.el.querySelector('.suggestion-box__results').hidden).toBeFalsy();
-                expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(1);
-                expect(view.el.querySelector('.suggestion-box__results li').textContent).toBe('some1');
-
-                const backspace_event = {
-                    'target': textarea,
-                    'preventDefault': _.noop,
-                    'keyCode': 8
-                }
-                for (var i=0; i<3; i++) {
-                    // Press backspace 3 times to remove "som"
-                    view.keyPressed(backspace_event);
-                    textarea.value = textarea.value.slice(0, textarea.value.length-1)
-                    view.keyUp(backspace_event);
-                }
-                expect(view.el.querySelector('.suggestion-box__results').hidden).toBeTruthy();
-
-                presence = $pres({
-                        'to': 'dummy@localhost/resource',
-                        'from': 'lounge@localhost/some2'
-                    })
-                    .c('x', {xmlns: Strophe.NS.MUC_USER})
-                    .c('item', {
-                        'affiliation': 'none',
-                        'jid': 'some2@localhost/resource',
-                        'role': 'participant'
-                    });
-                _converse.connection._dataRecv(test_utils.createRequest(presence));
-
-                textarea.value = "hello s s";
-                view.keyPressed(tab_event);
-                view.keyUp(tab_event);
-                expect(view.el.querySelector('.suggestion-box__results').hidden).toBeFalsy();
-                expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(2);
-
-                const up_arrow_event = {
-                    'target': textarea,
-                    'preventDefault': () => (up_arrow_event.defaultPrevented = true),
-                    'stopPropagation': _.noop,
-                    'keyCode': 38
-                }
-                view.keyPressed(up_arrow_event);
-                view.keyUp(up_arrow_event);
-                expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(2);
-                expect(view.el.querySelector('.suggestion-box__results li[aria-selected="false"]').textContent).toBe('some1');
-                expect(view.el.querySelector('.suggestion-box__results li[aria-selected="true"]').textContent).toBe('some2');
-
-                view.keyPressed({
-                    'target': textarea,
-                    'preventDefault': _.noop,
-                    'stopPropagation': _.noop,
-                    'keyCode': 13 // Enter
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+            const view = _converse.chatboxviews.get('lounge@localhost');
+            expect(view.model.occupants.length).toBe(1);
+            let presence = $pres({
+                    'to': 'dummy@localhost/resource',
+                    'from': 'lounge@localhost/some1'
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': 'some1@localhost/resource',
+                    'role': 'participant'
                 });
-                expect(textarea.value).toBe('hello s @some2 ');
+            _converse.connection._dataRecv(test_utils.createRequest(presence));
+            expect(view.model.occupants.length).toBe(2);
 
-                // Test that pressing tab twice selects
-                presence = $pres({
-                        'to': 'dummy@localhost/resource',
-                        'from': 'lounge@localhost/z3r0'
-                    })
-                    .c('x', {xmlns: Strophe.NS.MUC_USER})
-                    .c('item', {
-                        'affiliation': 'none',
-                        'jid': 'z3r0@localhost/resource',
-                        'role': 'participant'
-                    });
-                _converse.connection._dataRecv(test_utils.createRequest(presence));
-                textarea.value = "hello z";
-                view.keyPressed(tab_event);
-                view.keyUp(tab_event);
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = "hello som";
 
-                view.keyPressed(tab_event);
-                view.keyUp(tab_event);
-                expect(textarea.value).toBe('hello @z3r0 ');
+            // Press tab
+            const tab_event = {
+                'target': textarea,
+                'preventDefault': _.noop,
+                'stopPropagation': _.noop,
+                'keyCode': 9
+            }
+            view.keyPressed(tab_event);
+            view.keyUp(tab_event);
+            expect(view.el.querySelector('.suggestion-box__results').hidden).toBeFalsy();
+            expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(1);
+            expect(view.el.querySelector('.suggestion-box__results li').textContent).toBe('some1');
 
-                done();
-            }).catch(_.partial(console.error, _));
+            const backspace_event = {
+                'target': textarea,
+                'preventDefault': _.noop,
+                'keyCode': 8
+            }
+            for (var i=0; i<3; i++) {
+                // Press backspace 3 times to remove "som"
+                view.keyPressed(backspace_event);
+                textarea.value = textarea.value.slice(0, textarea.value.length-1)
+                view.keyUp(backspace_event);
+            }
+            expect(view.el.querySelector('.suggestion-box__results').hidden).toBeTruthy();
+
+            presence = $pres({
+                    'to': 'dummy@localhost/resource',
+                    'from': 'lounge@localhost/some2'
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': 'some2@localhost/resource',
+                    'role': 'participant'
+                });
+            _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+            textarea.value = "hello s s";
+            view.keyPressed(tab_event);
+            view.keyUp(tab_event);
+            expect(view.el.querySelector('.suggestion-box__results').hidden).toBeFalsy();
+            expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(2);
+
+            const up_arrow_event = {
+                'target': textarea,
+                'preventDefault': () => (up_arrow_event.defaultPrevented = true),
+                'stopPropagation': _.noop,
+                'keyCode': 38
+            }
+            view.keyPressed(up_arrow_event);
+            view.keyUp(up_arrow_event);
+            expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(2);
+            expect(view.el.querySelector('.suggestion-box__results li[aria-selected="false"]').textContent).toBe('some1');
+            expect(view.el.querySelector('.suggestion-box__results li[aria-selected="true"]').textContent).toBe('some2');
+
+            view.keyPressed({
+                'target': textarea,
+                'preventDefault': _.noop,
+                'stopPropagation': _.noop,
+                'keyCode': 13 // Enter
+            });
+            expect(textarea.value).toBe('hello s @some2 ');
+
+            // Test that pressing tab twice selects
+            presence = $pres({
+                    'to': 'dummy@localhost/resource',
+                    'from': 'lounge@localhost/z3r0'
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': 'z3r0@localhost/resource',
+                    'role': 'participant'
+                });
+            _converse.connection._dataRecv(test_utils.createRequest(presence));
+            textarea.value = "hello z";
+            view.keyPressed(tab_event);
+            view.keyUp(tab_event);
+
+            view.keyPressed(tab_event);
+            view.keyUp(tab_event);
+            expect(textarea.value).toBe('hello @z3r0 ');
+            done();
         }));
     });
 }));

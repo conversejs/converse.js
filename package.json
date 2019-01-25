@@ -43,7 +43,7 @@
     "backbone.overview": "^1.0.2",
     "backbone.vdomview": "^1.0.1",
     "bootstrap": "^4.0.0",
-    "bootstrap.native": "^2.0.23",
+    "bootstrap.native": "^2.0.24",
     "bourbon": "^4.3.2",
     "bytebuffer": "^3.5.5",
     "clean-css-cli": "^4.0.10",

@@ -3403,7 +3403,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.23 | © dnp_theme | MIT-License
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.24 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (true) {
     // AMD support:
@@ -3707,7 +3707,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       arrowLeft && (arrow[style][left] = arrowLeft + 'px');
     };
   
-  BSN.version = '2.0.23';
+  BSN.version = '2.0.24';
   
   /* Native Javascript for Bootstrap 4 | Alert
   -------------------------------------------*/
@@ -3893,7 +3893,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
     this[interval] = typeof intervalOption === 'number' ? intervalOption
                    : intervalOption === false || intervalData === 0 || intervalData === false ? 0
-                   : 5000; // bootstrap carousel default interval
+                   : isNaN(intervalData) ? 5000 // bootstrap carousel default interval
+                   : intervalData;
   
     // bind, event targets
     var self = this, index = element.index = 0, timer = element.timer = 0, 
@@ -3909,13 +3910,13 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     var pauseHandler = function () {
         if ( self[interval] !==false && !hasClass(element,paused) ) {
           addClass(element,paused);
-          !isSliding && clearInterval( timer );
+          !isSliding && ( clearInterval(timer), timer = null );
         }
       },
       resumeHandler = function() {
         if ( self[interval] !== false && hasClass(element,paused) ) {
           removeClass(element,paused);
-          !isSliding && clearInterval( timer );
+          !isSliding && ( clearInterval(timer), timer = null );
           !isSliding && self.cycle();
         }
       },
@@ -3974,6 +3975,11 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
     // public methods
     this.cycle = function() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+  
       timer = setInterval(function() {
         isElementInScrollRange() && (index++, self.slideTo( index ) );
       }, this[interval]);
@@ -3984,8 +3990,11 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       var activeItem = this.getActiveIndex(), // the current active
           orientation;
       
-      // determine slideDirection first
-      if  ( (activeItem < next ) || (activeItem === 0 && next === total -1 ) ) {
+      // first return if we're on the same item #227
+      if ( activeItem === next ) {
+        return;
+      // or determine slideDirection
+      } else if  ( (activeItem < next ) || (activeItem === 0 && next === total -1 ) ) {
         slideDirection = self[direction] = left; // next
       } else if  ( (activeItem > next) || (activeItem === total - 1 && next === 0 ) ) {
         slideDirection = self[direction] = right; // prev
@@ -3993,7 +4002,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
       // find the right next index 
       if ( next < 0 ) { next = total - 1; } 
-      else if ( next === total ){ next = 0; }
+      else if ( next >= total ){ next = 0; }
   
       // update index
       index = next;
@@ -4003,6 +4012,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
       isSliding = true;
       clearInterval(timer);
+      timer = null;
       setActivePage( next );
   
       if ( supportTransitions && hasClass(element,'slide') ) {
@@ -4282,7 +4292,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         bootstrapCustomEvent.call(parent, showEvent, component, relatedTarget);
         addClass(menu,showClass);
         addClass(parent,showClass);
-        menu[setAttribute](ariaExpanded,true);
+        element[setAttribute](ariaExpanded,true);
         bootstrapCustomEvent.call(parent, shownEvent, component, relatedTarget);
         element[open] = true;
         off(element, clickEvent, clickHandler);
@@ -4295,7 +4305,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         bootstrapCustomEvent.call(parent, hideEvent, component, relatedTarget);
         removeClass(menu,showClass);
         removeClass(parent,showClass);
-        menu[setAttribute](ariaExpanded,false);
+        element[setAttribute](ariaExpanded,false);
         bootstrapCustomEvent.call(parent, hiddenEvent, component, relatedTarget);
         element[open] = false;
         toggleDismiss();

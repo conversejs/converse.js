@@ -49350,8 +49350,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var converse_message_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! converse-message-view */ "./src/converse-message-view.js");
 /* harmony import */ var converse_modal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! converse-modal */ "./src/converse-modal.js");
 /* harmony import */ var twemoji__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! twemoji */ "./node_modules/twemoji/2/esm.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(bootstrap_native__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var templates_alert_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/alert.html */ "./src/templates/alert.html");
 /* harmony import */ var templates_alert_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_alert_html__WEBPACK_IMPORTED_MODULE_6__);
@@ -50504,7 +50504,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           this.insertEmojiPicker();
           this.renderEmojiPicker();
           const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
-          this.emoji_dropdown = new bootstrap__WEBPACK_IMPORTED_MODULE_4___default.a.Dropdown(dropdown_el, true);
+          this.emoji_dropdown = new bootstrap_native__WEBPACK_IMPORTED_MODULE_4___default.a.Dropdown(dropdown_el, true);
           this.emoji_dropdown.el = dropdown_el;
           this.emoji_dropdown.toggle();
         }
@@ -50819,8 +50819,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var converse_rosterview__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! converse-rosterview */ "./src/converse-rosterview.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(formdata_polyfill__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(bootstrap_native__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var _converse_headless_lodash_fp__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @converse/headless/lodash.fp */ "./src/headless/lodash.fp.js");
 /* harmony import */ var _converse_headless_lodash_fp__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_converse_headless_lodash_fp__WEBPACK_IMPORTED_MODULE_6__);
@@ -51304,7 +51304,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       initPopovers() {
         _.forEach(this.el.querySelectorAll('[data-title]'), el => {
-          const popover = new bootstrap__WEBPACK_IMPORTED_MODULE_4___default.a.Popover(el, {
+          const popover = new bootstrap_native__WEBPACK_IMPORTED_MODULE_4___default.a.Popover(el, {
             'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
             'dismissible': _converse.view_mode === 'mobile' && true || false,
             'container': this.el.parentElement.parentElement.parentElement
@@ -53227,8 +53227,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var backbone_vdomview__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/backbone.vdomview.js");
 /* harmony import */ var backbone_vdomview__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone_vdomview__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bootstrap_native__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var templates_alert_modal_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! templates/alert_modal.html */ "./src/templates/alert_modal.html");
 /* harmony import */ var templates_alert_modal_html__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(templates_alert_modal_html__WEBPACK_IMPORTED_MODULE_3__);
@@ -53251,7 +53251,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins
     _converse.BootstrapModal = Backbone.VDOMView.extend({
       initialize() {
         this.render().insertIntoDOM();
-        this.modal = new bootstrap__WEBPACK_IMPORTED_MODULE_1___default.a.Modal(this.el, {
+        this.modal = new bootstrap_native__WEBPACK_IMPORTED_MODULE_1___default.a.Modal(this.el, {
           backdrop: 'static',
           keyboard: true
         });
@@ -57413,8 +57413,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var converse_modal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! converse-modal */ "./src/converse-modal.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(formdata_polyfill__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bootstrap_native__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/chat_status_modal.html */ "./src/templates/chat_status_modal.html");
 /* harmony import */ var templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5__);
@@ -57497,7 +57497,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       },
 
       afterRender() {
-        this.tabs = _.map(this.el.querySelectorAll('.nav-item'), tab => new bootstrap__WEBPACK_IMPORTED_MODULE_3___default.a.Tab(tab));
+        this.tabs = _.map(this.el.querySelectorAll('.nav-item'), tab => new bootstrap_native__WEBPACK_IMPORTED_MODULE_3___default.a.Tab(tab));
       },
 
       openFileSelection(ev) {

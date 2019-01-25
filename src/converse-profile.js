@@ -9,7 +9,7 @@
 import "@converse/headless/converse-vcard";
 import "converse-modal";
 import _FormData from "formdata-polyfill";
-import bootstrap from "bootstrap";
+import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import tpl_chat_status_modal from "templates/chat_status_modal.html";
 import tpl_client_info_modal from "templates/client_info_modal.html";

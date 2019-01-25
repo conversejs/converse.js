@@ -8,7 +8,7 @@ import "converse-chatboxviews";
 import "converse-message-view";
 import "converse-modal";
 import * as twemoji from "twemoji";
-import bootstrap from "bootstrap";
+import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import tpl_alert from "templates/alert.html";
 import tpl_chatbox from "templates/chatbox.html";

@@ -3396,10 +3396,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 
 /***/ }),
 
-/***/ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js":
-/*!*******************************************************************!*\
-  !*** ./node_modules/bootstrap.native/dist/bootstrap-native-v4.js ***!
-  \*******************************************************************/
+/***/ "./node_modules/bootstrap.native/dist/bootstrap-native.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/bootstrap.native/dist/bootstrap-native.js ***!
+  \****************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3859,235 +3859,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   // BUTTON DATA API
   // =================
   supports[push]( [ stringButton, Button, '['+dataToggle+'="buttons"]' ] );
-  
-  
-  /* Native Javascript for Bootstrap 4 | Carousel
-  ----------------------------------------------*/
-  
-  // CAROUSEL DEFINITION
-  // ===================
-  var Carousel = function( element, options ) {
-  
-    // initialization element
-    element = queryElement( element );
-  
-    // set options
-    options = options || {};
-  
-    // DATA API
-    var intervalAttribute = element[getAttribute](dataInterval),
-        intervalOption = options[interval],
-        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute),  
-        pauseData = element[getAttribute](dataPause) === hoverEvent || false,
-        keyboardData = element[getAttribute](dataKeyboard) === 'true' || false,
-      
-        // strings
-        component = 'carousel',
-        paused = 'paused',
-        direction = 'direction',
-        carouselItem = 'carousel-item',
-        dataSlideTo = 'data-slide-to'; 
-  
-    this[keyboard] = options[keyboard] === true || keyboardData;
-    this[pause] = (options[pause] === hoverEvent || pauseData) ? hoverEvent : false; // false / hover
-  
-    this[interval] = typeof intervalOption === 'number' ? intervalOption
-                   : intervalOption === false || intervalData === 0 || intervalData === false ? 0
-                   : isNaN(intervalData) ? 5000 // bootstrap carousel default interval
-                   : intervalData;
-  
-    // bind, event targets
-    var self = this, index = element.index = 0, timer = element.timer = 0, 
-      isSliding = false, // isSliding prevents click event handlers when animation is running
-      slides = getElementsByClassName(element,carouselItem), total = slides[length],
-      slideDirection = this[direction] = left,
-      leftArrow = getElementsByClassName(element,component+'-control-prev')[0], 
-      rightArrow = getElementsByClassName(element,component+'-control-next')[0],
-      indicator = queryElement( '.'+component+'-indicators', element ),
-      indicators = indicator && indicator[getElementsByTagName]( "LI" ) || [];
-  
-    // handlers
-    var pauseHandler = function () {
-        if ( self[interval] !==false && !hasClass(element,paused) ) {
-          addClass(element,paused);
-          !isSliding && ( clearInterval(timer), timer = null );
-        }
-      },
-      resumeHandler = function() {
-        if ( self[interval] !== false && hasClass(element,paused) ) {
-          removeClass(element,paused);
-          !isSliding && ( clearInterval(timer), timer = null );
-          !isSliding && self.cycle();
-        }
-      },
-      indicatorHandler = function(e) {
-        e[preventDefault]();
-        if (isSliding) return;
-  
-        var eventTarget = e[target]; // event target | the current active item
-  
-        if ( eventTarget && !hasClass(eventTarget,active) && eventTarget[getAttribute](dataSlideTo) ) {
-          index = parseInt( eventTarget[getAttribute](dataSlideTo), 10 );
-        } else { return false; }
-  
-        self.slideTo( index ); //Do the slide
-      },
-      controlsHandler = function (e) {
-        e[preventDefault]();
-        if (isSliding) return;
-  
-        var eventTarget = e.currentTarget || e.srcElement;
-  
-        if ( eventTarget === rightArrow ) {
-          index++;
-        } else if ( eventTarget === leftArrow ) {
-          index--;
-        }
-  
-        self.slideTo( index ); //Do the slide
-      },
-      keyHandler = function (e) {
-        if (isSliding) return;
-        switch (e.which) {
-          case 39:
-            index++;
-            break;
-          case 37:
-            index--;
-            break;
-          default: return;
-        }
-        self.slideTo( index ); //Do the slide
-      },
-      // private methods
-      isElementInScrollRange = function () {
-        var rect = element[getBoundingClientRect](),
-          viewportHeight = globalObject[innerHeight] || HTML[clientHeight]
-        return rect[top] <= viewportHeight && rect[bottom] >= 0; // bottom && top
-      },    
-      setActivePage = function( pageIndex ) { //indicators
-        for ( var i = 0, icl = indicators[length]; i < icl; i++ ) {
-          removeClass(indicators[i],active);
-        }
-        if (indicators[pageIndex]) addClass(indicators[pageIndex], active);
-      };
-  
-  
-    // public methods
-    this.cycle = function() {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-      }
-  
-      timer = setInterval(function() {
-        isElementInScrollRange() && (index++, self.slideTo( index ) );
-      }, this[interval]);
-    };
-    this.slideTo = function( next ) {
-      if (isSliding) return; // when controled via methods, make sure to check again      
-      
-      var activeItem = this.getActiveIndex(), // the current active
-          orientation;
-      
-      // first return if we're on the same item #227
-      if ( activeItem === next ) {
-        return;
-      // or determine slideDirection
-      } else if  ( (activeItem < next ) || (activeItem === 0 && next === total -1 ) ) {
-        slideDirection = self[direction] = left; // next
-      } else if  ( (activeItem > next) || (activeItem === total - 1 && next === 0 ) ) {
-        slideDirection = self[direction] = right; // prev
-      }
-  
-      // find the right next index 
-      if ( next < 0 ) { next = total - 1; } 
-      else if ( next >= total ){ next = 0; }
-  
-      // update index
-      index = next;
-  
-      orientation = slideDirection === left ? 'next' : 'prev'; //determine type
-      bootstrapCustomEvent.call(element, slideEvent, component, slides[next]); // here we go with the slide
-  
-      isSliding = true;
-      clearInterval(timer);
-      timer = null;
-      setActivePage( next );
-  
-      if ( supportTransitions && hasClass(element,'slide') ) {
-  
-        addClass(slides[next],carouselItem +'-'+ orientation);
-        slides[next][offsetWidth];
-        addClass(slides[next],carouselItem +'-'+ slideDirection);
-        addClass(slides[activeItem],carouselItem +'-'+ slideDirection);
-  
-        one(slides[next], transitionEndEvent, function(e) {
-          var timeout = e[target] !== slides[next] ? e.elapsedTime*1000+100 : 20;
-          
-          isSliding && setTimeout(function(){
-            isSliding = false;
-  
-            addClass(slides[next],active);
-            removeClass(slides[activeItem],active);
-  
-            removeClass(slides[next],carouselItem +'-'+ orientation);
-            removeClass(slides[next],carouselItem +'-'+ slideDirection);
-            removeClass(slides[activeItem],carouselItem +'-'+ slideDirection);
-  
-            bootstrapCustomEvent.call(element, slidEvent, component, slides[next]);
-  
-            if ( !DOC.hidden && self[interval] && !hasClass(element,paused) ) {
-              self.cycle();
-            }
-          }, timeout);
-        });
-  
-      } else {
-        addClass(slides[next],active);
-        slides[next][offsetWidth];
-        removeClass(slides[activeItem],active);
-        setTimeout(function() {
-          isSliding = false;
-          if ( self[interval] && !hasClass(element,paused) ) {
-            self.cycle();
-          }
-          bootstrapCustomEvent.call(element, slidEvent, component, slides[next]);
-        }, 100 );
-      }
-    };
-    this.getActiveIndex = function () {
-      return slides[indexOf](getElementsByClassName(element,carouselItem+' active')[0]) || 0;
-    };
-  
-    // init
-    if ( !(stringCarousel in element ) ) { // prevent adding event handlers twice
-  
-      if ( self[pause] && self[interval] ) {
-        on( element, mouseHover[0], pauseHandler );
-        on( element, mouseHover[1], resumeHandler );
-        on( element, 'touchstart', pauseHandler );
-        on( element, 'touchend', resumeHandler );
-      }
-    
-      rightArrow && on( rightArrow, clickEvent, controlsHandler );
-      leftArrow && on( leftArrow, clickEvent, controlsHandler );
-    
-      indicator && on( indicator, clickEvent, indicatorHandler );
-      self[keyboard] === true && on( globalObject, keydownEvent, keyHandler );
-    }
-    if (self.getActiveIndex()<0) {
-      slides[length] && addClass(slides[0],active);
-      indicators[length] && setActivePage(0);
-    }
-  
-    if ( self[interval] ){ self.cycle(); }
-    element[stringCarousel] = self;
-  };
-  
-  // CAROUSEL DATA API
-  // =================
-  supports[push]( [ stringCarousel, Carousel, '['+dataRide+'="carousel"]' ] );
   
   
   /* Native Javascript for Bootstrap 4 | Collapse
@@ -4782,102 +4553,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   supports[push]( [ stringPopover, Popover, '['+dataToggle+'="popover"]' ] );
   
   
-  /* Native Javascript for Bootstrap 4 | ScrollSpy
-  -----------------------------------------------*/
-  
-  // SCROLLSPY DEFINITION
-  // ====================
-  var ScrollSpy = function(element, options) {
-  
-    // initialization element, the element we spy on
-    element = queryElement(element); 
-  
-    // DATA API
-    var targetData = queryElement(element[getAttribute](dataTarget)),
-        offsetData = element[getAttribute]('data-offset');
-  
-    // set options
-    options = options || {};
-    if ( !options[target] && !targetData ) { return; } // invalidate
-  
-    // event targets, constants
-    var self = this, spyTarget = options[target] && queryElement(options[target]) || targetData,
-        links = spyTarget && spyTarget[getElementsByTagName]('A'),
-        offset = parseInt(offsetData || options['offset']) || 10,      
-        items = [], targetItems = [], scrollOffset,
-        scrollTarget = element[offsetHeight] < element[scrollHeight] ? element : globalObject, // determine which is the real scrollTarget
-        isWindow = scrollTarget === globalObject;  
-  
-    // populate items and targets
-    for (var i=0, il=links[length]; i<il; i++) {
-      var href = links[i][getAttribute]('href'), 
-          targetItem = href && href.charAt(0) === '#' && href.slice(-1) !== '#' && queryElement(href);
-      if ( !!targetItem ) {
-        items[push](links[i]);
-        targetItems[push](targetItem);
-      }
-    }
-  
-    // private methods
-    var updateItem = function(index) {
-        var item = items[index],
-          targetItem = targetItems[index], // the menu item targets this element
-          dropdown = item[parentNode][parentNode],
-          dropdownLink = hasClass(dropdown,'dropdown') && dropdown[getElementsByTagName]('A')[0],
-          targetRect = isWindow && targetItem[getBoundingClientRect](),
-  
-          isActive = hasClass(item,active) || false,
-  
-          topEdge = (isWindow ? targetRect[top] + scrollOffset : targetItem[offsetTop]) - offset,
-          bottomEdge = isWindow ? targetRect[bottom] + scrollOffset - offset : targetItems[index+1] ? targetItems[index+1][offsetTop] - offset : element[scrollHeight],
-  
-          inside = scrollOffset >= topEdge && bottomEdge > scrollOffset;
-  
-        if ( !isActive && inside ) {
-          if ( !hasClass(item,active) ) {
-            addClass(item,active);
-            if (dropdownLink && !hasClass(dropdownLink,active) ) {
-              addClass(dropdownLink,active);
-            }
-            bootstrapCustomEvent.call(element, 'activate', 'scrollspy', items[index]);
-          }
-        } else if ( !inside ) {
-          if ( hasClass(item,active) ) {
-            removeClass(item,active);
-            if (dropdownLink && hasClass(dropdownLink,active) && !getElementsByClassName(item[parentNode],active).length  ) {
-              removeClass(dropdownLink,active);
-            }
-          }
-        } else if ( !inside && !isActive || isActive && inside ) {
-          return;
-        }
-      },
-      updateItems = function(){
-        scrollOffset = isWindow ? getScroll().y : element[scrollTop];
-        for (var index=0, itl=items[length]; index<itl; index++) {
-          updateItem(index)
-        }
-      };
-  
-    // public method
-    this.refresh = function () {
-      updateItems();
-    }
-  
-    // init
-    if ( !(stringScrollSpy in element) ) { // prevent adding event handlers twice
-      on( scrollTarget, scrollEvent, self.refresh );
-      on( globalObject, resizeEvent, self.refresh ); 
-    }
-    self.refresh();
-    element[stringScrollSpy] = self;
-  };
-  
-  // SCROLLSPY DATA API
-  // ==================
-  supports[push]( [ stringScrollSpy, ScrollSpy, '['+dataSpy+'="scroll"]' ] );
-  
-  
   /* Native Javascript for Bootstrap 4 | Tab
   -----------------------------------------*/
   
@@ -5184,12 +4859,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   return {
     Alert: Alert,
     Button: Button,
-    Carousel: Carousel,
     Collapse: Collapse,
     Dropdown: Dropdown,
     Modal: Modal,
     Popover: Popover,
-    ScrollSpy: ScrollSpy,
     Tab: Tab,
     Tooltip: Tooltip
   };
@@ -49360,7 +49033,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var converse_message_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! converse-message-view */ "./src/converse-message-view.js");
 /* harmony import */ var converse_modal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! converse-modal */ "./src/converse-modal.js");
 /* harmony import */ var twemoji__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! twemoji */ "./node_modules/twemoji/2/esm.js");
-/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native.js");
 /* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(bootstrap_native__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var templates_alert_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/alert.html */ "./src/templates/alert.html");
@@ -50829,7 +50502,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var converse_rosterview__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! converse-rosterview */ "./src/converse-rosterview.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(formdata_polyfill__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native.js");
 /* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(bootstrap_native__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var _converse_headless_lodash_fp__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @converse/headless/lodash.fp */ "./src/headless/lodash.fp.js");
@@ -53237,7 +52910,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var backbone_vdomview__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/backbone.vdomview.js");
 /* harmony import */ var backbone_vdomview__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone_vdomview__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native.js");
 /* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bootstrap_native__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var templates_alert_modal_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! templates/alert_modal.html */ "./src/templates/alert_modal.html");
@@ -57423,7 +57096,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var converse_modal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! converse-modal */ "./src/converse-modal.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(formdata_polyfill__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native.js");
 /* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bootstrap_native__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/chat_status_modal.html */ "./src/templates/chat_status_modal.html");

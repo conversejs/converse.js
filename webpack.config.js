@@ -72,6 +72,14 @@ const config = {
                     ]
                 }
             }
+        }, {
+            test: /bootstrap\.native/,
+            use: {
+                loader: 'bootstrap.native-loader',
+                options: {
+                    ignore: ['carousel', 'scrollspy']
+                }
+            }
         }],
     },
     resolve: {
@@ -84,7 +92,6 @@ const config = {
             "IPv6":                     path.resolve(__dirname, "node_modules/urijs/src/IPv6"),
             "SecondLevelDomains":       path.resolve(__dirname, "node_modules/urijs/src/SecondLevelDomains"),
             "awesomplete":              path.resolve(__dirname, "node_modules/awesomplete-avoid-xss/awesomplete"),
-            "bootstrap.native":         path.resolve(__dirname, "node_modules/bootstrap.native/dist/bootstrap-native-v4"),
             "formdata-polyfill":        path.resolve(__dirname, "node_modules/formdata-polyfill/FormData"),
             "jquery":                   path.resolve(__dirname, "src/jquery-stub"),
             "punycode":                 path.resolve(__dirname, "node_modules/urijs/src/punycode"),

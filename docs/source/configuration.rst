@@ -551,7 +551,7 @@ The server behind ``credentials_url`` should return a JSON encoded object::
 
     {
         "jid": "me@example.com/resource",
-        "password": "Ilikecats!",
+        "password": "Ilikecats!"
     }
 
 

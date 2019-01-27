@@ -441,7 +441,7 @@ converse.plugins.add('converse-muc', {
                  * as taken from the 'chat_state' attribute of the chat box.
                  * See XEP-0085 Chat State Notifications.
                  */
-                if (this.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
+                if (!_converse.send_chat_state_notifications || this.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                     return;
                 }
                 const chat_state = this.get('chat_state');
@@ -464,7 +464,7 @@ converse.plugins.add('converse-muc', {
                  *    (String) recipient - JID of the person being invited
                  *    (String) reason - Optional reason for the invitation
                  */
-                if (this.get('membersonly')) {
+                if (this.features.get('membersonly')) {
                     // When inviting to a members-only groupchat, we first add
                     // the person to the member list by giving them an
                     // affiliation of 'member' (if they're not affiliated
@@ -1153,7 +1153,7 @@ converse.plugins.add('converse-muc', {
 
                 _.forEach(_.filter(vcards, undefined), (vcard) => {
                     if (hash && vcard.get('image_hash') !== hash) {
-                        _converse.api.vcard.update(vcard);
+                        _converse.api.vcard.update(vcard, true);
                     }
                 });
             },

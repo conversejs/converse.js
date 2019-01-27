@@ -3396,14 +3396,14 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 
 /***/ }),
 
-/***/ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js":
-/*!*******************************************************************!*\
-  !*** ./node_modules/bootstrap.native/dist/bootstrap-native-v4.js ***!
-  \*******************************************************************/
+/***/ "./node_modules/bootstrap.native/dist/bootstrap-native.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/bootstrap.native/dist/bootstrap-native.js ***!
+  \****************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.23 | © dnp_theme | MIT-License
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.24 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (true) {
     // AMD support:
@@ -3707,7 +3707,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       arrowLeft && (arrow[style][left] = arrowLeft + 'px');
     };
   
-  BSN.version = '2.0.23';
+  BSN.version = '2.0.24';
   
   /* Native Javascript for Bootstrap 4 | Alert
   -------------------------------------------*/
@@ -3859,225 +3859,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   // BUTTON DATA API
   // =================
   supports[push]( [ stringButton, Button, '['+dataToggle+'="buttons"]' ] );
-  
-  
-  /* Native Javascript for Bootstrap 4 | Carousel
-  ----------------------------------------------*/
-  
-  // CAROUSEL DEFINITION
-  // ===================
-  var Carousel = function( element, options ) {
-  
-    // initialization element
-    element = queryElement( element );
-  
-    // set options
-    options = options || {};
-  
-    // DATA API
-    var intervalAttribute = element[getAttribute](dataInterval),
-        intervalOption = options[interval],
-        intervalData = intervalAttribute === 'false' ? 0 : parseInt(intervalAttribute),  
-        pauseData = element[getAttribute](dataPause) === hoverEvent || false,
-        keyboardData = element[getAttribute](dataKeyboard) === 'true' || false,
-      
-        // strings
-        component = 'carousel',
-        paused = 'paused',
-        direction = 'direction',
-        carouselItem = 'carousel-item',
-        dataSlideTo = 'data-slide-to'; 
-  
-    this[keyboard] = options[keyboard] === true || keyboardData;
-    this[pause] = (options[pause] === hoverEvent || pauseData) ? hoverEvent : false; // false / hover
-  
-    this[interval] = typeof intervalOption === 'number' ? intervalOption
-                   : intervalOption === false || intervalData === 0 || intervalData === false ? 0
-                   : 5000; // bootstrap carousel default interval
-  
-    // bind, event targets
-    var self = this, index = element.index = 0, timer = element.timer = 0, 
-      isSliding = false, // isSliding prevents click event handlers when animation is running
-      slides = getElementsByClassName(element,carouselItem), total = slides[length],
-      slideDirection = this[direction] = left,
-      leftArrow = getElementsByClassName(element,component+'-control-prev')[0], 
-      rightArrow = getElementsByClassName(element,component+'-control-next')[0],
-      indicator = queryElement( '.'+component+'-indicators', element ),
-      indicators = indicator && indicator[getElementsByTagName]( "LI" ) || [];
-  
-    // handlers
-    var pauseHandler = function () {
-        if ( self[interval] !==false && !hasClass(element,paused) ) {
-          addClass(element,paused);
-          !isSliding && clearInterval( timer );
-        }
-      },
-      resumeHandler = function() {
-        if ( self[interval] !== false && hasClass(element,paused) ) {
-          removeClass(element,paused);
-          !isSliding && clearInterval( timer );
-          !isSliding && self.cycle();
-        }
-      },
-      indicatorHandler = function(e) {
-        e[preventDefault]();
-        if (isSliding) return;
-  
-        var eventTarget = e[target]; // event target | the current active item
-  
-        if ( eventTarget && !hasClass(eventTarget,active) && eventTarget[getAttribute](dataSlideTo) ) {
-          index = parseInt( eventTarget[getAttribute](dataSlideTo), 10 );
-        } else { return false; }
-  
-        self.slideTo( index ); //Do the slide
-      },
-      controlsHandler = function (e) {
-        e[preventDefault]();
-        if (isSliding) return;
-  
-        var eventTarget = e.currentTarget || e.srcElement;
-  
-        if ( eventTarget === rightArrow ) {
-          index++;
-        } else if ( eventTarget === leftArrow ) {
-          index--;
-        }
-  
-        self.slideTo( index ); //Do the slide
-      },
-      keyHandler = function (e) {
-        if (isSliding) return;
-        switch (e.which) {
-          case 39:
-            index++;
-            break;
-          case 37:
-            index--;
-            break;
-          default: return;
-        }
-        self.slideTo( index ); //Do the slide
-      },
-      // private methods
-      isElementInScrollRange = function () {
-        var rect = element[getBoundingClientRect](),
-          viewportHeight = globalObject[innerHeight] || HTML[clientHeight]
-        return rect[top] <= viewportHeight && rect[bottom] >= 0; // bottom && top
-      },    
-      setActivePage = function( pageIndex ) { //indicators
-        for ( var i = 0, icl = indicators[length]; i < icl; i++ ) {
-          removeClass(indicators[i],active);
-        }
-        if (indicators[pageIndex]) addClass(indicators[pageIndex], active);
-      };
-  
-  
-    // public methods
-    this.cycle = function() {
-      timer = setInterval(function() {
-        isElementInScrollRange() && (index++, self.slideTo( index ) );
-      }, this[interval]);
-    };
-    this.slideTo = function( next ) {
-      if (isSliding) return; // when controled via methods, make sure to check again      
-      
-      var activeItem = this.getActiveIndex(), // the current active
-          orientation;
-      
-      // determine slideDirection first
-      if  ( (activeItem < next ) || (activeItem === 0 && next === total -1 ) ) {
-        slideDirection = self[direction] = left; // next
-      } else if  ( (activeItem > next) || (activeItem === total - 1 && next === 0 ) ) {
-        slideDirection = self[direction] = right; // prev
-      }
-  
-      // find the right next index 
-      if ( next < 0 ) { next = total - 1; } 
-      else if ( next === total ){ next = 0; }
-  
-      // update index
-      index = next;
-  
-      orientation = slideDirection === left ? 'next' : 'prev'; //determine type
-      bootstrapCustomEvent.call(element, slideEvent, component, slides[next]); // here we go with the slide
-  
-      isSliding = true;
-      clearInterval(timer);
-      setActivePage( next );
-  
-      if ( supportTransitions && hasClass(element,'slide') ) {
-  
-        addClass(slides[next],carouselItem +'-'+ orientation);
-        slides[next][offsetWidth];
-        addClass(slides[next],carouselItem +'-'+ slideDirection);
-        addClass(slides[activeItem],carouselItem +'-'+ slideDirection);
-  
-        one(slides[next], transitionEndEvent, function(e) {
-          var timeout = e[target] !== slides[next] ? e.elapsedTime*1000+100 : 20;
-          
-          isSliding && setTimeout(function(){
-            isSliding = false;
-  
-            addClass(slides[next],active);
-            removeClass(slides[activeItem],active);
-  
-            removeClass(slides[next],carouselItem +'-'+ orientation);
-            removeClass(slides[next],carouselItem +'-'+ slideDirection);
-            removeClass(slides[activeItem],carouselItem +'-'+ slideDirection);
-  
-            bootstrapCustomEvent.call(element, slidEvent, component, slides[next]);
-  
-            if ( !DOC.hidden && self[interval] && !hasClass(element,paused) ) {
-              self.cycle();
-            }
-          }, timeout);
-        });
-  
-      } else {
-        addClass(slides[next],active);
-        slides[next][offsetWidth];
-        removeClass(slides[activeItem],active);
-        setTimeout(function() {
-          isSliding = false;
-          if ( self[interval] && !hasClass(element,paused) ) {
-            self.cycle();
-          }
-          bootstrapCustomEvent.call(element, slidEvent, component, slides[next]);
-        }, 100 );
-      }
-    };
-    this.getActiveIndex = function () {
-      return slides[indexOf](getElementsByClassName(element,carouselItem+' active')[0]) || 0;
-    };
-  
-    // init
-    if ( !(stringCarousel in element ) ) { // prevent adding event handlers twice
-  
-      if ( self[pause] && self[interval] ) {
-        on( element, mouseHover[0], pauseHandler );
-        on( element, mouseHover[1], resumeHandler );
-        on( element, 'touchstart', pauseHandler );
-        on( element, 'touchend', resumeHandler );
-      }
-    
-      rightArrow && on( rightArrow, clickEvent, controlsHandler );
-      leftArrow && on( leftArrow, clickEvent, controlsHandler );
-    
-      indicator && on( indicator, clickEvent, indicatorHandler );
-      self[keyboard] === true && on( globalObject, keydownEvent, keyHandler );
-    }
-    if (self.getActiveIndex()<0) {
-      slides[length] && addClass(slides[0],active);
-      indicators[length] && setActivePage(0);
-    }
-  
-    if ( self[interval] ){ self.cycle(); }
-    element[stringCarousel] = self;
-  };
-  
-  // CAROUSEL DATA API
-  // =================
-  supports[push]( [ stringCarousel, Carousel, '['+dataRide+'="carousel"]' ] );
   
   
   /* Native Javascript for Bootstrap 4 | Collapse
@@ -4282,7 +4063,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         bootstrapCustomEvent.call(parent, showEvent, component, relatedTarget);
         addClass(menu,showClass);
         addClass(parent,showClass);
-        menu[setAttribute](ariaExpanded,true);
+        element[setAttribute](ariaExpanded,true);
         bootstrapCustomEvent.call(parent, shownEvent, component, relatedTarget);
         element[open] = true;
         off(element, clickEvent, clickHandler);
@@ -4295,7 +4076,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         bootstrapCustomEvent.call(parent, hideEvent, component, relatedTarget);
         removeClass(menu,showClass);
         removeClass(parent,showClass);
-        menu[setAttribute](ariaExpanded,false);
+        element[setAttribute](ariaExpanded,false);
         bootstrapCustomEvent.call(parent, hiddenEvent, component, relatedTarget);
         element[open] = false;
         toggleDismiss();
@@ -4772,102 +4553,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   supports[push]( [ stringPopover, Popover, '['+dataToggle+'="popover"]' ] );
   
   
-  /* Native Javascript for Bootstrap 4 | ScrollSpy
-  -----------------------------------------------*/
-  
-  // SCROLLSPY DEFINITION
-  // ====================
-  var ScrollSpy = function(element, options) {
-  
-    // initialization element, the element we spy on
-    element = queryElement(element); 
-  
-    // DATA API
-    var targetData = queryElement(element[getAttribute](dataTarget)),
-        offsetData = element[getAttribute]('data-offset');
-  
-    // set options
-    options = options || {};
-    if ( !options[target] && !targetData ) { return; } // invalidate
-  
-    // event targets, constants
-    var self = this, spyTarget = options[target] && queryElement(options[target]) || targetData,
-        links = spyTarget && spyTarget[getElementsByTagName]('A'),
-        offset = parseInt(offsetData || options['offset']) || 10,      
-        items = [], targetItems = [], scrollOffset,
-        scrollTarget = element[offsetHeight] < element[scrollHeight] ? element : globalObject, // determine which is the real scrollTarget
-        isWindow = scrollTarget === globalObject;  
-  
-    // populate items and targets
-    for (var i=0, il=links[length]; i<il; i++) {
-      var href = links[i][getAttribute]('href'), 
-          targetItem = href && href.charAt(0) === '#' && href.slice(-1) !== '#' && queryElement(href);
-      if ( !!targetItem ) {
-        items[push](links[i]);
-        targetItems[push](targetItem);
-      }
-    }
-  
-    // private methods
-    var updateItem = function(index) {
-        var item = items[index],
-          targetItem = targetItems[index], // the menu item targets this element
-          dropdown = item[parentNode][parentNode],
-          dropdownLink = hasClass(dropdown,'dropdown') && dropdown[getElementsByTagName]('A')[0],
-          targetRect = isWindow && targetItem[getBoundingClientRect](),
-  
-          isActive = hasClass(item,active) || false,
-  
-          topEdge = (isWindow ? targetRect[top] + scrollOffset : targetItem[offsetTop]) - offset,
-          bottomEdge = isWindow ? targetRect[bottom] + scrollOffset - offset : targetItems[index+1] ? targetItems[index+1][offsetTop] - offset : element[scrollHeight],
-  
-          inside = scrollOffset >= topEdge && bottomEdge > scrollOffset;
-  
-        if ( !isActive && inside ) {
-          if ( !hasClass(item,active) ) {
-            addClass(item,active);
-            if (dropdownLink && !hasClass(dropdownLink,active) ) {
-              addClass(dropdownLink,active);
-            }
-            bootstrapCustomEvent.call(element, 'activate', 'scrollspy', items[index]);
-          }
-        } else if ( !inside ) {
-          if ( hasClass(item,active) ) {
-            removeClass(item,active);
-            if (dropdownLink && hasClass(dropdownLink,active) && !getElementsByClassName(item[parentNode],active).length  ) {
-              removeClass(dropdownLink,active);
-            }
-          }
-        } else if ( !inside && !isActive || isActive && inside ) {
-          return;
-        }
-      },
-      updateItems = function(){
-        scrollOffset = isWindow ? getScroll().y : element[scrollTop];
-        for (var index=0, itl=items[length]; index<itl; index++) {
-          updateItem(index)
-        }
-      };
-  
-    // public method
-    this.refresh = function () {
-      updateItems();
-    }
-  
-    // init
-    if ( !(stringScrollSpy in element) ) { // prevent adding event handlers twice
-      on( scrollTarget, scrollEvent, self.refresh );
-      on( globalObject, resizeEvent, self.refresh ); 
-    }
-    self.refresh();
-    element[stringScrollSpy] = self;
-  };
-  
-  // SCROLLSPY DATA API
-  // ==================
-  supports[push]( [ stringScrollSpy, ScrollSpy, '['+dataSpy+'="scroll"]' ] );
-  
-  
   /* Native Javascript for Bootstrap 4 | Tab
   -----------------------------------------*/
   
@@ -5174,12 +4859,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   return {
     Alert: Alert,
     Button: Button,
-    Carousel: Carousel,
     Collapse: Collapse,
     Dropdown: Dropdown,
     Modal: Modal,
     Popover: Popover,
-    ScrollSpy: ScrollSpy,
     Tab: Tab,
     Tooltip: Tooltip
   };
@@ -49350,8 +49033,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var converse_message_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! converse-message-view */ "./src/converse-message-view.js");
 /* harmony import */ var converse_modal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! converse-modal */ "./src/converse-modal.js");
 /* harmony import */ var twemoji__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! twemoji */ "./node_modules/twemoji/2/esm.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native.js");
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(bootstrap_native__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var templates_alert_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/alert.html */ "./src/templates/alert.html");
 /* harmony import */ var templates_alert_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_alert_html__WEBPACK_IMPORTED_MODULE_6__);
@@ -50420,9 +50103,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       inputChanged(ev) {
-        ev.target.style.height = 'auto'; // Fixes weirdness
+        const new_height = ev.target.scrollHeight + 'px';
 
-        ev.target.style.height = ev.target.scrollHeight + 'px';
+        if (ev.target.style.height !== new_height) {
+          ev.target.style.height = 'auto'; // Fixes weirdness
+
+          ev.target.style.height = new_height;
+        }
       },
 
       clearMessages(ev) {
@@ -50500,7 +50187,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           this.insertEmojiPicker();
           this.renderEmojiPicker();
           const dropdown_el = this.el.querySelector('.toggle-smiley.dropup');
-          this.emoji_dropdown = new bootstrap__WEBPACK_IMPORTED_MODULE_4___default.a.Dropdown(dropdown_el, true);
+          this.emoji_dropdown = new bootstrap_native__WEBPACK_IMPORTED_MODULE_4___default.a.Dropdown(dropdown_el, true);
           this.emoji_dropdown.el = dropdown_el;
           this.emoji_dropdown.toggle();
         }
@@ -50815,8 +50502,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var converse_rosterview__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! converse-rosterview */ "./src/converse-rosterview.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(formdata_polyfill__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native.js");
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(bootstrap_native__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var _converse_headless_lodash_fp__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @converse/headless/lodash.fp */ "./src/headless/lodash.fp.js");
 /* harmony import */ var _converse_headless_lodash_fp__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_converse_headless_lodash_fp__WEBPACK_IMPORTED_MODULE_6__);
@@ -51300,7 +50987,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       initPopovers() {
         _.forEach(this.el.querySelectorAll('[data-title]'), el => {
-          const popover = new bootstrap__WEBPACK_IMPORTED_MODULE_4___default.a.Popover(el, {
+          const popover = new bootstrap_native__WEBPACK_IMPORTED_MODULE_4___default.a.Popover(el, {
             'trigger': _converse.view_mode === 'mobile' && 'click' || 'hover',
             'dismissible': _converse.view_mode === 'mobile' && true || false,
             'container': this.el.parentElement.parentElement.parentElement
@@ -53223,8 +52910,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var backbone_vdomview__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone.vdomview */ "./node_modules/backbone.vdomview/backbone.vdomview.js");
 /* harmony import */ var backbone_vdomview__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone_vdomview__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native.js");
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bootstrap_native__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var templates_alert_modal_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! templates/alert_modal.html */ "./src/templates/alert_modal.html");
 /* harmony import */ var templates_alert_modal_html__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(templates_alert_modal_html__WEBPACK_IMPORTED_MODULE_3__);
@@ -53247,7 +52934,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins
     _converse.BootstrapModal = Backbone.VDOMView.extend({
       initialize() {
         this.render().insertIntoDOM();
-        this.modal = new bootstrap__WEBPACK_IMPORTED_MODULE_1___default.a.Modal(this.el, {
+        this.modal = new bootstrap_native__WEBPACK_IMPORTED_MODULE_1___default.a.Modal(this.el, {
           backdrop: 'static',
           keyboard: true
         });
@@ -53517,6 +53204,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     _converse.api.settings.update({
       'auto_list_rooms': false,
       'muc_disable_moderator_commands': false,
+      'roomconfig_whitelist': [],
       'visible_toolbar_buttons': {
         'toggle_occupants': true
       }
@@ -54604,7 +54292,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           fieldset_el.insertAdjacentHTML('beforeend', `<p class="form-help">${instructions}</p>`);
         }
 
-        _.each(fields, field => fieldset_el.insertAdjacentHTML('beforeend', u.xForm2webForm(field, stanza))); // Render save/cancel buttons
+        _.each(fields, field => {
+          if (_converse.roomconfig_whitelist.length === 0 || _.includes(_converse.roomconfig_whitelist, field.getAttribute('var'))) {
+            fieldset_el.insertAdjacentHTML('beforeend', u.xForm2webForm(field, stanza));
+          }
+        }); // Render save/cancel buttons
 
 
         const last_fieldset_el = document.createElement('fieldset');
@@ -57404,8 +57096,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var converse_modal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! converse-modal */ "./src/converse-modal.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js");
 /* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(formdata_polyfill__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap.native/dist/bootstrap-native-v4.js");
-/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! bootstrap.native */ "./node_modules/bootstrap.native/dist/bootstrap-native.js");
+/* harmony import */ var bootstrap_native__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(bootstrap_native__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/chat_status_modal.html */ "./src/templates/chat_status_modal.html");
 /* harmony import */ var templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_chat_status_modal_html__WEBPACK_IMPORTED_MODULE_5__);
@@ -57488,7 +57180,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       },
 
       afterRender() {
-        this.tabs = _.map(this.el.querySelectorAll('.nav-item'), tab => new bootstrap__WEBPACK_IMPORTED_MODULE_3___default.a.Tab(tab));
+        this.tabs = _.map(this.el.querySelectorAll('.nav-item'), tab => new bootstrap_native__WEBPACK_IMPORTED_MODULE_3___default.a.Tab(tab));
       },
 
       openFileSelection(ev) {
@@ -62401,7 +62093,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname') // Get chat box, but only create a new one when the message has a body.
 
         };
-        const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`).length > 0;
+        const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
         const chatbox = this.getChatBox(contact_jid, attrs, has_body);
 
         if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza)) {
@@ -62749,7 +62441,7 @@ const _converse = {
   'templates': {},
   'promises': {}
 };
-_converse.VERSION_NAME = "v4.0.6";
+_converse.VERSION_NAME = "v4.1.0";
 
 _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.extend(_converse, Backbone.Events); // Make converse pluggable
 
@@ -66503,7 +66195,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          * as taken from the 'chat_state' attribute of the chat box.
          * See XEP-0085 Chat State Notifications.
          */
-        if (this.get('connection_status') !== _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.ENTERED) {
+        if (!_converse.send_chat_state_notifications || this.get('connection_status') !== _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].ROOMSTATUS.ENTERED) {
           return;
         }
 
@@ -66533,7 +66225,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          *    (String) recipient - JID of the person being invited
          *    (String) reason - Optional reason for the invitation
          */
-        if (this.get('membersonly')) {
+        if (this.features.get('membersonly')) {
           // When inviting to a members-only groupchat, we first add
           // the person to the member list by giving them an
           // affiliation of 'member' (if they're not affiliated
@@ -67343,7 +67035,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
         _.forEach(_.filter(vcards, undefined), vcard => {
           if (hash && vcard.get('image_hash') !== hash) {
-            _converse.api.vcard.update(vcard);
+            _converse.api.vcard.update(vcard, true);
           }
         });
       },
@@ -92286,7 +91978,7 @@ __p += '<!-- src/templates/chatarea.html -->\n<div class="chat-area col-md-9 col
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;
-__p += '"></div>\n    <div class="message-form-container"/>\n</div>\n';
+__p += '" aria-live="polite"></div>\n    <div class="message-form-container"/>\n</div>\n';
 return __p
 };
 
@@ -92307,7 +91999,7 @@ __p += '<!-- src/templates/chatbox.html -->\n<div class="flyout box-flyout">\n  
  if (o.show_send_button) { ;
 __p += 'chat-content-sendbutton';
  } ;
-__p += '"></div>\n        <div class="message-form-container"></div>\n    </div>\n</div>\n';
+__p += '" aria-live="polite"></div>\n        <div class="message-form-container"></div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -93077,7 +92769,7 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '';
-__p += '<!-- src/templates/converse_brand_heading.html -->\n<span class="brand-heading-container">\n    <div class="brand-heading">\n        <a href="https://conversejs.org" target="_blank" rel="noopener">\n            <svg class="converse-svg-logo"\n                xmlns:svg="http://www.w3.org/2000/svg"\n                xmlns="http://www.w3.org/2000/svg"\n                xmlns:xlink="http://www.w3.org/1999/xlink"\n                viewBox="0 0 364 364">\n                <title>Converse</title>\n                <g class="cls-1" id="g904">\n                    <g data-name="Layer 2">\n                        <g data-name="Layer 7">\n                            <path\n                                class="cls-3"\n                                d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" />\n                            <path\n                                class="cls-4"\n                                d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" />\n                        </g>\n                    </g>\n                </g>\n            </svg>\n            <span class="brand-name">converse</span>\n        </a>\n    </div>\n</span>\n';
+__p += '<!-- src/templates/converse_brand_heading.html -->\n<span class="brand-heading-container">\n    <a class="brand-heading" href="https://conversejs.org" target="_blank" rel="noopener">\n        <svg class="converse-svg-logo"\n            xmlns:svg="http://www.w3.org/2000/svg"\n            xmlns="http://www.w3.org/2000/svg"\n            xmlns:xlink="http://www.w3.org/1999/xlink"\n            viewBox="0 0 364 364">\n            <title>Converse</title>\n            <g class="cls-1" id="g904">\n                <g data-name="Layer 2">\n                    <g data-name="Layer 7">\n                        <path\n                            class="cls-3"\n                            d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" />\n                        <path\n                            class="cls-4"\n                            d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" />\n                    </g>\n                </g>\n            </g>\n        </svg>\n        <span class="brand-name">\n            <span class="brand-name__text">converse<span class="subdued">.js</span></span>\n        </span>\n    </a>\n</span>\n';
 return __p
 };
 
@@ -93624,7 +93316,7 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/inverse_brand_heading.html -->\n<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading brand-heading--inverse">\n            <svg class="converse-svg-logo"\n                xmlns:svg="http://www.w3.org/2000/svg"\n                xmlns="http://www.w3.org/2000/svg"\n                xmlns:xlink="http://www.w3.org/1999/xlink"\n                viewBox="0 0 364 364">\n                <title>Converse</title>\n                <g class="cls-1" id="g904">\n                    <g data-name="Layer 2">\n                        <g data-name="Layer 7">\n                            <path\n                                class="cls-3"\n                                d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" />\n                            <path\n                                class="cls-4"\n                                d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" />\n                        </g>\n                    </g>\n                </g>\n            </svg>\n            <span class="brand-name">converse</span>\n        </h1>\n        <p class="brand-subtitle">' +
+__p += '<!-- src/templates/inverse_brand_heading.html -->\n<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading brand-heading--inverse">\n            <svg class="converse-svg-logo"\n                xmlns:svg="http://www.w3.org/2000/svg"\n                xmlns="http://www.w3.org/2000/svg"\n                xmlns:xlink="http://www.w3.org/1999/xlink"\n                viewBox="0 0 364 364">\n                <title>Converse</title>\n                <g class="cls-1" id="g904">\n                    <g data-name="Layer 2">\n                        <g data-name="Layer 7">\n                            <path\n                                class="cls-3"\n                                d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" />\n                            <path\n                                class="cls-4"\n                                d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" />\n                        </g>\n                    </g>\n                </g>\n            </svg>\n            <span class="brand-name">\n                <span class="brand-name__text">converse<span class="subdued">.js</span></span>\n                <p class="byline">messaging freedom</p>\n            </span>\n        </h1>\n        <p class="brand-subtitle">' +
 __e(o.version_name) +
 '</p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client brought to you by <a target="_blank" rel="nofollow" href="https://opkode.com">Opkode</a> </p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> it into your own language</p>\n    </div>\n</div>\n';
 return __p
@@ -94239,7 +93931,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/register_panel.html -->\n<div class="row">\n    <form id="converse-register" class="converse-form">\n        <legend class="col-form-label">' +
+__p += '<!-- src/templates/register_panel.html -->\n<div>\n    <form id="converse-register" class="converse-form">\n        <legend class="col-form-label">' +
 __e(o.__("Create your account")) +
 '</legend>\n\n        <div class="form-group">\n            <label>' +
 __e(o.__("Please enter the XMPP provider to register with:")) +

@@ -107,7 +107,6 @@ Recently we have started accepting donations via [Patreon](https://www.patreon.c
 
 The following people are making recurring donations:
 
-* [Alexander Matviychuk](https://www.patreon.com/user/creators?u=10203506)
 * [Daniel Gultsch](https://www.patreon.com/user/creators?u=13443518)
 * [Dele Olajide](https://www.patreon.com/user/creators?u=14392041)
 * [Drew Varner](https://www.patreon.com/user/creators?u=8131055)
@@ -119,7 +118,7 @@ The following people are making recurring donations:
 * [Ramesh Jangama](https://www.patreon.com/user/creators?u=14564234)
 * [Tilman Beitter](https://www.patreon.com/spicewiesel/creators)
 * [mt7479](https://www.patreon.com/user/creators?u=3892290)
-* An anonymous backer on Liberapay
+* Two anonymous backers on Liberapay
 
 Additionally this project is supported by
 

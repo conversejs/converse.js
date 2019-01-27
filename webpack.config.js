@@ -72,6 +72,14 @@ const config = {
                     ]
                 }
             }
+        }, {
+            test: /bootstrap\.native/,
+            use: {
+                loader: 'bootstrap.native-loader',
+                options: {
+                    ignore: ['carousel', 'scrollspy']
+                }
+            }
         }],
     },
     resolve: {
@@ -84,10 +92,8 @@ const config = {
             "IPv6":                     path.resolve(__dirname, "node_modules/urijs/src/IPv6"),
             "SecondLevelDomains":       path.resolve(__dirname, "node_modules/urijs/src/SecondLevelDomains"),
             "awesomplete":              path.resolve(__dirname, "node_modules/awesomplete-avoid-xss/awesomplete"),
-            "bootstrap":                path.resolve(__dirname, "node_modules/bootstrap.native/dist/bootstrap-native-v4"),
             "formdata-polyfill":        path.resolve(__dirname, "node_modules/formdata-polyfill/FormData"),
             "jquery":                   path.resolve(__dirname, "src/jquery-stub"),
-            "pluggable":                path.resolve(__dirname, "node_modules/pluggable.js/dist/pluggable"),
             "punycode":                 path.resolve(__dirname, "node_modules/urijs/src/punycode"),
             "snabbdom":                 path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom"),
             "snabbdom-attributes":      path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-attributes"),
@@ -98,8 +104,6 @@ const config = {
             "snabbdom-style":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-style"),
             "tovnode":                  path.resolve(__dirname, "node_modules/snabbdom/dist/tovnode"),
             "underscore":               path.resolve(__dirname, "src/underscore-shim"),
-            "uri":                      path.resolve(__dirname, "node_modules/urijs/src/URI"),
-            "vdom-parser":              path.resolve(__dirname, "node_modules/vdom-parser/dist"),
             "xss":                      path.resolve(__dirname, "node_modules/xss/dist/xss")
         }
     }

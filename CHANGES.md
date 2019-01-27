@@ -1,13 +1,23 @@
 # Changelog
 
-## 4.0.7 (Unreleased)
+## 4.1.1 (unreleased)
+
+- Accessibility: Tag the chat-content as an ARIA live region, for screen readers
+- #1408 new config option `roomconfig_whitelist`
+- #1421 fix direct invite for membersonly room
+
+## 4.1.0 (2019-01-11)
 
 - Bugfix: MUC commands were being ignored
 - Bugfix: Multiple rooms shown active in the rooms list
+- Bugfix: Don't open chats when receiving messages without a `body`
+- Bugfix: Typing in the textarea can become very slow in large MUCs
 - UI: Always show the OMEMO lock icon (grayed out if not available).
 - Use `publish-options` with `pubsub#access_model` set to `open` when publishing OMEMO public keys and devices
 - Add a new `converse-pubsub` plugin, for generic PubSub operations
 - #1180 It's now possible to use OMEMO in a MUC (if it's members-only and non-anonymous)
+- #1334 Force avatar refetch when receiving `vcard-temp:x:update`
+- #1337 `send_chat_state_notifications` doesn't work in MUCs
 - #1353 Message Delivery Receipts not working because of the message "type" attribute
 - #1356 Make triangle icon usable 
 - #1374 Can't load embedded chat when changing `view_mode` between page reloads
@@ -16,7 +26,6 @@
 - #1379 MUC unread messages indicator is failing
 - #1382 Message Delivery Receipts: Set store hint and type='chat'
 - #1388 implement muc-owner command `/destroy`
-
 
 ## 4.0.6 (2018-12-07)
 

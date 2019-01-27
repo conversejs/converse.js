@@ -9321,6 +9321,8 @@ readers do not read off random characters that represent icons */
   --message-text-color: #555;
   --message-receipt-color: #3AA569;
   --save-button-color: #3AA569;
+  --message-avatar-width: 36px;
+  --message-avatar-height: 36px;
   --chat-textarea-color: #666;
   --chat-textarea-background-color: white;
   --chat-textarea-height: 60px;
@@ -9564,8 +9566,9 @@ body.converse-fullscreen {
     margin-bottom: 2em;
     margin-left: -2.7em;
     word-spacing: 5px; }
-  #conversejs-bg .converse-brand__text .subdued {
-    opacity: 0.25; }
+
+#conversejs-bg .subdued, #conversejs .subdued {
+  opacity: 0.35; }
 
 #conversejs {
   bottom: 0;
@@ -9592,15 +9595,26 @@ body.converse-fullscreen {
   #conversejs .brand-heading-container {
     text-align: center; }
   #conversejs .brand-heading {
-    font-size: 200%;
     display: inline-flex;
-    align-items: flex-end;
+    flex-direction: row;
+    align-items: flex-start;
     font-family: var(--branding-font);
-    color: var(--link-color); }
+    color: var(--link-color);
+    margin-bottom: 1em; }
+    #conversejs .brand-heading .brand-name {
+      color: var(--link-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: -0.5em; }
+    #conversejs .brand-heading .brand-name__text {
+      font-size: 120%;
+      vertical-align: text-bottom; }
     #conversejs .brand-heading .converse-svg-logo {
-      height: 1.2em;
+      color: var(--link-color);
+      height: 1.5em;
       margin-right: 0.25em;
-      margin-bottom: -0.3em; }
+      margin-bottom: -0.25em; }
       #conversejs .brand-heading .converse-svg-logo .cls-1 {
         isolation: isolate; }
       #conversejs .brand-heading .converse-svg-logo .cls-2 {
@@ -9611,7 +9625,15 @@ body.converse-fullscreen {
       #conversejs .brand-heading .converse-svg-logo .cls-4 {
         fill: var(--link-color); }
   #conversejs .brand-heading--inverse .converse-svg-logo {
-    margin-bottom: 0em; }
+    margin-bottom: 0em;
+    margin-top: -0.2em; }
+  #conversejs .brand-heading--inverse .byline {
+    margin: 0;
+    font-family: var(--heading-font);
+    font-size: 0.25em;
+    opacity: 0.55;
+    margin-left: -7em;
+    word-spacing: 5px; }
   #conversejs .popover {
     position: fixed; }
   #conversejs .converse-chatboxes {
@@ -10061,7 +10083,7 @@ body.converse-fullscreen {
 
 #conversejs form.converse-form {
   background: white;
-  padding: 1.5em; }
+  padding: 1.2rem; }
   #conversejs form.converse-form legend {
     color: var(--text-color);
     font-size: 125%;
@@ -10784,10 +10806,6 @@ body.converse-fullscreen {
       padding-bottom: 1em; }
       #conversejs #controlbox .conn-feedback p.feedback-subject.error {
         font-weight: bold; }
-  #conversejs #controlbox .brand-heading-container .brand-heading {
-    text-align: center; }
-  #conversejs #controlbox .brand-heading-container .brand-name {
-    font-size: 120%; }
   #conversejs #controlbox #converse-login-panel, #conversejs #controlbox #converse-register-panel {
     padding-top: 0;
     padding-bottom: 0; }
@@ -11007,12 +11025,11 @@ body.converse-fullscreen {
   #conversejs.converse-mobile #controlbox .brand-heading-container {
     flex: 0 0 100%;
     max-width: 100%;
-    margin-bottom: 1em;
-    text-align: center; }
+    margin-top: 5em;
+    margin-bottom: 1em; }
     #conversejs.converse-fullscreen #controlbox .brand-heading-container .brand-heading,
     #conversejs.converse-mobile #controlbox .brand-heading-container .brand-heading {
-      font-size: 150%;
-      font-size: 600%;
+      font-size: 500%;
       padding: 0.7em 0 0 0;
       opacity: 0.8;
       color: var(--brand-heading-color); }
@@ -11131,9 +11148,15 @@ body.converse-fullscreen {
       #conversejs:not(.converse-embedded) .converse-chatboxes.sidebar-open .chatbox:not(#controlbox) {
         display: none; }
       #conversejs:not(.converse-embedded) .converse-chatboxes.sidebar-open #controlbox .controlbox-pane {
-        display: block; }
-  #conversejs.converse-overlayed .converse-chatboxes .chatbox .box-flyout {
-    margin-left: 30px; } }
+        display: block; } }
+
+#conversejs.converse-overlayed .brand-heading {
+  padding-top: 0.8rem;
+  padding-left: 0.8rem;
+  width: 100%; }
+
+#conversejs.converse-overlayed .converse-svg-logo {
+  height: 1em; }
 
 #conversejs #converse-modals .set-xmpp-status {
   margin: 1em; }
@@ -11837,7 +11860,8 @@ body.converse-fullscreen {
   font-style: italic; }
 
 #conversejs .message.chat-msg {
-  display: flex;
+  display: inline-flex;
+  width: 100%;
   flex-direction: row;
   overflow: auto;
   padding: 0.25rem 1rem; }
@@ -11870,7 +11894,7 @@ body.converse-fullscreen {
     justify-content: space-between;
     align-items: stretch;
     margin-left: 0.5rem;
-    width: 100%; }
+    width: calc(100% - var(--message-avatar-width)); }
   #conversejs .message.chat-msg .chat-msg__content--action {
     margin-left: 0; }
   #conversejs .message.chat-msg .chat-msg__body {
@@ -11879,9 +11903,10 @@ body.converse-fullscreen {
     justify-content: space-between;
     width: 100%; }
   #conversejs .message.chat-msg .chat-msg__message {
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
-    width: 100%; }
+    width: 100%;
+    overflow-wrap: break-word; }
   #conversejs .message.chat-msg .chat-msg__edit-modal {
     cursor: pointer;
     padding-right: 0.5em; }
@@ -11923,16 +11948,16 @@ body.converse-fullscreen {
   #conversejs .message.chat-msg .chat-msg__avatar {
     margin-top: 0.5em;
     vertical-align: middle;
-    height: 36px;
-    width: 36px;
-    min-height: 36px;
-    min-width: 36px; }
+    height: var(--message-avatar-height);
+    width: var(--message-avatar-width);
+    min-height: var(--message-avatar-height);
+    min-width: var(--message-avatar-width); }
   #conversejs .message.chat-msg .chat-msg__heading {
     width: 100%;
     margin-top: 0.5em;
     padding-right: 0.25rem;
     padding-bottom: 0.25rem;
-    display: block; }
+    display: flex; }
     #conversejs .message.chat-msg .chat-msg__heading .chat-msg__author {
       overflow: hidden;
       text-overflow: ellipsis;

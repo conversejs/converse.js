@@ -10,7 +10,7 @@ import "converse-chatview";
 import "converse-profile";
 import "converse-rosterview";
 import _FormData from "formdata-polyfill";
-import bootstrap from "bootstrap";
+import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import fp from "@converse/headless/lodash.fp";
 import tpl_brand_heading from "templates/converse_brand_heading.html";

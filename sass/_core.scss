@@ -75,9 +75,12 @@ body.converse-fullscreen {
             margin-left: -2.7em;
             word-spacing: 5px;
         }
-        .subdued {
-            opacity: 0.25;
-        }
+    }
+}
+
+#conversejs-bg, #conversejs {
+    .subdued {
+        opacity: 0.35;
     }
 }
 
@@ -123,16 +126,31 @@ body.converse-fullscreen {
     }
 
     .brand-heading {
-        font-size: 200%;
         display: inline-flex;
-        align-items: flex-end;
+        flex-direction: row;
+        align-items: flex-start;
         font-family: var(--branding-font);
         color: var(--link-color);
+        margin-bottom: 1em;
+
+        .brand-name {
+            color: var(--link-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: -0.5em;
+        }
+
+        .brand-name__text {
+            font-size: 120%;
+            vertical-align: text-bottom;
+        }
 
         .converse-svg-logo {
-            height: 1.2em;
+            color: var(--link-color);
+            height: 1.5em;
             margin-right: 0.25em;
-            margin-bottom: -0.3em;
+            margin-bottom: -0.25em;
             .cls-1 {
                 isolation: isolate;
             }
@@ -152,6 +170,15 @@ body.converse-fullscreen {
     .brand-heading--inverse {
         .converse-svg-logo {
             margin-bottom: 0em;
+            margin-top: -0.2em;
+        }
+        .byline {
+            margin: 0;
+            font-family: var(--heading-font);
+            font-size: 0.25em;
+            opacity: 0.55;
+            margin-left: -7em;
+            word-spacing: 5px;
         }
     }
 

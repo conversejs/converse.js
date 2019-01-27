@@ -1,6 +1,6 @@
 {
   "name": "converse.js",
-  "version": "4.0.6",
+  "version": "4.1.0",
   "description": "Browser based XMPP chat client",
   "main": "dist/converse.js",
   "directories": {
@@ -43,7 +43,8 @@
     "backbone.overview": "^1.0.2",
     "backbone.vdomview": "^1.0.1",
     "bootstrap": "^4.0.0",
-    "bootstrap.native": "^2.0.23",
+    "bootstrap.native": "^2.0.24",
+    "bootstrap.native-loader": "^1.0.7",
     "bourbon": "^4.3.2",
     "bytebuffer": "^3.5.5",
     "clean-css-cli": "^4.0.10",
@@ -61,7 +62,7 @@
     "jed": "1.1.1",
     "jquery": "3.2.1",
     "jsdoc": "^3.5.5",
-    "lerna": "^3.10.2",
+    "lerna": "^3.10.5",
     "lodash-template-loader": "^2.0.0",
     "lodash-template-webpack-loader": "jcbrand/lodash-template-webpack-loader",
     "long": "^3.1.0",

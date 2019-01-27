@@ -164,15 +164,6 @@
             }
         }
 
-        .brand-heading-container {
-            .brand-heading {
-                text-align: center;
-            }
-            .brand-name {
-                font-size: 120%;
-            }
-        }
-
         #converse-login-panel, #converse-register-panel {
             padding-top: 0;
             padding-bottom: 0;
@@ -486,11 +477,10 @@
 
         .brand-heading-container {
             @include make-col(12);
+            margin-top: 5em;
             margin-bottom: 1em;
-            text-align: center;
             .brand-heading {
-                font-size: 150%;
-                font-size: 600%;
+                font-size: 500%;
                 padding: 0.7em 0 0 0;
                 opacity: 0.8;
                 color: var(--brand-heading-color);
@@ -605,14 +595,15 @@
             }
         }
     }
-    #conversejs.converse-overlayed {
-        .converse-chatboxes {
-            .chatbox { 
-                .box-flyout {
-                    margin-left: 30px; // Counteracts Bootstrap margins, but
-                                       // not clear why needed...
-                }
-            }
-        }
+}
+
+#conversejs.converse-overlayed {
+    .brand-heading {
+        padding-top: 0.8rem;
+        padding-left: 0.8rem;
+        width: 100%;
+    }
+    .converse-svg-logo {
+        height: 1em;
     }
 }

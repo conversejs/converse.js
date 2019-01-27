@@ -551,7 +551,7 @@ The server behind ``credentials_url`` should return a JSON encoded object::
 
     {
         "jid": "me@example.com/resource",
-        "password": "Ilikecats!",
+        "password": "Ilikecats!"
     }
 
 
@@ -1169,6 +1169,23 @@ For example:
             }]
         });
 
+
+.. _`roomconfig_whitelist`:
+
+roomconfig_whitelist
+--------------------
+
+* Default: ``[]``
+
+A list of room config-option names. If this list is non-empty, only the corresponding room
+config-options will be shown in the room configuration form. The default will show all options.
+
+In the following example the user can only see (and thus change) the roomname and nothing else:
+
+.. code-block:: javascript
+
+    roomconfig_whitelist: ['muc#roomconfig_roomname'],
+
 root
 ----
 
@@ -1202,10 +1219,9 @@ For example:
 roster_groups
 -------------
 
-* Default:  ``false``
+* Default:  ``true``
 
-If set to ``true``, Converse will show any roster groups you might have
-configured.
+If set to ``true``, Converse will show any roster groups you might have configured.
 
 .. note::
     It's currently not possible to use Converse to assign contacts to groups.

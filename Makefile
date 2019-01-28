@@ -228,7 +228,7 @@ eslint: stamp-npm
 	$(ESLINT) spec/
 
 .PHONY: check
-check: eslint
+check: dist/converse.js eslint
 	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
 
 ########################################################################

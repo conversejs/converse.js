@@ -226,10 +226,10 @@
                     font-family: var(--heading-font);
                     font-size: 115%;
                     font-weight: bold;
-                    .badge {
-                        font-size: 80%;
-                        font-family: var(--normal_font);
-                    }
+                }
+                .badge {
+                    margin-left: 0.5em;
+                    font-family: var(--normal_font);
                 }
                 .chat-msg__time {
                     padding-left: 0.25em;

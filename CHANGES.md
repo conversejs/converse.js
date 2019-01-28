@@ -5,6 +5,7 @@
 - Accessibility: Tag the chat-content as an ARIA live region, for screen readers
 - #1369 Don't wrongly interpret message with `subject` as a topic change.
 - #1408 new config option `roomconfig_whitelist`
+- #1417 Margin between nickname and badge
 - #1421 fix direct invite for membersonly room
 
 ## 4.1.0 (2019-01-11)

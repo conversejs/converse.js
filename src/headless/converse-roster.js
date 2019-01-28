@@ -68,7 +68,7 @@ converse.plugins.add('converse-roster', {
         };
 
 
-        _converse.populateRoster = function (ignore_cache=false) {
+        _converse.populateRoster = async function (ignore_cache=false) {
             /* Fetch all the roster groups, and then the roster contacts.
              * Emit an event after fetching is done in each case.
              *
@@ -79,25 +79,26 @@ converse.plugins.add('converse-roster', {
              */
             if (ignore_cache) {
                 _converse.send_initial_presence = true;
-                _converse.roster.fetchFromServer()
-                    .then(() => {
-                        _converse.emit('rosterContactsFetched');
-                        _converse.sendInitialPresence();
-                    }).catch((reason) => {
-                        _converse.log(reason, Strophe.LogLevel.ERROR);
-                        _converse.sendInitialPresence();
-                    });
-            } else {
-                _converse.rostergroups.fetchRosterGroups().then(() => {
-                    _converse.emit('rosterGroupsFetched');
-                    return _converse.roster.fetchRosterContacts();
-                }).then(() => {
+                try {
+                    await _converse.roster.fetchFromServer();
                     _converse.emit('rosterContactsFetched');
-                    _converse.sendInitialPresence();
-                }).catch((reason) => {
+                } catch (reason) {
                     _converse.log(reason, Strophe.LogLevel.ERROR);
+                } finally {
                     _converse.sendInitialPresence();
-                });
+                }
+            } else {
+                try {
+                    await _converse.rostergroups.fetchRosterGroups().then(() => {
+                        _converse.emit('rosterGroupsFetched');
+                        return _converse.roster.fetchRosterContacts();
+                    });
+                    _converse.emit('rosterContactsFetched');
+                } catch (reason) {
+                    _converse.log(reason, Strophe.LogLevel.ERROR);
+                } finally {
+                    _converse.sendInitialPresence();
+                }
             }
         };
 

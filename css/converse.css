@@ -11912,6 +11912,9 @@ body.converse-fullscreen {
     padding-right: 0.5em; }
   #conversejs .message.chat-msg.headline .chat-msg__body {
     margin-left: 0; }
+  #conversejs .message.chat-msg .chat-msg__subject {
+    font-weight: bold;
+    clear: right; }
   #conversejs .message.chat-msg .chat-msg__text {
     padding: 0;
     color: var(--message-text-color);

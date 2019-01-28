@@ -23,6 +23,9 @@
                         <a class="badge badge-info spoiler-toggle" data-toggle-state="closed" href="#"><i class="fa fa-eye"></i>{{{o.label_show}}}</a>
                     </div>
                 {[ } ]}
+                {[ if (o.subject) { ]}
+                    <div class="chat-msg__subject">{{{ o.subject }}}</div>
+                {[ } ]}
                 <div class="chat-msg__text{[ if (o.is_spoiler) { ]} spoiler collapsed{[ } ]}"><!-- message gets added here via renderMessage --></div>
                 <div class="chat-msg__media"></div>
             {[ if (!o.is_me_message) { ]}</div>{[ } ]}

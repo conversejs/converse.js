@@ -93518,6 +93518,12 @@ __e(o.spoiler_hint) +
 __e(o.label_show) +
 '</a>\n                    </div>\n                ';
  } ;
+__p += '\n                ';
+ if (o.subject) { ;
+__p += '\n                    <div class="chat-msg__subject">' +
+__e( o.subject ) +
+'</div>\n                ';
+ } ;
 __p += '\n                <div class="chat-msg__text';
  if (o.is_spoiler) { ;
 __p += ' spoiler collapsed';

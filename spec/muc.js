@@ -12,7 +12,7 @@
           Backbone = converse.env.Backbone,
           u = converse.env.utils;
 
-    describe("Chatrooms", function () {
+    describe("Groupchats", function () {
 
         describe("The \"rooms\" API", function () {
 
@@ -1937,7 +1937,7 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'jdev', 'conference.jabber.org', 'jc');
                 const text = 'Jabber/XMPP Development | RFCs and Extensions: http://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
-                const stanza = Strophe.xmlHtmlNode(
+                let stanza = Strophe.xmlHtmlNode(
                     '<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">'+
                     '    <subject>'+text+'</subject>'+
                     '    <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>'+
@@ -1945,10 +1945,25 @@
                     '</message>').firstChild;
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                const chat_content = view.el.querySelector('.chat-content');
+                await new Promise((resolve, reject) => view.model.once('change:subject', resolve));
+                let chat_content = view.el.querySelector('.chat-content');
                 expect(sizzle('.chat-event:last').pop().textContent).toBe('Topic set by ralphm');
                 expect(sizzle('.chat-topic:last').pop().textContent).toBe(text);
+                expect(view.el.querySelector('.chatroom-description').textContent).toBe(text);
+
+                stanza = Strophe.xmlHtmlNode(
+                    `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                         <subject>This is a message subject</subject>
+                         <body>This is a message</body>
+                     </message>`).firstChild;
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                chat_content = view.el.querySelector('.chat-content');
+                expect(sizzle('.chat-topic').length).toBe(1);
+                expect(sizzle('.chat-msg__subject').length).toBe(1);
+                expect(sizzle('.chat-msg__subject').pop().textContent).toBe('This is a message subject');
+                expect(sizzle('.chat-msg__text').length).toBe(1);
+                expect(sizzle('.chat-msg__text').pop().textContent).toBe('This is a message');
                 expect(view.el.querySelector('.chatroom-description').textContent).toBe(text);
                 done();
             }));

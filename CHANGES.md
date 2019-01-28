@@ -3,6 +3,7 @@
 ## 4.1.1 (unreleased)
 
 - Accessibility: Tag the chat-content as an ARIA live region, for screen readers
+- #1369 Don't wrongly interpret message with `subject` as a topic change.
 - #1408 new config option `roomconfig_whitelist`
 - #1421 fix direct invite for membersonly room
 

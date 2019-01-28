@@ -149,6 +149,11 @@
                 }
             }
 
+            .chat-msg__subject {
+                font-weight: bold;
+                clear: right;
+            }
+
             .chat-msg__text {
                 padding: 0;
                 color: var(--message-text-color);

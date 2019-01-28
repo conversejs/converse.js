@@ -431,13 +431,14 @@ converse.plugins.add('converse-chatview', {
                     return;
                 }
                 const contact_jid = this.model.get('jid');
-                const resources = this.model.presence.get('resources');
-                if (_.isEmpty(resources)) {
+                if (this.model.presence.resources.length === 0) {
                     return;
                 }
-                const results = await Promise.all(_.map(_.keys(resources),
-                    resource => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)
-                ));
+                const results = await Promise.all(
+                    this.model.presence.resources.map(
+                        res => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${res.get('name')}`)
+                    )
+                );
                 if (_.filter(results, 'length').length) {
                     const html = tpl_spoiler_button(this.model.toJSON());
                     if (_converse.visible_toolbar_buttons.emoji) {

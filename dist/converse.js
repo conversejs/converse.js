@@ -49505,13 +49505,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         const contact_jid = this.model.get('jid');
-        const resources = this.model.presence.get('resources');
 
-        if (_.isEmpty(resources)) {
+        if (this.model.presence.resources.length === 0) {
           return;
         }
 
-        const results = await Promise.all(_.map(_.keys(resources), resource => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)));
+        const results = await Promise.all(this.model.presence.resources.map(res => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${res.get('name')}`)));
 
         if (_.filter(results, 'length').length) {
           const html = templates_spoiler_button_html__WEBPACK_IMPORTED_MODULE_16___default()(this.model.toJSON());
@@ -67777,7 +67776,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.registerPresenceHandler = function () {
       _converse.unregisterPresenceHandler();
 
-      _converse.presence_ref = _converse.connection.addHandler(function (presence) {
+      _converse.presence_ref = _converse.connection.addHandler(presence => {
         _converse.roster.presenceHandler(presence);
 
         return true;
@@ -67843,12 +67842,35 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       }
     };
 
+    const Resource = Backbone.Model.extend({
+      'idAttribute': 'name'
+    });
+    const Resources = Backbone.Collection.extend({
+      'model': Resource
+    });
     _converse.Presence = Backbone.Model.extend({
-      defaults() {
-        return {
-          'show': 'offline',
-          'resources': {}
-        };
+      defaults: {
+        'show': 'offline'
+      },
+
+      initialize() {
+        this.resources = new Resources();
+        const id = `converse.identities-${this.get('jid')}`;
+        this.resources.browserStorage = new Backbone.BrowserStorage.session(id);
+        this.resources.on('update', this.onResourcesChanged, this);
+        this.resources.on('change', this.onResourcesChanged, this);
+      },
+
+      onResourcesChanged() {
+        const hpr = this.getHighestPriorityResource();
+
+        const show = _.get(hpr, 'attributes.show', 'offline');
+
+        if (this.get('show') !== show) {
+          this.save({
+            'show': show
+          });
+        }
       },
 
       getHighestPriorityResource() {
@@ -67857,15 +67879,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          * If multiple resources have the same priority, take the
          * latest one.
          */
-        const resources = this.get('resources');
-
-        if (_.isObject(resources) && _.size(resources)) {
-          const val = _.flow(_.values, _.partial(_.sortBy, _, ['priority', 'timestamp']), _.reverse)(resources)[0];
-
-          if (!_.isUndefined(val)) {
-            return val;
-          }
-        }
+        return this.resources.sortBy(r => `${r.get('priority')}-${r.get('timestamp')}`).reverse()[0];
       },
 
       addResource(presence) {
@@ -67875,52 +67889,35 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          * Also updates the presence if the resource has higher priority (and is newer).
          */
         const jid = presence.getAttribute('from'),
-              show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-              resource = Strophe.getResourceFromJid(jid),
+              name = Strophe.getResourceFromJid(jid),
               delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, presence).pop(),
-              timestamp = _.isNil(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
-        let priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
-        priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
-        const resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
-        resources[resource] = {
-          'name': resource,
-          'priority': priority,
-          'show': show,
-          'timestamp': timestamp
+              priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0,
+              resource = this.resources.get(name),
+              settings = {
+          'name': name,
+          'priority': _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
+          'show': _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+          'timestamp': _.isNil(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format()
         };
-        const changed = {
-          'resources': resources
-        };
-        const hpr = this.getHighestPriorityResource();
 
-        if (priority == hpr.priority && timestamp == hpr.timestamp) {
-          // Only set the "global" presence if this is the newest resource
-          // with the highest priority
-          changed.show = show;
+        if (resource) {
+          resource.save(settings);
+        } else {
+          this.resources.create(settings);
         }
-
-        this.save(changed);
-        return resources;
       },
 
-      removeResource(resource) {
+      removeResource(name) {
         /* Remove the passed in resource from the resources map.
          *
          * Also redetermines the presence given that there's one less
          * resource.
          */
-        let resources = this.get('resources');
+        const resource = this.resources.get(name);
 
-        if (!_.isObject(resources)) {
-          resources = {};
-        } else {
-          delete resources[resource];
+        if (resource) {
+          resource.destroy();
         }
-
-        this.save({
-          'resources': resources,
-          'show': _.propertyOf(this.getHighestPriorityResource())('show') || 'offline'
-        });
       }
 
     });
@@ -68326,7 +68323,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         if (from && from !== _converse.bare_jid) {
           // https://tools.ietf.org/html/rfc6121#page-15
-          // 
+          //
           // A receiving client MUST ignore the stanza unless it has no 'from'
           // attribute (i.e., implicitly from the bare JID of the user's
           // account) or it has a 'from' attribute whose value matches the
@@ -68686,8 +68683,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     _converse.api.listen.on('afterTearDown', () => {
       if (_converse.presences) {
-        _converse.presences.off().reset(); // Remove presences
-
+        _converse.presences.each(p => {
+          p.resources.each(r => r.destroy({
+            'silent': true
+          }));
+          p.save({
+            'show': 'offline'
+          }, {
+            'silent': true
+          });
+        });
       }
     });
 
@@ -68700,10 +68705,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.api.listen.on('statusInitialized', reconnecting => {
       if (!reconnecting) {
         _converse.presences = new _converse.Presences();
-        _converse.presences.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
-
-        _converse.presences.fetch();
       }
+
+      _converse.presences.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
+
+      _converse.presences.fetch();
 
       _converse.emit('presencesInitialized', reconnecting);
     });
@@ -68723,9 +68729,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       _converse.roster.onConnected();
 
-      _converse.populateRoster(reconnecting);
-
       _converse.registerPresenceHandler();
+
+      _converse.populateRoster(reconnecting);
     });
     /************************ API ************************/
     // API methods only available to plugins
@@ -68739,7 +68745,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       'contacts': {
         /**
          * This method is used to retrieve roster contacts.
-         * 
+         *
          * @method _converse.api.contacts.get
          * @params {(string[]|string)} jid|jids The JID or JIDs of
          *      the contacts to be returned.
@@ -68752,7 +68758,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          *     const contact = _converse.api.contacts.get('buddy@example.com')
          *     // ...
          * });
-         * 
+         *
          * @example
          * // To get multiple contacts, pass in an array of JIDs:
          * _converse.api.listen.on('rosterContactsFetched', function () {
@@ -68761,7 +68767,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          *     )
          *     // ...
          * });
-         * 
+         *
          * @example
          * // To return all contacts, simply call ``get`` without any parameters:
          * _converse.api.listen.on('rosterContactsFetched', function () {
@@ -68785,7 +68791,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         /**
          * Add a contact.
-         * 
+         *
          * @method _converse.api.contacts.add
          * @param {string} jid The JID of the contact to be added
          * @param {string} [name] A custom name to show the user by

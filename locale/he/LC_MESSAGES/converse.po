@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2019-01-24 10:04+0000\n"
+"PO-Revision-Date: 2019-01-29 04:03+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 3.4\n"
+"X-Generator: Weblate 3.5-dev\n"
 "X-Language: he\n"
 "X-Source-Language: en\n"
 
@@ -984,11 +984,11 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:39579
 msgid "Your avatar image"
-msgstr ""
+msgstr "התמונה המייצגת שלך"
 
 #: dist/converse-no-dependencies.js:39580
 msgid "Your Profile"
-msgstr ""
+msgstr "הפרופיל שלך"
 
 #: dist/converse-no-dependencies.js:39581
 #: dist/converse-no-dependencies.js:39668
@@ -997,11 +997,11 @@ msgstr ""
 #: dist/converse-no-dependencies.js:77207
 #: dist/converse-no-dependencies.js:77321
 msgid "Close"
-msgstr ""
+msgstr "סגירה"
 
 #: dist/converse-no-dependencies.js:39582
 msgid "Email"
-msgstr ""
+msgstr "דוא״ל"
 
 #: dist/converse-no-dependencies.js:39583
 #, fuzzy
@@ -1010,11 +1010,11 @@ msgstr "שם"
 
 #: dist/converse-no-dependencies.js:39584
 msgid "XMPP Address (JID)"
-msgstr ""
+msgstr "כתובת XMPP‏ (JID)"
 
 #: dist/converse-no-dependencies.js:39586
 msgid "Role"
-msgstr ""
+msgstr "תפקיד"
 
 #: dist/converse-no-dependencies.js:39587
 msgid ""

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2019-01-14 13:19+0000\n"
+"PO-Revision-Date: 2019-01-31 19:31+0000\n"
 "Last-Translator: Lorem Ipsum <aditoo@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
 "translations/cs/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 3.4-dev\n"
+"X-Generator: Weblate 3.5-dev\n"
 
 #: dist/converse-no-dependencies.js:30588
 #: dist/converse-no-dependencies.js:30645
@@ -782,9 +782,9 @@ msgid "Topic set by %1$s"
 msgstr "Téma nastavené uživatelem %1$s"
 
 #: dist/converse-no-dependencies.js:37358
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr "Téma nastavené uživatelem %1$s"
+msgstr "Téma potvrzené uživatelem %1$s"
 
 #: dist/converse-no-dependencies.js:37394
 msgid "Groupchats"
@@ -921,6 +921,9 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
+"Omlouváme se, nemohli jsme odeslat šifrovanou zprávu, protože %1$s požaduje, "
+"abyste měl/a jeho/její presenční odběr, pokud chcete vidět jeho/její "
+"informace OMEMO"
 
 #: dist/converse-no-dependencies.js:38431
 #, javascript-format
@@ -928,6 +931,8 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
+"Omlouváme se, nemohli jsme odeslat šifrovanou zprávu, protože vzdálený "
+"server pro uživatele %1$s nemohl být nalezen"
 
 #: dist/converse-no-dependencies.js:38433
 msgid "Unable to send an encrypted message due to an unexpected error."
@@ -964,6 +969,8 @@ msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
 "will no longer be possible in this grouchat."
 msgstr ""
+"%1$s nejspíš nemá klienta podporujícího OMEMO. Šifrované chatování nebude v "
+"tomto skupinovém chatu již možné."
 
 #: dist/converse-no-dependencies.js:39579
 msgid "Your avatar image"

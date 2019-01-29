@@ -32,13 +32,13 @@
     "browser": "*"
   },
   "devDependencies": {
-    "@babel/cli": "^7.1.0",
-    "@babel/core": "^7.1.0",
-    "@babel/preset-env": "^7.1.0",
+    "@babel/cli": "^7.2.2",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
     "@converse/headless": "^4.0.2",
     "@fortawesome/fontawesome-free": "5.3.1",
     "awesomplete-avoid-xss": "^1.1.2",
-    "babel-loader": "^8.0.0",
+    "babel-loader": "^8.0.4",
     "backbone.nativeview": "^0.3.3",
     "backbone.overview": "^1.0.2",
     "backbone.vdomview": "^1.0.1",

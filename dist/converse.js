@@ -8186,7 +8186,7 @@ module.exports = isSymbol;
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.10';
+  var VERSION = '4.17.11';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -8450,7 +8450,7 @@ module.exports = isSymbol;
   var reHasUnicode = RegExp('[' + rsZWJ + rsAstralRange  + rsComboRange + rsVarRange + ']');
 
   /** Used to detect strings that need a more robust regexp to match words. */
-  var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2,}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
+  var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
 
   /** Used to assign default `context` object properties. */
   var contextProps = [
@@ -9396,20 +9396,6 @@ module.exports = isSymbol;
       }
     }
     return result;
-  }
-
-  /**
-   * Gets the value at `key`, unless `key` is "__proto__".
-   *
-   * @private
-   * @param {Object} object The object to query.
-   * @param {string} key The key of the property to get.
-   * @returns {*} Returns the property value.
-   */
-  function safeGet(object, key) {
-    return key == '__proto__'
-      ? undefined
-      : object[key];
   }
 
   /**
@@ -11869,7 +11855,7 @@ module.exports = isSymbol;
           if (isArguments(objValue)) {
             newValue = toPlainObject(objValue);
           }
-          else if (!isObject(objValue) || (srcIndex && isFunction(objValue))) {
+          else if (!isObject(objValue) || isFunction(objValue)) {
             newValue = initCloneObject(srcValue);
           }
         }
@@ -14790,6 +14776,22 @@ module.exports = isSymbol;
         array[length] = isIndex(index, arrLength) ? oldArray[index] : undefined;
       }
       return array;
+    }
+
+    /**
+     * Gets the value at `key`, unless `key` is "__proto__".
+     *
+     * @private
+     * @param {Object} object The object to query.
+     * @param {string} key The key of the property to get.
+     * @returns {*} Returns the property value.
+     */
+    function safeGet(object, key) {
+      if (key == '__proto__') {
+        return;
+      }
+
+      return object[key];
     }
 
     /**
@@ -47779,7 +47781,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     };
 
     class AutoComplete {
-      constructor(el, config = {}) {
+      constructor(el) {
+        let config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         this.is_opened = false;
 
         if (u.hasClass('.suggestion-box', el)) {
@@ -49688,7 +49691,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.scrollDown();
       },
 
-      addSpinner(append = false) {
+      addSpinner() {
+        let append = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
         if (_.isNull(this.el.querySelector('.spinner'))) {
           if (append) {
             this.content.insertAdjacentHTML('beforeend', templates_spinner_html__WEBPACK_IMPORTED_MODULE_15___default()());
@@ -50209,7 +50214,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         return this;
       },
 
-      insertIntoTextArea(value, replace = false, correcting = false) {
+      insertIntoTextArea(value) {
+        let replace = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+        let correcting = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
         const textarea = this.el.querySelector('.chat-textarea');
 
         if (correcting) {
@@ -59470,7 +59477,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         return u.slideIn(this.contacts_el);
       },
 
-      filterOutContacts(contacts = []) {
+      filterOutContacts() {
+        let contacts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
         /* Given a list of contacts, make sure they're filtered out
          * (aka hidden) and that all other contacts are visible.
          *
@@ -62251,7 +62260,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
-      getChatBox(jid, attrs = {}, create) {
+      getChatBox(jid) {
+        let attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        let create = arguments.length > 2 ? arguments[2] : undefined;
+
         /* Returns a chat box or optionally return a newly
          * created one if one doesn't exist.
          *
@@ -62711,7 +62723,9 @@ _converse.default_settings = {
   whitelisted_plugins: []
 };
 
-_converse.log = function (message, level, style = '') {
+_converse.log = function (message, level) {
+  let style = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+
   /* Logs messages to the browser's developer console.
    *
    * Parameters:
@@ -64974,7 +64988,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
            * @param {boolean} [create] Whether the entity should be created if it doesn't exist.
            * @example _converse.api.disco.entities.get(jid);
            */
-          async 'get'(jid, create = false) {
+          async 'get'(jid) {
+            let create = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
             await _converse.api.waitUntil('discoInitialized');
 
             if (_.isNil(jid)) {
@@ -67820,7 +67835,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-pub
          *      strict, then Converse will publish to the node even if
          *      the publish options precondication cannot be met.
          */
-        async 'publish'(jid, node, item, options, strict_options = true) {
+        async 'publish'(jid, node, item, options) {
+          let strict_options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
           const stanza = $iq({
             'from': _converse.bare_jid,
             'type': 'set',
@@ -67955,7 +67971,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       _converse.emit('rosterInitialized');
     };
 
-    _converse.populateRoster = async function (ignore_cache = false) {
+    _converse.populateRoster = async function () {
+      let ignore_cache = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
       /* Fetch all the roster groups, and then the roster contacts.
        * Emit an event after fetching is done in each case.
        *
@@ -68127,7 +68145,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         this.presence.on('change:show', () => this.trigger('presenceChanged'));
       },
 
-      setChatBox(chatbox = null) {
+      setChatBox() {
+        let chatbox = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
         chatbox = chatbox || _converse.chatboxes.get(this.get('jid'));
 
         if (chatbox) {
@@ -69828,7 +69847,8 @@ u.stringToNode = function (s) {
   return div.firstElementChild;
 };
 
-u.getOuterWidth = function (el, include_margin = false) {
+u.getOuterWidth = function (el) {
+  let include_margin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   var width = el.offsetWidth;
 
   if (!include_margin) {
@@ -69966,7 +69986,10 @@ u.interpolate = function (string, o) {
   });
 };
 
-u.onMultipleEvents = function (events = [], callback) {
+u.onMultipleEvents = function () {
+  let events = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  let callback = arguments.length > 1 ? arguments[1] : undefined;
+
   /* Call the callback once all the events have been triggered
    *
    * Parameters:
@@ -70019,7 +70042,10 @@ u.replaceCurrentWord = function (input, new_value) {
   input.selectionEnd = cursor - current_word.length + new_value.length + 1;
 };
 
-u.triggerEvent = function (el, name, type = "Event", bubbles = true, cancelable = true) {
+u.triggerEvent = function (el, name) {
+  let type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "Event";
+  let bubbles = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+  let cancelable = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
   const evt = document.createEvent(type);
   evt.initEvent(name, bubbles, cancelable);
   el.dispatchEvent(evt);
@@ -95394,7 +95420,8 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].calculateElementHe
   return _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.reduce(el.children, (result, child) => result + child.offsetHeight, 0);
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getNextElement = function (el, selector = '*') {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getNextElement = function (el) {
+  let selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
   let next_el = el.nextElementSibling;
 
   while (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNull(next_el) && !sizzle__WEBPACK_IMPORTED_MODULE_2___default.a.matchesSelector(next_el, selector)) {
@@ -95404,7 +95431,8 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getNextElement = f
   return next_el;
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getPreviousElement = function (el, selector = '*') {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getPreviousElement = function (el) {
+  let selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
   let prev_el = el.previousSibling;
 
   while (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNull(prev_el) && !sizzle__WEBPACK_IMPORTED_MODULE_2___default.a.matchesSelector(prev_el, selector)) {
@@ -95414,7 +95442,8 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getPreviousElement
   return prev_el;
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getFirstChildElement = function (el, selector = '*') {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getFirstChildElement = function (el) {
+  let selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
   let first_el = el.firstElementChild;
 
   while (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNull(first_el) && !sizzle__WEBPACK_IMPORTED_MODULE_2___default.a.matchesSelector(first_el, selector)) {
@@ -95424,7 +95453,8 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getFirstChildEleme
   return first_el;
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getLastChildElement = function (el, selector = '*') {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getLastChildElement = function (el) {
+  let selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
   let last_el = el.lastElementChild;
 
   while (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNull(last_el) && !sizzle__WEBPACK_IMPORTED_MODULE_2___default.a.matchesSelector(last_el, selector)) {
@@ -95478,7 +95508,9 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].ancestor = functio
   return parent;
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].nextUntil = function (el, selector, include_self = false) {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].nextUntil = function (el, selector) {
+  let include_self = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
   /* Return the element's siblings until one matches the selector. */
   const matches = [];
   let sibling_el = el.nextElementSibling;
@@ -95546,7 +95578,8 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].addHyperlinks = fu
   });
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideInAllElements = function (elements, duration = 300) {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideInAllElements = function (elements) {
+  let duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 300;
   return Promise.all(_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.map(elements, _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.partial(_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideIn, _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a, duration)));
 };
 
@@ -95558,7 +95591,9 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideToggleElement
   }
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideOut = function (el, duration = 200) {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideOut = function (el) {
+  let duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 200;
+
   /* Shows/expands an element by sliding it out of itself
    *
    * Parameters:
@@ -95625,7 +95660,9 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideOut = functio
   });
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideIn = function (el, duration = 200) {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideIn = function (el) {
+  let duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 200;
+
   /* Hides/collapses an element by sliding it into itself. */
   return new Promise((resolve, reject) => {
     if (_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(el)) {

@@ -53287,6 +53287,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     _converse.api.settings.update({
       'auto_list_rooms': false,
       'muc_disable_moderator_commands': false,
+      'muc_show_join_leave': true,
       'roomconfig_whitelist': [],
       'visible_toolbar_buttons': {
         'toggle_occupants': true

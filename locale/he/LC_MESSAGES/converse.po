@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2019-01-29 04:03+0000\n"
+"PO-Revision-Date: 2019-02-01 12:09+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -512,55 +512,51 @@ msgid "%1$s is now a permanent member of this groupchat"
 msgstr "אינך ברשימת החברים של חדר זה"
 
 #: dist/converse-no-dependencies.js:36168
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned from this groupchat"
-msgstr "נאסרת מתוך חדר זה"
+msgstr "הגישה של %1$s להתכתבות הקבוצתית הזאת נחסמה"
 
 #. For example: AppleJack is now an (admin|owner) of this groupchat
 #: dist/converse-no-dependencies.js:36171
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now an %2$s of this groupchat"
-msgstr "לחץ כדי לפתוח את חדר זה"
+msgstr "התפקיד של %1$s בהתכתבות הקבוצתית הזו הוא עכשיו %2$s"
 
 #: dist/converse-no-dependencies.js:36183
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is no longer a moderator"
-msgstr "משתמש זה הינו אחראי"
+msgstr "הרשאות הפיקוח של %1$s הוסרו"
 
 #: dist/converse-no-dependencies.js:36187
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been given a voice again"
-msgstr "%1$s נבעט(ה)"
+msgstr "הקול של %1$s שוב פעיל"
 
 #: dist/converse-no-dependencies.js:36191
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been muted"
-msgstr "%1$s נאסר(ה)"
+msgstr "הקול של %1$s הושתק"
 
 #: dist/converse-no-dependencies.js:36195
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is now a moderator"
-msgstr "משתמש זה הינו אחראי"
+msgstr "הוענקו הרשאות פיקוח לטובת %1$s"
 
 #: dist/converse-no-dependencies.js:36204
-#, fuzzy
 msgid "Close and leave this groupchat"
-msgstr "לחץ כדי לפתוח את חדר זה"
+msgstr "סגירה ויציאה מההתכתבות הקבוצתית הזאת"
 
 #: dist/converse-no-dependencies.js:36205
-#, fuzzy
 msgid "Configure this groupchat"
-msgstr "לחץ כדי לפתוח את חדר זה"
+msgstr "הגדרות התכתבות קבוצתית זו"
 
 #: dist/converse-no-dependencies.js:36206
-#, fuzzy
 msgid "Show more details about this groupchat"
-msgstr "הצג עוד מידע אודות חדר זה"
+msgstr "הצגת פרטים נוספים על ההתכתבות הקבוצתית הזאת"
 
 #: dist/converse-no-dependencies.js:36252
-#, fuzzy
 msgid "Hide the list of participants"
-msgstr "הסתר רשימת משתתפים"
+msgstr "הסתרת רשימת המשתתפים"
 
 #: dist/converse-no-dependencies.js:36400
 msgid "Forbidden: you do not have the necessary role in order to do that."

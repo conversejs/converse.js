@@ -114,6 +114,8 @@ $mobile_portrait_length: 480px !default;
     --chatroom-head-border-bottom: 0px;
     --chatroom-width: 400px;
     --chatroom-correcting-color: #fadfd7; // lighten($red, 30%)
+    --chatroom-badge-color: var(--chatroom-head-color);
+    --chatroom-badge-hover-color: var(--chatroom-head-color-dark);
 
     --headline-head-color: #E7A151; // $orange
     --headline-message-color: #D2842B;
@@ -212,6 +214,8 @@ $mobile_portrait_length: 480px !default;
     --chatroom-head-description-padding-left: 12px;
     --chatroom-head-border-bottom: 1px solid #EEE;
     --chatroom-correcting-color: #FFFFC0;
+    --chatroom-badge-color: #E77051; // $orange
+    --chatroom-badge-hover-color: #D24E2B; // $red
 
     --occupants-background-color: #F3F3F3;
     /* TODO: find a way to allow that and reflow the chat-area properly.

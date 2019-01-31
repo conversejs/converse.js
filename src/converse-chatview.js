@@ -751,17 +751,14 @@ converse.plugins.add('converse-chatview', {
                  * Parameters:
                  *  (Backbone.Model) message: The message object
                  */
+                if (!u.isNewMessage(message) && u.isEmptyMessage(message)) {
+                    // Handle archived or delayed messages without any message
+                    // text to show.
+                    return message.destroy();
+                }
                 const view = new _converse.MessageView({'model': message});
                 await view.render();
                 this.clearChatStateNotification(message);
-                if (!view.el.innerHTML) {
-                    // An "inactive" CSN message (for example) will have an
-                    // empty body. No need to then continue.
-                    return _converse.log(
-                        "Not inserting a message with empty element",
-                        Strophe.LogLevel.INFO
-                    );
-                }
                 this.insertMessage(view);
                 this.insertDayIndicator(view.el);
                 this.setScrollPosition(view.el);

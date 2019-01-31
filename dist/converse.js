@@ -49913,18 +49913,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          * Parameters:
          *  (Backbone.Model) message: The message object
          */
+        if (!_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isNewMessage(message) && _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isEmptyMessage(message)) {
+          // Handle archived or delayed messages without any message
+          // text to show.
+          return message.destroy();
+        }
+
         const view = new _converse.MessageView({
           'model': message
         });
         await view.render();
         this.clearChatStateNotification(message);
-
-        if (!view.el.innerHTML) {
-          // An "inactive" CSN message (for example) will have an
-          // empty body. No need to then continue.
-          return _converse.log("Not inserting a message with empty element", Strophe.LogLevel.INFO);
-        }
-
         this.insertMessage(view);
         this.insertDayIndicator(view.el);
         this.setScrollPosition(view.el);
@@ -69675,9 +69674,19 @@ u.isNewMessage = function (message) {
    */
   if (message instanceof Element) {
     return !(sizzle__WEBPACK_IMPORTED_MODULE_4___default()(`result[xmlns="${strophe_js__WEBPACK_IMPORTED_MODULE_2__["Strophe"].NS.MAM}"]`, message).length && sizzle__WEBPACK_IMPORTED_MODULE_4___default()(`delay[xmlns="${strophe_js__WEBPACK_IMPORTED_MODULE_2__["Strophe"].NS.DELAY}"]`, message).length);
-  } else {
-    return !(message.get('is_delayed') && message.get('is_archived'));
+  } else if (message instanceof backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Model) {
+    message = message.attributes;
   }
+
+  return !(message['is_delayed'] && message['is_archived']);
+};
+
+u.isEmptyMessage = function (attrs) {
+  if (attrs instanceof backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Model) {
+    attrs = attrs.attributes;
+  }
+
+  return !attrs['oob_url'] && !attrs['file'] && !(attrs['is_encrypted'] && attrs['plaintext']) && !attrs['message'];
 };
 
 u.isOnlyChatStateNotification = function (attrs) {
@@ -69685,7 +69694,7 @@ u.isOnlyChatStateNotification = function (attrs) {
     attrs = attrs.attributes;
   }
 
-  return attrs['chat_state'] && !attrs['oob_url'] && !attrs['file'] && !(attrs['is_encrypted'] && attrs['plaintext']) && !attrs['message'];
+  return attrs['chat_state'] && u.isEmptyMessage(attrs);
 };
 
 u.isHeadlineMessage = function (_converse, message) {

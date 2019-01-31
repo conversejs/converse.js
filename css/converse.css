@@ -11967,7 +11967,8 @@ body.converse-fullscreen {
       white-space: nowrap;
       font-family: var(--heading-font);
       font-size: 115%;
-      font-weight: bold; }
+      font-weight: bold;
+      padding-bottom: 1px; }
     #conversejs .message.chat-msg .chat-msg__heading .badge {
       margin-left: 0.5em;
       font-family: var(--normal_font); }
@@ -11984,6 +11985,8 @@ body.converse-fullscreen {
     margin-top: 0;
     padding-bottom: 0;
     width: auto; }
+    #conversejs .message.chat-msg.chat-msg--action .chat-msg__heading .fa {
+      margin-left: 0.5em; }
   #conversejs .message.chat-msg.chat-msg--action .chat-msg__author {
     font-size: var(--message-font-size); }
   #conversejs .message.chat-msg.chat-msg--action .chat-msg__time {

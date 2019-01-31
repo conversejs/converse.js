@@ -176,7 +176,7 @@
                     margin-bottom: -6px;
                 }
             }
-            
+
             .chat-msg__media {
                 margin-top: 0.25rem;
                 word-break: break-all;
@@ -250,6 +250,10 @@
                     margin-top: 0;
                     padding-bottom: 0;
                     width: auto;
+
+                    .fa {
+                        margin-left: 0.5em;
+                    }
                 }
                 .chat-msg__author {
                     font-size: var(--message-font-size);

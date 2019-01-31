@@ -530,6 +530,38 @@
 
             describe("A Chat Status Notification", function () {
 
+                it("is ignored when it's a carbon copy of one of my own",
+                    mock.initConverseWithPromises(
+                        null, ['rosterGroupsFetched'], {},
+                        async function (done, _converse) {
+
+                    test_utils.createContacts(_converse, 'current');
+                    test_utils.openControlBox();
+
+                    const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    await test_utils.openChatBoxFor(_converse, sender_jid);
+                    let stanza = Strophe.xmlHtmlNode(
+                        `<message from="${sender_jid}"
+                                 type="chat"
+                                 to="dummy@localhost/resource">
+                            <composing xmlns="http://jabber.org/protocol/chatstates"/>
+                            <no-store xmlns="urn:xmpp:hints"/>
+                            <no-permanent-store xmlns="urn:xmpp:hints"/>
+                        </message>`).firstChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                    stanza = Strophe.xmlHtmlNode(
+                        `<message from="${sender_jid}"
+                                 type="chat"
+                                 to="dummy@localhost/resource">
+                            <paused xmlns="http://jabber.org/protocol/chatstates"/>
+                            <no-store xmlns="urn:xmpp:hints"/>
+                            <no-permanent-store xmlns="urn:xmpp:hints"/>
+                        </message>`).firstChild;
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    done();
+                }));
+
                 it("does not open a new chatbox",
                     mock.initConverseWithPromises(
                         null, ['rosterGroupsFetched'], {},
@@ -656,12 +688,14 @@
                             async function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current');
+                        _converse.emit('rosterContactsFetched');
                         test_utils.openControlBox();
 
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse, 'emit');
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        test_utils.openChatBoxFor(_converse, sender_jid);
+                        await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
+                        await test_utils.openChatBoxFor(_converse, sender_jid);
 
                         // <composing> state
                         let msg = $msg({
@@ -678,7 +712,6 @@
                         await test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
                         // Check that the notification appears inside the chatbox in the DOM
                         let events = view.el.querySelectorAll('.chat-state-notification');
-                        expect(events.length).toBe(1);
                         expect(events[0].textContent).toEqual(mock.cur_names[1] + ' is typing');
 
                         // Check that it doesn't appear twice
@@ -687,7 +720,7 @@
                                 to: _converse.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
-                            }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                            }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.chatboxes.onMessage(msg);
                         events = view.el.querySelectorAll('.chat-state-notification');
                         expect(events.length).toBe(1);
@@ -802,24 +835,24 @@
                                 null, ['rosterGroupsFetched'], {},
                                 async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current');
+                        test_utils.createContacts(_converse, 'current', 2);
+                        _converse.emit('rosterContactsFetched');
                         test_utils.openControlBox();
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         // TODO: only show paused state if the previous state was composing
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(_converse, 'emit');
+                        spyOn(_converse, 'emit').and.callThrough();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        const view = await test_utils.openChatBoxFor(_converse, sender_jid);
                         // <paused> state
                         const msg = $msg({
                                 from: sender_jid,
                                 to: _converse.connection.jid,
                                 type: 'chat',
                                 id: (new Date()).getTime()
-                            }).c('body').c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
+                            }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.chatboxes.onMessage(msg);
                         expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
-                        const view = _converse.chatboxviews.get(sender_jid);
-                        await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                         await test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
                         var event = view.el.querySelector('.chat-info.chat-state-notification');
                         expect(event.textContent).toEqual(mock.cur_names[1] + ' has stopped typing');

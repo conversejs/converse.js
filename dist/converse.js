@@ -61304,6 +61304,7 @@ const u = _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env.utils;
 Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
 Strophe.addNamespace('RECEIPTS', 'urn:xmpp:receipts');
 Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
+Strophe.addNamespace('MARKERS', 'urn:xmpp:chat-markers:0');
 _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-chatboxes', {
   dependencies: ["converse-roster", "converse-vcard"],
 
@@ -61634,7 +61635,84 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return false;
       },
 
-      handleReceipt(stanza) {
+      sendMarker(to_jid, id, type) {
+        const stanza = $msg({
+          'from': _converse.connection.jid,
+          'id': _converse.connection.getUniqueId(),
+          'to': to_jid,
+          'type': 'chat'
+        }).c(type, {
+          'xmlns': Strophe.NS.MARKERS,
+          'id': id
+        });
+
+        _converse.api.send(stanza);
+      },
+
+      handleChatMarker(stanza, from_jid, is_carbon) {
+        const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));
+
+        if (to_bare_jid !== _converse.bare_jid) {
+          return false;
+        }
+
+        const markers = sizzle(`[xmlns="${Strophe.NS.MARKERS}"]`, stanza);
+
+        if (markers.length === 0) {
+          return false;
+        } else if (markers.length > 1) {
+          _converse.log('onMessage: Ignoring incoming stanza with multiple message markers', Strophe.LogLevel.ERROR);
+
+          _converse.log(stanza, Strophe.LogLevel.ERROR);
+
+          return false;
+        } else {
+          const marker = markers.pop();
+
+          if (marker.nodeName === 'markable' && !is_carbon) {
+            this.sendMarker(from_jid, stanza.getAttribute('id'), 'received');
+            return false;
+          } else {
+            const msgid = marker && marker.getAttribute('id'),
+                  message = msgid && this.messages.findWhere({
+              msgid
+            }),
+                  field_name = `marker_${marker.nodeName}`;
+
+            if (message && !message.get(field_name)) {
+              message.save({
+                field_name: moment().format()
+              });
+            }
+
+            return true;
+          }
+        }
+      },
+
+      sendReceiptStanza(to_jid, id) {
+        const receipt_stanza = $msg({
+          'from': _converse.connection.jid,
+          'id': _converse.connection.getUniqueId(),
+          'to': to_jid,
+          'type': 'chat'
+        }).c('received', {
+          'xmlns': Strophe.NS.RECEIPTS,
+          'id': id
+        }).up().c('store', {
+          'xmlns': Strophe.NS.HINTS
+        }).up();
+
+        _converse.api.send(receipt_stanza);
+      },
+
+      handleReceipt(stanza, from_jid, is_carbon, is_me) {
+        const requests_receipt = !_.isUndefined(sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
+
+        if (requests_receipt && !is_carbon && !is_me) {
+          this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
+        }
+
         const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));
 
         if (to_bare_jid === _converse.bare_jid) {
@@ -61927,6 +62005,23 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return attrs;
       },
 
+      async createMessage(stanza, original_stanza) {
+        const msgid = stanza.getAttribute('id'),
+              message = msgid && this.messages.findWhere({
+          msgid
+        });
+
+        if (!message) {
+          // Only create the message when we're sure it's not a duplicate
+          const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+
+          if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
+            const msg = this.messages.create(attrs);
+            this.incrementUnreadMsgCounter(msg);
+          }
+        }
+      },
+
       isHidden() {
         /* Returns a boolean to indicate whether a newly received
          * message will be visible to the user or not.
@@ -62078,22 +62173,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
       },
 
-      sendReceiptStanza(to_jid, id) {
-        const receipt_stanza = $msg({
-          'from': _converse.connection.jid,
-          'id': _converse.connection.getUniqueId(),
-          'to': to_jid,
-          'type': 'chat'
-        }).c('received', {
-          'xmlns': Strophe.NS.RECEIPTS,
-          'id': id
-        }).up().c('store', {
-          'xmlns': Strophe.NS.HINTS
-        }).up();
-
-        _converse.api.send(receipt_stanza);
-      },
-
       async onMessage(stanza) {
         /* Handler method for all incoming single-user chat "message"
          * stanzas.
@@ -62141,12 +62220,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
               from_resource = Strophe.getResourceFromJid(from_jid),
               is_me = from_bare_jid === _converse.bare_jid;
-        const requests_receipt = !_.isUndefined(sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
-
-        if (requests_receipt && !is_carbon && !is_me) {
-          this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
-        }
-
         let contact_jid;
 
         if (is_me) {
@@ -62158,27 +62231,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           contact_jid = Strophe.getBareJidFromJid(to_jid);
         } else {
           contact_jid = from_bare_jid;
-        }
+        } // Get chat box, but only create when the message has something to show to the user
 
-        const attrs = {
-          'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname') // Get chat box, but only create a new one when the message has a body.
 
-        };
-        const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
-        const chatbox = this.getChatBox(contact_jid, attrs, has_body);
+        const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0,
+              chatbox_attrs = {
+          'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
+        },
+              chatbox = this.getChatBox(contact_jid, chatbox_attrs, has_body);
 
-        if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza)) {
-          const msgid = stanza.getAttribute('id'),
-                message = msgid && chatbox.messages.findWhere({
-            msgid
-          });
-
-          if (!message) {
-            // Only create the message when we're sure it's not a duplicate
-            const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
-            const msg = chatbox.messages.create(attrs);
-            chatbox.incrementUnreadMsgCounter(msg);
-          }
+        if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon)) {
+          await chatbox.createMessage(stanza, original_stanza);
         }
 
         _converse.emit('message', {

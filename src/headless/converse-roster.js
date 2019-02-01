@@ -836,7 +836,7 @@ converse.plugins.add('converse-roster', {
         _converse.api.listen.on('afterTearDown', () => {
             if (_converse.presences) {
                 _converse.presences.each(p => {
-                    p.resources.each(r => r.destroy({'silent': true}));
+                    _.each(p.resources.reject(_.isUndefined), r => r.destroy({'silent': true}));
                     p.save({'show': 'offline'}, {'silent': true})
                 });
             }

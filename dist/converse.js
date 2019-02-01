@@ -68771,9 +68771,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.api.listen.on('afterTearDown', () => {
       if (_converse.presences) {
         _converse.presences.each(p => {
-          p.resources.each(r => r.destroy({
+          _.each(p.resources.reject(_.isUndefined), r => r.destroy({
             'silent': true
           }));
+
           p.save({
             'show': 'offline'
           }, {

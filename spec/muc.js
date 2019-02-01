@@ -3951,7 +3951,7 @@
                 test_utils.openControlBox();
                 _converse.emit('rosterContactsFetched');
 
-                var roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
                 roomspanel.el.querySelector('.show-add-muc-modal').click();
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.add_room_modal;
@@ -3960,8 +3960,8 @@
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 modal.el.querySelector('input[name="chatroom"]').value = 'lounce@muc.localhost';
                 modal.el.querySelector('form input[type="submit"]').click();
-                await  test_utils.waitUntil(() => _converse.chatboxes.length);
-                expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
+                await test_utils.waitUntil(() => _converse.chatboxes.length);
+                await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
                 done();
             }));
 

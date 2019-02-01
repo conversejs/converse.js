@@ -26,6 +26,7 @@
             test_utils.openChatBoxFor(_converse, contact_jid);
             await test_utils.waitUntil(() => _converse.chatboxes.length);
             const view = _converse.chatboxviews.get(contact_jid);
+            await new Promise((resolve) => view.model.once('contactAdded', resolve));
             let show_modal_button = view.el.querySelector('.show-user-details-modal');
             expect(u.isVisible(show_modal_button)).toBeTruthy();
             show_modal_button.click();

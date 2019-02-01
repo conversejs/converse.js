@@ -229,7 +229,7 @@ eslint: stamp-npm
 
 .PHONY: check
 check: dist/converse.js eslint
-	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
+	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --disable-gpu --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
 
 ########################################################################
 ## Documentation

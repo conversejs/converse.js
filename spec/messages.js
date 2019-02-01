@@ -2300,7 +2300,7 @@
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
-            await u.hasClass('correcting', view.el.querySelector('.chat-msg'));
+            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')));
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             view.keyPressed({
                 target: textarea,
@@ -2309,7 +2309,7 @@
             expect(textarea.value).toBe('');
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
-            expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
+            await test_utils.waitUntil(() => !u.hasClass('correcting', view.el.querySelector('.chat-msg')));
             done();
         }));
 

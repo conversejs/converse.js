@@ -9383,6 +9383,8 @@ readers do not read off random characters that represent icons */
   --chatroom-head-border-bottom: 0px;
   --chatroom-width: 400px;
   --chatroom-correcting-color: #fadfd7;
+  --chatroom-badge-color: var(--chatroom-head-color);
+  --chatroom-badge-hover-color: var(--chatroom-head-color-dark);
   --headline-head-color: #E7A151;
   --headline-message-color: #D2842B;
   --chatbox-button-size: 14px;
@@ -9463,6 +9465,8 @@ readers do not read off random characters that represent icons */
   --chatroom-head-description-padding-left: 12px;
   --chatroom-head-border-bottom: 1px solid #EEE;
   --chatroom-correcting-color: #FFFFC0;
+  --chatroom-badge-color: #E77051;
+  --chatroom-badge-hover-color: #D24E2B;
   --occupants-background-color: #F3F3F3;
   /* TODO: find a way to allow that and reflow the chat-area properly.
      * --occupants-max-width: 240px; */
@@ -9952,13 +9956,13 @@ body.converse-fullscreen {
       background-color: var(--primary-color-dark) !important;
       border-color: transparent !important; }
   #conversejs .badge-groupchat {
-    background-color: var(--chatroom-head-color);
+    background-color: var(--chatroom-badge-color);
     border-color: transparent; }
     #conversejs .badge-groupchat:hover {
-      background-color: var(--chatroom-head-color-dark);
+      background-color: var(--chatroom-badge-hover-color);
       border-color: transparent; }
     #conversejs .badge-groupchat.active {
-      background-color: var(--chatroom-head-color-dark) !important;
+      background-color: var(--chatroom-badge-hover-color) !important;
       border-color: transparent !important; }
   #conversejs .btn-info, #conversejs .badge-info {
     background-color: var(--primary-color);

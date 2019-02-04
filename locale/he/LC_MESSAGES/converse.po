@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2019-02-01 12:09+0000\n"
+"PO-Revision-Date: 2019-02-04 07:37+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -875,27 +875,27 @@ msgstr "באפשרותך להכליל הודעה, אשר  מסבירה את הס
 
 #: dist/converse-no-dependencies.js:37555
 msgid "Please enter a valid XMPP username"
-msgstr ""
+msgstr "נא להקליד שם משתמש תקין ל־XMPP"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37908
 #: dist/converse-no-dependencies.js:37914
 #, javascript-format
 msgid "Notification from %1$s"
-msgstr ""
+msgstr "התראה מאת %1$s"
 
 #: dist/converse-no-dependencies.js:37916
 #: dist/converse-no-dependencies.js:37927
 #: dist/converse-no-dependencies.js:37930
 #, javascript-format
 msgid "%1$s says"
-msgstr ""
+msgstr "נאמר על ידי %1$s"
 
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
 #: dist/converse-no-dependencies.js:37939
 msgid "OMEMO Message received"
-msgstr ""
+msgstr "התקבלה הודעת OMEMO"
 
 #: dist/converse-no-dependencies.js:37970
 msgid "has gone offline"
@@ -929,10 +929,12 @@ msgid ""
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
+"לייצר מפתחות OMEMO חדשים? פעולה זו תסיר את המפתחות הישנים שלך ואת כל ההודעות "
+"שהוצפנו בעבר לא תהיה לך אפשרות לפענח במכשיר הזה."
 
 #: dist/converse-no-dependencies.js:38314
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
-msgstr ""
+msgstr "לא ניתן לפענח הודעת OMEMO שהתקבלה עקב שגיאה, עמך הסליחה."
 
 #: dist/converse-no-dependencies.js:38429
 #, javascript-format

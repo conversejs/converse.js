@@ -36,7 +36,7 @@ converse.plugins.add('converse-disco', {
 
                 this.dataforms = new Backbone.Collection();
                 this.dataforms.browserStorage = new Backbone.BrowserStorage.session(
-                    b64_sha1(`converse.dataforms-{this.get('jid')}`)
+                    b64_sha1(`converse.dataforms-${this.get('jid')}`)
                 );
 
                 this.features = new Backbone.Collection();

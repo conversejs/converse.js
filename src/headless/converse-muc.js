@@ -987,33 +987,40 @@ converse.plugins.add('converse-muc', {
 
                 const original_stanza = stanza,
                       forwarded = sizzle(`forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).pop();
-
                 if (forwarded) {
                     stanza = forwarded.querySelector('message');
                 }
                 if (this.isDuplicate(stanza, original_stanza)) {
                     return;
                 }
-                const jid = stanza.getAttribute('from'),
-                      resource = Strophe.getResourceFromJid(jid),
-                      sender = resource && Strophe.unescapeNode(resource) || '';
-
+                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+                if (!attrs.nick) {
+                    return;
+                }
                 if (!this.handleMessageCorrection(stanza)) {
-                    if (sender === '') {
+                    if (attrs.subject && !attrs.thread && !attrs.message) {
+                        // https://xmpp.org/extensions/xep-0045.html#subject-mod
+                        // -----------------------------------------------------
+                        // The subject is changed by sending a message of type "groupchat" to the <room@service>,
+                        // where the <message/> MUST contain a <subject/> element that specifies the new subject but
+                        // MUST NOT contain a <body/> element (or a <thread/> element).
+                        u.safeSave(this, {'subject': {'author': attrs.nick, 'text': attrs.subject || ''}});
                         return;
                     }
-                    const subject_el = stanza.querySelector('subject');
-                    if (subject_el) {
-                        const subject = _.propertyOf(subject_el)('textContent') || '';
-                        u.safeSave(this, {'subject': {'author': sender, 'text': subject}});
+
+                    const is_csn = u.isOnlyChatStateNotification(attrs),
+                          own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
+                    if (is_csn && (attrs.is_delayed || own_message)) {
+                        // No need showing delayed or our own CSN messages
+                        return;
                     }
-                    const msg = await this.createMessage(stanza, original_stanza);
+                    const msg = await this.messages.create(attrs);
                     if (forwarded && msg && msg.get('sender')  === 'me') {
                         msg.save({'received': moment().format()});
                     }
                     this.incrementUnreadMsgCounter(msg);
                 }
-                if (sender !== this.get('nick')) {
+                if (attrs.nick !== this.get('nick')) {
                     // We only emit an event if it's not our own message
                     _converse.emit('message', {'stanza': original_stanza, 'chatbox': this});
                 }

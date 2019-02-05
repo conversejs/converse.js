@@ -2,9 +2,16 @@
 
 ## 4.1.1 (unreleased)
 
+- Updated translations: af, cz, de, es, eu, ga, he, hi, ja, nb, nl_BE, zh_CN
+- New language supported: Esperanto
 - Accessibility: Tag the chat-content as an ARIA live region, for screen readers
+- #1369 Don't wrongly interpret message with `subject` as a topic change.
 - #1408 new config option `roomconfig_whitelist`
+- #1417 Margin between nickname and badge
 - #1421 fix direct invite for membersonly room
+- #1422 Resurrect the `muc_show_join_leave` option
+- #1412 muc moderator commands can be disabled selectively by config
+- #1413 fix moderator commands that change affiliation
 
 ## 4.1.0 (2019-01-11)
 

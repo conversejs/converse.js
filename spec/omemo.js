@@ -5,11 +5,13 @@
     const u = converse.env.utils;
 
 
-    function deviceListFetched (_converse, jid) {
-        return _.filter(
+    async function deviceListFetched (_converse, jid) {
+        const stanza = await test_utils.waitUntil(() => _.filter(
             _converse.connection.IQ_stanzas,
             iq => iq.nodeTree.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`)
-        ).pop();
+        ).pop());
+        await test_utils.waitUntil(() => _converse.devicelists.get(jid));
+        return stanza;
     }
 
     function ownDeviceHasBeenPublished (_converse) {
@@ -115,7 +117,7 @@
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => _converse.omemo_store);
             const devicelist = _converse.devicelists.get({'jid': contact_jid});
-            expect(devicelist.devices.length).toBe(1);
+            await test_utils.waitUntil(() => devicelist.devices.length === 1);
 
             const view = _converse.chatboxviews.get(contact_jid);
             view.model.set('omemo_active', true);
@@ -291,6 +293,7 @@
             await test_utils.waitUntil(() => _converse.omemo_store);
             expect(_converse.devicelists.length).toBe(2);
 
+            await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
             const devicelist = _converse.devicelists.get(contact_jid);
             expect(devicelist.devices.length).toBe(1);
             expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
@@ -444,6 +447,7 @@
             expect(_converse.devicelists.length).toBe(2);
 
             const devicelist = _converse.devicelists.get(contact_jid);
+            await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
             expect(devicelist.devices.length).toBe(1);
             expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');
 
@@ -1239,6 +1243,7 @@
             await test_utils.waitUntil(() => _converse.omemo_store);
             expect(_converse.devicelists.length).toBe(2);
 
+            await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
             const devicelist = _converse.devicelists.get(contact_jid);
             expect(devicelist.devices.length).toBe(2);
             expect(devicelist.devices.at(0).get('id')).toBe('4e30f35051b7b8b42abe083742187228');

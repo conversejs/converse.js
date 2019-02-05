@@ -285,7 +285,7 @@
             view.model.set({'minimized': true});
             const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
             const nick = mock.chatroom_names[0];
-            view.model.onMessage(
+            await view.model.onMessage(
                 $msg({
                     from: room_jid+'/'+nick,
                     id: (new Date()).getTime(),
@@ -293,13 +293,12 @@
                     type: 'groupchat'
                 }).c('body').t('foo').tree());
 
-            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             // If the user isn't mentioned, the counter doesn't get incremented, but the text of the groupchat is bold
             let room_el = _converse.rooms_list_view.el.querySelector(".available-chatroom");
             expect(_.includes(room_el.classList, 'unread-msgs')).toBeTruthy();
 
             // If the user is mentioned, the counter also gets updated
-            view.model.onMessage(
+            await view.model.onMessage(
                 $msg({
                     from: room_jid+'/'+nick,
                     id: (new Date()).getTime(),
@@ -311,7 +310,7 @@
             spyOn(view.model, 'incrementUnreadMsgCounter').and.callThrough();
             let indicator_el = _converse.rooms_list_view.el.querySelector(".msgs-indicator");
             expect(indicator_el.textContent).toBe('1');
-            view.model.onMessage(
+            await view.model.onMessage(
                 $msg({
                     from: room_jid+'/'+nick,
                     id: (new Date()).getTime(),

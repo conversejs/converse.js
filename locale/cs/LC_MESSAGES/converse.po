@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2018-12-25 19:08+0000\n"
+"PO-Revision-Date: 2019-01-14 13:19+0000\n"
 "Last-Translator: Lorem Ipsum <aditoo@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
 "translations/cs/>\n"
@@ -601,7 +601,7 @@ msgstr "Změnit roli uživatele na účastníka"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Destroy room"
-msgstr ""
+msgstr "Zničit místnost"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Kick user from groupchat"
@@ -930,9 +930,8 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:38433
-#, fuzzy
 msgid "Unable to send an encrypted message due to an unexpected error."
-msgstr "Omlouváme se, kvůli chybě nelze odeslat zprávu."
+msgstr "Kvůli neočekávané chybě nelze odeslat zprávu."
 
 #: dist/converse-no-dependencies.js:38516
 #, javascript-format
@@ -940,17 +939,16 @@ msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
 msgstr ""
-"Nelze použít šivrování end-to-end, protože %1$s používá klienta, který "
+"Nelze použít šifrování end-to-end, protože %1$s používá klienta, který "
 "nepodporuje OMEMO."
 
 #: dist/converse-no-dependencies.js:38543
-#, fuzzy
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
 msgstr ""
-"Nelze použít šivrování end-to-end, protože %1$s používá klienta, který "
-"nepodporuje OMEMO."
+"V tomto skupinovém chatu nelze použít šifrování end-to-end, skupinový chat "
+"má buď jistou úroveň anonymity, nebo ne všichni účastníci podporují OMEMO."
 
 #: dist/converse-no-dependencies.js:38720
 msgid ""

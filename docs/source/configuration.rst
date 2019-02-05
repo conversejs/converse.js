@@ -918,6 +918,16 @@ muc_disable_moderator_commands
 * Default: ``false``
 
 Allows you to disable the moderator commands such as ``/kick`` or ``/ban``.
+Ìf set to ``true`` all commands will be disabled.
+
+You can also selectively disable some moderator commands by setting it to an
+array of commands you don't want.
+
+The following example will disable 'mute' and 'voice' command:
+
+.. code-block:: javascript
+
+    muc_disable_moderator_commands: ['mute', 'voice'],
 
 muc_domain
 ----------

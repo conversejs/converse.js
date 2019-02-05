@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2018-02-02 01:35+0000\n"
-"Last-Translator: ezjerry liao <ezjerry@gmail.com>\n"
+"PO-Revision-Date: 2019-01-14 13:19+0000\n"
+"Last-Translator: Louies <louies0623@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "conversejs/translations/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.19-dev\n"
+"X-Generator: Weblate 3.4-dev\n"
 "domain: converse\n"
 "lang: zh\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -26,20 +26,18 @@ msgstr ""
 #: dist/converse-no-dependencies.js:30645
 #: dist/converse-no-dependencies.js:30678
 #: dist/converse-no-dependencies.js:40905
-#, fuzzy
 msgid "Bookmark this groupchat"
-msgstr "打开聊天室"
+msgstr "將此群組添加到書簽"
 
 #: dist/converse-no-dependencies.js:30642
 #: dist/converse-no-dependencies.js:30974
 #: dist/converse-no-dependencies.js:40904
-#, fuzzy
 msgid "Unbookmark this groupchat"
-msgstr "打开聊天室"
+msgstr "取消此群組的書簽"
 
 #: dist/converse-no-dependencies.js:30679
 msgid "Would you like this groupchat to be automatically joined upon startup?"
-msgstr ""
+msgstr "您希望此群組在啟動時自動加入嗎？"
 
 #: dist/converse-no-dependencies.js:30680
 #: dist/converse-no-dependencies.js:39670
@@ -49,11 +47,11 @@ msgstr "取消"
 
 #: dist/converse-no-dependencies.js:30681
 msgid "The name for this bookmark:"
-msgstr ""
+msgstr "此書簽的名稱:"
 
 #: dist/converse-no-dependencies.js:30682
 msgid "What should your nickname for this groupchat be?"
-msgstr ""
+msgstr "您在此群組的暱稱應該是什麼？"
 
 #: dist/converse-no-dependencies.js:30683
 #: dist/converse-no-dependencies.js:39674
@@ -61,9 +59,9 @@ msgid "Save"
 msgstr "保存"
 
 #: dist/converse-no-dependencies.js:30761
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Are you sure you want to remove the bookmark \"%1$s\"?"
-msgstr "确定移除联系人吗？"
+msgstr "確實要刪除書簽 \"%1$s\" 嗎？"
 
 #: dist/converse-no-dependencies.js:30883
 #: dist/converse-no-dependencies.js:31758
@@ -73,93 +71,84 @@ msgstr "确定移除联系人吗？"
 #: dist/converse-no-dependencies.js:38543
 #: dist/converse-no-dependencies.js:39618
 msgid "Error"
-msgstr "错误"
+msgstr "錯誤"
 
 #: dist/converse-no-dependencies.js:30883
 msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr ""
+msgstr "對不起，在嘗試保存書簽時出錯。"
 
 #: dist/converse-no-dependencies.js:30972
 #: dist/converse-no-dependencies.js:40903
-#, fuzzy
 msgid "Leave this groupchat"
-msgstr "打开聊天室"
+msgstr "離開此群組"
 
 #: dist/converse-no-dependencies.js:30973
 msgid "Remove this bookmark"
-msgstr ""
+msgstr "刪除此書簽"
 
 #: dist/converse-no-dependencies.js:30975
 #: dist/converse-no-dependencies.js:35825
 #: dist/converse-no-dependencies.js:40906
-#, fuzzy
 msgid "Show more information on this groupchat"
-msgstr "显示次聊天室的更多信息"
+msgstr "顯示有關此群組的更多資訊"
 
 #: dist/converse-no-dependencies.js:30978
 #: dist/converse-no-dependencies.js:35824
 #: dist/converse-no-dependencies.js:40908
-#, fuzzy
 msgid "Click to open this groupchat"
-msgstr "打开聊天室"
+msgstr "打開這個群組"
 
 #: dist/converse-no-dependencies.js:31020
-#, fuzzy
 msgid "Click to toggle the bookmarks list"
-msgstr "打开聊天室"
+msgstr "按一下以切換書簽清單"
 
 #: dist/converse-no-dependencies.js:31021
 msgid "Bookmarks"
-msgstr ""
+msgstr "書簽"
 
 #: dist/converse-no-dependencies.js:31661
-#, fuzzy
 msgid "Close this chat box"
-msgstr "点击恢复聊天窗口"
+msgstr "關閉這個聊天視窗"
 
 #: dist/converse-no-dependencies.js:31733
-#, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr "点击移除联系人"
+msgstr "對不起，在嘗試重新整理時出錯了"
 
 #: dist/converse-no-dependencies.js:31749
 #: dist/converse-no-dependencies.js:41696
-#, fuzzy
 msgid "Are you sure you want to remove this contact?"
-msgstr "确定移除联系人吗？"
+msgstr "確實要刪除此連絡人嗎？"
 
 #: dist/converse-no-dependencies.js:31758
 #: dist/converse-no-dependencies.js:41714
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Sorry, there was an error while trying to remove %1$s as a contact."
-msgstr "点击移除联系人"
+msgstr "對不起，嘗試刪除 %1$s 作為連絡人時出錯。"
 
 #: dist/converse-no-dependencies.js:31818
 #: dist/converse-no-dependencies.js:31860
-#, fuzzy
 msgid "You have unread messages"
-msgstr "移除消息"
+msgstr "您有未讀訊息"
 
 #: dist/converse-no-dependencies.js:31846
-#, fuzzy
 msgid "Hidden message"
 msgstr "私訊"
 
 #: dist/converse-no-dependencies.js:31848
 msgid "Message"
-msgstr "信息"
+msgstr "訊息"
 
 #: dist/converse-no-dependencies.js:31855
 msgid "Send"
-msgstr ""
+msgstr "發送"
 
 #: dist/converse-no-dependencies.js:31856
 msgid "Optional hint"
-msgstr ""
+msgstr "可選提示"
 
 #: dist/converse-no-dependencies.js:31910
 msgid "Choose a file to send"
-msgstr ""
+msgstr "選擇要發送的檔案"
 
 #: dist/converse-no-dependencies.js:32313
 #: dist/converse-no-dependencies.js:36496
@@ -168,7 +157,7 @@ msgstr "移除訊息"
 
 #: dist/converse-no-dependencies.js:32313
 msgid "Write in the third person"
-msgstr "以第三者身份寫"
+msgstr "以第三者身份書寫"
 
 #: dist/converse-no-dependencies.js:32313
 #: dist/converse-no-dependencies.js:36496
@@ -176,174 +165,154 @@ msgid "Show this menu"
 msgstr "顯示此選單"
 
 #: dist/converse-no-dependencies.js:32537
-#, fuzzy
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr "您確定要清除此聊天室中的訊息嗎？"
+msgstr "確實要清除此對話中的訊息嗎？"
 
 #: dist/converse-no-dependencies.js:32659
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone offline"
-msgstr "对方已下线"
+msgstr "%1$s 已經離線"
 
 #: dist/converse-no-dependencies.js:32661
 #: dist/converse-no-dependencies.js:34615
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone away"
-msgstr "对方离开"
+msgstr "%1$s 已經離線"
 
 #: dist/converse-no-dependencies.js:32663
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is busy"
-msgstr "忙碌"
+msgstr "%1$s 忙線中"
 
 #: dist/converse-no-dependencies.js:32665
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is online"
-msgstr "在线"
+msgstr "%1$s 在線"
 
 #: dist/converse-no-dependencies.js:33400
-#, fuzzy
 msgid "Username"
-msgstr "XMPP/Jabber用户名:"
+msgstr "用戶名稱"
 
 #: dist/converse-no-dependencies.js:33400
 msgid "user@domain"
-msgstr ""
+msgstr "user@domain"
 
 #: dist/converse-no-dependencies.js:33420
 #: dist/converse-no-dependencies.js:41284
 msgid "Please enter a valid XMPP address"
-msgstr ""
+msgstr "請輸入有效的 XMPP 位址"
 
 #: dist/converse-no-dependencies.js:33533
-#, fuzzy
 msgid "Chat Contacts"
-msgstr "联系人"
+msgstr "聊天連絡人"
 
 #: dist/converse-no-dependencies.js:33533
 msgid "Toggle chat"
-msgstr "折叠聊天窗口"
+msgstr "切換聊天視窗"
 
 #: dist/converse-no-dependencies.js:34554
-#, fuzzy
 msgid "Show more"
-msgstr "显示所有聊天室"
+msgstr "顯示更多"
 
 #: dist/converse-no-dependencies.js:34604
 msgid "Typing from another device"
-msgstr ""
+msgstr "從其他裝置輸入"
 
 #: dist/converse-no-dependencies.js:34606
 #, javascript-format
 msgid "%1$s is typing"
-msgstr ""
+msgstr "%1$s 正在輸入"
 
 #: dist/converse-no-dependencies.js:34610
 msgid "Stopped typing on the other device"
-msgstr ""
+msgstr "停止在其他裝置上輸入"
 
 #: dist/converse-no-dependencies.js:34612
 #, javascript-format
 msgid "%1$s has stopped typing"
-msgstr ""
+msgstr "%1$s 已停止輸入"
 
 #: dist/converse-no-dependencies.js:34652
 msgid "Unencryptable OMEMO message"
-msgstr ""
+msgstr "不可加密的 OMEMO 訊息"
 
 #: dist/converse-no-dependencies.js:34893
 #: dist/converse-no-dependencies.js:34939
 msgid "Minimize this chat box"
-msgstr ""
+msgstr "最小化此聊天視窗"
 
 #: dist/converse-no-dependencies.js:35074
-#, fuzzy
 msgid "Click to restore this chat"
-msgstr "点击恢复聊天窗口"
+msgstr "點擊恢復此聊天"
 
 #: dist/converse-no-dependencies.js:35271
 msgid "Minimized"
-msgstr "最小化的"
+msgstr "最小化"
 
 #: dist/converse-no-dependencies.js:35665
-#, fuzzy
 msgid "This groupchat is not anonymous"
-msgstr "此为非匿名聊天室"
+msgstr "此群組不是匿名的"
 
 #: dist/converse-no-dependencies.js:35666
-#, fuzzy
 msgid "This groupchat now shows unavailable members"
-msgstr "此聊天室显示不可用用户"
+msgstr "此群組現在顯示不可用的成員"
 
 #: dist/converse-no-dependencies.js:35667
-#, fuzzy
 msgid "This groupchat does not show unavailable members"
-msgstr "此聊天室不显示不可用用户"
+msgstr "此群組不顯示不可用的成員"
 
 #: dist/converse-no-dependencies.js:35668
-#, fuzzy
 msgid "The groupchat configuration has changed"
-msgstr "此聊天室设置(非私密性)已改变"
+msgstr "群組配置已更改"
 
 #: dist/converse-no-dependencies.js:35669
-#, fuzzy
 msgid "groupchat logging is now enabled"
-msgstr "聊天室聊天记录已启用"
+msgstr "現已啟用群組聊天紀錄記錄"
 
 #: dist/converse-no-dependencies.js:35670
-#, fuzzy
 msgid "groupchat logging is now disabled"
-msgstr "聊天室聊天记录已禁用"
+msgstr "現已禁用群組聊天紀錄記錄"
 
 #: dist/converse-no-dependencies.js:35671
-#, fuzzy
 msgid "This groupchat is now no longer anonymous"
-msgstr "此聊天室非匿名"
+msgstr "這個組現在不再是匿名的"
 
 #: dist/converse-no-dependencies.js:35672
-#, fuzzy
 msgid "This groupchat is now semi-anonymous"
-msgstr "此聊天室半匿名"
+msgstr "這個群組現在是半匿名的"
 
 #: dist/converse-no-dependencies.js:35673
-#, fuzzy
 msgid "This groupchat is now fully-anonymous"
-msgstr "此聊天室完全匿名"
+msgstr "這個群組現在是完全是匿名的"
 
 #: dist/converse-no-dependencies.js:35674
-#, fuzzy
 msgid "A new groupchat has been created"
-msgstr "新聊天室已创建"
+msgstr "建立了新的群組"
 
 #: dist/converse-no-dependencies.js:35677
-#, fuzzy
 msgid "You have been banned from this groupchat"
-msgstr "您已被此聊天室禁止入内"
+msgstr "您被禁止參加這個群組"
 
 #: dist/converse-no-dependencies.js:35678
-#, fuzzy
 msgid "You have been kicked from this groupchat"
-msgstr "您已被踢出次房间"
+msgstr "您被踢出了這個群組"
 
 #: dist/converse-no-dependencies.js:35679
-#, fuzzy
 msgid ""
 "You have been removed from this groupchat because of an affiliation change"
-msgstr "由于关系变化，您已被移除此房间"
+msgstr "由於隸屬關係的更改，您已經從群組中刪除"
 
 #: dist/converse-no-dependencies.js:35680
-#, fuzzy
 msgid ""
 "You have been removed from this groupchat because the groupchat has changed "
 "to members-only and you're not a member"
-msgstr "您已被移除此房间因为此房间更改为只允许成员加入，而您非成员"
+msgstr "您已經從此群組中刪除，因為群聊已更改為僅限成員，並且您不再是成員"
 
 #: dist/converse-no-dependencies.js:35681
-#, fuzzy
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
-msgstr "由于服务不可用，您已被移除此房间。"
+msgstr "您已經從這個群組中刪除，因為託管它的服務正在關閉"
 
 #. XXX: Note the triple underscore function and not double
 #. * underscore.
@@ -356,77 +325,76 @@ msgstr "由于服务不可用，您已被移除此房间。"
 #. * strings are picked up by the translation machinery.
 #.
 #: dist/converse-no-dependencies.js:35694
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been banned"
 msgstr "%1$s 已被禁止"
 
 #: dist/converse-no-dependencies.js:35695
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s's nickname has changed"
-msgstr "%1$s 已被禁止"
+msgstr "%1$s 的暱稱已經更改"
 
 #: dist/converse-no-dependencies.js:35696
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been kicked out"
-msgstr "%1$s 已被踢出"
+msgstr "%1$s 已被踢出群組"
 
 #: dist/converse-no-dependencies.js:35697
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "由于关系解除、%1$s 已被移除"
+msgstr "由於隸屬關係的更改，%1$s 已經從群組中刪除"
 
 #: dist/converse-no-dependencies.js:35698
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr "由于不是成员、%1$s 已被移除"
+msgstr "由於隸屬關係更改，%1$s 已被刪除"
 
 #: dist/converse-no-dependencies.js:35701
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname has been automatically set to %1$s"
-msgstr "您的昵称被更改了"
+msgstr "您的匿稱已自動設置為 %1$s"
 
 #: dist/converse-no-dependencies.js:35702
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Your nickname has been changed to %1$s"
-msgstr "您的昵称被更改了"
+msgstr "您的匿稱已更改為 %1$s"
 
 #: dist/converse-no-dependencies.js:35733
 msgid "Description:"
 msgstr "描述："
 
 #: dist/converse-no-dependencies.js:35734
-#, fuzzy
 msgid "Groupchat Address (JID):"
-msgstr "聊天室名称"
+msgstr "群組位址 (JID):"
 
 #: dist/converse-no-dependencies.js:35735
-#, fuzzy
 msgid "Participants:"
-msgstr "成员:"
+msgstr "參與者："
 
 #: dist/converse-no-dependencies.js:35736
 msgid "Features:"
 msgstr "特性:"
 
 #: dist/converse-no-dependencies.js:35737
+#, fuzzy
 msgid "Requires authentication"
-msgstr "需要验证"
+msgstr "需要身份驗證"
 
 #: dist/converse-no-dependencies.js:35738
 #: dist/converse-no-dependencies.js:74704
 #: dist/converse-no-dependencies.js:74856
 msgid "Hidden"
-msgstr "隐藏的"
+msgstr "隱藏"
 
 #: dist/converse-no-dependencies.js:35739
 msgid "Requires an invitation"
-msgstr "需要被邀请"
+msgstr "需要邀請"
 
 #: dist/converse-no-dependencies.js:35740
 #: dist/converse-no-dependencies.js:74768
 #: dist/converse-no-dependencies.js:74920
 msgid "Moderated"
-msgstr "发言受限"
+msgstr "須審核"
 
 #: dist/converse-no-dependencies.js:35741
 msgid "Non-anonymous"
@@ -435,20 +403,18 @@ msgstr "非匿名"
 #: dist/converse-no-dependencies.js:35742
 #: dist/converse-no-dependencies.js:74728
 #: dist/converse-no-dependencies.js:74880
-#, fuzzy
 msgid "Open"
-msgstr "打开聊天室"
+msgstr "打開"
 
 #: dist/converse-no-dependencies.js:35743
-#, fuzzy
 msgid "Permanent"
-msgstr "永久聊天室"
+msgstr "永久"
 
 #: dist/converse-no-dependencies.js:35744
 #: dist/converse-no-dependencies.js:74712
 #: dist/converse-no-dependencies.js:74864
 msgid "Public"
-msgstr "公开的"
+msgstr "公開"
 
 #: dist/converse-no-dependencies.js:35745
 #: dist/converse-no-dependencies.js:74760
@@ -459,61 +425,54 @@ msgstr "半匿名"
 #: dist/converse-no-dependencies.js:35746
 #: dist/converse-no-dependencies.js:74744
 #: dist/converse-no-dependencies.js:74896
-#, fuzzy
 msgid "Temporary"
-msgstr "临时聊天室"
+msgstr "臨時"
 
 #: dist/converse-no-dependencies.js:35747
 msgid "Unmoderated"
-msgstr "无发言限制"
+msgstr "不須審核"
 
 #: dist/converse-no-dependencies.js:35783
-#, fuzzy
 msgid "Query for Groupchats"
-msgstr "阻止此用户进入房间"
+msgstr "查詢群組"
 
 #: dist/converse-no-dependencies.js:35784
-#, fuzzy
 msgid "Server address"
-msgstr "服务器"
+msgstr "伺服器地址"
 
 #: dist/converse-no-dependencies.js:35785
 #, fuzzy
 msgid "Show groupchats"
-msgstr "设置房间主题"
+msgstr "顯示群組"
 
 #: dist/converse-no-dependencies.js:35786
 msgid "conference.example.org"
-msgstr ""
+msgstr "conference.example.org"
 
 #: dist/converse-no-dependencies.js:35837
-#, fuzzy
 msgid "No groupchats found"
-msgstr "未找到用户"
+msgstr "找不到群組"
 
 #: dist/converse-no-dependencies.js:35855
-#, fuzzy
 msgid "Groupchats found:"
-msgstr "%1$s 上的聊天室"
+msgstr "發現的群組:"
 
 #: dist/converse-no-dependencies.js:35911
-#, fuzzy
 msgid "Enter a new Groupchat"
-msgstr "打开聊天室"
+msgstr "輸入新的群組"
 
 #: dist/converse-no-dependencies.js:35912
-#, fuzzy
 msgid "Groupchat address"
-msgstr "聊天室名称"
+msgstr "群組位址"
 
 #: dist/converse-no-dependencies.js:35913
 #: dist/converse-no-dependencies.js:41276
 msgid "Optional nickname"
-msgstr ""
+msgstr "可選匿稱"
 
 #: dist/converse-no-dependencies.js:35914
 msgid "name@conference.example.org"
-msgstr ""
+msgstr "name@conference.example.org"
 
 #: dist/converse-no-dependencies.js:35915
 #, fuzzy
@@ -714,6 +673,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:36851
 #: dist/converse-no-dependencies.js:39585
+#, fuzzy
 msgid "Nickname"
 msgstr "昵称"
 
@@ -728,10 +688,12 @@ msgid "This groupchat requires a password"
 msgstr "此聊天室需要密码"
 
 #: dist/converse-no-dependencies.js:36878
+#, fuzzy
 msgid "Password: "
 msgstr "密码： "
 
 #: dist/converse-no-dependencies.js:36879
+#, fuzzy
 msgid "Submit"
 msgstr "送出"
 
@@ -1073,25 +1035,30 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:39667
 #: dist/converse-no-dependencies.js:41408
+#, fuzzy
 msgid "Away"
 msgstr "离开"
 
 #: dist/converse-no-dependencies.js:39669
 #: dist/converse-no-dependencies.js:41407
+#, fuzzy
 msgid "Busy"
 msgstr "忙碌中"
 
 #: dist/converse-no-dependencies.js:39671
+#, fuzzy
 msgid "Custom status"
 msgstr "DIY状态"
 
 #: dist/converse-no-dependencies.js:39672
 #: dist/converse-no-dependencies.js:41410
+#, fuzzy
 msgid "Offline"
 msgstr "离线"
 
 #: dist/converse-no-dependencies.js:39673
 #: dist/converse-no-dependencies.js:41405
+#, fuzzy
 msgid "Online"
 msgstr "在线"
 
@@ -1126,7 +1093,7 @@ msgid "%1$s Translate %2$s it into your own language"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:39739
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "I am %1$s"
 msgstr "我现在%1$s"
 
@@ -1135,6 +1102,7 @@ msgid "Change settings"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:39743
+#, fuzzy
 msgid "Click to change your chat status"
 msgstr "点击这里改变聊天状态"
 
@@ -1159,18 +1127,22 @@ msgstr "确定移除联系人吗？"
 
 #: dist/converse-no-dependencies.js:39795
 #: dist/converse-no-dependencies.js:39805
+#, fuzzy
 msgid "online"
 msgstr "在线"
 
 #: dist/converse-no-dependencies.js:39797
+#, fuzzy
 msgid "busy"
 msgstr "忙碌"
 
 #: dist/converse-no-dependencies.js:39799
+#, fuzzy
 msgid "away for long"
 msgstr "长时间离开"
 
 #: dist/converse-no-dependencies.js:39801
+#, fuzzy
 msgid "away"
 msgstr "离开"
 
@@ -1241,26 +1213,32 @@ msgid "Are you sure you want to leave the groupchat %1$s?"
 msgstr "确定移除联系人吗？"
 
 #: dist/converse-no-dependencies.js:41215
+#, fuzzy
 msgid "This contact is busy"
 msgstr "对方忙碌中"
 
 #: dist/converse-no-dependencies.js:41216
+#, fuzzy
 msgid "This contact is online"
 msgstr "对方在线中"
 
 #: dist/converse-no-dependencies.js:41217
+#, fuzzy
 msgid "This contact is offline"
 msgstr "对方已下线"
 
 #: dist/converse-no-dependencies.js:41218
+#, fuzzy
 msgid "This contact is unavailable"
 msgstr "对方免打扰"
 
 #: dist/converse-no-dependencies.js:41219
+#, fuzzy
 msgid "This contact is away for an extended period"
 msgstr "对方暂时离开"
 
 #: dist/converse-no-dependencies.js:41220
+#, fuzzy
 msgid "This contact is away"
 msgstr "对方离开"
 
@@ -1269,14 +1247,17 @@ msgid "Groups"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:41225
+#, fuzzy
 msgid "My contacts"
 msgstr "我的好友列表"
 
 #: dist/converse-no-dependencies.js:41227
+#, fuzzy
 msgid "Pending contacts"
 msgstr "保留中的联系人"
 
 #: dist/converse-no-dependencies.js:41229
+#, fuzzy
 msgid "Contact requests"
 msgstr "来自好友的请求"
 
@@ -1285,6 +1266,7 @@ msgid "Ungrouped"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:41276
+#, fuzzy
 msgid "Contact name"
 msgstr "联系人名称"
 
@@ -1302,6 +1284,7 @@ msgid "name@example.org"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:41283
+#, fuzzy
 msgid "Add"
 msgstr "添加"
 
@@ -1365,10 +1348,12 @@ msgid "Are you sure you want to decline this contact request?"
 msgstr "确定移除联系人吗？"
 
 #: dist/converse-no-dependencies.js:42002
+#, fuzzy
 msgid "Contacts"
 msgstr "联系人"
 
 #: dist/converse-no-dependencies.js:42003
+#, fuzzy
 msgid "Add a contact"
 msgstr "添加联系人"
 
@@ -1650,6 +1635,7 @@ msgid "XMPP Username:"
 msgstr "XMPP/Jabber用户名:"
 
 #: dist/converse-no-dependencies.js:75803
+#, fuzzy
 msgid "Password:"
 msgstr "密碼："
 

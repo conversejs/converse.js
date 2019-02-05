@@ -105,10 +105,10 @@ converse.plugins.add('converse-headline', {
             'afterShown': _.noop
         });
 
-        function onHeadlineMessage (message) {
+        async function onHeadlineMessage (message) {
             /* Handler method for all incoming messages of type "headline". */
-            const from_jid = message.getAttribute('from');
             if (utils.isHeadlineMessage(_converse, message)) {
+                const from_jid = message.getAttribute('from');
                 if (_.includes(from_jid, '@') && 
                         !_converse.api.contacts.get(from_jid) &&
                         !_converse.allow_non_roster_messaging) {
@@ -125,14 +125,17 @@ converse.plugins.add('converse-headline', {
                     'type': _converse.HEADLINES_TYPE,
                     'from': from_jid
                 });
-                chatbox.createMessage(message, message);
+                const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
+                await chatbox.messages.create(attrs);
                 _converse.emit('message', {'chatbox': chatbox, 'stanza': message});
             }
-            return true;
         }
 
         function registerHeadlineHandler () {
-            _converse.connection.addHandler(onHeadlineMessage, null, 'message');
+            _converse.connection.addHandler(message => {
+                onHeadlineMessage(message);
+                return true
+            }, null, 'message');
         }
         _converse.on('connected', registerHeadlineHandler);
         _converse.on('reconnected', registerHeadlineHandler);

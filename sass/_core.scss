@@ -524,14 +524,14 @@ body.converse-fullscreen {
     }
 
     .badge-groupchat {
-        background-color: var(--chatroom-head-color);
+        background-color: var(--chatroom-badge-color);
         border-color: transparent;
         &:hover {
-            background-color: var(--chatroom-head-color-dark);
+            background-color: var(--chatroom-badge-hover-color);
             border-color: transparent;
         }
         &.active {
-            background-color: var(--chatroom-head-color-dark) !important;
+            background-color: var(--chatroom-badge-hover-color) !important;
             border-color: transparent !important;
         }
     }

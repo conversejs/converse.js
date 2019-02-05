@@ -125,9 +125,9 @@
 
             test_utils.openControlBox();
             test_utils.createContacts(_converse, 'current'); // Create some contacts so that we can test positioning
-            var contact_jid = mock.cur_names[8].replace(/ /g,'.').toLowerCase() + '@localhost';
-            var contact = _converse.roster.get(contact_jid);
-            var stanza = $(
+            const contact_jid = mock.cur_names[8].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const contact = _converse.roster.get(contact_jid);
+            let stanza = $(
             '<presence xmlns="jabber:client"'+
             '          to="dummy@localhost/converse.js-21770972"'+
             '          from="'+contact_jid+'/priority-1-resource">'+
@@ -141,9 +141,9 @@
             '</presence>');
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
             expect(contact.presence.get('show')).toBe('online');
-            expect(_.keys(contact.presence.get('resources')).length).toBe(1);
-            expect(contact.presence.get('resources')['priority-1-resource']['priority']).toBe(1);
-            expect(contact.presence.get('resources')['priority-1-resource']['show']).toBe('online');
+            expect(contact.presence.resources.length).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBe('online');
 
             stanza = $(
             '<presence xmlns="jabber:client"'+
@@ -157,12 +157,13 @@
             '    <delay xmlns="urn:xmpp:delay" stamp="2017-02-15T17:02:24Z" from="'+contact_jid+'/priority-0-resource"/>'+
             '</presence>');
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
-            expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('online');
-            expect(_.keys(contact.presence.get('resources')).length).toBe(2);
-            expect(contact.presence.get('resources')['priority-0-resource']['priority']).toBe(0);
-            expect(contact.presence.get('resources')['priority-0-resource']['show']).toBe('xa');
-            expect(contact.presence.get('resources')['priority-1-resource']['priority']).toBe(1);
-            expect(contact.presence.get('resources')['priority-1-resource']['show']).toBe('online');
+            expect(contact.presence.get('show')).toBe('online');
+
+            expect(contact.presence.resources.length).toBe(2);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBe('online');
 
             stanza = $(
             '<presence xmlns="jabber:client"'+
@@ -172,14 +173,14 @@
             '    <show>dnd</show>'+
             '</presence>');
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
-            expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('dnd');
-            expect(_.keys(contact.presence.get('resources')).length).toBe(3);
-            expect(contact.presence.get('resources')['priority-0-resource']['priority']).toBe(0);
-            expect(contact.presence.get('resources')['priority-0-resource']['show']).toBe('xa');
-            expect(contact.presence.get('resources')['priority-1-resource']['priority']).toBe(1);
-            expect(contact.presence.get('resources')['priority-1-resource']['show']).toBe('online');
-            expect(contact.presence.get('resources')['priority-2-resource']['priority']).toBe(2);
-            expect(contact.presence.get('resources')['priority-2-resource']['show']).toBe('dnd');
+            expect(contact.presence.get('show')).toBe('dnd');
+            expect(contact.presence.resources.length).toBe(3);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBe('online');
+            expect(contact.presence.resources.get('priority-2-resource').get('priority')).toBe(2);
+            expect(contact.presence.resources.get('priority-2-resource').get('show')).toBe('dnd');
 
             stanza = $(
             '<presence xmlns="jabber:client"'+
@@ -190,15 +191,15 @@
             '</presence>');
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
             expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('away');
-            expect(_.keys(contact.presence.get('resources')).length).toBe(4);
-            expect(contact.presence.get('resources')['priority-0-resource']['priority']).toBe(0);
-            expect(contact.presence.get('resources')['priority-0-resource']['show']).toBe('xa');
-            expect(contact.presence.get('resources')['priority-1-resource']['priority']).toBe(1);
-            expect(contact.presence.get('resources')['priority-1-resource']['show']).toBe('online');
-            expect(contact.presence.get('resources')['priority-2-resource']['priority']).toBe(2);
-            expect(contact.presence.get('resources')['priority-2-resource']['show']).toBe('dnd');
-            expect(contact.presence.get('resources')['priority-3-resource']['priority']).toBe(3);
-            expect(contact.presence.get('resources')['priority-3-resource']['show']).toBe('away');
+            expect(contact.presence.resources.length).toBe(4);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBe('online');
+            expect(contact.presence.resources.get('priority-2-resource').get('priority')).toBe(2);
+            expect(contact.presence.resources.get('priority-2-resource').get('show')).toBe('dnd');
+            expect(contact.presence.resources.get('priority-3-resource').get('priority')).toBe(3);
+            expect(contact.presence.resources.get('priority-3-resource').get('show')).toBe('away');
 
             stanza = $(
             '<presence xmlns="jabber:client"'+
@@ -210,17 +211,17 @@
             '</presence>');
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
             expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('away');
-            expect(_.keys(contact.presence.get('resources')).length).toBe(5);
-            expect(contact.presence.get('resources')['older-priority-1-resource']['priority']).toBe(1);
-            expect(contact.presence.get('resources')['older-priority-1-resource']['show']).toBe('dnd');
-            expect(contact.presence.get('resources')['priority-0-resource']['priority']).toBe(0);
-            expect(contact.presence.get('resources')['priority-0-resource']['show']).toBe('xa');
-            expect(contact.presence.get('resources')['priority-1-resource']['priority']).toBe(1);
-            expect(contact.presence.get('resources')['priority-1-resource']['show']).toBe('online');
-            expect(contact.presence.get('resources')['priority-2-resource']['priority']).toBe(2);
-            expect(contact.presence.get('resources')['priority-2-resource']['show']).toBe('dnd');
-            expect(contact.presence.get('resources')['priority-3-resource']['priority']).toBe(3);
-            expect(contact.presence.get('resources')['priority-3-resource']['show']).toBe('away');
+            expect(contact.presence.resources.length).toBe(5);
+            expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('older-priority-1-resource').get('show')).toBe('dnd');
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBe('online');
+            expect(contact.presence.resources.get('priority-2-resource').get('priority')).toBe(2);
+            expect(contact.presence.resources.get('priority-2-resource').get('show')).toBe('dnd');
+            expect(contact.presence.resources.get('priority-3-resource').get('priority')).toBe(3);
+            expect(contact.presence.resources.get('priority-3-resource').get('show')).toBe('away');
 
             stanza = $(
             '<presence xmlns="jabber:client"'+
@@ -230,15 +231,15 @@
             '</presence>');
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
             expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('dnd');
-            expect(_.keys(contact.presence.get('resources')).length).toBe(4);
-            expect(contact.presence.get('resources')['priority-0-resource']['priority']).toBe(0);
-            expect(contact.presence.get('resources')['priority-0-resource']['show']).toBe('xa');
-            expect(contact.presence.get('resources')['priority-1-resource']['priority']).toBe(1);
-            expect(contact.presence.get('resources')['priority-1-resource']['show']).toBe('online');
-            expect(contact.presence.get('resources')['priority-2-resource']['priority']).toBe(2);
-            expect(contact.presence.get('resources')['priority-2-resource']['show']).toBe('dnd');
-            expect(contact.presence.get('resources')['older-priority-1-resource']['priority']).toBe(1);
-            expect(contact.presence.get('resources')['older-priority-1-resource']['show']).toBe('dnd');
+            expect(contact.presence.resources.length).toBe(4);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBe('online');
+            expect(contact.presence.resources.get('priority-2-resource').get('priority')).toBe(2);
+            expect(contact.presence.resources.get('priority-2-resource').get('show')).toBe('dnd');
+            expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('older-priority-1-resource').get('show')).toBe('dnd');
 
             stanza = $(
             '<presence xmlns="jabber:client"'+
@@ -248,13 +249,13 @@
             '</presence>');
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
             expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('online');
-            expect(_.keys(contact.presence.get('resources')).length).toBe(3);
-            expect(contact.presence.get('resources')['priority-0-resource']['priority']).toBe(0);
-            expect(contact.presence.get('resources')['priority-0-resource']['show']).toBe('xa');
-            expect(contact.presence.get('resources')['priority-1-resource']['priority']).toBe(1);
-            expect(contact.presence.get('resources')['priority-1-resource']['show']).toBe('online');
-            expect(contact.presence.get('resources')['older-priority-1-resource']['priority']).toBe(1);
-            expect(contact.presence.get('resources')['older-priority-1-resource']['show']).toBe('dnd');
+            expect(contact.presence.resources.length).toBe(3);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('priority-1-resource').get('show')).toBe('online');
+            expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('older-priority-1-resource').get('show')).toBe('dnd');
 
             stanza = $(
             '<presence xmlns="jabber:client"'+
@@ -264,11 +265,11 @@
             '</presence>');
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
             expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('dnd');
-            expect(_.keys(contact.presence.get('resources')).length).toBe(2);
-            expect(contact.presence.get('resources')['priority-0-resource']['priority']).toBe(0);
-            expect(contact.presence.get('resources')['priority-0-resource']['show']).toBe('xa');
-            expect(contact.presence.get('resources')['older-priority-1-resource']['priority']).toBe(1);
-            expect(contact.presence.get('resources')['older-priority-1-resource']['show']).toBe('dnd');
+            expect(contact.presence.resources.length).toBe(2);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
+            expect(contact.presence.resources.get('older-priority-1-resource').get('priority')).toBe(1);
+            expect(contact.presence.resources.get('older-priority-1-resource').get('show')).toBe('dnd');
 
             stanza = $(
             '<presence xmlns="jabber:client"'+
@@ -278,9 +279,9 @@
             '</presence>');
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
             expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('xa');
-            expect(_.keys(contact.presence.get('resources')).length).toBe(1);
-            expect(contact.presence.get('resources')['priority-0-resource']['priority']).toBe(0);
-            expect(contact.presence.get('resources')['priority-0-resource']['show']).toBe('xa');
+            expect(contact.presence.resources.length).toBe(1);
+            expect(contact.presence.resources.get('priority-0-resource').get('priority')).toBe(0);
+            expect(contact.presence.resources.get('priority-0-resource').get('show')).toBe('xa');
 
             stanza = $(
             '<presence xmlns="jabber:client"'+
@@ -290,7 +291,7 @@
             '</presence>');
             _converse.connection._dataRecv(test_utils.createRequest(stanza[0]));
             expect(_converse.roster.get(contact_jid).presence.get('show')).toBe('offline');
-            expect(_.keys(contact.presence.get('resources')).length).toBe(0);
+            expect(contact.presence.resources.length).toBe(0);
             done();
         }));
     });

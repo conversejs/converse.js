@@ -218,6 +218,8 @@ converse.plugins.add('converse-mam', {
                         if (!results.length) { return; }
                         this.addSpinner();
                         _converse.api.archive.query(
+                            // TODO: only query from the last message we have
+                            // in our history
                             _.extend({
                                 'groupchat': is_groupchat,
                                 'before': '', // Page backwards from the most recent message

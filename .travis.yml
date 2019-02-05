@@ -1,4 +1,4 @@
-dist: trusty
+dist: xenial 
 language: node_js
 cache:
     directories:
@@ -6,7 +6,7 @@ cache:
 addons:
     chrome: stable
 node_js:
- - "9"
+ - "10"
 before_install:
   - npm install -g lerna
   - rm -rf ./node_modules

@@ -112,7 +112,7 @@ var specs = [
     "spec/chatbox",
     "spec/user-details-modal",
     "spec/messages",
-    "spec/chatroom",
+    "spec/muc",
     "spec/room_registration",
     "spec/autocomplete",
     "spec/minchats",

@@ -26010,6 +26010,88 @@ return de;
 
 /***/ }),
 
+/***/ "./node_modules/moment/locale/eo.js":
+/*!******************************************!*\
+  !*** ./node_modules/moment/locale/eo.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+//! moment.js locale configuration
+//! locale : Esperanto [eo]
+//! author : Colin Dean : https://github.com/colindean
+//! author : Mia Nordentoft Imperatori : https://github.com/miestasmia
+//! comment : miestasmia corrected the translation by colindean
+
+;(function (global, factory) {
+    true ? factory(__webpack_require__(/*! ../moment */ "./node_modules/moment/moment.js")) :
+   undefined
+}(this, (function (moment) { 'use strict';
+
+
+var eo = moment.defineLocale('eo', {
+    months : 'januaro_februaro_marto_aprilo_majo_junio_julio_aŭgusto_septembro_oktobro_novembro_decembro'.split('_'),
+    monthsShort : 'jan_feb_mar_apr_maj_jun_jul_aŭg_sep_okt_nov_dec'.split('_'),
+    weekdays : 'dimanĉo_lundo_mardo_merkredo_ĵaŭdo_vendredo_sabato'.split('_'),
+    weekdaysShort : 'dim_lun_mard_merk_ĵaŭ_ven_sab'.split('_'),
+    weekdaysMin : 'di_lu_ma_me_ĵa_ve_sa'.split('_'),
+    longDateFormat : {
+        LT : 'HH:mm',
+        LTS : 'HH:mm:ss',
+        L : 'YYYY-MM-DD',
+        LL : 'D[-a de] MMMM, YYYY',
+        LLL : 'D[-a de] MMMM, YYYY HH:mm',
+        LLLL : 'dddd, [la] D[-a de] MMMM, YYYY HH:mm'
+    },
+    meridiemParse: /[ap]\.t\.m/i,
+    isPM: function (input) {
+        return input.charAt(0).toLowerCase() === 'p';
+    },
+    meridiem : function (hours, minutes, isLower) {
+        if (hours > 11) {
+            return isLower ? 'p.t.m.' : 'P.T.M.';
+        } else {
+            return isLower ? 'a.t.m.' : 'A.T.M.';
+        }
+    },
+    calendar : {
+        sameDay : '[Hodiaŭ je] LT',
+        nextDay : '[Morgaŭ je] LT',
+        nextWeek : 'dddd [je] LT',
+        lastDay : '[Hieraŭ je] LT',
+        lastWeek : '[pasinta] dddd [je] LT',
+        sameElse : 'L'
+    },
+    relativeTime : {
+        future : 'post %s',
+        past : 'antaŭ %s',
+        s : 'sekundoj',
+        m : 'minuto',
+        mm : '%d minutoj',
+        h : 'horo',
+        hh : '%d horoj',
+        d : 'tago',//ne 'diurno', ĉar estas uzita por proksimumo
+        dd : '%d tagoj',
+        M : 'monato',
+        MM : '%d monatoj',
+        y : 'jaro',
+        yy : '%d jaroj'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}a/,
+    ordinal : '%da',
+    week : {
+        dow : 1, // Monday is the first day of the week.
+        doy : 7  // The week that contains Jan 1st is the first week of the year.
+    }
+});
+
+return eo;
+
+})));
+
+
+/***/ }),
+
 /***/ "./node_modules/moment/locale/es.js":
 /*!******************************************!*\
   !*** ./node_modules/moment/locale/es.js ***!
@@ -49505,13 +49587,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         const contact_jid = this.model.get('jid');
-        const resources = this.model.presence.get('resources');
 
-        if (_.isEmpty(resources)) {
+        if (this.model.presence.resources.length === 0) {
           return;
         }
 
-        const results = await Promise.all(_.map(_.keys(resources), resource => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${resource}`)));
+        const results = await Promise.all(this.model.presence.resources.map(res => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${res.get('name')}`)));
 
         if (_.filter(results, 'length').length) {
           const html = templates_spoiler_button_html__WEBPACK_IMPORTED_MODULE_16___default()(this.model.toJSON());
@@ -49832,18 +49913,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          * Parameters:
          *  (Backbone.Model) message: The message object
          */
+        if (!_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isNewMessage(message) && _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isEmptyMessage(message)) {
+          // Handle archived or delayed messages without any message
+          // text to show.
+          return message.destroy();
+        }
+
         const view = new _converse.MessageView({
           'model': message
         });
         await view.render();
         this.clearChatStateNotification(message);
-
-        if (!view.el.innerHTML) {
-          // An "inactive" CSN message (for example) will have an
-          // empty body. No need to then continue.
-          return _converse.log("Not inserting a message with empty element", Strophe.LogLevel.INFO);
-        }
-
         this.insertMessage(view);
         this.insertDayIndicator(view.el);
         this.setScrollPosition(view.el);
@@ -51920,11 +52000,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       'afterShown': _.noop
     });
 
-    function onHeadlineMessage(message) {
+    async function onHeadlineMessage(message) {
       /* Handler method for all incoming messages of type "headline". */
-      const from_jid = message.getAttribute('from');
-
       if (utils.isHeadlineMessage(_converse, message)) {
+        const from_jid = message.getAttribute('from');
+
         if (_.includes(from_jid, '@') && !_converse.api.contacts.get(from_jid) && !_converse.allow_non_roster_messaging) {
           return;
         }
@@ -51942,19 +52022,21 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
           'from': from_jid
         });
 
-        chatbox.createMessage(message, message);
+        const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
+        await chatbox.messages.create(attrs);
 
         _converse.emit('message', {
           'chatbox': chatbox,
           'stanza': message
         });
       }
-
-      return true;
     }
 
     function registerHeadlineHandler() {
-      _converse.connection.addHandler(onHeadlineMessage, null, 'message');
+      _converse.connection.addHandler(message => {
+        onHeadlineMessage(message);
+        return true;
+      }, null, 'message');
     }
 
     _converse.on('connected', registerHeadlineHandler);
@@ -53141,6 +53223,7 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       $msg = _converse$env.$msg,
       $pres = _converse$env.$pres;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].env.utils;
+const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc-views', {
   /* Dependencies are other plugins which might be
    * overridden or relied upon, and therefore need to be loaded before
@@ -53204,6 +53287,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     _converse.api.settings.update({
       'auto_list_rooms': false,
       'muc_disable_moderator_commands': false,
+      'muc_show_join_leave': true,
       'roomconfig_whitelist': [],
       'visible_toolbar_buttons': {
         'toggle_occupants': true
@@ -54010,7 +54094,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           return false;
         }
 
-        if (!this.model.occupants.findWhere({
+        if (!(_.includes(AFFILIATION_CHANGE_COMANDS, command) && u.isValidJID(args[0])) && !this.model.occupants.findWhere({
           'nick': args[0]
         }) && !this.model.occupants.findWhere({
           'jid': args[0]
@@ -54029,13 +54113,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       },
 
       parseMessageForCommands(text) {
-        if (_converse.muc_disable_moderator_commands) {
+        if (_converse.muc_disable_moderator_commands && !_.isArray(_converse.muc_disable_moderator_commands)) {
           return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
         }
 
         const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
               args = match[2] && match[2].splitOnce(' ').filter(s => s) || [],
-              command = match[1].toLowerCase();
+              command = match[1].toLowerCase(),
+              disabled_commands = _.isArray(_converse.muc_disable_moderator_commands) ? _converse.muc_disable_moderator_commands : [];
+
+        if (_.includes(disabled_commands, command)) {
+          return false;
+        }
 
         switch (command) {
           case 'admin':
@@ -54077,7 +54166,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
             break;
 
           case 'help':
-            this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/destroy</strong>: ${__('Destroy room')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this groupchat")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`]);
+            this.showHelpMessages(_.filter([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/destroy</strong>: ${__('Destroy room')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this groupchat")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`], line => _.every(disabled_commands, element => !line.startsWith(element + '<', 9))));
             break;
 
           case 'kick':
@@ -54108,11 +54197,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
                 'jid': args[0]
               }),
                     attrs = {
-                'jid': occupant.get('jid'),
+                'jid': occupant ? occupant.get('jid') : args[0],
                 'reason': args[1]
               };
 
-              if (_converse.auto_register_muc_nickname) {
+              if (_converse.auto_register_muc_nickname && occupant) {
                 attrs['nick'] = occupant.get('nick');
               }
 
@@ -54718,7 +54807,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       },
 
       showJoinNotification(occupant) {
-        if (this.model.get('connection_status') !== _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.ENTERED) {
+        if (!_converse.muc_show_join_leave || this.model.get('connection_status') !== _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.ENTERED) {
           return;
         }
 
@@ -54778,7 +54867,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       },
 
       showLeaveNotification(occupant) {
-        if (_.includes(occupant.get('states'), '303') || _.includes(occupant.get('states'), '307')) {
+        if (!_converse.muc_show_join_leave || _.includes(occupant.get('states'), '303') || _.includes(occupant.get('states'), '307')) {
           return;
         }
 
@@ -61216,6 +61305,7 @@ const u = _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env.utils;
 Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
 Strophe.addNamespace('RECEIPTS', 'urn:xmpp:receipts');
 Strophe.addNamespace('REFERENCE', 'urn:xmpp:reference:0');
+Strophe.addNamespace('MARKERS', 'urn:xmpp:chat-markers:0');
 _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-chatboxes', {
   dependencies: ["converse-roster", "converse-vcard"],
 
@@ -61546,7 +61636,84 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return false;
       },
 
-      handleReceipt(stanza) {
+      sendMarker(to_jid, id, type) {
+        const stanza = $msg({
+          'from': _converse.connection.jid,
+          'id': _converse.connection.getUniqueId(),
+          'to': to_jid,
+          'type': 'chat'
+        }).c(type, {
+          'xmlns': Strophe.NS.MARKERS,
+          'id': id
+        });
+
+        _converse.api.send(stanza);
+      },
+
+      handleChatMarker(stanza, from_jid, is_carbon) {
+        const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));
+
+        if (to_bare_jid !== _converse.bare_jid) {
+          return false;
+        }
+
+        const markers = sizzle(`[xmlns="${Strophe.NS.MARKERS}"]`, stanza);
+
+        if (markers.length === 0) {
+          return false;
+        } else if (markers.length > 1) {
+          _converse.log('onMessage: Ignoring incoming stanza with multiple message markers', Strophe.LogLevel.ERROR);
+
+          _converse.log(stanza, Strophe.LogLevel.ERROR);
+
+          return false;
+        } else {
+          const marker = markers.pop();
+
+          if (marker.nodeName === 'markable' && !is_carbon) {
+            this.sendMarker(from_jid, stanza.getAttribute('id'), 'received');
+            return false;
+          } else {
+            const msgid = marker && marker.getAttribute('id'),
+                  message = msgid && this.messages.findWhere({
+              msgid
+            }),
+                  field_name = `marker_${marker.nodeName}`;
+
+            if (message && !message.get(field_name)) {
+              message.save({
+                field_name: moment().format()
+              });
+            }
+
+            return true;
+          }
+        }
+      },
+
+      sendReceiptStanza(to_jid, id) {
+        const receipt_stanza = $msg({
+          'from': _converse.connection.jid,
+          'id': _converse.connection.getUniqueId(),
+          'to': to_jid,
+          'type': 'chat'
+        }).c('received', {
+          'xmlns': Strophe.NS.RECEIPTS,
+          'id': id
+        }).up().c('store', {
+          'xmlns': Strophe.NS.HINTS
+        }).up();
+
+        _converse.api.send(receipt_stanza);
+      },
+
+      handleReceipt(stanza, from_jid, is_carbon, is_me) {
+        const requests_receipt = !_.isUndefined(sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
+
+        if (requests_receipt && !is_carbon && !is_me) {
+          this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
+        }
+
         const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));
 
         if (to_bare_jid === _converse.bare_jid) {
@@ -61803,8 +61970,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'is_delayed': !_.isNil(delay),
           'is_spoiler': !_.isNil(spoiler),
           'message': _converse.chatboxes.getMessageBody(stanza) || undefined,
-          'references': this.getReferencesFromStanza(stanza),
           'msgid': stanza.getAttribute('id'),
+          'references': this.getReferencesFromStanza(stanza),
+          'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
+          'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
           'time': delay ? delay.getAttribute('stamp') : moment().format(),
           'type': stanza.getAttribute('type')
         };
@@ -61837,22 +62006,20 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return attrs;
       },
 
-      async createMessage(message, original_stanza) {
-        /* Create a Backbone.Message object inside this chat box
-         * based on the identified message stanza.
-         */
-        const attrs = await this.getMessageAttributesFromStanza(message, original_stanza),
-              is_csn = u.isOnlyChatStateNotification(attrs);
+      async createMessage(stanza, original_stanza) {
+        const msgid = stanza.getAttribute('id'),
+              message = msgid && this.messages.findWhere({
+          msgid
+        });
 
-        if (is_csn && (attrs.is_delayed || attrs.type === 'groupchat' && Strophe.getResourceFromJid(attrs.from) == this.get('nick'))) {
-          // XXX: MUC leakage
-          // No need showing delayed or our own CSN messages
-          return;
-        } else if (!is_csn && !attrs.file && !attrs.plaintext && !attrs.message && !attrs.oob_url && attrs.type !== 'error') {
-          // TODO: handle <subject> messages (currently being done by ChatRoom)
-          return;
-        } else {
-          return this.messages.create(attrs);
+        if (!message) {
+          // Only create the message when we're sure it's not a duplicate
+          const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+
+          if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
+            const msg = this.messages.create(attrs);
+            this.incrementUnreadMsgCounter(msg);
+          }
         }
       },
 
@@ -61952,7 +62119,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
-      onErrorMessage(message) {
+      async onErrorMessage(message) {
         /* Handler method for all incoming error message stanzas
         */
         const from_jid = Strophe.getBareJidFromJid(message.getAttribute('from'));
@@ -61990,8 +62157,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           _converse.log(message, Strophe.LogLevel.ERROR);
         }
 
-        chatbox.createMessage(message, message);
-        return true;
+        const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
+        chatbox.messages.create(attrs);
       },
 
       getMessageBody(stanza) {
@@ -62007,23 +62174,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
       },
 
-      sendReceiptStanza(to_jid, id) {
-        const receipt_stanza = $msg({
-          'from': _converse.connection.jid,
-          'id': _converse.connection.getUniqueId(),
-          'to': to_jid,
-          'type': 'chat'
-        }).c('received', {
-          'xmlns': Strophe.NS.RECEIPTS,
-          'id': id
-        }).up().c('store', {
-          'xmlns': Strophe.NS.HINTS
-        }).up();
-
-        _converse.api.send(receipt_stanza);
-      },
-
-      onMessage(stanza) {
+      async onMessage(stanza) {
         /* Handler method for all incoming single-user chat "message"
          * stanzas.
          *
@@ -62070,12 +62221,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
               from_resource = Strophe.getResourceFromJid(from_jid),
               is_me = from_bare_jid === _converse.bare_jid;
-        const requests_receipt = !_.isUndefined(sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
-
-        if (requests_receipt && !is_carbon && !is_me) {
-          this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
-        }
-
         let contact_jid;
 
         if (is_me) {
@@ -62087,33 +62232,23 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           contact_jid = Strophe.getBareJidFromJid(to_jid);
         } else {
           contact_jid = from_bare_jid;
-        }
+        } // Get chat box, but only create when the message has something to show to the user
 
-        const attrs = {
-          'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname') // Get chat box, but only create a new one when the message has a body.
 
-        };
-        const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
-        const chatbox = this.getChatBox(contact_jid, attrs, has_body);
+        const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0,
+              chatbox_attrs = {
+          'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
+        },
+              chatbox = this.getChatBox(contact_jid, chatbox_attrs, has_body);
 
-        if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza)) {
-          const msgid = stanza.getAttribute('id'),
-                message = msgid && chatbox.messages.findWhere({
-            msgid
-          });
-
-          if (!message) {
-            // Only create the message when we're sure it's not a duplicate
-            chatbox.createMessage(stanza, original_stanza).then(msg => chatbox.incrementUnreadMsgCounter(msg)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-          }
+        if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon)) {
+          await chatbox.createMessage(stanza, original_stanza);
         }
 
         _converse.emit('message', {
           'stanza': original_stanza,
           'chatbox': chatbox
         });
-
-        return true;
       },
 
       getChatBox(jid, attrs = {}, create) {
@@ -62559,7 +62694,7 @@ _converse.default_settings = {
   jid: undefined,
   keepalive: true,
   locales_url: 'locale/{{{locale}}}/LC_MESSAGES/converse.json',
-  locales: ['af', 'ar', 'bg', 'ca', 'cs', 'de', 'es', 'eu', 'en', 'fr', 'gl', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
+  locales: ['af', 'ar', 'bg', 'ca', 'cs', 'de', 'eo', 'es', 'eu', 'en', 'fr', 'gl', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'nb', 'nl', 'pl', 'pt_BR', 'ro', 'ru', 'tr', 'uk', 'zh_CN', 'zh_TW'],
   message_carbons: true,
   nickname: undefined,
   password: undefined,
@@ -64307,7 +64442,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       initialize() {
         this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
         this.dataforms = new Backbone.Collection();
-        this.dataforms.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.dataforms-{this.get('jid')}`));
+        this.dataforms.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.dataforms-${this.get('jid')}`));
         this.features = new Backbone.Collection();
         this.features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.features-${this.get('jid')}`));
         this.features.on('add', this.onFeatureAdded, this);
@@ -65298,7 +65433,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
 
           this.addSpinner();
 
-          _converse.api.archive.query(_.extend({
+          _converse.api.archive.query( // TODO: only query from the last message we have
+          // in our history
+          _.extend({
             'groupchat': is_groupchat,
             'before': '',
             // Page backwards from the most recent message
@@ -66839,28 +66976,37 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           return;
         }
 
-        const jid = stanza.getAttribute('from'),
-              resource = Strophe.getResourceFromJid(jid),
-              sender = resource && Strophe.unescapeNode(resource) || '';
+        const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+
+        if (!attrs.nick) {
+          return;
+        }
 
         if (!this.handleMessageCorrection(stanza)) {
-          if (sender === '') {
+          if (attrs.subject && !attrs.thread && !attrs.message) {
+            // https://xmpp.org/extensions/xep-0045.html#subject-mod
+            // -----------------------------------------------------
+            // The subject is changed by sending a message of type "groupchat" to the <room@service>,
+            // where the <message/> MUST contain a <subject/> element that specifies the new subject but
+            // MUST NOT contain a <body/> element (or a <thread/> element).
+            _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].safeSave(this, {
+              'subject': {
+                'author': attrs.nick,
+                'text': attrs.subject || ''
+              }
+            });
             return;
           }
 
-          const subject_el = stanza.querySelector('subject');
+          const is_csn = _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isOnlyChatStateNotification(attrs),
+                own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
 
-          if (subject_el) {
-            const subject = _.propertyOf(subject_el)('textContent') || '';
-            _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].safeSave(this, {
-              'subject': {
-                'author': sender,
-                'text': subject
-              }
-            });
+          if (is_csn && (attrs.is_delayed || own_message)) {
+            // No need showing delayed or our own CSN messages
+            return;
           }
 
-          const msg = await this.createMessage(stanza, original_stanza);
+          const msg = await this.messages.create(attrs);
 
           if (forwarded && msg && msg.get('sender') === 'me') {
             msg.save({
@@ -66871,7 +67017,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           this.incrementUnreadMsgCounter(msg);
         }
 
-        if (sender !== this.get('nick')) {
+        if (attrs.nick !== this.get('nick')) {
           // We only emit an event if it's not our own message
           _converse.emit('message', {
             'stanza': original_stanza,
@@ -67781,7 +67927,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.registerPresenceHandler = function () {
       _converse.unregisterPresenceHandler();
 
-      _converse.presence_ref = _converse.connection.addHandler(function (presence) {
+      _converse.presence_ref = _converse.connection.addHandler(presence => {
         _converse.roster.presenceHandler(presence);
 
         return true;
@@ -67809,7 +67955,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       _converse.emit('rosterInitialized');
     };
 
-    _converse.populateRoster = function (ignore_cache = false) {
+    _converse.populateRoster = async function (ignore_cache = false) {
       /* Fetch all the roster groups, and then the roster contacts.
        * Emit an event after fetching is done in each case.
        *
@@ -67821,38 +67967,61 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       if (ignore_cache) {
         _converse.send_initial_presence = true;
 
-        _converse.roster.fetchFromServer().then(() => {
+        try {
+          await _converse.roster.fetchFromServer();
+
           _converse.emit('rosterContactsFetched');
-
-          _converse.sendInitialPresence();
-        }).catch(reason => {
+        } catch (reason) {
           _converse.log(reason, Strophe.LogLevel.ERROR);
-
+        } finally {
           _converse.sendInitialPresence();
-        });
+        }
       } else {
-        _converse.rostergroups.fetchRosterGroups().then(() => {
-          _converse.emit('rosterGroupsFetched');
+        try {
+          await _converse.rostergroups.fetchRosterGroups().then(() => {
+            _converse.emit('rosterGroupsFetched');
 
-          return _converse.roster.fetchRosterContacts();
-        }).then(() => {
+            return _converse.roster.fetchRosterContacts();
+          });
+
           _converse.emit('rosterContactsFetched');
-
-          _converse.sendInitialPresence();
-        }).catch(reason => {
+        } catch (reason) {
           _converse.log(reason, Strophe.LogLevel.ERROR);
-
+        } finally {
           _converse.sendInitialPresence();
-        });
+        }
       }
     };
 
+    const Resource = Backbone.Model.extend({
+      'idAttribute': 'name'
+    });
+    const Resources = Backbone.Collection.extend({
+      'model': Resource
+    });
     _converse.Presence = Backbone.Model.extend({
-      defaults() {
-        return {
-          'show': 'offline',
-          'resources': {}
-        };
+      defaults: {
+        'show': 'offline'
+      },
+
+      initialize() {
+        this.resources = new Resources();
+        const id = `converse.identities-${this.get('jid')}`;
+        this.resources.browserStorage = new Backbone.BrowserStorage.session(id);
+        this.resources.on('update', this.onResourcesChanged, this);
+        this.resources.on('change', this.onResourcesChanged, this);
+      },
+
+      onResourcesChanged() {
+        const hpr = this.getHighestPriorityResource();
+
+        const show = _.get(hpr, 'attributes.show', 'offline');
+
+        if (this.get('show') !== show) {
+          this.save({
+            'show': show
+          });
+        }
       },
 
       getHighestPriorityResource() {
@@ -67861,15 +68030,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          * If multiple resources have the same priority, take the
          * latest one.
          */
-        const resources = this.get('resources');
-
-        if (_.isObject(resources) && _.size(resources)) {
-          const val = _.flow(_.values, _.partial(_.sortBy, _, ['priority', 'timestamp']), _.reverse)(resources)[0];
-
-          if (!_.isUndefined(val)) {
-            return val;
-          }
-        }
+        return this.resources.sortBy(r => `${r.get('priority')}-${r.get('timestamp')}`).reverse()[0];
       },
 
       addResource(presence) {
@@ -67879,52 +68040,35 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          * Also updates the presence if the resource has higher priority (and is newer).
          */
         const jid = presence.getAttribute('from'),
-              show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-              resource = Strophe.getResourceFromJid(jid),
+              name = Strophe.getResourceFromJid(jid),
               delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, presence).pop(),
-              timestamp = _.isNil(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
-        let priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
-        priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
-        const resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
-        resources[resource] = {
-          'name': resource,
-          'priority': priority,
-          'show': show,
-          'timestamp': timestamp
+              priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0,
+              resource = this.resources.get(name),
+              settings = {
+          'name': name,
+          'priority': _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
+          'show': _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+          'timestamp': _.isNil(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format()
         };
-        const changed = {
-          'resources': resources
-        };
-        const hpr = this.getHighestPriorityResource();
 
-        if (priority == hpr.priority && timestamp == hpr.timestamp) {
-          // Only set the "global" presence if this is the newest resource
-          // with the highest priority
-          changed.show = show;
+        if (resource) {
+          resource.save(settings);
+        } else {
+          this.resources.create(settings);
         }
-
-        this.save(changed);
-        return resources;
       },
 
-      removeResource(resource) {
+      removeResource(name) {
         /* Remove the passed in resource from the resources map.
          *
          * Also redetermines the presence given that there's one less
          * resource.
          */
-        let resources = this.get('resources');
+        const resource = this.resources.get(name);
 
-        if (!_.isObject(resources)) {
-          resources = {};
-        } else {
-          delete resources[resource];
+        if (resource) {
+          resource.destroy();
         }
-
-        this.save({
-          'resources': resources,
-          'show': _.propertyOf(this.getHighestPriorityResource())('show') || 'offline'
-        });
       }
 
     });
@@ -68330,7 +68474,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         if (from && from !== _converse.bare_jid) {
           // https://tools.ietf.org/html/rfc6121#page-15
-          // 
+          //
           // A receiving client MUST ignore the stanza unless it has no 'from'
           // attribute (i.e., implicitly from the bare JID of the user's
           // account) or it has a 'from' attribute whose value matches the
@@ -68690,8 +68834,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     _converse.api.listen.on('afterTearDown', () => {
       if (_converse.presences) {
-        _converse.presences.off().reset(); // Remove presences
+        _converse.presences.each(p => {
+          _.each(p.resources.reject(_.isUndefined), r => r.destroy({
+            'silent': true
+          }));
 
+          p.save({
+            'show': 'offline'
+          }, {
+            'silent': true
+          });
+        });
       }
     });
 
@@ -68704,10 +68857,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.api.listen.on('statusInitialized', reconnecting => {
       if (!reconnecting) {
         _converse.presences = new _converse.Presences();
-        _converse.presences.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
-
-        _converse.presences.fetch();
       }
+
+      _converse.presences.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
+
+      _converse.presences.fetch();
 
       _converse.emit('presencesInitialized', reconnecting);
     });
@@ -68727,9 +68881,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       _converse.roster.onConnected();
 
-      _converse.populateRoster(reconnecting);
-
       _converse.registerPresenceHandler();
+
+      _converse.populateRoster(reconnecting);
     });
     /************************ API ************************/
     // API methods only available to plugins
@@ -68743,7 +68897,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       'contacts': {
         /**
          * This method is used to retrieve roster contacts.
-         * 
+         *
          * @method _converse.api.contacts.get
          * @params {(string[]|string)} jid|jids The JID or JIDs of
          *      the contacts to be returned.
@@ -68756,7 +68910,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          *     const contact = _converse.api.contacts.get('buddy@example.com')
          *     // ...
          * });
-         * 
+         *
          * @example
          * // To get multiple contacts, pass in an array of JIDs:
          * _converse.api.listen.on('rosterContactsFetched', function () {
@@ -68765,7 +68919,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          *     )
          *     // ...
          * });
-         * 
+         *
          * @example
          * // To return all contacts, simply call ``get`` without any parameters:
          * _converse.api.listen.on('rosterContactsFetched', function () {
@@ -68789,7 +68943,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         /**
          * Add a contact.
-         * 
+         *
          * @method _converse.api.contacts.add
          * @param {string} jid The JID of the contact to be added
          * @param {string} [name] A custom name to show the user by
@@ -69102,54 +69256,56 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var moment_locale_cs__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(moment_locale_cs__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var moment_locale_de__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! moment/locale/de */ "./node_modules/moment/locale/de.js");
 /* harmony import */ var moment_locale_de__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(moment_locale_de__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var moment_locale_es__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! moment/locale/es */ "./node_modules/moment/locale/es.js");
-/* harmony import */ var moment_locale_es__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(moment_locale_es__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var moment_locale_eu__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! moment/locale/eu */ "./node_modules/moment/locale/eu.js");
-/* harmony import */ var moment_locale_eu__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(moment_locale_eu__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var moment_locale_fr__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! moment/locale/fr */ "./node_modules/moment/locale/fr.js");
-/* harmony import */ var moment_locale_fr__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(moment_locale_fr__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var moment_locale_gl__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! moment/locale/gl */ "./node_modules/moment/locale/gl.js");
-/* harmony import */ var moment_locale_gl__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(moment_locale_gl__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var moment_locale_he__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! moment/locale/he */ "./node_modules/moment/locale/he.js");
-/* harmony import */ var moment_locale_he__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(moment_locale_he__WEBPACK_IMPORTED_MODULE_10__);
-/* harmony import */ var moment_locale_hi__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! moment/locale/hi */ "./node_modules/moment/locale/hi.js");
-/* harmony import */ var moment_locale_hi__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(moment_locale_hi__WEBPACK_IMPORTED_MODULE_11__);
-/* harmony import */ var moment_locale_hu__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! moment/locale/hu */ "./node_modules/moment/locale/hu.js");
-/* harmony import */ var moment_locale_hu__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(moment_locale_hu__WEBPACK_IMPORTED_MODULE_12__);
-/* harmony import */ var moment_locale_id__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! moment/locale/id */ "./node_modules/moment/locale/id.js");
-/* harmony import */ var moment_locale_id__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(moment_locale_id__WEBPACK_IMPORTED_MODULE_13__);
-/* harmony import */ var moment_locale_it__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! moment/locale/it */ "./node_modules/moment/locale/it.js");
-/* harmony import */ var moment_locale_it__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(moment_locale_it__WEBPACK_IMPORTED_MODULE_14__);
-/* harmony import */ var moment_locale_ja__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! moment/locale/ja */ "./node_modules/moment/locale/ja.js");
-/* harmony import */ var moment_locale_ja__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ja__WEBPACK_IMPORTED_MODULE_15__);
-/* harmony import */ var moment_locale_nb__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! moment/locale/nb */ "./node_modules/moment/locale/nb.js");
-/* harmony import */ var moment_locale_nb__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(moment_locale_nb__WEBPACK_IMPORTED_MODULE_16__);
-/* harmony import */ var moment_locale_nl__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! moment/locale/nl */ "./node_modules/moment/locale/nl.js");
-/* harmony import */ var moment_locale_nl__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(moment_locale_nl__WEBPACK_IMPORTED_MODULE_17__);
-/* harmony import */ var moment_locale_pl__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! moment/locale/pl */ "./node_modules/moment/locale/pl.js");
-/* harmony import */ var moment_locale_pl__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(moment_locale_pl__WEBPACK_IMPORTED_MODULE_18__);
-/* harmony import */ var moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! moment/locale/pt-br */ "./node_modules/moment/locale/pt-br.js");
-/* harmony import */ var moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_19__);
-/* harmony import */ var moment_locale_ro__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! moment/locale/ro */ "./node_modules/moment/locale/ro.js");
-/* harmony import */ var moment_locale_ro__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ro__WEBPACK_IMPORTED_MODULE_20__);
-/* harmony import */ var moment_locale_ru__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! moment/locale/ru */ "./node_modules/moment/locale/ru.js");
-/* harmony import */ var moment_locale_ru__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ru__WEBPACK_IMPORTED_MODULE_21__);
-/* harmony import */ var moment_locale_tr__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! moment/locale/tr */ "./node_modules/moment/locale/tr.js");
-/* harmony import */ var moment_locale_tr__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(moment_locale_tr__WEBPACK_IMPORTED_MODULE_22__);
-/* harmony import */ var moment_locale_uk__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! moment/locale/uk */ "./node_modules/moment/locale/uk.js");
-/* harmony import */ var moment_locale_uk__WEBPACK_IMPORTED_MODULE_23___default = /*#__PURE__*/__webpack_require__.n(moment_locale_uk__WEBPACK_IMPORTED_MODULE_23__);
-/* harmony import */ var moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! moment/locale/zh-cn */ "./node_modules/moment/locale/zh-cn.js");
-/* harmony import */ var moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_24___default = /*#__PURE__*/__webpack_require__.n(moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_24__);
-/* harmony import */ var moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! moment/locale/zh-tw */ "./node_modules/moment/locale/zh-tw.js");
-/* harmony import */ var moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_25___default = /*#__PURE__*/__webpack_require__.n(moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_25__);
-/* harmony import */ var jed__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! jed */ "./node_modules/jed/jed.js");
-/* harmony import */ var jed__WEBPACK_IMPORTED_MODULE_26___default = /*#__PURE__*/__webpack_require__.n(jed__WEBPACK_IMPORTED_MODULE_26__);
-/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! es6-promise/dist/es6-promise.auto */ "./node_modules/es6-promise/dist/es6-promise.auto.js");
-/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_27___default = /*#__PURE__*/__webpack_require__.n(es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_27__);
-/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./lodash.noconflict */ "./src/headless/lodash.noconflict.js");
-/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default = /*#__PURE__*/__webpack_require__.n(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_28__);
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_29___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_29__);
+/* harmony import */ var moment_locale_eo__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! moment/locale/eo */ "./node_modules/moment/locale/eo.js");
+/* harmony import */ var moment_locale_eo__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(moment_locale_eo__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var moment_locale_es__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! moment/locale/es */ "./node_modules/moment/locale/es.js");
+/* harmony import */ var moment_locale_es__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(moment_locale_es__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var moment_locale_eu__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! moment/locale/eu */ "./node_modules/moment/locale/eu.js");
+/* harmony import */ var moment_locale_eu__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(moment_locale_eu__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var moment_locale_fr__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! moment/locale/fr */ "./node_modules/moment/locale/fr.js");
+/* harmony import */ var moment_locale_fr__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(moment_locale_fr__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var moment_locale_gl__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! moment/locale/gl */ "./node_modules/moment/locale/gl.js");
+/* harmony import */ var moment_locale_gl__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(moment_locale_gl__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var moment_locale_he__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! moment/locale/he */ "./node_modules/moment/locale/he.js");
+/* harmony import */ var moment_locale_he__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(moment_locale_he__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var moment_locale_hi__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! moment/locale/hi */ "./node_modules/moment/locale/hi.js");
+/* harmony import */ var moment_locale_hi__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(moment_locale_hi__WEBPACK_IMPORTED_MODULE_12__);
+/* harmony import */ var moment_locale_hu__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! moment/locale/hu */ "./node_modules/moment/locale/hu.js");
+/* harmony import */ var moment_locale_hu__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(moment_locale_hu__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var moment_locale_id__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! moment/locale/id */ "./node_modules/moment/locale/id.js");
+/* harmony import */ var moment_locale_id__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(moment_locale_id__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony import */ var moment_locale_it__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! moment/locale/it */ "./node_modules/moment/locale/it.js");
+/* harmony import */ var moment_locale_it__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(moment_locale_it__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var moment_locale_ja__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! moment/locale/ja */ "./node_modules/moment/locale/ja.js");
+/* harmony import */ var moment_locale_ja__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ja__WEBPACK_IMPORTED_MODULE_16__);
+/* harmony import */ var moment_locale_nb__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! moment/locale/nb */ "./node_modules/moment/locale/nb.js");
+/* harmony import */ var moment_locale_nb__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(moment_locale_nb__WEBPACK_IMPORTED_MODULE_17__);
+/* harmony import */ var moment_locale_nl__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! moment/locale/nl */ "./node_modules/moment/locale/nl.js");
+/* harmony import */ var moment_locale_nl__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(moment_locale_nl__WEBPACK_IMPORTED_MODULE_18__);
+/* harmony import */ var moment_locale_pl__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! moment/locale/pl */ "./node_modules/moment/locale/pl.js");
+/* harmony import */ var moment_locale_pl__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(moment_locale_pl__WEBPACK_IMPORTED_MODULE_19__);
+/* harmony import */ var moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! moment/locale/pt-br */ "./node_modules/moment/locale/pt-br.js");
+/* harmony import */ var moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(moment_locale_pt_br__WEBPACK_IMPORTED_MODULE_20__);
+/* harmony import */ var moment_locale_ro__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! moment/locale/ro */ "./node_modules/moment/locale/ro.js");
+/* harmony import */ var moment_locale_ro__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ro__WEBPACK_IMPORTED_MODULE_21__);
+/* harmony import */ var moment_locale_ru__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! moment/locale/ru */ "./node_modules/moment/locale/ru.js");
+/* harmony import */ var moment_locale_ru__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(moment_locale_ru__WEBPACK_IMPORTED_MODULE_22__);
+/* harmony import */ var moment_locale_tr__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! moment/locale/tr */ "./node_modules/moment/locale/tr.js");
+/* harmony import */ var moment_locale_tr__WEBPACK_IMPORTED_MODULE_23___default = /*#__PURE__*/__webpack_require__.n(moment_locale_tr__WEBPACK_IMPORTED_MODULE_23__);
+/* harmony import */ var moment_locale_uk__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! moment/locale/uk */ "./node_modules/moment/locale/uk.js");
+/* harmony import */ var moment_locale_uk__WEBPACK_IMPORTED_MODULE_24___default = /*#__PURE__*/__webpack_require__.n(moment_locale_uk__WEBPACK_IMPORTED_MODULE_24__);
+/* harmony import */ var moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! moment/locale/zh-cn */ "./node_modules/moment/locale/zh-cn.js");
+/* harmony import */ var moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_25___default = /*#__PURE__*/__webpack_require__.n(moment_locale_zh_cn__WEBPACK_IMPORTED_MODULE_25__);
+/* harmony import */ var moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! moment/locale/zh-tw */ "./node_modules/moment/locale/zh-tw.js");
+/* harmony import */ var moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_26___default = /*#__PURE__*/__webpack_require__.n(moment_locale_zh_tw__WEBPACK_IMPORTED_MODULE_26__);
+/* harmony import */ var jed__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! jed */ "./node_modules/jed/jed.js");
+/* harmony import */ var jed__WEBPACK_IMPORTED_MODULE_27___default = /*#__PURE__*/__webpack_require__.n(jed__WEBPACK_IMPORTED_MODULE_27__);
+/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! es6-promise/dist/es6-promise.auto */ "./node_modules/es6-promise/dist/es6-promise.auto.js");
+/* harmony import */ var es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_28___default = /*#__PURE__*/__webpack_require__.n(es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_28__);
+/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./lodash.noconflict */ "./src/headless/lodash.noconflict.js");
+/* harmony import */ var _lodash_noconflict__WEBPACK_IMPORTED_MODULE_29___default = /*#__PURE__*/__webpack_require__.n(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_29__);
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_30___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_30__);
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
@@ -69160,6 +69316,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /*global define */
+
 
 
 
@@ -69227,15 +69384,15 @@ function detectLocale(library_check) {
 }
 
 function isMomentLocale(locale) {
-  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a.includes(moment__WEBPACK_IMPORTED_MODULE_29___default.a.locales(), locale);
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_29___default.a.includes(moment__WEBPACK_IMPORTED_MODULE_30___default.a.locales(), locale);
 }
 
 function isConverseLocale(locale, supported_locales) {
-  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a.isString(locale) && _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a.includes(supported_locales, locale);
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_29___default.a.isString(locale) && _lodash_noconflict__WEBPACK_IMPORTED_MODULE_29___default.a.includes(supported_locales, locale);
 }
 
 function getLocale(preferred_locale, isSupportedByLibrary) {
-  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a.isString(preferred_locale)) {
+  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_29___default.a.isString(preferred_locale)) {
     if (preferred_locale === 'en' || isSupportedByLibrary(preferred_locale)) {
       return preferred_locale;
     }
@@ -69265,13 +69422,13 @@ function isLocaleAvailable(locale, available) {
 let jed_instance;
 /* harmony default export */ __webpack_exports__["default"] = ({
   setLocales(preferred_locale, _converse) {
-    _converse.locale = getLocale(preferred_locale, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a.partial(isConverseLocale, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a, _converse.locales));
-    moment__WEBPACK_IMPORTED_MODULE_29___default.a.locale(getLocale(preferred_locale, isMomentLocale));
+    _converse.locale = getLocale(preferred_locale, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_29___default.a.partial(isConverseLocale, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_29___default.a, _converse.locales));
+    moment__WEBPACK_IMPORTED_MODULE_30___default.a.locale(getLocale(preferred_locale, isMomentLocale));
   },
 
   translate(str) {
-    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_28___default.a.isNil(jed_instance)) {
-      return jed__WEBPACK_IMPORTED_MODULE_26___default.a.sprintf.apply(jed__WEBPACK_IMPORTED_MODULE_26___default.a, arguments);
+    if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_29___default.a.isNil(jed_instance)) {
+      return jed__WEBPACK_IMPORTED_MODULE_27___default.a.sprintf.apply(jed__WEBPACK_IMPORTED_MODULE_27___default.a, arguments);
     }
 
     var t = jed_instance.translate(str);
@@ -69292,7 +69449,7 @@ let jed_instance;
      *  (String) locale_url:        The URL from which the translations
      *                              should be fetched.
      */
-    return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_27___default.a((resolve, reject) => {
+    return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_28___default.a((resolve, reject) => {
       if (!isConverseLocale(locale, supported_locales) || locale === 'en') {
         return resolve();
       }
@@ -69305,7 +69462,7 @@ let jed_instance;
         if (xhr.status >= 200 && xhr.status < 400) {
           try {
             const data = window.JSON.parse(xhr.responseText);
-            jed_instance = new jed__WEBPACK_IMPORTED_MODULE_26___default.a(data);
+            jed_instance = new jed__WEBPACK_IMPORTED_MODULE_27___default.a(data);
             resolve();
           } catch (e) {
             xhr.onerror(e);
@@ -69582,9 +69739,19 @@ u.isNewMessage = function (message) {
    */
   if (message instanceof Element) {
     return !(sizzle__WEBPACK_IMPORTED_MODULE_4___default()(`result[xmlns="${strophe_js__WEBPACK_IMPORTED_MODULE_2__["Strophe"].NS.MAM}"]`, message).length && sizzle__WEBPACK_IMPORTED_MODULE_4___default()(`delay[xmlns="${strophe_js__WEBPACK_IMPORTED_MODULE_2__["Strophe"].NS.DELAY}"]`, message).length);
-  } else {
-    return !(message.get('is_delayed') && message.get('is_archived'));
+  } else if (message instanceof backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Model) {
+    message = message.attributes;
   }
+
+  return !(message['is_delayed'] && message['is_archived']);
+};
+
+u.isEmptyMessage = function (attrs) {
+  if (attrs instanceof backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Model) {
+    attrs = attrs.attributes;
+  }
+
+  return !attrs['oob_url'] && !attrs['file'] && !(attrs['is_encrypted'] && attrs['plaintext']) && !attrs['message'];
 };
 
 u.isOnlyChatStateNotification = function (attrs) {
@@ -69592,7 +69759,7 @@ u.isOnlyChatStateNotification = function (attrs) {
     attrs = attrs.attributes;
   }
 
-  return attrs['chat_state'] && !attrs['oob_url'] && !attrs['file'] && !(attrs['is_encrypted'] && attrs['plaintext']) && !attrs['message'];
+  return attrs['chat_state'] && u.isEmptyMessage(attrs);
 };
 
 u.isHeadlineMessage = function (_converse, message) {
@@ -93521,6 +93688,12 @@ __e(o.spoiler_hint) +
 '</span>\n                        <a class="badge badge-info spoiler-toggle" data-toggle-state="closed" href="#"><i class="fa fa-eye"></i>' +
 __e(o.label_show) +
 '</a>\n                    </div>\n                ';
+ } ;
+__p += '\n                ';
+ if (o.subject) { ;
+__p += '\n                    <div class="chat-msg__subject">' +
+__e( o.subject ) +
+'</div>\n                ';
  } ;
 __p += '\n                <div class="chat-msg__text';
  if (o.is_spoiler) { ;

@@ -38,8 +38,7 @@ converse.plugins.add('converse-roster', {
 
         _converse.registerPresenceHandler = function () {
             _converse.unregisterPresenceHandler();
-            _converse.presence_ref = _converse.connection.addHandler(
-                function (presence) {
+            _converse.presence_ref = _converse.connection.addHandler(presence => {
                     _converse.roster.presenceHandler(presence);
                     return true;
                 }, null, 'presence', null);
@@ -68,7 +67,7 @@ converse.plugins.add('converse-roster', {
         };
 
 
-        _converse.populateRoster = function (ignore_cache=false) {
+        _converse.populateRoster = async function (ignore_cache=false) {
             /* Fetch all the roster groups, and then the roster contacts.
              * Emit an event after fetching is done in each case.
              *
@@ -79,34 +78,51 @@ converse.plugins.add('converse-roster', {
              */
             if (ignore_cache) {
                 _converse.send_initial_presence = true;
-                _converse.roster.fetchFromServer()
-                    .then(() => {
-                        _converse.emit('rosterContactsFetched');
-                        _converse.sendInitialPresence();
-                    }).catch((reason) => {
-                        _converse.log(reason, Strophe.LogLevel.ERROR);
-                        _converse.sendInitialPresence();
-                    });
-            } else {
-                _converse.rostergroups.fetchRosterGroups().then(() => {
-                    _converse.emit('rosterGroupsFetched');
-                    return _converse.roster.fetchRosterContacts();
-                }).then(() => {
+                try {
+                    await _converse.roster.fetchFromServer();
                     _converse.emit('rosterContactsFetched');
-                    _converse.sendInitialPresence();
-                }).catch((reason) => {
+                } catch (reason) {
                     _converse.log(reason, Strophe.LogLevel.ERROR);
+                } finally {
                     _converse.sendInitialPresence();
-                });
+                }
+            } else {
+                try {
+                    await _converse.rostergroups.fetchRosterGroups().then(() => {
+                        _converse.emit('rosterGroupsFetched');
+                        return _converse.roster.fetchRosterContacts();
+                    });
+                    _converse.emit('rosterContactsFetched');
+                } catch (reason) {
+                    _converse.log(reason, Strophe.LogLevel.ERROR);
+                } finally {
+                    _converse.sendInitialPresence();
+                }
             }
         };
 
+        const Resource = Backbone.Model.extend({'idAttribute': 'name'});
+        const Resources = Backbone.Collection.extend({'model': Resource});
+
 
         _converse.Presence = Backbone.Model.extend({
-            defaults () {
-                return {
-                    'show': 'offline',
-                    'resources': {}
+            defaults: {
+                'show': 'offline'
+            },
+
+            initialize () {
+                this.resources = new Resources();
+                const id = `converse.identities-${this.get('jid')}`;
+                this.resources.browserStorage = new Backbone.BrowserStorage.session(id);
+                this.resources.on('update', this.onResourcesChanged, this);
+                this.resources.on('change', this.onResourcesChanged, this);
+            },
+
+            onResourcesChanged () {
+                const hpr = this.getHighestPriorityResource();
+                const show = _.get(hpr, 'attributes.show', 'offline');
+                if (this.get('show') !== show) {
+                    this.save({'show': show});
                 }
             },
 
@@ -116,17 +132,7 @@ converse.plugins.add('converse-roster', {
                  * If multiple resources have the same priority, take the
                  * latest one.
                  */
-                const resources = this.get('resources');
-                if (_.isObject(resources) && _.size(resources)) {
-                    const val = _.flow(
-                            _.values,
-                            _.partial(_.sortBy, _, ['priority', 'timestamp']),
-                            _.reverse
-                        )(resources)[0];
-                    if (!_.isUndefined(val)) {
-                        return val;
-                    }
-                }
+                return this.resources.sortBy(r => `${r.get('priority')}-${r.get('timestamp')}`).reverse()[0];
             },
 
             addResource (presence) {
@@ -136,52 +142,35 @@ converse.plugins.add('converse-roster', {
                  * Also updates the presence if the resource has higher priority (and is newer).
                  */
                 const jid = presence.getAttribute('from'),
-                      show = _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-                      resource = Strophe.getResourceFromJid(jid),
+                      name = Strophe.getResourceFromJid(jid),
                       delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, presence).pop(),
-                      timestamp = _.isNil(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format();
-
-                let priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0;
-                priority = _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10);
-
-                const resources = _.isObject(this.get('resources')) ? this.get('resources') : {};
-                resources[resource] = {
-                    'name': resource,
-                    'priority': priority,
-                    'show': show,
-                    'timestamp': timestamp
-                };
-                const changed = {'resources': resources};
-                const hpr = this.getHighestPriorityResource();
-                if (priority == hpr.priority && timestamp == hpr.timestamp) {
-                    // Only set the "global" presence if this is the newest resource
-                    // with the highest priority
-                    changed.show = show;
+                      priority = _.propertyOf(presence.querySelector('priority'))('textContent') || 0,
+                      resource = this.resources.get(name),
+                      settings = {
+                          'name': name,
+                          'priority': _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
+                          'show': _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
+                          'timestamp': _.isNil(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format()
+                       };
+                if (resource) {
+                    resource.save(settings);
+                } else {
+                    this.resources.create(settings);
                 }
-                this.save(changed);
-                return resources;
             },
 
 
-            removeResource (resource) {
+            removeResource (name) {
                 /* Remove the passed in resource from the resources map.
                  *
                  * Also redetermines the presence given that there's one less
                  * resource.
                  */
-                let resources = this.get('resources');
-                if (!_.isObject(resources)) {
-                    resources = {};
-                } else {
-                    delete resources[resource];
+                const resource = this.resources.get(name);
+                if (resource) {
+                    resource.destroy();
                 }
-                this.save({
-                    'resources': resources,
-                    'show': _.propertyOf(
-                        this.getHighestPriorityResource())('show') || 'offline'
-                });
-            },
-
+            }
         });
 
 
@@ -538,7 +527,7 @@ converse.plugins.add('converse-roster', {
                 const from = iq.getAttribute('from');
                 if (from && from !== _converse.bare_jid) {
                     // https://tools.ietf.org/html/rfc6121#page-15
-                    // 
+                    //
                     // A receiving client MUST ignore the stanza unless it has no 'from'
                     // attribute (i.e., implicitly from the bare JID of the user's
                     // account) or it has a 'from' attribute whose value matches the
@@ -846,7 +835,10 @@ converse.plugins.add('converse-roster', {
 
         _converse.api.listen.on('afterTearDown', () => {
             if (_converse.presences) {
-                _converse.presences.off().reset(); // Remove presences
+                _converse.presences.each(p => {
+                    _.each(p.resources.reject(_.isUndefined), r => r.destroy({'silent': true}));
+                    p.save({'show': 'offline'}, {'silent': true})
+                });
             }
         });
 
@@ -859,10 +851,10 @@ converse.plugins.add('converse-roster', {
         _converse.api.listen.on('statusInitialized', (reconnecting) => {
             if (!reconnecting) {
                 _converse.presences = new _converse.Presences();
-                _converse.presences.browserStorage = 
-                    new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
-                _converse.presences.fetch();
             }
+            _converse.presences.browserStorage =
+                new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
+            _converse.presences.fetch();
             _converse.emit('presencesInitialized', reconnecting);
         });
 
@@ -878,8 +870,8 @@ converse.plugins.add('converse-roster', {
                 _converse.initRoster();
             }
             _converse.roster.onConnected();
-            _converse.populateRoster(reconnecting);
             _converse.registerPresenceHandler();
+            _converse.populateRoster(reconnecting);
         });
 
 
@@ -894,7 +886,7 @@ converse.plugins.add('converse-roster', {
             'contacts': {
                 /**
                  * This method is used to retrieve roster contacts.
-                 * 
+                 *
                  * @method _converse.api.contacts.get
                  * @params {(string[]|string)} jid|jids The JID or JIDs of
                  *      the contacts to be returned.
@@ -907,7 +899,7 @@ converse.plugins.add('converse-roster', {
                  *     const contact = _converse.api.contacts.get('buddy@example.com')
                  *     // ...
                  * });
-                 * 
+                 *
                  * @example
                  * // To get multiple contacts, pass in an array of JIDs:
                  * _converse.api.listen.on('rosterContactsFetched', function () {
@@ -916,7 +908,7 @@ converse.plugins.add('converse-roster', {
                  *     )
                  *     // ...
                  * });
-                 * 
+                 *
                  * @example
                  * // To return all contacts, simply call ``get`` without any parameters:
                  * _converse.api.listen.on('rosterContactsFetched', function () {
@@ -937,7 +929,7 @@ converse.plugins.add('converse-roster', {
                 },
                 /**
                  * Add a contact.
-                 * 
+                 *
                  * @method _converse.api.contacts.add
                  * @param {string} jid The JID of the contact to be added
                  * @param {string} [name] A custom name to show the user by

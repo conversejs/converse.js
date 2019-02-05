@@ -35,7 +35,7 @@ import xss from "xss";
 
 const { Backbone, Promise, Strophe, b64_sha1, moment, f, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
 const u = converse.env.utils;
-
+const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
 
 converse.plugins.add('converse-muc-views', {
     /* Dependencies are other plugins which might be
@@ -100,6 +100,7 @@ converse.plugins.add('converse-muc-views', {
         _converse.api.settings.update({
             'auto_list_rooms': false,
             'muc_disable_moderator_commands': false,
+            'muc_show_join_leave': true,
             'roomconfig_whitelist': [],
             'visible_toolbar_buttons': {
                 'toggle_occupants': true
@@ -840,7 +841,9 @@ converse.plugins.add('converse-muc-views', {
                     );
                     return false;
                 }
-                if (!this.model.occupants.findWhere({'nick': args[0]}) && !this.model.occupants.findWhere({'jid': args[0]})) {
+                if (!(_.includes(AFFILIATION_CHANGE_COMANDS, command) && u.isValidJID(args[0])) &&
+                        !this.model.occupants.findWhere({'nick': args[0]}) &&
+                            !this.model.occupants.findWhere({'jid': args[0]})) {
                     this.showErrorMessage(__('Error: couldn\'t find a groupchat participant "%1$s"', args[0]));
                     return false;
                 }
@@ -853,12 +856,18 @@ converse.plugins.add('converse-muc-views', {
             },
 
             parseMessageForCommands (text) {
-                if (_converse.muc_disable_moderator_commands) {
+                if (_converse.muc_disable_moderator_commands &&
+                        !_.isArray(_converse.muc_disable_moderator_commands)) {
                     return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
                 }
                 const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                       args = match[2] && match[2].splitOnce(' ').filter(s => s) || [],
-                      command = match[1].toLowerCase();
+                      command = match[1].toLowerCase(),
+                      disabled_commands = _.isArray(_converse.muc_disable_moderator_commands) ?
+                        _converse.muc_disable_moderator_commands : [];
+                if (_.includes(disabled_commands, command)) {
+                    return false;
+                }
                 switch (command) {
                     case 'admin':
                         if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
@@ -901,7 +910,7 @@ converse.plugins.add('converse-muc-views', {
                             .catch(e => this.onCommandError(e));
                         break;
                     case 'help':
-                        this.showHelpMessages([
+                        this.showHelpMessages(_.filter([
                             `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
                             `<strong>/ban</strong>: ${__('Ban user from groupchat')}`,
                             `<strong>/clear</strong>: ${__('Remove messages')}`,
@@ -920,7 +929,8 @@ converse.plugins.add('converse-muc-views', {
                             `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
                             `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,
                             `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`
-                        ]);
+                        ], line => (_.every(disabled_commands, element => (!line.startsWith(element+'<', 9))))
+                        ));
                         break;
                     case 'kick':
                         if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
@@ -945,10 +955,10 @@ converse.plugins.add('converse-muc-views', {
                         const occupant = this.model.occupants.findWhere({'nick': args[0]}) ||
                                          this.model.occupants.findWhere({'jid': args[0]}),
                               attrs = {
-                                'jid': occupant.get('jid'),
+                                'jid': occupant ? occupant.get('jid') : args[0],
                                 'reason': args[1]
                               };
-                        if (_converse.auto_register_muc_nickname) {
+                        if (_converse.auto_register_muc_nickname && occupant) {
                             attrs['nick'] = occupant.get('nick');
                         }
                         this.model.setAffiliation('member', [attrs])
@@ -1523,7 +1533,8 @@ converse.plugins.add('converse-muc-views', {
             },
 
             showJoinNotification (occupant) {
-                if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
+                if (!_converse.muc_show_join_leave ||
+                        this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                     return;
                 }
                 const nick = occupant.get('nick'),
@@ -1576,7 +1587,9 @@ converse.plugins.add('converse-muc-views', {
             },
 
             showLeaveNotification (occupant) {
-                if (_.includes(occupant.get('states'), '303') || _.includes(occupant.get('states'), '307')) {
+                if (!_converse.muc_show_join_leave ||
+                        _.includes(occupant.get('states'), '303') ||
+                        _.includes(occupant.get('states'), '307')) {
                     return;
                 }
                 const nick = occupant.get('nick'),

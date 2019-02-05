@@ -103,24 +103,4 @@ Issues can be logged on the [Github issue tracker](https://github.com/conversejs
 A heartfelt thanks for everyone who has supported this project over the years.
 Many people have contributed testing, bugfixes, features and corrections.
 
-Recently we have started accepting donations via [Patreon](https://www.patreon.com/jcbrand) and [Liberapay](https://liberapay.com/jcbrand).
-
-The following people are making recurring donations:
-
-* [Daniel Gultsch](https://www.patreon.com/user/creators?u=13443518)
-* [Dele Olajide](https://www.patreon.com/user/creators?u=14392041)
-* [Drew Varner](https://www.patreon.com/user/creators?u=8131055)
-* [Fabian Pack](https://www.patreon.com/user/creators?u=14725359)
-* [Guus der Kinderen](https://www.patreon.com/user/creators?u=8302585)
-* [Krischan](https://www.patreon.com/user/creators?u=337569)
-* [Nicolas Vérité](https://www.patreon.com/nyconyco/creators)
-* [Rafael](https://www.patreon.com/user/creators?u=4340078)
-* [Ramesh Jangama](https://www.patreon.com/user/creators?u=14564234)
-* [Tilman Beitter](https://www.patreon.com/spicewiesel/creators)
-* [mt7479](https://www.patreon.com/user/creators?u=3892290)
-* Two anonymous backers on Liberapay
-
-Additionally this project is supported by
-
-* [![KeyCDN](https://conversejs.org/logo/keycdn.png)](https://www.keycdn.com/)
-* [![Wikisuite](https://conversejs.org/logo/wikisuite.png)](https://wikisuite.org)
+We accept donations via [Patreon](https://www.patreon.com/jcbrand) and [Liberapay](https://liberapay.com/jcbrand).

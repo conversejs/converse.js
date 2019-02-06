@@ -8,35 +8,32 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2018-11-11 07:07+0000\n"
-"Last-Translator: Infinite universe <0ser0tim0@gmail.com>\n"
+"PO-Revision-Date: 2019-02-06 19:24+0000\n"
+"Last-Translator: Raov <djraov2004@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.3-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 3.5-dev\n"
 
 #: dist/converse-no-dependencies.js:30588
 #: dist/converse-no-dependencies.js:30645
 #: dist/converse-no-dependencies.js:30678
 #: dist/converse-no-dependencies.js:40905
-#, fuzzy
 msgid "Bookmark this groupchat"
 msgstr "Добавить эту комнату в закладки"
 
 #: dist/converse-no-dependencies.js:30642
 #: dist/converse-no-dependencies.js:30974
 #: dist/converse-no-dependencies.js:40904
-#, fuzzy
 msgid "Unbookmark this groupchat"
 msgstr "Удалить эту комнату из закладок"
 
 #: dist/converse-no-dependencies.js:30679
-#, fuzzy
 msgid "Would you like this groupchat to be automatically joined upon startup?"
 msgstr ""
 "Хотели бы вы, чтобы вход в эту комнату совершался автоматически при запуске?"
@@ -52,7 +49,6 @@ msgid "The name for this bookmark:"
 msgstr "Имя для этой закладки:"
 
 #: dist/converse-no-dependencies.js:30682
-#, fuzzy
 msgid "What should your nickname for this groupchat be?"
 msgstr "Какой должен быть псевдоним для этой комнаты?"
 
@@ -78,12 +74,10 @@ msgstr "Ошибка"
 
 #: dist/converse-no-dependencies.js:30883
 msgid "Sorry, something went wrong while trying to save your bookmark."
-msgstr ""
-"Извините, что-то пошло не так в момент попытки сохранить вашу закладку."
+msgstr "Извините, что-то пошло не так при попытке сохранить вашу закладку."
 
 #: dist/converse-no-dependencies.js:30972
 #: dist/converse-no-dependencies.js:40903
-#, fuzzy
 msgid "Leave this groupchat"
 msgstr "Покинуть эту комнату"
 
@@ -94,14 +88,12 @@ msgstr "Удалить эту закладку"
 #: dist/converse-no-dependencies.js:30975
 #: dist/converse-no-dependencies.js:35825
 #: dist/converse-no-dependencies.js:40906
-#, fuzzy
 msgid "Show more information on this groupchat"
 msgstr "Показать больше информации об этом чате"
 
 #: dist/converse-no-dependencies.js:30978
 #: dist/converse-no-dependencies.js:35824
 #: dist/converse-no-dependencies.js:40908
-#, fuzzy
 msgid "Click to open this groupchat"
 msgstr "Зайти в чат"
 
@@ -118,10 +110,8 @@ msgid "Close this chat box"
 msgstr "Закрыть это окно чата"
 
 #: dist/converse-no-dependencies.js:31733
-#, fuzzy
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr ""
-"Извините, что-то пошло не так в момент попытки сохранить вашу закладку."
+msgstr "Извините, что-то пошло не так при попытке обновления"
 
 #: dist/converse-no-dependencies.js:31749
 #: dist/converse-no-dependencies.js:41696
@@ -174,30 +164,29 @@ msgid "Show this menu"
 msgstr "Показать это меню"
 
 #: dist/converse-no-dependencies.js:32537
-#, fuzzy
 msgid "Are you sure you want to clear the messages from this conversation?"
-msgstr "Вы уверены, что хотите очистить сообщения из окна чата?"
+msgstr "Вы уверены, что хотите очистить сообщения данного разговора?"
 
 #: dist/converse-no-dependencies.js:32659
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone offline"
-msgstr "вышел из сети"
+msgstr "%1$s вышел из сети"
 
 #: dist/converse-no-dependencies.js:32661
 #: dist/converse-no-dependencies.js:34615
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has gone away"
-msgstr "отошёл"
+msgstr "%1$s отошёл"
 
 #: dist/converse-no-dependencies.js:32663
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is busy"
-msgstr "занят"
+msgstr "%1$s занят"
 
 #: dist/converse-no-dependencies.js:32665
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s is online"
-msgstr "на связи"
+msgstr "%1$s зашел в сеть"
 
 #: dist/converse-no-dependencies.js:33400
 msgid "Username"
@@ -221,9 +210,8 @@ msgid "Toggle chat"
 msgstr "Включить чат"
 
 #: dist/converse-no-dependencies.js:34554
-#, fuzzy
 msgid "Show more"
-msgstr "Показать чаты"
+msgstr "Показать больше"
 
 #: dist/converse-no-dependencies.js:34604
 msgid "Typing from another device"
@@ -326,9 +314,7 @@ msgstr ""
 msgid ""
 "You have been removed from this groupchat because the service hosting it is "
 "being shut down"
-msgstr ""
-"Вы были удалены из этой комнаты, потому что сервис многопользовательского "
-"чата отключился"
+msgstr "Вы были удалены из этой комнаты по причине отключения хоста."
 
 #. XXX: Note the triple underscore function and not double
 #. * underscore.
@@ -380,12 +366,10 @@ msgid "Description:"
 msgstr "Описание:"
 
 #: dist/converse-no-dependencies.js:35734
-#, fuzzy
 msgid "Groupchat Address (JID):"
 msgstr "Адрес комнаты (идентификатор):"
 
 #: dist/converse-no-dependencies.js:35735
-#, fuzzy
 msgid "Participants:"
 msgstr "Участники:"
 
@@ -424,9 +408,8 @@ msgid "Open"
 msgstr "Открыть"
 
 #: dist/converse-no-dependencies.js:35743
-#, fuzzy
 msgid "Permanent"
-msgstr "Постоянный чат"
+msgstr "Постоянный"
 
 #: dist/converse-no-dependencies.js:35744
 #: dist/converse-no-dependencies.js:74712
@@ -451,7 +434,6 @@ msgid "Unmoderated"
 msgstr "Немодерируемый"
 
 #: dist/converse-no-dependencies.js:35783
-#, fuzzy
 msgid "Query for Groupchats"
 msgstr "Запросить список комнат"
 
@@ -460,9 +442,8 @@ msgid "Server address"
 msgstr "Адрес сервера"
 
 #: dist/converse-no-dependencies.js:35785
-#, fuzzy
 msgid "Show groupchats"
-msgstr "Группы"
+msgstr "Показать список групп"
 
 #: dist/converse-no-dependencies.js:35786
 msgid "conference.example.org"
@@ -563,14 +544,12 @@ msgid "%1$s is now a moderator"
 msgstr "%1$s теперь модератор."
 
 #: dist/converse-no-dependencies.js:36204
-#, fuzzy
 msgid "Close and leave this groupchat"
 msgstr "Закрыть и покинуть эту комнату"
 
 #: dist/converse-no-dependencies.js:36205
-#, fuzzy
 msgid "Configure this groupchat"
-msgstr "Настроить эту комнату"
+msgstr "Настроить комнату"
 
 #: dist/converse-no-dependencies.js:36206
 #, fuzzy
@@ -578,13 +557,12 @@ msgid "Show more details about this groupchat"
 msgstr "Показать больше информации об этом чате"
 
 #: dist/converse-no-dependencies.js:36252
-#, fuzzy
 msgid "Hide the list of participants"
 msgstr "Спрятать список участников"
 
 #: dist/converse-no-dependencies.js:36400
 msgid "Forbidden: you do not have the necessary role in order to do that."
-msgstr ""
+msgstr "Запрещено: у вас нет необходимой роли для выполнения данного действия."
 
 #: dist/converse-no-dependencies.js:36413
 msgid ""
@@ -1632,7 +1610,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:75797
 msgid "XMPP Username:"
-msgstr "XMPP Username:"
+msgstr "Имя пользователя:"
 
 #: dist/converse-no-dependencies.js:75803
 msgid "Password:"

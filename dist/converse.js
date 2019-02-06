@@ -66163,7 +66163,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }).c("x", {
           'xmlns': Strophe.NS.MUC
         }).c("history", {
-          'maxstanzas': this.get('mam_enabled') ? 0 : _converse.muc_history_max_stanzas
+          'maxstanzas': this.features.get('mam_enabled') ? 0 : _converse.muc_history_max_stanzas
         }).up();
 
         if (password) {

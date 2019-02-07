@@ -61761,23 +61761,23 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'id': message.get('edited') && _converse.connection.getUniqueId() || message.get('msgid')
         }).c('body').t(message.get('message')).up().c(_converse.ACTIVE, {
           'xmlns': Strophe.NS.CHATSTATES
-        }).up();
+        }).root();
 
         if (message.get('type') === 'chat') {
           stanza.c('request', {
             'xmlns': Strophe.NS.RECEIPTS
-          }).up();
+          }).root();
         }
 
         if (message.get('is_spoiler')) {
           if (message.get('spoiler_hint')) {
             stanza.c('spoiler', {
               'xmlns': Strophe.NS.SPOILER
-            }, message.get('spoiler_hint')).up();
+            }, message.get('spoiler_hint')).root();
           } else {
             stanza.c('spoiler', {
               'xmlns': Strophe.NS.SPOILER
-            }).up();
+            }).root();
           }
         }
 
@@ -61793,20 +61793,27 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             attrs.uri = reference.uri;
           }
 
-          stanza.c('reference', attrs).up();
+          stanza.c('reference', attrs).root();
         });
 
         if (message.get('oob_url')) {
           stanza.c('x', {
             'xmlns': Strophe.NS.OUTOFBAND
-          }).c('url').t(message.get('oob_url')).up();
+          }).c('url').t(message.get('oob_url')).root();
         }
 
         if (message.get('edited')) {
           stanza.c('replace', {
             'xmlns': Strophe.NS.MESSAGE_CORRECT,
             'id': message.get('msgid')
-          }).up();
+          }).root();
+        }
+
+        if (message.get('origin_id')) {
+          stanza.c('origin-id', {
+            'xmlns': Strophe.NS.SID,
+            'id': message.get('origin_id')
+          }).root();
         }
 
         return stanza;
@@ -61833,6 +61840,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const is_spoiler = this.get('composing_spoiler');
         return _.extend(this.toJSON(), {
           'id': _converse.connection.getUniqueId(),
+          'origin_id': _converse.connection.getUniqueId(),
           'fullname': _converse.xmppstatus.get('fullname'),
           'from': _converse.bare_jid,
           'sender': 'me',
@@ -66308,6 +66316,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         text = _this$parseTextForRef2[0];
         references = _this$parseTextForRef2[1];
         return {
+          'origin_id': _converse.connection.getUniqueId(),
           'from': `${this.get('jid')}/${this.get('nick')}`,
           'fullname': this.get('nick'),
           'is_spoiler': is_spoiler,

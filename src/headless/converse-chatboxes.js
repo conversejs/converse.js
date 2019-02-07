@@ -401,15 +401,16 @@ converse.plugins.add('converse-chatboxes', {
                         'type': this.get('message_type'),
                         'id': message.get('edited') && _converse.connection.getUniqueId() || message.get('msgid'),
                     }).c('body').t(message.get('message')).up()
-                      .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).up();
+                      .c(_converse.ACTIVE, {'xmlns': Strophe.NS.CHATSTATES}).root();
+
                 if (message.get('type') === 'chat') {
-                    stanza.c('request', {'xmlns': Strophe.NS.RECEIPTS}).up();
+                    stanza.c('request', {'xmlns': Strophe.NS.RECEIPTS}).root();
                 }
                 if (message.get('is_spoiler')) {
                     if (message.get('spoiler_hint')) {
-                        stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER}, message.get('spoiler_hint')).up();
+                        stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER}, message.get('spoiler_hint')).root();
                     } else {
-                        stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER}).up();
+                        stanza.c('spoiler', {'xmlns': Strophe.NS.SPOILER}).root();
                     }
                 }
                 (message.get('references') || []).forEach(reference => {
@@ -422,17 +423,20 @@ converse.plugins.add('converse-chatboxes', {
                     if (reference.uri) {
                         attrs.uri = reference.uri;
                     }
-                    stanza.c('reference', attrs).up();
+                    stanza.c('reference', attrs).root();
                 });
 
                 if (message.get('oob_url')) {
-                    stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('oob_url')).up();
+                    stanza.c('x', {'xmlns': Strophe.NS.OUTOFBAND}).c('url').t(message.get('oob_url')).root();
                 }
                 if (message.get('edited')) {
                     stanza.c('replace', {
                         'xmlns': Strophe.NS.MESSAGE_CORRECT,
                         'id': message.get('msgid')
-                    }).up();
+                    }).root();
+                }
+                if (message.get('origin_id')) {
+                    stanza.c('origin-id', {'xmlns': Strophe.NS.SID, 'id': message.get('origin_id')}).root();
                 }
                 return stanza;
             },
@@ -459,6 +463,7 @@ converse.plugins.add('converse-chatboxes', {
                 const is_spoiler = this.get('composing_spoiler');
                 return _.extend(this.toJSON(), {
                     'id': _converse.connection.getUniqueId(),
+                    'origin_id': _converse.connection.getUniqueId(),
                     'fullname': _converse.xmppstatus.get('fullname'),
                     'from': _converse.bare_jid,
                     'sender': 'me',

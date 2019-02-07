@@ -405,6 +405,7 @@ converse.plugins.add('converse-muc', {
                 [text, references] = this.parseTextForReferences(text);
 
                 return {
+                    'origin_id': _converse.connection.getUniqueId(),
                     'from': `${this.get('jid')}/${this.get('nick')}`,
                     'fullname': this.get('nick'),
                     'is_spoiler': is_spoiler,

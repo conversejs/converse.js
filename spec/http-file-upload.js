@@ -362,6 +362,7 @@
                                     `<x xmlns="jabber:x:oob">`+
                                         `<url>${message}</url>`+
                                     `</x>`+
+                                    `<origin-id id="${sent_stanza.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                             `</message>`);
                         await test_utils.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
                         // Check that the image renders
@@ -464,6 +465,7 @@
                                     `<x xmlns="jabber:x:oob">`+
                                         `<url>${message}</url>`+
                                     `</x>`+
+                                    `<origin-id id="${sent_stanza.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                             `</message>`);
                         await test_utils.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
                         // Check that the image renders

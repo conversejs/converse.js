@@ -52113,7 +52113,7 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       _ = _converse$env._,
       moment = _converse$env.moment;
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-message-view', {
-  dependencies: ["converse-modal"],
+  dependencies: ["converse-modal", "converse-chatboxviews"],
 
   initialize() {
     /* The initialize function gets called as soon as the plugin is

@@ -5,6 +5,7 @@
 - Updated translations: af, cz, de, es, eu, ga, he, hi, ja, nb, nl_BE, zh_CN
 - New language supported: Esperanto
 - Accessibility: Tag the chat-content as an ARIA live region, for screen readers
+- Update contact nickname when receive a roster push
 - #1369 Don't wrongly interpret message with `subject` as a topic change.
 - #1408 new config option `roomconfig_whitelist`
 - #1417 Margin between nickname and badge

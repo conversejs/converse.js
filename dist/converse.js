@@ -68673,6 +68673,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           contact.save({
             'subscription': subscription,
             'ask': ask,
+            'nickname': item.getAttribute("name"),
             'requesting': null,
             'groups': groups
           });

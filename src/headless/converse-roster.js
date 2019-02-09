@@ -627,6 +627,7 @@ converse.plugins.add('converse-roster', {
                     contact.save({
                         'subscription': subscription,
                         'ask': ask,
+                        'nickname': item.getAttribute("name"),
                         'requesting': null,
                         'groups': groups
                     });

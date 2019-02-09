@@ -20,6 +20,7 @@
 - #1417 Margin between nickname and badge
 - #1421 Fix direct invite for membersonly room
 - #1422 Resurrect the `muc_show_join_leave` option
+- #1438 Update contact nickname when receiving a roster push
 - #1442 MUC read receipts causing empty lines
 
 ## 4.1.0 (2019-01-11)

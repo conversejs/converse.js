@@ -270,7 +270,7 @@
                     .c('item', {
                         'jid': 'contact@example.org',
                         'subscription': 'to',
-                        'name': 'contact@example.org'});
+                        'name': 'Nicky'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 // Check that the IQ set was acknowledged.
                 expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
@@ -294,7 +294,7 @@
                 expect($contacts.hasClass('to')).toBeTruthy();
                 expect($contacts.hasClass('both')).toBeFalsy();
                 expect($contacts.hasClass('current-xmpp-contact')).toBeTruthy();
-                expect($contacts.text().trim()).toBe('Contact');
+                expect($contacts.text().trim()).toBe('Nicky');
                 expect(contact.presence.get('show')).toBe('offline');
 
                 /*  <presence

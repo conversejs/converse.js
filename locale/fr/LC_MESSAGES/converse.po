@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-11 18:42+0100\n"
-"PO-Revision-Date: 2018-12-20 10:08+0000\n"
-"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
+"PO-Revision-Date: 2019-02-12 10:09+0000\n"
+"Last-Translator: Arnaud Jacquemin <arnaud.jacquemin+weblate@free.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
 "Language: fr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.4-dev\n"
+"X-Generator: Weblate 3.5-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -610,9 +610,8 @@ msgid "Change user role to participant"
 msgstr "Changer le rôle de l’utilisateur en participant"
 
 #: dist/converse-no-dependencies.js:36496
-#, fuzzy
 msgid "Destroy room"
-msgstr "Salon temporaire"
+msgstr "Détruire le salon"
 
 #: dist/converse-no-dependencies.js:36496
 msgid "Kick user from groupchat"
@@ -935,6 +934,8 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
+"Désolé, impossible d'envoyer un message chiffré parce que %1$s nécessitent "
+"que vous soyez abonné à leur présence afin de voir leurs informations OMEMO"
 
 #: dist/converse-no-dependencies.js:38431
 #, javascript-format
@@ -942,11 +943,12 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
+"Désolé, impossible d'envoyer un message chiffré parce que le serveur distant "
+"de %1$s n'est pas joignable"
 
 #: dist/converse-no-dependencies.js:38433
-#, fuzzy
 msgid "Unable to send an encrypted message due to an unexpected error."
-msgstr "Désolé, impossible d’envoyer ce message à cause d’une erreur."
+msgstr "Impossible d’envoyer un message chiffré à cause d’une erreur."
 
 #: dist/converse-no-dependencies.js:38516
 #, javascript-format
@@ -958,13 +960,13 @@ msgstr ""
 "client qui ne gère pas OMEMO."
 
 #: dist/converse-no-dependencies.js:38543
-#, fuzzy
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
 msgstr ""
-"Impossible d’utiliser le chiffrement bout à bout parce que %1$s utilise un "
-"client qui ne gère pas OMEMO."
+"Impossible d’utiliser le chiffrement bout à bout dans ce groupe de "
+"discussion, soit parce qu'il permet l'anonymat, ou parce que tous les "
+"participants ne gèrent pas OMEMO."
 
 #: dist/converse-no-dependencies.js:38720
 msgid ""
@@ -981,6 +983,8 @@ msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
 "will no longer be possible in this grouchat."
 msgstr ""
+"%1$s ne semble pas avoir un client qui supporte OMEMO. Le chiffrement ne "
+"sera plus possible dans ce groupe de discussion."
 
 #: dist/converse-no-dependencies.js:39579
 msgid "Your avatar image"
@@ -1336,7 +1340,7 @@ msgstr "Ajouter un contact"
 
 #: dist/converse-no-dependencies.js:42004
 msgid "Re-sync your contacts"
-msgstr "Resynchronise vos contacts"
+msgstr "Resynchroniser vos contacts"
 
 #: dist/converse-no-dependencies.js:43785
 msgid "Sorry, could not determine upload URL."

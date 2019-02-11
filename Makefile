@@ -124,11 +124,11 @@ stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 .PHONY: clean
 clean:
 	rm -rf node_modules stamp-npm
-	rm dist/*.min.js
-	rm css/*.min.css
-	rm css/*.map
-	rm css/*.zip
-	rm *.zip
+	rm -f dist/*.min.js
+	rm -f css/*.min.css
+	rm -f css/*.map
+	rm -f css/*.zip
+	rm -f *.zip
 
 .PHONY: dev
 dev: stamp-npm

@@ -68005,11 +68005,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
       } else {
         try {
-          await _converse.rostergroups.fetchRosterGroups().then(() => {
-            _converse.emit('rosterGroupsFetched');
+          /* Make sure not to run fetchRosterContacts async, since we need
+           * the contacts to exist before processing contacts presence,
+           * which might come in the same BOSH request.
+           */
+          await _converse.rostergroups.fetchRosterGroups();
 
-            return _converse.roster.fetchRosterContacts();
-          });
+          _converse.emit('rosterGroupsFetched');
+
+          await _converse.roster.fetchRosterContacts();
 
           _converse.emit('rosterContactsFetched');
         } catch (reason) {

@@ -13,6 +13,7 @@
 - #1412 muc moderator commands can be disabled selectively by config
 - #1413 fix moderator commands that change affiliation
 - #1414 Prevent duplicate messages on MUC join
+- #1405 Status of contacts list are not displayed properly
 
 ## 4.1.0 (2019-01-11)
 

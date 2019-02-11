@@ -84,7 +84,6 @@ pluggable.enable(_converse, '_converse', 'pluggable');
 // the other plugins are whitelisted in src/converse.js
 _converse.core_plugins = [
     'converse-chatboxes',
-    'converse-core',
     'converse-disco',
     'converse-mam',
     'converse-muc',

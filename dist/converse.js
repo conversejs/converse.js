@@ -62605,7 +62605,7 @@ pluggable_js_dist_pluggable__WEBPACK_IMPORTED_MODULE_8___default.a.enable(_conve
 // These are just the @converse/headless plugins, for the full converse,
 // the other plugins are whitelisted in src/converse.js
 
-_converse.core_plugins = ['converse-chatboxes', 'converse-core', 'converse-disco', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-pubsub', 'converse-roster', 'converse-vcard'];
+_converse.core_plugins = ['converse-chatboxes', 'converse-disco', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-pubsub', 'converse-roster', 'converse-vcard'];
 _converse.keycodes = {
   TAB: 9,
   ENTER: 13,

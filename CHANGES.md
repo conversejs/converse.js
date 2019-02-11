@@ -7,6 +7,7 @@
 - Accessibility: Tag the chat-content as an ARIA live region, for screen readers
 - Set releases URL to new Github repo
 - #1369 Don't wrongly interpret message with `subject` as a topic change.
+- #1405 Status of contacts list are not displayed properly
 - #1408 new config option `roomconfig_whitelist`
 - #1412 muc moderator commands can be disabled selectively by config
 - #1413 fix moderator commands that change affiliation

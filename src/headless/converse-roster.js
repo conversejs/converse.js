@@ -88,10 +88,14 @@ converse.plugins.add('converse-roster', {
                 }
             } else {
                 try {
-                    await _converse.rostergroups.fetchRosterGroups().then(() => {
-                        _converse.emit('rosterGroupsFetched');
-                        return _converse.roster.fetchRosterContacts();
-                    });
+                    /* Make sure not to run fetchRosterContacts async, since we need
+                     * the contacts to exist before processing contacts presence,
+                     * which might come in the same BOSH request.
+                     */
+                    await _converse.rostergroups.fetchRosterGroups();
+                    _converse.emit('rosterGroupsFetched');
+
+                    await _converse.roster.fetchRosterContacts();
                     _converse.emit('rosterContactsFetched');
                 } catch (reason) {
                     _converse.log(reason, Strophe.LogLevel.ERROR);
@@ -403,7 +407,7 @@ converse.plugins.add('converse-roster', {
                 if (collection.length === 0 ||
                         (this.rosterVersioningSupported() && !_converse.session.get('roster_fetched'))) {
                     _converse.send_initial_presence = true;
-                    _converse.roster.fetchFromServer();
+                    await _converse.roster.fetchFromServer();
                 } else {
                     _converse.emit('cachedRoster', collection);
                 }

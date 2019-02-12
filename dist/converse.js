@@ -68362,8 +68362,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         if (collection.length === 0 || this.rosterVersioningSupported() && !_converse.session.get('roster_fetched')) {
           _converse.send_initial_presence = true;
-
-          _converse.roster.fetchFromServer();
+          await _converse.roster.fetchFromServer();
         } else {
           _converse.emit('cachedRoster', collection);
         }

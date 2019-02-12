@@ -407,7 +407,7 @@ converse.plugins.add('converse-roster', {
                 if (collection.length === 0 ||
                         (this.rosterVersioningSupported() && !_converse.session.get('roster_fetched'))) {
                     _converse.send_initial_presence = true;
-                    _converse.roster.fetchFromServer();
+                    await _converse.roster.fetchFromServer();
                 } else {
                     _converse.emit('cachedRoster', collection);
                 }

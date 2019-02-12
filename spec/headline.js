@@ -13,7 +13,7 @@
 
     describe("A headlines box", function () {
 
-        it("will not open nor display non-headline messages", mock.initConverse(function (_converse) {
+        it("will not open nor display non-headline messages", mock.initConverse((done, _converse) => {
             /* XMPP spam message:
              *
              *  <message xmlns="jabber:client"
@@ -37,9 +37,10 @@
             expect(utils.isHeadlineMessage.called).toBeTruthy();
             expect(utils.isHeadlineMessage.returned(false)).toBeTruthy();
             utils.isHeadlineMessage.restore();
+            done();
         }));
 
-        it("will open and display headline messages", mock.initConverseWithPromises(
+        it("will open and display headline messages", mock.initConverse(
             null, ['rosterGroupsFetched'], {}, function (done, _converse) {
 
             /* <message from='notify.example.com'
@@ -84,7 +85,7 @@
         }));
 
         it("will not show a headline messages from a full JID if allow_non_roster_messaging is false",
-            mock.initConverse(function (_converse) {
+            mock.initConverse((done, _converse) => {
 
             _converse.allow_non_roster_messaging = false;
             sinon.spy(utils, 'isHeadlineMessage');
@@ -101,6 +102,7 @@
             expect(utils.isHeadlineMessage.called).toBeTruthy();
             expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
             utils.isHeadlineMessage.restore(); // unwraps
+            done();
         }));
     });
 }));

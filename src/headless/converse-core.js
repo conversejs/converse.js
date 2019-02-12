@@ -463,7 +463,7 @@ function cleanup () {
 }
 
 
-_converse.initialize = function (settings, callback) {
+_converse.initialize = async function (settings, callback) {
     settings = !_.isUndefined(settings) ? settings : {};
     const init_promise = u.getResolveablePromise();
     _.each(PROMISES, addPromise);
@@ -1212,21 +1212,18 @@ _converse.initialize = function (settings, callback) {
         this.connection = settings.connection;
     }
 
-    if (!_.isUndefined(_converse.connection) &&
-            _converse.connection.service === 'jasmine tests') {
+    if (_.get(_converse.connection, 'service') === 'jasmine tests') {
         finishInitialization();
         return _converse;
-    } else if (_.isUndefined(i18n)) {
-        finishInitialization();
-    } else {
-        i18n.fetchTranslations(
-            _converse.locale,
-            _converse.locales,
-            u.interpolate(_converse.locales_url, {'locale': _converse.locale}))
-        .catch(e => _converse.log(e.message, Strophe.LogLevel.FATAL))
-        .finally(finishInitialization)
-        .catch(e => _converse.log(e.message, Strophe.LogLevel.FATAL));
+    } else if (!_.isUndefined(i18n)) {
+        const url = u.interpolate(_converse.locales_url, {'locale': _converse.locale});
+        try {
+            await i18n.fetchTranslations(_converse.locale, _converse.locales, url);
+        } catch (e) {
+            _converse.log(e.message, Strophe.LogLevel.FATAL);
+        }
     }
+    finishInitialization();
     return init_promise;
 };
 

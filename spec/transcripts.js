@@ -50,7 +50,7 @@
     return describe("Transcripts of chat logs", function () {
 
         it("can be used to replay conversations",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 

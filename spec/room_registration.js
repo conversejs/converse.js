@@ -14,7 +14,7 @@
         describe("The /register commmand", function () {
 
             it("allows you to register your nickname in a room",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'auto_register_muc_nickname': true},
                     function (done, _converse) {
 
@@ -78,7 +78,7 @@
         describe("The auto_register_muc_nickname option", function () {
 
             it("allows you to automatically register your nickname when joining a room",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'auto_register_muc_nickname': true},
                     function (done, _converse) {
 

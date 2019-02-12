@@ -16,7 +16,7 @@
     describe("The nickname autocomplete feature", function () {
 
         it("shows all autocompletion options when the user presses @",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -60,7 +60,7 @@
         }));
 
         it("autocompletes when the user presses tab",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 

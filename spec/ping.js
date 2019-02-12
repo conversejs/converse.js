@@ -7,7 +7,7 @@
         describe("Ping and pong handlers", function () {
 
             it("are registered when _converse.js is connected",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -20,7 +20,7 @@
             }));
 
             it("are registered when _converse.js reconnected",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -35,9 +35,9 @@
 
         describe("An IQ stanza", function () {
 
-            it("is sent out when _converse.js pings a server", mock.initConverse(function (_converse) {
-                var sent_stanza, IQ_id;
-                var sendIQ = _converse.connection.sendIQ;
+            it("is sent out when _converse.js pings a server", mock.initConverse((done, _converse) => {
+                let sent_stanza, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
@@ -47,6 +47,7 @@
                     `<iq id="${IQ_id}" to="localhost" type="get" xmlns="jabber:client">`+
                         `<ping xmlns="urn:xmpp:ping"/>`+
                     `</iq>`);
+                done();
             }));
         });
     });

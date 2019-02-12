@@ -49,7 +49,7 @@
              * stanza of type "result".
              */
             it("Subscribe to contact, contact accepts and subscribes back",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'],
                     { roster_groups: false },
                     async function (done, _converse) {
@@ -366,7 +366,7 @@
             }));
 
             it("Alternate Flow: Contact Declines Subscription Request",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -453,7 +453,7 @@
             }));
 
             it("Unsubscribe to a contact when subscription is mutual",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'],
                     { roster_groups: false },
                     async function (done, _converse) {
@@ -512,7 +512,7 @@
                 done();
             }));
 
-            it("Receiving a subscription request", mock.initConverseWithPromises(
+            it("Receiving a subscription request", mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 

@@ -19,7 +19,7 @@
         describe("A Chatbox", function () {
 
             it("has a /help command to show the available commands",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -52,7 +52,7 @@
 
 
             it("supports the /me command",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -99,7 +99,7 @@
                 done();
             }));
 
-            it("is created when you click on a roster item", mock.initConverseWithPromises(
+            it("is created when you click on a roster item", mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
@@ -140,17 +140,17 @@
                 done();
             }));
 
-            it("opens when a new message is received", mock.initConverseWithPromises(
+            it("opens when a new message is received", mock.initConverse(
                 null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                const stanza = Strophe.xmlHtmlNode(
-                    "<message from='"+sender_jid+"'"+
-                    "         type='chat'"+
-                    "         to='dummy@localhost/resource'>"+
-                    "    <body>Hey\nHave you heard the news?</body>"+
-                    "</message>").firstChild;
+                const stanza = u.toStanza(`
+                    <message from="${sender_jid}"
+                             type="chat"
+                             to="dummy@localhost/resource">
+                        <body>Hey\nHave you heard the news?</body>
+                    </message>`);
 
                 const message_promise = new Promise(resolve => _converse.api.listen.on('message', resolve));
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
@@ -159,18 +159,18 @@
                 done();
             }));
 
-            it("doesn't open when a message without body is received", mock.initConverseWithPromises(
+            it("doesn't open when a message without body is received", mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                const stanza = Strophe.xmlHtmlNode(`
+                const stanza = u.toStanza(`
                     <message from="${sender_jid}"
                              type="chat"
                              to="dummy@localhost/resource">
                         <composing xmlns="http://jabber.org/protocol/chatstates"/>
-                    </message>`).firstChild;
+                    </message>`);
                 const message_promise = new Promise(resolve => _converse.api.listen.on('message', resolve))
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await test_utils.waitUntil(() => message_promise);
@@ -179,7 +179,7 @@
             }));
 
             it("can be trimmed to conserve space",
-                mock.initConverseWithPromises(null, ['rosterGroupsFetched'], {},
+                mock.initConverse(null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 spyOn(_converse.chatboxviews, 'trimChats');
@@ -237,7 +237,7 @@
             }));
 
             it("can be opened in minimized mode initially",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -259,7 +259,7 @@
 
 
             it("is focused if its already open and you click on its corresponding roster item",
-                mock.initConverseWithPromises(null, ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {
+                mock.initConverse(null, ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
                 _converse.emit('rosterContactsFetched');
@@ -286,7 +286,7 @@
             }));
 
             it("can be saved to, and retrieved from, browserStorage",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched',], {},
                     async function (done, _converse) {
 
@@ -323,7 +323,7 @@
             }));
 
             it("can be closed by clicking a DOM element with class 'close-chatbox-button'",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -359,7 +359,7 @@
             }));
 
             it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -401,7 +401,7 @@
             }));
 
             it("will be removed from browserStorage when closed",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -443,7 +443,7 @@
             describe("A chat toolbar", function () {
 
                 it("can be found on each chat box",
-                    mock.initConverseWithPromises(
+                    mock.initConverse(
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
@@ -464,7 +464,7 @@
                 }));
 
                 it("contains a button for inserting emojis",
-                    mock.initConverseWithPromises(
+                    mock.initConverse(
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
@@ -495,7 +495,7 @@
                 }));
 
                 it("can contain a button for starting a call",
-                    mock.initConverseWithPromises(
+                    mock.initConverse(
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
@@ -531,7 +531,7 @@
             describe("A Chat Status Notification", function () {
 
                 it("is ignored when it's a carbon copy of one of my own",
-                    mock.initConverseWithPromises(
+                    mock.initConverse(
                         null, ['rosterGroupsFetched'], {},
                         async function (done, _converse) {
 
@@ -540,30 +540,30 @@
 
                     const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     await test_utils.openChatBoxFor(_converse, sender_jid);
-                    let stanza = Strophe.xmlHtmlNode(
+                    let stanza = u.toStanza(
                         `<message from="${sender_jid}"
                                  type="chat"
                                  to="dummy@localhost/resource">
                             <composing xmlns="http://jabber.org/protocol/chatstates"/>
                             <no-store xmlns="urn:xmpp:hints"/>
                             <no-permanent-store xmlns="urn:xmpp:hints"/>
-                        </message>`).firstChild;
+                        </message>`);
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                    stanza = Strophe.xmlHtmlNode(
+                    stanza = u.toStanza(
                         `<message from="${sender_jid}"
                                  type="chat"
                                  to="dummy@localhost/resource">
                             <paused xmlns="http://jabber.org/protocol/chatstates"/>
                             <no-store xmlns="urn:xmpp:hints"/>
                             <no-permanent-store xmlns="urn:xmpp:hints"/>
-                        </message>`).firstChild;
+                        </message>`);
                     _converse.connection._dataRecv(test_utils.createRequest(stanza));
                     done();
                 }));
 
                 it("does not open a new chatbox",
-                    mock.initConverseWithPromises(
+                    mock.initConverse(
                         null, ['rosterGroupsFetched'], {},
                         async function (done, _converse) {
 
@@ -587,7 +587,7 @@
                 describe("An active notification", function () {
 
                     it("is sent when the user opens a chat box",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
@@ -610,7 +610,7 @@
                         done();
                     }));
 
-                    it("is sent when the user maximizes a minimized a chat box", mock.initConverseWithPromises(
+                    it("is sent when the user maximizes a minimized a chat box", mock.initConverse(
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
@@ -645,7 +645,7 @@
                 describe("A composing notification", function () {
 
                     it("is sent as soon as the user starts typing a message which is not a command",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
@@ -683,7 +683,7 @@
                     }));
 
                     it("will be shown if received",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched'], {},
                             async function (done, _converse) {
 
@@ -729,7 +729,7 @@
                     }));
 
                     it("can be a composing carbon message that this user sent from a different client",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
@@ -776,7 +776,7 @@
                 describe("A paused notification", function () {
 
                     it("is sent if the user has stopped typing since 30 seconds",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
@@ -831,7 +831,7 @@
                     }));
 
                     it("will be shown if received",
-                            mock.initConverseWithPromises(
+                            mock.initConverse(
                                 null, ['rosterGroupsFetched'], {},
                                 async function (done, _converse) {
 
@@ -860,7 +860,7 @@
                     }));
 
                     it("can be a paused carbon message that this user sent from a different client",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
@@ -907,7 +907,7 @@
                 describe("An inactive notifciation", function () {
 
                     it("is sent if the user has stopped typing since 2 minutes",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
@@ -959,7 +959,7 @@
                     }));
 
                     it("is sent when the user a minimizes a chat box",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
@@ -981,7 +981,7 @@
                     }));
 
                     it("is sent if the user closes a chat box",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
@@ -1006,7 +1006,7 @@
                     }));
 
                     it("will clear any other chat status notifications",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
@@ -1049,7 +1049,7 @@
                 describe("A gone notifciation", function () {
 
                     it("will be shown if received",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched'], {},
                             async function (done, _converse) {
 
@@ -1080,7 +1080,7 @@
         describe("Special Messages", function () {
 
             it("'/clear' can be used to clear messages in a conversation",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1123,7 +1123,7 @@
         describe("A Message Counter", function () {
 
             it("is incremented when the message is received and the window is not focused",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1163,7 +1163,7 @@
             }));
 
             it("is cleared when the window is focused",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -1178,7 +1178,7 @@
             }));
 
             it("is not incremented when the message is received and the window is focused",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1204,7 +1204,7 @@
             }));
 
             it("is incremented from zero when chatbox was closed after viewing previously received messages and the window is not focused now",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1256,7 +1256,7 @@
         describe("A ChatBox's Unread Message Count", function () {
 
             it("is incremented when the message is received and ChatBoxView is scrolled up",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1275,7 +1275,7 @@
             }));
 
             it("is not incremented when the message is received and ChatBoxView is scrolled down",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1293,7 +1293,7 @@
             }));
 
             it("is incremeted when message is received, chatbox is scrolled down and the window is not focused",
-                mock.initConverseWithPromises(null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                mock.initConverse(null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
@@ -1313,7 +1313,7 @@
             }));
 
             it("is incremeted when message is received, chatbox is scrolled up and the window is not focused",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1332,7 +1332,7 @@
             }));
 
             it("is cleared when ChatBoxView was scrolled down and the window become focused",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1352,7 +1352,7 @@
             }));
 
             it("is not cleared when ChatBoxView was scrolled up and the windows become focused",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1376,7 +1376,7 @@
         describe("A RosterView's Unread Message Count", function () {
 
             it("is updated when message is received and chatbox is scrolled up",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1405,7 +1405,7 @@
             }));
 
             it("is updated when message is received and chatbox is minimized",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1436,7 +1436,7 @@
             }));
 
             it("is cleared when chatbox is maximzied after receiving messages in minimized mode",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1463,7 +1463,7 @@
             }));
 
             it("is cleared when unread messages are viewed which were received in scrolled-up chatbox",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1488,7 +1488,7 @@
             }));
 
             it("is not cleared after user clicks on roster view when chatbox is already opened and scrolled up",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1517,7 +1517,7 @@
         describe("A Minimized ChatBoxView's Unread Message Count", function () {
 
             it("is displayed when scrolled up chatbox is minimized after receiving unread messages",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1546,7 +1546,7 @@
             }));
 
             it("is incremented when message is received and windows is not focused",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1572,7 +1572,7 @@
             }));
 
             it("will render Openstreetmap-URL from geo-URI",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 

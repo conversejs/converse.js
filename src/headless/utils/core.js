@@ -16,6 +16,10 @@ import sizzle from "sizzle";
 
 const u = {};
 
+u.toStanza = function (string) {
+    return Strophe.xmlHtmlNode(string).firstElementChild;
+}
+
 u.getLongestSubstring = function (string, candidates) {
     function reducer (accumulator, current_value) {
         if (string.startsWith(current_value)) {

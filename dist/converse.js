@@ -66987,6 +66987,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }
       },
 
+      isReceipt(stanza) {
+        return sizzle(`[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).length > 0;
+      },
+
+      isChatMarker(stanza) {
+        return sizzle(`[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
+      },
+
       async onMessage(stanza) {
         /* Handler for all MUC messages sent to this groupchat.
          *
@@ -67011,7 +67019,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           return;
         }
 
-        if (!this.handleMessageCorrection(stanza)) {
+        if (!this.handleMessageCorrection(stanza) && !this.isReceipt(stanza) && !this.isChatMarker(stanza)) {
           if (attrs.subject && !attrs.thread && !attrs.message) {
             // https://xmpp.org/extensions/xep-0045.html#subject-mod
             // -----------------------------------------------------

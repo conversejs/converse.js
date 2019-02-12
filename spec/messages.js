@@ -2316,7 +2316,7 @@
             done();
         }));
 
-        it("delivery can be acknowledged by a receipt",
+        it("will be shown as received upon MUC reflection",
             mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
@@ -2344,6 +2344,40 @@
                 }).c('body').t(body).up().tree();
             await view.model.onMessage(msg);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(1);
+            done();
+        }));
+
+        it("can cause a delivery receipt",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            test_utils.createContacts(_converse, 'current');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+            const view = _converse.chatboxviews.get('lounge@localhost');
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = 'But soft, what light through yonder airlock breaks?';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+
+            const msg_obj = view.model.messages.at(0);
+            const stanza = u.toStanza(`
+                <message xml:lang="en" to="dummy@localhost/resource"
+                         from="lounge@localhost/some1" type="groupchat" xmlns="jabber:client">
+                    <received xmlns="urn:xmpp:receipts" id="${msg_obj.get('msgid')}"/>
+                    <origin-id xmlns="urn:xmpp:sid:0" id="CE08D448-5ED8-4B6A-BB5B-07ED9DFE4FF0"/>
+                </message>`);
+            spyOn(_converse, 'emit').and.callThrough();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.emit.calls.count() === 1);
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
             done();
         }));
 

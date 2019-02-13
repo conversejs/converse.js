@@ -845,6 +845,11 @@ converse.plugins.add('converse-chatboxes', {
                     contact_jid = Strophe.getBareJidFromJid(to_jid);
                 } else {
                     contact_jid = from_bare_jid;
+                    await _converse.api.waitUntil('rosterContactsFetched');
+                    const roster_item = _converse.roster.get(contact_jid);
+                    if (_.isUndefined(roster_item) && !_converse.allow_non_roster_messaging) {
+                        return;
+                    }
                 }
                 // Get chat box, but only create when the message has something to show to the user
                 const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0,

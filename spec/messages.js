@@ -2347,7 +2347,7 @@
             done();
         }));
 
-        it("can cause a delivery receipt",
+        it("can cause a delivery receipt to be returned",
             mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
@@ -2376,6 +2376,73 @@
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => _converse.emit.calls.count() === 1);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+            done();
+        }));
+
+        it("can cause a chat marker to be returned",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            test_utils.createContacts(_converse, 'current');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+            const view = _converse.chatboxviews.get('lounge@localhost');
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = 'But soft, what light through yonder airlock breaks?';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+
+            const msg_obj = view.model.messages.at(0);
+            let stanza = u.toStanza(`
+                <message xml:lang="en" to="dummy@localhost/resource"
+                         from="lounge@localhost/some1" type="groupchat" xmlns="jabber:client">
+                    <received xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
+                </message>`);
+            spyOn(_converse, 'emit').and.callThrough();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.emit.calls.count() === 1);
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+
+            stanza = u.toStanza(`
+                <message xml:lang="en" to="dummy@localhost/resource"
+                         from="lounge@localhost/some1" type="groupchat" xmlns="jabber:client">
+                    <displayed xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
+                </message>`);
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.emit.calls.count() === 2);
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+
+            stanza = u.toStanza(`
+                <message xml:lang="en" to="dummy@localhost/resource"
+                         from="lounge@localhost/some1" type="groupchat" xmlns="jabber:client">
+                    <acknowledged xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
+                </message>`);
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.emit.calls.count() === 3);
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+
+            stanza = u.toStanza(`
+                <message xml:lang="en" to="dummy@localhost/resource"
+                         from="lounge@localhost/some1" type="groupchat" xmlns="jabber:client">
+                    <body>'tis I!</body>
+                    <markable xmlns="urn:xmpp:chat-markers:0"/>
+                </message>`);
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.emit.calls.count() === 5);
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
             expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
             done();

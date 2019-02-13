@@ -979,11 +979,27 @@ converse.plugins.add('converse-muc', {
             },
 
             isReceipt (stanza) {
-                return sizzle(`[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).length > 0;
+                return sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).length > 0;
             },
 
             isChatMarker (stanza) {
-                return sizzle(`[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
+                return sizzle(
+                    `received[xmlns="${Strophe.NS.MARKERS}"],
+                     displayed[xmlns="${Strophe.NS.MARKERS}"],
+                     acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
+            },
+
+            subjectChangeHandled (attrs) {
+                if (attrs.subject && !attrs.thread && !attrs.message) {
+                    // https://xmpp.org/extensions/xep-0045.html#subject-mod
+                    // -----------------------------------------------------
+                    // The subject is changed by sending a message of type "groupchat" to the <room@service>,
+                    // where the <message/> MUST contain a <subject/> element that specifies the new subject but
+                    // MUST NOT contain a <body/> element (or a <thread/> element).
+                    u.safeSave(this, {'subject': {'author': attrs.nick, 'text': attrs.subject || ''}});
+                    return true;
+                }
+                return false;
             },
 
             async onMessage (stanza) {
@@ -1008,17 +1024,8 @@ converse.plugins.add('converse-muc', {
                 }
                 if (!this.handleMessageCorrection(stanza) &&
                     !this.isReceipt(stanza) &&
-                    !this.isChatMarker(stanza)) {
-
-                    if (attrs.subject && !attrs.thread && !attrs.message) {
-                        // https://xmpp.org/extensions/xep-0045.html#subject-mod
-                        // -----------------------------------------------------
-                        // The subject is changed by sending a message of type "groupchat" to the <room@service>,
-                        // where the <message/> MUST contain a <subject/> element that specifies the new subject but
-                        // MUST NOT contain a <body/> element (or a <thread/> element).
-                        u.safeSave(this, {'subject': {'author': attrs.nick, 'text': attrs.subject || ''}});
-                        return;
-                    }
+                    !this.isChatMarker(stanza) &&
+                    !this.subjectChangeHandled(attrs)) {
 
                     const is_csn = u.isOnlyChatStateNotification(attrs),
                           own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
@@ -1026,11 +1033,10 @@ converse.plugins.add('converse-muc', {
                         // No need showing delayed or our own CSN messages
                         return;
                     }
-                    const msg = await this.messages.create(attrs);
+                    const msg = await this.createMessage(stanza, original_stanza);
                     if (forwarded && msg && msg.get('sender')  === 'me') {
                         msg.save({'received': moment().format()});
                     }
-                    this.incrementUnreadMsgCounter(msg);
                 }
                 if (attrs.nick !== this.get('nick')) {
                     // We only emit an event if it's not our own message

@@ -167,10 +167,8 @@
         }
 
         const connection = mock.mock_connection();
-        if (!_.isUndefined(spies)) {
-            _.forEach(spies, function (method) {
-                spyOn(connection, method);
-            });
+        if (!_.isNil(spies)) {
+            _.forEach(spies.connection, method => spyOn(connection, method));
         }
 
         const _converse = await converse.initialize(_.extend({
@@ -185,6 +183,10 @@
             'view_mode': mock.view_mode,
             'debug': false
         }, settings || {}));
+
+        if (!_.isNil(spies)) {
+            _.forEach(spies._converse, method => spyOn(_converse, method).and.callThrough());
+        }
 
         _converse.ChatBoxViews.prototype.trimChat = function () {};
 

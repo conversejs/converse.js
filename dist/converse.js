@@ -68022,10 +68022,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
       } else {
         try {
-          /* Make sure not to run fetchRosterContacts async, since we need
-           * the contacts to exist before processing contacts presence,
-           * which might come in the same BOSH request.
-           */
           await _converse.rostergroups.fetchRosterGroups();
 
           _converse.emit('rosterGroupsFetched');
@@ -68379,7 +68375,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         if (collection.length === 0 || this.rosterVersioningSupported() && !_converse.session.get('roster_fetched')) {
           _converse.send_initial_presence = true;
-          await _converse.roster.fetchFromServer();
+          return _converse.roster.fetchFromServer();
         } else {
           _converse.emit('cachedRoster', collection);
         }
@@ -68810,13 +68806,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         * Returns a promise which resolves once the groups have been
         * returned.
         */
-        return new Promise((resolve, reject) => {
+        return new Promise(success => {
           this.fetch({
-            silent: true,
+            success,
             // We need to first have all groups before
             // we can start positioning them, so we set
             // 'silent' to true.
-            success: resolve
+            silent: true
           });
         });
       }

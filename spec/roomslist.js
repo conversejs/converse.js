@@ -48,7 +48,7 @@
 
         it("uses bookmarks to determine groupchat names",
             mock.initConverse(
-                ['send'], ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
+                {'connection': ['send']}, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
                 async function (done, _converse) {
 
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');

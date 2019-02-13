@@ -88,13 +88,8 @@ converse.plugins.add('converse-roster', {
                 }
             } else {
                 try {
-                    /* Make sure not to run fetchRosterContacts async, since we need
-                     * the contacts to exist before processing contacts presence,
-                     * which might come in the same BOSH request.
-                     */
                     await _converse.rostergroups.fetchRosterGroups();
                     _converse.emit('rosterGroupsFetched');
-
                     await _converse.roster.fetchRosterContacts();
                     _converse.emit('rosterContactsFetched');
                 } catch (reason) {
@@ -407,7 +402,7 @@ converse.plugins.add('converse-roster', {
                 if (collection.length === 0 ||
                         (this.rosterVersioningSupported() && !_converse.session.get('roster_fetched'))) {
                     _converse.send_initial_presence = true;
-                    await _converse.roster.fetchFromServer();
+                    return _converse.roster.fetchFromServer();
                 } else {
                     _converse.emit('cachedRoster', collection);
                 }
@@ -780,12 +775,13 @@ converse.plugins.add('converse-roster', {
                 * Returns a promise which resolves once the groups have been
                 * returned.
                 */
-                return new Promise((resolve, reject) => {
+                return new Promise(success => {
                     this.fetch({
-                        silent: true, // We need to first have all groups before
-                                    // we can start positioning them, so we set
-                                    // 'silent' to true.
-                        success: resolve
+                        success,
+                        // We need to first have all groups before
+                        // we can start positioning them, so we set
+                        // 'silent' to true.
+                        silent: true,
                     });
                 });
             }

@@ -362,7 +362,7 @@
 
 
         it("can be retrieved from the XMPP server", mock.initConverse(
-            ['send'], ['chatBoxesFetched', 'roomsPanelRendered', 'rosterGroupsFetched'], {},
+            {'connection': ['send']}, ['chatBoxesFetched', 'roomsPanelRendered', 'rosterGroupsFetched'], {},
             async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(
@@ -453,7 +453,7 @@
         describe("The rooms panel", function () {
 
             it("shows a list of bookmarks", mock.initConverse(
-                ['send'], ['rosterGroupsFetched'], {},
+                {'connection': ['send']}, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 await test_utils.waitUntilDiscoConfirmed(
@@ -541,7 +541,7 @@
 
 
             it("remembers the toggle state of the bookmarks list", mock.initConverse(
-                ['send'], ['rosterGroupsFetched'], {},
+                {'connection': ['send']}, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 test_utils.openControlBox();

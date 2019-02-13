@@ -61659,7 +61659,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         _converse.api.send(stanza);
       },
 
-      handleChatMarker(stanza, from_jid, is_carbon) {
+      handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact) {
         const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));
 
         if (to_bare_jid !== _converse.bare_jid) {
@@ -61679,8 +61679,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         } else {
           const marker = markers.pop();
 
-          if (marker.nodeName === 'markable' && !is_carbon) {
-            this.sendMarker(from_jid, stanza.getAttribute('id'), 'received');
+          if (marker.nodeName === 'markable') {
+            if (is_roster_contact && !is_carbon) {
+              this.sendMarker(from_jid, stanza.getAttribute('id'), 'received');
+            }
+
             return false;
           } else {
             const msgid = marker && marker.getAttribute('id'),
@@ -62221,7 +62224,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
               from_resource = Strophe.getResourceFromJid(from_jid),
               is_me = from_bare_jid === _converse.bare_jid;
-        let contact_jid;
+        let contact_jid,
+            is_roster_contact = false;
 
         if (is_me) {
           // I am the sender, so this must be a forwarded message...
@@ -62233,10 +62237,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         } else {
           contact_jid = from_bare_jid;
           await _converse.api.waitUntil('rosterContactsFetched');
+          is_roster_contact = !_.isUndefined(_converse.roster.get(contact_jid));
 
-          const roster_item = _converse.roster.get(contact_jid);
-
-          if (_.isUndefined(roster_item) && !_converse.allow_non_roster_messaging) {
+          if (!is_roster_contact && !_converse.allow_non_roster_messaging) {
             return;
           }
         } // Get chat box, but only create when the message has something to show to the user
@@ -62248,7 +62251,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         },
               chatbox = this.getChatBox(contact_jid, chatbox_attrs, has_body);
 
-        if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon)) {
+        if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
           const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
 
           if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {

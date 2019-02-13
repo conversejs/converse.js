@@ -324,7 +324,7 @@ converse.plugins.add('converse-chatboxes', {
                 _converse.api.send(stanza);
             },
 
-            handleChatMarker (stanza, from_jid, is_carbon) {
+            handleChatMarker (stanza, from_jid, is_carbon, is_roster_contact) {
                 const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));
                 if (to_bare_jid !== _converse.bare_jid) {
                     return false;
@@ -341,8 +341,10 @@ converse.plugins.add('converse-chatboxes', {
                     return false;
                 } else {
                     const marker = markers.pop();
-                    if (marker.nodeName === 'markable' && !is_carbon) {
-                        this.sendMarker(from_jid, stanza.getAttribute('id'), 'received');
+                    if (marker.nodeName === 'markable') {
+                        if (is_roster_contact && !is_carbon) {
+                            this.sendMarker(from_jid, stanza.getAttribute('id'), 'received');
+                        }
                         return false;
                     } else {
                         const msgid = marker && marker.getAttribute('id'),
@@ -820,7 +822,8 @@ converse.plugins.add('converse-chatboxes', {
                       from_resource = Strophe.getResourceFromJid(from_jid),
                       is_me = from_bare_jid === _converse.bare_jid;
 
-                let contact_jid;
+                let contact_jid,
+                    is_roster_contact = false;
                 if (is_me) {
                     // I am the sender, so this must be a forwarded message...
                     if (_.isNull(to_jid)) {
@@ -833,8 +836,8 @@ converse.plugins.add('converse-chatboxes', {
                 } else {
                     contact_jid = from_bare_jid;
                     await _converse.api.waitUntil('rosterContactsFetched');
-                    const roster_item = _converse.roster.get(contact_jid);
-                    if (_.isUndefined(roster_item) && !_converse.allow_non_roster_messaging) {
+                    is_roster_contact = !_.isUndefined(_converse.roster.get(contact_jid));
+                    if (!is_roster_contact && !_converse.allow_non_roster_messaging) {
                         return;
                     }
                 }
@@ -846,7 +849,7 @@ converse.plugins.add('converse-chatboxes', {
                 if (chatbox &&
                         !chatbox.handleMessageCorrection(stanza) &&
                         !chatbox.handleReceipt (stanza, from_jid, is_carbon, is_me) &&
-                        !chatbox.handleChatMarker(stanza, from_jid, is_carbon)) {
+                        !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
 
                     const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
                     if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {

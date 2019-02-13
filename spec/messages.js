@@ -2030,12 +2030,13 @@
 
     describe("A XEP-0333 Chat Marker", function () {
 
-        it("is sent when a markable message is received",
+        it("is sent when a markable message is received from a roster contact",
             mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current', 1);
+            _converse.emit('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid);
             const view = await _converse.api.chatviews.get(contact_jid);
@@ -2059,6 +2060,42 @@
                         `id="${sent_stanzas[0].nodeTree.getAttribute('id')}" `+
                         `to="${contact_jid}" type="chat" xmlns="jabber:client">`+
                 `<received id="${msgid}" xmlns="urn:xmpp:chat-markers:0"/>`+
+                `</message>`);
+            done();
+        }));
+
+        it("is not sent when a markable message is received from someone not on the roster",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
+                async function (done, _converse) {
+
+            _converse.emit('rosterContactsFetched');
+            const contact_jid = 'someone@localhost';
+            const msgid = u.getUniqueId();
+            const stanza = u.toStanza(`
+                <message from='${contact_jid}'
+                    id='${msgid}'
+                    type="chat"
+                    to='${_converse.jid}'>
+                  <body>My lord, dispatch; read o'er these articles.</body>
+                  <markable xmlns='urn:xmpp:chat-markers:0'/>
+                </message>`);
+
+            const sent_stanzas = [];
+            spyOn(_converse.connection, 'send').and.callFake(s => sent_stanzas.push(s));
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.api.chats.get().length == 2);
+            const sent_messages = sent_stanzas
+                .map(s => _.isElement(s) ? s : s.nodeTree)
+                .filter(e => e.nodeName === 'message');
+
+            // Only one message is sent out, and it's not a chat marker
+            expect(sent_messages.length).toBe(1);
+            expect(Strophe.serialize(sent_messages[0])).toBe(
+                `<message id="${sent_messages[0].getAttribute('id')}" to="someone@localhost" type="chat" xmlns="jabber:client">`+
+                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                    `<no-store xmlns="urn:xmpp:hints"/>`+
+                    `<no-permanent-store xmlns="urn:xmpp:hints"/>`+
                 `</message>`);
             done();
         }));

@@ -6,6 +6,7 @@
 - New language supported: Esperanto
 - Accessibility: Tag the chat-content as an ARIA live region, for screen readers
 - Set releases URL to new Github repo
+- Rudimentary support for XEP-0333 chat markers
 - #1369 Don't wrongly interpret message with `subject` as a topic change.
 - #1405 Status of contacts list are not displayed properly
 - #1408 New config option `roomconfig_whitelist`

@@ -1566,7 +1566,7 @@ The ``view_mode`` setting configures Converse's mode and resulting behavior.
     longer exist. Instead the standard ``converse.js`` build is used, together with
     the appropriate ``view_mode`` value.
 
-    Since verseion 4.0.0, there is now also only one CSS file to be used for all
+    Since version 4.0.0, there is now also only one CSS file to be used for all
     the different view modes, ``converse.css``.
 
     The ``converse-muc-embedded.js`` build can still be built, because it's smaller

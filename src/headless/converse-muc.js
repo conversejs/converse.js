@@ -989,7 +989,35 @@ converse.plugins.add('converse-muc', {
                      acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
             },
 
+            reflectionHandled (stanza) {
+                /* Handle a MUC reflected message and return true if so.
+                 *
+                 * Parameters:
+                 *  (XMLElement) stanza: The message stanza
+                 */
+                const from = stanza.getAttribute('from');
+                const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
+                if (own_message) {
+                    const msgid = stanza.getAttribute('id'),
+                          jid = stanza.getAttribute('from');
+
+                    // TODO: use stanza-id?
+                    if (msgid) {
+                        const msg = this.messages.findWhere({'msgid': msgid, 'from': jid});
+                        if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
+                            msg.save({'received': moment().format()});
+                            return true;
+                        }
+                    }
+                }
+            },
+
             subjectChangeHandled (attrs) {
+                /* Handle a subject change and return `true` if so.
+                 *
+                 * Parameters:
+                 *  (Object) attrs: The message attributes
+                 */
                 if (attrs.subject && !attrs.thread && !attrs.message) {
                     // https://xmpp.org/extensions/xep-0045.html#subject-mod
                     // -----------------------------------------------------
@@ -1000,6 +1028,18 @@ converse.plugins.add('converse-muc', {
                     return true;
                 }
                 return false;
+            },
+
+            ignorableCSN (attrs) {
+                /* Is this a chat state notification that can be ignored,
+                 * because it's old or because it's from us.
+                 *
+                 * Parameters:
+                 *  (Object) attrs: The message attributes
+                 */
+                const is_csn = u.isOnlyChatStateNotification(attrs),
+                        own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
+                return is_csn && (attrs.is_delayed || own_message);
             },
 
             async onMessage (stanza) {
@@ -1025,15 +1065,13 @@ converse.plugins.add('converse-muc', {
                 if (!this.handleMessageCorrection(stanza) &&
                     !this.isReceipt(stanza) &&
                     !this.isChatMarker(stanza) &&
-                    !this.subjectChangeHandled(attrs)) {
+                    !this.reflectionHandled(stanza) &&
+                    !this.subjectChangeHandled(attrs) &&
+                    !this.ignorableCSN(attrs) &&
+                    (attrs['chat_state'] || !u.isEmptyMessage(attrs))) {
 
-                    const is_csn = u.isOnlyChatStateNotification(attrs),
-                          own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
-                    if (is_csn && (attrs.is_delayed || own_message)) {
-                        // No need showing delayed or our own CSN messages
-                        return;
-                    }
-                    const msg = await this.createMessage(stanza, original_stanza);
+                    const msg = this.messages.create(attrs);
+                    this.incrementUnreadMsgCounter(msg);
                     if (forwarded && msg && msg.get('sender')  === 'me') {
                         msg.save({'received': moment().format()});
                     }

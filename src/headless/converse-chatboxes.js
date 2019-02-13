@@ -637,19 +637,6 @@ converse.plugins.add('converse-chatboxes', {
                 return attrs;
             },
 
-            async createMessage (stanza, original_stanza) {
-                const msgid = stanza.getAttribute('id'),
-                      message = msgid && this.messages.findWhere({msgid});
-                if (!message) {
-                    // Only create the message when we're sure it's not a duplicate
-                    const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
-                    if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
-                        const msg = this.messages.create(attrs);
-                        this.incrementUnreadMsgCounter(msg);
-                    }
-                }
-            },
-
             isHidden () {
                 /* Returns a boolean to indicate whether a newly received
                  * message will be visible to the user or not.
@@ -855,11 +842,17 @@ converse.plugins.add('converse-chatboxes', {
                 const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0,
                       chatbox_attrs = {'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')},
                       chatbox = this.getChatBox(contact_jid, chatbox_attrs, has_body);
+
                 if (chatbox &&
                         !chatbox.handleMessageCorrection(stanza) &&
                         !chatbox.handleReceipt (stanza, from_jid, is_carbon, is_me) &&
                         !chatbox.handleChatMarker(stanza, from_jid, is_carbon)) {
-                    await chatbox.createMessage(stanza, original_stanza);
+
+                    const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
+                    if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
+                        const msg = chatbox.messages.create(attrs);
+                        chatbox.incrementUnreadMsgCounter(msg);
+                    }
                 }
                 _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
             },

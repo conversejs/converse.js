@@ -79,26 +79,17 @@ converse.plugins.add('converse-disco', {
                 });
             },
 
-            hasFeature (feature) {
+            async hasFeature (feature) {
                 /* Returns a Promise which resolves with a map indicating
                  * whether a given feature is supported.
                  *
                  * Parameters:
                  *    (String) feature - The feature that might be supported.
                  */
-                const entity = this;
-                return new Promise((resolve, reject) => {
-                    function fulfillPromise () {
-                        if (entity.features.findWhere({'var': feature})) {
-                            resolve(entity);
-                        } else {
-                            resolve();
-                        }
-                    }
-                    entity.waitUntilFeaturesDiscovered
-                        .then(fulfillPromise)
-                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                });
+                await this.waitUntilFeaturesDiscovered
+                if (this.features.findWhere({'var': feature})) {
+                    return this;
+                }
             },
 
             onFeatureAdded (feature) {

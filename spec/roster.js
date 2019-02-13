@@ -31,7 +31,7 @@
     describe("The Contacts Roster", function () {
 
         it("supports roster versioning",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
@@ -90,7 +90,7 @@
         describe("The live filter", function () {
 
             it("will only appear when roster contacts flow over the visible area",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -136,7 +136,7 @@
             }));
 
             it("can be used to filter the contacts shown",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -202,7 +202,7 @@
             }));
 
             it("will also filter out contacts added afterwards",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -252,7 +252,7 @@
             }));
 
             it("can be used to filter the groups shown",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -308,7 +308,7 @@
             }));
 
             it("has a button with which its contents can be cleared",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -333,7 +333,7 @@
             }));
 
             it("can be used to filter contacts by their chat state",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -374,7 +374,7 @@
         describe("A Roster Group", function () {
 
             it("can be used to organize existing contacts",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -412,7 +412,7 @@
             }));
 
             it("gets created when a contact's \"groups\" attribute changes",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -457,7 +457,7 @@
             }));
 
             it("can share contacts with other roster groups", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -490,7 +490,7 @@
             }));
 
             it("remembers whether it is closed or opened",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -535,7 +535,7 @@
             }
 
             it("can be collapsed under their own header", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -549,7 +549,7 @@
             }));
 
             it("can be added to the roster",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -566,7 +566,7 @@
             }));
 
             it("are shown in the roster when show_only_online_users", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -583,7 +583,7 @@
             }));
 
             it("are shown in the roster when hide_offline_users", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -603,7 +603,7 @@
             }));
 
             it("can be removed by the user", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -643,7 +643,7 @@
             }));
 
             it("do not have a header if there aren't any", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -659,9 +659,9 @@
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
                     if (typeof callback === "function") { return callback(); }
                 });
-                await test_utils.waitUntil(function () {
-                    var $pending_contacts = $(_converse.rosterview.get('Pending contacts').el);
-                    return $pending_contacts.is(':visible') && $pending_contacts.find('li:visible').length;
+                await test_utils.waitUntil(() => {
+                    const el = _converse.rosterview.get('Pending contacts').el;
+                    return u.isVisible(el) && _.filter(el.querySelectorAll('li'), li => u.isVisible(li)).length;
                 }, 700)
                             
                 $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')")
@@ -674,7 +674,7 @@
             }));
 
             it("is shown when a new private message is received",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -694,7 +694,7 @@
             }));
 
             it("can be added to the roster and they will be sorted alphabetically",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -725,13 +725,12 @@
         });
 
         describe("Existing Contacts", function () {
-            var _addContacts = function (_converse) {
-                test_utils.createContacts(_converse, 'current')
-                    .openControlBox()
-            };
+            function _addContacts (_converse) {
+                test_utils.createContacts(_converse, 'current').openControlBox()
+            }
 
             it("can be collapsed under their own header", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -747,7 +746,7 @@
             }));
 
             it("will be hidden when appearing under a collapsed group", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -774,7 +773,7 @@
             }));
 
             it("can be added to the roster and they will be sorted alphabetically", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -804,7 +803,7 @@
             }));
 
             it("can be removed by the user", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -836,7 +835,7 @@
             }));
 
             it("do not have a header if there aren't any", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -866,7 +865,7 @@
             }));
 
             it("can change their status to online and be sorted alphabetically", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -891,7 +890,7 @@
             }));
 
             it("can change their status to busy and be sorted alphabetically", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -918,7 +917,7 @@
             }));
 
             it("can change their status to away and be sorted alphabetically", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -945,7 +944,7 @@
             }));
 
             it("can change their status to xa and be sorted alphabetically", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -972,7 +971,7 @@
             }));
 
             it("can change their status to unavailable and be sorted alphabetically", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -1000,7 +999,7 @@
             }));
 
             it("are ordered according to status: online, busy, away, xa, unavailable, offline", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -1101,7 +1100,7 @@
         describe("Requesting Contacts", function () {
 
             it("can be added to the roster and they will be sorted alphabetically",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -1137,7 +1136,7 @@
             }));
 
             it("do not have a header if there aren't any", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -1164,7 +1163,7 @@
             }));
 
             it("can be collapsed under their own header", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -1180,7 +1179,7 @@
             }));
 
             it("can have their requests accepted by the user", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1203,7 +1202,7 @@
             }));
 
             it("can have their requests denied by the user", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -1227,7 +1226,7 @@
                 });
             }));
 
-            it("are persisted even if other contacts' change their presence ", mock.initConverseWithPromises(
+            it("are persisted even if other contacts' change their presence ", mock.initConverse(
                 null, ['rosterGroupsFetched'], {}, function (done, _converse) {
 
                 /* This is a regression test.
@@ -1275,7 +1274,7 @@
         describe("All Contacts", function () {
 
             it("are saved to, and can be retrieved from browserStorage",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -1303,7 +1302,7 @@
             }));
 
             it("will show fullname and jid properties on tooltip", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 

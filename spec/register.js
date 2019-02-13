@@ -9,7 +9,7 @@
     describe("The Registration Panel", function () {
 
         it("is not available unless allow_registration=true",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: false },
@@ -23,7 +23,7 @@
         }));
 
         it("can be opened by clicking on the registration tab",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
@@ -44,7 +44,7 @@
         }));
 
         it("allows the user to choose an XMPP provider's domain",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
@@ -80,7 +80,7 @@
         }));
 
         it("will render a registration form as received from the XMPP provider",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
@@ -136,7 +136,7 @@
         }));
 
         it("will set form_type to legacy and submit it as legacy",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },
@@ -193,7 +193,7 @@
         }));
 
         it("will set form_type to xform and submit it as xform",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: true },

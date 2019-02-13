@@ -62984,7 +62984,7 @@ function cleanup() {
   initClientConfig();
 }
 
-_converse.initialize = function (settings, callback) {
+_converse.initialize = async function (settings, callback) {
   settings = !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(settings) ? settings : {};
   const init_promise = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].getResolveablePromise();
 
@@ -63821,17 +63821,22 @@ _converse.initialize = function (settings, callback) {
     this.connection = settings.connection;
   }
 
-  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {
+  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(_converse.connection, 'service') === 'jasmine tests') {
     finishInitialization();
     return _converse;
-  } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"])) {
-    finishInitialization();
-  } else {
-    _i18n__WEBPACK_IMPORTED_MODULE_6__["default"].fetchTranslations(_converse.locale, _converse.locales, _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
+  } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"])) {
+    const url = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
       'locale': _converse.locale
-    })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).finally(finishInitialization).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL));
+    });
+
+    try {
+      await _i18n__WEBPACK_IMPORTED_MODULE_6__["default"].fetchTranslations(_converse.locale, _converse.locales, url);
+    } catch (e) {
+      _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL);
+    }
   }
 
+  finishInitialization();
   return init_promise;
 };
 /**
@@ -66982,6 +66987,35 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }
       },
 
+      isReceipt(stanza) {
+        return sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).length > 0;
+      },
+
+      isChatMarker(stanza) {
+        return sizzle(`received[xmlns="${Strophe.NS.MARKERS}"],
+                     displayed[xmlns="${Strophe.NS.MARKERS}"],
+                     acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
+      },
+
+      subjectChangeHandled(attrs) {
+        if (attrs.subject && !attrs.thread && !attrs.message) {
+          // https://xmpp.org/extensions/xep-0045.html#subject-mod
+          // -----------------------------------------------------
+          // The subject is changed by sending a message of type "groupchat" to the <room@service>,
+          // where the <message/> MUST contain a <subject/> element that specifies the new subject but
+          // MUST NOT contain a <body/> element (or a <thread/> element).
+          _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].safeSave(this, {
+            'subject': {
+              'author': attrs.nick,
+              'text': attrs.subject || ''
+            }
+          });
+          return true;
+        }
+
+        return false;
+      },
+
       async onMessage(stanza) {
         /* Handler for all MUC messages sent to this groupchat.
          *
@@ -67006,22 +67040,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           return;
         }
 
-        if (!this.handleMessageCorrection(stanza)) {
-          if (attrs.subject && !attrs.thread && !attrs.message) {
-            // https://xmpp.org/extensions/xep-0045.html#subject-mod
-            // -----------------------------------------------------
-            // The subject is changed by sending a message of type "groupchat" to the <room@service>,
-            // where the <message/> MUST contain a <subject/> element that specifies the new subject but
-            // MUST NOT contain a <body/> element (or a <thread/> element).
-            _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].safeSave(this, {
-              'subject': {
-                'author': attrs.nick,
-                'text': attrs.subject || ''
-              }
-            });
-            return;
-          }
-
+        if (!this.handleMessageCorrection(stanza) && !this.isReceipt(stanza) && !this.isChatMarker(stanza) && !this.subjectChangeHandled(attrs)) {
           const is_csn = _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isOnlyChatStateNotification(attrs),
                 own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
 
@@ -67030,15 +67049,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
             return;
           }
 
-          const msg = await this.messages.create(attrs);
+          const msg = await this.createMessage(stanza, original_stanza);
 
           if (forwarded && msg && msg.get('sender') === 'me') {
             msg.save({
               'received': moment().format()
             });
           }
-
-          this.incrementUnreadMsgCounter(msg);
         }
 
         if (attrs.nick !== this.get('nick')) {
@@ -69719,6 +69736,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const u = {};
+
+u.toStanza = function (string) {
+  return strophe_js__WEBPACK_IMPORTED_MODULE_2__["Strophe"].xmlHtmlNode(string).firstElementChild;
+};
 
 u.getLongestSubstring = function (string, candidates) {
   function reducer(accumulator, current_value) {

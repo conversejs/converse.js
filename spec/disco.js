@@ -15,7 +15,7 @@
         describe("Whenever converse.js queries a server for its features", function () {
 
             it("stores the features it receives",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['discoInitialized'], {},
                     function (done, _converse) {
 
@@ -183,7 +183,7 @@
 
         describe("Whenever converse.js discovers a new server feature", function () {
            it("emits the serviceDiscovered event",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['discoInitialized'], {},
                     function (done, _converse) {
 

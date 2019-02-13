@@ -9,7 +9,7 @@
     describe("The Minimized Chats Widget", function () {
 
         it("shows chats that have been minimized",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
@@ -48,7 +48,7 @@
         }));
 
         it("can be toggled to hide or show minimized chats",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
@@ -79,7 +79,7 @@
         }));
 
         it("shows the number messages received to minimized chats",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 function (done, _converse) {
 
@@ -158,7 +158,7 @@
         }));
 
         it("shows the number messages received to minimized groupchats",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 

@@ -52,6 +52,7 @@
     "eslint": "4.19.1",
     "eslint-plugin-lodash": "^2.3.3",
     "exports-loader": "^0.7.0",
+    "fast-text-encoding": "^1.0.0",
     "filesize": "^3.6.1",
     "formdata-polyfill": "^3.0.12",
     "hellojs": "^1.16.1",
@@ -62,7 +63,7 @@
     "jed": "1.1.1",
     "jquery": "3.2.1",
     "jsdoc": "^3.5.5",
-    "lerna": "^3.10.5",
+    "lerna": "^3.11.1",
     "lodash-template-loader": "^2.0.0",
     "lodash-template-webpack-loader": "jcbrand/lodash-template-webpack-loader",
     "long": "^3.1.0",
@@ -84,8 +85,5 @@
     "webpack": "^4.0.1",
     "webpack-cli": "^2.1.4",
     "xss": "^0.3.3"
-  },
-  "dependencies": {
-    "fast-text-encoding": "^1.0.0"
   }
 }

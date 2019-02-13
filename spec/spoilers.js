@@ -10,9 +10,9 @@
     describe("A spoiler message", function () {
 
         it("can be received with a hint",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                async (done, _converse) => {
 
             test_utils.createContacts(_converse, 'current');
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -47,9 +47,9 @@
         }));
 
         it("can be received without a hint",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                async (done, _converse) => {
 
             test_utils.createContacts(_converse, 'current');
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -80,9 +80,9 @@
         }));
 
         it("can be sent without a hint",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                async (done, _converse) => {
 
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
@@ -155,9 +155,9 @@
         }));
 
         it("can be sent with a hint",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                async (done, _converse) => {
 
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');

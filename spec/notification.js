@@ -72,7 +72,8 @@
                                 to: 'dummy@localhost',
                                 type: 'groupchat'
                             }).c('body').t(message).tree();
-                        await _converse.chatboxes.onMessage(msg); // This will emit 'message'
+
+                        _converse.connection._dataRecv(test_utils.createRequest(msg));
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(_converse.showMessageNotification).toHaveBeenCalled();

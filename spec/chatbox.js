@@ -144,6 +144,7 @@
                 null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
+                _converse.emit('rosterContactsFetched');
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const stanza = u.toStanza(`
                     <message from="${sender_jid}"
@@ -154,6 +155,7 @@
 
                 const message_promise = new Promise(resolve => _converse.api.listen.on('message', resolve));
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                await test_utils.waitUntil(() => _converse.api.chats.get().length === 2);
                 await test_utils.waitUntil(() => message_promise);
                 expect(_converse.chatboxviews.keys().length).toBe(2);
                 done();
@@ -568,6 +570,7 @@
                         async function (done, _converse) {
 
                     test_utils.createContacts(_converse, 'current');
+                    _converse.emit('rosterContactsFetched');
                     test_utils.openControlBox();
 
                     spyOn(_converse, 'emit');
@@ -581,6 +584,7 @@
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                     await _converse.chatboxes.onMessage(msg);
                     expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                    expect(_converse.api.chats.get().length).toBe(1);
                     done();
                 }));
 
@@ -1054,6 +1058,7 @@
                             async function (done, _converse) {
 
                         test_utils.createContacts(_converse, 'current', 3);
+                        _converse.emit('rosterContactsFetched');
                         test_utils.openControlBox();
 
                         spyOn(_converse, 'emit');
@@ -1209,6 +1214,7 @@
                     async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current');
+                _converse.emit('rosterContactsFetched');
                 // initial state
                 expect(_converse.msg_counter).toBe(0);
                 const message = 'This message will always increment the message counter from zero',
@@ -1228,9 +1234,8 @@
                 // leave converse-chat page
                 _converse.windowState = 'hidden';
                 _converse.chatboxes.onMessage(msgFactory());
-                await test_utils.waitUntil(() => _converse.api.chats.get().length)
+                await test_utils.waitUntil(() => _converse.api.chats.get().length === 2)
                 let view = _converse.chatboxviews.get(sender_jid);
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 expect(_converse.msg_counter).toBe(1);
 
                 // come back to converse-chat page
@@ -1244,9 +1249,8 @@
 
                 // check that msg_counter is incremented from zero again
                 _converse.chatboxes.onMessage(msgFactory());
-                await test_utils.waitUntil(() => _converse.api.chats.get().length)
+                await test_utils.waitUntil(() => _converse.api.chats.get().length === 2)
                 view = _converse.chatboxviews.get(sender_jid);
-                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 expect(u.isVisible(view.el)).toBeTruthy();
                 expect(_converse.msg_counter).toBe(1);
                 done();

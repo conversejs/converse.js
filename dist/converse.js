@@ -62023,23 +62023,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return attrs;
       },
 
-      async createMessage(stanza, original_stanza) {
-        const msgid = stanza.getAttribute('id'),
-              message = msgid && this.messages.findWhere({
-          msgid
-        });
-
-        if (!message) {
-          // Only create the message when we're sure it's not a duplicate
-          const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
-
-          if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
-            const msg = this.messages.create(attrs);
-            this.incrementUnreadMsgCounter(msg);
-          }
-        }
-      },
-
       isHidden() {
         /* Returns a boolean to indicate whether a newly received
          * message will be visible to the user or not.
@@ -62249,6 +62232,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           contact_jid = Strophe.getBareJidFromJid(to_jid);
         } else {
           contact_jid = from_bare_jid;
+          await _converse.api.waitUntil('rosterContactsFetched');
+
+          const roster_item = _converse.roster.get(contact_jid);
+
+          if (_.isUndefined(roster_item) && !_converse.allow_non_roster_messaging) {
+            return;
+          }
         } // Get chat box, but only create when the message has something to show to the user
 
 
@@ -62259,7 +62249,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
               chatbox = this.getChatBox(contact_jid, chatbox_attrs, has_body);
 
         if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon)) {
-          await chatbox.createMessage(stanza, original_stanza);
+          const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
+
+          if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
+            const msg = chatbox.messages.create(attrs);
+            chatbox.incrementUnreadMsgCounter(msg);
+          }
         }
 
         _converse.emit('message', {
@@ -66997,7 +66992,41 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
                      acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
       },
 
+      reflectionHandled(stanza) {
+        /* Handle a MUC reflected message and return true if so.
+         *
+         * Parameters:
+         *  (XMLElement) stanza: The message stanza
+         */
+        const from = stanza.getAttribute('from');
+        const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
+
+        if (own_message) {
+          const msgid = stanza.getAttribute('id'),
+                jid = stanza.getAttribute('from'); // TODO: use stanza-id?
+
+          if (msgid) {
+            const msg = this.messages.findWhere({
+              'msgid': msgid,
+              'from': jid
+            });
+
+            if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
+              msg.save({
+                'received': moment().format()
+              });
+              return true;
+            }
+          }
+        }
+      },
+
       subjectChangeHandled(attrs) {
+        /* Handle a subject change and return `true` if so.
+         *
+         * Parameters:
+         *  (Object) attrs: The message attributes
+         */
         if (attrs.subject && !attrs.thread && !attrs.message) {
           // https://xmpp.org/extensions/xep-0045.html#subject-mod
           // -----------------------------------------------------
@@ -67014,6 +67043,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }
 
         return false;
+      },
+
+      ignorableCSN(attrs) {
+        /* Is this a chat state notification that can be ignored,
+         * because it's old or because it's from us.
+         *
+         * Parameters:
+         *  (Object) attrs: The message attributes
+         */
+        const is_csn = _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isOnlyChatStateNotification(attrs),
+              own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
+        return is_csn && (attrs.is_delayed || own_message);
       },
 
       async onMessage(stanza) {
@@ -67040,16 +67081,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           return;
         }
 
-        if (!this.handleMessageCorrection(stanza) && !this.isReceipt(stanza) && !this.isChatMarker(stanza) && !this.subjectChangeHandled(attrs)) {
-          const is_csn = _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isOnlyChatStateNotification(attrs),
-                own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
-
-          if (is_csn && (attrs.is_delayed || own_message)) {
-            // No need showing delayed or our own CSN messages
-            return;
-          }
-
-          const msg = await this.createMessage(stanza, original_stanza);
+        if (!this.handleMessageCorrection(stanza) && !this.isReceipt(stanza) && !this.isChatMarker(stanza) && !this.reflectionHandled(stanza) && !this.subjectChangeHandled(attrs) && !this.ignorableCSN(attrs) && (attrs['chat_state'] || !_utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isEmptyMessage(attrs))) {
+          const msg = this.messages.create(attrs);
+          this.incrementUnreadMsgCounter(msg);
 
           if (forwarded && msg && msg.get('sender') === 'me') {
             msg.save({

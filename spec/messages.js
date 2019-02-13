@@ -2172,7 +2172,6 @@
             done();
         }));
 
-
         it("can not be expected to have a unique id attribute",
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
@@ -2201,6 +2200,62 @@
             await view.model.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
+            done();
+        }));
+
+        it("is ignored if it has the same stanza-id of an already received on",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            const features = [
+                'http://jabber.org/protocol/muc',
+                'jabber:iq:register',
+                'muc_passwordprotected',
+                'muc_hidden',
+                'muc_temporary',
+                'muc_membersonly',
+                'muc_unmoderated',
+                'muc_nonanonymous',
+                Strophe.NS.SID,
+            ];
+            await test_utils.openAndEnterChatRoom(_converse, 'room', 'muc.example.com', 'dummy', features);
+            const view = _converse.chatboxviews.get('room@muc.example.com');
+            spyOn(view.model, 'isDuplicate').and.callThrough();
+            let stanza = u.toStanza(`
+                <message xmlns="jabber:client"
+                         from="room@muc.example.com/some1"
+                         to="${_converse.connection.jid}"
+                         type="groupchat">
+                    <body>Typical body text</body>
+                    <stanza-id xmlns="urn:xmpp:sid:0"
+                               id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
+                               by="room@muc.example.com"/>
+                    <origin-id xmlns="urn:xmpp:sid:0" id="de305d54-75b4-431b-adb2-eb6b9e546013"/>
+                </message>`);
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.api.chats.get().length);
+            await test_utils.waitUntil(() => view.model.messages.length === 1);
+            await test_utils.waitUntil(() => view.model.isDuplicate.calls.count() === 1);
+            let result = await view.model.isDuplicate.calls.all()[0].returnValue;
+            expect(result).toBe(false);
+
+            stanza = u.toStanza(`
+                <message xmlns="jabber:client"
+                         from="room@muc.example.com/some1"
+                         to="${_converse.connection.jid}"
+                         type="groupchat">
+                    <body>Typical body text</body>
+                    <stanza-id xmlns="urn:xmpp:sid:0"
+                               id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
+                               by="room@muc.example.com"/>
+                    <origin-id xmlns="urn:xmpp:sid:0" id="de305d54-75b4-431b-adb2-eb6b9e546013"/>
+                </message>`);
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => view.model.isDuplicate.calls.count() === 2);
+            result = await view.model.isDuplicate.calls.all()[1].returnValue;
+            expect(result).toBe(true);
+            expect(view.model.messages.length).toBe(1);
             done();
         }));
 

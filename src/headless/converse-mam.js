@@ -32,11 +32,6 @@ function getMessageArchiveID (stanza) {
     if (!_.isUndefined(result)) {
         return result.getAttribute('id');
     }
-    // See: https://xmpp.org/extensions/xep-0313.html#archives_id
-    const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-    if (!_.isUndefined(stanza_id)) {
-        return stanza_id.getAttribute('id');
-    }
 }
 
 function queryForArchivedMessages (_converse, options, callback, errback) {

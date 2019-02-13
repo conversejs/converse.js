@@ -61982,6 +61982,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
               spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
               delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
+              stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop(),
               chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
         const attrs = {
@@ -61992,6 +61993,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'message': _converse.chatboxes.getMessageBody(stanza) || undefined,
           'msgid': stanza.getAttribute('id'),
           'references': this.getReferencesFromStanza(stanza),
+          'stanza_id': stanza_id ? stanza_id.getAttribute('id') : undefined,
+          'stanza_id_by_jid': stanza_id ? stanza_id.getAttribute('by') : undefined,
           'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
           'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
           'time': delay ? delay.getAttribute('stamp') : moment().format(),
@@ -65219,13 +65222,6 @@ function getMessageArchiveID(stanza) {
 
   if (!_.isUndefined(result)) {
     return result.getAttribute('id');
-  } // See: https://xmpp.org/extensions/xep-0313.html#archives_id
-
-
-  const stanza_id = sizzle__WEBPACK_IMPORTED_MODULE_3___default()(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-
-  if (!_.isUndefined(stanza_id)) {
-    return stanza_id.getAttribute('id');
   }
 }
 
@@ -66942,27 +66938,25 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         return data;
       },
 
-      isDuplicate(message, original_stanza) {
-        // XXX: original_stanza is not used here, but in converse-mam
-        const msgid = message.getAttribute('id'),
-              jid = message.getAttribute('from');
+      async isDuplicate(message, original_stanza) {
+        const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, message).pop();
 
-        if (msgid) {
-          const msg = this.messages.findWhere({
-            'msgid': msgid,
-            'from': jid
-          });
-
-          if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
-            msg.save({
-              'received': moment().format()
-            });
-          }
-
-          return msg;
+        if (!stanza_id) {
+          return;
         }
 
-        return false;
+        const by_jid = stanza_id.getAttribute('by');
+        const result = await _converse.api.disco.supports(Strophe.NS.SID, by_jid);
+
+        if (!result.length) {
+          return false;
+        }
+
+        const msg = this.messages.findWhere({
+          'stanza_id': stanza_id.getAttribute('id'),
+          'stanza_id_by_jid': by_jid
+        });
+        return !_.isNil(msg);
       },
 
       fetchFeaturesIfConfigurationChanged(stanza) {
@@ -67067,7 +67061,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           stanza = forwarded.querySelector('message');
         }
 
-        if (this.isDuplicate(stanza, original_stanza)) {
+        if (await this.isDuplicate(stanza, original_stanza)) {
           return;
         }
 

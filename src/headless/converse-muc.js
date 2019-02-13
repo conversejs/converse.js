@@ -948,20 +948,21 @@ converse.plugins.add('converse-muc', {
                 return data;
             },
 
-            isDuplicate (message, original_stanza) {
-                // XXX: original_stanza is not used here, but in converse-mam
-                const msgid = message.getAttribute('id'),
-                      jid = message.getAttribute('from');
-
-                if (msgid) {
-                    const msg = this.messages.findWhere({'msgid': msgid, 'from': jid});
-                    if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
-                        msg.save({'received': moment().format()});
-                    }
-                    return msg;
+            async isDuplicate (message, original_stanza) {
+                const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, message).pop();
+                if (!stanza_id) {
+                    return false;
                 }
-                return false;
-
+                const by_jid = stanza_id.getAttribute('by');
+                const result = await _converse.api.disco.supports(Strophe.NS.SID, by_jid);
+                if (!result.length) {
+                    return false;
+                }
+                const msg = this.messages.findWhere({
+                    'stanza_id': stanza_id.getAttribute('id'),
+                    'stanza_id_by_jid': by_jid
+                });
+                return !_.isNil(msg);
             },
 
             fetchFeaturesIfConfigurationChanged (stanza) {
@@ -1055,7 +1056,7 @@ converse.plugins.add('converse-muc', {
                 if (forwarded) {
                     stanza = forwarded.querySelector('message');
                 }
-                if (this.isDuplicate(stanza, original_stanza)) {
+                if (await this.isDuplicate(stanza, original_stanza)) {
                     return;
                 }
                 const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);

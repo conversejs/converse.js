@@ -11978,6 +11978,7 @@ body.converse-fullscreen {
       font-family: var(--normal_font); }
     #conversejs .message.chat-msg .chat-msg__heading .chat-msg__time {
       padding-left: 0.25em;
+      padding-right: 0.25em;
       color: var(--text-color-lighten-15-percent); }
   #conversejs .message.chat-msg.chat-msg--action .chat-msg__content {
     flex-wrap: wrap;

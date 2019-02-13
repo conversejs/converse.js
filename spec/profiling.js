@@ -7,7 +7,7 @@
 
     describe("Profiling", function() {
         xit("adds hundreds of contacts to the roster",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -51,7 +51,7 @@
         }));
 
         xit("adds hundreds of contacts to the roster, with roster groups",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
             

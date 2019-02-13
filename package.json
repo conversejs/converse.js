@@ -32,13 +32,13 @@
     "browser": "*"
   },
   "devDependencies": {
-    "@babel/cli": "^7.1.0",
-    "@babel/core": "^7.1.0",
-    "@babel/preset-env": "^7.1.0",
+    "@babel/cli": "^7.2.2",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
     "@converse/headless": "^4.0.2",
     "@fortawesome/fontawesome-free": "5.3.1",
     "awesomplete-avoid-xss": "^1.1.2",
-    "babel-loader": "^8.0.0",
+    "babel-loader": "^8.0.4",
     "backbone.nativeview": "^0.3.3",
     "backbone.overview": "^1.0.2",
     "backbone.vdomview": "^1.0.1",
@@ -52,6 +52,7 @@
     "eslint": "4.19.1",
     "eslint-plugin-lodash": "^2.3.3",
     "exports-loader": "^0.7.0",
+    "fast-text-encoding": "^1.0.0",
     "filesize": "^3.6.1",
     "formdata-polyfill": "^3.0.12",
     "hellojs": "^1.16.1",
@@ -62,7 +63,7 @@
     "jed": "1.1.1",
     "jquery": "3.2.1",
     "jsdoc": "^3.5.5",
-    "lerna": "^3.10.5",
+    "lerna": "^3.11.1",
     "lodash-template-loader": "^2.0.0",
     "lodash-template-webpack-loader": "jcbrand/lodash-template-webpack-loader",
     "long": "^3.1.0",
@@ -84,8 +85,5 @@
     "webpack": "^4.0.1",
     "webpack-cli": "^2.1.4",
     "xss": "^0.3.3"
-  },
-  "dependencies": {
-    "fast-text-encoding": "^1.0.0"
   }
 }

@@ -14,9 +14,9 @@
                 describe("an HTML5 Notification", function () {
 
                     it("is shown when a new private message is received",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched'], {},
-                            async function (done, _converse) {
+                            async (done, _converse) => {
 
                         // TODO: not yet testing show_desktop_notifications setting
                         test_utils.createContacts(_converse, 'current');
@@ -42,9 +42,9 @@
                     }));
 
                     it("is shown when you are mentioned in a groupchat",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched'], {},
-                            async function (done, _converse) {
+                            async (done, _converse) => {
 
                         await test_utils.createContacts(_converse, 'current');
                         await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
@@ -72,7 +72,8 @@
                                 to: 'dummy@localhost',
                                 type: 'groupchat'
                             }).c('body').t(message).tree();
-                        await _converse.chatboxes.onMessage(msg); // This will emit 'message'
+
+                        _converse.connection._dataRecv(test_utils.createRequest(msg));
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(_converse.showMessageNotification).toHaveBeenCalled();
@@ -83,9 +84,9 @@
                     }));
 
                     it("is shown for headline messages",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched'], {},
-                            async function (done, _converse) {
+                            async (done, _converse) => {
 
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
                         spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
@@ -112,11 +113,11 @@
                         done();
                     }));
 
-                    it("is not shown for full JID headline messages if allow_non_roster_messaging is false", mock.initConverse(function (_converse) {
+                    it("is not shown for full JID headline messages if allow_non_roster_messaging is false", mock.initConverse((done, _converse) => {
                         _converse.allow_non_roster_messaging = false;
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
-                        var stanza = $msg({
+                        const stanza = $msg({
                                 'type': 'headline',
                                 'from': 'someone@notify.example.com',
                                 'to': 'dummy@localhost',
@@ -132,30 +133,33 @@
                                 'someone@notify.example.com')
                             ).toBeFalsy();
                         expect(_converse.showMessageNotification).not.toHaveBeenCalled();
+                        done();
                     }));
 
-                    it("is shown when a user changes their chat state (if show_chatstate_notifications is true)", mock.initConverse(function (_converse) {
+                    it("is shown when a user changes their chat state (if show_chatstate_notifications is true)", mock.initConverse((done, _converse) => {
                         // TODO: not yet testing show_desktop_notifications setting
                         _converse.show_chatstate_notifications = true;
 
                         test_utils.createContacts(_converse, 'current');
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         spyOn(_converse, 'showChatStateNotification');
-                        var jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        const jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                         _converse.roster.get(jid).presence.set('show', 'busy'); // This will emit 'contactStatusChanged'
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(_converse.showChatStateNotification).toHaveBeenCalled();
+                        done()
                     }));
                 });
             });
 
             describe("When a new contact request is received", function () {
-                it("an HTML5 Notification is received", mock.initConverse(function (_converse) {
+                it("an HTML5 Notification is received", mock.initConverse((done, _converse) => {
                     spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                     spyOn(_converse, 'showContactRequestNotification');
                     _converse.emit('contactRequest', {'fullname': 'Peter Parker', 'jid': 'peter@parker.com'});
                     expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                     expect(_converse.showContactRequestNotification).toHaveBeenCalled();
+                    done();
                 }));
             });
         });
@@ -164,9 +168,9 @@
             describe("A notification sound", function () {
 
                 it("is played when the current user is mentioned in a groupchat",
-                    mock.initConverseWithPromises(
+                    mock.initConverse(
                         null, ['rosterGroupsFetched'], {},
-                        async function (done, _converse) {
+                        async (done, _converse) => {
 
                     test_utils.createContacts(_converse, 'current');
                     await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');

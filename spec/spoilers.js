@@ -10,11 +10,12 @@
     describe("A spoiler message", function () {
 
         it("can be received with a hint",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                async (done, _converse) => {
 
             test_utils.createContacts(_converse, 'current');
+            _converse.emit('rosterContactsFetched');
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             /* <message to='romeo@montague.net/orchard' from='juliet@capulet.net/balcony' id='spoiler2'>
@@ -36,6 +37,7 @@
                 .tree();
             _converse.chatboxes.onMessage(msg);
 
+            await test_utils.waitUntil(() => _converse.api.chats.get().length === 2);
             const view = _converse.chatboxviews.get(sender_jid);
             await test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Max Frankfurter')
             expect(view.el.querySelector('.chat-msg__author').textContent.trim()).toBe('Max Frankfurter');
@@ -47,11 +49,12 @@
         }));
 
         it("can be received without a hint",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
-                async function (done, _converse) {
+                async (done, _converse) => {
 
             test_utils.createContacts(_converse, 'current');
+            _converse.emit('rosterContactsFetched');
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             /* <message to='romeo@montague.net/orchard' from='juliet@capulet.net/balcony' id='spoiler2'>
              *      <body>And at the end of the story, both of them die! It is so tragic!</body>
@@ -69,6 +72,7 @@
                       'xmlns': 'urn:xmpp:spoiler:0',
                     }).tree();
             _converse.chatboxes.onMessage(msg);
+            await test_utils.waitUntil(() => _converse.api.chats.get().length === 2);
             const view = _converse.chatboxviews.get(sender_jid);
             await test_utils.waitUntil(() => view.model.vcard.get('fullname') === 'Max Frankfurter')
             expect(_.includes(view.el.querySelector('.chat-msg__author').textContent, 'Max Frankfurter')).toBeTruthy();
@@ -80,9 +84,9 @@
         }));
 
         it("can be sent without a hint",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                async (done, _converse) => {
 
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');
@@ -155,9 +159,9 @@
         }));
 
         it("can be sent with a hint",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                async function (done, _converse) {
+                async (done, _converse) => {
 
             test_utils.createContacts(_converse, 'current', 1);
             _converse.emit('rosterContactsFetched');

@@ -88,10 +88,9 @@ converse.plugins.add('converse-roster', {
                 }
             } else {
                 try {
-                    await _converse.rostergroups.fetchRosterGroups().then(() => {
-                        _converse.emit('rosterGroupsFetched');
-                        return _converse.roster.fetchRosterContacts();
-                    });
+                    await _converse.rostergroups.fetchRosterGroups();
+                    _converse.emit('rosterGroupsFetched');
+                    await _converse.roster.fetchRosterContacts();
                     _converse.emit('rosterContactsFetched');
                 } catch (reason) {
                     _converse.log(reason, Strophe.LogLevel.ERROR);
@@ -403,7 +402,7 @@ converse.plugins.add('converse-roster', {
                 if (collection.length === 0 ||
                         (this.rosterVersioningSupported() && !_converse.session.get('roster_fetched'))) {
                     _converse.send_initial_presence = true;
-                    _converse.roster.fetchFromServer();
+                    return _converse.roster.fetchFromServer();
                 } else {
                     _converse.emit('cachedRoster', collection);
                 }
@@ -776,12 +775,13 @@ converse.plugins.add('converse-roster', {
                 * Returns a promise which resolves once the groups have been
                 * returned.
                 */
-                return new Promise((resolve, reject) => {
+                return new Promise(success => {
                     this.fetch({
-                        silent: true, // We need to first have all groups before
-                                    // we can start positioning them, so we set
-                                    // 'silent' to true.
-                        success: resolve
+                        success,
+                        // We need to first have all groups before
+                        // we can start positioning them, so we set
+                        // 'silent' to true.
+                        silent: true,
                     });
                 });
             }

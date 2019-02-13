@@ -8186,7 +8186,7 @@ module.exports = isSymbol;
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.10';
+  var VERSION = '4.17.11';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -8450,7 +8450,7 @@ module.exports = isSymbol;
   var reHasUnicode = RegExp('[' + rsZWJ + rsAstralRange  + rsComboRange + rsVarRange + ']');
 
   /** Used to detect strings that need a more robust regexp to match words. */
-  var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2,}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
+  var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
 
   /** Used to assign default `context` object properties. */
   var contextProps = [
@@ -9396,20 +9396,6 @@ module.exports = isSymbol;
       }
     }
     return result;
-  }
-
-  /**
-   * Gets the value at `key`, unless `key` is "__proto__".
-   *
-   * @private
-   * @param {Object} object The object to query.
-   * @param {string} key The key of the property to get.
-   * @returns {*} Returns the property value.
-   */
-  function safeGet(object, key) {
-    return key == '__proto__'
-      ? undefined
-      : object[key];
   }
 
   /**
@@ -11869,7 +11855,7 @@ module.exports = isSymbol;
           if (isArguments(objValue)) {
             newValue = toPlainObject(objValue);
           }
-          else if (!isObject(objValue) || (srcIndex && isFunction(objValue))) {
+          else if (!isObject(objValue) || isFunction(objValue)) {
             newValue = initCloneObject(srcValue);
           }
         }
@@ -14790,6 +14776,22 @@ module.exports = isSymbol;
         array[length] = isIndex(index, arrLength) ? oldArray[index] : undefined;
       }
       return array;
+    }
+
+    /**
+     * Gets the value at `key`, unless `key` is "__proto__".
+     *
+     * @private
+     * @param {Object} object The object to query.
+     * @param {string} key The key of the property to get.
+     * @returns {*} Returns the property value.
+     */
+    function safeGet(object, key) {
+      if (key == '__proto__') {
+        return;
+      }
+
+      return object[key];
     }
 
     /**
@@ -47779,7 +47781,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     };
 
     class AutoComplete {
-      constructor(el, config = {}) {
+      constructor(el) {
+        let config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         this.is_opened = false;
 
         if (u.hasClass('.suggestion-box', el)) {
@@ -49688,7 +49691,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.scrollDown();
       },
 
-      addSpinner(append = false) {
+      addSpinner() {
+        let append = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
         if (_.isNull(this.el.querySelector('.spinner'))) {
           if (append) {
             this.content.insertAdjacentHTML('beforeend', templates_spinner_html__WEBPACK_IMPORTED_MODULE_15___default()());
@@ -50209,7 +50214,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         return this;
       },
 
-      insertIntoTextArea(value, replace = false, correcting = false) {
+      insertIntoTextArea(value) {
+        let replace = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+        let correcting = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
         const textarea = this.el.querySelector('.chat-textarea');
 
         if (correcting) {
@@ -52106,7 +52113,7 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       _ = _converse$env._,
       moment = _converse$env.moment;
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-message-view', {
-  dependencies: ["converse-modal"],
+  dependencies: ["converse-modal", "converse-chatboxviews"],
 
   initialize() {
     /* The initialize function gets called as soon as the plugin is
@@ -59470,7 +59477,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         return u.slideIn(this.contacts_el);
       },
 
-      filterOutContacts(contacts = []) {
+      filterOutContacts() {
+        let contacts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
         /* Given a list of contacts, make sure they're filtered out
          * (aka hidden) and that all other contacts are visible.
          *
@@ -61650,7 +61659,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         _converse.api.send(stanza);
       },
 
-      handleChatMarker(stanza, from_jid, is_carbon) {
+      handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact) {
         const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));
 
         if (to_bare_jid !== _converse.bare_jid) {
@@ -61670,8 +61679,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         } else {
           const marker = markers.pop();
 
-          if (marker.nodeName === 'markable' && !is_carbon) {
-            this.sendMarker(from_jid, stanza.getAttribute('id'), 'received');
+          if (marker.nodeName === 'markable') {
+            if (is_roster_contact && !is_carbon) {
+              this.sendMarker(from_jid, stanza.getAttribute('id'), 'received');
+            }
+
             return false;
           } else {
             const msgid = marker && marker.getAttribute('id'),
@@ -61752,23 +61764,23 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'id': message.get('edited') && _converse.connection.getUniqueId() || message.get('msgid')
         }).c('body').t(message.get('message')).up().c(_converse.ACTIVE, {
           'xmlns': Strophe.NS.CHATSTATES
-        }).up();
+        }).root();
 
         if (message.get('type') === 'chat') {
           stanza.c('request', {
             'xmlns': Strophe.NS.RECEIPTS
-          }).up();
+          }).root();
         }
 
         if (message.get('is_spoiler')) {
           if (message.get('spoiler_hint')) {
             stanza.c('spoiler', {
               'xmlns': Strophe.NS.SPOILER
-            }, message.get('spoiler_hint')).up();
+            }, message.get('spoiler_hint')).root();
           } else {
             stanza.c('spoiler', {
               'xmlns': Strophe.NS.SPOILER
-            }).up();
+            }).root();
           }
         }
 
@@ -61784,20 +61796,27 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             attrs.uri = reference.uri;
           }
 
-          stanza.c('reference', attrs).up();
+          stanza.c('reference', attrs).root();
         });
 
         if (message.get('oob_url')) {
           stanza.c('x', {
             'xmlns': Strophe.NS.OUTOFBAND
-          }).c('url').t(message.get('oob_url')).up();
+          }).c('url').t(message.get('oob_url')).root();
         }
 
         if (message.get('edited')) {
           stanza.c('replace', {
             'xmlns': Strophe.NS.MESSAGE_CORRECT,
             'id': message.get('msgid')
-          }).up();
+          }).root();
+        }
+
+        if (message.get('origin_id')) {
+          stanza.c('origin-id', {
+            'xmlns': Strophe.NS.SID,
+            'id': message.get('origin_id')
+          }).root();
         }
 
         return stanza;
@@ -61824,6 +61843,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const is_spoiler = this.get('composing_spoiler');
         return _.extend(this.toJSON(), {
           'id': _converse.connection.getUniqueId(),
+          'origin_id': _converse.connection.getUniqueId(),
           'fullname': _converse.xmppstatus.get('fullname'),
           'from': _converse.bare_jid,
           'sender': 'me',
@@ -62004,23 +62024,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
 
         return attrs;
-      },
-
-      async createMessage(stanza, original_stanza) {
-        const msgid = stanza.getAttribute('id'),
-              message = msgid && this.messages.findWhere({
-          msgid
-        });
-
-        if (!message) {
-          // Only create the message when we're sure it's not a duplicate
-          const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
-
-          if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
-            const msg = this.messages.create(attrs);
-            this.incrementUnreadMsgCounter(msg);
-          }
-        }
       },
 
       isHidden() {
@@ -62221,7 +62224,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
               from_resource = Strophe.getResourceFromJid(from_jid),
               is_me = from_bare_jid === _converse.bare_jid;
-        let contact_jid;
+        let contact_jid,
+            is_roster_contact = false;
 
         if (is_me) {
           // I am the sender, so this must be a forwarded message...
@@ -62232,6 +62236,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           contact_jid = Strophe.getBareJidFromJid(to_jid);
         } else {
           contact_jid = from_bare_jid;
+          await _converse.api.waitUntil('rosterContactsFetched');
+          is_roster_contact = !_.isUndefined(_converse.roster.get(contact_jid));
+
+          if (!is_roster_contact && !_converse.allow_non_roster_messaging) {
+            return;
+          }
         } // Get chat box, but only create when the message has something to show to the user
 
 
@@ -62241,8 +62251,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         },
               chatbox = this.getChatBox(contact_jid, chatbox_attrs, has_body);
 
-        if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon)) {
-          await chatbox.createMessage(stanza, original_stanza);
+        if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
+          const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
+
+          if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
+            const msg = chatbox.messages.create(attrs);
+            chatbox.incrementUnreadMsgCounter(msg);
+          }
         }
 
         _converse.emit('message', {
@@ -62251,7 +62266,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
-      getChatBox(jid, attrs = {}, create) {
+      getChatBox(jid) {
+        let attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        let create = arguments.length > 2 ? arguments[2] : undefined;
+
         /* Returns a chat box or optionally return a newly
          * created one if one doesn't exist.
          *
@@ -62585,7 +62603,7 @@ pluggable_js_dist_pluggable__WEBPACK_IMPORTED_MODULE_8___default.a.enable(_conve
 // These are just the @converse/headless plugins, for the full converse,
 // the other plugins are whitelisted in src/converse.js
 
-_converse.core_plugins = ['converse-chatboxes', 'converse-core', 'converse-disco', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-pubsub', 'converse-roster', 'converse-vcard'];
+_converse.core_plugins = ['converse-chatboxes', 'converse-disco', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-pubsub', 'converse-roster', 'converse-vcard'];
 _converse.keycodes = {
   TAB: 9,
   ENTER: 13,
@@ -62711,7 +62729,9 @@ _converse.default_settings = {
   whitelisted_plugins: []
 };
 
-_converse.log = function (message, level, style = '') {
+_converse.log = function (message, level) {
+  let style = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+
   /* Logs messages to the browser's developer console.
    *
    * Parameters:
@@ -62962,7 +62982,7 @@ function cleanup() {
   initClientConfig();
 }
 
-_converse.initialize = function (settings, callback) {
+_converse.initialize = async function (settings, callback) {
   settings = !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(settings) ? settings : {};
   const init_promise = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].getResolveablePromise();
 
@@ -63799,17 +63819,22 @@ _converse.initialize = function (settings, callback) {
     this.connection = settings.connection;
   }
 
-  if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.connection) && _converse.connection.service === 'jasmine tests') {
+  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(_converse.connection, 'service') === 'jasmine tests') {
     finishInitialization();
     return _converse;
-  } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"])) {
-    finishInitialization();
-  } else {
-    _i18n__WEBPACK_IMPORTED_MODULE_6__["default"].fetchTranslations(_converse.locale, _converse.locales, _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
+  } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"])) {
+    const url = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
       'locale': _converse.locale
-    })).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL)).finally(finishInitialization).catch(e => _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL));
+    });
+
+    try {
+      await _i18n__WEBPACK_IMPORTED_MODULE_6__["default"].fetchTranslations(_converse.locale, _converse.locales, url);
+    } catch (e) {
+      _converse.log(e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL);
+    }
   }
 
+  finishInitialization();
   return init_promise;
 };
 /**
@@ -64472,27 +64497,20 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         });
       },
 
-      hasFeature(feature) {
+      async hasFeature(feature) {
         /* Returns a Promise which resolves with a map indicating
          * whether a given feature is supported.
          *
          * Parameters:
          *    (String) feature - The feature that might be supported.
          */
-        const entity = this;
-        return new Promise((resolve, reject) => {
-          function fulfillPromise() {
-            if (entity.features.findWhere({
-              'var': feature
-            })) {
-              resolve(entity);
-            } else {
-              resolve();
-            }
-          }
+        await this.waitUntilFeaturesDiscovered;
 
-          entity.waitUntilFeaturesDiscovered.then(fulfillPromise).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-        });
+        if (this.features.findWhere({
+          'var': feature
+        })) {
+          return this;
+        }
       },
 
       onFeatureAdded(feature) {
@@ -64529,7 +64547,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
           const stanza = await _converse.api.disco.info(this.get('jid'), null);
           this.onInfo(stanza);
         } catch (iq) {
-          this.waitUntilFeaturesDiscovered.reject(iq);
+          this.waitUntilFeaturesDiscovered.resolve(this);
 
           _converse.log(iq, Strophe.LogLevel.ERROR);
         }
@@ -64974,7 +64992,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
            * @param {boolean} [create] Whether the entity should be created if it doesn't exist.
            * @example _converse.api.disco.entities.get(jid);
            */
-          async 'get'(jid, create = false) {
+          async 'get'(jid) {
+            let create = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
             await _converse.api.waitUntil('discoInitialized');
 
             if (_.isNil(jid)) {
@@ -66148,7 +66167,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }).c("x", {
           'xmlns': Strophe.NS.MUC
         }).c("history", {
-          'maxstanzas': this.get('mam_enabled') ? 0 : _converse.muc_history_max_stanzas
+          'maxstanzas': this.features.get('mam_enabled') ? 0 : _converse.muc_history_max_stanzas
         }).up();
 
         if (password) {
@@ -66293,6 +66312,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         text = _this$parseTextForRef2[0];
         references = _this$parseTextForRef2[1];
         return {
+          'origin_id': _converse.connection.getUniqueId(),
           'from': `${this.get('jid')}/${this.get('nick')}`,
           'fullname': this.get('nick'),
           'is_spoiler': is_spoiler,
@@ -66958,6 +66978,81 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         }
       },
 
+      isReceipt(stanza) {
+        return sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).length > 0;
+      },
+
+      isChatMarker(stanza) {
+        return sizzle(`received[xmlns="${Strophe.NS.MARKERS}"],
+                     displayed[xmlns="${Strophe.NS.MARKERS}"],
+                     acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
+      },
+
+      reflectionHandled(stanza) {
+        /* Handle a MUC reflected message and return true if so.
+         *
+         * Parameters:
+         *  (XMLElement) stanza: The message stanza
+         */
+        const from = stanza.getAttribute('from');
+        const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
+
+        if (own_message) {
+          const msgid = stanza.getAttribute('id'),
+                jid = stanza.getAttribute('from'); // TODO: use stanza-id?
+
+          if (msgid) {
+            const msg = this.messages.findWhere({
+              'msgid': msgid,
+              'from': jid
+            });
+
+            if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
+              msg.save({
+                'received': moment().format()
+              });
+              return true;
+            }
+          }
+        }
+      },
+
+      subjectChangeHandled(attrs) {
+        /* Handle a subject change and return `true` if so.
+         *
+         * Parameters:
+         *  (Object) attrs: The message attributes
+         */
+        if (attrs.subject && !attrs.thread && !attrs.message) {
+          // https://xmpp.org/extensions/xep-0045.html#subject-mod
+          // -----------------------------------------------------
+          // The subject is changed by sending a message of type "groupchat" to the <room@service>,
+          // where the <message/> MUST contain a <subject/> element that specifies the new subject but
+          // MUST NOT contain a <body/> element (or a <thread/> element).
+          _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].safeSave(this, {
+            'subject': {
+              'author': attrs.nick,
+              'text': attrs.subject || ''
+            }
+          });
+          return true;
+        }
+
+        return false;
+      },
+
+      ignorableCSN(attrs) {
+        /* Is this a chat state notification that can be ignored,
+         * because it's old or because it's from us.
+         *
+         * Parameters:
+         *  (Object) attrs: The message attributes
+         */
+        const is_csn = _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isOnlyChatStateNotification(attrs),
+              own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
+        return is_csn && (attrs.is_delayed || own_message);
+      },
+
       async onMessage(stanza) {
         /* Handler for all MUC messages sent to this groupchat.
          *
@@ -66982,39 +67077,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           return;
         }
 
-        if (!this.handleMessageCorrection(stanza)) {
-          if (attrs.subject && !attrs.thread && !attrs.message) {
-            // https://xmpp.org/extensions/xep-0045.html#subject-mod
-            // -----------------------------------------------------
-            // The subject is changed by sending a message of type "groupchat" to the <room@service>,
-            // where the <message/> MUST contain a <subject/> element that specifies the new subject but
-            // MUST NOT contain a <body/> element (or a <thread/> element).
-            _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].safeSave(this, {
-              'subject': {
-                'author': attrs.nick,
-                'text': attrs.subject || ''
-              }
-            });
-            return;
-          }
-
-          const is_csn = _utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isOnlyChatStateNotification(attrs),
-                own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
-
-          if (is_csn && (attrs.is_delayed || own_message)) {
-            // No need showing delayed or our own CSN messages
-            return;
-          }
-
-          const msg = await this.messages.create(attrs);
+        if (!this.handleMessageCorrection(stanza) && !this.isReceipt(stanza) && !this.isChatMarker(stanza) && !this.reflectionHandled(stanza) && !this.subjectChangeHandled(attrs) && !this.ignorableCSN(attrs) && (attrs['chat_state'] || !_utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isEmptyMessage(attrs))) {
+          const msg = this.messages.create(attrs);
+          this.incrementUnreadMsgCounter(msg);
 
           if (forwarded && msg && msg.get('sender') === 'me') {
             msg.save({
               'received': moment().format()
             });
           }
-
-          this.incrementUnreadMsgCounter(msg);
         }
 
         if (attrs.nick !== this.get('nick')) {
@@ -67820,7 +67891,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-pub
          *      strict, then Converse will publish to the node even if
          *      the publish options precondication cannot be met.
          */
-        async 'publish'(jid, node, item, options, strict_options = true) {
+        async 'publish'(jid, node, item, options) {
+          let strict_options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
           const stanza = $iq({
             'from': _converse.bare_jid,
             'type': 'set',
@@ -67955,7 +68027,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       _converse.emit('rosterInitialized');
     };
 
-    _converse.populateRoster = async function (ignore_cache = false) {
+    _converse.populateRoster = async function () {
+      let ignore_cache = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
       /* Fetch all the roster groups, and then the roster contacts.
        * Emit an event after fetching is done in each case.
        *
@@ -67978,11 +68052,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
       } else {
         try {
-          await _converse.rostergroups.fetchRosterGroups().then(() => {
-            _converse.emit('rosterGroupsFetched');
+          await _converse.rostergroups.fetchRosterGroups();
 
-            return _converse.roster.fetchRosterContacts();
-          });
+          _converse.emit('rosterGroupsFetched');
+
+          await _converse.roster.fetchRosterContacts();
 
           _converse.emit('rosterContactsFetched');
         } catch (reason) {
@@ -68127,7 +68201,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         this.presence.on('change:show', () => this.trigger('presenceChanged'));
       },
 
-      setChatBox(chatbox = null) {
+      setChatBox() {
+        let chatbox = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
         chatbox = chatbox || _converse.chatboxes.get(this.get('jid'));
 
         if (chatbox) {
@@ -68330,8 +68405,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         if (collection.length === 0 || this.rosterVersioningSupported() && !_converse.session.get('roster_fetched')) {
           _converse.send_initial_presence = true;
-
-          _converse.roster.fetchFromServer();
+          return _converse.roster.fetchFromServer();
         } else {
           _converse.emit('cachedRoster', collection);
         }
@@ -68762,13 +68836,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         * Returns a promise which resolves once the groups have been
         * returned.
         */
-        return new Promise((resolve, reject) => {
+        return new Promise(success => {
           this.fetch({
-            silent: true,
+            success,
             // We need to first have all groups before
             // we can start positioning them, so we set
             // 'silent' to true.
-            success: resolve
+            silent: true
           });
         });
       }
@@ -69689,6 +69763,10 @@ __webpack_require__.r(__webpack_exports__);
 
 const u = {};
 
+u.toStanza = function (string) {
+  return strophe_js__WEBPACK_IMPORTED_MODULE_2__["Strophe"].xmlHtmlNode(string).firstElementChild;
+};
+
 u.getLongestSubstring = function (string, candidates) {
   function reducer(accumulator, current_value) {
     if (string.startsWith(current_value)) {
@@ -69828,7 +69906,8 @@ u.stringToNode = function (s) {
   return div.firstElementChild;
 };
 
-u.getOuterWidth = function (el, include_margin = false) {
+u.getOuterWidth = function (el) {
+  let include_margin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   var width = el.offsetWidth;
 
   if (!include_margin) {
@@ -69966,7 +70045,10 @@ u.interpolate = function (string, o) {
   });
 };
 
-u.onMultipleEvents = function (events = [], callback) {
+u.onMultipleEvents = function () {
+  let events = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  let callback = arguments.length > 1 ? arguments[1] : undefined;
+
   /* Call the callback once all the events have been triggered
    *
    * Parameters:
@@ -70019,7 +70101,10 @@ u.replaceCurrentWord = function (input, new_value) {
   input.selectionEnd = cursor - current_word.length + new_value.length + 1;
 };
 
-u.triggerEvent = function (el, name, type = "Event", bubbles = true, cancelable = true) {
+u.triggerEvent = function (el, name) {
+  let type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "Event";
+  let bubbles = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+  let cancelable = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
   const evt = document.createEvent(type);
   evt.initEvent(name, bubbles, cancelable);
   el.dispatchEvent(evt);
@@ -95394,7 +95479,8 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].calculateElementHe
   return _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.reduce(el.children, (result, child) => result + child.offsetHeight, 0);
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getNextElement = function (el, selector = '*') {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getNextElement = function (el) {
+  let selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
   let next_el = el.nextElementSibling;
 
   while (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNull(next_el) && !sizzle__WEBPACK_IMPORTED_MODULE_2___default.a.matchesSelector(next_el, selector)) {
@@ -95404,7 +95490,8 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getNextElement = f
   return next_el;
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getPreviousElement = function (el, selector = '*') {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getPreviousElement = function (el) {
+  let selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
   let prev_el = el.previousSibling;
 
   while (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNull(prev_el) && !sizzle__WEBPACK_IMPORTED_MODULE_2___default.a.matchesSelector(prev_el, selector)) {
@@ -95414,7 +95501,8 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getPreviousElement
   return prev_el;
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getFirstChildElement = function (el, selector = '*') {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getFirstChildElement = function (el) {
+  let selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
   let first_el = el.firstElementChild;
 
   while (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNull(first_el) && !sizzle__WEBPACK_IMPORTED_MODULE_2___default.a.matchesSelector(first_el, selector)) {
@@ -95424,7 +95512,8 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getFirstChildEleme
   return first_el;
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getLastChildElement = function (el, selector = '*') {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getLastChildElement = function (el) {
+  let selector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '*';
   let last_el = el.lastElementChild;
 
   while (!_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNull(last_el) && !sizzle__WEBPACK_IMPORTED_MODULE_2___default.a.matchesSelector(last_el, selector)) {
@@ -95478,7 +95567,9 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].ancestor = functio
   return parent;
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].nextUntil = function (el, selector, include_self = false) {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].nextUntil = function (el, selector) {
+  let include_self = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
   /* Return the element's siblings until one matches the selector. */
   const matches = [];
   let sibling_el = el.nextElementSibling;
@@ -95546,7 +95637,8 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].addHyperlinks = fu
   });
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideInAllElements = function (elements, duration = 300) {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideInAllElements = function (elements) {
+  let duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 300;
   return Promise.all(_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.map(elements, _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.partial(_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideIn, _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a, duration)));
 };
 
@@ -95558,7 +95650,9 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideToggleElement
   }
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideOut = function (el, duration = 200) {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideOut = function (el) {
+  let duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 200;
+
   /* Shows/expands an element by sliding it out of itself
    *
    * Parameters:
@@ -95625,7 +95719,9 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideOut = functio
   });
 };
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideIn = function (el, duration = 200) {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].slideIn = function (el) {
+  let duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 200;
+
   /* Hides/collapses an element by sliding it into itself. */
   return new Promise((resolve, reject) => {
     if (_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(el)) {

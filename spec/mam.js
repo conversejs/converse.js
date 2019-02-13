@@ -8,6 +8,7 @@
     const $iq = converse.env.$iq;
     const $msg = converse.env.$msg;
     const moment = converse.env.moment;
+    const u = converse.env.utils;
     // See: https://xmpp.org/rfcs/rfc3921.html
 
     describe("Message Archive Management", function () {
@@ -16,18 +17,17 @@
         describe("Archived Messages", function () {
 
            it("aren't shown as duplicates by comparing their stanza-id attribute", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['discoInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'trek-radio', 'conference.lightwitch.org', 'jcbrand');
                 const view = _converse.chatboxviews.get('trek-radio@conference.lightwitch.org');
-                let stanza = Strophe.xmlHtmlNode(
+                let stanza = u.toStanza(
                     `<message xmlns="jabber:client" to="jcbrand@lightwitch.org/converse.js-73057452" type="groupchat" from="trek-radio@conference.lightwitch.org/comndrdukath#0805 (STO)">
                         <body>negan</body>
                         <stanza-id xmlns="urn:xmpp:sid:0" id="45fbbf2a-1059-479d-9283-c8effaf05621" by="trek-radio@conference.lightwitch.org"/>
-                    </message>`
-                ).firstElementChild;
+                    </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
                 // XXX: we wait here until the first message appears before
@@ -38,7 +38,7 @@
                 //
                 // Not sure whether such a race-condition might pose a problem
                 // in "real-world" situations.
-                stanza = Strophe.xmlHtmlNode(
+                stanza = u.toStanza(
                     `<message xmlns="jabber:client" to="jcbrand@lightwitch.org/converse.js-73057452">
                         <result xmlns="urn:xmpp:mam:2" queryid="82d9db27-6cf8-4787-8c2c-5a560263d823" id="45fbbf2a-1059-479d-9283-c8effaf05621">
                             <forwarded xmlns="urn:xmpp:forward:0">
@@ -48,7 +48,7 @@
                                 </message>
                             </forwarded>
                         </result>
-                    </message>`).firstElementChild;
+                    </message>`);
 
                 spyOn(view.model, 'isDuplicate').and.callThrough();
                 view.model.onMessage(stanza);
@@ -58,13 +58,13 @@
             }));
 
            it("aren't shown as duplicates by comparing their queryid attribute", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['discoInitialized'], {},
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'discuss', 'conference.conversejs.org', 'dummy');
                 const view = _converse.chatboxviews.get('discuss@conference.conversejs.org');
-                let stanza = Strophe.xmlHtmlNode(
+                let stanza = u.toStanza(
                     `<message xmlns="jabber:client"
                               to="discuss@conference.conversejs.org"
                               type="groupchat" xml:lang="en"
@@ -74,11 +74,11 @@
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="prezel@blubber.im" role="participant"/>
                         </x>
-                    </message>`).firstElementChild;
+                    </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
 
-                stanza = Strophe.xmlHtmlNode(
+                stanza = u.toStanza(
                     `<message xmlns="jabber:client" to="dummy@localhost/resource" from="discuss@conference.conversejs.org">
                         <result xmlns="urn:xmpp:mam:2" queryid="06fea9ca-97c9-48c4-8583-009ff54ea2e8" id="7a9fde91-4387-4bf8-b5d3-978dab8f6bf3">
                             <forwarded xmlns="urn:xmpp:forward:0">
@@ -91,7 +91,7 @@
                                 </message>
                             </forwarded>
                         </result>
-                    </message>`).firstElementChild;
+                    </message>`);
 
                 spyOn(view.model, 'isDuplicate').and.callThrough();
                 view.model.onMessage(stanza);
@@ -99,7 +99,7 @@
                 expect(view.model.isDuplicate.calls.count()).toBe(1);
                 expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
 
-                stanza = Strophe.xmlHtmlNode(
+                stanza = u.toStanza(
                     `<message xmlns="jabber:client" to="dummy@localhost/resource" from="discuss@conference.conversejs.org">
                         <result xmlns="urn:xmpp:mam:2" queryid="06fea9ca-97c9-48c4-8583-009ff54ea2e8" id="7a9fde91-4387-4bf8-b5d3-978dab8f6bf3">
                             <forwarded xmlns="urn:xmpp:forward:0">
@@ -112,7 +112,7 @@
                                 </message>
                             </forwarded>
                         </result>
-                    </message>`).firstElementChild;
+                    </message>`);
                 view.model.onMessage(stanza);
                 expect(view.model.isDuplicate.calls.count()).toBe(2);
                 expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
@@ -123,12 +123,12 @@
         describe("The archive.query API", function () {
 
            it("can be used to query for all archived messages",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['discoInitialized'], {},
                     function (done, _converse) {
 
-                var sent_stanza, IQ_id;
-                var sendIQ = _converse.connection.sendIQ;
+                let sent_stanza, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
@@ -137,14 +137,14 @@
                     _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
                 _converse.api.archive.query();
-                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
+                const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
                 expect(sent_stanza.toString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client"><query queryid="${queryid}" xmlns="urn:xmpp:mam:2"/></iq>`);
                 done();
             }));
 
            it("can be used to query for all messages to/from a particular JID",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
 
@@ -177,7 +177,7 @@
             }));
 
            it("can be used to query for archived messages from a chat room",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
 
@@ -211,7 +211,7 @@
            }));
 
             it("checks whether returned MAM messages from a MUC room are from the right JID",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
 
@@ -219,16 +219,16 @@
                 if (!entity.features.findWhere({'var': Strophe.NS.MAM})) {
                     _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
                 }
-                var sent_stanza, IQ_id;
+                let sent_stanza, IQ_id;
                 const sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                var callback = jasmine.createSpy('callback');
+                const callback = jasmine.createSpy('callback');
 
                 _converse.api.archive.query({'with': 'coven@chat.shakespear.lit', 'groupchat': true, 'max':'10'}, callback);
-                var queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
+                const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
 
                 /* <message id='iasd207' from='coven@chat.shakespeare.lit' to='hag66@shakespeare.lit/pda'>
                  *     <result xmlns='urn:xmpp:mam:2' queryid='g27' id='34482-21985-73620'>
@@ -249,7 +249,7 @@
                  *     </result>
                  * </message>
                  */
-                var msg1 = $msg({'id':'iasd207', 'from': 'other@chat.shakespear.lit', 'to': 'dummy@localhost'})
+                const msg1 = $msg({'id':'iasd207', 'from': 'other@chat.shakespear.lit', 'to': 'dummy@localhost'})
                             .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'34482-21985-73620'})
                                 .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
                                     .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
@@ -283,13 +283,13 @@
 
                 await test_utils.waitUntil(() => callback.calls.count());
                 expect(callback).toHaveBeenCalled();
-                var args = callback.calls.argsFor(0);
+                const args = callback.calls.argsFor(0);
                 expect(args[0].length).toBe(0);
                 done();
            }));
 
            it("can be used to query for all messages in a certain timespan",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
 
@@ -332,7 +332,7 @@
            }));
 
            it("throws a TypeError if an invalid date is provided",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
 
@@ -347,7 +347,7 @@
            }));
 
            it("can be used to query for all messages after a certain time",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
 
@@ -385,7 +385,7 @@
            }));
 
            it("can be used to query for a limited set of results",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
 
@@ -423,7 +423,7 @@
            }));
 
            it("can be used to page through results",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
 
@@ -465,7 +465,7 @@
            }));
 
            it("accepts \"before\" with an empty string as value to reverse the order",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
 
@@ -499,7 +499,7 @@
            }));
 
            it("accepts a Strophe.RSM object for the query options",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
 
@@ -546,7 +546,7 @@
            }));
 
            it("accepts a callback function, which it passes the messages and a Strophe.RSM object",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
 
@@ -579,7 +579,7 @@
                  *  </result>
                  *  </message>
                  */
-                var msg1 = $msg({'id':'aeb213', 'to':'juliet@capulet.lit/chamber'})
+                const msg1 = $msg({'id':'aeb213', 'to':'juliet@capulet.lit/chamber'})
                             .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'28482-98726-73623'})
                                 .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
                                     .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
@@ -591,7 +591,7 @@
                                     .c('body').t("Call me but love, and I'll be new baptized;");
                 _converse.connection._dataRecv(test_utils.createRequest(msg1));
 
-                var msg2 = $msg({'id':'aeb213', 'to':'juliet@capulet.lit/chamber'})
+                const msg2 = $msg({'id':'aeb213', 'to':'juliet@capulet.lit/chamber'})
                             .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'28482-98726-73624'})
                                 .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
                                     .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
@@ -624,7 +624,7 @@
 
                 await test_utils.waitUntil(() => callback.calls.count());
                 expect(callback).toHaveBeenCalled();
-                var args = callback.calls.argsFor(0);
+                const args = callback.calls.argsFor(0);
                 expect(args[0].length).toBe(2);
                 expect(args[0][0].outerHTML).toBe(msg1.nodeTree.outerHTML);
                 expect(args[0][1].outerHTML).toBe(msg2.nodeTree.outerHTML);
@@ -640,7 +640,7 @@
         describe("The default preference", function () {
 
             it("is set once server support for MAM has been confirmed",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
 
@@ -654,7 +654,7 @@
                 spyOn(_converse, 'onMAMPreferences').and.callThrough();
                 _converse.message_archiving = 'never';
 
-                var feature = new Backbone.Model({
+                const feature = new Backbone.Model({
                     'var': Strophe.NS.MAM
                 });
                 spyOn(feature, 'save').and.callFake(feature.set); // Save will complain about a url not being set

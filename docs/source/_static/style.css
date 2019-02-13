@@ -73,8 +73,8 @@ h5 {
 }
 
 #sidebar > .nav-list {
-    max-height: 48vh;
-    overflow-y: scroll;
+    max-height: 35vh;
+    overflow-y: auto;
 }
 
 .bs-sidenav .nav .nav > li > a {

@@ -5,19 +5,19 @@
         "test-utils"], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    var Strophe = converse.env.Strophe;
-    var $iq = converse.env.$iq;
-    var _ = converse.env._;
-    var f = converse.env.f;
+    const Strophe = converse.env.Strophe;
+    const $iq = converse.env.$iq;
+    const _ = converse.env._;
+    const u = converse.env.utils;
+    const f = converse.env.f;
 
     describe("XEP-0363: HTTP File Upload", function () {
 
         describe("Discovering support", function () {
 
-            it("is done automatically", mock.initConverseWithAsync(async function (done, _converse) {
-                var IQ_stanzas = _converse.connection.IQ_stanzas;
-                var IQ_ids =  _converse.connection.IQ_ids;
-
+            it("is done automatically", mock.initConverse(async (done, _converse) => {
+                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                const IQ_ids =  _converse.connection.IQ_ids;
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
                 await test_utils.waitUntil(() => _.filter(
                     IQ_stanzas,
@@ -41,8 +41,7 @@
                     return iq.nodeTree.querySelector(
                         'iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                 });
-                var info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-
+                const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                 stanza = $iq({
                     'type': 'result',
                     'from': 'localhost',
@@ -173,43 +172,37 @@
         describe("When not supported", function () {
             describe("A file upload toolbar button", function () {
 
-                it("does not appear in private chats", mock.initConverseWithAsync(function (done, _converse) {
+                it("does not appear in private chats", mock.initConverse(async (done, _converse) => {
                     var contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     test_utils.createContacts(_converse, 'current');
                     test_utils.openChatBoxFor(_converse, contact_jid);
 
+                    await test_utils.waitUntilDiscoConfirmed(
+                        _converse, _converse.domain,
+                        [{'category': 'server', 'type':'IM'}],
+                        ['http://jabber.org/protocol/disco#items'], [], 'info');
+
+                    await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], [], 'items');
+                    const view = _converse.chatboxviews.get(contact_jid);
+                    expect(view.el.querySelector('.chat-toolbar .upload-file')).toBe(null);
+                    done();
+                }));
+
+                it("does not appear in MUC chats", mock.initConverse(
+                        null, ['rosterGroupsFetched'], {},
+                        async (done, _converse) => {
+
+                    await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                     test_utils.waitUntilDiscoConfirmed(
                         _converse, _converse.domain,
                         [{'category': 'server', 'type':'IM'}],
-                        ['http://jabber.org/protocol/disco#items'], [], 'info').then(function () {
+                        ['http://jabber.org/protocol/disco#items'], [], 'info');
 
-                        test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], [], 'items').then(function () {
-                            var view = _converse.chatboxviews.get(contact_jid);
-                            expect(view.el.querySelector('.chat-toolbar .upload-file')).toBe(null);
-                            done();
-                        });
-                    });
-                }));
-
-                it("does not appear in MUC chats", mock.initConverseWithPromises(
-                        null, ['rosterGroupsFetched'], {},
-                        function (done, _converse) {
-
-                    test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy').then(function () {
-                        test_utils.waitUntilDiscoConfirmed(
-                            _converse, _converse.domain,
-                            [{'category': 'server', 'type':'IM'}],
-                            ['http://jabber.org/protocol/disco#items'], [], 'info').then(function () {
-
-                            test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.localhost'], 'items').then(function () {
-                                test_utils.waitUntilDiscoConfirmed(_converse, 'upload.localhost', [], [Strophe.NS.HTTPUPLOAD], []).then(function () {
-                                    var view = _converse.chatboxviews.get('lounge@localhost');
-                                    expect(view.el.querySelector('.chat-toolbar .upload-file')).toBe(null);
-                                    done();
-                                });
-                            });
-                        });
-                    });
+                    await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.localhost'], 'items');
+                    await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.localhost', [], [Strophe.NS.HTTPUPLOAD], []);
+                    const view = _converse.chatboxviews.get('lounge@localhost');
+                    expect(view.el.querySelector('.chat-toolbar .upload-file')).toBe(null);
+                    done();
                 }));
 
             });
@@ -219,60 +212,46 @@
 
             describe("A file upload toolbar button", function () {
 
-                it("appears in private chats", mock.initConverseWithAsync(function (done, _converse) {
-                    test_utils.waitUntilDiscoConfirmed(
+                it("appears in private chats", mock.initConverse(async (done, _converse) => {
+                    await test_utils.waitUntilDiscoConfirmed(
                         _converse, _converse.domain,
                         [{'category': 'server', 'type':'IM'}],
-                        ['http://jabber.org/protocol/disco#items'], [], 'info').then(function () {
+                        ['http://jabber.org/protocol/disco#items'], [], 'info');
 
-                        let contact_jid, view;
-
-                        test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.localhost'], 'items')
-                        .then(() => test_utils.waitUntilDiscoConfirmed(_converse, 'upload.localhost', [], [Strophe.NS.HTTPUPLOAD], []))
-                        .then(() => {
-                            test_utils.createContacts(_converse, 'current', 3);
-                            _converse.emit('rosterContactsFetched');
-
-                            contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                            return test_utils.openChatBoxFor(_converse, contact_jid);
-                        }).then(() => {
-                            view = _converse.chatboxviews.get(contact_jid);
-                            test_utils.waitUntil(() => view.el.querySelector('.upload-file'));
-                        }).then(() => {
-                            expect(view.el.querySelector('.chat-toolbar .upload-file')).not.toBe(null);
-                            done();
-                        });
-                    });
+                    await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.localhost'], 'items')
+                    await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.localhost', [], [Strophe.NS.HTTPUPLOAD], []);
+                    test_utils.createContacts(_converse, 'current', 3);
+                    _converse.emit('rosterContactsFetched');
+                    const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    await test_utils.openChatBoxFor(_converse, contact_jid);
+                    const view = _converse.chatboxviews.get(contact_jid);
+                    test_utils.waitUntil(() => view.el.querySelector('.upload-file'));
+                    expect(view.el.querySelector('.chat-toolbar .upload-file')).not.toBe(null);
+                    done();
                 }));
 
-                it("appears in MUC chats", mock.initConverseWithPromises(
+                it("appears in MUC chats", mock.initConverse(
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
-                        function (done, _converse) {
+                        async (done, _converse) => {
 
-                    test_utils.waitUntilDiscoConfirmed(
+                    await test_utils.waitUntilDiscoConfirmed(
                         _converse, _converse.domain,
                         [{'category': 'server', 'type':'IM'}],
-                        ['http://jabber.org/protocol/disco#items'], [], 'info').then(function () {
+                        ['http://jabber.org/protocol/disco#items'], [], 'info');
 
-                        test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.localhost'], 'items')
-                        .then(() => test_utils.waitUntilDiscoConfirmed(_converse, 'upload.localhost', [], [Strophe.NS.HTTPUPLOAD], []))
-                        .then(() => test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy'))
-                        .then(() => test_utils.waitUntil(() => _converse.chatboxviews.get('lounge@localhost').el.querySelector('.upload-file')))
-                        .then(() => {
-                            const view = _converse.chatboxviews.get('lounge@localhost');
-                            expect(view.el.querySelector('.chat-toolbar .upload-file')).not.toBe(null);
-                            done();
-                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                    });
+                    await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.localhost'], 'items');
+                    await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.localhost', [], [Strophe.NS.HTTPUPLOAD], []);
+                    await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                    await test_utils.waitUntil(() => _converse.chatboxviews.get('lounge@localhost').el.querySelector('.upload-file'));
+                    const view = _converse.chatboxviews.get('lounge@localhost');
+                    expect(view.el.querySelector('.chat-toolbar .upload-file')).not.toBe(null);
+                    done();
                 }));
 
                 describe("when clicked and a file chosen", function () {
 
-                    it("is uploaded and sent out", mock.initConverseWithAsync(
-                        async function (done, _converse) {
-
+                    it("is uploaded and sent out", mock.initConverse(async (done, _converse) => {
                         const base_url = 'https://conversejs.org';
-
                         await test_utils.waitUntilDiscoConfirmed(
                             _converse, _converse.domain,
                             [{'category': 'server', 'type':'IM'}],
@@ -298,7 +277,7 @@
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
                         await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq[to="upload.montague.tld"] request')).length);
-                        var iq = IQ_stanzas.pop();
+                        const iq = IQ_stanzas.pop();
                         expect(iq.toLocaleString()).toBe(
                             `<iq from="dummy@localhost/resource" `+
                                 `id="${iq.nodeTree.getAttribute("id")}" `+
@@ -312,21 +291,21 @@
                                 `xmlns="urn:xmpp:http:upload:0"/>`+
                             `</iq>`);
 
-                        var message = base_url+"/logo/conversejs-filled.svg";
+                        const message = base_url+"/logo/conversejs-filled.svg";
 
-                        var stanza = Strophe.xmlHtmlNode(
-                            "<iq from='upload.montague.tld'"+
-                            "    id='"+iq.nodeTree.getAttribute('id')+"'"+
-                            "    to='dummy@localhost/resource'"+
-                            "    type='result'>"+
-                            "<slot xmlns='urn:xmpp:http:upload:0'>"+
-                            "    <put url='https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg'>"+
-                            "    <header name='Authorization'>Basic Base64String==</header>"+
-                            "    <header name='Cookie'>foo=bar; user=romeo</header>"+
-                            "    </put>"+
-                            "    <get url='"+message+"' />"+
-                            "</slot>"+
-                            "</iq>").firstElementChild;
+                        const stanza = u.toStanza(`
+                            <iq from="upload.montague.tld"
+                                id="${iq.nodeTree.getAttribute("id")}"
+                                to="dummy@localhost/resource"
+                                type="result">
+                            <slot xmlns="urn:xmpp:http:upload:0">
+                                <put url="https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg">
+                                <header name="Authorization">Basic Base64String==</header>
+                                <header name="Cookie">foo=bar; user=romeo</header>
+                                </put>
+                                <get url="${message}" />
+                            </slot>
+                            </iq>`);
 
                         spyOn(XMLHttpRequest.prototype, 'send').and.callFake(function () {
                             const message = view.model.messages.at(0);
@@ -362,6 +341,7 @@
                                     `<x xmlns="jabber:x:oob">`+
                                         `<url>${message}</url>`+
                                     `</x>`+
+                                    `<origin-id id="${sent_stanza.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                             `</message>`);
                         await test_utils.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
                         // Check that the image renders
@@ -374,8 +354,7 @@
                         done();
                     }));
 
-                    it("is uploaded and sent out from a groupchat", mock.initConverseWithAsync(
-                        async function (done, _converse) {
+                    it("is uploaded and sent out from a groupchat", mock.initConverse(async (done, _converse) => {
 
                         const base_url = 'https://conversejs.org';
                         await test_utils.waitUntilDiscoConfirmed(
@@ -400,7 +379,7 @@
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
                         await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq[to="upload.montague.tld"] request')).length);
-                        var iq = IQ_stanzas.pop();
+                        const iq = IQ_stanzas.pop();
                         expect(iq.toLocaleString()).toBe(
                             `<iq from="dummy@localhost/resource" `+
                                 `id="${iq.nodeTree.getAttribute("id")}" `+
@@ -414,21 +393,20 @@
                                 `xmlns="urn:xmpp:http:upload:0"/>`+
                             `</iq>`);
 
-                        var message = base_url+"/logo/conversejs-filled.svg";
-
-                        var stanza = Strophe.xmlHtmlNode(
-                            "<iq from='upload.montague.tld'"+
-                            "    id='"+iq.nodeTree.getAttribute('id')+"'"+
-                            "    to='dummy@localhost/resource'"+
-                            "    type='result'>"+
-                            "<slot xmlns='urn:xmpp:http:upload:0'>"+
-                            "    <put url='https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg'>"+
-                            "    <header name='Authorization'>Basic Base64String==</header>"+
-                            "    <header name='Cookie'>foo=bar; user=romeo</header>"+
-                            "    </put>"+
-                            "    <get url='"+message+"' />"+
-                            "</slot>"+
-                            "</iq>").firstElementChild;
+                        const message = base_url+"/logo/conversejs-filled.svg";
+                        const stanza = u.toStanza(`
+                            <iq from='upload.montague.tld'
+                                id="${iq.nodeTree.getAttribute('id')}"
+                                to='dummy@localhost/resource'
+                                type='result'>
+                            <slot xmlns='urn:xmpp:http:upload:0'>
+                                <put url='https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg'>
+                                <header name='Authorization'>Basic Base64String==</header>
+                                <header name='Cookie'>foo=bar; user=romeo</header>
+                                </put>
+                                <get url="${message}" />
+                            </slot>
+                            </iq>`);
 
                         spyOn(XMLHttpRequest.prototype, 'send').and.callFake(function () {
                             const message = view.model.messages.at(0);
@@ -464,6 +442,7 @@
                                     `<x xmlns="jabber:x:oob">`+
                                         `<url>${message}</url>`+
                                     `</x>`+
+                                    `<origin-id id="${sent_stanza.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                             `</message>`);
                         await test_utils.waitUntil(() => view.el.querySelector('.chat-image'), 1000);
                         // Check that the image renders
@@ -476,7 +455,7 @@
                         done();
                     }));
 
-                    it("shows an error message if the file is too large", mock.initConverseWithAsync(async function (done, _converse) {
+                    it("shows an error message if the file is too large", mock.initConverse(async (done, _converse) => {
                         const IQ_stanzas = _converse.connection.IQ_stanzas;
                         const IQ_ids =  _converse.connection.IQ_ids;
                         const send_backup = XMLHttpRequest.prototype.send;
@@ -600,7 +579,7 @@
 
             describe("While a file is being uploaded", function () {
 
-                it("shows a progress bar", mock.initConverseWithPromises(
+                it("shows a progress bar", mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -644,19 +623,19 @@
 
                     const base_url = 'https://conversejs.org';
                     const message = base_url+"/logo/conversejs-filled.svg";
-                    const stanza = Strophe.xmlHtmlNode(
-                        "<iq from='upload.montague.tld'"+
-                        "    id='"+iq.nodeTree.getAttribute('id')+"'"+
-                        "    to='dummy@localhost/resource'"+
-                        "    type='result'>"+
-                        "<slot xmlns='urn:xmpp:http:upload:0'>"+
-                        "    <put url='https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg'>"+
-                        "    <header name='Authorization'>Basic Base64String==</header>"+
-                        "    <header name='Cookie'>foo=bar; user=romeo</header>"+
-                        "    </put>"+
-                        "    <get url='"+message+"' />"+
-                        "</slot>"+
-                        "</iq>").firstElementChild;
+                    const stanza = u.toStanza(`
+                        <iq from="upload.montague.tld"
+                            id="${iq.nodeTree.getAttribute("id")}"
+                            to="dummy@localhost/resource"
+                            type="result">
+                        <slot xmlns="urn:xmpp:http:upload:0">
+                            <put url="https://upload.montague.tld/4a771ac1-f0b2-4a4a-9700-f2a26fa2bb67/my-juliet.jpg">
+                                <header name="Authorization">Basic Base64String==</header>
+                                <header name="Cookie">foo=bar; user=romeo</header>
+                            </put>
+                            <get url="${message}" />
+                        </slot>
+                        </iq>`);
                     spyOn(XMLHttpRequest.prototype, 'send').and.callFake(function () {
                         const message = view.model.messages.at(0);
                         expect(view.el.querySelector('.chat-content progress').getAttribute('value')).toBe('0');

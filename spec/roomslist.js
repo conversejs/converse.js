@@ -7,7 +7,7 @@
 
     describe("A list of open groupchats", function () {
 
-        it("is shown in controlbox", mock.initConverseWithPromises(
+        it("is shown in controlbox", mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'],
                 { allow_bookmarks: false // Makes testing easier, otherwise we
                                         // have to mock stanza traffic.
@@ -47,8 +47,8 @@
         ));
 
         it("uses bookmarks to determine groupchat names",
-            mock.initConverseWithPromises(
-                ['send'], ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
+            mock.initConverse(
+                {'connection': ['send']}, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
                 async function (done, _converse) {
 
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
@@ -113,7 +113,7 @@
 
     describe("A groupchat shown in the groupchats list", function () {
 
-        it("is highlighted if its currently open", mock.initConverseWithPromises(
+        it("is highlighted if its currently open", mock.initConverse(
             null, ['rosterGroupsFetched', 'chatBoxesFetched'],
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we
@@ -142,7 +142,7 @@
             done();
         }));
 
-        it("has an info icon which opens a details modal when clicked", mock.initConverseWithPromises(
+        it("has an info icon which opens a details modal when clicked", mock.initConverse(
             null, ['rosterGroupsFetched', 'chatBoxesFetched'],
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we
@@ -249,7 +249,7 @@
             done();
         }));
 
-        it("can be closed", mock.initConverseWithPromises(
+        it("can be closed", mock.initConverse(
             null, ['rosterGroupsFetched'],
             { whitelisted_plugins: ['converse-roomslist'],
               allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
@@ -272,10 +272,11 @@
             done();
         }));
 
-        it("shows unread messages directed at the user", mock.initConverseWithAsync(
-            { whitelisted_plugins: ['converse-roomslist'],
+        it("shows unread messages directed at the user", mock.initConverse(
+                null, null,
+                { whitelisted_plugins: ['converse-roomslist'],
                 allow_bookmarks: false // Makes testing easier, otherwise we have to mock stanza traffic.
-            }, async function (done, _converse) {
+                }, async (done, _converse) => {
 
             test_utils.openControlBox();
             const room_jid = 'kitchen@conference.shakespeare.lit';

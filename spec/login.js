@@ -5,7 +5,7 @@
     describe("The Login Form", function () {
 
         it("contains a checkbox to indicate whether the computer is trusted or not",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   allow_registration: false },
@@ -43,7 +43,7 @@
         }));
 
         it("checkbox can be set to false by default",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['connectionInitialized', 'chatBoxesInitialized'],
                 { auto_login: false,
                   trusted: false,

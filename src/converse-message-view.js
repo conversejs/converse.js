@@ -20,7 +20,7 @@ const { Backbone, _, moment } = converse.env;
 
 converse.plugins.add('converse-message-view', {
 
-    dependencies: ["converse-modal"],
+    dependencies: ["converse-modal", "converse-chatboxviews"],
 
     initialize () {
         /* The initialize function gets called as soon as the plugin is

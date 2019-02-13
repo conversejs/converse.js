@@ -76,7 +76,7 @@
     describe("The OMEMO module", function() {
 
         it("adds methods for encrypting and decrypting messages via AES GCM",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
@@ -93,7 +93,7 @@
 
 
         it("enables encrypted messages to be sent and received",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
@@ -233,7 +233,7 @@
         }));
 
         it("enables encrypted groupchat messages to be sent and received",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
@@ -377,7 +377,7 @@
         }));
 
         it("gracefully handles auth errors when trying to send encrypted groupchat messages",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
@@ -506,7 +506,7 @@
         }));
 
         it("can receive a PreKeySignalMessage",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
@@ -607,7 +607,7 @@
 
 
         it("updates device lists based on PEP messages",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
@@ -771,7 +771,7 @@
 
 
         it("updates device bundles based on PEP messages",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
@@ -921,7 +921,7 @@
         }));
 
         it("publishes a bundle with which an encrypted session can be created",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
@@ -1000,7 +1000,7 @@
 
 
         it("adds a toolbar button for starting an encrypted chat session",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
@@ -1165,7 +1165,7 @@
         }));
 
         it("adds a toolbar button for starting an encrypted groupchat session",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
                 async function (done, _converse) {
 
@@ -1347,7 +1347,7 @@
 
 
         it("shows OMEMO device fingerprints in the user details modal",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
@@ -1447,7 +1447,7 @@
     describe("A chatbox with an active OMEMO session", function() {
 
         it("will not show the spoiler toolbar button",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
             // TODO

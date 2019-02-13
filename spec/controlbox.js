@@ -12,7 +12,7 @@
     describe("The Controlbox", function () {
 
         it("can be opened by clicking a DOM element with class 'toggle-controlbox'",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
@@ -35,7 +35,7 @@
         describe("The \"Contacts\" section", function () {
 
             it("can be used to add contact and it checks for case-sensivity", 
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -63,7 +63,7 @@
             }));
 
             it("shows the number of unread mentions received",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -113,7 +113,7 @@
         describe("The Status Widget", function () {
 
             it("shows the user's chat status, which is online by default",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     function (done, _converse) {
 
@@ -125,7 +125,7 @@
             }));
 
             it("can be used to set the current user's chat status",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -149,7 +149,7 @@
             }));
 
             it("can be used to set a custom status message",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -178,7 +178,7 @@
     describe("The 'Add Contact' widget", function () {
 
         it("opens up an add modal when you click on it",
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
@@ -215,7 +215,7 @@
 
 
         it("integrates with xhr_user_search_url to search for contacts", 
-            mock.initConverseWithPromises(
+            mock.initConverse(
                 null, ['rosterGroupsFetched'],
                 { 'xhr_user_search': true,
                   'xhr_user_search_url': 'http://example.org/'

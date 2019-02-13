@@ -17,7 +17,7 @@
         describe("The \"rooms\" API", function () {
 
             it("has a method 'close' which closes rooms by JID or all rooms when called with no arguments",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -53,7 +53,7 @@
             }));
 
             it("has a method 'get' which returns a wrapped groupchat (if it exists)",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -99,7 +99,7 @@
             }));
 
             it("has a method 'open' which opens (optionally configures) and returns a wrapped chat box",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -207,39 +207,39 @@
                     `<iq id="${IQ_id}" to="room@conference.example.org" type="get" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/muc#owner"/></iq>`
                 );
-                var node = Strophe.xmlHtmlNode(
-                   '<iq xmlns="jabber:client"'+
-                   '     type="result"'+
-                   '     to="dummy@localhost/pda"'+
-                   '     from="room@conference.example.org" id="'+IQ_id+'">'+
-                   ' <query xmlns="http://jabber.org/protocol/muc#owner">'+
-                   '     <x xmlns="jabber:x:data" type="form">'+
-                   '     <title>Configuration for room@conference.example.org</title>'+
-                   '     <instructions>Complete and submit this form to configure the room.</instructions>'+
-                   '     <field var="FORM_TYPE" type="hidden">'+
-                   '         <value>http://jabber.org/protocol/muc#roomconfig</value>'+
-                   '     </field>'+
-                   '     <field type="text-single" var="muc#roomconfig_roomname" label="Name">'+
-                   '         <value>Room</value>'+
-                   '     </field>'+
-                   '     <field type="text-single" var="muc#roomconfig_roomdesc" label="Description"><value/></field>'+
-                   '     <field type="boolean" var="muc#roomconfig_persistentroom" label="Make Room Persistent?"/>'+
-                   '     <field type="boolean" var="muc#roomconfig_publicroom" label="Make Room Publicly Searchable?"><value>1</value></field>'+
-                   '     <field type="boolean" var="muc#roomconfig_changesubject" label="Allow Occupants to Change Subject?"/>'+
-                   '     <field type="list-single" var="muc#roomconfig_whois" label="Who May Discover Real JIDs?"><option label="Moderators Only">'+
-                   '        <value>moderators</value></option><option label="Anyone"><value>anyone</value></option>'+
-                   '     </field>'+
-                   '     <field type="text-private" var="muc#roomconfig_roomsecret" label="Password"><value/></field>'+
-                   '     <field type="boolean" var="muc#roomconfig_moderatedroom" label="Make Room Moderated?"/>'+
-                   '     <field type="boolean" var="muc#roomconfig_membersonly" label="Make Room Members-Only?"/>'+
-                   '     <field type="text-single" var="muc#roomconfig_historylength" label="Maximum Number of History Messages Returned by Room">'+
-                   '        <value>20</value></field>'+
-                   '     </x>'+
-                   ' </query>'+
-                   ' </iq>');
+                const node = u.toStanza(`
+                   <iq xmlns="jabber:client"
+                        type="result"
+                        to="dummy@localhost/pda"
+                        from="room@conference.example.org" id="${IQ_id}">
+                    <query xmlns="http://jabber.org/protocol/muc#owner">
+                        <x xmlns="jabber:x:data" type="form">
+                        <title>Configuration for room@conference.example.org</title>
+                        <instructions>Complete and submit this form to configure the room.</instructions>
+                        <field var="FORM_TYPE" type="hidden">
+                            <value>http://jabber.org/protocol/muc#roomconfig</value>
+                        </field>
+                        <field type="text-single" var="muc#roomconfig_roomname" label="Name">
+                            <value>Room</value>
+                        </field>
+                        <field type="text-single" var="muc#roomconfig_roomdesc" label="Description"><value/></field>
+                        <field type="boolean" var="muc#roomconfig_persistentroom" label="Make Room Persistent?"/>
+                        <field type="boolean" var="muc#roomconfig_publicroom" label="Make Room Publicly Searchable?"><value>1</value></field>
+                        <field type="boolean" var="muc#roomconfig_changesubject" label="Allow Occupants to Change Subject?"/>
+                        <field type="list-single" var="muc#roomconfig_whois" label="Who May Discover Real JIDs?"><option label="Moderators Only">
+                           <value>moderators</value></option><option label="Anyone"><value>anyone</value></option>
+                        </field>
+                        <field type="text-private" var="muc#roomconfig_roomsecret" label="Password"><value/></field>
+                        <field type="boolean" var="muc#roomconfig_moderatedroom" label="Make Room Moderated?"/>
+                        <field type="boolean" var="muc#roomconfig_membersonly" label="Make Room Members-Only?"/>
+                        <field type="text-single" var="muc#roomconfig_historylength" label="Maximum Number of History Messages Returned by Room">
+                           <value>20</value></field>
+                        </x>
+                    </query>
+                    </iq>`);
 
                 spyOn(chatroomview.model, 'sendConfiguration').and.callThrough();
-                _converse.connection._dataRecv(test_utils.createRequest(node.firstElementChild));
+                _converse.connection._dataRecv(test_utils.createRequest(node));
                 await test_utils.waitUntil(() => chatroomview.model.sendConfiguration.calls.count() === 1);
                 var sent_stanza = sent_IQ_els.pop();
                 while (sent_stanza.getAttribute('type') !== 'set') {
@@ -260,7 +260,7 @@
         describe("An instant groupchat", function () {
 
             it("will be created when muc_instant_rooms is set to true",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -391,7 +391,7 @@
         describe("A Groupchat", function () {
 
             it("is opened when an xmpp: URI is clicked inside another groupchat",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -420,7 +420,7 @@
             }));
 
             it("shows a notification if its not anonymous",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -478,7 +478,7 @@
 
 
             it("shows join/leave messages when users enter or exit a groupchat",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -753,7 +753,7 @@
             }));
 
             it("combines subsequent join/leave messages when users enter or exit a groupchat",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -764,99 +764,99 @@
                 expect(sizzle('div.chat-info', chat_content).length).toBe(1);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("dummy has entered the groupchat");
 
-                let presence = Strophe.xmlHtmlNode(
+                let presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fabio">
                         <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="INI3xjRUioclBTP/aACfWi5m9UY=" hash="sha-1"/>
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
                         </x>
-                    </presence>`).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(2);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("fabio has entered the groupchat");
 
-                presence = Strophe.xmlHtmlNode(
+                presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/Dele Olajide">
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-39320524" role="participant"/>
                         </x>
-                    </presence>`).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(3);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("Dele Olajide has entered the groupchat");
 
-                presence = Strophe.xmlHtmlNode(
+                presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/jcbrand">
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="owner" jid="jc@opkode.com/converse.js-30645022" role="moderator"/>
                             <status code="110"/>
                         </x>
-                    </presence>`).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(4);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("jcbrand has entered the groupchat");
 
-                presence = Strophe.xmlHtmlNode(
+                presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/Dele Olajide">
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-39320524" role="none"/>
                         </x>
-                    </presence>`).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(4);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("Dele Olajide has entered and left the groupchat");
 
-                presence = Strophe.xmlHtmlNode(
+                presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/Dele Olajide">
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-74567907" role="participant"/>
                         </x>
-                    </presence>`).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(4);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("Dele Olajide has entered the groupchat");
 
-                presence = Strophe.xmlHtmlNode(
+                presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fuvuv" xml:lang="en">
                         <c xmlns="http://jabber.org/protocol/caps" node="http://jabber.pix-art.de" ver="5tOurnuFnp2h50hKafeUyeN4Yl8=" hash="sha-1"/>
                         <x xmlns="vcard-temp:x:update"/>
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="fuvuv@blabber.im/Pix-Art Messenger.8zoB" role="participant"/>
                         </x>
-                    </presence>`).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(5);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("fuvuv has entered the groupchat");
 
-                presence = Strophe.xmlHtmlNode(
+                presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/fuvuv">
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="fuvuv@blabber.im/Pix-Art Messenger.8zoB" role="none"/>
                         </x>
-                    </presence>`).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(5);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("fuvuv has entered and left the groupchat");
 
-                presence = Strophe.xmlHtmlNode(
+                presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/fabio">
                         <status>Disconnected: Replaced by new connection</status>
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="none"/>
                         </x>
-                    </presence>`).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(5);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                     `fabio has entered and left the groupchat. "Disconnected: Replaced by new connection"`);
 
-                presence = Strophe.xmlHtmlNode(
+                presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fabio">
                         <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="INI3xjRUioclBTP/aACfWi5m9UY=" hash="sha-1"/>
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
                         </x>
-                    </presence>`).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(5);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
@@ -866,46 +866,45 @@
                 // who were already in the room when we joined.
                 chat_content.innerHTML = '';
 
-                presence = Strophe.xmlHtmlNode(
+                presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/fabio">
                         <status>Disconnected: closed</status>
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="none"/>
                         </x>
-                    </presence>`).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(1);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                     `fabio has left the groupchat. "Disconnected: closed"`);
 
-                presence = Strophe.xmlHtmlNode(
+                presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/Dele Olajide">
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-74567907" role="none"/>
                         </x>
-                    </presence>`).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(2);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                     `Dele Olajide has left the groupchat`);
 
-                presence = Strophe.xmlHtmlNode(
+                presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fabio">
                         <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="INI3xjRUioclBTP/aACfWi5m9UY=" hash="sha-1"/>
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
                         </x>
-                    </presence>`).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(2);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                     `fabio has left and re-entered the groupchat`);
-
                 done();
             }));
 
             it("role-change messages that follow a MUC leave are left out",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -936,16 +935,15 @@
                 await view.model.onMessage(msg);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-                let stanza = Strophe.xmlHtmlNode(
+                let stanza = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="conversations@conference.siacs.eu/Guus">
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" role="none"/>
                         </x>
-                    </presence>`
-                ).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                stanza = Strophe.xmlHtmlNode(
+                stanza = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="conversations@conference.siacs.eu/Guus">
                         <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="ISg6+9AoK1/cwhbNEDviSvjdPzI=" hash="sha-1"/>
                         <x xmlns="vcard-temp:x:update">
@@ -954,8 +952,7 @@
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" role="visitor"/>
                         </x>
-                    </presence>`
-                ).firstElementChild;
+                    </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
                 const chat_content = view.el.querySelector('.chat-content');
@@ -969,7 +966,7 @@
 
 
             it("shows a new day indicator if a join/leave message is received on a new day",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1052,14 +1049,14 @@
 
                 jasmine.clock().tick(ONE_DAY_LATER);
 
-                let stanza = Strophe.xmlHtmlNode(
-                    '<message xmlns="jabber:client"' +
-                    '   to="dummy@localhost/_converse.js-290929789"' +
-                    '   type="groupchat"' +
-                    '   from="coven@chat.shakespeare.lit/some1">'+
-                    '       <body>hello world</body>'+
-                    '       <delay xmlns="urn:xmpp:delay" stamp="'+moment().format()+'" from="some1@localhost"/>'+
-                    '</message>').firstChild;
+                let stanza = u.toStanza(`
+                     <message xmlns="jabber:client"
+                        to="dummy@localhost/_converse.js-290929789"
+                        type="groupchat"
+                        from="coven@chat.shakespeare.lit/some1">
+                            <body>hello world</body>
+                            <delay xmlns="urn:xmpp:delay" stamp="${moment().format()}" from="some1@localhost"/>
+                     </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
@@ -1087,14 +1084,14 @@
 
                 jasmine.clock().tick(ONE_DAY_LATER);
 
-                stanza = Strophe.xmlHtmlNode(
-                    '<message xmlns="jabber:client"' +
-                    '   to="dummy@localhost/_converse.js-290929789"' +
-                    '   type="groupchat"' +
-                    '   from="coven@chat.shakespeare.lit/some1">'+
-                    '       <body>hello world</body>'+
-                    '       <delay xmlns="urn:xmpp:delay" stamp="'+moment().format()+'" from="some1@localhost"/>'+
-                    '</message>').firstChild;
+                stanza = u.toStanza(`
+                    <message xmlns="jabber:client"
+                       to="dummy@localhost/_converse.js-290929789"
+                       type="groupchat"
+                       from="coven@chat.shakespeare.lit/some1">"+
+                           <body>hello world</body>"+
+                           <delay xmlns="urn:xmpp:delay" stamp="${moment().format()}" from="some1@localhost"/>"+
+                    </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
@@ -1131,7 +1128,7 @@
 
 
             it("supports the /me command",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1171,7 +1168,7 @@
             }));
 
             it("can be configured if you're its owner",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1389,7 +1386,7 @@
             }));
 
             it("shows all members even if they're not currently present in the groupchat",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1443,7 +1440,7 @@
             }));
 
             it("shows users currently present in the groupchat",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1497,7 +1494,7 @@
             }));
 
             it("escapes occupant nicknames when rendering them, to avoid JS-injection attacks",
-                mock.initConverseWithPromises(null, ['rosterGroupsFetched'], {},
+                mock.initConverse(null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
@@ -1528,7 +1525,7 @@
             }));
 
             it("indicates moderators and visitors by means of a special css class and tooltip",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {'view_mode': 'fullscreen'},
                     async function (done, _converse) {
 
@@ -1591,7 +1588,7 @@
             }));
 
             it("properly handles notification that a room has been destroyed",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1622,7 +1619,7 @@
             }));
 
             it("will use the user's reserved nickname, if it exists",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1719,7 +1716,7 @@
             }));
 
             it("allows the user to invite their roster contacts to enter the groupchat",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -1778,7 +1775,7 @@
             }));
 
             it("can be joined automatically, based upon a received invite",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1798,10 +1795,10 @@
                 expect(_converse.chatboxes.models.length).toBe(1);
                 expect(_converse.chatboxes.models[0].id).toBe("controlbox");
 
-                const stanza = Strophe.xmlHtmlNode(
-                    '<message xmlns="jabber:client" to="'+_converse.bare_jid+'" from="'+from_jid+'" id="9bceb415-f34b-4fa4-80d5-c0d076a24231">'+
-                        '<x xmlns="jabber:x:conference" jid="'+room_jid+'" reason="'+reason+'"/>'+
-                    '</message>').firstChild;
+                const stanza = u.toStanza(`
+                    <message xmlns="jabber:client" to="${_converse.bare_jid}" from="${from_jid}" id="9bceb415-f34b-4fa4-80d5-c0d076a24231">
+                       <x xmlns="jabber:x:conference" jid="${room_jid}" reason="${reason}"/>
+                    </message>`);
                 _converse.onDirectMUCInvitation(stanza);
                 expect(window.confirm).toHaveBeenCalledWith(
                     name + ' has invited you to join a groupchat: '+ room_jid +
@@ -1813,7 +1810,7 @@
             }));
 
             it("shows received groupchat messages",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1846,7 +1843,7 @@
             }));
 
             it("shows sent groupchat messages",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1888,7 +1885,7 @@
             }));
 
             it("will cause the chat area to be scrolled down only if it was at the bottom already",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1931,18 +1928,18 @@
             }));
 
             it("shows the room topic in the header",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'jdev', 'conference.jabber.org', 'jc');
                 const text = 'Jabber/XMPP Development | RFCs and Extensions: http://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
-                let stanza = Strophe.xmlHtmlNode(
-                    '<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">'+
-                    '    <subject>'+text+'</subject>'+
-                    '    <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>'+
-                    '    <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>'+
-                    '</message>').firstChild;
+                let stanza = u.toStanza(`
+                    <message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
+                        <subject>${text}</subject>
+                        <delay xmlns="urn:xmpp:delay" stamp="2014-02-04T09:35:39Z" from="jdev@conference.jabber.org"/>
+                        <x xmlns="jabber:x:delay" stamp="20140204T09:35:39" from="jdev@conference.jabber.org"/>
+                    </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 const view = _converse.chatboxviews.get('jdev@conference.jabber.org');
                 await new Promise((resolve, reject) => view.model.once('change:subject', resolve));
@@ -1951,11 +1948,11 @@
                 expect(sizzle('.chat-topic:last').pop().textContent).toBe(text);
                 expect(view.el.querySelector('.chatroom-description').textContent).toBe(text);
 
-                stanza = Strophe.xmlHtmlNode(
+                stanza = u.toStanza(
                     `<message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
                          <subject>This is a message subject</subject>
                          <body>This is a message</body>
-                     </message>`).firstChild;
+                     </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 chat_content = view.el.querySelector('.chat-content');
@@ -1969,7 +1966,7 @@
             }));
 
             it("escapes the subject before rendering it, to avoid JS-injection attacks",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -1988,7 +1985,7 @@
             }));
 
             it("informs users if their nicknames has been changed.",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -2094,7 +2091,7 @@
             }));
 
             it("queries for the groupchat information before attempting to join the user",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -2168,7 +2165,7 @@
             }));
 
             it("updates the shown features when the groupchat configuration has changed",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {'view_mode': 'fullscreen'},
                     async function (done, _converse) {
 
@@ -2212,7 +2209,7 @@
                         `iq[to="${jid}"] query[xmlns="${Strophe.NS.MUC_OWNER}"]`
                     )).pop());
 
-                const response = Strophe.xmlHtmlNode(
+                const response_el = u.toStanza(
                    `<iq xmlns="jabber:client"
                          type="result"
                          to="dummy@localhost/pda"
@@ -2277,7 +2274,6 @@
                      </x>
                      </query>
                      </iq>`);
-                const response_el = response.firstElementChild;
                 _converse.connection._dataRecv(test_utils.createRequest(response_el));
                 const el = await test_utils.waitUntil(() => document.querySelector('.chatroom-form legend'));
                 expect(el.textContent).toBe("Configuration for room@conference.example.org");
@@ -2357,7 +2353,7 @@
             }));
 
             it("indicates when a room is no longer anonymous",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -2406,7 +2402,7 @@
             }));
 
             it("informs users if they have been kicked out of the groupchat",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -2459,7 +2455,7 @@
 
 
             it("can be saved to, and retrieved from, browserStorage",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -2491,7 +2487,7 @@
             }));
 
             it("can be minimized by clicking a DOM element with class 'toggle-chatbox-button'",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -2522,7 +2518,7 @@
             }));
 
             it("can be closed again by clicking a DOM element with class 'close-chatbox-button'",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -2544,7 +2540,7 @@
         describe("Each chat groupchat can take special commands", function () {
 
             it("takes /help to show the available commands",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -2582,7 +2578,7 @@
             }));
 
             it("takes /help to show the available commands and commands can be disabled by config",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {muc_disable_moderator_commands: ['mute', 'voice']},
                     async function (done, _converse) {
 
@@ -2618,7 +2614,7 @@
             }));
 
             it("takes /member to make an occupant a member",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -2767,7 +2763,7 @@
             }));
 
             it("takes /topic to set the groupchat topic",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -2819,7 +2815,7 @@
             }));
 
             it("takes /clear to clear messages",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -2838,7 +2834,7 @@
             }));
 
             it("takes /owner to make a user an owner",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -2926,7 +2922,7 @@
             }));
 
             it("takes /ban to ban a user",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3006,7 +3002,7 @@
             }));
 
             it("takes /kick to kick a user",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3095,7 +3091,7 @@
 
 
             it("takes /op and /deop to make a user a moderator or not",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3237,7 +3233,7 @@
             }));
 
             it("takes /mute and /voice to mute and unmute a user",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3380,7 +3376,7 @@
             }));
 
             it("takes /destroy to destroy a muc",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3431,7 +3427,7 @@
         describe("When attempting to enter a groupchat", function () {
 
             it("will use the nickname set in the global settings if the user doesn't have a VCard nickname",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'nickname': 'Benedict-Cucumberpatch'},
                     async function (done, _converse) {
 
@@ -3442,7 +3438,7 @@
             }));
 
             it("will show an error message if the groupchat requires a password",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -3478,7 +3474,7 @@
             }));
 
             it("will show an error message if the groupchat is members-only and the user not included",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3502,7 +3498,7 @@
             }));
 
             it("will show an error message if the user has been banned",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3526,7 +3522,7 @@
             }));
 
             it("will render a nickname form if a nickname conflict happens and muc_nickname_from_jid=false",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3554,7 +3550,7 @@
             }));
 
             it("will automatically choose a new nickname if a nickname conflict happens and muc_nickname_from_jid=true",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3615,7 +3611,7 @@
             }));
 
             it("will show an error message if the user is not allowed to have created the groupchat",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3638,7 +3634,7 @@
             }));
 
             it("will show an error message if the user's nickname doesn't conform to groupchat policy",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3662,7 +3658,7 @@
             }));
 
             it("will show an error message if the groupchat doesn't yet exist",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3686,7 +3682,7 @@
             }));
 
             it("will show an error message if the groupchat has reached its maximum number of participants",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3713,7 +3709,7 @@
         describe("Someone being invited to a groupchat", function () {
 
             it("will first be added to the member list if the groupchat is members only",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -3879,7 +3875,7 @@
         describe("The affiliations delta", function () {
 
             it("can be computed in various ways",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
@@ -3944,7 +3940,7 @@
         describe("The \"Groupchats\" section", function () {
 
             it("contains a link to a modal through which a new chatroom can be created",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -3956,6 +3952,7 @@
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.add_room_modal;
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
+                expect(modal.el.querySelector('.modal-title').textContent).toBe('Enter a new Groupchat');
                 spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 modal.el.querySelector('input[name="chatroom"]').value = 'lounce@muc.localhost';
@@ -3966,7 +3963,7 @@
             }));
 
             it("contains a link to a modal which can list groupchats publically available on the server",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
@@ -4028,7 +4025,7 @@
             }));
 
             it("shows the number of unread mentions received",
-                mock.initConverseWithPromises(
+                mock.initConverse(
                     null, ['rosterGroupsFetched'], {'allow_bookmarks': false},
                     async function (done, _converse) {
                 // XXX: we set `allow_bookmarks` to false, so that the groupchats
@@ -4083,7 +4080,7 @@
                 describe("A composing notification", function () {
 
                     it("will be shown if received",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched'], {},
                             async function (done, _converse) {
 
@@ -4239,7 +4236,7 @@
 
                 describe("A paused notification", function () {
                     it("will be shown if received",
-                        mock.initConverseWithPromises(
+                        mock.initConverse(
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 

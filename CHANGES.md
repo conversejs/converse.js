@@ -8,12 +8,13 @@
 - Set releases URL to new Github repo
 - #1369 Don't wrongly interpret message with `subject` as a topic change.
 - #1405 Status of contacts list are not displayed properly
-- #1408 new config option `roomconfig_whitelist`
-- #1412 muc moderator commands can be disabled selectively by config
-- #1413 fix moderator commands that change affiliation
+- #1408 New config option `roomconfig_whitelist`
+- #1410 HTTP upload not working if conversations push proxy is used
+- #1412 MUC moderator commands can be disabled selectively by config
+- #1413 Fix moderator commands that change affiliation
 - #1414 Prevent duplicate messages on MUC join
 - #1417 Margin between nickname and badge
-- #1421 fix direct invite for membersonly room
+- #1421 Fix direct invite for membersonly room
 - #1422 Resurrect the `muc_show_join_leave` option
 - #1442 MUC read receipts causing empty lines
 

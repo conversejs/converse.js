@@ -142,6 +142,7 @@
         features = features.length ? features : [
             'http://jabber.org/protocol/muc',
             'jabber:iq:register',
+            Strophe.NS.SID,
             'muc_passwordprotected',
             'muc_hidden',
             'muc_temporary',

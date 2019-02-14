@@ -1869,13 +1869,18 @@
 
                 // Let's check that if we receive the same message again, it's
                 // not shown.
-                const message = $msg({
-                    from: 'lounge@localhost/dummy',
-                    to: 'dummy@localhost.com',
-                    type: 'groupchat',
-                    id: view.model.messages.at(0).get('msgid')
-                }).c('body').t(text);
-                await view.model.onMessage(message.nodeTree);
+                const stanza = u.toStanza(`
+                    <message xmlns="jabber:client"
+                            from="lounge@localhost/dummy"
+                            to="${_converse.connection.jid}"
+                            type="groupchat">
+                        <body>${text}</body>
+                        <stanza-id xmlns="urn:xmpp:sid:0"
+                                id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
+                                by="lounge@localhost"/>
+                        <origin-id xmlns="urn:xmpp:sid:0" id="${view.model.messages.at(0).get('origin_id')}"/>
+                    </message>`);
+                await view.model.onMessage(stanza);
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(sizzle('.chat-msg__text:last').pop().textContent).toBe(text);
                 expect(view.model.messages.length).toBe(1);

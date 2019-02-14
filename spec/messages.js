@@ -2208,18 +2208,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            const features = [
-                'http://jabber.org/protocol/muc',
-                'jabber:iq:register',
-                'muc_passwordprotected',
-                'muc_hidden',
-                'muc_temporary',
-                'muc_membersonly',
-                'muc_unmoderated',
-                'muc_nonanonymous',
-                Strophe.NS.SID,
-            ];
-            await test_utils.openAndEnterChatRoom(_converse, 'room', 'muc.example.com', 'dummy', features);
+            await test_utils.openAndEnterChatRoom(_converse, 'room', 'muc.example.com', 'dummy');
             const view = _converse.chatboxviews.get('room@muc.example.com');
             spyOn(view.model, 'isDuplicate').and.callThrough();
             let stanza = u.toStanza(`
@@ -2464,17 +2453,65 @@
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             const msg_obj = view.model.messages.at(0);
-            const msg_id = msg_obj.get('msgid');
-            const from = msg_obj.get('from');
-            const body = msg_obj.get('message');
-            const msg = $msg({
-                    'from': from,
-                    'id': msg_id,
-                    'to': 'dummy@localhost',
-                    'type': 'groupchat',
-                }).c('body').t(body).up().tree();
-            await view.model.onMessage(msg);
+            const stanza = u.toStanza(`
+                <message xmlns="jabber:client"
+                         from="${msg_obj.get('from')}"
+                         to="${_converse.connection.jid}"
+                         type="groupchat">
+                    <body>${msg_obj.get('message')}</body>
+                    <stanza-id xmlns="urn:xmpp:sid:0"
+                               id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
+                               by="lounge@localhost"/>
+                    <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
+                </message>`);
+            await view.model.onMessage(stanza);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(1);
+            done();
+        }));
+
+        it("gets updated with its stanza-id upon MUC reflection",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            await test_utils.openAndEnterChatRoom(_converse, 'room', 'muc.example.com', 'dummy');
+            const view = _converse.chatboxviews.get('room@muc.example.com');
+
+            const attrs = {
+                'id': _converse.connection.getUniqueId(),
+                'origin_id': _converse.connection.getUniqueId(),
+                'fullname': 'dummy',
+                'references': [],
+                'from': _converse.connection.jid,
+                'sender': 'me',
+                'time': moment().format(),
+                'message': 'Hello world',
+                'is_spoiler': false,
+                'type': 'groupchat' 
+            }
+            view.model.sendMessage(attrs);
+            await test_utils.waitUntil(() => _converse.api.chats.get().length);
+            await test_utils.waitUntil(() => view.model.messages.length === 1);
+            expect(view.model.messages.at(0).get('stanza_id')).toBeUndefined();
+            expect(view.model.messages.at(0).get('origin_id')).toBe(attrs.origin_id);
+
+            const stanza = u.toStanza(`
+                <message xmlns="jabber:client"
+                         from="room@muc.example.com/dummy"
+                         to="${_converse.connection.jid}"
+                         type="groupchat">
+                    <body>Hello world</body>
+                    <stanza-id xmlns="urn:xmpp:sid:0"
+                               id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
+                               by="room@muc.example.com"/>
+                    <origin-id xmlns="urn:xmpp:sid:0" id="${attrs.origin_id}"/>
+                </message>`);
+            spyOn(view.model, 'reflectionHandled').and.callThrough();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => view.model.reflectionHandled.calls.count() === 1);
+            expect(view.model.messages.length).toBe(1);
+            expect(view.model.messages.at(0).get('stanza_id')).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");
+            expect(view.model.messages.at(0).get('origin_id')).toBe(attrs.origin_id);
             done();
         }));
 

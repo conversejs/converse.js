@@ -999,17 +999,26 @@ converse.plugins.add('converse-muc', {
                 const from = stanza.getAttribute('from');
                 const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
                 if (own_message) {
-                    const msgid = stanza.getAttribute('id'),
-                          jid = stanza.getAttribute('from');
-
-                    // TODO: use stanza-id?
-                    if (msgid) {
-                        const msg = this.messages.findWhere({'msgid': msgid, 'from': jid});
-                        if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
-                            msg.save({'received': moment().format()});
-                            return true;
-                        }
+                    const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+                    if (!origin_id) {
+                        return false;
                     }
+                    const msg = this.messages.findWhere({
+                        'origin_id': origin_id.getAttribute('id'),
+                        'sender': 'me'
+                    });
+                    if (msg) {
+                        const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+                        const attrs = {
+                            'stanza_id': stanza_id ? stanza_id.getAttribute('id') : undefined,
+                            'stanza_id_by_jid': stanza_id ? stanza_id.getAttribute('by') : undefined
+                        }
+                        if (!msg.get('received')) {
+                            attrs.received = moment().format();
+                        }
+                        msg.save(attrs);
+                    }
+                    return msg ? true : false;
                 }
             },
 

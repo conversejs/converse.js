@@ -50039,16 +50039,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         if (this.parseMessageForCommands(message) || (await this.model.sendMessage(this.model.getOutgoingMessageAttributes(message, spoiler_hint)))) {
           hint_el.value = '';
           textarea.value = '';
-          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea); // Trigger input event, so that the textarea resizes
-
-          const event = document.createEvent('Event');
-          event.initEvent('input', true, true);
-          textarea.dispatchEvent(event);
+          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea);
+          textarea.style.height = 'auto'; // Fixes weirdness
 
           _converse.emit('messageSend', message);
         }
 
         textarea.removeAttribute('disabled');
+        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('disabled', textarea);
         textarea.focus(); // Suppress events, otherwise superfluous CSN gets set
         // immediately after the message, causing rate-limiting issues.
 

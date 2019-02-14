@@ -958,10 +958,9 @@ converse.plugins.add('converse-muc', {
                 if (!result.length) {
                     return false;
                 }
-                const msg = this.messages.findWhere({
-                    'stanza_id': stanza_id.getAttribute('id'),
-                    'stanza_id_by_jid': by_jid
-                });
+                const query = {};
+                query[`stanza_id ${by_jid}`] = stanza_id.getAttribute('id');
+                const msg = this.messages.findWhere(query);
                 return !_.isNil(msg);
             },
 
@@ -1008,10 +1007,12 @@ converse.plugins.add('converse-muc', {
                         'sender': 'me'
                     });
                     if (msg) {
+                        const attrs = {};
                         const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-                        const attrs = {
-                            'stanza_id': stanza_id ? stanza_id.getAttribute('id') : undefined,
-                            'stanza_id_by_jid': stanza_id ? stanza_id.getAttribute('by') : undefined
+                        const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
+                        if (by_jid) {
+                            const key = `stanza_id ${by_jid}`;
+                            attrs[key] = stanza_id.getAttribute('id');
                         }
                         if (!msg.get('received')) {
                             attrs.received = moment().format();

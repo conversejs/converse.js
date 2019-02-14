@@ -2510,7 +2510,7 @@
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => view.model.reflectionHandled.calls.count() === 1);
             expect(view.model.messages.length).toBe(1);
-            expect(view.model.messages.at(0).get('stanza_id')).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");
+            expect(view.model.messages.at(0).get('stanza_id room@muc.example.com')).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");
             expect(view.model.messages.at(0).get('origin_id')).toBe(attrs.origin_id);
             done();
         }));

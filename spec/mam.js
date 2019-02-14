@@ -30,12 +30,6 @@
                     </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
-                // XXX: we wait here until the first message appears before
-                // sending the duplicate. If we don't do that, then the
-                // duplicate appears before the promise for `createMessage`
-                // has been resolved, which means that the `isDuplicate`
-                // check fails because the first message doesn't exist yet.
-                //
                 // Not sure whether such a race-condition might pose a problem
                 // in "real-world" situations.
                 stanza = u.toStanza(
@@ -50,9 +44,9 @@
                         </result>
                     </message>`);
 
-                spyOn(view.model, 'isDuplicate').and.callThrough();
+                spyOn(view.model, 'hasDuplicateStanzaID').and.callThrough();
                 view.model.onMessage(stanza);
-                await test_utils.waitUntil(() => view.model.isDuplicate.calls.count());
+                await test_utils.waitUntil(() => view.model.hasDuplicateStanzaID.calls.count());
                 expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
                 done();
             }));
@@ -93,10 +87,10 @@
                         </result>
                     </message>`);
 
-                spyOn(view.model, 'isDuplicate').and.callThrough();
+                spyOn(view.model, 'hasDuplicateStanzaID').and.callThrough();
                 view.model.onMessage(stanza);
-                await test_utils.waitUntil(() => view.model.isDuplicate.calls.count());
-                expect(view.model.isDuplicate.calls.count()).toBe(1);
+                await test_utils.waitUntil(() => view.model.hasDuplicateStanzaID.calls.count());
+                expect(view.model.hasDuplicateStanzaID.calls.count()).toBe(1);
                 expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
 
                 stanza = u.toStanza(
@@ -114,7 +108,7 @@
                         </result>
                     </message>`);
                 view.model.onMessage(stanza);
-                expect(view.model.isDuplicate.calls.count()).toBe(2);
+                expect(view.model.hasDuplicateStanzaID.calls.count()).toBe(2);
                 expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
                 done();
             }))

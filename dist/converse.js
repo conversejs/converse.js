@@ -61643,6 +61643,39 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return false;
       },
 
+      findDuplicateFromOriginID(stanza) {
+        const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+
+        if (!origin_id) {
+          return false;
+        }
+
+        return this.messages.findWhere({
+          'origin_id': origin_id.getAttribute('id'),
+          'sender': 'me'
+        });
+      },
+
+      async hasDuplicateStanzaID(stanza) {
+        const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+
+        if (!stanza_id) {
+          return false;
+        }
+
+        const by_jid = stanza_id.getAttribute('by');
+        const result = await _converse.api.disco.supports(Strophe.NS.SID, by_jid);
+
+        if (!result.length) {
+          return false;
+        }
+
+        const query = {};
+        query[`stanza_id ${by_jid}`] = stanza_id.getAttribute('id');
+        const msg = this.messages.findWhere(query);
+        return !_.isNil(msg);
+      },
+
       sendMarker(to_jid, id, type) {
         const stanza = $msg({
           'from': _converse.connection.jid,
@@ -62251,7 +62284,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         },
               chatbox = this.getChatBox(contact_jid, chatbox_attrs, has_body);
 
-        if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
+        if (chatbox && !chatbox.findDuplicateFromOriginID(stanza) && !(await chatbox.hasDuplicateStanzaID(stanza)) && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
           const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
 
           if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
@@ -66935,26 +66968,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         return data;
       },
 
-      async isDuplicate(message, original_stanza) {
-        const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, message).pop();
-
-        if (!stanza_id) {
-          return false;
-        }
-
-        const by_jid = stanza_id.getAttribute('by');
-        const result = await _converse.api.disco.supports(Strophe.NS.SID, by_jid);
-
-        if (!result.length) {
-          return false;
-        }
-
-        const query = {};
-        query[`stanza_id ${by_jid}`] = stanza_id.getAttribute('id');
-        const msg = this.messages.findWhere(query);
-        return !_.isNil(msg);
-      },
-
       fetchFeaturesIfConfigurationChanged(stanza) {
         const configuration_changed = stanza.querySelector("status[code='104']"),
               logging_enabled = stanza.querySelector("status[code='170']"),
@@ -66978,7 +66991,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
                      acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
       },
 
-      reflectionHandled(stanza) {
+      handleReflection(stanza) {
         /* Handle a MUC reflected message and return true if so.
          *
          * Parameters:
@@ -66988,16 +67001,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
 
         if (own_message) {
-          const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-
-          if (!origin_id) {
-            return false;
-          }
-
-          const msg = this.messages.findWhere({
-            'origin_id': origin_id.getAttribute('id'),
-            'sender': 'me'
-          });
+          const msg = this.findDuplicateFromOriginID(stanza);
 
           if (msg) {
             const attrs = {};
@@ -67070,17 +67074,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           stanza = forwarded.querySelector('message');
         }
 
-        if (await this.isDuplicate(stanza, original_stanza)) {
-          return;
+        if (this.handleReflection(stanza) || (await this.hasDuplicateStanzaID(stanza)) || this.handleMessageCorrection(stanza) || this.isReceipt(stanza) || this.isChatMarker(stanza)) {
+          return _converse.emit('message', {
+            'stanza': original_stanza
+          });
         }
 
         const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
 
-        if (!attrs.nick) {
-          return;
-        }
-
-        if (!this.handleMessageCorrection(stanza) && !this.isReceipt(stanza) && !this.isChatMarker(stanza) && !this.reflectionHandled(stanza) && !this.subjectChangeHandled(attrs) && !this.ignorableCSN(attrs) && (attrs['chat_state'] || !_utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isEmptyMessage(attrs))) {
+        if (attrs.nick && !this.subjectChangeHandled(attrs) && !this.ignorableCSN(attrs) && (attrs['chat_state'] || !_utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isEmptyMessage(attrs))) {
           const msg = this.messages.create(attrs);
           this.incrementUnreadMsgCounter(msg);
 
@@ -67091,13 +67093,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           }
         }
 
-        if (attrs.nick !== this.get('nick')) {
-          // We only emit an event if it's not our own message
-          _converse.emit('message', {
-            'stanza': original_stanza,
-            'chatbox': this
-          });
-        }
+        _converse.emit('message', {
+          'stanza': original_stanza,
+          'chatbox': this
+        });
       },
 
       onPresence(pres) {

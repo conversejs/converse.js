@@ -313,6 +313,34 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 return false;
             },
+
+            findDuplicateFromOriginID  (stanza) {
+                const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+                if (!origin_id) {
+                    return false;
+                }
+                return this.messages.findWhere({
+                    'origin_id': origin_id.getAttribute('id'),
+                    'sender': 'me'
+                });
+            },
+
+            async hasDuplicateStanzaID (stanza) {
+                const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+                if (!stanza_id) {
+                    return false;
+                }
+                const by_jid = stanza_id.getAttribute('by');
+                const result = await _converse.api.disco.supports(Strophe.NS.SID, by_jid);
+                if (!result.length) {
+                    return false;
+                }
+                const query = {};
+                query[`stanza_id ${by_jid}`] = stanza_id.getAttribute('id');
+                const msg = this.messages.findWhere(query);
+                return !_.isNil(msg);
+            },
+
             
             sendMarker(to_jid, id, type) {
                 const stanza = $msg({
@@ -821,6 +849,7 @@ converse.plugins.add('converse-chatboxes', {
                     from_jid = stanza.getAttribute('from');
                     to_jid = stanza.getAttribute('to');
                 }
+
                 const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
                       from_resource = Strophe.getResourceFromJid(from_jid),
                       is_me = from_bare_jid === _converse.bare_jid;
@@ -850,6 +879,8 @@ converse.plugins.add('converse-chatboxes', {
                       chatbox = this.getChatBox(contact_jid, chatbox_attrs, has_body);
 
                 if (chatbox &&
+                        !chatbox.findDuplicateFromOriginID(stanza) &&
+                        !await chatbox.hasDuplicateStanzaID(stanza) &&
                         !chatbox.handleMessageCorrection(stanza) &&
                         !chatbox.handleReceipt (stanza, from_jid, is_carbon, is_me) &&
                         !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {

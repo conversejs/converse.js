@@ -1215,7 +1215,9 @@
                 }).c('body').t('Message!').up()
                 .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
             await _converse.chatboxes.onMessage(msg);
-            const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_stanzas[1].tree()).pop();
+            const sent_messages = sent_stanzas.map(s => _.isElement(s) ? s : s.nodeTree).filter(s => s.nodeName === 'message');
+            expect(sent_messages.length).toBe(1);
+            const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_messages[0]).pop();
             expect(Strophe.serialize(receipt)).toBe(`<received id="${msg_id}" xmlns="${Strophe.NS.RECEIPTS}"/>`);
             done();
         }));
@@ -2106,6 +2108,8 @@
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current', 1);
+            await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
+
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid);
             const view = await _converse.api.chatviews.get(contact_jid);
@@ -2210,7 +2214,7 @@
 
             await test_utils.openAndEnterChatRoom(_converse, 'room', 'muc.example.com', 'dummy');
             const view = _converse.chatboxviews.get('room@muc.example.com');
-            spyOn(view.model, 'isDuplicate').and.callThrough();
+            spyOn(view.model, 'hasDuplicateStanzaID').and.callThrough();
             let stanza = u.toStanza(`
                 <message xmlns="jabber:client"
                          from="room@muc.example.com/some1"
@@ -2225,8 +2229,8 @@
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => _converse.api.chats.get().length);
             await test_utils.waitUntil(() => view.model.messages.length === 1);
-            await test_utils.waitUntil(() => view.model.isDuplicate.calls.count() === 1);
-            let result = await view.model.isDuplicate.calls.all()[0].returnValue;
+            await test_utils.waitUntil(() => view.model.hasDuplicateStanzaID.calls.count() === 1);
+            let result = await view.model.hasDuplicateStanzaID.calls.all()[0].returnValue;
             expect(result).toBe(false);
 
             stanza = u.toStanza(`
@@ -2241,8 +2245,8 @@
                     <origin-id xmlns="urn:xmpp:sid:0" id="de305d54-75b4-431b-adb2-eb6b9e546013"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.isDuplicate.calls.count() === 2);
-            result = await view.model.isDuplicate.calls.all()[1].returnValue;
+            await test_utils.waitUntil(() => view.model.hasDuplicateStanzaID.calls.count() === 2);
+            result = await view.model.hasDuplicateStanzaID.calls.all()[1].returnValue;
             expect(result).toBe(true);
             expect(view.model.messages.length).toBe(1);
             done();
@@ -2506,9 +2510,9 @@
                                by="room@muc.example.com"/>
                     <origin-id xmlns="urn:xmpp:sid:0" id="${attrs.origin_id}"/>
                 </message>`);
-            spyOn(view.model, 'reflectionHandled').and.callThrough();
+            spyOn(view.model, 'handleReflection').and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.reflectionHandled.calls.count() === 1);
+            await test_utils.waitUntil(() => view.model.handleReflection.calls.count() === 1);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('stanza_id room@muc.example.com')).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");
             expect(view.model.messages.at(0).get('origin_id')).toBe(attrs.origin_id);

@@ -4200,7 +4200,7 @@
                         // Check that new messages appear under the chat state
                         // notifications
                         msg = $msg({
-                            from: 'lounge@localhost/some1',
+                            from: `${room_jid}/some1`,
                             id: (new Date()).getTime(),
                             to: 'dummy@localhost',
                             type: 'groupchat'

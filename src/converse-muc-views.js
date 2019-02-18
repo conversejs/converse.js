@@ -33,7 +33,7 @@ import tpl_spinner from "templates/spinner.html";
 import xss from "xss";
 
 
-const { Backbone, Promise, Strophe, b64_sha1, moment, f, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
+const { Backbone, Promise, Strophe, moment, f, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
 const u = converse.env.utils;
 const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
 
@@ -60,9 +60,9 @@ converse.plugins.add('converse-muc-views', {
                 const { _converse } = this.__super__;
                 this.roomspanel = new _converse.RoomsPanel({
                     'model': new (_converse.RoomsPanelModel.extend({
-                        'id': b64_sha1(`converse.roomspanel${_converse.bare_jid}`), // Required by sessionStorage
+                        'id': `converse.roomspanel${_converse.bare_jid}`, // Required by web storage 
                         'browserStorage': new Backbone.BrowserStorage[_converse.config.get('storage')](
-                            b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
+                            `converse.roomspanel${_converse.bare_jid}`)
                     }))()
                 });
                 this.roomspanel.model.fetch();

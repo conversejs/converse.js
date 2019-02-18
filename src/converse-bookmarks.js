@@ -17,7 +17,7 @@ import tpl_bookmarks_list from "templates/bookmarks_list.html"
 import tpl_chatroom_bookmark_form from "templates/chatroom_bookmark_form.html";
 import tpl_chatroom_bookmark_toggle from "templates/chatroom_bookmark_toggle.html";
 
-const { Backbone, Promise, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
+const { Backbone, Promise, Strophe, $iq, sizzle, _ } = converse.env;
 const u = converse.env.utils;
 
 
@@ -243,8 +243,8 @@ converse.plugins.add('converse-bookmarks', {
 
                 const storage = _converse.config.get('storage'),
                       cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
-                this.fetched_flag = b64_sha1(cache_key+'fetched');
-                this.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(cache_key));
+                this.fetched_flag = cache_key+'fetched';
+                this.browserStorage = new Backbone.BrowserStorage[storage](cache_key);
             },
 
             openBookmarkedRoom (bookmark) {
@@ -434,7 +434,7 @@ converse.plugins.add('converse-bookmarks', {
                 _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
                 const storage = _converse.config.get('storage'),
-                      id = b64_sha1(`converse.room-bookmarks${_converse.bare_jid}-list-model`);
+                      id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
                 this.list_model = new _converse.BookmarksList({'id': id});
                 this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
                 this.list_model.fetch();

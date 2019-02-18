@@ -1,7 +1,7 @@
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse developers
+// Copyright (c) 2013-2019, the Converse developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* This is a Converse plugin which add support for XEP-0030: Service Discovery */

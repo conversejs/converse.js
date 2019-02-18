@@ -47733,7 +47733,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 // This plugin started as a fork of Lea Verou's Awesomplete
 // https://leaverou.github.io/awesomplete/
@@ -48848,7 +48848,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env,
@@ -48933,7 +48933,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2012-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -49156,7 +49156,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -51777,7 +51777,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -52093,7 +52093,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -52386,7 +52386,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -53003,7 +53003,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -53183,7 +53183,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -55439,7 +55439,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, JC Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, JC Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
@@ -55768,7 +55768,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* global libsignal, ArrayBuffer, parseInt, crypto */
@@ -57504,7 +57504,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* This is a Converse.js plugin which add support for registering
@@ -58451,7 +58451,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* This is a non-core Converse.js plugin which shows a list of currently open
@@ -58812,7 +58812,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -59940,7 +59940,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* converse-singleton
@@ -61288,7 +61288,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2012-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -62556,7 +62556,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -64461,7 +64461,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse developers
+// Copyright (c) 2013-2019, the Converse developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* This is a Converse plugin which add support for XEP-0030: Service Discovery */
@@ -65887,7 +65887,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -67707,7 +67707,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* This is a Converse.js plugin which add support for application-level pings
@@ -67837,7 +67837,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2018, the Converse.js developers
+// Copyright (c) 2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -67960,7 +67960,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env,
@@ -69053,7 +69053,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -69745,7 +69745,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 // This is the utilities module.
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
@@ -91734,7 +91734,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 // This is the utilities module.
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -91784,7 +91784,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 // This is the utilities module.
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
@@ -95257,7 +95257,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 // This is a form utilities module.
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 
 

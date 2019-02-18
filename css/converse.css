@@ -9581,7 +9581,7 @@ body.converse-fullscreen {
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   color: var(--text-color);
-  font-family: "Helvetica", "Arial", sans-serif;
+  font-family: var(--normal-font);
   font-size: var(--font-size);
   direction: ltr;
   z-index: 1031; }

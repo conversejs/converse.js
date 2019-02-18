@@ -5244,7 +5244,7 @@ section h4 {
   align-items: center;
   font-family: 'Baumans', cursive;
   font-size: 6em;
-  margin-top: 1em;
+  margin-top: 2em;
   margin-bottom: 0.5em;
   color: white; }
   .brand-heading .byline {
@@ -5270,6 +5270,18 @@ section h4 {
       fill: white; }
     .brand-heading .converse-svg-logo .cls-4 {
       fill: white; }
+
+@media (max-width: 767.98px) {
+  .banner-social-buttons {
+    display: none; }
+  .chatroom-name {
+    font-size: 16px; }
+  .brand-heading {
+    flex-direction: column;
+    font-size: 4em;
+    margin-top: 1em; }
+    .brand-heading .byline {
+      margin: auto; } }
 
 .brand-heading__text {
   font-size: 0.9em;

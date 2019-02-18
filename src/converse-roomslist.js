@@ -166,8 +166,9 @@ converse.plugins.add('converse-roomslist', {
             initialize () {
                 Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
 
-                this.model.on('add', this.showOrHide, this);
-                this.model.on('remove', this.showOrHide, this);
+                this.debouncedShowOrHide = _.debounce(this.showOrHide, 50);
+                this.model.on('add', this.debouncedShowOrHide, this);
+                this.model.on('remove', this.debouncedShowOrHide, this);
 
                 const storage = _converse.config.get('storage'),
                       id = b64_sha1(`converse.roomslist${_converse.bare_jid}`);
@@ -235,9 +236,9 @@ converse.plugins.add('converse-roomslist', {
 
             showOrHide (item) {
                 if (!this.model.models.length) {
-                    u.hideElement(this.el);
+                    this.hide();
                 } else {
-                    u.showElement(this.el);
+                    this.show();
                 }
             },
 

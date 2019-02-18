@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.1.1 (unreleased)
+## 4.1.1 (2019-02-18)
 
 - Updated translations: af, cz, de, es, eu, ga, he, hi, ja, nb, nl_BE, zh_CN
 - New language supported: Esperanto

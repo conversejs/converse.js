@@ -1725,20 +1725,31 @@
                 // cheat here and emit the event.
                 _converse.emit('rosterContactsFetched');
 
-                await test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                spyOn(_converse, 'emit');
-                spyOn(window, 'prompt').and.callFake(function () {
-                    return "Please join!";
-                });
+                const features = [
+                    'http://jabber.org/protocol/muc',
+                    'jabber:iq:register',
+                    'muc_passwordprotected',
+                    'muc_hidden',
+                    'muc_temporary',
+                    'muc_membersonly',
+                    'muc_unmoderated',
+                    'muc_anonymous'
+                ]
+                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy', features);
+                spyOn(_converse, 'emit').and.callThrough();
+                spyOn(window, 'prompt').and.callFake(() => "Please join!");
                 const view = _converse.chatboxviews.get('lounge@localhost');
-
-                // XXX: cheating a lttle bit, normally this'll be set after
-                // receiving the features for the groupchat.
-                view.model.set('open', 'true');
-
-                spyOn(view.model, 'directInvite').and.callThrough();
                 const chat_area = view.el.querySelector('.chat-area');
-                chat_area.parentElement.removeChild(chat_area);
+
+                expect(view.model.get('affiliation')).toBe('owner');
+                expect(view.model.features.get('open')).toBe(false);
+                expect(view.el.querySelectorAll('input.invited-contact').length).toBe(1);
+
+                view.model.set('affiliation', 'member');
+                await test_utils.waitUntil(() => view.el.querySelectorAll('input.invited-contact').length === 0);
+
+                view.model.features.set('open', 'true');
+                spyOn(view.model, 'directInvite').and.callThrough();
                 await test_utils.waitUntil(() => view.el.querySelectorAll('input.invited-contact').length);
                 const input = view.el.querySelector('input.invited-contact');
                 expect(input.getAttribute('placeholder')).toBe('Invite');
@@ -1755,22 +1766,19 @@
                 expect(hint.textContent).toBe('Felix Amsel');
                 expect(input.nextSibling.childNodes.length).toBe(1);
 
-                if (typeof(Event) === 'function') {
-                    // Not working on PhantomJS
-                    evt = new Event('mousedown', {'bubbles': true});
-                    evt.button = 0; // For some reason awesomplete wants this
-                    hint.dispatchEvent(evt);
-                    expect(window.prompt).toHaveBeenCalled();
-                    expect(view.model.directInvite).toHaveBeenCalled();
-                    expect(sent_stanza.toLocaleString()).toBe(
-                        `<message from="dummy@localhost/resource" `+
-                                `id="${sent_stanza.nodeTree.getAttribute("id")}" `+
-                                `to="felix.amsel@localhost" `+
-                                `xmlns="jabber:client">`+
-                            `<x jid="lounge@localhost" reason="Please join!" xmlns="jabber:x:conference"/>`+
-                        `</message>`
-                    );
-                }
+                evt = new Event('mousedown', {'bubbles': true});
+                evt.button = 0; // For some reason awesomplete wants this
+                hint.dispatchEvent(evt);
+                expect(window.prompt).toHaveBeenCalled();
+                expect(view.model.directInvite).toHaveBeenCalled();
+                expect(sent_stanza.toLocaleString()).toBe(
+                    `<message from="dummy@localhost/resource" `+
+                            `id="${sent_stanza.nodeTree.getAttribute("id")}" `+
+                            `to="felix.amsel@localhost" `+
+                            `xmlns="jabber:client">`+
+                        `<x jid="lounge@localhost" reason="Please join!" xmlns="jabber:x:conference"/>`+
+                    `</message>`
+                );
                 done();
             }));
 

@@ -55146,8 +55146,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       initialize() {
         Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
         this.chatroomview = this.model.chatroomview;
-        this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
         this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
+        this.chatroomview.model.features.on('change:open', this.renderInviteWidget, this);
         this.chatroomview.model.features.on('change', this.renderRoomFeatures, this);
         this.render();
         this.model.fetch({
@@ -55251,7 +55251,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       },
 
       shouldInviteWidgetBeShown() {
-        return _converse.allow_muc_invitations && (this.chatroomview.model.get('open') || this.chatroomview.model.get('affiliation') === "owner");
+        return _converse.allow_muc_invitations && (this.chatroomview.model.features.get('open') || this.chatroomview.model.get('affiliation') === "owner");
       },
 
       initInviteWidget() {

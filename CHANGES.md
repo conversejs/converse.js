@@ -9,6 +9,7 @@
 - Rudimentary support for XEP-0333 chat markers
 - Better support for XEP-0359 `stanza-id` and `origin-id` elements.
 - Bugfix: restore textarea size after sending a message
+- Bugfix: MUC invite form not appearing
 - #1369 Don't wrongly interpret message with `subject` as a topic change.
 - #1405 Status of contacts list are not displayed properly
 - #1408 New config option `roomconfig_whitelist`

@@ -1849,8 +1849,8 @@ converse.plugins.add('converse-muc-views', {
                 Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
 
                 this.chatroomview = this.model.chatroomview;
-                this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
                 this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
+                this.chatroomview.model.features.on('change:open', this.renderInviteWidget, this);
                 this.chatroomview.model.features.on('change', this.renderRoomFeatures, this);
 
                 this.render();
@@ -1955,7 +1955,7 @@ converse.plugins.add('converse-muc-views', {
 
             shouldInviteWidgetBeShown () {
                 return _converse.allow_muc_invitations &&
-                    (this.chatroomview.model.get('open') ||
+                    (this.chatroomview.model.features.get('open') ||
                         this.chatroomview.model.get('affiliation') === "owner"
                     );
             },

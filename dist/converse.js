@@ -48211,7 +48211,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
       $iq = _converse$env.$iq,
-      b64_sha1 = _converse$env.b64_sha1,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
@@ -48462,8 +48461,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         const storage = _converse.config.get('storage'),
               cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
 
-        this.fetched_flag = b64_sha1(cache_key + 'fetched');
-        this.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(cache_key));
+        this.fetched_flag = cache_key + 'fetched';
+        this.browserStorage = new Backbone.BrowserStorage[storage](cache_key);
       },
 
       openBookmarkedRoom(bookmark) {
@@ -48671,7 +48670,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
         const storage = _converse.config.get('storage'),
-              id = b64_sha1(`converse.room-bookmarks${_converse.bare_jid}-list-model`);
+              id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
 
         this.list_model = new _converse.BookmarksList({
           'id': id
@@ -52400,7 +52399,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].env.utils;
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-minimize', {
@@ -52838,7 +52836,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 
       initToggle() {
         const storage = _converse.config.get('storage'),
-              id = b64_sha1(`converse.minchatstoggle${_converse.bare_jid}`);
+              id = `converse.minchatstoggle${_converse.bare_jid}`;
 
         this.toggleview = new _converse.MinimizedChatsToggleView({
           'model': new _converse.MinimizedChatsToggle({
@@ -53218,7 +53216,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment,
       f = _converse$env.f,
       sizzle = _converse$env.sizzle,
@@ -53249,9 +53246,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         const _converse = this.__super__._converse;
         this.roomspanel = new _converse.RoomsPanel({
           'model': new (_converse.RoomsPanelModel.extend({
-            'id': b64_sha1(`converse.roomspanel${_converse.bare_jid}`),
-            // Required by sessionStorage
-            'browserStorage': new Backbone.BrowserStorage[_converse.config.get('storage')](b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
+            'id': `converse.roomspanel${_converse.bare_jid}`,
+            // Required by web storage 
+            'browserStorage': new Backbone.BrowserStorage[_converse.config.get('storage')](`converse.roomspanel${_converse.bare_jid}`)
           }))()
         });
         this.roomspanel.model.fetch();
@@ -55787,8 +55784,7 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       $iq = _converse$env.$iq,
       $msg = _converse$env.$msg,
       _ = _converse$env._,
-      f = _converse$env.f,
-      b64_sha1 = _converse$env.b64_sha1;
+      f = _converse$env.f;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
 Strophe.addNamespace('OMEMO_DEVICELIST', Strophe.NS.OMEMO + ".devicelist");
 Strophe.addNamespace('OMEMO_VERIFICATION', Strophe.NS.OMEMO + ".verification");
@@ -58469,7 +58465,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
@@ -58638,7 +58633,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         this.model.on('remove', this.showOrHide, this);
 
         const storage = _converse.config.get('storage'),
-              id = b64_sha1(`converse.roomslist${_converse.bare_jid}`);
+              id = `converse.roomslist${_converse.bare_jid}`;
 
         this.list_model = new _converse.RoomsList({
           'id': id
@@ -58750,7 +58745,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     const initRoomsListView = function initRoomsListView() {
       const storage = _converse.config.get('storage'),
-            id = b64_sha1(`converse.open-rooms-{_converse.bare_jid}`),
+            id = `converse.open-rooms-{_converse.bare_jid}`,
             model = new _converse.OpenRooms();
 
       model.browserStorage = new Backbone.BrowserStorage[storage](id);
@@ -59706,7 +59701,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       createRosterFilter() {
         // Create a model on which we can store filter properties
         const model = new _converse.RosterFilter();
-        model.id = b64_sha1(`_converse.rosterfilter${_converse.bare_jid}`);
+        model.id = `_converse.rosterfilter${_converse.bare_jid}`;
         model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
         this.filter_view = new _converse.RosterFilterView({
           'model': model
@@ -59844,7 +59839,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         return this.model.create({
           name,
-          id: b64_sha1(name)
+          'id': b64_sha1(name)
         });
       },
 
@@ -62904,7 +62899,7 @@ function initClientConfig() {
    * What this means is that config values need to persist across
    * user sessions.
    */
-  const id = b64_sha1('converse.client-config');
+  const id = 'converse.client-config';
   _converse.config = new Backbone.Model({
     'id': id,
     'trusted': _converse.trusted && true || false,
@@ -64476,7 +64471,6 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
       $iq = _converse$env.$iq,
-      b64_sha1 = _converse$env.b64_sha1,
       utils = _converse$env.utils,
       _ = _converse$env._,
       f = _converse$env.f;
@@ -64500,18 +64494,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       initialize() {
         this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
         this.dataforms = new Backbone.Collection();
-        this.dataforms.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.dataforms-${this.get('jid')}`));
+        this.dataforms.browserStorage = new Backbone.BrowserStorage.session(`converse.dataforms-${this.get('jid')}`);
         this.features = new Backbone.Collection();
-        this.features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.features-${this.get('jid')}`));
+        this.features.browserStorage = new Backbone.BrowserStorage.session(`converse.features-${this.get('jid')}`);
         this.features.on('add', this.onFeatureAdded, this);
         this.fields = new Backbone.Collection();
-        this.fields.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.fields-${this.get('jid')}`));
+        this.fields.browserStorage = new Backbone.BrowserStorage.session(`converse.fields-${this.get('jid')}`);
         this.fields.on('add', this.onFieldAdded, this);
         this.identities = new Backbone.Collection();
-        this.identities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.identities-${this.get('jid')}`));
+        this.identities.browserStorage = new Backbone.BrowserStorage.session(`converse.identities-${this.get('jid')}`);
         this.fetchFeatures();
         this.items = new _converse.DiscoEntities();
-        this.items.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.disco-items-${this.get('jid')}`));
+        this.items.browserStorage = new Backbone.BrowserStorage.session(`converse.disco-items-${this.get('jid')}`);
         this.items.fetch();
       },
 
@@ -64713,7 +64707,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
 
     function initStreamFeatures() {
       _converse.stream_features = new Backbone.Collection();
-      _converse.stream_features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.stream-features-${_converse.bare_jid}`));
+      _converse.stream_features.browserStorage = new Backbone.BrowserStorage.session(`converse.stream-features-${_converse.bare_jid}`);
 
       _converse.stream_features.fetch({
         success(collection) {
@@ -64738,7 +64732,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
 
       _converse.disco_entities = new _converse.DiscoEntities();
-      _converse.disco_entities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.disco-entities-${_converse.bare_jid}`));
+      _converse.disco_entities.browserStorage = new Backbone.BrowserStorage.session(`converse.disco-entities-${_converse.bare_jid}`);
       const collection = await _converse.disco_entities.fetchEntities();
 
       if (collection.length === 0 || !collection.get(_converse.domain)) {
@@ -66087,7 +66081,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         this.features.browserStorage = new Backbone.BrowserStorage.session(id);
         this.features.fetch();
         this.occupants = new _converse.ChatRoomOccupants();
-        this.occupants.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`));
+        this.occupants.browserStorage = new Backbone.BrowserStorage.session(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`);
         this.occupants.chatroom = this;
         this.registerHandlers();
       },
@@ -67854,7 +67848,6 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].env
       $build = _converse$env.$build,
       $msg = _converse$env.$msg,
       $pres = _converse$env.$pres,
-      b64_sha1 = _converse$env.b64_sha1,
       f = _converse$env.f,
       moment = _converse$env.moment,
       _ = _converse$env._;
@@ -67975,7 +67968,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Strophe = _converse$env.Strophe,
       $iq = _converse$env.$iq,
       $pres = _converse$env.$pres,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
@@ -68015,16 +68007,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       const storage = _converse.config.get('storage');
 
       _converse.roster = new _converse.RosterContacts();
-      _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.contacts-${_converse.bare_jid}`));
+      _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](`converse.contacts-${_converse.bare_jid}`);
       _converse.roster.data = new Backbone.Model();
-      const id = b64_sha1(`converse-roster-model-${_converse.bare_jid}`);
+      const id = `converse-roster-model-${_converse.bare_jid}`;
       _converse.roster.data.id = id;
       _converse.roster.data.browserStorage = new Backbone.BrowserStorage[storage](id);
 
       _converse.roster.data.fetch();
 
       _converse.rostergroups = new _converse.RosterGroups();
-      _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
+      _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](`converse.roster.groups${_converse.bare_jid}`);
 
       _converse.emit('rosterInitialized');
     };
@@ -68935,7 +68927,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         _converse.presences = new _converse.Presences();
       }
 
-      _converse.presences.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
+      _converse.presences.browserStorage = new Backbone.BrowserStorage.session(`converse.presences-${_converse.bare_jid}`);
 
       _converse.presences.fetch();
 
@@ -69071,7 +69063,6 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env
       _ = _converse$env._,
       $iq = _converse$env.$iq,
       $build = _converse$env.$build,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment,
       sizzle = _converse$env.sizzle;
 const u = _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
@@ -69201,7 +69192,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
 
     _converse.initVCardCollection = function () {
       _converse.vcards = new _converse.VCards();
-      const id = b64_sha1(`${_converse.bare_jid}-converse.vcards`);
+      const id = `${_converse.bare_jid}-converse.vcards`;
       _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.config.get('storage')](id);
 
       _converse.vcards.fetch();

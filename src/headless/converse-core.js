@@ -367,7 +367,7 @@ function initClientConfig () {
      * What this means is that config values need to persist across
      * user sessions.
      */
-    const id = b64_sha1('converse.client-config');
+    const id = 'converse.client-config';
     _converse.config = new Backbone.Model({
         'id': id,
         'trusted': _converse.trusted && true || false,

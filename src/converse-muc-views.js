@@ -1939,7 +1939,7 @@ converse.plugins.add('converse-muc-views', {
                       jid = el.value;
                 if (!jid || _.compact(jid.split('@')).length < 2) {
                     evt.target.outerHTML = tpl_chatroom_invite({
-                        'error_message': __('Please enter a valid XMPP username'),
+                        'error_message': __('Please enter a valid XMPP address'),
                         'label_invitation': __('Invite'),
                     });
                     this.initInviteWidget();

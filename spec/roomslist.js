@@ -220,7 +220,7 @@
                 'Hidden - This groupchat is not publicly searchable'+
                 'Open - Anyone can join this groupchat'+
                 'Temporary - This groupchat will disappear once the last person leaves'+
-                'Not anonymous - All other groupchat participants can see your XMPP username'+
+                'Not anonymous - All other groupchat participants can see your XMPP address'+
                 'Not moderated - Participants entering this groupchat can write right away'
             );
             presence = $pres({

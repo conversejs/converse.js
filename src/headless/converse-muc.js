@@ -1044,6 +1044,7 @@ converse.plugins.add('converse-muc', {
                     stanza = forwarded.querySelector('message');
                 }
                 if (this.handleReflection(stanza) ||
+                        await this.hasDuplicateArchiveID(original_stanza) ||
                         await this.hasDuplicateStanzaID(stanza) ||
                         this.handleMessageCorrection(stanza) ||
                         this.isReceipt(stanza) ||

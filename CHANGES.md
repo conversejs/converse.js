@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.1.2 (Unreleased)
+
+- Bugfix. Prevent duplicate messages by comparing MAM archive id to XEP-0359 stanza ids.
+
 ## 4.1.1 (2019-02-18)
 
 - Updated translations: af, cz, de, es, eu, ga, he, hi, ja, nb, nl_BE, zh_CN

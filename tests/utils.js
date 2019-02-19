@@ -143,6 +143,7 @@
             'http://jabber.org/protocol/muc',
             'jabber:iq:register',
             Strophe.NS.SID,
+            Strophe.NS.MAM,
             'muc_passwordprotected',
             'muc_hidden',
             'muc_temporary',

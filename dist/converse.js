@@ -55231,7 +55231,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
 
         if (!jid || _.compact(jid.split('@')).length < 2) {
           evt.target.outerHTML = templates_chatroom_invite_html__WEBPACK_IMPORTED_MODULE_14___default()({
-            'error_message': __('Please enter a valid XMPP username'),
+            'error_message': __('Please enter a valid XMPP address'),
             'label_invitation': __('Invite')
           });
           this.initInviteWidget();
@@ -61651,6 +61651,26 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
+      async hasDuplicateArchiveID(stanza) {
+        const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+
+        if (!result) {
+          return false;
+        }
+
+        const by_jid = stanza.getAttribute('from');
+        const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
+
+        if (!supported.length) {
+          return false;
+        }
+
+        const query = {};
+        query[`stanza_id ${by_jid}`] = result.getAttribute('id');
+        const msg = this.messages.findWhere(query);
+        return !_.isNil(msg);
+      },
+
       async hasDuplicateStanzaID(stanza) {
         const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
 
@@ -61993,6 +62013,24 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
+      getStanzaIDs(stanza) {
+        const attrs = {};
+        const stanza_ids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
+
+        if (stanza_ids.length) {
+          stanza_ids.forEach(s => attrs[`stanza_id ${s.getAttribute('by')}`] = s.getAttribute('id'));
+        }
+
+        const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+
+        if (result) {
+          const by_jid = stanza.getAttribute('from');
+          attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
+        }
+
+        return attrs;
+      },
+
       getMessageAttributesFromStanza(stanza, original_stanza) {
         /* Parses a passed in message stanza and returns an object
          * of attributes.
@@ -62010,7 +62048,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
               delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
               chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
-        const attrs = {
+        const attrs = _.extend({
           'chat_state': chat_state,
           'is_archived': !_.isNil(archive),
           'is_delayed': !_.isNil(delay),
@@ -62022,9 +62060,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
           'time': delay ? delay.getAttribute('stamp') : moment().format(),
           'type': stanza.getAttribute('type')
-        };
-        const stanza_ids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
-        stanza_ids.forEach(s => attrs[`stanza_id ${s.getAttribute('by')}`] = s.getAttribute('id'));
+        }, this.getStanzaIDs(original_stanza));
 
         if (attrs.type === 'groupchat') {
           attrs.from = stanza.getAttribute('from');
@@ -62279,7 +62315,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         },
               chatbox = this.getChatBox(contact_jid, chatbox_attrs, has_body);
 
-        if (chatbox && !chatbox.findDuplicateFromOriginID(stanza) && !(await chatbox.hasDuplicateStanzaID(stanza)) && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
+        if (chatbox && !chatbox.findDuplicateFromOriginID(stanza) && !(await chatbox.hasDuplicateArchiveID(original_stanza)) && !(await chatbox.hasDuplicateStanzaID(stanza)) && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
           const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
 
           if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
@@ -67068,7 +67104,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           stanza = forwarded.querySelector('message');
         }
 
-        if (this.handleReflection(stanza) || (await this.hasDuplicateStanzaID(stanza)) || this.handleMessageCorrection(stanza) || this.isReceipt(stanza) || this.isChatMarker(stanza)) {
+        if (this.handleReflection(stanza) || (await this.hasDuplicateArchiveID(original_stanza)) || (await this.hasDuplicateStanzaID(stanza)) || this.handleMessageCorrection(stanza) || this.isReceipt(stanza) || this.isChatMarker(stanza)) {
           return _converse.emit('message', {
             'stanza': original_stanza
           });
@@ -92585,7 +92621,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-id-card"></span>' +
 __e( o.__('Not anonymous') ) +
 ' - <em>' +
-__e( o.__('All other groupchat participants can see your XMPP username') ) +
+__e( o.__('All other groupchat participants can see your XMPP address') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -92593,7 +92629,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-user-secret"></span>' +
 __e( o.__('Semi-anonymous') ) +
 ' - <em>' +
-__e( o.__('Only moderators can see your XMPP username') ) +
+__e( o.__('Only moderators can see your XMPP address') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -92733,7 +92769,7 @@ __e( o.__('Temporary') ) +
 __p += '\n';
  if (o.nonanonymous) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('All other groupchat participants can see your XMPP username') ) +
+__e( o.__('All other groupchat participants can see your XMPP address') ) +
 '"><span class="fa fa-id-card"></span>' +
 __e( o.__('Not anonymous') ) +
 '</li>\n';
@@ -92741,7 +92777,7 @@ __e( o.__('Not anonymous') ) +
 __p += '\n';
  if (o.semianonymous) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('Only moderators can see your XMPP username') ) +
+__e( o.__('Only moderators can see your XMPP address') ) +
 '"><span class="fa fa-user-secret"></span>' +
 __e( o.__('Semi-anonymous') ) +
 '</li>\n';
@@ -93628,7 +93664,7 @@ __p += '\n            <span class="spinner fa fa-spinner centered"/>\n        ';
 __p += '\n            ';
  if (o.authentication == o.LOGIN || o.authentication == o.EXTERNAL) { ;
 __p += '\n                <div class="form-group">\n                    <label for="converse-login-jid">' +
-__e(o.__("XMPP Username:")) +
+__e(o.__("XMPP Address:")) +
 '</label>\n                    <input id="converse-login-jid" class="form-control" autofocus required="required" type="text" name="jid" placeholder="' +
 __e(o.placeholder_username) +
 '"/>\n                </div>\n                ';

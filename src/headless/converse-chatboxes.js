@@ -325,6 +325,22 @@ converse.plugins.add('converse-chatboxes', {
                 });
             },
 
+            async hasDuplicateArchiveID (stanza) {
+                const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+                if (!result) {
+                    return false;
+                }
+                const by_jid = stanza.getAttribute('from');
+                const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
+                if (!supported.length) {
+                    return false;
+                }
+                const query = {};
+                query[`stanza_id ${by_jid}`] = result.getAttribute('id');
+                const msg = this.messages.findWhere(query);
+                return !_.isNil(msg);
+            },
+
             async hasDuplicateStanzaID (stanza) {
                 const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
                 if (!stanza_id) {
@@ -609,6 +625,20 @@ converse.plugins.add('converse-chatboxes', {
                 });
             },
 
+            getStanzaIDs (stanza) {
+                const attrs = {};
+                const stanza_ids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
+                if (stanza_ids.length) {
+                    stanza_ids.forEach(s => (attrs[`stanza_id ${s.getAttribute('by')}`] = s.getAttribute('id')));
+                }
+                const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+                if (result) {
+                    const by_jid = stanza.getAttribute('from');
+                    attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
+                }
+                return attrs;
+            },
+
             getMessageAttributesFromStanza (stanza, original_stanza) {
                 /* Parses a passed in message stanza and returns an object
                  * of attributes.
@@ -630,7 +660,7 @@ converse.plugins.add('converse-chatboxes', {
                             stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
                             stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
-                const attrs = {
+                const attrs = _.extend({
                     'chat_state': chat_state,
                     'is_archived': !_.isNil(archive),
                     'is_delayed': !_.isNil(delay),
@@ -642,9 +672,7 @@ converse.plugins.add('converse-chatboxes', {
                     'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
                     'time': delay ? delay.getAttribute('stamp') : moment().format(),
                     'type': stanza.getAttribute('type')
-                };
-                const stanza_ids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
-                stanza_ids.forEach(s => (attrs[`stanza_id ${s.getAttribute('by')}`] = s.getAttribute('id')));
+                }, this.getStanzaIDs(original_stanza));
 
                 if (attrs.type === 'groupchat') {
                     attrs.from = stanza.getAttribute('from');
@@ -880,6 +908,7 @@ converse.plugins.add('converse-chatboxes', {
 
                 if (chatbox &&
                         !chatbox.findDuplicateFromOriginID(stanza) &&
+                        !await chatbox.hasDuplicateArchiveID(original_stanza) &&
                         !await chatbox.hasDuplicateStanzaID(stanza) &&
                         !chatbox.handleMessageCorrection(stanza) &&
                         !chatbox.handleReceipt (stanza, from_jid, is_carbon, is_me) &&

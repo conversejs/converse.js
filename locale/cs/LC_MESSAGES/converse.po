@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-18 20:37+0100\n"
+"POT-Creation-Date: 2019-02-19 14:58+0100\n"
 "PO-Revision-Date: 2019-01-31 19:31+0000\n"
 "Last-Translator: Lorem Ipsum <aditoo@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
@@ -196,6 +196,7 @@ msgid "user@domain"
 msgstr "uživatel@doména"
 
 #: dist/converse-no-dependencies.js:33185
+#: dist/converse-no-dependencies.js:37332
 #: dist/converse-no-dependencies.js:41059
 msgid "Please enter a valid XMPP address"
 msgstr "Prosím zadejte platnou XMPP adresu"
@@ -852,10 +853,6 @@ msgid ""
 msgstr ""
 "Chystáte se pozvat uživatele %1$s do skupinového chatu „%2$s“. Můžete "
 "volitelně přidat zprávu vysvětlující důvod pozvání."
-
-#: dist/converse-no-dependencies.js:37332
-msgid "Please enter a valid XMPP username"
-msgstr "Prosím zadejte platné uživatelské jméno XMPP"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37685
@@ -1541,14 +1538,16 @@ msgstr "Není anonymní"
 
 #: dist/converse-no-dependencies.js:74686
 #: dist/converse-no-dependencies.js:74834
-msgid "All other groupchat participants can see your XMPP username"
+#, fuzzy
+msgid "All other groupchat participants can see your XMPP address"
 msgstr ""
 "Všichni ostatní účastníci skupinového chatu mohou vidět vaše XMPP "
 "uživatelské jméno"
 
 #: dist/converse-no-dependencies.js:74694
 #: dist/converse-no-dependencies.js:74842
-msgid "Only moderators can see your XMPP username"
+#, fuzzy
+msgid "Only moderators can see your XMPP address"
 msgstr "Pouze moderátoři mohou vidět vaše XMPP uživatelské jméno"
 
 #: dist/converse-no-dependencies.js:74702
@@ -1592,8 +1591,9 @@ msgid "Uploading file:"
 msgstr "Nahrává se soubor:"
 
 #: dist/converse-no-dependencies.js:75729
-msgid "XMPP Username:"
-msgstr "Uživatelské jméno XMPP:"
+#: dist/converse-no-dependencies.js:77165
+msgid "XMPP Address:"
+msgstr "XMPP adresa:"
 
 #: dist/converse-no-dependencies.js:75735
 msgid "Password:"
@@ -1732,10 +1732,6 @@ msgstr "Profilový obrázek uživatele"
 msgid "Full Name:"
 msgstr "Celé jméno:"
 
-#: dist/converse-no-dependencies.js:77165
-msgid "XMPP Address:"
-msgstr "XMPP adresa:"
-
 #: dist/converse-no-dependencies.js:77173
 msgid "Nickname:"
 msgstr "Přezdívka:"
@@ -1795,6 +1791,12 @@ msgstr "Stáhnout"
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Stáhnout videosoubor „%1$s“"
+
+#~ msgid "Please enter a valid XMPP username"
+#~ msgstr "Prosím zadejte platné uživatelské jméno XMPP"
+
+#~ msgid "XMPP Username:"
+#~ msgstr "Uživatelské jméno XMPP:"
 
 #~ msgid "Click to write as a normal (non-spoiler) message"
 #~ msgstr "Kliknutím napíšete jako normální zprávu (bez spoilerů)"

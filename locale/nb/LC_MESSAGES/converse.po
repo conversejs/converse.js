@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-18 20:37+0100\n"
+"POT-Creation-Date: 2019-02-19 14:58+0100\n"
 "PO-Revision-Date: 2019-01-14 13:20+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
@@ -196,6 +196,7 @@ msgid "user@domain"
 msgstr "bruker@domene"
 
 #: dist/converse-no-dependencies.js:33185
+#: dist/converse-no-dependencies.js:37332
 #: dist/converse-no-dependencies.js:41059
 msgid "Please enter a valid XMPP address"
 msgstr "Skriv inn et gydlig XMPP-brukernavn"
@@ -888,10 +889,6 @@ msgid ""
 msgstr ""
 "Du er i ferd med å invitere %1$s til sludringen \"%2$s\". Du kan eventuelt "
 "inkludere en melding og forklare årsaken til invitasjonen."
-
-#: dist/converse-no-dependencies.js:37332
-msgid "Please enter a valid XMPP username"
-msgstr "Skriv inn et gydlig XMPP-brukernavn"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37685
@@ -1594,12 +1591,13 @@ msgstr "Ikke-anonym"
 #: dist/converse-no-dependencies.js:74686
 #: dist/converse-no-dependencies.js:74834
 #, fuzzy
-msgid "All other groupchat participants can see your XMPP username"
+msgid "All other groupchat participants can see your XMPP address"
 msgstr "Alle andre romdeltagere kan se ditt XMPP-brukernavn"
 
 #: dist/converse-no-dependencies.js:74694
 #: dist/converse-no-dependencies.js:74842
-msgid "Only moderators can see your XMPP username"
+#, fuzzy
+msgid "Only moderators can see your XMPP address"
 msgstr "Bare moderatorer kan se ditt XMPP-brukernavn"
 
 #: dist/converse-no-dependencies.js:74702
@@ -1644,8 +1642,10 @@ msgid "Uploading file:"
 msgstr "Laster opp fil:"
 
 #: dist/converse-no-dependencies.js:75729
-msgid "XMPP Username:"
-msgstr "XMPP-brukernavn:"
+#: dist/converse-no-dependencies.js:77165
+#, fuzzy
+msgid "XMPP Address:"
+msgstr "XMPP-adresse"
 
 #: dist/converse-no-dependencies.js:75735
 msgid "Password:"
@@ -1790,11 +1790,6 @@ msgstr "Brukerens profilbilde"
 msgid "Full Name:"
 msgstr "Fullt navn"
 
-#: dist/converse-no-dependencies.js:77165
-#, fuzzy
-msgid "XMPP Address:"
-msgstr "XMPP-adresse"
-
 #: dist/converse-no-dependencies.js:77173
 #, fuzzy
 msgid "Nickname:"
@@ -1858,6 +1853,12 @@ msgstr "Last ned"
 #, fuzzy, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Last ned videofilen \"%1$s\""
+
+#~ msgid "Please enter a valid XMPP username"
+#~ msgstr "Skriv inn et gydlig XMPP-brukernavn"
+
+#~ msgid "XMPP Username:"
+#~ msgstr "XMPP-brukernavn:"
 
 #, fuzzy
 #~ msgid "Click to write as a normal (non-spoiler) message"

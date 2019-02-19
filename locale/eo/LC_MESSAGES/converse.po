@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 4.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-18 20:37+0100\n"
+"POT-Creation-Date: 2019-02-19 14:58+0100\n"
 "PO-Revision-Date: 2019-01-31 14:33+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/conversejs/"
@@ -197,6 +197,7 @@ msgid "user@domain"
 msgstr "uzanto@domajno"
 
 #: dist/converse-no-dependencies.js:33185
+#: dist/converse-no-dependencies.js:37332
 #: dist/converse-no-dependencies.js:41059
 msgid "Please enter a valid XMPP address"
 msgstr "Bonvolu eniri validan XMPPan adreson"
@@ -840,10 +841,6 @@ msgid ""
 "You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
-
-#: dist/converse-no-dependencies.js:37332
-msgid "Please enter a valid XMPP username"
-msgstr "Bonvolu eniri validan XMPPan uzantnomon"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37685
@@ -1489,12 +1486,12 @@ msgstr "Ne anonima"
 
 #: dist/converse-no-dependencies.js:74686
 #: dist/converse-no-dependencies.js:74834
-msgid "All other groupchat participants can see your XMPP username"
+msgid "All other groupchat participants can see your XMPP address"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:74694
 #: dist/converse-no-dependencies.js:74842
-msgid "Only moderators can see your XMPP username"
+msgid "Only moderators can see your XMPP address"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:74702
@@ -1536,8 +1533,9 @@ msgid "Uploading file:"
 msgstr "Alŝutado de dosiero:"
 
 #: dist/converse-no-dependencies.js:75729
-msgid "XMPP Username:"
-msgstr "XMPPa salutnomo:"
+#: dist/converse-no-dependencies.js:77165
+msgid "XMPP Address:"
+msgstr "XMPPa adreso:"
 
 #: dist/converse-no-dependencies.js:75735
 msgid "Password:"
@@ -1671,10 +1669,6 @@ msgstr "Profilbildo de la uzanto"
 msgid "Full Name:"
 msgstr "Kompleta nomo:"
 
-#: dist/converse-no-dependencies.js:77165
-msgid "XMPP Address:"
-msgstr "XMPPa adreso:"
-
 #: dist/converse-no-dependencies.js:77173
 msgid "Nickname:"
 msgstr ""
@@ -1734,3 +1728,9 @@ msgstr ""
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr ""
+
+#~ msgid "Please enter a valid XMPP username"
+#~ msgstr "Bonvolu eniri validan XMPPan uzantnomon"
+
+#~ msgid "XMPP Username:"
+#~ msgstr "XMPPa salutnomo:"

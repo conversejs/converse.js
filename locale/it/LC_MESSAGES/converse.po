@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-18 20:37+0100\n"
+"POT-Creation-Date: 2019-02-19 14:58+0100\n"
 "PO-Revision-Date: 2018-11-25 10:07+0000\n"
 "Last-Translator: Sylke Vicious <silkevicious@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
@@ -202,6 +202,7 @@ msgid "user@domain"
 msgstr "utente@dominio"
 
 #: dist/converse-no-dependencies.js:33185
+#: dist/converse-no-dependencies.js:37332
 #: dist/converse-no-dependencies.js:41059
 msgid "Please enter a valid XMPP address"
 msgstr "Inserisci un indirizzo XMPP valido"
@@ -905,10 +906,6 @@ msgid ""
 "include a message, explaining the reason for the invitation."
 msgstr "Puoi includere un messaggio per spiegare le ragioni dell'invito."
 
-#: dist/converse-no-dependencies.js:37332
-msgid "Please enter a valid XMPP username"
-msgstr "Inserisci un nome utente XMPP valido"
-
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37685
 #: dist/converse-no-dependencies.js:37691
@@ -1603,13 +1600,14 @@ msgstr "Non-anonima"
 #: dist/converse-no-dependencies.js:74686
 #: dist/converse-no-dependencies.js:74834
 #, fuzzy
-msgid "All other groupchat participants can see your XMPP username"
+msgid "All other groupchat participants can see your XMPP address"
 msgstr ""
 "Tutti gli occupanti della stanza possono vedere il tuo nome utente XMPP"
 
 #: dist/converse-no-dependencies.js:74694
 #: dist/converse-no-dependencies.js:74842
-msgid "Only moderators can see your XMPP username"
+#, fuzzy
+msgid "Only moderators can see your XMPP address"
 msgstr "Solo i moderatori possono vedere il tuo nome utente XMPP"
 
 #: dist/converse-no-dependencies.js:74702
@@ -1654,8 +1652,10 @@ msgid "Uploading file:"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75729
-msgid "XMPP Username:"
-msgstr "Username XMPP:"
+#: dist/converse-no-dependencies.js:77165
+#, fuzzy
+msgid "XMPP Address:"
+msgstr "Indirizzo XMPP"
 
 #: dist/converse-no-dependencies.js:75735
 msgid "Password:"
@@ -1801,11 +1801,6 @@ msgstr "L'immagine del profilo dell'utente"
 msgid "Full Name:"
 msgstr "Nome Completo"
 
-#: dist/converse-no-dependencies.js:77165
-#, fuzzy
-msgid "XMPP Address:"
-msgstr "Indirizzo XMPP"
-
 #: dist/converse-no-dependencies.js:77173
 #, fuzzy
 msgid "Nickname:"
@@ -1868,6 +1863,12 @@ msgstr "Download"
 #, fuzzy, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Download file video"
+
+#~ msgid "Please enter a valid XMPP username"
+#~ msgstr "Inserisci un nome utente XMPP valido"
+
+#~ msgid "XMPP Username:"
+#~ msgstr "Username XMPP:"
 
 #, fuzzy
 #~ msgid "Click to write as a normal (non-spoiler) message"

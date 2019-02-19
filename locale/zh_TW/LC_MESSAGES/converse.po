@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-18 20:37+0100\n"
+"POT-Creation-Date: 2019-02-19 14:58+0100\n"
 "PO-Revision-Date: 2019-01-14 13:19+0000\n"
 "Last-Translator: Louies <louies0623@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -198,6 +198,7 @@ msgid "user@domain"
 msgstr "user@domain"
 
 #: dist/converse-no-dependencies.js:33185
+#: dist/converse-no-dependencies.js:37332
 #: dist/converse-no-dependencies.js:41059
 msgid "Please enter a valid XMPP address"
 msgstr "請輸入有效的 XMPP 位址"
@@ -871,10 +872,6 @@ msgstr ""
 msgid ""
 "You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
-msgstr ""
-
-#: dist/converse-no-dependencies.js:37332
-msgid "Please enter a valid XMPP username"
 msgstr ""
 
 #. workaround for Prosody which doesn't give type "headline"
@@ -1580,12 +1577,12 @@ msgstr "非匿名"
 
 #: dist/converse-no-dependencies.js:74686
 #: dist/converse-no-dependencies.js:74834
-msgid "All other groupchat participants can see your XMPP username"
+msgid "All other groupchat participants can see your XMPP address"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:74694
 #: dist/converse-no-dependencies.js:74842
-msgid "Only moderators can see your XMPP username"
+msgid "Only moderators can see your XMPP address"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:74702
@@ -1630,9 +1627,9 @@ msgid "Uploading file:"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75729
-#, fuzzy
-msgid "XMPP Username:"
-msgstr "XMPP/Jabber用户名:"
+#: dist/converse-no-dependencies.js:77165
+msgid "XMPP Address:"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:75735
 #, fuzzy
@@ -1774,10 +1771,6 @@ msgstr ""
 msgid "Full Name:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:77165
-msgid "XMPP Address:"
-msgstr ""
-
 #: dist/converse-no-dependencies.js:77173
 #, fuzzy
 msgid "Nickname:"
@@ -1839,6 +1832,10 @@ msgstr ""
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr ""
+
+#, fuzzy
+#~ msgid "XMPP Username:"
+#~ msgstr "XMPP/Jabber用户名:"
 
 #, fuzzy
 #~ msgid "Click to write as a normal (non-spoiler) message"

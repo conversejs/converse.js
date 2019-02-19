@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-18 20:37+0100\n"
+"POT-Creation-Date: 2019-02-19 14:58+0100\n"
 "PO-Revision-Date: 2018-02-13 19:39+0000\n"
 "Last-Translator: Максим Якимчук <xpinovo@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/conversejs/"
@@ -209,6 +209,7 @@ msgid "user@domain"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:33185
+#: dist/converse-no-dependencies.js:37332
 #: dist/converse-no-dependencies.js:41059
 msgid "Please enter a valid XMPP address"
 msgstr ""
@@ -914,10 +915,6 @@ msgid ""
 msgstr ""
 "Ви можете опціонально додати повідомлення, щоб пояснити причину запрошення."
 
-#: dist/converse-no-dependencies.js:37332
-msgid "Please enter a valid XMPP username"
-msgstr ""
-
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37685
 #: dist/converse-no-dependencies.js:37691
@@ -1598,12 +1595,12 @@ msgstr "Не-анонімні"
 
 #: dist/converse-no-dependencies.js:74686
 #: dist/converse-no-dependencies.js:74834
-msgid "All other groupchat participants can see your XMPP username"
+msgid "All other groupchat participants can see your XMPP address"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:74694
 #: dist/converse-no-dependencies.js:74842
-msgid "Only moderators can see your XMPP username"
+msgid "Only moderators can see your XMPP address"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:74702
@@ -1648,8 +1645,9 @@ msgid "Uploading file:"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75729
-msgid "XMPP Username:"
-msgstr "XMPP адреса:"
+#: dist/converse-no-dependencies.js:77165
+msgid "XMPP Address:"
+msgstr ""
 
 #: dist/converse-no-dependencies.js:75735
 msgid "Password:"
@@ -1790,10 +1788,6 @@ msgstr ""
 msgid "Full Name:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:77165
-msgid "XMPP Address:"
-msgstr ""
-
 #: dist/converse-no-dependencies.js:77173
 #, fuzzy
 msgid "Nickname:"
@@ -1855,6 +1849,9 @@ msgstr ""
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr ""
+
+#~ msgid "XMPP Username:"
+#~ msgstr "XMPP адреса:"
 
 #, fuzzy
 #~ msgid "Click to write as a normal (non-spoiler) message"

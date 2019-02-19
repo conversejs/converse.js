@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-18 20:37+0100\n"
+"POT-Creation-Date: 2019-02-19 14:58+0100\n"
 "PO-Revision-Date: 2018-11-22 18:07+0000\n"
 "Last-Translator: Szilágyi Gyula <gyula.n7@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
@@ -199,6 +199,7 @@ msgid "user@domain"
 msgstr "felhasználó@tartomány"
 
 #: dist/converse-no-dependencies.js:33185
+#: dist/converse-no-dependencies.js:37332
 #: dist/converse-no-dependencies.js:41059
 msgid "Please enter a valid XMPP address"
 msgstr "Kérjük, adjon meg érvényes XMPP címet"
@@ -854,10 +855,6 @@ msgid ""
 msgstr ""
 "Meghívja %1$s nevű felhasználót a \"%2$s\" nevű konferenciába. Opcionálisan "
 "hozzáadhat egy üzenetet, amelyben leírja a meghívás okát."
-
-#: dist/converse-no-dependencies.js:37332
-msgid "Please enter a valid XMPP username"
-msgstr "Kérjük, adjon meg érvényes XMPP felhasználónevet"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37685
@@ -1529,12 +1526,14 @@ msgstr "Nem névtelen"
 
 #: dist/converse-no-dependencies.js:74686
 #: dist/converse-no-dependencies.js:74834
-msgid "All other groupchat participants can see your XMPP username"
+#, fuzzy
+msgid "All other groupchat participants can see your XMPP address"
 msgstr "Minden konferencia-résztvevő láthatja az XMPP felhasználónevét"
 
 #: dist/converse-no-dependencies.js:74694
 #: dist/converse-no-dependencies.js:74842
-msgid "Only moderators can see your XMPP username"
+#, fuzzy
+msgid "Only moderators can see your XMPP address"
 msgstr "Csak a moderátorok láthatják az Ön XMPP felhasználónevét"
 
 #: dist/converse-no-dependencies.js:74702
@@ -1576,8 +1575,9 @@ msgid "Uploading file:"
 msgstr "Fájl feltöltése:"
 
 #: dist/converse-no-dependencies.js:75729
-msgid "XMPP Username:"
-msgstr "XMPP Felhasználónév:"
+#: dist/converse-no-dependencies.js:77165
+msgid "XMPP Address:"
+msgstr "XMPP Cím:"
 
 #: dist/converse-no-dependencies.js:75735
 msgid "Password:"
@@ -1718,10 +1718,6 @@ msgstr "A felhasználó profilképe"
 msgid "Full Name:"
 msgstr "Teljes név:"
 
-#: dist/converse-no-dependencies.js:77165
-msgid "XMPP Address:"
-msgstr "XMPP Cím:"
-
 #: dist/converse-no-dependencies.js:77173
 msgid "Nickname:"
 msgstr "Becenév:"
@@ -1781,6 +1777,12 @@ msgstr "Letöltés"
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Videó fájl letöltése \"%1$s\""
+
+#~ msgid "Please enter a valid XMPP username"
+#~ msgstr "Kérjük, adjon meg érvényes XMPP felhasználónevet"
+
+#~ msgid "XMPP Username:"
+#~ msgstr "XMPP Felhasználónév:"
 
 #~ msgid "Click to write as a normal (non-spoiler) message"
 #~ msgstr "Kattintson normál (nem spoiler) üzenet írásához"

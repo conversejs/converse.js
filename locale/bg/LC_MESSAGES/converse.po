@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-18 20:37+0100\n"
+"POT-Creation-Date: 2019-02-19 14:58+0100\n"
 "PO-Revision-Date: 2018-03-09 16:34+0000\n"
 "Last-Translator: Тони <toni@neshtoto.club>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
@@ -206,6 +206,7 @@ msgid "user@domain"
 msgstr "потребител@област"
 
 #: dist/converse-no-dependencies.js:33185
+#: dist/converse-no-dependencies.js:37332
 #: dist/converse-no-dependencies.js:41059
 msgid "Please enter a valid XMPP address"
 msgstr "Моля въведете действителен XMPP адрес"
@@ -916,10 +917,6 @@ msgstr ""
 "Ще поканите %1$s в стаята за разговори „%2$s“. Можете по желание да включите "
 "съобщение, обясняващо причината за поканата."
 
-#: dist/converse-no-dependencies.js:37332
-msgid "Please enter a valid XMPP username"
-msgstr "Моля въведете действително потребителско име за XMPP"
-
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37685
 #: dist/converse-no-dependencies.js:37691
@@ -1604,14 +1601,15 @@ msgstr "Неанонимна"
 #: dist/converse-no-dependencies.js:74686
 #: dist/converse-no-dependencies.js:74834
 #, fuzzy
-msgid "All other groupchat participants can see your XMPP username"
+msgid "All other groupchat participants can see your XMPP address"
 msgstr ""
 "Всички други участници в стаята могат да виждат потребителското ви име за "
 "XMPP"
 
 #: dist/converse-no-dependencies.js:74694
 #: dist/converse-no-dependencies.js:74842
-msgid "Only moderators can see your XMPP username"
+#, fuzzy
+msgid "Only moderators can see your XMPP address"
 msgstr "Само модераторите могат да виждат потребителското ви име за XMPP"
 
 #: dist/converse-no-dependencies.js:74702
@@ -1655,9 +1653,10 @@ msgid "Uploading file:"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75729
+#: dist/converse-no-dependencies.js:77165
 #, fuzzy
-msgid "XMPP Username:"
-msgstr "Потребителско име"
+msgid "XMPP Address:"
+msgstr "Адрес на стаята (JID):"
 
 #: dist/converse-no-dependencies.js:75735
 msgid "Password:"
@@ -1796,11 +1795,6 @@ msgstr ""
 msgid "Full Name:"
 msgstr ""
 
-#: dist/converse-no-dependencies.js:77165
-#, fuzzy
-msgid "XMPP Address:"
-msgstr "Адрес на стаята (JID):"
-
 #: dist/converse-no-dependencies.js:77173
 #, fuzzy
 msgid "Nickname:"
@@ -1862,6 +1856,13 @@ msgstr ""
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr ""
+
+#~ msgid "Please enter a valid XMPP username"
+#~ msgstr "Моля въведете действително потребителско име за XMPP"
+
+#, fuzzy
+#~ msgid "XMPP Username:"
+#~ msgstr "Потребителско име"
 
 #~ msgid "Click to write as a normal (non-spoiler) message"
 #~ msgstr "Натиснете за писане на нормално (неакордеонно) съобщение"

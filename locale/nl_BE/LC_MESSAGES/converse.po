@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-18 20:37+0100\n"
+"POT-Creation-Date: 2019-02-19 14:58+0100\n"
 "PO-Revision-Date: 2019-01-14 13:19+0000\n"
 "Last-Translator: Nathan Follens <nthn@unseen.is>\n"
 "Language-Team: Flemish <https://hosted.weblate.org/projects/conversejs/"
@@ -195,6 +195,7 @@ msgid "user@domain"
 msgstr "gebruiker@domein"
 
 #: dist/converse-no-dependencies.js:33185
+#: dist/converse-no-dependencies.js:37332
 #: dist/converse-no-dependencies.js:41059
 msgid "Please enter a valid XMPP address"
 msgstr "Voerd een geldig XMPP-adres in"
@@ -852,10 +853,6 @@ msgid ""
 msgstr ""
 "Ge staat op het punt %1$s uit te nodigen in het groepsgesprek ‘%2$s’. Ge "
 "kunt optioneel een bericht toevoegen, met de reden voor de uitnodiging."
-
-#: dist/converse-no-dependencies.js:37332
-msgid "Please enter a valid XMPP username"
-msgstr "Voerd ne geldigen XMPP-gebruikersnaam in"
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37685
@@ -1546,13 +1543,15 @@ msgstr "Niet-anoniem"
 
 #: dist/converse-no-dependencies.js:74686
 #: dist/converse-no-dependencies.js:74834
-msgid "All other groupchat participants can see your XMPP username"
+#, fuzzy
+msgid "All other groupchat participants can see your XMPP address"
 msgstr ""
 "Alle gebruikers in dit groepsgesprek kunnen uwen XMPP-gebruikersnaam zien"
 
 #: dist/converse-no-dependencies.js:74694
 #: dist/converse-no-dependencies.js:74842
-msgid "Only moderators can see your XMPP username"
+#, fuzzy
+msgid "Only moderators can see your XMPP address"
 msgstr "Enkel moderatoren kunnen uwen XMPP-gebruikersnaam zien"
 
 #: dist/converse-no-dependencies.js:74702
@@ -1596,8 +1595,9 @@ msgid "Uploading file:"
 msgstr "Bestand uploaden:"
 
 #: dist/converse-no-dependencies.js:75729
-msgid "XMPP Username:"
-msgstr "XMPP-gebruikersnaam:"
+#: dist/converse-no-dependencies.js:77165
+msgid "XMPP Address:"
+msgstr "XMPP-adres:"
 
 #: dist/converse-no-dependencies.js:75735
 msgid "Password:"
@@ -1739,10 +1739,6 @@ msgstr "Profielafbeelding van gebruiker"
 msgid "Full Name:"
 msgstr "Volledige naam:"
 
-#: dist/converse-no-dependencies.js:77165
-msgid "XMPP Address:"
-msgstr "XMPP-adres:"
-
 #: dist/converse-no-dependencies.js:77173
 msgid "Nickname:"
 msgstr "Bijnaam:"
@@ -1802,6 +1798,12 @@ msgstr "Downloaden"
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Videobestand ‘%1$s’ downloaden"
+
+#~ msgid "Please enter a valid XMPP username"
+#~ msgstr "Voerd ne geldigen XMPP-gebruikersnaam in"
+
+#~ msgid "XMPP Username:"
+#~ msgstr "XMPP-gebruikersnaam:"
 
 #~ msgid "Click to write as a normal (non-spoiler) message"
 #~ msgstr "Klikt hier voor een gewoon (nie’-verborgen) bericht te schrijven"

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.9.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-19 14:58+0100\n"
-"PO-Revision-Date: 2018-11-15 11:19+0000\n"
+"PO-Revision-Date: 2019-02-20 15:17+0000\n"
 "Last-Translator: Sneer Sneerowski <weblate@0xf.pl>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/conversejs/"
 "translations/pl/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.3-dev\n"
+"X-Generator: Weblate 3.5-dev\n"
 
 #: dist/converse-no-dependencies.js:30353
 #: dist/converse-no-dependencies.js:30410
@@ -602,9 +602,8 @@ msgid "Change user role to participant"
 msgstr "Zmień uprawnienia na zwykłego uczestnika"
 
 #: dist/converse-no-dependencies.js:36269
-#, fuzzy
 msgid "Destroy room"
-msgstr "Pokój tymczasowy"
+msgstr "Zniszcz pokój"
 
 #: dist/converse-no-dependencies.js:36269
 msgid "Kick user from groupchat"
@@ -635,7 +634,6 @@ msgid "Grant ownership of this groupchat"
 msgstr "Uczyń właścicielem pokoju"
 
 #: dist/converse-no-dependencies.js:36269
-#, fuzzy
 msgid "Register a nickname for this groupchat"
 msgstr "Zarejestruj pseudonim dla tego pokoju"
 
@@ -811,19 +809,16 @@ msgid "This user is a moderator."
 msgstr "Ten użytkownik jest moderatorem."
 
 #: dist/converse-no-dependencies.js:37218
-#, fuzzy
 msgid "This user can send messages in this groupchat."
-msgstr "Ten człowiek może rozmawiać w niejszym pokoju"
+msgstr "Ten użytkownik może wysyłać wiadomości w tym pokoju."
 
 #: dist/converse-no-dependencies.js:37219
-#, fuzzy
 msgid "This user can NOT send messages in this groupchat."
-msgstr "Ten człowiek NIE może rozmawiać w niniejszym pokoju"
+msgstr "Ten człowiek NIE może rozmawiać w tym pokoju."
 
 #: dist/converse-no-dependencies.js:37220
-#, fuzzy
 msgid "Moderator"
-msgstr "Moderowany"
+msgstr "Moderator"
 
 #: dist/converse-no-dependencies.js:37221
 msgid "Visitor"
@@ -851,13 +846,13 @@ msgid "Invite"
 msgstr "Zaproś"
 
 #: dist/converse-no-dependencies.js:37309
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
-"Masz opcjonalną możliwość dołączenia wiadomości, która wyjaśni przyczynę "
-"zaproszenia."
+"Masz zamiar zaprosić %1$ s do pokoju \"%2$ s\". Możesz dołączyć wiadomości, "
+"która wyjaśni powód zaproszenia."
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37685
@@ -876,9 +871,8 @@ msgstr "%1$s powiedział"
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
 #: dist/converse-no-dependencies.js:37716
-#, fuzzy
 msgid "OMEMO Message received"
-msgstr "Archiwizowanie wiadomości"
+msgstr "Otrzymano wiadomość OMEMO"
 
 #: dist/converse-no-dependencies.js:37747
 msgid "has gone offline"
@@ -901,9 +895,8 @@ msgid "wants to be your contact"
 msgstr "chce być twoim kontaktem"
 
 #: dist/converse-no-dependencies.js:37999
-#, fuzzy
 msgid "Sorry, an error occurred while trying to remove the devices."
-msgstr "Wystąpił błąd w czasie próby zachowania formularza."
+msgstr "Wystąpił błąd w czasie próby usunięcia urządzenia."
 
 #: dist/converse-no-dependencies.js:38009
 msgid ""
@@ -911,6 +904,9 @@ msgid ""
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
+"Czy na pewno chcesz wygenerować nowe klucze OMEMO? Spowoduje to usunięcie "
+"starych kluczy, a wszystkie wcześniej zaszyfrowane wiadomości nie będą już "
+"mogły być odszyfrowywane na tym urządzeniu."
 
 #: dist/converse-no-dependencies.js:38090
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -923,6 +919,9 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
+"Przepraszamy, nie jesteśmy w stanie wysłać zaszyfrowanej wiadomości, "
+"ponieważ %1$s wymaga subskrypcji ich statusu, aby zobaczyć ich informacje "
+"OMEMO"
 
 #: dist/converse-no-dependencies.js:38207
 #, javascript-format
@@ -930,9 +929,10 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
+"Przepraszamy, nie jesteśmy w stanie wysłać zaszyfrowanej wiadomości, "
+"ponieważ nie można było znaleźć zdalnego serwera dla %1$s"
 
 #: dist/converse-no-dependencies.js:38209
-#, fuzzy
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr "Przepraszamy, z powodu błędu nie udało się wysłać wiadomości."
 
@@ -942,12 +942,17 @@ msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
 msgstr ""
+"Nie można używać szyfrowania typu end-to-end, ponieważ %1$s używa klienta, "
+"który nie obsługuje OMEMO."
 
 #: dist/converse-no-dependencies.js:38319
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
 msgstr ""
+"Nie można zastosować szyfrowania typu end-to-end w tym czacie grupowym, albo "
+"czat grupowy ma pewną anonimowość, albo nie wszyscy uczestnicy wspierają "
+"OMEMO."
 
 #: dist/converse-no-dependencies.js:38496
 msgid ""
@@ -963,6 +968,8 @@ msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
 "will no longer be possible in this grouchat."
 msgstr ""
+"%1$s wydaje się mieć klienta, który nie obsługuje OMEMO. Szyfrowany czat nie "
+"będzie już możliwy w tym pokoju."
 
 #: dist/converse-no-dependencies.js:39355
 msgid "Your avatar image"
@@ -986,9 +993,8 @@ msgid "Email"
 msgstr "E-mail"
 
 #: dist/converse-no-dependencies.js:39359
-#, fuzzy
 msgid "Full Name"
-msgstr "Nazwa"
+msgstr "Pełna nazwa"
 
 #: dist/converse-no-dependencies.js:39360
 msgid "XMPP Address (JID)"
@@ -1011,9 +1017,8 @@ msgid "URL"
 msgstr "Adres URL"
 
 #: dist/converse-no-dependencies.js:39394
-#, fuzzy
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr "Wystąpił błąd w trakcie próby usunięcia "
+msgstr "Wystąpił błąd w trakcie próby zapisania Twoich danych profilowych."
 
 #: dist/converse-no-dependencies.js:39394
 msgid "You can check your browser's developer console for any error output."
@@ -1044,9 +1049,8 @@ msgid "Online"
 msgstr "Dostępny"
 
 #: dist/converse-no-dependencies.js:39451
-#, fuzzy
 msgid "Away for long"
-msgstr "dłużej nieobecny"
+msgstr "Dłużej nieobecny"
 
 #: dist/converse-no-dependencies.js:39452
 #, fuzzy

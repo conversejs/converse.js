@@ -273,14 +273,17 @@ converse.plugins.add('converse-roomslist', {
             _converse.api.emit('roomsListInitialized');
         };
 
-        if (_converse.allow_bookmarks) {
-            _converse.api.waitUntil('bookmarksInitialized').then(initRoomsListView);
-        } else {
-            u.onMultipleEvents([
-                    {'object': _converse, 'event': 'chatBoxesInitialized'},
-                    {'object': _converse, 'event': 'roomsPanelRendered'}
-                ], initRoomsListView);
-        }
+        _converse.on('connected', async () =>  {
+            if (_converse.allow_bookmarks) {
+                await _converse.api.waitUntil('bookmarksInitialized');
+            } else {
+                await Promise.all([
+                    _converse.api.waitUntil('chatBoxesFetched'),
+                    _converse.api.waitUntil('roomsPanelRendered')
+                ]);
+            }
+            initRoomsListView();
+        });
 
         _converse.api.listen.on('reconnected', initRoomsListView);
     }

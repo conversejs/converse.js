@@ -48802,14 +48802,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       _converse.emit('bookmarksInitialized');
     };
 
-    u.onMultipleEvents([{
-      'object': _converse,
-      'event': 'chatBoxesFetched'
-    }, {
-      'object': _converse,
-      'event': 'roomsPanelRendered'
-    }], initBookmarks);
-
     _converse.on('clearSession', () => {
       if (!_.isUndefined(_converse.bookmarks)) {
         _converse.bookmarks.browserStorage._clear();
@@ -48820,7 +48812,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     _converse.on('reconnected', initBookmarks);
 
-    _converse.on('connected', () => {
+    _converse.on('connected', async () => {
       // Add a handler for bookmarks pushed from other connected clients
       // (from the same user obviously)
       _converse.connection.addHandler(message => {
@@ -48828,6 +48820,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           _converse.api.waitUntil('bookmarksInitialized').then(() => _converse.bookmarks.createBookmarksFromStanza(message)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }
       }, null, 'message', 'headline', null, _converse.bare_jid);
+
+      await Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]);
+      initBookmarks();
     });
   }
 
@@ -50683,20 +50678,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     // relevant objects or classes.
     //
     // New functions which don't exist yet can also be added.
-    tearDown() {
-      this.__super__.tearDown.apply(this, arguments);
-
-      if (this.rosterview) {
-        // Removes roster groups
-        this.rosterview.model.off().reset();
-        this.rosterview.each(function (groupview) {
-          groupview.removeAll();
-          groupview.remove();
-        });
-        this.rosterview.removeAll().remove();
-      }
-    },
-
     ChatBoxes: {
       model(attrs, options) {
         const _converse = this.__super__._converse;
@@ -50872,7 +50853,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         if (!_converse.connection.connected || !_converse.connection.authenticated || _converse.connection.disconnecting) {
           this.renderLoginPanel();
-        } else if (this.model.get('connected') && (!this.controlbox_pane || !u.isVisible(this.controlbox_pane.el))) {
+        } else if (this.model.get('connected')) {
           this.renderControlBoxPane();
         }
 
@@ -50941,6 +50922,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         if (this.loginpanel) {
           this.loginpanel.remove();
           delete this.loginpanel;
+        }
+
+        if (this.controlbox_pane && u.isVisible(this.controlbox_pane.el)) {
+          return;
         }
 
         this.el.classList.remove("logged-out");
@@ -51304,9 +51289,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       return view;
     };
 
-    _converse.on('disconnected', () => disconnect().renderLoginPanel());
+    _converse.api.listen.on('disconnected', () => disconnect().renderLoginPanel());
 
-    _converse.on('will-reconnect', disconnect);
+    _converse.api.listen.on('will-reconnect', disconnect);
+
+    _converse.api.listen.on('clearSession', () => {
+      const view = _converse.chatboxviews.get('controlbox');
+
+      if (view && view.controlbox_pane) {
+        view.controlbox_pane.remove();
+        delete view.controlbox_pane;
+      }
+    });
     /************************ BEGIN API ************************/
 
 
@@ -53244,6 +53238,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     ControlBoxView: {
       renderRoomsPanel() {
         const _converse = this.__super__._converse;
+
+        if (this.roomspanel && u.isVisible(this.roomspanel.el)) {
+          return;
+        }
+
         this.roomspanel = new _converse.RoomsPanel({
           'model': new (_converse.RoomsPanelModel.extend({
             'id': `converse.roomspanel${_converse.bare_jid}`,
@@ -55347,7 +55346,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       });
     });
 
-    _converse.on('controlboxInitialized', view => {
+    _converse.api.listen.on('clearSession', () => {
+      const view = _converse.chatboxviews.get('controlbox');
+
+      if (view && view.roomspanel) {
+        view.roomspanel.remove();
+        delete view.roomspanel;
+      }
+    });
+
+    _converse.api.listen.on('controlboxInitialized', view => {
       if (!_converse.allow_muc) {
         return;
       }
@@ -58756,17 +58764,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       _converse.api.emit('roomsListInitialized');
     };
 
-    if (_converse.allow_bookmarks) {
-      _converse.api.waitUntil('bookmarksInitialized').then(initRoomsListView);
-    } else {
-      u.onMultipleEvents([{
-        'object': _converse,
-        'event': 'chatBoxesInitialized'
-      }, {
-        'object': _converse,
-        'event': 'roomsPanelRendered'
-      }], initRoomsListView);
-    }
+    _converse.on('connected', async () => {
+      if (_converse.allow_bookmarks) {
+        await _converse.api.waitUntil('bookmarksInitialized');
+      } else {
+        await Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]);
+      }
+
+      initRoomsListView();
+    });
 
     _converse.api.listen.on('reconnected', initRoomsListView);
   }
@@ -58845,17 +58851,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     // New functions which don't exist yet can also be added.
     afterReconnected() {
       this.__super__.afterReconnected.apply(this, arguments);
-    },
-
-    tearDown() {
-      /* Remove the rosterview when tearing down. It gets created
-       * anew when reconnecting or logging in.
-       */
-      this.__super__.tearDown.apply(this, arguments);
-
-      if (!_.isUndefined(this.rosterview)) {
-        this.rosterview.remove();
-      }
     },
 
     RosterGroups: {
@@ -59919,6 +59914,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     _converse.api.listen.on('rosterInitialized', initRoster);
 
     _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
+
+    _converse.api.listen.on('afterTearDown', () => {
+      if (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview) {
+        _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview.model.off().reset();
+        _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview.each(groupview => groupview.removeAll().remove());
+        _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview.removeAll().remove();
+        delete _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview;
+      }
+    });
   }
 
 });

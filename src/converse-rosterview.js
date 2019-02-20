@@ -37,16 +37,6 @@ converse.plugins.add('converse-rosterview', {
             this.__super__.afterReconnected.apply(this, arguments);
         },
 
-        tearDown () {
-            /* Remove the rosterview when tearing down. It gets created
-             * anew when reconnecting or logging in.
-             */
-            this.__super__.tearDown.apply(this, arguments);
-            if (!_.isUndefined(this.rosterview)) {
-                this.rosterview.remove();
-            }
-        },
-
         RosterGroups: {
             comparator () {
                 // RosterGroupsComparator only gets set later (once i18n is
@@ -1000,6 +990,15 @@ converse.plugins.add('converse-rosterview', {
         }
         _converse.api.listen.on('rosterInitialized', initRoster);
         _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
+
+        _converse.api.listen.on('afterTearDown', () => {
+            if (converse.rosterview) {
+                converse.rosterview.model.off().reset();
+                converse.rosterview.each(groupview => groupview.removeAll().remove());
+                converse.rosterview.removeAll().remove();
+                delete converse.rosterview;
+            }
+        });
     }
 });
 

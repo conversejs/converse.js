@@ -542,12 +542,6 @@ converse.plugins.add('converse-bookmarks', {
             _converse.emit('bookmarksInitialized');
         }
 
-        u.onMultipleEvents([
-                {'object': _converse, 'event': 'chatBoxesFetched'},
-                {'object': _converse, 'event': 'roomsPanelRendered'}
-            ], initBookmarks);
-
-
         _converse.on('clearSession', () => {
             if (!_.isUndefined(_converse.bookmarks)) {
                 _converse.bookmarks.browserStorage._clear();
@@ -557,16 +551,22 @@ converse.plugins.add('converse-bookmarks', {
 
         _converse.on('reconnected', initBookmarks);
 
-        _converse.on('connected', () => {
+        _converse.on('connected', async () =>  {
             // Add a handler for bookmarks pushed from other connected clients
             // (from the same user obviously)
-            _converse.connection.addHandler((message) => {
+            _converse.connection.addHandler(message => {
                 if (sizzle('event[xmlns="'+Strophe.NS.PUBSUB+'#event"] items[node="storage:bookmarks"]', message).length) {
                     _converse.api.waitUntil('bookmarksInitialized')
                         .then(() => _converse.bookmarks.createBookmarksFromStanza(message))
                         .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                 }
             }, null, 'message', 'headline', null, _converse.bare_jid);
+
+            await Promise.all([
+                _converse.api.waitUntil('chatBoxesFetched'),
+                _converse.api.waitUntil('roomsPanelRendered')
+            ]);
+            initBookmarks();
         });
 
     }

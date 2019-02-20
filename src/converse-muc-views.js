@@ -58,6 +58,9 @@ converse.plugins.add('converse-muc-views', {
 
             renderRoomsPanel () {
                 const { _converse } = this.__super__;
+                if (this.roomspanel && u.isVisible(this.roomspanel.el)) {
+                    return;
+                }
                 this.roomspanel = new _converse.RoomsPanel({
                     'model': new (_converse.RoomsPanelModel.extend({
                         'id': `converse.roomspanel${_converse.bare_jid}`, // Required by web storage 
@@ -2038,7 +2041,15 @@ converse.plugins.add('converse-muc-views', {
             });
         });
 
-        _converse.on('controlboxInitialized', (view) => {
+        _converse.api.listen.on('clearSession', () => {
+            const view = _converse.chatboxviews.get('controlbox');
+            if (view && view.roomspanel) {
+                view.roomspanel.remove();
+                delete view.roomspanel;
+            }
+        });
+
+        _converse.api.listen.on('controlboxInitialized', (view) => {
             if (!_converse.allow_muc) {
                 return;
             }

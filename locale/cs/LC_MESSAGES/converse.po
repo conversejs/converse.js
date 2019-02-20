@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-19 14:58+0100\n"
-"PO-Revision-Date: 2019-01-31 19:31+0000\n"
+"PO-Revision-Date: 2019-02-22 15:30+0000\n"
 "Last-Translator: Lorem Ipsum <aditoo@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/conversejs/"
 "translations/cs/>\n"
@@ -1538,17 +1538,14 @@ msgstr "Není anonymní"
 
 #: dist/converse-no-dependencies.js:74686
 #: dist/converse-no-dependencies.js:74834
-#, fuzzy
 msgid "All other groupchat participants can see your XMPP address"
 msgstr ""
-"Všichni ostatní účastníci skupinového chatu mohou vidět vaše XMPP "
-"uživatelské jméno"
+"Všichni ostatní účastníci skupinového chatu mohou vidět vaši XMPP adresu"
 
 #: dist/converse-no-dependencies.js:74694
 #: dist/converse-no-dependencies.js:74842
-#, fuzzy
 msgid "Only moderators can see your XMPP address"
-msgstr "Pouze moderátoři mohou vidět vaše XMPP uživatelské jméno"
+msgstr "Pouze moderátoři mohou vidět vaši XMPP adresu"
 
 #: dist/converse-no-dependencies.js:74702
 #: dist/converse-no-dependencies.js:74850

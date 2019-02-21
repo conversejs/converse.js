@@ -416,8 +416,8 @@ function setUpXMLLogging () {
 
 
 function finishInitialization () {
-    initPlugins();
     initClientConfig();
+    initPlugins();
     _converse.initConnection();
     setUpXMLLogging();
     _converse.logIn();

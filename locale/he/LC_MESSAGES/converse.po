@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-19 14:58+0100\n"
-"PO-Revision-Date: 2019-02-04 07:37+0000\n"
+"PO-Revision-Date: 2019-02-22 15:30+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -939,13 +939,15 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
+"לא הצלחנו לשלוח הודעה מוצפנת כיוון שקיימת דרישת מצד %1$s להירשם למצב הנוכחות "
+"שלהם כדי לצפות בפרטי OMEMO, עמך הסליחה"
 
 #: dist/converse-no-dependencies.js:38207
 #, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
-msgstr ""
+msgstr "לא הצלחנו לשלוח הודעה מוצפנת כיוון שלא ניתן למצוא את השרת המרוחק %1$s"
 
 #: dist/converse-no-dependencies.js:38209
 msgid "Unable to send an encrypted message due to an unexpected error."
@@ -976,6 +978,8 @@ msgid ""
 "%1$s doesn't appear to have a client that supports OMEMO. Encrypted chat "
 "will no longer be possible in this grouchat."
 msgstr ""
+"כנראה שהלקוח שמותקן אצל %1$s אינו תומך ב־‏OMEMO. אין עוד תמיכה בהתכתבות "
+"מוצפנת בהתכתבות הקבוצתית הזאת."
 
 #: dist/converse-no-dependencies.js:39355
 msgid "Your avatar image"
@@ -999,9 +1003,8 @@ msgid "Email"
 msgstr "דוא״ל"
 
 #: dist/converse-no-dependencies.js:39359
-#, fuzzy
 msgid "Full Name"
-msgstr "שם"
+msgstr "שם מלא"
 
 #: dist/converse-no-dependencies.js:39360
 msgid "XMPP Address (JID)"
@@ -1016,10 +1019,12 @@ msgid ""
 "Use commas to separate multiple roles. Your roles are shown next to your "
 "name on your chat messages."
 msgstr ""
+"ניתן להשתמש בפסיקים כדי להפריד בין מספר תפקידים. התפקידים מופיעים ליד השם "
+"בהודעות שלך כחלק מההתכתבות."
 
 #: dist/converse-no-dependencies.js:39364
 msgid "URL"
-msgstr ""
+msgstr "כתובת"
 
 #: dist/converse-no-dependencies.js:39394
 #, fuzzy
@@ -1028,7 +1033,7 @@ msgstr "מצטערים, היתה שגיאה במהלך ניסיון להסיר �
 
 #: dist/converse-no-dependencies.js:39394
 msgid "You can check your browser's developer console for any error output."
-msgstr ""
+msgstr "מוטב לחפש שגיאות במסוף הפיתוח של הדפדפן שלך."
 
 #: dist/converse-no-dependencies.js:39443
 #: dist/converse-no-dependencies.js:41183
@@ -1071,18 +1076,18 @@ msgstr "הודעה אישית"
 
 #: dist/converse-no-dependencies.js:39488
 msgid "About"
-msgstr ""
+msgstr "על אודות"
 
 #: dist/converse-no-dependencies.js:39490
 #, javascript-format
 msgid ""
 "%1$s Open Source %2$s XMPP chat client brought to you by %3$s Opkode %2$s"
-msgstr ""
+msgstr "לקוח התכתבות דרך XMPP ב%1$sקוד פתוח%2$s שמוגש מטעם %3$sOpokde%2$s"
 
 #: dist/converse-no-dependencies.js:39491
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
-msgstr ""
+msgstr "%1$sלתרגם%2$s זאת לשפה שלך"
 
 # אני במצב
 #: dist/converse-no-dependencies.js:39515
@@ -1092,7 +1097,7 @@ msgstr "מצבי כעת הינו %1$s"
 
 #: dist/converse-no-dependencies.js:39518
 msgid "Change settings"
-msgstr ""
+msgstr "עריכת הגדרות"
 
 #: dist/converse-no-dependencies.js:39519
 msgid "Click to change your chat status"
@@ -1109,7 +1114,7 @@ msgstr "הצג עוד מידע אודות חדר זה"
 
 #: dist/converse-no-dependencies.js:39522
 msgid "Your profile"
-msgstr ""
+msgstr "הפרופיל שלך"
 
 #: dist/converse-no-dependencies.js:39562
 #, fuzzy
@@ -1155,7 +1160,7 @@ msgstr "כאן"
 
 #: dist/converse-no-dependencies.js:40030
 msgid "Sorry, we're unable to connect to your chosen provider."
-msgstr ""
+msgstr "לא הצלחנו להתחבר לספק שבחרת, עמך הסליחה."
 
 #: dist/converse-no-dependencies.js:40046
 msgid ""
@@ -1193,7 +1198,7 @@ msgstr "לחץ כדי לפתוח את חדר זה"
 
 #: dist/converse-no-dependencies.js:40749
 msgid "Open Groupchats"
-msgstr ""
+msgstr "התכתבויות קבוצתיות פתוחות"
 
 #: dist/converse-no-dependencies.js:40799
 #, fuzzy, javascript-format
@@ -1256,7 +1261,7 @@ msgstr "הוסף איש קשר"
 
 #: dist/converse-no-dependencies.js:41055
 msgid "XMPP Address"
-msgstr ""
+msgstr "כתובת XMPP"
 
 #: dist/converse-no-dependencies.js:41057
 #, fuzzy
@@ -1269,7 +1274,7 @@ msgstr "הוסף"
 
 #: dist/converse-no-dependencies.js:41174
 msgid "Filter"
-msgstr ""
+msgstr "מסנן"
 
 #: dist/converse-no-dependencies.js:41175
 #, fuzzy
@@ -1278,27 +1283,27 @@ msgstr "שם איש קשר"
 
 #: dist/converse-no-dependencies.js:41176
 msgid "Filter by group name"
-msgstr ""
+msgstr "סינון לפי שם קבוצה"
 
 #: dist/converse-no-dependencies.js:41177
 msgid "Filter by status"
-msgstr ""
+msgstr "סינון לפי מצב"
 
 #: dist/converse-no-dependencies.js:41178
 msgid "Any"
-msgstr ""
+msgstr "כלשהו"
 
 #: dist/converse-no-dependencies.js:41179
 msgid "Unread"
-msgstr ""
+msgstr "לא נקראו"
 
 #: dist/converse-no-dependencies.js:41181
 msgid "Chatty"
-msgstr ""
+msgstr "קשקשנות"
 
 #: dist/converse-no-dependencies.js:41184
 msgid "Extended Away"
-msgstr ""
+msgstr "היעדרות ממושכת"
 
 #: dist/converse-no-dependencies.js:41366
 #: dist/converse-no-dependencies.js:41424
@@ -1340,47 +1345,47 @@ msgstr "האנשי קשר שלי"
 
 #: dist/converse-no-dependencies.js:43563
 msgid "Sorry, could not determine upload URL."
-msgstr ""
+msgstr "לא ניתן לפענח את כתובת ההעלאה, עמך הסליחה."
 
 #: dist/converse-no-dependencies.js:43577
 msgid "Sorry, could not determine file upload URL."
-msgstr ""
+msgstr "לא ניתן לפענח את כתובת העלאת הקבצים, עמך הסליחה."
 
 #: dist/converse-no-dependencies.js:43611
 #, javascript-format
 msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
-msgstr ""
+msgstr "העלאת הקובץ שלך לא הצליחה. תגובת השרת היא: „%1$s”, עמך הסליחה"
 
 #: dist/converse-no-dependencies.js:43613
 msgid "Sorry, could not succesfully upload your file."
-msgstr ""
+msgstr "העלאת הקובץ שלך לא הצליחה, עמך הסליחה."
 
 #: dist/converse-no-dependencies.js:44034
 #: dist/converse-no-dependencies.js:44051
 msgid "Sorry, looks like file upload is not supported by your server."
-msgstr ""
+msgstr "נראה כי השרת שלך אינו תומך בהעלאת קבצים, עמך הסליחה."
 
 #: dist/converse-no-dependencies.js:44060
 #, javascript-format
 msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
-msgstr ""
+msgstr "גודל הקובץ שלך, %1$s, חורג מהגודל המרבי שמרשה השרת שהוא %2$s."
 
 #: dist/converse-no-dependencies.js:44300
 msgid "Sorry, an error occurred:"
-msgstr ""
+msgstr "אירעה שגיאה, עמך הסליחה:"
 
 #: dist/converse-no-dependencies.js:45427
 msgid "The XMPP server did not offer a supported authentication mechanism"
-msgstr ""
+msgstr "שרת ה־XMPP לא הציע מנגנון אימות נתמך"
 
 #: dist/converse-no-dependencies.js:45425
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
-msgstr ""
+msgstr "לא הצלחנו להתחבר למארח ה־XMPP עם שם המתחם: %1$s"
 
 # אינך מורשה
 #: dist/converse-no-dependencies.js:48927
@@ -1399,12 +1404,14 @@ msgstr "אין לך רשות ליצור חדרים חדשים"
 msgid ""
 "Can't register your nickname in this groupchat, it doesn't support "
 "registration."
-msgstr ""
+msgstr "לא ניתן לרשום את הכינוי לך בהתכתבות הקבוצתית הזאת, אין לה תמיכה בהרשמה."
 
 #: dist/converse-no-dependencies.js:48962
 msgid ""
 "Can't register your nickname in this groupchat, invalid data form supplied."
 msgstr ""
+"אין אפשרות לרשום את הכינוי שלך בהתכתבות הקבוצתית הזו, תצורת הנתונים שסופקה "
+"שגויה."
 
 #: dist/converse-no-dependencies.js:49473
 #, fuzzy, javascript-format
@@ -1450,7 +1457,7 @@ msgstr "חדר זה אינו אנונימי"
 
 #: dist/converse-no-dependencies.js:74561
 msgid "The conversation has moved. Click below to enter."
-msgstr ""
+msgstr "הדיון הועבר. יש ללחוץ להלן כדי להיכנס."
 
 #: dist/converse-no-dependencies.js:74588
 #, fuzzy
@@ -1469,11 +1476,11 @@ msgstr "תיאור:"
 
 #: dist/converse-no-dependencies.js:74602
 msgid "Topic"
-msgstr ""
+msgstr "נושא"
 
 #: dist/converse-no-dependencies.js:74606
 msgid "Topic author"
-msgstr ""
+msgstr "יוצר הנושא"
 
 #: dist/converse-no-dependencies.js:74612
 #, fuzzy
@@ -1541,17 +1548,17 @@ msgstr "לחץ כדי לפתוח את חדר זה"
 #: dist/converse-no-dependencies.js:74668
 #: dist/converse-no-dependencies.js:74820
 msgid "Persistent"
-msgstr ""
+msgstr "עקבי"
 
 #: dist/converse-no-dependencies.js:74670
 #: dist/converse-no-dependencies.js:74818
 msgid "This groupchat persists even if it's unoccupied"
-msgstr ""
+msgstr "התכתבות קבוצתית זו נשמרת גם אם אין בה משתתפים"
 
 #: dist/converse-no-dependencies.js:74678
 #: dist/converse-no-dependencies.js:74826
 msgid "This groupchat will disappear once the last person leaves"
-msgstr ""
+msgstr "התכתבות קבוצתית זו תיעלם עם יציאת החבר האחרון"
 
 # לא-עלום
 #: dist/converse-no-dependencies.js:74684
@@ -1575,7 +1582,7 @@ msgstr "כל שאר המשתתפים בהתכתבות הקבוצתית יכול�
 #: dist/converse-no-dependencies.js:74850
 msgid ""
 "Participants entering this groupchat need to request permission to write"
-msgstr ""
+msgstr "על משתתפים חדשים בהתכתבות קבוצתית זו לבקש הרשאה לכתוב"
 
 #: dist/converse-no-dependencies.js:74708
 #: dist/converse-no-dependencies.js:74860
@@ -1585,17 +1592,17 @@ msgstr "ללא פיקוח"
 #: dist/converse-no-dependencies.js:74710
 #: dist/converse-no-dependencies.js:74858
 msgid "Participants entering this groupchat can write right away"
-msgstr ""
+msgstr "משתתפים שנכנסים להתכתבות הקבוצתית הזאת יכולים לכתוב מאותו הרגע"
 
 #: dist/converse-no-dependencies.js:74716
 #: dist/converse-no-dependencies.js:74868
 msgid "Message archiving"
-msgstr ""
+msgstr "העברת הודעות לארכיון"
 
 #: dist/converse-no-dependencies.js:74718
 #: dist/converse-no-dependencies.js:74866
 msgid "Messages are archived on the server"
-msgstr ""
+msgstr "ההודעות נשמרות בארכיון שבשרת"
 
 #: dist/converse-no-dependencies.js:74780
 msgid "No password"
@@ -1607,7 +1614,7 @@ msgstr "התכתבות קבוצתית זו מוגבלת לחברים בלבד"
 
 #: dist/converse-no-dependencies.js:75284
 msgid "Uploading file:"
-msgstr ""
+msgstr "קובץ נשלח:"
 
 #: dist/converse-no-dependencies.js:75729
 #: dist/converse-no-dependencies.js:77165
@@ -1624,7 +1631,7 @@ msgstr "סיסמה"
 
 #: dist/converse-no-dependencies.js:75747
 msgid "This is a trusted device"
-msgstr ""
+msgstr "זה מכשיר מהימן"
 
 #: dist/converse-no-dependencies.js:75749
 msgid ""

@@ -2800,6 +2800,34 @@
                 done();
             }));
 
+            it("will not leak the real JIDs of participants in XEP-0372 references",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                const view = _converse.chatboxviews.get('lounge@localhost');
+                view.model.features.save({'nonanonymous': false, 'semianonymous': true});
+                const textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = "Meow @dummy!";
+                spyOn(_converse.connection, 'send');
+                const enter_event = {
+                    'target': textarea,
+                    'preventDefault': _.noop,
+                    'stopPropagation': _.noop,
+                    'keyCode': 13 // Enter
+                };
+                view.keyPressed(enter_event);
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                const msg = _converse.connection.send.calls.all()[0].args[0];
+                const selector = `message[to="lounge@localhost"] reference[xmlns="urn:xmpp:reference:0"]`;
+                const node = msg.nodeTree.querySelector(selector);
+                const refUri = node.getAttribute('uri');
+                expect(refUri).toBe('xmpp:lounge@localhost/dummy');
+
+                done();
+            }));
+
             it("includes XEP-0372 references to that person",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},

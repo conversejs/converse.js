@@ -61662,7 +61662,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           return false;
         }
 
-        const by_jid = stanza.getAttribute('from');
+        const by_jid = stanza.getAttribute('from') || this.get('jid');
         const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
 
         if (!supported.length) {

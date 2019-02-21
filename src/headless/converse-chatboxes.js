@@ -330,7 +330,7 @@ converse.plugins.add('converse-chatboxes', {
                 if (!result) {
                     return false;
                 }
-                const by_jid = stanza.getAttribute('from');
+                const by_jid = stanza.getAttribute('from') || this.get('jid');
                 const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
                 if (!supported.length) {
                     return false;

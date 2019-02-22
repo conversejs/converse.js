@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-22 16:44+0100\n"
+"POT-Creation-Date: 2019-02-22 18:21+0100\n"
 "PO-Revision-Date: 2018-11-22 18:07+0000\n"
 "Last-Translator: Szilágyi Gyula <gyula.n7@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/conversejs/"
@@ -602,8 +602,8 @@ msgstr "A felhasználó szerepének változtatása résztvevőre"
 
 #: dist/converse-no-dependencies.js:36268
 #, fuzzy
-msgid "Destroy room"
-msgstr "Ideiglenes szoba"
+msgid "Destroy groupchat"
+msgstr "Belépés a konferenciába"
 
 #: dist/converse-no-dependencies.js:36268
 msgid "Kick user from groupchat"
@@ -1777,6 +1777,10 @@ msgstr "Letöltés"
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Videó fájl letöltése \"%1$s\""
+
+#, fuzzy
+#~ msgid "Destroy room"
+#~ msgstr "Ideiglenes szoba"
 
 #~ msgid "Please enter a valid XMPP username"
 #~ msgstr "Kérjük, adjon meg érvényes XMPP felhasználónevet"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-22 16:44+0100\n"
+"POT-Creation-Date: 2019-02-22 18:21+0100\n"
 "PO-Revision-Date: 2019-01-07 18:06+0000\n"
 "Last-Translator: ButterflyOfFire <ButterflyOfFire@protonmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/conversejs/"
@@ -593,8 +593,8 @@ msgstr "تغيير دور المستخدِم إلى مُشترِك"
 
 #: dist/converse-no-dependencies.js:36268
 #, fuzzy
-msgid "Destroy room"
-msgstr "غرفة محادثة مؤقتة"
+msgid "Destroy groupchat"
+msgstr "الإلتحاق بفريق المحادثة"
 
 #: dist/converse-no-dependencies.js:36268
 msgid "Kick user from groupchat"
@@ -1735,6 +1735,10 @@ msgstr "تنزيل"
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "تنزيل ملف الفيديو: \"%1$s\""
+
+#, fuzzy
+#~ msgid "Destroy room"
+#~ msgstr "غرفة محادثة مؤقتة"
 
 #~ msgid "Please enter a valid XMPP username"
 #~ msgstr "يُرجى إدخال إسم مستخدِم XMPP صحيح"

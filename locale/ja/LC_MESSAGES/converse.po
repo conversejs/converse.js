@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-22 16:44+0100\n"
+"POT-Creation-Date: 2019-02-22 18:21+0100\n"
 "PO-Revision-Date: 2019-01-19 17:19+0000\n"
 "Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
@@ -598,8 +598,8 @@ msgstr "ユーザーの役を参加者に変更"
 
 #: dist/converse-no-dependencies.js:36268
 #, fuzzy
-msgid "Destroy room"
-msgstr "臨時談話室"
+msgid "Destroy groupchat"
+msgstr "談話室に入る"
 
 #: dist/converse-no-dependencies.js:36268
 msgid "Kick user from groupchat"
@@ -1765,6 +1765,10 @@ msgstr "ダウンロード"
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "ダウンロード動画 \"%1$s\""
+
+#, fuzzy
+#~ msgid "Destroy room"
+#~ msgstr "臨時談話室"
 
 #~ msgid "Please enter a valid XMPP username"
 #~ msgstr "正しい XMPP ユーザー名を入力してください"

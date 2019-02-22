@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-22 16:44+0100\n"
+"POT-Creation-Date: 2019-02-22 18:21+0100\n"
 "PO-Revision-Date: 2018-03-30 08:45+0000\n"
 "Last-Translator: Sarp Doruk ASLAN <sarpdorukaslan@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/conversejs/"
@@ -591,7 +591,7 @@ msgid "Change user role to participant"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:36268
-msgid "Destroy room"
+msgid "Destroy groupchat"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:36268

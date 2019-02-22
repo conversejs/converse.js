@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-22 16:44+0100\n"
+"POT-Creation-Date: 2019-02-22 18:21+0100\n"
 "PO-Revision-Date: 2019-02-22 15:30+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
@@ -603,8 +603,9 @@ msgid "Change user role to participant"
 msgstr "החלפת תפקיד המשתמש למשתתף"
 
 #: dist/converse-no-dependencies.js:36268
-msgid "Destroy room"
-msgstr "השמדת חדר"
+#, fuzzy
+msgid "Destroy groupchat"
+msgstr "חדר פתוח"
 
 #: dist/converse-no-dependencies.js:36268
 msgid "Kick user from groupchat"
@@ -1817,6 +1818,9 @@ msgstr "הורדה"
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "הורדת קובץ הווידאו „%1$s”"
+
+#~ msgid "Destroy room"
+#~ msgstr "השמדת חדר"
 
 #~ msgid "Please enter a valid XMPP username"
 #~ msgstr "נא להקליד שם משתמש תקין ל־XMPP"

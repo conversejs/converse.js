@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-22 16:44+0100\n"
+"POT-Creation-Date: 2019-02-22 18:21+0100\n"
 "PO-Revision-Date: 2018-11-22 18:07+0000\n"
 "Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/conversejs/"
@@ -661,8 +661,8 @@ msgstr "Ubah peran pengguna menjadi penghuni"
 
 #: dist/converse-no-dependencies.js:36268
 #, fuzzy
-msgid "Destroy room"
-msgstr "Ruang sementara"
+msgid "Destroy groupchat"
+msgstr "Ruangan terbuka"
 
 #: dist/converse-no-dependencies.js:36268
 #, fuzzy
@@ -1873,6 +1873,10 @@ msgstr "Unduh"
 #, fuzzy, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Unduh file video"
+
+#, fuzzy
+#~ msgid "Destroy room"
+#~ msgstr "Ruang sementara"
 
 #, fuzzy
 #~ msgid "XMPP Username:"

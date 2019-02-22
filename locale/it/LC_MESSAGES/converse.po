@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-22 16:44+0100\n"
+"POT-Creation-Date: 2019-02-22 18:21+0100\n"
 "PO-Revision-Date: 2019-02-22 15:30+0000\n"
 "Last-Translator: Guus der Kinderen <guus.der.kinderen@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/conversejs/"
@@ -636,8 +636,8 @@ msgstr "Cambia il ruolo dell'utente in occupante"
 
 #: dist/converse-no-dependencies.js:36268
 #, fuzzy
-msgid "Destroy room"
-msgstr "Stanza temporanea"
+msgid "Destroy groupchat"
+msgstr "Entra nella stanza"
 
 #: dist/converse-no-dependencies.js:36268
 #, fuzzy
@@ -1860,6 +1860,10 @@ msgstr "Download"
 #, fuzzy, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Download file video"
+
+#, fuzzy
+#~ msgid "Destroy room"
+#~ msgstr "Stanza temporanea"
 
 #~ msgid "Please enter a valid XMPP username"
 #~ msgstr "Inserisci un nome utente XMPP valido"

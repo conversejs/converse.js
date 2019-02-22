@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-22 16:44+0100\n"
+"POT-Creation-Date: 2019-02-22 18:21+0100\n"
 "PO-Revision-Date: 2018-03-09 16:34+0000\n"
 "Last-Translator: Тони <toni@neshtoto.club>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/conversejs/"
@@ -644,8 +644,8 @@ msgstr "Променяне на ролята на потребителя на у
 
 #: dist/converse-no-dependencies.js:36268
 #, fuzzy
-msgid "Destroy room"
-msgstr "Временна стая"
+msgid "Destroy groupchat"
+msgstr "Влизане в стаята"
 
 #: dist/converse-no-dependencies.js:36268
 #, fuzzy
@@ -1856,6 +1856,10 @@ msgstr ""
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr ""
+
+#, fuzzy
+#~ msgid "Destroy room"
+#~ msgstr "Временна стая"
 
 #~ msgid "Please enter a valid XMPP username"
 #~ msgstr "Моля въведете действително потребителско име за XMPP"

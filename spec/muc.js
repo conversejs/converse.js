@@ -2582,7 +2582,7 @@
                 expect(info_messages.pop().textContent).toBe('/me: Write in 3rd person');
                 expect(info_messages.pop().textContent).toBe('/kick: Kick user from groupchat');
                 expect(info_messages.pop().textContent).toBe('/help: Show this menu');
-                expect(info_messages.pop().textContent).toBe('/destroy: Destroy room');
+                expect(info_messages.pop().textContent).toBe('/destroy: Remove this groupchat');
                 expect(info_messages.pop().textContent).toBe('/deop: Change user role to participant');
                 expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
                 expect(info_messages.pop().textContent).toBe('/ban: Ban user from groupchat');
@@ -2618,7 +2618,7 @@
                 expect(info_messages.pop().textContent).toBe('/me: Write in 3rd person');
                 expect(info_messages.pop().textContent).toBe('/kick: Kick user from groupchat');
                 expect(info_messages.pop().textContent).toBe('/help: Show this menu');
-                expect(info_messages.pop().textContent).toBe('/destroy: Destroy room');
+                expect(info_messages.pop().textContent).toBe('/destroy: Remove this groupchat');
                 expect(info_messages.pop().textContent).toBe('/deop: Change user role to participant');
                 expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
                 expect(info_messages.pop().textContent).toBe('/ban: Ban user from groupchat');

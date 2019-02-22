@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-22 16:44+0100\n"
+"POT-Creation-Date: 2019-02-22 18:21+0100\n"
 "PO-Revision-Date: 2019-01-15 12:02+0000\n"
 "Last-Translator: aitzol berasategi <aitzol@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/conversejs/"
@@ -598,8 +598,9 @@ msgid "Change user role to participant"
 msgstr "Ezarri erabiltzailearen rola parte-hartzaile gisa"
 
 #: dist/converse-no-dependencies.js:36268
-msgid "Destroy room"
-msgstr "Gela deuseztatu"
+#, fuzzy
+msgid "Destroy groupchat"
+msgstr "Elkartu gelara"
 
 #: dist/converse-no-dependencies.js:36268
 msgid "Kick user from groupchat"
@@ -1784,6 +1785,9 @@ msgstr "Deskargatu"
 #, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Deskargatu bideo fitxategia \"%1$s\""
+
+#~ msgid "Destroy room"
+#~ msgstr "Gela deuseztatu"
 
 #~ msgid "Please enter a valid XMPP username"
 #~ msgstr "Mesedez sartu baleko XMPP erabiltzailea"

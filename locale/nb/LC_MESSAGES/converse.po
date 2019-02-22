@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-22 16:44+0100\n"
+"POT-Creation-Date: 2019-02-22 18:21+0100\n"
 "PO-Revision-Date: 2019-01-14 13:20+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
@@ -621,8 +621,8 @@ msgstr "Endre brukerrolle til deltager"
 
 #: dist/converse-no-dependencies.js:36268
 #, fuzzy
-msgid "Destroy room"
-msgstr "Midlertidig Rom"
+msgid "Destroy groupchat"
+msgstr "Ta del i rommet"
 
 #: dist/converse-no-dependencies.js:36268
 #, fuzzy
@@ -1853,6 +1853,10 @@ msgstr "Last ned"
 #, fuzzy, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Last ned videofilen \"%1$s\""
+
+#, fuzzy
+#~ msgid "Destroy room"
+#~ msgstr "Midlertidig Rom"
 
 #~ msgid "Please enter a valid XMPP username"
 #~ msgstr "Skriv inn et gydlig XMPP-brukernavn"

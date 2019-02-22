@@ -918,7 +918,7 @@ converse.plugins.add('converse-muc-views', {
                             `<strong>/ban</strong>: ${__('Ban user from groupchat')}`,
                             `<strong>/clear</strong>: ${__('Remove messages')}`,
                             `<strong>/deop</strong>: ${__('Change user role to participant')}`,
-                            `<strong>/destroy</strong>: ${__('Destroy room')}`,
+                            `<strong>/destroy</strong>: ${__('Remove this groupchat')}`,
                             `<strong>/help</strong>: ${__('Show this menu')}`,
                             `<strong>/kick</strong>: ${__('Kick user from groupchat')}`,
                             `<strong>/me</strong>: ${__('Write in 3rd person')}`,

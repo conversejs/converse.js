@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.9.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-22 16:44+0100\n"
+"POT-Creation-Date: 2019-02-22 18:21+0100\n"
 "PO-Revision-Date: 2019-02-22 15:30+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/conversejs/"
@@ -602,8 +602,9 @@ msgid "Change user role to participant"
 msgstr "Zmień uprawnienia na zwykłego uczestnika"
 
 #: dist/converse-no-dependencies.js:36268
-msgid "Destroy room"
-msgstr "Zniszcz pokój"
+#, fuzzy
+msgid "Destroy groupchat"
+msgstr "Wejdź do pokoju"
 
 #: dist/converse-no-dependencies.js:36268
 msgid "Kick user from groupchat"
@@ -1823,6 +1824,9 @@ msgstr "Pobierz"
 #, fuzzy, javascript-format
 msgid "Download video file \"%1$s\""
 msgstr "Pobierz plik wideo"
+
+#~ msgid "Destroy room"
+#~ msgstr "Zniszcz pokój"
 
 #~ msgid "Please enter a valid XMPP username"
 #~ msgstr "Wprowadź poprawną nazwę użytkownika XMPP"

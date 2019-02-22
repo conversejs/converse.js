@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-19 14:58+0100\n"
-"PO-Revision-Date: 2019-01-14 13:19+0000\n"
-"Last-Translator: Nathan Follens <nthn@unseen.is>\n"
+"PO-Revision-Date: 2019-02-22 15:30+0000\n"
+"Last-Translator: JC Brand <jc@opkode.com>\n"
 "Language-Team: Flemish <https://hosted.weblate.org/projects/conversejs/"
 "translations/nl_BE/>\n"
 "Language: nl_BE\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.4-dev\n"
+"X-Generator: Weblate 3.5-dev\n"
 
 #: dist/converse-no-dependencies.js:30353
 #: dist/converse-no-dependencies.js:30410
@@ -1543,16 +1543,13 @@ msgstr "Niet-anoniem"
 
 #: dist/converse-no-dependencies.js:74686
 #: dist/converse-no-dependencies.js:74834
-#, fuzzy
 msgid "All other groupchat participants can see your XMPP address"
-msgstr ""
-"Alle gebruikers in dit groepsgesprek kunnen uwen XMPP-gebruikersnaam zien"
+msgstr "Alle gebruikers in dit groepsgesprek kunnen uwen XMPP-adres zien"
 
 #: dist/converse-no-dependencies.js:74694
 #: dist/converse-no-dependencies.js:74842
-#, fuzzy
 msgid "Only moderators can see your XMPP address"
-msgstr "Enkel moderatoren kunnen uwen XMPP-gebruikersnaam zien"
+msgstr "Enkel moderatoren kunnen uwen XMPP-adres zien"
 
 #: dist/converse-no-dependencies.js:74702
 #: dist/converse-no-dependencies.js:74850

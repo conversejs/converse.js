@@ -100,7 +100,8 @@ release:
 	make po2json
 	make build
 	mkdir -p 'converse-assets-$(VERSION)'
-	$(INSTALL) -D dist/converse.min.js 'converse-assets-$(VERSION)/converse.js'
+	$(INSTALL) -D dist/converse.min.js 'converse-assets-$(VERSION)/converse.min.js'
+	$(INSTALL) -D dist/converse.min.js.map 'converse-assets-$(VERSION)/converse.min.js.map'
 	$(INSTALL) -D css/converse.min.css \
 		'converse-assets-$(VERSION)/css/converse.css'
 	cp -r css/webfonts 'converse-assets-$(VERSION)/css/'

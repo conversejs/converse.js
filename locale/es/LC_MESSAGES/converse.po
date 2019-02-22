@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-22 18:21+0100\n"
-"PO-Revision-Date: 2019-02-22 15:30+0000\n"
-"Last-Translator: Seve <seve@delape.net>\n"
+"POT-Creation-Date: 2019-02-19 14:58+0100\n"
+"PO-Revision-Date: 2019-02-23 10:45+0000\n"
+"Last-Translator: sergio <srg.dev@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
 "Language: es\n"
@@ -1719,7 +1719,7 @@ msgstr "Crea tu cuenta"
 
 #: dist/converse-no-dependencies.js:76327
 msgid "Please enter the XMPP provider to register with:"
-msgstr "Por favor, ingresa el proveedor de XMPP para registrarse:"
+msgstr "Por favor, introduce el proveedor de XMPP para registrarse:"
 
 #: dist/converse-no-dependencies.js:76345
 #: dist/converse-no-dependencies.js:76384

@@ -5,6 +5,8 @@
 - Bugfix. Prevent duplicate messages by comparing MAM archive id to XEP-0359 stanza ids.
 - Bugfix. Open groupchats not shown when logging in after disconnection.
 - #1406: `TypeError: e.devicelists is undefined` when unchecking the "trusted device" checkbox
+- Bugfix. Don't send real jids in mentions in a semi-anonymous or anonymous room when we are a moderator.
+- Bugfix. Always set the "uri" field in reference tags, as required by the XEP.
 
 ## 4.1.1 (2019-02-18)
 

@@ -2686,6 +2686,9 @@
                         })));
                 });
 
+                // This room is not anonymous, so real JIDs can be used.
+                view.model.features.save({'nonanonymous': true, 'semianonymous': false});
+
                 // Run a few unit tests for the parseTextForReferences method
                 let [text, references] = view.model.parseTextForReferences('hello z3r0')
                 expect(references.length).toBe(0);
@@ -2694,15 +2697,17 @@
                 [text, references] = view.model.parseTextForReferences('hello @z3r0')
                 expect(references.length).toBe(1);
                 expect(text).toBe('hello z3r0');
-                expect(JSON.stringify(references))
-                    .toBe('[{"begin":6,"end":10,"value":"z3r0","type":"mention","uri":"xmpp:z3r0@localhost"}]');
+                expect(references)
+                    .toEqual([{"begin":6,"end":10,"value":"z3r0","type":"mention","uri":"xmpp:z3r0@localhost"}]);
 
                 [text, references] = view.model.parseTextForReferences('hello @some1 @z3r0 @gibson @mr.robot, how are you?')
                 expect(text).toBe('hello @some1 z3r0 gibson mr.robot, how are you?');
-                expect(JSON.stringify(references))
-                    .toBe('[{"begin":13,"end":17,"value":"z3r0","type":"mention","uri":"xmpp:z3r0@localhost"},'+
-                            '{"begin":18,"end":24,"value":"gibson","type":"mention","uri":"xmpp:gibson@localhost"},'+
-                            '{"begin":25,"end":33,"value":"mr.robot","type":"mention","uri":"xmpp:mr.robot@localhost"}]');
+                expect(references)
+                    .toEqual([
+                        {"begin":13,"end":17,"value":"z3r0","type":"mention","uri":"xmpp:z3r0@localhost"},
+                        {"begin":18,"end":24,"value":"gibson","type":"mention","uri":"xmpp:gibson@localhost"},
+                        {"begin":25,"end":33,"value":"mr.robot","type":"mention","uri":"xmpp:mr.robot@localhost"}
+                    ]);
 
                 [text, references] = view.model.parseTextForReferences('yo @gib')
                 expect(text).toBe('yo @gib');
@@ -2715,14 +2720,14 @@
                 [text, references] = view.model.parseTextForReferences('@gibson')
                 expect(text).toBe('gibson');
                 expect(references.length).toBe(1);
-                expect(JSON.stringify(references))
-                    .toBe('[{"begin":0,"end":6,"value":"gibson","type":"mention","uri":"xmpp:gibson@localhost"}]');
+                expect(references)
+                    .toEqual([{"begin":0,"end":6,"value":"gibson","type":"mention","uri":"xmpp:gibson@localhost"}]);
 
                 [text, references] = view.model.parseTextForReferences('hi @Link Mauve how are you?')
                 expect(text).toBe('hi Link Mauve how are you?');
                 expect(references.length).toBe(1);
-                expect(JSON.stringify(references))
-                    .toBe('[{"begin":3,"end":13,"value":"Link Mauve","type":"mention","uri":"xmpp:Link-Mauve@localhost"}]');
+                expect(references)
+                    .toEqual([{"begin":3,"end":13,"value":"Link Mauve","type":"mention","uri":"xmpp:Link-Mauve@localhost"}]);
                 done();
             }));
 
@@ -2746,6 +2751,9 @@
                             'role': 'participant'
                         })));
                 });
+
+                // This room is not anonymous, so real JIDs can be used.
+                view.model.features.save({'nonanonymous': true, 'semianonymous': false});
 
                 const textarea = view.el.querySelector('textarea.chat-textarea');
                 textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?'
@@ -2800,6 +2808,34 @@
                 done();
             }));
 
+            it("will not leak the real JIDs of participants in XEP-0372 references",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                const view = _converse.chatboxviews.get('lounge@localhost');
+                view.model.features.save({'nonanonymous': false, 'semianonymous': true});
+                const textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = "Meow @dummy!";
+                spyOn(_converse.connection, 'send');
+                const enter_event = {
+                    'target': textarea,
+                    'preventDefault': _.noop,
+                    'stopPropagation': _.noop,
+                    'keyCode': 13 // Enter
+                };
+                view.keyPressed(enter_event);
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                const msg = _converse.connection.send.calls.all()[0].args[0];
+                const selector = `message[to="lounge@localhost"] reference[xmlns="urn:xmpp:reference:0"]`;
+                const node = msg.nodeTree.querySelector(selector);
+                const refUri = node.getAttribute('uri');
+                expect(refUri).toBe('xmpp:lounge@localhost/dummy');
+
+                done();
+            }));
+
             it("includes XEP-0372 references to that person",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
@@ -2821,6 +2857,9 @@
                                 'role': 'participant'
                             })));
                     });
+
+                    // This room is not anonymous, so real JIDs can be used.
+                    view.model.features.save({'nonanonymous': true, 'semianonymous': false});
 
                     spyOn(_converse.connection, 'send');
                     const textarea = view.el.querySelector('textarea.chat-textarea');

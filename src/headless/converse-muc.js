@@ -356,15 +356,22 @@ converse.plugins.add('converse-muc', {
                 if (!occupant) {
                     return null;
                 }
+                const roomJid = this.get('jid');
+                const nonanon = this.features.get('nonanonymous');
+                let uri;
+                if (occupant.get('jid') && nonanon) {
+                    uri = `xmpp:${occupant.get('jid')}`;
+                }
+                else {
+                    uri = `xmpp:${roomJid}/${occupant.get('nick')}`;
+                }
                 const obj = {
                     'begin': index,
                     'end': index + longest_match.length,
                     'value': longest_match,
-                    'type': 'mention'
+                    'type': 'mention',
+                    'uri': uri,
                 };
-                if (occupant.get('jid')) {
-                    obj.uri = `xmpp:${occupant.get('jid')}`
-                }
                 return obj;
             },
 

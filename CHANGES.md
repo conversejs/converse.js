@@ -1,7 +1,8 @@
 # Changelog
 
-## 4.1.2 (Unreleased)
+## 4.1.2 (2019-02-22)
 
+- Updated translations: af, cz, de, es, he, it, nl, nl_BE, pt_BR, zh_CN
 - Bugfix. Prevent duplicate messages by comparing MAM archive id to XEP-0359 stanza ids.
 - Bugfix. Open groupchats not shown when logging in after disconnection.
 - #1406: `TypeError: e.devicelists is undefined` when unchecking the "trusted device" checkbox

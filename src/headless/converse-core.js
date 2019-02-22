@@ -72,7 +72,7 @@ const _converse = {
     'promises': {}
 }
 
-_converse.VERSION_NAME = "v4.1.1";
+_converse.VERSION_NAME = "v4.1.2";
 
 _.extend(_converse, Backbone.Events);
 

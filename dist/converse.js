@@ -53709,30 +53709,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         this.enterRoom();
       },
 
-      enterRoom(ev) {
+      async enterRoom(ev) {
         if (ev) {
           ev.preventDefault();
         }
 
         if (this.model.get('connection_status') !== _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.ENTERED) {
-          const handler = () => {
-            if (!u.isPersistableModel(this.model)) {
-              // Happens during tests, nothing to do if this
-              // is a hanging chatbox (i.e. not in the collection anymore).
-              return;
-            }
+          await this.model.getRoomFeatures();
 
-            this.populateAndJoin();
+          if (!u.isPersistableModel(this.model)) {
+            // XXX: Happens during tests, nothing to do if this
+            // is a hanging chatbox (i.e. not in the collection anymore).
+            return;
+          }
 
-            _converse.emit('chatRoomOpened', this);
-          };
-
-          this.model.getRoomFeatures().then(handler, handler);
+          this.populateAndJoin();
         } else {
           this.fetchMessages();
-
-          _converse.emit('chatRoomOpened', this);
         }
+
+        _converse.emit('chatRoomOpened', this);
       },
 
       render() {

@@ -11162,6 +11162,9 @@ body.converse-fullscreen {
 #conversejs.converse-overlayed .converse-svg-logo {
   height: 1em; }
 
+#conversejs.converse-overlayed #controlbox #converse-login-panel {
+  height: 100%; }
+
 #conversejs #converse-modals .set-xmpp-status {
   margin: 1em; }
   #conversejs #converse-modals .set-xmpp-status .custom-control-label {

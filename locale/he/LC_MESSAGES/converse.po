@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-22 18:21+0100\n"
-"PO-Revision-Date: 2019-02-22 15:30+0000\n"
+"PO-Revision-Date: 2019-02-25 09:17+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -594,18 +594,16 @@ msgid "Change user's affiliation to admin"
 msgstr "שנה סינוף משתמש למנהל"
 
 #: dist/converse-no-dependencies.js:36268
-#, fuzzy
 msgid "Ban user from groupchat"
-msgstr "אסור משתמש מתוך חדר"
+msgstr "חסימת גישת משתמש מהתכתבות קבוצתית זו"
 
 #: dist/converse-no-dependencies.js:36268
 msgid "Change user role to participant"
 msgstr "החלפת תפקיד המשתמש למשתתף"
 
 #: dist/converse-no-dependencies.js:36268
-#, fuzzy
 msgid "Destroy groupchat"
-msgstr "חדר פתוח"
+msgstr "השמדת ההתכתבות הקבוצתית"
 
 #: dist/converse-no-dependencies.js:36268
 msgid "Kick user from groupchat"
@@ -632,23 +630,20 @@ msgid "Grant moderator role to user"
 msgstr "הענק תפקיד אחראי למשתמש"
 
 #: dist/converse-no-dependencies.js:36268
-#, fuzzy
 msgid "Grant ownership of this groupchat"
-msgstr "הענק בעלות על חדר זה"
+msgstr "הענקת בעלות על התכתבות קבוצתית זו"
 
 #: dist/converse-no-dependencies.js:36268
-#, fuzzy
 msgid "Register a nickname for this groupchat"
-msgstr "נבעטת מתוך חדר זה"
+msgstr "רשימת שם משתמש עבור שיחה קבוצתית זו"
 
 #: dist/converse-no-dependencies.js:36268
 msgid "Revoke user's membership"
 msgstr "שלול חברות משתמש"
 
 #: dist/converse-no-dependencies.js:36268
-#, fuzzy
 msgid "Set groupchat subject"
-msgstr "קבע נושא חדר"
+msgstr "הגדרת נושא להתכתבות הקבוצתית"
 
 #: dist/converse-no-dependencies.js:36268
 msgid "Set groupchat subject (alias for /subject)"
@@ -669,9 +664,8 @@ msgid ""
 msgstr "הכינוי שבחרת שמור או בשימוש, נא לבחור באחד אחר."
 
 #: dist/converse-no-dependencies.js:36626
-#, fuzzy
 msgid "Please choose your nickname"
-msgstr "שנה את השם כינוי שלך"
+msgstr "נא לבחור את כינוי שלך"
 
 #: dist/converse-no-dependencies.js:36627
 #: dist/converse-no-dependencies.js:39369
@@ -679,14 +673,12 @@ msgid "Nickname"
 msgstr "שם כינוי"
 
 #: dist/converse-no-dependencies.js:36628
-#, fuzzy
 msgid "Enter groupchat"
-msgstr "חדר פתוח"
+msgstr "כניסה להתכתבות קבוצתית"
 
 #: dist/converse-no-dependencies.js:36653
-#, fuzzy
 msgid "This groupchat requires a password"
-msgstr "חדר שיחה זה מצריך סיסמה"
+msgstr "התכתבות קבוצתית זו דורשת ססמה"
 
 #: dist/converse-no-dependencies.js:36654
 msgid "Password: "
@@ -697,15 +689,15 @@ msgid "Submit"
 msgstr "שלח"
 
 #: dist/converse-no-dependencies.js:36830
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "This action was done by %1$s."
-msgstr "השם כינוי שלך שונה בשם: %1$s"
+msgstr "פעולה זו נערכה על ידי %1$s."
 
 #: dist/converse-no-dependencies.js:36834
 #: dist/converse-no-dependencies.js:36851
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The reason given is: \"%1$s\"."
-msgstr "הסיבה שניתנה היא: \""
+msgstr "הסיבה שסופקה היא: „%1$s”."
 
 #: dist/converse-no-dependencies.js:36922
 #, fuzzy, javascript-format
@@ -748,70 +740,61 @@ msgid "%1$s has left the groupchat. \"%2$s\""
 msgstr "לחץ כדי לפתוח את חדר זה"
 
 #: dist/converse-no-dependencies.js:37054
-#, fuzzy
 msgid "You are not on the member list of this groupchat."
-msgstr "אינך ברשימת החברים של חדר זה"
+msgstr "אינך ברשימת החברים של התכתבות קבוצתית זו."
 
 #: dist/converse-no-dependencies.js:37056
-#, fuzzy
 msgid "You have been banned from this groupchat."
-msgstr "נאסרת מתוך חדר זה"
+msgstr "גישתך להתכתבות קבוצתית זו נחסמה."
 
 # אף שם כינוי לא צוין
 #: dist/converse-no-dependencies.js:37060
-#, fuzzy
 msgid "No nickname was specified."
-msgstr "לא צוין שום שם כינוי"
+msgstr "לא צוין אף כינוי."
 
 # אינך מורשה
 #: dist/converse-no-dependencies.js:37064
-#, fuzzy
 msgid "You are not allowed to create new groupchats."
-msgstr "אין לך רשות ליצור חדרים חדשים"
+msgstr "אין לך הרשאה ליצור התכתבויות קבוצתיות חדשות."
 
 #: dist/converse-no-dependencies.js:37066
-#, fuzzy
 msgid "Your nickname doesn't conform to this groupchat's policies."
-msgstr "השם כינוי שלך לא תואם את המדינויות של חדר זה"
+msgstr "הכינוי שלך אינו תואם למדיניות של ההתכתבות הקבוצתית הזו."
 
 #: dist/converse-no-dependencies.js:37072
-#, fuzzy
 msgid "This groupchat does not (yet) exist."
-msgstr "חדר זה (עדיין) לא קיים"
+msgstr "התכתבות קבוצתית זו (עדיין) אינה קיימת."
 
 #: dist/converse-no-dependencies.js:37074
-#, fuzzy
 msgid "This groupchat has reached its maximum number of participants."
-msgstr "חדר זה הגיע לסף הנוכחים המרבי שלו"
+msgstr "התכתבות קבוצתית זו הגיעה לרף הנוכחים העליון שלה."
 
 #: dist/converse-no-dependencies.js:37076
 msgid "Remote server not found"
 msgstr "השרת המרוחק לא נמצא"
 
 #: dist/converse-no-dependencies.js:37081
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "The explanation given is: \"%1$s\"."
-msgstr "הסיבה שניתנה היא: \""
+msgstr "ההסבר שסופק הוא: „%1$s”."
 
 #: dist/converse-no-dependencies.js:37134
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic set by %1$s"
-msgstr "נושא חדר זה נקבע על ידי %1$s אל: %2$s"
+msgstr "נושא התכתבות קבוצתית זו הוגדר על ידי %1$s"
 
 #: dist/converse-no-dependencies.js:37134
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr "נושא חדר זה נקבע על ידי %1$s אל: %2$s"
+msgstr "נושא התכתבות קבוצתית זו נמחק על ידי %1$s"
 
 #: dist/converse-no-dependencies.js:37170
-#, fuzzy
 msgid "Groupchats"
-msgstr "קבוצות"
+msgstr "התכתבויות קבוצתיות"
 
 #: dist/converse-no-dependencies.js:37171
-#, fuzzy
 msgid "Add a new groupchat"
-msgstr "חדר פתוח"
+msgstr "הוספת התכתבות קבוצתית חדשה"
 
 #: dist/converse-no-dependencies.js:37172
 #, fuzzy
@@ -952,26 +935,30 @@ msgstr "לא הצלחנו לשלוח הודעה מוצפנת כיוון שלא �
 
 #: dist/converse-no-dependencies.js:38217
 msgid "Unable to send an encrypted message due to an unexpected error."
-msgstr ""
+msgstr "לא ניתן לשלוח הודעה מוצפנת עקב שגיאה בלתי צפויה."
 
 #: dist/converse-no-dependencies.js:38300
 #, javascript-format
 msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
-msgstr ""
+msgstr "לא ניתן להשתמש בהצפנה מקצה לקצה כיוון שהלקוח של %1$s אינו תומך ב־OMEMO."
 
 #: dist/converse-no-dependencies.js:38327
 msgid ""
 "Cannot use end-to-end encryption in this groupchat, either the groupchat has "
 "some anonymity or not all participants support OMEMO."
 msgstr ""
+"לא ניתן להשתמש בהצפנה מקצה לקצה בהתכתבות הקבוצתית הזאת, או מכיוון שבקבוצה "
+"כבר חלה סוג של אלמוניות או שלחלק מהמשתמשים אין תמיכה ב־OMEMO."
 
 #: dist/converse-no-dependencies.js:38504
 msgid ""
 "This is an OMEMO encrypted message which your client doesn’t seem to "
 "support. Find more information on https://conversations.im/omemo"
 msgstr ""
+"זו הודעה שמוצפנת ב־OMEMO שכפי הנראה הלקוח שלך אינו תומך בה. ניתן למצוא פרטים "
+"נוספים בכתובת https://conversations.im/omemo"
 
 #: dist/converse-no-dependencies.js:39163
 #, javascript-format

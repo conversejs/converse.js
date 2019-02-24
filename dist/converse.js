@@ -61589,11 +61589,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return {
           'bookmarked': false,
           'chat_state': undefined,
+          'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode),
+          'message_type': 'chat',
+          'nickname': undefined,
           'num_unread': 0,
           'type': _converse.PRIVATE_CHAT_TYPE,
-          'message_type': 'chat',
-          'url': '',
-          'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode)
+          'url': ''
         };
       },
 
@@ -61643,7 +61644,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
           'box_id': b64_sha1(this.get('jid')),
           'time_opened': this.get('time_opened') || moment().valueOf(),
-          'user_id': Strophe.getNodeFromJid(this.get('jid'))
+          'user_id': Strophe.getNodeFromJid(this.get('jid')),
+          'nickname': _.get(_converse.api.contacts.get(this.get('jid')), 'attributes.nickname')
         });
       },
 
@@ -62126,7 +62128,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             attrs.fullname = _converse.xmppstatus.get('fullname');
           } else {
             attrs.sender = 'them';
-            attrs.fullname = this.get('fullname');
+            attrs.fullname = this.get('fullname') || this.get('fullname');
           }
         }
 
@@ -62362,10 +62364,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
 
         const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0,
-              chatbox_attrs = {
-          'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
-        },
-              chatbox = this.getChatBox(contact_jid, chatbox_attrs, has_body);
+              roster_nick = _.get(_converse.api.contacts.get(contact_jid), 'attributes.nickname'),
+              chatbox = this.getChatBox(contact_jid, {
+          'nickname': roster_nick
+        }, has_body);
 
         if (chatbox && !chatbox.findDuplicateFromOriginID(stanza) && !(await chatbox.hasDuplicateArchiveID(original_stanza)) && !(await chatbox.hasDuplicateStanzaID(stanza)) && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
           const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);

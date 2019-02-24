@@ -18,8 +18,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             test_utils.openControlBox();
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -123,8 +122,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             test_utils.openControlBox();
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid)
@@ -280,7 +278,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
 
             let message, msg;
@@ -466,7 +464,7 @@
             null, ['rosterGroupsFetched'], {},
             async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
 
             /* Ideally we wouldn't have to filter out headline
@@ -502,7 +500,8 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            const include_nick = false;
+            await test_utils.waitForRoster(_converse, 'current', 2, include_nick);
             test_utils.openControlBox();
 
             // Send a message from a different resource
@@ -523,6 +522,7 @@
                         'to': _converse.bare_jid+'/another-resource',
                         'type': 'chat'
                 }).c('body').t(msgtext).tree();
+
             await _converse.chatboxes.onMessage(msg);
             await test_utils.waitUntil(() => (_converse.api.chats.get().length > 1))
             const chatbox = _converse.chatboxes.get(sender_jid);
@@ -534,7 +534,8 @@
             expect(chatbox.messages.length).toEqual(1);
             const msg_obj = chatbox.messages.models[0];
             expect(msg_obj.get('message')).toEqual(msgtext);
-            expect(msg_obj.get('fullname')).toEqual(mock.cur_names[1]);
+            expect(msg_obj.get('fullname')).toBeUndefined();
+            expect(msg_obj.get('nickname')).toBeUndefined();
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(false);
             // Now check that the message appears inside the chatbox in the DOM
@@ -553,8 +554,7 @@
                 async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp']);
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
 
             // Send a message from a different resource
@@ -601,7 +601,7 @@
             null, ['rosterGroupsFetched'], {},
             async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
             /* <message from="mallory@evil.example" to="b@xmpp.example">
              *    <received xmlns='urn:xmpp:carbons:2'>
@@ -651,8 +651,7 @@
             if (_converse.view_mode === 'fullscreen') {
                 return done();
             }
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             const contact_name = mock.cur_names[0];
             const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
             test_utils.openControlBox();
@@ -711,8 +710,8 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            const include_nick = false;
+            await test_utils.waitForRoster(_converse, 'current', 2, include_nick);
             test_utils.openControlBox();
             spyOn(_converse, 'emit');
             const contact_name = mock.cur_names[1];
@@ -742,7 +741,8 @@
             expect(chatbox.messages.length).toEqual(1);
             let msg_obj = chatbox.messages.models[0];
             expect(msg_obj.get('message')).toEqual(message);
-            expect(msg_obj.get('fullname')).toEqual(contact_name);
+            expect(msg_obj.get('fullname')).toBeUndefined();
+            expect(msg_obj.get('nickname')).toBeUndefined();
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(true);
             await test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')
@@ -788,7 +788,7 @@
             expect(chatbox.messages.length).toEqual(2);
             msg_obj = chatbox.messages.models[1];
             expect(msg_obj.get('message')).toEqual(message);
-            expect(msg_obj.get('fullname')).toEqual(contact_name);
+            expect(msg_obj.get('fullname')).toBeUndefined();
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(false);
             const msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
@@ -805,8 +805,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
             spyOn(_converse, 'emit');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -828,8 +827,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid)
@@ -849,8 +847,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid)
@@ -872,8 +869,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -916,8 +912,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             const view = await test_utils.openChatBoxFor(_converse, contact_jid);
             let stanza = u.toStanza(`
@@ -956,8 +951,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             let base_url = 'https://conversejs.org';
             let message = base_url+"/logo/conversejs-filled.svg";
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1005,9 +999,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
-
+            await test_utils.waitForRoster(_converse, 'current');
             _converse.time_format = 'hh:mm';
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid)
@@ -1033,8 +1025,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
 
             let message, msg;
@@ -1200,8 +1191,8 @@
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+
+            await test_utils.waitForRoster(_converse, 'current');
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             const msg_id = u.getUniqueId();
             const sent_stanzas = [];
@@ -1227,7 +1218,7 @@
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
-            test_utils.createContacts(_converse, 'current', 1);
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             const msg_id = u.getUniqueId();
             const sent_stanzas = [];
@@ -1258,7 +1249,7 @@
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
-            test_utils.createContacts(_converse, 'current', 1);
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const recipient_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             const msg_id = u.getUniqueId();
             const sent_stanzas = [];
@@ -1289,8 +1280,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
@@ -1349,8 +1339,8 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                const include_nick = false;
+                await test_utils.waitForRoster(_converse, 'current', 1, include_nick);
                 test_utils.openControlBox();
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
                 spyOn(_converse, 'emit').and.callThrough();
@@ -1378,7 +1368,7 @@
                 expect(chatbox.messages.length).toEqual(1);
                 const msg_obj = chatbox.messages.models[0];
                 expect(msg_obj.get('message')).toEqual(message);
-                expect(msg_obj.get('fullname')).toEqual(mock.cur_names[0]);
+                expect(msg_obj.get('fullname')).toBeUndefined();
                 expect(msg_obj.get('sender')).toEqual('them');
                 expect(msg_obj.get('is_delayed')).toEqual(false);
                 // Now check that the message appears inside the chatbox in the DOM
@@ -1395,8 +1385,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 test_utils.openControlBox();
                 const message = 'This is a received message';
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1578,8 +1567,7 @@
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
-                    test_utils.createContacts(_converse, 'current');
-                    _converse.emit('rosterContactsFetched');
+                    await test_utils.waitForRoster(_converse, 'current', 1);
                     test_utils.openControlBox();
 
                     // TODO: what could still be done for error
@@ -1725,8 +1713,7 @@
 
                     // See #1317
                     // https://github.com/conversejs/converse.js/issues/1317
-                    test_utils.createContacts(_converse, 'current');
-                    _converse.emit('rosterContactsFetched');
+                    await test_utils.waitForRoster(_converse, 'current');
                     test_utils.openControlBox();
 
                     const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1763,8 +1750,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1817,9 +1803,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                test_utils.openControlBox();
-
+                await test_utils.waitForRoster(_converse, 'current');
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
                 // Send a message from a different resource
                 spyOn(_converse, 'log');
@@ -1869,8 +1853,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.api.chatviews.get(contact_jid);
@@ -1920,8 +1903,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.openChatBoxFor(_converse, contact_jid)
                 const view = _converse.api.chatviews.get(contact_jid);
@@ -1969,8 +1951,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.api.chatviews.get(contact_jid);
@@ -2000,8 +1981,7 @@
                     async function (done, _converse) {
 
                 const base_url = 'https://conversejs.org';
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.openChatBoxFor(_converse, contact_jid)
                 const view = _converse.api.chatviews.get(contact_jid);
@@ -2038,8 +2018,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid);
             const view = _converse.api.chatviews.get(contact_jid);
@@ -2108,7 +2087,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current', 1);
+            await test_utils.waitForRoster(_converse, 'current', 1);
             await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -2258,7 +2237,6 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
             const view = _converse.api.chatviews.get('lounge@localhost');
             const msg = $msg({
@@ -2446,7 +2424,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
             const view = _converse.chatboxviews.get('lounge@localhost');
             const textarea = view.el.querySelector('textarea.chat-textarea');
@@ -2525,7 +2503,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
             const view = _converse.chatboxviews.get('lounge@localhost');
             const textarea = view.el.querySelector('textarea.chat-textarea');
@@ -2559,7 +2537,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
             const view = _converse.chatboxviews.get('lounge@localhost');
             const textarea = view.el.querySelector('textarea.chat-textarea');

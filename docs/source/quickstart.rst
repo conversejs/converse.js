@@ -104,6 +104,11 @@ your website, where users authenticate once in your website and are then
 automatically logged in to the XMPP server as well. For more info on how this
 can be achieved, read: :ref:`session-support`.
 
+For end-to-end encryption via OMEMO, you'll need to load `libsignal-protocol.js
+<https://github.com/signalapp/libsignal-protocol-javascript>`_ separately in
+your page. Take a look at the section on :ref:`libsignal <dependency-libsignal>` and the
+:ref:`security considerations around OMEMO <feature-omemo>`.
+
 Perhaps you want to create your own custom build of Converse? Then head over
 to the :doc:`builds` section, or more generally the :doc:`development <development>`
 documentation.

@@ -25,9 +25,15 @@ The file server needs to be configured for `Cross-Origin resource sharing <https
 ``Access-Control-Allow-Origin`` header which includes the domain hosting
 Converse.
 
+.. _`feature-omemo`:
 
 End to end message encryption (`XEP-0384 OMEMO <https://xmpp.org/extensions/xep-0363.html>`_)
 =============================================================================================
+
+.. note::
+    Converse.js (as of version 4.1.2) does NOT support encryption or decryption
+    of uploaded files. Files will be uploaded WITHOUT ENCRYPTION, even when
+    OMEMO is enabled.
 
 Converse supports OMEMO encryption based on the
 `Signal Protocol <https://github.com/signalapp/libsignal-protocol-javascript>`_.

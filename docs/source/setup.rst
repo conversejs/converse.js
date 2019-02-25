@@ -15,7 +15,12 @@ At the very least you'll need Converse and an :ref:`XMPP server` with
 :ref:`websocket-section` or :ref:`BOSH-section` enabled. That's definitely
 enough to simply demo Converse or to do development work on it.
 
-However, if you want to more fully integrate it into a website
+For end-to-end encryption via OMEMO, you'll need to load `libsignal-protocol.js
+<https://github.com/signalapp/libsignal-protocol-javascript>`_ separately in
+your page. Take a look at the section on :ref:`libsignal <dependency-libsignal>` and the
+:ref:`security considerations around OMEMO <feature-omemo>`.
+
+If you want to more fully integrate it into a website
 then you'll likely need to set up more services and components.
 
 The diagram below shows a fairly common setup for a website or intranet:

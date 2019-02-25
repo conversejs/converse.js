@@ -19,6 +19,7 @@ The core events, which are also promises are:
 
 * `cachedRoster`_
 * `chatBoxesFetched`_
+* `connectionInitialized`_
 * `controlboxInitialized`_ (only via the `converse-controlbox` plugin)
 * `pluginsInitialized`_
 * `roomsPanelRendered`_ (only via the `converse-muc` plugin)
@@ -34,8 +35,33 @@ For more info on how to use (or add promises), you can read the
 Below we will now list all events and also specify whether they are available
 as promises.
 
-List of global events (and promises)
-------------------------------------
+Global events
+-------------
+
+With global events, we mean events triggered in the global context, i.e. on the
+`window` object in browsers.
+
+converse-loaded
+---------------
+
+Once Converse.js has loaded, it'll dispatch a custom event with the name
+``converse-loaded``.
+
+You can listen for this event in your scripts and thereby be informed as soon
+as converse.js has been loaded, which would mean it's safe to call
+``converse.initialize``.
+
+For example:
+
+.. code-block:: javascript
+
+    window.addEventListener('converse-loaded', () => {
+        converse.initialize();
+    });
+
+
+List protected of events (and promises)
+----------------------------------------
 
 Hooking into events that Converse.js emits is a great way to extend or
 customize its functionality.
@@ -160,6 +186,12 @@ connected
 After connection has been established and converse.js has got all its ducks in a row.
 
 ``_converse.api.listen.on('connected', function () { ... });``
+
+connectionInitialized
+~~~~~~~~~~~~~~~~~~~~~
+
+Called once the ``Strophe.Connection`` constructor has been initialized, which
+will be responsible for managing the connection to the XMPP server.
 
 contactRequest
 ~~~~~~~~~~~~~~

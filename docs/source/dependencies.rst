@@ -100,10 +100,12 @@ Converse relies on the following dependencies:
   allows existing attributes, functions and objects on Converse to be
   overridden inside plugins.
 
+.. _`dependency-libsignal`:
+
 Libsignal
 ---------
 
-Optionally, if you want OMEMO encryption, you need to load `libsignal
+If you want OMEMO encryption, you need to load `libsignal
 <https://github.com/signalapp/libsignal-protocol-javascript>`_ separately in
 your page.
 

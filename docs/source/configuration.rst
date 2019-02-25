@@ -154,6 +154,13 @@ Allow users to resize chats by dragging the edges. The min-height and min-width
 CSS properties set on a chatboxes (specifically on the ``#converse.js .chatbox > .box-flyout`` element)
 will be honored, IF they are set in pixels.
 
+allow_logout
+------------
+
+* Default: ``true``
+
+Determines whether the user is allowed to log out. If set to ``false``, there will be no logout button.
+
 allow_muc
 ---------
 

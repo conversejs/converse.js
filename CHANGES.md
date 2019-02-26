@@ -5,6 +5,7 @@
 - New config setting [locked_muc_domain](https://conversejs.org/docs/html/configuration.html#locked-muc-domain)
 - #1373: Re-add support for the [muc_domain](https://conversejs.org/docs/html/configuration.html#muc-domain) setting
 - #1437: List of groupchats in modal doesn't scroll
+- #1457: Wrong tooltip shown for "unbookmark" icon
 
 ## 4.1.2 (2019-02-22)
 

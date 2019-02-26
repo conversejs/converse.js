@@ -62,8 +62,10 @@ converse.plugins.add('converse-bookmarks', {
 
                 const bookmark_button = tpl_chatroom_bookmark_toggle(
                     _.assignIn(this.model.toJSON(), {
-                        info_toggle_bookmark: __('Bookmark this groupchat'),
-                        bookmarked: this.model.get('bookmarked')
+                        'info_toggle_bookmark': this.model.get('bookmarked') ?
+                            __('Unbookmark this groupchat') :
+                            __('Bookmark this groupchat'),
+                        'bookmarked': this.model.get('bookmarked')
                     }));
                 const close_button = this.el.querySelector('.close-chatbox-button');
                 close_button.insertAdjacentHTML('afterend', bookmark_button);

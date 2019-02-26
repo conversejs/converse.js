@@ -103,6 +103,8 @@ converse.plugins.add('converse-muc-views', {
         _converse.api.settings.update({
             'auto_list_rooms': false,
             'muc_disable_moderator_commands': false,
+            'muc_domain': undefined,
+            'locked_muc_domain': undefined,
             'muc_show_join_leave': true,
             'roomconfig_whitelist': [],
             'visible_toolbar_buttons': {
@@ -110,6 +112,10 @@ converse.plugins.add('converse-muc-views', {
             }
         });
 
+        if (_converse.locked_muc_domain && !_.isString(_converse.muc_domain)) {
+            throw new Error("Config Error: it makes no sense to set locked_muc_domain "+
+                            "to true when muc_domain is not set");
+        }
 
         function ___ (str) {
             /* This is part of a hack to get gettext to scan strings to be
@@ -266,22 +272,32 @@ converse.plugins.add('converse-muc-views', {
 
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                if (_converse.muc_domain && !this.model.get('muc_domain')) {
+                    this.model.save('muc_domain', _converse.muc_domain);
+                }
                 this.model.on('change:muc_domain', this.onDomainChange, this);
             },
 
             toHTML () {
+                const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
                 return tpl_list_chatrooms_modal(_.extend(this.model.toJSON(), {
                     'heading_list_chatrooms': __('Query for Groupchats'),
                     'label_server_address': __('Server address'),
                     'label_query': __('Show groupchats'),
-                    'server_placeholder': __('conference.example.org')
+                    'show_form': !_converse.locked_muc_domain,
+                    'server_placeholder': muc_domain ? muc_domain : __('conference.example.org')
                 }));
             },
 
             afterRender () {
-                this.el.addEventListener('shown.bs.modal', () => {
-                    this.el.querySelector('input[name="server"]').focus();
-                }, false);
+                if (_converse.locked_muc_domain) {
+                    this.updateRoomsList();
+                } else {
+                    this.el.addEventListener('shown.bs.modal',
+                        () => this.el.querySelector('input[name="server"]').focus(),
+                        false
+                    );
+                }
             },
 
             openRoom (ev) {
@@ -384,12 +400,22 @@ converse.plugins.add('converse-muc-views', {
                 'submit form.add-chatroom': 'openChatRoom'
             },
 
+            initialize () {
+                _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+                this.model.on('change:muc_domain', this.render, this);
+            },
+
             toHTML () {
+                let placeholder = '';
+                if (!_converse.locked_muc_domain) {
+                    const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
+                    placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
+                }
                 return tpl_add_chatroom_modal(_.extend(this.model.toJSON(), {
                     'heading_new_chatroom': __('Enter a new Groupchat'),
-                    'label_room_address': __('Groupchat address'),
+                    'label_room_address': _converse.muc_domain ? __('Groupchat name') :  __('Groupchat address'),
                     'label_nickname': __('Optional nickname'),
-                    'chatroom_placeholder': __('name@conference.example.org'),
+                    'chatroom_placeholder': placeholder,
                     'label_join': __('Join'),
                 }));
             },
@@ -417,7 +443,13 @@ converse.plugins.add('converse-muc-views', {
                     // Make sure defaults apply if no nick is provided.
                     data.nick = undefined;
                 }
-                _converse.api.rooms.open(data.jid, data);
+                let jid;
+                if (_converse.locked_muc_domain || (_converse.muc_domain && !u.isValidJID(data.jid))) {
+                    jid = `${Strophe.escapeNode(data.jid)}@${_converse.muc_domain}`;
+                } else {
+                    jid = data.jid
+                }
+                _converse.api.rooms.open(jid, _.extend(data, {jid}));
                 this.modal.hide();
                 ev.target.reset();
             }

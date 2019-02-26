@@ -53303,12 +53303,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     _converse.api.settings.update({
       'auto_list_rooms': false,
       'muc_disable_moderator_commands': false,
+      'muc_domain': undefined,
+      'locked_muc_domain': undefined,
       'muc_show_join_leave': true,
       'roomconfig_whitelist': [],
       'visible_toolbar_buttons': {
         'toggle_occupants': true
       }
     });
+
+    if (_converse.locked_muc_domain && !_.isString(_converse.muc_domain)) {
+      throw new Error("Config Error: it makes no sense to set locked_muc_domain " + "to true when muc_domain is not set");
+    }
 
     function ___(str) {
       /* This is part of a hack to get gettext to scan strings to be
@@ -53459,22 +53465,31 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       initialize() {
         _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
 
+        if (_converse.muc_domain && !this.model.get('muc_domain')) {
+          this.model.save('muc_domain', _converse.muc_domain);
+        }
+
         this.model.on('change:muc_domain', this.onDomainChange, this);
       },
 
       toHTML() {
+        const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
+
         return templates_list_chatrooms_modal_html__WEBPACK_IMPORTED_MODULE_19___default()(_.extend(this.model.toJSON(), {
           'heading_list_chatrooms': __('Query for Groupchats'),
           'label_server_address': __('Server address'),
           'label_query': __('Show groupchats'),
-          'server_placeholder': __('conference.example.org')
+          'show_form': !_converse.locked_muc_domain,
+          'server_placeholder': muc_domain ? muc_domain : __('conference.example.org')
         }));
       },
 
       afterRender() {
-        this.el.addEventListener('shown.bs.modal', () => {
-          this.el.querySelector('input[name="server"]').focus();
-        }, false);
+        if (_converse.locked_muc_domain) {
+          this.updateRoomsList();
+        } else {
+          this.el.addEventListener('shown.bs.modal', () => this.el.querySelector('input[name="server"]').focus(), false);
+        }
       },
 
       openRoom(ev) {
@@ -53588,12 +53603,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         'submit form.add-chatroom': 'openChatRoom'
       },
 
+      initialize() {
+        _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+
+        this.model.on('change:muc_domain', this.render, this);
+      },
+
       toHTML() {
+        let placeholder = '';
+
+        if (!_converse.locked_muc_domain) {
+          const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
+
+          placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
+        }
+
         return templates_add_chatroom_modal_html__WEBPACK_IMPORTED_MODULE_5___default()(_.extend(this.model.toJSON(), {
           'heading_new_chatroom': __('Enter a new Groupchat'),
-          'label_room_address': __('Groupchat address'),
+          'label_room_address': _converse.muc_domain ? __('Groupchat name') : __('Groupchat address'),
           'label_nickname': __('Optional nickname'),
-          'chatroom_placeholder': __('name@conference.example.org'),
+          'chatroom_placeholder': placeholder,
           'label_join': __('Join')
         }));
       },
@@ -53623,7 +53652,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           data.nick = undefined;
         }
 
-        _converse.api.rooms.open(data.jid, data);
+        let jid;
+
+        if (_converse.locked_muc_domain || _converse.muc_domain && !u.isValidJID(data.jid)) {
+          jid = `${Strophe.escapeNode(data.jid)}@${_converse.muc_domain}`;
+        } else {
+          jid = data.jid;
+        }
+
+        _converse.api.rooms.open(jid, _.extend(data, {
+          jid
+        }));
 
         this.modal.hide();
         ev.target.reset();
@@ -66093,7 +66132,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
       auto_join_on_invite: false,
       auto_join_rooms: [],
       auto_register_muc_nickname: false,
-      muc_domain: undefined,
       muc_history_max_stanzas: undefined,
       muc_instant_rooms: true,
       muc_nickname_from_jid: false
@@ -93667,18 +93705,23 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/list_chatrooms_modal.html -->\n<div class="modal fade" id="list-chatrooms-modal" tabindex="-1" role="dialog" aria-labelledby="list-chatrooms-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title"\n                    id="list-chatrooms-modal-label">' +
 __e(o.heading_list_chatrooms) +
-'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body d-flex flex-column">\n                <form class="converse-form list-chatrooms">\n                    <div class="form-group">\n                        <label for="chatroom">' +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body d-flex flex-column">\n                ';
+ if (o.show_form) { ;
+__p += '\n                <form class="converse-form list-chatrooms">\n                    <div class="form-group">\n                        <label for="chatroom">' +
 __e(o.label_server_address) +
 ':</label>\n                        <input type="text" value="' +
 __e(o.muc_domain) +
 '" required="required" name="server" class="form-control" placeholder="' +
 __e(o.server_placeholder) +
-'"/>\n                    </div>\n                    <input type="submit" class="btn btn-primary" name="join" value="' +
+'"/>\n                    </div>\n                    <input type="submit" class="btn btn-primary" name="list" value="' +
 __e(o.label_query) +
-'"/>\n                </form>\n                <ul class="available-chatrooms list-group"></ul>\n            </div>\n        </div>\n    </div>\n</div>\n';
+'"/>\n                </form>\n                ';
+ } ;
+__p += '\n                <ul class="available-chatrooms list-group"></ul>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 

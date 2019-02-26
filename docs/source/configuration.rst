@@ -256,13 +256,18 @@ auto_list_rooms
 * Default:  ``false``
 
 If true, and the XMPP server on which the current user is logged in supports
-multi-user chat, then a list of rooms on that server will be fetched.
+multi-user chat, then a list of rooms on that server will be fetched in the
+"Query for Groupchats" modal.
 
 Not recommended for servers with lots of chatrooms.
 
 For each room on the server a query is made to fetch further details (e.g.
 features, number of occupants etc.), so on servers with many rooms this
 option will create lots of extra connection traffic.
+
+If the `muc_domain`_ is locked with the `locked_muc_domain`_ setting, then
+rooms will automatically be fetched in the "Query for Groupchats" modal,
+regardless of the value of this setting.
 
 .. _`auto_login`:
 
@@ -869,6 +874,15 @@ For example, if ``locked_domain`` is set to ``example.org``, then the user
 Additionally, only users registered on the ``example.org`` host can log in, no
 other users are allowed to log in.
 
+locked_muc_domain
+-----------------
+
+* Default: ``false``
+
+This setting allows you to restrict the multi-user chat (MUC) domain to only the value
+specified in `muc_domain`_.
+
+
 message_archiving
 -----------------
 
@@ -941,11 +955,16 @@ muc_domain
 
 * Default:  ``undefined``
 
-The MUC (multi-user chat) domain that should be used. By default Converse
-will attempt to get the MUC domain from the XMPP host of the currently logged in
-user.
+The default MUC (multi-user chat) domain that should be used.
 
-This setting will override that.
+When setting this value, users can only enter the name when opening a new MUC,
+and don't have to add the whole address (i.e. including the domain part).
+
+Users can however still enter the domain and they can still open MUCs with
+other domains.
+
+If you want to restrict MUCs to only this domain, then set `locked_domain`_ to
+``true``.
 
 muc_history_max_stanzas
 -----------------------

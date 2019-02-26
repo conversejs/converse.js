@@ -2,6 +2,8 @@
 
 ## 4.1.3 (Unreleased)
 
+- New config setting [locked_muc_domain](https://conversejs.org/docs/html/configuration.html#locked-muc-domain)
+- #1373: Re-add support for the [muc_domain](https://conversejs.org/docs/html/configuration.html#muc-domain) setting
 - #1437: List of groupchats in modal doesn't scroll
 
 ## 4.1.2 (2019-02-22)
@@ -23,7 +25,7 @@
 - Bugfix: MUC invite form not appearing
 - #1369 Don't wrongly interpret message with `subject` as a topic change.
 - #1405 Status of contacts list are not displayed properly
-- #1408 New config option `roomconfig_whitelist`
+- #1408 New config option [roomconfig_whitelist](https://conversejs.org/docs/html/configuration.html#roomconfig-whitelist)
 - #1410 HTTP upload not working if conversations push proxy is used
 - #1412 MUC moderator commands can be disabled selectively by config
 - #1413 Fix moderator commands that change affiliation

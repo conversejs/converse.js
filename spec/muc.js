@@ -3958,13 +3958,19 @@
                     async function (done, _converse) {
 
                 test_utils.openControlBox();
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 0);
 
                 const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
                 roomspanel.el.querySelector('.show-add-muc-modal').click();
                 test_utils.closeControlBox(_converse);
                 const modal = roomspanel.add_room_modal;
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
+
+                let label_name = modal.el.querySelector('label[for="chatroom"]');
+                expect(label_name.textContent).toBe('Groupchat address:');
+                let name_input = modal.el.querySelector('input[name="chatroom"]');
+                expect(name_input.placeholder).toBe('name@conference.example.org');
+
                 expect(modal.el.querySelector('.modal-title').textContent).toBe('Enter a new Groupchat');
                 spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -3972,6 +3978,83 @@
                 modal.el.querySelector('form input[type="submit"]').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.length);
                 await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
+
+                roomspanel.model.set('muc_domain', 'muc.example.org');
+                roomspanel.el.querySelector('.show-add-muc-modal').click();
+                label_name = modal.el.querySelector('label[for="chatroom"]');
+                expect(label_name.textContent).toBe('Groupchat address:');
+                name_input = modal.el.querySelector('input[name="chatroom"]');
+                expect(name_input.placeholder).toBe('name@muc.example.org');
+                done();
+            }));
+
+            it("doesn't require the domain when muc_domain is set",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'muc_domain': 'muc.example.org'},
+                    async function (done, _converse) {
+
+                test_utils.openControlBox();
+                const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                roomspanel.el.querySelector('.show-add-muc-modal').click();
+                const modal = roomspanel.add_room_modal;
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
+                expect(modal.el.querySelector('.modal-title').textContent).toBe('Enter a new Groupchat');
+                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                const label_name = modal.el.querySelector('label[for="chatroom"]');
+                expect(label_name.textContent).toBe('Groupchat name:');
+                let name_input = modal.el.querySelector('input[name="chatroom"]');
+                expect(name_input.placeholder).toBe('name@muc.example.org');
+                name_input.value = 'lounge';
+                modal.el.querySelector('form input[type="submit"]').click();
+                await test_utils.waitUntil(() => _converse.chatboxes.length);
+                await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
+                expect(_.includes(_converse.chatboxes.models.map(m => m.get('id')), 'lounge@muc.example.org')).toBe(true);
+
+                // However, you can still open MUCs with different domains
+                roomspanel.el.querySelector('.show-add-muc-modal').click();
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                name_input = modal.el.querySelector('input[name="chatroom"]');
+                name_input.value = 'lounge@conference.example.org';
+                modal.el.querySelector('form input[type="submit"]').click();
+                await test_utils.waitUntil(() => _converse.chatboxes.models.filter(c => c.get('type') === 'chatroom').length === 2);
+                await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 2);
+                expect(_.includes(_converse.chatboxes.models.map(m => m.get('id')), 'lounge@conference.example.org')).toBe(true);
+                done();
+            }));
+
+            it("only uses the muc_domain is locked_muc_domain is true",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'muc_domain': 'muc.example.org', 'locked_muc_domain': true},
+                    async function (done, _converse) {
+
+                test_utils.openControlBox();
+                const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                roomspanel.el.querySelector('.show-add-muc-modal').click();
+                const modal = roomspanel.add_room_modal;
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
+                expect(modal.el.querySelector('.modal-title').textContent).toBe('Enter a new Groupchat');
+                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+                const label_name = modal.el.querySelector('label[for="chatroom"]');
+                expect(label_name.textContent).toBe('Groupchat name:');
+                let name_input = modal.el.querySelector('input[name="chatroom"]');
+                expect(name_input.placeholder).toBe('');
+                name_input.value = 'lounge';
+                modal.el.querySelector('form input[type="submit"]').click();
+                await test_utils.waitUntil(() => _converse.chatboxes.length);
+                await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
+                expect(_.includes(_converse.chatboxes.models.map(m => m.get('id')), 'lounge@muc.example.org')).toBe(true);
+
+                // However, you can still open MUCs with different domains
+                roomspanel.el.querySelector('.show-add-muc-modal').click();
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                name_input = modal.el.querySelector('input[name="chatroom"]');
+                name_input.value = 'lounge@conference';
+                modal.el.querySelector('form input[type="submit"]').click();
+                await test_utils.waitUntil(() => _converse.chatboxes.models.filter(c => c.get('type') === 'chatroom').length === 2);
+                await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 2);
+                expect(_.includes(_converse.chatboxes.models.map(m => m.get('id')), 'lounge\\40conference@muc.example.org')).toBe(true);
                 done();
             }));
         });
@@ -4002,7 +4085,9 @@
                 // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
                 expect(modal.el.querySelectorAll('.available-chatrooms li').length).toBe(0);
 
-                const input = modal.el.querySelector('input[name="server"]').value = 'chat.shakespear.lit';
+                const server_input = modal.el.querySelector('input[name="server"]');
+                expect(server_input.placeholder).toBe('conference.example.org');
+                const input = server_input.value = 'chat.shakespear.lit';
                 modal.el.querySelector('input[type="submit"]').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.length);
                 expect(sent_stanza.toLocaleString()).toBe(
@@ -4010,7 +4095,6 @@
                         `<query xmlns="http://jabber.org/protocol/disco#items"/>`+
                     `</iq>`
                 );
-
                 const iq = $iq({
                     from:'muc.localhost',
                     to:'dummy@localhost/pda',
@@ -4029,19 +4113,90 @@
                 .c('item', { jid:'street@chat.shakespeare.lit', name:'A street'}).nodeTree;
                 _converse.connection._dataRecv(test_utils.createRequest(iq));
 
-                await test_utils.waitUntil(() => modal.el.querySelectorAll('.available-chatrooms li').length === 5);
+                await test_utils.waitUntil(() => modal.el.querySelectorAll('.available-chatrooms li').length === 11);
                 const rooms = modal.el.querySelectorAll('.available-chatrooms li');
                 expect(rooms[0].textContent.trim()).toBe("Groupchats found:");
                 expect(rooms[1].textContent.trim()).toBe("A Lonely Heath");
                 expect(rooms[2].textContent.trim()).toBe("A Dark Cave");
                 expect(rooms[3].textContent.trim()).toBe("The Palace");
                 expect(rooms[4].textContent.trim()).toBe("Macbeth's Castle");
+                expect(rooms[5].textContent.trim()).toBe('Capulet\'s Orchard');
+                expect(rooms[6].textContent.trim()).toBe('Friar Laurence\'s cell');
+                expect(rooms[7].textContent.trim()).toBe('Hall in Capulet\'s house');
+                expect(rooms[8].textContent.trim()).toBe('Juliet\'s chamber');
+                expect(rooms[9].textContent.trim()).toBe('A public place');
+                expect(rooms[10].textContent.trim()).toBe('A street');
 
                 rooms[4].querySelector('.open-room').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.length > 1);
                 expect(sizzle('.chatroom', _converse.el).filter(u.isVisible).length).toBe(1); // There should now be an open chatroom
                 var view = _converse.chatboxviews.get('inverness@chat.shakespeare.lit');
                 expect(view.el.querySelector('.chat-head-chatroom').textContent.trim()).toBe("Macbeth's Castle");
+                done();
+            }));
+
+            it("is pre-filled with the muc_domain",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'],
+                    {'muc_domain': 'muc.example.org'},
+                    async function (done, _converse) {
+
+                test_utils.openControlBox();
+                const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                roomspanel.el.querySelector('.show-list-muc-modal').click();
+                test_utils.closeControlBox(_converse);
+                const modal = roomspanel.list_rooms_modal;
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                const server_input = modal.el.querySelector('input[name="server"]');
+                expect(server_input.value).toBe('muc.example.org');
+                done();
+            }));
+
+            it("doesn't let you set the MUC domain if it's locked",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'],
+                    {'muc_domain': 'chat.shakespeare.lit', 'locked_muc_domain': true},
+                    async function (done, _converse) {
+
+                test_utils.openControlBox();
+                const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                roomspanel.el.querySelector('.show-list-muc-modal').click();
+                test_utils.closeControlBox(_converse);
+                const modal = roomspanel.list_rooms_modal;
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+                spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
+                roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
+
+                expect(modal.el.querySelector('input[name="server"]')).toBe(null);
+                expect(modal.el.querySelector('input[type="submit"]')).toBe(null);
+                await test_utils.waitUntil(() => _converse.chatboxes.length);
+                const sent_stanza = await test_utils.waitUntil(() =>
+                    _converse.connection.sent_stanzas.filter(
+                        s => sizzle(`query[xmlns="http://jabber.org/protocol/disco#items"]`, s).length).pop()
+                );
+                expect(Strophe.serialize(sent_stanza)).toBe(
+                    `<iq from="dummy@localhost/resource" id="${sent_stanza.getAttribute('id')}" `+
+                            `to="chat.shakespeare.lit" type="get" xmlns="jabber:client">`+
+                        `<query xmlns="http://jabber.org/protocol/disco#items"/>`+
+                    `</iq>`
+                );
+                const iq = $iq({
+                    from:'muc.localhost',
+                    to:'dummy@localhost/pda',
+                    id: sent_stanza.getAttribute('id'),
+                    type:'result'
+                }).c('query')
+                .c('item', { jid:'heath@chat.shakespeare.lit', name:'A Lonely Heath'}).up()
+                .c('item', { jid:'coven@chat.shakespeare.lit', name:'A Dark Cave'}).up()
+                .c('item', { jid:'forres@chat.shakespeare.lit', name:'The Palace'}).up()
+                _converse.connection._dataRecv(test_utils.createRequest(iq));
+
+                await test_utils.waitUntil(() => modal.el.querySelectorAll('.available-chatrooms li').length === 4);
+                const rooms = modal.el.querySelectorAll('.available-chatrooms li');
+                expect(rooms[0].textContent.trim()).toBe("Groupchats found:");
+                expect(rooms[1].textContent.trim()).toBe("A Lonely Heath");
+                expect(rooms[2].textContent.trim()).toBe("A Dark Cave");
+                expect(rooms[3].textContent.trim()).toBe("The Palace");
                 done();
             }));
         });
@@ -4052,9 +4207,6 @@
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {'allow_bookmarks': false},
                     async function (done, _converse) {
-                // XXX: we set `allow_bookmarks` to false, so that the groupchats
-                // list gets rendered. Otherwise we would have to mock
-                // the bookmark stanza exchange.
 
                 test_utils.openControlBox();
                 const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;

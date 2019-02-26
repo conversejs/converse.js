@@ -118,7 +118,6 @@ converse.plugins.add('converse-muc', {
             auto_join_on_invite: false,
             auto_join_rooms: [],
             auto_register_muc_nickname: false,
-            muc_domain: undefined,
             muc_history_max_stanzas: undefined,
             muc_instant_rooms: true,
             muc_nickname_from_jid: false

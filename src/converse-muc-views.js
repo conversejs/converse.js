@@ -323,9 +323,7 @@ converse.plugins.add('converse-muc-views', {
 
             informNoRoomsFound () {
                 const chatrooms_el = this.el.querySelector('.available-chatrooms');
-                chatrooms_el.innerHTML = tpl_rooms_results({
-                    'feedback_text': __('No groupchats found')
-                });
+                chatrooms_el.innerHTML = tpl_rooms_results({'feedback_text': __('No groupchats found')});
                 const input_el = this.el.querySelector('input[name="server"]');
                 input_el.classList.remove('hidden')
                 this.removeSpinner();
@@ -338,11 +336,7 @@ converse.plugins.add('converse-muc-views', {
                 const available_chatrooms = this.el.querySelector('.available-chatrooms');
                 this.rooms = iq.querySelectorAll('query item');
                 if (this.rooms.length) {
-                    // For translators: %1$s is a variable and will be
-                    // replaced with the XMPP server name
-                    available_chatrooms.innerHTML = tpl_rooms_results({
-                        'feedback_text': __('Groupchats found:')
-                    });
+                    available_chatrooms.innerHTML = tpl_rooms_results({'feedback_text': __('Groupchats found:')});
                     const fragment = document.createDocumentFragment();
                     const children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil)
                     _.each(children, (child) => fragment.appendChild(child));

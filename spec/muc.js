@@ -3974,8 +3974,11 @@
                 await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
                 done();
             }));
+        });
 
-            it("contains a link to a modal which can list groupchats publically available on the server",
+        describe("The \"Groupchats\" List modal", function () {
+
+            it("can be opened from a link in the \"Groupchats\" section of the controlbox",
                 mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
@@ -4017,11 +4020,16 @@
                 .c('item', { jid:'heath@chat.shakespeare.lit', name:'A Lonely Heath'}).up()
                 .c('item', { jid:'coven@chat.shakespeare.lit', name:'A Dark Cave'}).up()
                 .c('item', { jid:'forres@chat.shakespeare.lit', name:'The Palace'}).up()
-                .c('item', { jid:'inverness@chat.shakespeare.lit', name:'Macbeth&apos;s Castle'}).nodeTree;
+                .c('item', { jid:'inverness@chat.shakespeare.lit', name:'Macbeth&apos;s Castle'}).up()
+                .c('item', { jid:'orchard@chat.shakespeare.lit', name:'Capulet\'s Orchard'}).up()
+                .c('item', { jid:'friar@chat.shakespeare.lit', name:'Friar Laurence\'s cell'}).up()
+                .c('item', { jid:'hall@chat.shakespeare.lit', name:'Hall in Capulet\'s house'}).up()
+                .c('item', { jid:'chamber@chat.shakespeare.lit', name:'Juliet\'s chamber'}).up()
+                .c('item', { jid:'public@chat.shakespeare.lit', name:'A public place'}).up()
+                .c('item', { jid:'street@chat.shakespeare.lit', name:'A street'}).nodeTree;
                 _converse.connection._dataRecv(test_utils.createRequest(iq));
 
                 await test_utils.waitUntil(() => modal.el.querySelectorAll('.available-chatrooms li').length === 5);
-
                 const rooms = modal.el.querySelectorAll('.available-chatrooms li');
                 expect(rooms[0].textContent.trim()).toBe("Groupchats found:");
                 expect(rooms[1].textContent.trim()).toBe("A Lonely Heath");

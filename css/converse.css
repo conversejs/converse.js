@@ -11400,6 +11400,16 @@ body.converse-fullscreen {
 #conversejs .add-chatroom input[type="button"] {
   margin: 0.3em 0; }
 
+#conversejs.converse-embedded #list-chatrooms-modal .modal-body,
+#conversejs #list-chatrooms-modal .modal-body {
+  max-height: 70vh;
+  padding-bottom: 0; }
+
+#conversejs.converse-embedded #list-chatrooms-modal .available-chatrooms,
+#conversejs #list-chatrooms-modal .available-chatrooms {
+  overflow: auto;
+  padding-bottom: 1rem; }
+
 #conversejs.converse-embedded #room-details-modal .features-list,
 #conversejs #room-details-modal .features-list {
   margin-left: 1em; }

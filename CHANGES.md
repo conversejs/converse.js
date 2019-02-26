@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.1.3 (Unreleased)
+
+- #1437: List of groupchats in modal doesn't scroll
+
 ## 4.1.2 (2019-02-22)
 
 - Updated translations: af, cz, de, es, he, it, nl, nl_BE, pt_BR, zh_CN

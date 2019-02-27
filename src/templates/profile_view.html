@@ -4,7 +4,9 @@
         <canvas class="avatar align-self-center" height="40" width="40"></canvas>
     </a>
     <span class="username w-100 align-self-center">{{{o.fullname}}}</span>
-    <a class="controlbox-heading__btn show-client-info fa fa-info-circle align-self-center" title="{{{o.info_details}}}"></a>
+    {[ if (o._converse.show_client_info) { ]}
+        <a class="controlbox-heading__btn show-client-info fa fa-info-circle align-self-center" title="{{{o.info_details}}}"></a>
+    {[ } ]}
     {[ if (o._converse.allow_logout) { ]}
         <a class="controlbox-heading__btn logout fa fa-sign-out-alt align-self-center" title="{{{o.title_log_out}}}"></a>
     {[ } ]}

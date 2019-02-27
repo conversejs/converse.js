@@ -1271,6 +1271,14 @@ show_chatstate_notifications
 
 Specifies whether chat state (online, dnd, away) HTML5 desktop notifications should be shown.
 
+show_client_info
+----------------
+
+* Default:  ``true``
+
+Specifies whether the info icon is shown on the controlbox which when clicked opens an
+"About" modal with more information about the version of Converse being used.
+
 show_controlbox_by_default
 --------------------------
 

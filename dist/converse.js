@@ -63176,6 +63176,14 @@ _converse.initialize = async function (settings, callback) {
       throw new Error("Config Error: you need to provide the server's " + "domain via the 'jid' option when using anonymous " + "authentication with auto_login.");
     }
   }
+
+  _converse.router.route(/^converse\?debug=(true|false)$/, 'debug', debug => {
+    if (debug === "true") {
+      _converse.debug = true;
+    } else {
+      _converse.debug = false;
+    }
+  });
   /* Localisation */
 
 

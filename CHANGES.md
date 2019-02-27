@@ -2,6 +2,7 @@
 
 ## 4.1.3 (Unreleased)
 
+- Allow setting of debug mode via URL with `/#converse?debug=true`
 - New config setting [locked_muc_domain](https://conversejs.org/docs/html/configuration.html#locked-muc-domain)
 - New config setting [show_client_info](https://conversejs.org/docs/html/configuration.html#show-client-info)
 - #1373: Re-add support for the [muc_domain](https://conversejs.org/docs/html/configuration.html#muc-domain) setting

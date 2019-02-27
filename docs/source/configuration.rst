@@ -588,7 +588,10 @@ debug
 
 * Default:  ``false``
 
-If set to true, debugging output will be logged to the browser console.
+If set to ``true``, debugging output will be logged to the browser console.
+
+You can also set this value by changing the URL fragment to `#converse?debug=true` or `#converse?debug=false`.
+
 
 default_domain
 --------------

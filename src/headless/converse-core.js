@@ -495,6 +495,14 @@ _converse.initialize = async function (settings, callback) {
         }
     }
 
+    _converse.router.route(/^converse\?debug=(true|false)$/, 'debug', debug => {
+        if (debug === "true") {
+            _converse.debug = true;
+        } else {
+            _converse.debug = false;
+        }
+    });
+
     /* Localisation */
     if (!_.isUndefined(i18n)) {
         i18n.setLocales(settings.i18n, _converse);

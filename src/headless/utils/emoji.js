@@ -160,6 +160,14 @@ function convert (unicode) {
     return twemoji.default.convert.fromCodePoint(unicode);
 }
 
+u.isSingleEmoji = function (str) {
+    if (!str || str.length > 2) {
+        return;
+    }
+    const result = _.flow(u.shortnameToUnicode, twemoji.default.parse)(str)
+    return result.match(/<img class="emoji" draggable="false" alt=".*?" src=".*?\.png"\/>/);
+}
+
 u.shortnameToUnicode = function (str) {
     /* will output unicode from shortname
      * useful for sending emojis back to mobile devices
@@ -186,13 +194,8 @@ u.shortnameToUnicode = function (str) {
     return str;
 }
 
-
 u.addEmoji = function (_converse, text) {
-    if (_converse.use_system_emojis) {
-        return u.shortnameToUnicode(text);
-    } else {
-        return twemoji.default.parse(text);
-    }
+    return u.getEmojiRenderer(_converse)(text);
 }
 
 u.getEmojisByCategory = function (_converse) {

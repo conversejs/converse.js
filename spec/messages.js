@@ -907,6 +907,30 @@
             done();
         }));
 
+        it("will display larger if it's a single emoji",
+            mock.initConverse(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            await test_utils.waitForRoster(_converse, 'current');
+            const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+            _converse.chatboxes.onMessage($msg({
+                    'from': sender_jid,
+                    'to': _converse.connection.jid,
+                    'type': 'chat',
+                    'id': (new Date()).getTime()
+                }).c('body').t('😇').up()
+                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+            await new Promise(resolve => _converse.on('chatBoxOpened', resolve));
+            const view = _converse.api.chatviews.get(sender_jid);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+
+            const chat_content = view.el.querySelector('.chat-content');
+            const message = chat_content.querySelector('.chat-msg__text');
+            expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
+            done();
+        }));
+
         it("will render newlines",
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
@@ -1870,7 +1894,9 @@
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg audio').length, 1000);
                 let msg = view.el.querySelector('.chat-msg .chat-msg__text');
-                expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you heard this funny audio?</div>');
+                expect(msg.classList.length).toEqual(1);
+                expect(u.hasClass('chat-msg__text', msg)).toBe(true);
+                expect(msg.textContent).toEqual('Have you heard this funny audio?');
                 let media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/audio.html -->'+
@@ -1919,7 +1945,8 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg video').length, 2000)
                 let msg = view.el.querySelector('.chat-msg .chat-msg__text');
-                expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you seen this funny video?</div>');
+                expect(msg.classList.length).toBe(1);
+                expect(msg.textContent).toEqual('Have you seen this funny video?');
                 let media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/video.html -->'+
@@ -1967,7 +1994,8 @@
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg a').length, 1000);
                 const msg = view.el.querySelector('.chat-msg .chat-msg__text');
-                expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you downloaded this funny file?</div>');
+                expect(u.hasClass('chat-msg__text', msg)).toBe(true);
+                expect(msg.textContent).toEqual('Have you downloaded this funny file?');
                 const media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/file.html -->'+
@@ -1999,7 +2027,8 @@
                 await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg img').length, 2000);
 
                 const msg = view.el.querySelector('.chat-msg .chat-msg__text');
-                expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you seen this funny image?</div>');
+                expect(u.hasClass('chat-msg__text', msg)).toBe(true);
+                expect(msg.textContent).toEqual('Have you seen this funny image?');
                 const media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     `<!-- src/templates/image.html -->`+
@@ -2633,11 +2662,13 @@
                         .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@localhost'}).nodeTree;
                 await view.model.onMessage(msg);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                expect(view.el.querySelectorAll('.chat-msg__text').length).toBe(1);
-                expect(view.el.querySelector('.chat-msg__text').outerHTML).toBe(
-                    '<div class="chat-msg__text">hello <span class="mention">z3r0</span> '+
+                const messages = view.el.querySelectorAll('.chat-msg__text');
+                expect(messages.length).toBe(1);
+                expect(messages[0].classList.length).toEqual(1);
+                expect(messages[0].innerHTML).toBe(
+                    'hello <span class="mention">z3r0</span> '+
                     '<span class="mention mention--self badge badge-info">tom</span> '+
-                    '<span class="mention">mr.robot</span>, how are you?</div>');
+                    '<span class="mention">mr.robot</span>, how are you?');
                 done();
             }));
         });

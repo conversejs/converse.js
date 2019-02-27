@@ -48252,8 +48252,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         const _converse = this.__super__._converse,
               __ = _converse.__;
         const bookmark_button = templates_chatroom_bookmark_toggle_html__WEBPACK_IMPORTED_MODULE_5___default()(_.assignIn(this.model.toJSON(), {
-          info_toggle_bookmark: __('Bookmark this groupchat'),
-          bookmarked: this.model.get('bookmarked')
+          'info_toggle_bookmark': this.model.get('bookmarked') ? __('Unbookmark this groupchat') : __('Bookmark this groupchat'),
+          'bookmarked': this.model.get('bookmarked')
         }));
         const close_button = this.el.querySelector('.close-chatbox-button');
         close_button.insertAdjacentHTML('afterend', bookmark_button);
@@ -62137,6 +62137,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
               spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
               delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
+              text = _converse.chatboxes.getMessageBody(stanza) || undefined,
               chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
         const attrs = _.extend({
@@ -62144,7 +62145,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'is_archived': !_.isNil(archive),
           'is_delayed': !_.isNil(delay),
           'is_spoiler': !_.isNil(spoiler),
-          'message': _converse.chatboxes.getMessageBody(stanza) || undefined,
+          'is_single_emoji': text ? u.isSingleEmoji(text) : false,
+          'message': text,
           'msgid': stanza.getAttribute('id'),
           'references': this.getReferencesFromStanza(stanza),
           'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
@@ -91745,6 +91747,16 @@ function convert(unicode) {
   return twemoji__WEBPACK_IMPORTED_MODULE_0__["default"].convert.fromCodePoint(unicode);
 }
 
+_core__WEBPACK_IMPORTED_MODULE_2__["default"].isSingleEmoji = function (str) {
+  if (!str || str.length > 2) {
+    return;
+  }
+
+  const result = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.flow(_core__WEBPACK_IMPORTED_MODULE_2__["default"].shortnameToUnicode, twemoji__WEBPACK_IMPORTED_MODULE_0__["default"].parse)(str);
+
+  return result.match(/<img class="emoji" draggable="false" alt=".*?" src=".*?\.png"\/>/);
+};
+
 _core__WEBPACK_IMPORTED_MODULE_2__["default"].shortnameToUnicode = function (str) {
   /* will output unicode from shortname
    * useful for sending emojis back to mobile devices
@@ -91774,11 +91786,7 @@ _core__WEBPACK_IMPORTED_MODULE_2__["default"].shortnameToUnicode = function (str
 };
 
 _core__WEBPACK_IMPORTED_MODULE_2__["default"].addEmoji = function (_converse, text) {
-  if (_converse.use_system_emojis) {
-    return _core__WEBPACK_IMPORTED_MODULE_2__["default"].shortnameToUnicode(text);
-  } else {
-    return twemoji__WEBPACK_IMPORTED_MODULE_0__["default"].parse(text);
-  }
+  return _core__WEBPACK_IMPORTED_MODULE_2__["default"].getEmojiRenderer(_converse)(text);
 };
 
 _core__WEBPACK_IMPORTED_MODULE_2__["default"].getEmojisByCategory = function (_converse) {
@@ -93905,7 +93913,11 @@ __p += '\n                    <div class="chat-msg__subject">' +
 __e( o.subject ) +
 '</div>\n                ';
  } ;
-__p += '\n                <div class="chat-msg__text';
+__p += '\n                <div class="chat-msg__text\n                    ';
+ if (o.is_single_emoji) { ;
+__p += ' chat-msg__text--larger';
+ } ;
+__p += '\n                    ';
  if (o.is_spoiler) { ;
 __p += ' spoiler collapsed';
  } ;

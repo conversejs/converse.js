@@ -11948,6 +11948,9 @@ body.converse-fullscreen {
       vertical-align: -0.1em; }
     #conversejs .message.chat-msg .chat-msg__text .emojione {
       margin-bottom: -6px; }
+  #conversejs .message.chat-msg .chat-msg__text--larger {
+    font-size: 2em;
+    padding-top: 0.25em; }
   #conversejs .message.chat-msg .chat-msg__media {
     margin-top: 0.25rem;
     word-break: break-all; }

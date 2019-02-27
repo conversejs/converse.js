@@ -656,6 +656,7 @@ converse.plugins.add('converse-chatboxes', {
                 const archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
                       spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
                       delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
+                      text = _converse.chatboxes.getMessageBody(stanza) || undefined,
                       chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
                             stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
                             stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
@@ -667,7 +668,8 @@ converse.plugins.add('converse-chatboxes', {
                     'is_archived': !_.isNil(archive),
                     'is_delayed': !_.isNil(delay),
                     'is_spoiler': !_.isNil(spoiler),
-                    'message': _converse.chatboxes.getMessageBody(stanza) || undefined,
+                    'is_single_emoji': text ? u.isSingleEmoji(text) : false,
+                    'message': text,
                     'msgid': stanza.getAttribute('id'),
                     'references': this.getReferencesFromStanza(stanza),
                     'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),

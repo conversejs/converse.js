@@ -94781,7 +94781,25 @@ __p += '<!-- src/templates/roster_filter.html -->\n<form class="controlbox-padde
  if (!o.visible) { ;
 __p += ' hidden ';
  } ;
-__p += '">\n    <div class="form-inline flex-nowrap">\n        <div class="btn-group">\n            <input ';
+__p += '">\n    <div class="form-inline flex-nowrap">\n        <div class="filter-by d-flex flex-nowrap">\n            <span class="fa fa-user ';
+ if (o.filter_type === 'contacts') { ;
+__p += ' selected ';
+ } ;
+__p += '" data-type="contacts" title="' +
+__e(o.title_contact_filter) +
+'"></span>\n            <span class="fa fa-users ';
+ if (o.filter_type === 'groups') { ;
+__p += ' selected ';
+ } ;
+__p += '" data-type="groups" title="' +
+__e(o.title_group_filter) +
+'"></span>\n            <span class="fa fa-circle ';
+ if (o.filter_type === 'state') { ;
+__p += ' selected ';
+ } ;
+__p += '" data-type="state" title="' +
+__e(o.title_status_filter) +
+'"></span>\n        </div>\n\n        <div class="btn-group">\n            <input ';
  if (o.filter_text) { ;
 __p += ' value="' +
 __e(o.filter_text) +
@@ -94845,25 +94863,7 @@ __p += ' selected="selected" ';
  } ;
 __p += '\n                value="offline">' +
 __e(o.label_offline) +
-'</option>\n        </select>\n\n        <div class="filter-by d-flex flex-nowrap">\n            <span class="fa fa-user ';
- if (o.filter_type === 'contacts') { ;
-__p += ' selected ';
- } ;
-__p += '" data-type="contacts" title="' +
-__e(o.title_contact_filter) +
-'"></span>\n            <span class="fa fa-users ';
- if (o.filter_type === 'groups') { ;
-__p += ' selected ';
- } ;
-__p += '" data-type="groups" title="' +
-__e(o.title_group_filter) +
-'"></span>\n            <span class="fa fa-circle ';
- if (o.filter_type === 'state') { ;
-__p += ' selected ';
- } ;
-__p += '" data-type="state" title="' +
-__e(o.title_status_filter) +
-'"></span>\n        </div>\n    </div>\n</form>\n';
+'</option>\n        </select>\n    </div>\n</form>\n';
 return __p
 };
 

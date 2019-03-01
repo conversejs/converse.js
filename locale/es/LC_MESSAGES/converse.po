@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-19 14:58+0100\n"
-"PO-Revision-Date: 2019-02-25 09:17+0000\n"
+"PO-Revision-Date: 2019-03-02 11:17+0000\n"
 "Last-Translator: sergio <srg.dev@posteo.net>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/conversejs/"
 "translations/es/>\n"
@@ -421,7 +421,7 @@ msgstr "No anónimo"
 #: dist/converse-no-dependencies.js:74700
 #: dist/converse-no-dependencies.js:74852
 msgid "Open"
-msgstr "Abrir"
+msgstr "Abierta"
 
 #: dist/converse-no-dependencies.js:35510
 msgid "Permanent"
@@ -437,7 +437,7 @@ msgstr "Pública"
 #: dist/converse-no-dependencies.js:74732
 #: dist/converse-no-dependencies.js:74884
 msgid "Semi-anonymous"
-msgstr "Semi-anónimo"
+msgstr "Semi-anónima"
 
 #: dist/converse-no-dependencies.js:35513
 #: dist/converse-no-dependencies.js:74716

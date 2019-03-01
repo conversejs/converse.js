@@ -670,7 +670,6 @@
 
                 await test_utils.waitUntil(() => _converse.onMAMPreferences.calls.count());
                 expect(_converse.onMAMPreferences).toHaveBeenCalled();
-                expect(_converse.connection.sendIQ.calls.count()).toBe(3);
 
                 expect(sent_stanza.toString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+

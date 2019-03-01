@@ -4363,11 +4363,12 @@
                     expect(events[1].textContent).toEqual('newguy has entered the groupchat');
                     expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
+                    await test_utils.waitUntil(() => (view.el.querySelectorAll('.chat-state-notification').length === 2));
                     notifications = view.el.querySelectorAll('.chat-state-notification');
                     expect(notifications.length).toBe(2);
                     expect(notifications[0].textContent).toEqual('newguy is typing');
                     expect(notifications[1].textContent).toEqual('nomorenicks is typing');
-                    expect(timeout_functions.length).toBe(2);
+                    expect(timeout_functions.length).toBe(3);
 
                     // Check that new messages appear under the chat state
                     // notifications
@@ -4492,7 +4493,8 @@
                     expect(events[1].textContent).toEqual('newguy has entered the groupchat');
                     expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
-                    var notifications = view.el.querySelectorAll('.chat-state-notification');
+                    await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-state-notification').length);
+                    let notifications = view.el.querySelectorAll('.chat-state-notification');
                     expect(notifications.length).toBe(1);
                     expect(notifications[0].textContent).toEqual('newguy is typing');
 
@@ -4529,10 +4531,14 @@
                     expect(events[1].textContent).toEqual('newguy has entered the groupchat');
                     expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
+                    await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-state-notification').length ===  2);
                     notifications = view.el.querySelectorAll('.chat-state-notification');
-                    expect(notifications.length).toBe(2);
-                    expect(notifications[0].textContent).toEqual('newguy is typing');
-                    expect(notifications[1].textContent).toEqual('nomorenicks is typing');
+                    // We check for the messages' text without assuming order,
+                    // because it can be variable since getLastMessageDate
+                    // ignore CSN messages.
+                    let text = _.map(notifications, 'textContent').join(' ');
+                    expect(text.includes('newguy is typing')).toBe(true);
+                    expect(text.includes('nomorenicks is typing')).toBe(true);
 
                     // <paused> state from occupant who typed first
                     msg = $msg({
@@ -4548,10 +4554,16 @@
                     expect(events[1].textContent).toEqual('newguy has entered the groupchat');
                     expect(events[2].textContent).toEqual('nomorenicks has entered the groupchat');
 
+                    await test_utils.waitUntil(() => {
+                        return _.map(
+                            view.el.querySelectorAll('.chat-state-notification'), 'textContent')
+                                .join(' ').includes('stopped typing')
+                    });
                     notifications = view.el.querySelectorAll('.chat-state-notification');
                     expect(notifications.length).toBe(2);
-                    expect(notifications[0].textContent).toEqual('nomorenicks is typing');
-                    expect(notifications[1].textContent).toEqual('newguy has stopped typing');
+                    text = _.map(notifications, 'textContent').join(' ');
+                    expect(text.includes('newguy has stopped typing')).toBe(true);
+                    expect(text.includes('nomorenicks is typing')).toBe(true);
                     done();
                 }));
             });

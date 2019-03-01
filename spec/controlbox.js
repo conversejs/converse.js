@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["jquery", "jasmine", "mock", "test-utils"], factory);
-} (this, function ($, jasmine, mock, test_utils) {
+    define(["jasmine", "mock", "test-utils"], factory);
+} (this, function (jasmine, mock, test_utils) {
     const _ = converse.env._,
           $pres = converse.env.$pres,
           $msg = converse.env.$msg,
@@ -18,7 +18,9 @@
 
             // This spec will only pass if the controlbox is not currently
             // open yet.
-            expect($("div#controlbox").is(':visible')).toBe(false);
+            let el = document.querySelector("div#controlbox");
+            expect(_.isElement(el)).toBe(true);
+            expect(u.isVisible(el)).toBe(false);
             spyOn(_converse.controlboxtoggle, 'onClick').and.callThrough();
             spyOn(_converse.controlboxtoggle, 'showControlBox').and.callThrough();
             spyOn(_converse, 'emit');
@@ -28,7 +30,8 @@
             expect(_converse.controlboxtoggle.onClick).toHaveBeenCalled();
             expect(_converse.controlboxtoggle.showControlBox).toHaveBeenCalled();
             expect(_converse.emit).toHaveBeenCalledWith('controlBoxOpened', jasmine.any(Object));
-            expect($("div#controlbox").is(':visible')).toBe(true);
+            el = document.querySelector("div#controlbox");
+            expect(u.isVisible(el)).toBe(true);
             done();
         }));
 
@@ -55,9 +58,9 @@
                     ask: 'subscribe',
                     fullname: mock.pend_names[0]
                 });
-                await test_utils.waitUntil(() => $(_converse.rosterview.el).find('.roster-group li:visible').length, 700);
+                await test_utils.waitUntil(() => _.filter(_converse.rosterview.el.querySelectorAll('.roster-group li'), u.isVisible).length, 700);
                 // Checking that only one entry is created because both JID is same (Case sensitive check)
-                expect($(_converse.rosterview.el).find('li:visible').length).toBe(1);
+                expect(_.filter(_converse.rosterview.el.querySelectorAll('li'), u.isVisible).length).toBe(1);
                 expect(_converse.rosterview.update).toHaveBeenCalled();
                 done();
             }));
@@ -119,7 +122,7 @@
 
                 test_utils.openControlBox();
                 var view = _converse.xmppstatusview;
-                expect($(view.el).find('.xmpp-status span:first-child').hasClass('online')).toBe(true);
+                expect(u.hasClass('online', view.el.querySelector('.xmpp-status span:first-child'))).toBe(true);
                 expect(view.el.querySelector('.xmpp-status span.online').textContent.trim()).toBe('I am online');
                 done();
             }));
@@ -142,8 +145,9 @@
                 modal.el.querySelector('[type="submit"]').click();
 
                 expect(_converse.emit).toHaveBeenCalledWith('statusChanged', 'dnd');
-                expect($(view.el).find('.xmpp-status span:first-child').hasClass('online')).toBe(false);
-                expect($(view.el).find('.xmpp-status span:first-child').hasClass('dnd')).toBe(true);
+                const first_child = view.el.querySelector('.xmpp-status span:first-child');
+                expect(u.hasClass('online', first_child)).toBe(false);
+                expect(u.hasClass('dnd', first_child)).toBe(true);
                 expect(view.el.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe('I am busy');
                 done();
             }));
@@ -168,7 +172,8 @@
                 modal.el.querySelector('[type="submit"]').click();
 
                 expect(_converse.emit).toHaveBeenCalledWith('statusMessageChanged', msg);
-                expect($(view.el).find('.xmpp-status span:first-child').hasClass('online')).toBe(true);
+                const first_child = view.el.querySelector('.xmpp-status span:first-child');
+                expect(u.hasClass('online', first_child)).toBe(true);
                 expect(view.el.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe(msg);
                 done();
             }));
@@ -218,11 +223,11 @@
             mock.initConverse(
                 null, ['rosterGroupsFetched'],
                 { 'xhr_user_search': true,
-                  'xhr_user_search_url': 'http://example.org/'
+                  'xhr_user_search_url': 'http://example.org/?'
                 },
                 async function (done, _converse) {
 
-            var xhr = {
+            const xhr = {
                 'open': _.noop,
                 'send': function () {
                     xhr.responseText = JSON.stringify([
@@ -234,23 +239,20 @@
             };
             const XMLHttpRequestBackup = window.XMLHttpRequest;
             window.XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
-            XMLHttpRequest.and.callFake(function () {
-                return xhr;
-            });
+            XMLHttpRequest.and.callFake(() => xhr);
 
-            var input_el;
-            var panel = _converse.chatboxviews.get('controlbox').contactspanel;
-            var cbview = _converse.chatboxviews.get('controlbox');
+            const panel = _converse.chatboxviews.get('controlbox').contactspanel;
+            const cbview = _converse.chatboxviews.get('controlbox');
             cbview.el.querySelector('.add-contact').click()
-            var modal = _converse.rosterview.add_contact_modal;
+            const modal = _converse.rosterview.add_contact_modal;
             await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
-            input_el = modal.el.querySelector('input[name="name"]');
+            const input_el = modal.el.querySelector('input[name="name"]');
             input_el.value = 'marty';
-            var evt = new Event('input');
+            let evt = new Event('input');
             input_el.dispatchEvent(evt);
             await test_utils.waitUntil(() => modal.el.querySelector('.awesomplete li'), 1000);
-            var sendIQ = _converse.connection.sendIQ;
-            var sent_stanza, IQ_id;
+            const sendIQ = _converse.connection.sendIQ;
+            let sent_stanza, IQ_id;
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_stanza = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);

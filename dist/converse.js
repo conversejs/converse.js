@@ -59050,14 +59050,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       afterRender() {
         if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
           this.initXHRAutoComplete(this.el);
+          this.el.addEventListener('awesomplete-selectcomplete', ev => {
+            this.el.querySelector('input[name="name"]').value = ev.text.label;
+            this.el.querySelector('input[name="jid"]').value = ev.text.value;
+          });
         } else {
           this.initJIDAutoComplete(this.el);
         }
 
         const jid_input = this.el.querySelector('input[name="jid"]');
-        this.el.addEventListener('shown.bs.modal', () => {
-          jid_input.focus();
-        }, false);
+        this.el.addEventListener('shown.bs.modal', () => jid_input.focus(), false);
       },
 
       initJIDAutoComplete(root) {
@@ -59067,9 +59069,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         new awesomplete__WEBPACK_IMPORTED_MODULE_3___default.a(jid_input, {
           'list': list,
-          'data': function data(text, input) {
-            return input.slice(0, input.indexOf("@")) + "@" + text;
-          },
+          'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
           'filter': awesomplete__WEBPACK_IMPORTED_MODULE_3___default.a.FILTER_STARTSWITH
         });
       },
@@ -59100,10 +59100,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           xhr.open("GET", `${_converse.xhr_user_search_url}q=${name_input.value}`, true);
           xhr.send();
         }, 300));
-        this.el.addEventListener('awesomplete-selectcomplete', ev => {
-          jid_input.value = ev.text.value;
-          name_input.value = ev.text.label;
-        });
       },
 
       addContactFromForm(ev) {

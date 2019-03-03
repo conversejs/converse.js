@@ -1,15 +1,39 @@
 # Changelog
 
-## 4.1.1 (unreleased)
+## 4.1.3 (Unreleased)
+
+- Upgrade to Backbone 1.4.0
+- Fix "flashing" of roster filter when you have less than 5 roster contacts.
+- Allow setting of debug mode via URL with `/#converse?debug=true`
+- New config setting [locked_muc_domain](https://conversejs.org/docs/html/configuration.html#locked-muc-domain)
+- New config setting [show_client_info](https://conversejs.org/docs/html/configuration.html#show-client-info)
+- #1149: With `xhr_user_search_url`, contact requests are not being sent out
+- #1213: Switch roster filter input and icons
+- #1373: Re-add support for the [muc_domain](https://conversejs.org/docs/html/configuration.html#muc-domain) setting
+- #1400: When a chat message is just an emoji, enlarge the emoji
+- #1437: List of groupchats in modal doesn't scroll
+- #1457: Wrong tooltip shown for "unbookmark" icon
+
+## 4.1.2 (2019-02-22)
+
+- Updated translations: af, cz, de, es, he, it, nl, nl_BE, pt_BR, zh_CN
+- Bugfix. Prevent duplicate messages by comparing MAM archive id to XEP-0359 stanza ids.
+- Bugfix. Open groupchats not shown when logging in after disconnection.
+- #1406: `TypeError: e.devicelists is undefined` when unchecking the "trusted device" checkbox
+
+## 4.1.1 (2019-02-18)
 
 - Updated translations: af, cz, de, es, eu, ga, he, hi, ja, nb, nl_BE, zh_CN
 - New language supported: Esperanto
 - Accessibility: Tag the chat-content as an ARIA live region, for screen readers
 - Set releases URL to new Github repo
 - Rudimentary support for XEP-0333 chat markers
+- Better support for XEP-0359 `stanza-id` and `origin-id` elements.
+- Bugfix: restore textarea size after sending a message
+- Bugfix: MUC invite form not appearing
 - #1369 Don't wrongly interpret message with `subject` as a topic change.
 - #1405 Status of contacts list are not displayed properly
-- #1408 New config option `roomconfig_whitelist`
+- #1408 New config option [roomconfig_whitelist](https://conversejs.org/docs/html/configuration.html#roomconfig-whitelist)
 - #1410 HTTP upload not working if conversations push proxy is used
 - #1412 MUC moderator commands can be disabled selectively by config
 - #1413 Fix moderator commands that change affiliation
@@ -17,6 +41,7 @@
 - #1417 Margin between nickname and badge
 - #1421 Fix direct invite for membersonly room
 - #1422 Resurrect the `muc_show_join_leave` option
+- #1438 Update contact nickname when receiving a roster push
 - #1442 MUC read receipts causing empty lines
 
 ## 4.1.0 (2019-01-11)

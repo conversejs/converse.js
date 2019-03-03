@@ -1,14 +1,14 @@
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
 import converse from "./converse-core";
 import tpl_vcard from "./templates/vcard.html";
 
-const { Backbone, Promise, Strophe, _, $iq, $build, b64_sha1, moment, sizzle } = converse.env;
+const { Backbone, Promise, Strophe, _, $iq, $build, moment, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -123,7 +123,7 @@ converse.plugins.add('converse-vcard', {
         /* Event handlers */
         _converse.initVCardCollection = function () {
             _converse.vcards = new _converse.VCards();
-            const id = b64_sha1(`${_converse.bare_jid}-converse.vcards`);
+            const id = `${_converse.bare_jid}-converse.vcards`;
             _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.config.get('storage')](id);
             _converse.vcards.fetch();
         }

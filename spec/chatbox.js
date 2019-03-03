@@ -23,8 +23,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 test_utils.openControlBox();
 
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -56,7 +55,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
+                await test_utils.waitForRoster(_converse, 'current');
                 await test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp']);
                 await test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
                 await test_utils.openControlBox();
@@ -103,8 +102,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
                 // openControlBox was called earlier, so the controlbox is
@@ -165,7 +163,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const stanza = u.toStanza(`
                     <message from="${sender_jid}"
@@ -190,9 +188,7 @@
                 spyOn(trimmed_chatboxes, 'addChat').and.callThrough();
                 spyOn(trimmed_chatboxes, 'removeChat').and.callThrough();
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
-
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
                 let jid, chatboxview;
@@ -241,19 +237,17 @@
             it("can be opened in minimized mode initially",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-
-                var sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                var chat = _converse.api.chats.create(sender_jid, {
+                await test_utils.waitForRoster(_converse, 'current');
+                const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const chat = _converse.api.chats.create(sender_jid, {
                     minimized: true
                 });
-
-                var chatBoxView = _converse.chatboxviews.get(sender_jid);
+                const chatBoxView = _converse.chatboxviews.get(sender_jid);
                 expect(u.isVisible(chatBoxView.el)).toBeFalsy();
 
-                var minimized_chat = _converse.minimized_chats.get(sender_jid);
+                const minimized_chat = _converse.minimized_chats.get(sender_jid);
                 expect(minimized_chat).toBeTruthy();
                 expect($(minimized_chat.el).is(':visible')).toBeTruthy();
                 done();
@@ -261,30 +255,26 @@
 
 
             it("is focused if its already open and you click on its corresponding roster item",
-                mock.initConverse(null, ['rosterGroupsFetched', 'chatBoxesFetched'], {}, function (done, _converse) {
+                mock.initConverse(null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
                 const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                let el, jid;
                 // openControlBox was called earlier, so the controlbox is
                 // visible, but no other chat boxes have been created.
                 expect(_converse.chatboxes.length).toEqual(1);
 
-                test_utils.openChatBoxFor(_converse, contact_jid)
-                .then((view) => {
-                    el = sizzle('a.open-chat:contains("'+view.model.getDisplayName()+'")', _converse.rosterview.el).pop();
-                    jid = el.textContent.replace(/ /g,'.').toLowerCase() + '@localhost';
-                    spyOn(_converse, 'emit');
-                    el.click();
-                    return test_utils.waitUntil(() => _converse.emit.calls.count(), 500);
-                }).then(() => {
-                    expect(_converse.chatboxes.length).toEqual(2);
-                    expect(_converse.emit).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
-                    done();
-                });
+                const view = await test_utils.openChatBoxFor(_converse, contact_jid);
+                const el = sizzle('a.open-chat:contains("'+view.model.getDisplayName()+'")', _converse.rosterview.el).pop();
+                const jid = el.textContent.replace(/ /g,'.').toLowerCase() + '@localhost';
+                spyOn(_converse, 'emit');
+                el.click();
+                await test_utils.waitUntil(() => _converse.emit.calls.count(), 500);
+                expect(_converse.chatboxes.length).toEqual(2);
+                expect(_converse.emit).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
+                done();
             }));
 
             it("can be saved to, and retrieved from, browserStorage",
@@ -292,8 +282,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched',], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
                 spyOn(_converse, 'emit');
@@ -329,8 +318,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
                 const contact_jid = mock.cur_names[7].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -365,9 +353,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
-
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
                 const contact_jid = mock.cur_names[7].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -407,8 +393,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                 spyOn(_converse, 'emit');
@@ -449,10 +434,8 @@
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
-                    test_utils.createContacts(_converse, 'current', 3);
-                    _converse.emit('rosterContactsFetched');
+                    await test_utils.waitForRoster(_converse, 'current', 3);
                     test_utils.openControlBox();
-
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     await test_utils.openChatBoxFor(_converse, contact_jid);
                     const chatbox = _converse.chatboxes.get(contact_jid);
@@ -470,8 +453,7 @@
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
-                    test_utils.createContacts(_converse, 'current');
-                    _converse.emit('rosterContactsFetched');
+                    await test_utils.waitForRoster(_converse, 'current');
                     test_utils.openControlBox();
 
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -501,8 +483,7 @@
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
-                    test_utils.createContacts(_converse, 'current');
-                    _converse.emit('rosterContactsFetched');
+                    await test_utils.waitForRoster(_converse, 'current');
                     test_utils.openControlBox();
 
                     let toolbar, call_button;
@@ -537,7 +518,7 @@
                         null, ['rosterGroupsFetched'], {},
                         async function (done, _converse) {
 
-                    test_utils.createContacts(_converse, 'current');
+                    await test_utils.waitForRoster(_converse, 'current');
                     test_utils.openControlBox();
 
                     const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -569,8 +550,7 @@
                         null, ['rosterGroupsFetched'], {},
                         async function (done, _converse) {
 
-                    test_utils.createContacts(_converse, 'current');
-                    _converse.emit('rosterContactsFetched');
+                    await test_utils.waitForRoster(_converse, 'current');
                     test_utils.openControlBox();
 
                     spyOn(_converse, 'emit');
@@ -595,8 +575,7 @@
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current');
-                        _converse.emit('rosterContactsFetched');
+                        await test_utils.waitForRoster(_converse, 'current');
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openControlBox();
                         test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
@@ -618,8 +597,7 @@
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current', 1);
-                        _converse.emit('rosterContactsFetched');
+                        await test_utils.waitForRoster(_converse, 'current', 1);
                         test_utils.openControlBox();
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
@@ -653,8 +631,7 @@
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current');
-                        _converse.emit('rosterContactsFetched');
+                        await test_utils.waitForRoster(_converse, 'current');
                         test_utils.openControlBox();
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
@@ -691,8 +668,7 @@
                             null, ['rosterGroupsFetched'], {},
                             async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current');
-                        _converse.emit('rosterContactsFetched');
+                        await test_utils.waitForRoster(_converse, 'current');
                         test_utils.openControlBox();
 
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
@@ -740,8 +716,7 @@
                         let contact, sent_stanza, IQ_id, stanza;
                         await test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp']);
                         await test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
-                        test_utils.createContacts(_converse, 'current');
-                        _converse.emit('rosterContactsFetched');
+                        await test_utils.waitForRoster(_converse, 'current');
                         // Send a message from a different resource
                         spyOn(_converse, 'log');
                         const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -784,8 +759,7 @@
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current');
-                        _converse.emit('rosterContactsFetched');
+                        await test_utils.waitForRoster(_converse, 'current');
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openControlBox();
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length, 700);
@@ -839,8 +813,7 @@
                                 null, ['rosterGroupsFetched'], {},
                                 async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current', 2);
-                        _converse.emit('rosterContactsFetched');
+                        await test_utils.waitForRoster(_converse, 'current');
                         test_utils.openControlBox();
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         // TODO: only show paused state if the previous state was composing
@@ -871,8 +844,7 @@
                         let contact, sent_stanza, IQ_id, stanza;
                         await test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp']);
                         await test_utils.waitUntil(() => _converse.xmppstatus.vcard.get('fullname'));
-                        test_utils.createContacts(_converse, 'current', 6);
-                        _converse.emit('rosterContactsFetched');
+                        await test_utils.waitForRoster(_converse, 'current');
                         // Send a message from a different resource
                         spyOn(_converse, 'log');
                         const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -919,9 +891,7 @@
                         _converse.TIMEOUTS.PAUSED = 200;
                         _converse.TIMEOUTS.INACTIVE = 200;
 
-                        test_utils.createContacts(_converse, 'current');
-                        _converse.emit('rosterContactsFetched');
-
+                        await test_utils.waitForRoster(_converse, 'current');
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openControlBox();
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 1000);
@@ -967,8 +937,7 @@
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current', 1);
-                        _converse.emit('rosterContactsFetched');
+                        await test_utils.waitForRoster(_converse, 'current');
                         test_utils.openControlBox();
 
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -989,8 +958,7 @@
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current');
-                        _converse.emit('rosterContactsFetched');
+                        await test_utils.waitForRoster(_converse, 'current');
                         const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                         test_utils.openControlBox();
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
@@ -1014,8 +982,7 @@
                             null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                             async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current');
-                        _converse.emit('rosterContactsFetched');
+                        await test_utils.waitForRoster(_converse, 'current');
                         test_utils.openControlBox();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
@@ -1057,8 +1024,7 @@
                             null, ['rosterGroupsFetched'], {},
                             async function (done, _converse) {
 
-                        test_utils.createContacts(_converse, 'current', 3);
-                        _converse.emit('rosterContactsFetched');
+                        await test_utils.waitForRoster(_converse, 'current', 3);
                         test_utils.openControlBox();
 
                         spyOn(_converse, 'emit');
@@ -1089,8 +1055,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
@@ -1133,8 +1098,7 @@
                     async function (done, _converse) {
 
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
                 expect(_converse.msg_counter).toBe(0);
@@ -1170,9 +1134,9 @@
             it("is cleared when the window is focused",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
                 _converse.windowState = 'hidden';
                 spyOn(_converse, 'clearMsgCounter').and.callThrough();
@@ -1187,7 +1151,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
                 expect(_converse.msg_counter).toBe(0);
@@ -1213,8 +1177,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current');
                 // initial state
                 expect(_converse.msg_counter).toBe(0);
                 const message = 'This message will always increment the message counter from zero',
@@ -1264,9 +1227,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
-
+                await test_utils.waitForRoster(_converse, 'current');
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                       msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
 
@@ -1283,8 +1244,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current');
 
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
                       msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be read');
@@ -1300,8 +1260,7 @@
                 mock.initConverse(null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current');
 
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const msgFactory = function () {
@@ -1321,8 +1280,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const msgFactory = () => test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                 await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -1340,8 +1298,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const msgFactory = () => test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                 await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -1360,8 +1317,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const msgFactory = () => test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                 await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -1384,9 +1340,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
-
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 let msg, indicator_el;
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500);
@@ -1396,10 +1350,9 @@
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                 await _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => chatbox.messages.length);
-                const selector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
+                const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('1');
-
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
                 await _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => chatbox.messages.length > 1);
@@ -1413,8 +1366,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
                 let indicator_el, msg;
@@ -1427,7 +1379,7 @@
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread');
                 await _converse.chatboxes.onMessage(msg);
                 await test_utils.waitUntil(() => chatbox.messages.length);
-                const selector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
+                const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('1');
 
@@ -1444,25 +1396,24 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const msgFactory = () => test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500);
                 await test_utils.openChatBoxFor(_converse, sender_jid);
                 const chatbox = _converse.chatboxes.get(sender_jid);
                 const view = _converse.chatboxviews.get(sender_jid);
-                const msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
-                const select_msgs_indicator = () => $(_converse.rosterview.el).find(msgsIndicatorSelector);
+                const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
+                const select_msgs_indicator = () => sizzle(selector, _converse.rosterview.el).pop();
                 view.minimize();
                 _converse.chatboxes.onMessage(msgFactory());
                 await test_utils.waitUntil(() => chatbox.messages.length);
-                expect(select_msgs_indicator().text()).toBe('1');
+                expect(select_msgs_indicator().textContent).toBe('1');
                 _converse.chatboxes.onMessage(msgFactory());
                 await test_utils.waitUntil(() => chatbox.messages.length > 1);
-                expect(select_msgs_indicator().text()).toBe('2');
+                expect(select_msgs_indicator().textContent).toBe('2');
                 view.maximize();
-                expect(select_msgs_indicator().length).toBe(0);
+                expect(select_msgs_indicator()).toBeUndefined();
                 done();
             }));
 
@@ -1471,23 +1422,22 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500);
                 await test_utils.openChatBoxFor(_converse, sender_jid);
                 const chatbox = _converse.chatboxes.get(sender_jid);
                 const view = _converse.chatboxviews.get(sender_jid);
                 const msgFactory = () => test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
-                const msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
-                const select_msgs_indicator = () => $(_converse.rosterview.el).find(msgsIndicatorSelector);
+                const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
+                const select_msgs_indicator = () => sizzle(selector, _converse.rosterview.el).pop();
                 chatbox.save('scrolled', true);
                 _converse.chatboxes.onMessage(msgFactory());
                 await test_utils.waitUntil(() => view.model.messages.length);
-                expect(select_msgs_indicator().text()).toBe('1');
+                expect(select_msgs_indicator().textContent).toBe('1');
                 view.viewUnreadMessages();
                 _converse.rosterview.render();
-                expect(select_msgs_indicator().length).toBe(0);
+                expect(select_msgs_indicator()).toBeUndefined();
                 done();
             }));
 
@@ -1496,24 +1446,22 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 500);
                 await test_utils.openChatBoxFor(_converse, sender_jid);
                 const chatbox = _converse.chatboxes.get(sender_jid);
                 const view = _converse.chatboxviews.get(sender_jid);
-                const msgFactory = function () {
-                    return test_utils.createChatMessage(_converse, sender_jid, 'This message will be received as unread, but eventually will be read');
-                };
-                var msgsIndicatorSelector = 'a.open-chat:contains("' + chatbox.get('fullname') + '") .msgs-indicator';
-                const select_msgs_indicator = () => $(_converse.rosterview.el).find(msgsIndicatorSelector);
+                const msg = 'This message will be received as unread, but eventually will be read';
+                const msgFactory = () => test_utils.createChatMessage(_converse, sender_jid, msg);
+                const selector = 'a.open-chat:contains("' + chatbox.get('nickname') + '") .msgs-indicator';
+                const select_msgs_indicator = () => sizzle(selector, _converse.rosterview.el).pop();
                 chatbox.save('scrolled', true);
                 _converse.chatboxes.onMessage(msgFactory());
                 await test_utils.waitUntil(() => view.model.messages.length);
-                expect(select_msgs_indicator().text()).toBe('1');
+                expect(select_msgs_indicator().textContent).toBe('1');
                 await test_utils.openChatBoxFor(_converse, sender_jid);
-                expect(select_msgs_indicator().text()).toBe('1');
+                expect(select_msgs_indicator().textContent).toBe('1');
                 done();
             }));
         });
@@ -1525,8 +1473,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.openChatBoxFor(_converse, sender_jid);
                 const msgFactory = function () {
@@ -1554,8 +1501,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const view = await test_utils.openChatBoxFor(_converse, sender_jid)
                 const msgFactory = function () {
@@ -1580,8 +1526,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
 
                 const base_url = document.URL.split(window.location.pathname)[0],
                       message = "geo:37.786971,-122.399677",

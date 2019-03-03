@@ -1,5 +1,11 @@
 <form class="controlbox-padded roster-filter-form input-button-group {[ if (!o.visible) { ]} hidden {[ } ]}">
     <div class="form-inline flex-nowrap">
+        <div class="filter-by d-flex flex-nowrap">
+            <span class="fa fa-user {[ if (o.filter_type === 'contacts') { ]} selected {[ } ]}" data-type="contacts" title="{{{o.title_contact_filter}}}"></span>
+            <span class="fa fa-users {[ if (o.filter_type === 'groups') { ]} selected {[ } ]}" data-type="groups" title="{{{o.title_group_filter}}}"></span>
+            <span class="fa fa-circle {[ if (o.filter_type === 'state') { ]} selected {[ } ]}" data-type="state" title="{{{o.title_status_filter}}}"></span>
+        </div>
+
         <div class="btn-group">
             <input {[ if (o.filter_text) { ]} value="{{{o.filter_text}}}" {[ } ]}
                 class="roster-filter form-control {[ if (o.filter_type === 'state') { ]} hidden {[ } ]}"
@@ -24,11 +30,5 @@
             <option {[ if (o.chat_state === 'offline') { ]} selected="selected" {[ } ]}
                 value="offline">{{{o.label_offline}}}</option>
         </select>
-
-        <div class="filter-by d-flex flex-nowrap">
-            <span class="fa fa-user {[ if (o.filter_type === 'contacts') { ]} selected {[ } ]}" data-type="contacts" title="{{{o.title_contact_filter}}}"></span>
-            <span class="fa fa-users {[ if (o.filter_type === 'groups') { ]} selected {[ } ]}" data-type="groups" title="{{{o.title_group_filter}}}"></span>
-            <span class="fa fa-circle {[ if (o.filter_type === 'state') { ]} selected {[ } ]}" data-type="state" title="{{{o.title_status_filter}}}"></span>
-        </div>
     </div>
 </form>

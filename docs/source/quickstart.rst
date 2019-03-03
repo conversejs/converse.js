@@ -26,16 +26,16 @@ might break when a new backwards-incompatible version of Converse is released.
 
 To load a specific version of Converse you can put the version in the URL:
 
-* https://cdn.conversejs.org/4.1.0/dist/converse.min.js
-* https://cdn.conversejs.org/4.1.0/css/converse.min.css
+* https://cdn.conversejs.org/4.1.2/dist/converse.min.js
+* https://cdn.conversejs.org/4.1.2/css/converse.min.css
 
 You can include these two URLs inside the *<head>* element of your website
 via the *script* and *link* tags:
 
 .. code-block:: html
 
-    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/4.1.0/css/converse.min.css">
-    <script src="https://cdn.conversejs.org/4.1.0/dist/converse.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/4.1.2/css/converse.min.css">
+    <script src="https://cdn.conversejs.org/4.1.2/dist/converse.min.js" charset="utf-8"></script>
 
 
 Option 2: Building the files yourself
@@ -103,6 +103,11 @@ You might want to implement some kind of persistent single-session solution for
 your website, where users authenticate once in your website and are then
 automatically logged in to the XMPP server as well. For more info on how this
 can be achieved, read: :ref:`session-support`.
+
+For end-to-end encryption via OMEMO, you'll need to load `libsignal-protocol.js
+<https://github.com/signalapp/libsignal-protocol-javascript>`_ separately in
+your page. Take a look at the section on :ref:`libsignal <dependency-libsignal>` and the
+:ref:`security considerations around OMEMO <feature-omemo>`.
 
 Perhaps you want to create your own custom build of Converse? Then head over
 to the :doc:`builds` section, or more generally the :doc:`development <development>`

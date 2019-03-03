@@ -1,7 +1,7 @@
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 import { $build, $iq, $msg, $pres, SHA1, Strophe } from "strophe.js";
@@ -72,7 +72,7 @@ const _converse = {
     'promises': {}
 }
 
-_converse.VERSION_NAME = "v4.1.0";
+_converse.VERSION_NAME = "v4.1.2";
 
 _.extend(_converse, Backbone.Events);
 
@@ -367,7 +367,7 @@ function initClientConfig () {
      * What this means is that config values need to persist across
      * user sessions.
      */
-    const id = b64_sha1('converse.client-config');
+    const id = 'converse.client-config';
     _converse.config = new Backbone.Model({
         'id': id,
         'trusted': _converse.trusted && true || false,
@@ -416,8 +416,8 @@ function setUpXMLLogging () {
 
 
 function finishInitialization () {
-    initPlugins();
     initClientConfig();
+    initPlugins();
     _converse.initConnection();
     setUpXMLLogging();
     _converse.logIn();
@@ -494,6 +494,14 @@ _converse.initialize = async function (settings, callback) {
                   "authentication with auto_login.");
         }
     }
+
+    _converse.router.route(/^converse\?debug=(true|false)$/, 'debug', debug => {
+        if (debug === "true") {
+            _converse.debug = true;
+        } else {
+            _converse.debug = false;
+        }
+    });
 
     /* Localisation */
     if (!_.isUndefined(i18n)) {

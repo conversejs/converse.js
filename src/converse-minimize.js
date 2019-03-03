@@ -1,7 +1,7 @@
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 
 import "converse-chatview";
@@ -12,7 +12,7 @@ import tpl_toggle_chats from "templates/toggle_chats.html";
 import tpl_trimmed_chat from "templates/trimmed_chat.html";
 
 
-const { _ , Backbone, Promise, Strophe, b64_sha1, moment } = converse.env;
+const { _ , Backbone, Promise, Strophe, moment } = converse.env;
 const u = converse.env.utils;
 
 converse.plugins.add('converse-minimize', {
@@ -414,7 +414,7 @@ converse.plugins.add('converse-minimize', {
 
             initToggle () {
                 const storage = _converse.config.get('storage'),
-                      id = b64_sha1(`converse.minchatstoggle${_converse.bare_jid}`);
+                      id = `converse.minchatstoggle${_converse.bare_jid}`;
                 this.toggleview = new _converse.MinimizedChatsToggleView({
                     'model': new _converse.MinimizedChatsToggle({'id': id})
                 });

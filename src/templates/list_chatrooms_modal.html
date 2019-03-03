@@ -8,14 +8,16 @@
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body d-flex flex-column">
+                {[ if (o.show_form) { ]}
                 <form class="converse-form list-chatrooms">
                     <div class="form-group">
                         <label for="chatroom">{{{o.label_server_address}}}:</label>
                         <input type="text" value="{{{o.muc_domain}}}" required="required" name="server" class="form-control" placeholder="{{{o.server_placeholder}}}"/>
                     </div>
-                    <input type="submit" class="btn btn-primary" name="join" value="{{{o.label_query}}}"/>
+                    <input type="submit" class="btn btn-primary" name="list" value="{{{o.label_query}}}"/>
                 </form>
+                {[ } ]}
                 <ul class="available-chatrooms list-group"></ul>
             </div>
         </div>

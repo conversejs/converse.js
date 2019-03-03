@@ -1,7 +1,7 @@
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2012-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 import "@converse/headless/converse-chatboxes";
@@ -152,6 +152,18 @@ converse.plugins.add('converse-chatboxviews', {
 
 
         /************************ BEGIN Event Handlers ************************/
+        _converse.api.waitUntil('rosterContactsFetched').then(() => {
+            _converse.roster.on('add', (contact) => {
+                /* When a new contact is added, check if we already have a
+                 * chatbox open for it, and if so attach it to the chatbox.
+                 */
+                const chatbox = _converse.chatboxes.findWhere({'jid': contact.get('jid')});
+                if (chatbox) {
+                    chatbox.addRelatedContact(contact);
+                }
+            });
+        });
+
         _converse.api.listen.on('chatBoxesInitialized', () => {
             _converse.chatboxviews = new _converse.ChatBoxViews({
                 'model': _converse.chatboxes

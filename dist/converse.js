@@ -893,12 +893,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 //     https://github.com/akre54/Backbone.NativeView
 
 (function (factory) {
-  if (true) { !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+  if (true) { !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! underscore */ "./src/underscore-shim.js"), __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   } else {}
-}(function (Backbone) {
+}(function (_, Backbone) {
   // Cached regex to match an opening '<' of an HTML tag, possibly left-padded
   // with whitespace.
   var paddedLt = /^\s*</;
@@ -907,10 +907,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   var ElementProto = (typeof Element !== 'undefined' && Element.prototype) || {};
 
   // Cross-browser event listener shims
-  var elementAddEventListener = ElementProto.addEventListener || function(eventName, listener) {
+  var elementAddEventListener = ElementProto.addEventListener ? function(eventName, listener) {
+    return this.addEventListener(eventName, listener, false);
+  } : function(eventName, listener) {
     return this.attachEvent('on' + eventName, listener);
   }
-  var elementRemoveEventListener = ElementProto.removeEventListener || function(eventName, listener) {
+
+  var elementRemoveEventListener = ElementProto.removeEventListener ? function(eventName, listener) {
+    return this.removeEventListener(eventName, listener, false);
+  } : function(eventName, listener) {
     return this.detachEvent('on' + eventName, listener);
   }
 
@@ -959,7 +964,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     },
 
     // Apply the `element` to the view. `element` can be a CSS selector,
-    // a string of HTML, or an Element node.
+    // a string of HTML, or an Element node. If passed a NodeList or CSS
+    // selector, uses just the first match.
     _setElement: function(element) {
       if (typeof element == 'string') {
         if (paddedLt.test(element)) {
@@ -969,6 +975,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         } else {
           this.el = document.querySelector(element);
         }
+      } else if (element && !_.isElement(element) && element.length) {
+        this.el = element[0];
       } else {
         this.el = element;
       }
@@ -991,12 +999,28 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     // result of calling bound `listener` with the parameters given to the
     // handler.
     delegate: function(eventName, selector, listener) {
+      var root = this.el;
+
+      if (!root) {
+        return;
+      }
+
       if (typeof selector === 'function') {
         listener = selector;
         selector = null;
       }
 
-      var root = this.el;
+      // Given that `focus` and `blur` events do not bubble, do not delegate these events
+      if (['focus', 'blur'].indexOf(eventName) !== -1) {
+        var els = this.el.querySelectorAll(selector);
+        for (var i = 0, len = els.length; i < len; i++) {
+          var item = els[i];
+          elementAddEventListener.call(item, eventName, listener, false);
+          this._domEvents.push({el: item, eventName: eventName, handler: listener});
+        }
+        return listener;
+      }
+
       var handler = selector ? function (e) {
         var node = e.target || e.srcElement;
         for (; node && node != root; node = node.parentNode) {
@@ -1008,7 +1032,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       } : listener;
 
       elementAddEventListener.call(this.el, eventName, handler, false);
-      this._domEvents.push({eventName: eventName, handler: handler, listener: listener, selector: selector});
+      this._domEvents.push({el: this.el, eventName: eventName, handler: handler, listener: listener, selector: selector});
       return handler;
     },
 
@@ -1022,7 +1046,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       if (this.el) {
         var handlers = this._domEvents.slice();
-        for (var i = 0, len = handlers.length; i < len; i++) {
+        var i = handlers.length;
+        while (i--) {
           var item = handlers[i];
 
           var match = item.eventName === eventName &&
@@ -1031,8 +1056,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
           if (!match) continue;
 
-          elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
-          this._domEvents.splice(indexOf(handlers, item), 1);
+          elementRemoveEventListener.call(item.el, item.eventName, item.handler, false);
+          this._domEvents.splice(i, 1);
         }
       }
       return this;
@@ -1043,7 +1068,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       if (this.el) {
         for (var i = 0, len = this._domEvents.length; i < len; i++) {
           var item = this._domEvents[i];
-          elementRemoveEventListener.call(this.el, item.eventName, item.handler, false);
+          elementRemoveEventListener.call(item.el, item.eventName, item.handler, false);
         };
         this._domEvents.length = 0;
       }
@@ -1055,6 +1080,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
   return Backbone.NativeView;
 }));
+
 
 
 /***/ }),
@@ -1478,9 +1504,9 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.js 1.3.3
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.js 1.4.0
 
-//     (c) 2010-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+//     (c) 2010-2019 Jeremy Ashkenas and DocumentCloud
 //     Backbone may be freely distributed under the MIT license.
 //     For all details and documentation:
 //     http://backbonejs.org
@@ -1489,8 +1515,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 
   // Establish the root object, `window` (`self`) in the browser, or `global` on the server.
   // We use `self` instead of `window` for `WebWorker` support.
-  var root = (typeof self == 'object' && self.self === self && self) ||
-            (typeof global == 'object' && global.global === global && global);
+  var root = typeof self == 'object' && self.self === self && self ||
+            typeof global == 'object' && global.global === global && global;
 
   // Set up Backbone appropriately for the environment. Start with AMD.
   if (true) {
@@ -1517,7 +1543,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   var slice = Array.prototype.slice;
 
   // Current version of the library. Keep in sync with `package.json`.
-  Backbone.VERSION = '1.3.3';
+  Backbone.VERSION = '1.4.0';
 
   // For Backbone's purposes, jQuery, Zepto, Ender, or My Library (kidding) owns
   // the `$` variable.
@@ -1541,54 +1567,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   // form param named `model`.
   Backbone.emulateJSON = false;
 
-  // Proxy Backbone class methods to Underscore functions, wrapping the model's
-  // `attributes` object or collection's `models` array behind the scenes.
-  //
-  // collection.filter(function(model) { return model.get('age') > 10 });
-  // collection.each(this.addView);
-  //
-  // `Function#apply` can be slow so we use the method's arg count, if we know it.
-  var addMethod = function(length, method, attribute) {
-    switch (length) {
-      case 1: return function() {
-        return _[method](this[attribute]);
-      };
-      case 2: return function(value) {
-        return _[method](this[attribute], value);
-      };
-      case 3: return function(iteratee, context) {
-        return _[method](this[attribute], cb(iteratee, this), context);
-      };
-      case 4: return function(iteratee, defaultVal, context) {
-        return _[method](this[attribute], cb(iteratee, this), defaultVal, context);
-      };
-      default: return function() {
-        var args = slice.call(arguments);
-        args.unshift(this[attribute]);
-        return _[method].apply(_, args);
-      };
-    }
-  };
-  var addUnderscoreMethods = function(Class, methods, attribute) {
-    _.each(methods, function(length, method) {
-      if (_[method]) Class.prototype[method] = addMethod(length, method, attribute);
-    });
-  };
-
-  // Support `collection.sortBy('attr')` and `collection.findWhere({id: 1})`.
-  var cb = function(iteratee, instance) {
-    if (_.isFunction(iteratee)) return iteratee;
-    if (_.isObject(iteratee) && !instance._isModel(iteratee)) return modelMatcher(iteratee);
-    if (_.isString(iteratee)) return function(model) { return model.get(iteratee); };
-    return iteratee;
-  };
-  var modelMatcher = function(attrs) {
-    var matcher = _.matches(attrs);
-    return function(model) {
-      return matcher(model.attributes);
-    };
-  };
-
   // Backbone.Events
   // ---------------
 
@@ -1606,6 +1584,9 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 
   // Regular expression used to split event strings.
   var eventSplitter = /\s+/;
+
+  // A private global variable to share between listeners and listenees.
+  var _listening;
 
   // Iterates over the standard `event, callback` (as well as the fancy multiple
   // space-separated events `"change blur", callback` and jQuery-style event
@@ -1633,23 +1614,21 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   // Bind an event to a `callback` function. Passing `"all"` will bind
   // the callback to all events fired.
   Events.on = function(name, callback, context) {
-    return internalOn(this, name, callback, context);
-  };
-
-  // Guard the `listening` argument from the public API.
-  var internalOn = function(obj, name, callback, context, listening) {
-    obj._events = eventsApi(onApi, obj._events || {}, name, callback, {
+    this._events = eventsApi(onApi, this._events || {}, name, callback, {
       context: context,
-      ctx: obj,
-      listening: listening
+      ctx: this,
+      listening: _listening
     });
 
-    if (listening) {
-      var listeners = obj._listeners || (obj._listeners = {});
-      listeners[listening.id] = listening;
+    if (_listening) {
+      var listeners = this._listeners || (this._listeners = {});
+      listeners[_listening.id] = _listening;
+      // Allow the listening to use a counter, instead of tracking
+      // callbacks for library interop
+      _listening.interop = false;
     }
 
-    return obj;
+    return this;
   };
 
   // Inversion-of-control versions of `on`. Tell *this* object to listen to
@@ -1659,17 +1638,23 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     if (!obj) return this;
     var id = obj._listenId || (obj._listenId = _.uniqueId('l'));
     var listeningTo = this._listeningTo || (this._listeningTo = {});
-    var listening = listeningTo[id];
+    var listening = _listening = listeningTo[id];
 
     // This object is not listening to any other events on `obj` yet.
     // Setup the necessary references to track the listening callbacks.
     if (!listening) {
-      var thisId = this._listenId || (this._listenId = _.uniqueId('l'));
-      listening = listeningTo[id] = {obj: obj, objId: id, id: thisId, listeningTo: listeningTo, count: 0};
+      this._listenId || (this._listenId = _.uniqueId('l'));
+      listening = _listening = listeningTo[id] = new Listening(this, obj);
     }
 
-    // Bind callbacks on obj, and keep track of them on listening.
-    internalOn(obj, name, callback, this, listening);
+    // Bind callbacks on obj.
+    var error = tryCatchOn(obj, name, callback, this);
+    _listening = void 0;
+
+    if (error) throw error;
+    // If the target obj is not Backbone.Events, track events manually.
+    if (listening.interop) listening.on(name, callback);
+
     return this;
   };
 
@@ -1685,6 +1670,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     return events;
   };
 
+  // An try-catch guarded #on function, to prevent poisoning the global
+  // `_listening` variable.
+  var tryCatchOn = function(obj, name, callback, context) {
+    try {
+      obj.on(name, callback, context);
+    } catch (e) {
+      return e;
+    }
+  };
+
   // Remove one or many callbacks. If `context` is null, removes all
   // callbacks with that function. If `callback` is null, removes all
   // callbacks for the event. If `name` is null, removes all bound
@@ -1695,6 +1690,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       context: context,
       listeners: this._listeners
     });
+
     return this;
   };
 
@@ -1705,7 +1701,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     if (!listeningTo) return this;
 
     var ids = obj ? [obj._listenId] : _.keys(listeningTo);
-
     for (var i = 0; i < ids.length; i++) {
       var listening = listeningTo[ids[i]];
 
@@ -1714,7 +1709,9 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       if (!listening) break;
 
       listening.obj.off(name, callback, this);
+      if (listening.interop) listening.off(name, callback);
     }
+    if (_.isEmpty(listeningTo)) this._listeningTo = void 0;
 
     return this;
   };
@@ -1723,21 +1720,18 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   var offApi = function(events, name, callback, options) {
     if (!events) return;
 
-    var i = 0, listening;
     var context = options.context, listeners = options.listeners;
+    var i = 0, names;
 
-    // Delete all events listeners and "drop" events.
-    if (!name && !callback && !context) {
-      var ids = _.keys(listeners);
-      for (; i < ids.length; i++) {
-        listening = listeners[ids[i]];
-        delete listeners[listening.id];
-        delete listening.listeningTo[listening.objId];
+    // Delete all event listeners and "drop" events.
+    if (!name && !context && !callback) {
+      for (names = _.keys(listeners); i < names.length; i++) {
+        listeners[names[i]].cleanup();
       }
       return;
     }
 
-    var names = name ? [name] : _.keys(events);
+    names = name ? [name] : _.keys(events);
     for (; i < names.length; i++) {
       name = names[i];
       var handlers = events[name];
@@ -1745,7 +1739,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       // Bail out if there are no events stored.
       if (!handlers) break;
 
-      // Replace events if there are any remaining.  Otherwise, clean up.
+      // Find any remaining events.
       var remaining = [];
       for (var j = 0; j < handlers.length; j++) {
         var handler = handlers[j];
@@ -1756,21 +1750,19 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         ) {
           remaining.push(handler);
         } else {
-          listening = handler.listening;
-          if (listening && --listening.count === 0) {
-            delete listeners[listening.id];
-            delete listening.listeningTo[listening.objId];
-          }
+          var listening = handler.listening;
+          if (listening) listening.off(name, callback);
         }
       }
 
-      // Update tail event if the list has any events.  Otherwise, clean up.
+      // Replace events if there are any remaining.  Otherwise, clean up.
       if (remaining.length) {
         events[name] = remaining;
       } else {
         delete events[name];
       }
     }
+
     return events;
   };
 
@@ -1780,7 +1772,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   // once for each event, not once for a combination of all events.
   Events.once = function(name, callback, context) {
     // Map the event into a `{event: once}` object.
-    var events = eventsApi(onceMap, {}, name, callback, _.bind(this.off, this));
+    var events = eventsApi(onceMap, {}, name, callback, this.off.bind(this));
     if (typeof name === 'string' && context == null) callback = void 0;
     return this.on(events, callback, context);
   };
@@ -1788,7 +1780,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   // Inversion-of-control versions of `once`.
   Events.listenToOnce = function(obj, name, callback) {
     // Map the event into a `{event: once}` object.
-    var events = eventsApi(onceMap, {}, name, callback, _.bind(this.stopListening, this, obj));
+    var events = eventsApi(onceMap, {}, name, callback, this.stopListening.bind(this, obj));
     return this.listenTo(obj, events);
   };
 
@@ -1846,6 +1838,44 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     }
   };
 
+  // A listening class that tracks and cleans up memory bindings
+  // when all callbacks have been offed.
+  var Listening = function(listener, obj) {
+    this.id = listener._listenId;
+    this.listener = listener;
+    this.obj = obj;
+    this.interop = true;
+    this.count = 0;
+    this._events = void 0;
+  };
+
+  Listening.prototype.on = Events.on;
+
+  // Offs a callback (or several).
+  // Uses an optimized counter if the listenee uses Backbone.Events.
+  // Otherwise, falls back to manual tracking to support events
+  // library interop.
+  Listening.prototype.off = function(name, callback) {
+    var cleanup;
+    if (this.interop) {
+      this._events = eventsApi(offApi, this._events, name, callback, {
+        context: void 0,
+        listeners: void 0
+      });
+      cleanup = !this._events;
+    } else {
+      this.count--;
+      cleanup = this.count === 0;
+    }
+    if (cleanup) this.cleanup();
+  };
+
+  // Cleans up memory bindings between the listener and the listenee.
+  Listening.prototype.cleanup = function() {
+    delete this.listener._listeningTo[this.obj._listenId];
+    if (!this.interop) delete this.obj._listeners[this.id];
+  };
+
   // Aliases for backwards compatibility.
   Events.bind   = Events.on;
   Events.unbind = Events.off;
@@ -1867,6 +1897,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   var Model = Backbone.Model = function(attributes, options) {
     var attrs = attributes || {};
     options || (options = {});
+    this.preinitialize.apply(this, arguments);
     this.cid = _.uniqueId(this.cidPrefix);
     this.attributes = {};
     if (options.collection) this.collection = options.collection;
@@ -1894,6 +1925,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // The prefix is used to create the client id which is used to identify models locally.
     // You may want to override this if you're experiencing name clashes with model ids.
     cidPrefix: 'c',
+
+    // preinitialize is an empty function by default. You can override it with a function
+    // or object.  preinitialize will run before any instantiation logic is run in the Model.
+    preinitialize: function(){},
 
     // Initialize is an empty function by default. Override it with your own
     // initialization logic.
@@ -2035,12 +2070,14 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       if (!diff) return this.hasChanged() ? _.clone(this.changed) : false;
       var old = this._changing ? this._previousAttributes : this.attributes;
       var changed = {};
+      var hasChanged;
       for (var attr in diff) {
         var val = diff[attr];
         if (_.isEqual(old[attr], val)) continue;
         changed[attr] = val;
+        hasChanged = true;
       }
-      return _.size(changed) ? changed : false;
+      return hasChanged ? changed : false;
     },
 
     // Get the previous value of an attribute, recorded at the time the last
@@ -2116,7 +2153,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       // Set temporary attributes if `{wait: true}` to properly find new ids.
       if (attrs && wait) this.attributes = _.extend({}, attributes, attrs);
 
-      var method = this.isNew() ? 'create' : (options.patch ? 'patch' : 'update');
+      var method = this.isNew() ? 'create' : options.patch ? 'patch' : 'update';
       if (method === 'patch' && !options.attrs) options.attrs = attrs;
       var xhr = this.sync(method, this, options);
 
@@ -2204,14 +2241,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 
   });
 
-  // Underscore methods that we want to implement on the Model, mapped to the
-  // number of arguments they take.
-  var modelMethods = {keys: 1, values: 1, pairs: 1, invert: 1, pick: 0,
-      omit: 0, chain: 1, isEmpty: 1};
-
-  // Mix in each Underscore method as a proxy to `Model#attributes`.
-  addUnderscoreMethods(Model, modelMethods, 'attributes');
-
   // Backbone.Collection
   // -------------------
 
@@ -2227,6 +2256,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   // its models in sort order, as they're added and removed.
   var Collection = Backbone.Collection = function(models, options) {
     options || (options = {});
+    this.preinitialize.apply(this, arguments);
     if (options.model) this.model = options.model;
     if (options.comparator !== void 0) this.comparator = options.comparator;
     this._reset();
@@ -2255,6 +2285,11 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // The default model for a collection is just a **Backbone.Model**.
     // This should be overridden in most cases.
     model: Model,
+
+
+    // preinitialize is an empty function by default. You can override it with a function
+    // or object.  preinitialize will run before any instantiation logic is run in the Collection.
+    preinitialize: function(){},
 
     // Initialize is an empty function by default. Override it with your own
     // initialization logic.
@@ -2458,7 +2493,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     get: function(obj) {
       if (obj == null) return void 0;
       return this._byId[obj] ||
-        this._byId[this.modelId(obj.attributes || obj)] ||
+        this._byId[this.modelId(this._isModel(obj) ? obj.attributes : obj)] ||
         obj.cid && this._byId[obj.cid];
     },
 
@@ -2494,7 +2529,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       options || (options = {});
 
       var length = comparator.length;
-      if (_.isFunction(comparator)) comparator = _.bind(comparator, this);
+      if (_.isFunction(comparator)) comparator = comparator.bind(this);
 
       // Run sort based on type of `comparator`.
       if (length === 1 || _.isString(comparator)) {
@@ -2564,6 +2599,21 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // Define how to uniquely identify models in the collection.
     modelId: function(attrs) {
       return attrs[this.model.prototype.idAttribute || 'id'];
+    },
+
+    // Get an iterator of all models in this collection.
+    values: function() {
+      return new CollectionIterator(this, ITERATOR_VALUES);
+    },
+
+    // Get an iterator of all model IDs in this collection.
+    keys: function() {
+      return new CollectionIterator(this, ITERATOR_KEYS);
+    },
+
+    // Get an iterator of all [ID, model] tuples in this collection.
+    entries: function() {
+      return new CollectionIterator(this, ITERATOR_KEYSVALUES);
     },
 
     // Private method to reset all internal state. Called when the collection
@@ -2662,20 +2712,71 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 
   });
 
-  // Underscore methods that we want to implement on the Collection.
-  // 90% of the core usefulness of Backbone Collections is actually implemented
-  // right here:
-  var collectionMethods = {forEach: 3, each: 3, map: 3, collect: 3, reduce: 0,
-      foldl: 0, inject: 0, reduceRight: 0, foldr: 0, find: 3, detect: 3, filter: 3,
-      select: 3, reject: 3, every: 3, all: 3, some: 3, any: 3, include: 3, includes: 3,
-      contains: 3, invoke: 0, max: 3, min: 3, toArray: 1, size: 1, first: 3,
-      head: 3, take: 3, initial: 3, rest: 3, tail: 3, drop: 3, last: 3,
-      without: 0, difference: 0, indexOf: 3, shuffle: 1, lastIndexOf: 3,
-      isEmpty: 1, chain: 1, sample: 3, partition: 3, groupBy: 3, countBy: 3,
-      sortBy: 3, indexBy: 3, findIndex: 3, findLastIndex: 3};
+  // Defining an @@iterator method implements JavaScript's Iterable protocol.
+  // In modern ES2015 browsers, this value is found at Symbol.iterator.
+  /* global Symbol */
+  var $$iterator = typeof Symbol === 'function' && Symbol.iterator;
+  if ($$iterator) {
+    Collection.prototype[$$iterator] = Collection.prototype.values;
+  }
 
-  // Mix in each Underscore method as a proxy to `Collection#models`.
-  addUnderscoreMethods(Collection, collectionMethods, 'models');
+  // CollectionIterator
+  // ------------------
+
+  // A CollectionIterator implements JavaScript's Iterator protocol, allowing the
+  // use of `for of` loops in modern browsers and interoperation between
+  // Backbone.Collection and other JavaScript functions and third-party libraries
+  // which can operate on Iterables.
+  var CollectionIterator = function(collection, kind) {
+    this._collection = collection;
+    this._kind = kind;
+    this._index = 0;
+  };
+
+  // This "enum" defines the three possible kinds of values which can be emitted
+  // by a CollectionIterator that correspond to the values(), keys() and entries()
+  // methods on Collection, respectively.
+  var ITERATOR_VALUES = 1;
+  var ITERATOR_KEYS = 2;
+  var ITERATOR_KEYSVALUES = 3;
+
+  // All Iterators should themselves be Iterable.
+  if ($$iterator) {
+    CollectionIterator.prototype[$$iterator] = function() {
+      return this;
+    };
+  }
+
+  CollectionIterator.prototype.next = function() {
+    if (this._collection) {
+
+      // Only continue iterating if the iterated collection is long enough.
+      if (this._index < this._collection.length) {
+        var model = this._collection.at(this._index);
+        this._index++;
+
+        // Construct a value depending on what kind of values should be iterated.
+        var value;
+        if (this._kind === ITERATOR_VALUES) {
+          value = model;
+        } else {
+          var id = this._collection.modelId(model.attributes);
+          if (this._kind === ITERATOR_KEYS) {
+            value = id;
+          } else { // ITERATOR_KEYSVALUES
+            value = [id, model];
+          }
+        }
+        return {value: value, done: false};
+      }
+
+      // Once exhausted, remove the reference to the collection so future
+      // calls to the next method always return done.
+      this._collection = void 0;
+    }
+
+    return {value: void 0, done: true};
+  };
 
   // Backbone.View
   // -------------
@@ -2692,6 +2793,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   // if an existing element is not provided...
   var View = Backbone.View = function(options) {
     this.cid = _.uniqueId('view');
+    this.preinitialize.apply(this, arguments);
     _.extend(this, _.pick(options, viewOptions));
     this._ensureElement();
     this.initialize.apply(this, arguments);
@@ -2714,6 +2816,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     $: function(selector) {
       return this.$el.find(selector);
     },
+
+    // preinitialize is an empty function by default. You can override it with a function
+    // or object.  preinitialize will run before any instantiation logic is run in the View
+    preinitialize: function(){},
 
     // Initialize is an empty function by default. Override it with your own
     // initialization logic.
@@ -2782,7 +2888,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         if (!_.isFunction(method)) method = this[method];
         if (!method) continue;
         var match = key.match(delegateEventSplitter);
-        this.delegate(match[1], match[2], _.bind(method, this));
+        this.delegate(match[1], match[2], method.bind(this));
       }
       return this;
     },
@@ -2838,6 +2944,94 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       this.$el.attr(attributes);
     }
 
+  });
+
+  // Proxy Backbone class methods to Underscore functions, wrapping the model's
+  // `attributes` object or collection's `models` array behind the scenes.
+  //
+  // collection.filter(function(model) { return model.get('age') > 10 });
+  // collection.each(this.addView);
+  //
+  // `Function#apply` can be slow so we use the method's arg count, if we know it.
+  var addMethod = function(base, length, method, attribute) {
+    switch (length) {
+      case 1: return function() {
+        return base[method](this[attribute]);
+      };
+      case 2: return function(value) {
+        return base[method](this[attribute], value);
+      };
+      case 3: return function(iteratee, context) {
+        return base[method](this[attribute], cb(iteratee, this), context);
+      };
+      case 4: return function(iteratee, defaultVal, context) {
+        return base[method](this[attribute], cb(iteratee, this), defaultVal, context);
+      };
+      default: return function() {
+        var args = slice.call(arguments);
+        args.unshift(this[attribute]);
+        return base[method].apply(base, args);
+      };
+    }
+  };
+
+  var addUnderscoreMethods = function(Class, base, methods, attribute) {
+    _.each(methods, function(length, method) {
+      if (base[method]) Class.prototype[method] = addMethod(base, length, method, attribute);
+    });
+  };
+
+  // Support `collection.sortBy('attr')` and `collection.findWhere({id: 1})`.
+  var cb = function(iteratee, instance) {
+    if (_.isFunction(iteratee)) return iteratee;
+    if (_.isObject(iteratee) && !instance._isModel(iteratee)) return modelMatcher(iteratee);
+    if (_.isString(iteratee)) return function(model) { return model.get(iteratee); };
+    return iteratee;
+  };
+  var modelMatcher = function(attrs) {
+    var matcher = _.matches(attrs);
+    return function(model) {
+      return matcher(model.attributes);
+    };
+  };
+
+  // Underscore methods that we want to implement on the Collection.
+  // 90% of the core usefulness of Backbone Collections is actually implemented
+  // right here:
+  var collectionMethods = {forEach: 3, each: 3, map: 3, collect: 3, reduce: 0,
+    foldl: 0, inject: 0, reduceRight: 0, foldr: 0, find: 3, detect: 3, filter: 3,
+    select: 3, reject: 3, every: 3, all: 3, some: 3, any: 3, include: 3, includes: 3,
+    contains: 3, invoke: 0, max: 3, min: 3, toArray: 1, size: 1, first: 3,
+    head: 3, take: 3, initial: 3, rest: 3, tail: 3, drop: 3, last: 3,
+    without: 0, difference: 0, indexOf: 3, shuffle: 1, lastIndexOf: 3,
+    isEmpty: 1, chain: 1, sample: 3, partition: 3, groupBy: 3, countBy: 3,
+    sortBy: 3, indexBy: 3, findIndex: 3, findLastIndex: 3};
+
+
+  // Underscore methods that we want to implement on the Model, mapped to the
+  // number of arguments they take.
+  var modelMethods = {keys: 1, values: 1, pairs: 1, invert: 1, pick: 0,
+    omit: 0, chain: 1, isEmpty: 1};
+
+  // Mix in each Underscore method as a proxy to `Collection#models`.
+
+  _.each([
+    [Collection, collectionMethods, 'models'],
+    [Model, modelMethods, 'attributes']
+  ], function(config) {
+    var Base = config[0],
+        methods = config[1],
+        attribute = config[2];
+
+    Base.mixin = function(obj) {
+      var mappings = _.reduce(_.functions(obj), function(memo, name) {
+        memo[name] = 0;
+        return memo;
+      }, {});
+      addUnderscoreMethods(Base, obj, mappings, attribute);
+    };
+
+    addUnderscoreMethods(Base, _, methods, attribute);
   });
 
   // Backbone.sync
@@ -2920,11 +3114,11 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 
   // Map from CRUD to HTTP for our default `Backbone.sync` implementation.
   var methodMap = {
-    'create': 'POST',
-    'update': 'PUT',
-    'patch': 'PATCH',
-    'delete': 'DELETE',
-    'read': 'GET'
+    create: 'POST',
+    update: 'PUT',
+    patch: 'PATCH',
+    delete: 'DELETE',
+    read: 'GET'
   };
 
   // Set the default implementation of `Backbone.ajax` to proxy through to `$`.
@@ -2940,6 +3134,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   // matched. Creating a new one sets its `routes` hash, if not set statically.
   var Router = Backbone.Router = function(options) {
     options || (options = {});
+    this.preinitialize.apply(this, arguments);
     if (options.routes) this.routes = options.routes;
     this._bindRoutes();
     this.initialize.apply(this, arguments);
@@ -2954,6 +3149,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 
   // Set up all inheritable **Backbone.Router** properties and methods.
   _.extend(Router.prototype, Events, {
+
+    // preinitialize is an empty function by default. You can override it with a function
+    // or object.  preinitialize will run before any instantiation logic is run in the Router.
+    preinitialize: function(){},
 
     // Initialize is an empty function by default. Override it with your own
     // initialization logic.
@@ -3012,11 +3211,11 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // against the current location hash.
     _routeToRegExp: function(route) {
       route = route.replace(escapeRegExp, '\\$&')
-                   .replace(optionalParam, '(?:$1)?')
-                   .replace(namedParam, function(match, optional) {
-                     return optional ? match : '([^/?]+)';
-                   })
-                   .replace(splatParam, '([^?]*?)');
+        .replace(optionalParam, '(?:$1)?')
+        .replace(namedParam, function(match, optional) {
+          return optional ? match : '([^/?]+)';
+        })
+        .replace(splatParam, '([^?]*?)');
       return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
     },
 
@@ -3044,7 +3243,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   // falls back to polling.
   var History = Backbone.History = function() {
     this.handlers = [];
-    this.checkUrl = _.bind(this.checkUrl, this);
+    this.checkUrl = this.checkUrl.bind(this);
 
     // Ensure that `History` can be used outside of the browser.
     if (typeof window !== 'undefined') {
@@ -3285,11 +3484,14 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       }
       var url = rootPath + fragment;
 
-      // Strip the hash and decode for matching.
-      fragment = this.decodeFragment(fragment.replace(pathStripper, ''));
+      // Strip the fragment of the query and hash for matching.
+      fragment = fragment.replace(pathStripper, '');
 
-      if (this.fragment === fragment) return;
-      this.fragment = fragment;
+      // Decode for matching.
+      var decodedFragment = this.decodeFragment(fragment);
+
+      if (this.fragment === decodedFragment) return;
+      this.fragment = decodedFragment;
 
       // If pushState is available, we use it to set the fragment as a real URL.
       if (this._usePushState) {
@@ -47733,7 +47935,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 // This plugin started as a fork of Lea Verou's Awesomplete
 // https://leaverou.github.io/awesomplete/
@@ -48211,7 +48413,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
       $iq = _converse$env.$iq,
-      b64_sha1 = _converse$env.b64_sha1,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
@@ -48253,8 +48454,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         const _converse = this.__super__._converse,
               __ = _converse.__;
         const bookmark_button = templates_chatroom_bookmark_toggle_html__WEBPACK_IMPORTED_MODULE_5___default()(_.assignIn(this.model.toJSON(), {
-          info_toggle_bookmark: __('Bookmark this groupchat'),
-          bookmarked: this.model.get('bookmarked')
+          'info_toggle_bookmark': this.model.get('bookmarked') ? __('Unbookmark this groupchat') : __('Bookmark this groupchat'),
+          'bookmarked': this.model.get('bookmarked')
         }));
         const close_button = this.el.querySelector('.close-chatbox-button');
         close_button.insertAdjacentHTML('afterend', bookmark_button);
@@ -48462,8 +48663,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         const storage = _converse.config.get('storage'),
               cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
 
-        this.fetched_flag = b64_sha1(cache_key + 'fetched');
-        this.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(cache_key));
+        this.fetched_flag = cache_key + 'fetched';
+        this.browserStorage = new Backbone.BrowserStorage[storage](cache_key);
       },
 
       openBookmarkedRoom(bookmark) {
@@ -48671,7 +48872,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         _converse.chatboxes.on('remove', this.renderBookmarkListElement, this);
 
         const storage = _converse.config.get('storage'),
-              id = b64_sha1(`converse.room-bookmarks${_converse.bare_jid}-list-model`);
+              id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
 
         this.list_model = new _converse.BookmarksList({
           'id': id
@@ -48803,14 +49004,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       _converse.emit('bookmarksInitialized');
     };
 
-    u.onMultipleEvents([{
-      'object': _converse,
-      'event': 'chatBoxesFetched'
-    }, {
-      'object': _converse,
-      'event': 'roomsPanelRendered'
-    }], initBookmarks);
-
     _converse.on('clearSession', () => {
       if (!_.isUndefined(_converse.bookmarks)) {
         _converse.bookmarks.browserStorage._clear();
@@ -48821,7 +49014,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     _converse.on('reconnected', initBookmarks);
 
-    _converse.on('connected', () => {
+    _converse.on('connected', async () => {
       // Add a handler for bookmarks pushed from other connected clients
       // (from the same user obviously)
       _converse.connection.addHandler(message => {
@@ -48829,6 +49022,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           _converse.api.waitUntil('bookmarksInitialized').then(() => _converse.bookmarks.createBookmarksFromStanza(message)).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
         }
       }, null, 'message', 'headline', null, _converse.bare_jid);
+
+      await Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]);
+      initBookmarks();
     });
   }
 
@@ -48849,7 +49045,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env,
@@ -48934,7 +49130,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2012-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -49088,6 +49284,21 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     });
     /************************ BEGIN Event Handlers ************************/
 
+    _converse.api.waitUntil('rosterContactsFetched').then(() => {
+      _converse.roster.on('add', contact => {
+        /* When a new contact is added, check if we already have a
+         * chatbox open for it, and if so attach it to the chatbox.
+         */
+        const chatbox = _converse.chatboxes.findWhere({
+          'jid': contact.get('jid')
+        });
+
+        if (chatbox) {
+          chatbox.addRelatedContact(contact);
+        }
+      });
+    });
+
     _converse.api.listen.on('chatBoxesInitialized', () => {
       _converse.chatboxviews = new _converse.ChatBoxViews({
         'model': _converse.chatboxes
@@ -49157,7 +49368,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -50039,16 +50250,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         if (this.parseMessageForCommands(message) || (await this.model.sendMessage(this.model.getOutgoingMessageAttributes(message, spoiler_hint)))) {
           hint_el.value = '';
           textarea.value = '';
-          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea); // Trigger input event, so that the textarea resizes
-
-          const event = document.createEvent('Event');
-          event.initEvent('input', true, true);
-          textarea.dispatchEvent(event);
+          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea);
+          textarea.style.height = 'auto'; // Fixes weirdness
 
           _converse.emit('messageSend', message);
         }
 
         textarea.removeAttribute('disabled');
+        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('disabled', textarea);
         textarea.focus(); // Suppress events, otherwise superfluous CSN gets set
         // immediately after the message, causing rate-limiting issues.
 
@@ -50686,20 +50895,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     // relevant objects or classes.
     //
     // New functions which don't exist yet can also be added.
-    tearDown() {
-      this.__super__.tearDown.apply(this, arguments);
-
-      if (this.rosterview) {
-        // Removes roster groups
-        this.rosterview.model.off().reset();
-        this.rosterview.each(function (groupview) {
-          groupview.removeAll();
-          groupview.remove();
-        });
-        this.rosterview.removeAll().remove();
-      }
-    },
-
     ChatBoxes: {
       model(attrs, options) {
         const _converse = this.__super__._converse;
@@ -50875,7 +51070,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         if (!_converse.connection.connected || !_converse.connection.authenticated || _converse.connection.disconnecting) {
           this.renderLoginPanel();
-        } else if (this.model.get('connected') && (!this.controlbox_pane || !u.isVisible(this.controlbox_pane.el))) {
+        } else if (this.model.get('connected')) {
           this.renderControlBoxPane();
         }
 
@@ -50944,6 +51139,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         if (this.loginpanel) {
           this.loginpanel.remove();
           delete this.loginpanel;
+        }
+
+        if (this.controlbox_pane && u.isVisible(this.controlbox_pane.el)) {
+          return;
         }
 
         this.el.classList.remove("logged-out");
@@ -51307,9 +51506,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       return view;
     };
 
-    _converse.on('disconnected', () => disconnect().renderLoginPanel());
+    _converse.api.listen.on('disconnected', () => disconnect().renderLoginPanel());
 
-    _converse.on('will-reconnect', disconnect);
+    _converse.api.listen.on('will-reconnect', disconnect);
+
+    _converse.api.listen.on('clearSession', () => {
+      const view = _converse.chatboxviews.get('controlbox');
+
+      if (view && view.controlbox_pane) {
+        view.controlbox_pane.remove();
+        delete view.controlbox_pane;
+      }
+    });
     /************************ BEGIN API ************************/
 
 
@@ -51780,7 +51988,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -52096,7 +52304,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -52389,7 +52597,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -52402,7 +52610,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].env.utils;
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-minimize', {
@@ -52840,7 +53047,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 
       initToggle() {
         const storage = _converse.config.get('storage'),
-              id = b64_sha1(`converse.minchatstoggle${_converse.bare_jid}`);
+              id = `converse.minchatstoggle${_converse.bare_jid}`;
 
         this.toggleview = new _converse.MinimizedChatsToggleView({
           'model': new _converse.MinimizedChatsToggle({
@@ -53007,7 +53214,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -53187,7 +53394,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -53220,7 +53427,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment,
       f = _converse$env.f,
       sizzle = _converse$env.sizzle,
@@ -53249,11 +53455,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     ControlBoxView: {
       renderRoomsPanel() {
         const _converse = this.__super__._converse;
+
+        if (this.roomspanel && u.isVisible(this.roomspanel.el)) {
+          return;
+        }
+
         this.roomspanel = new _converse.RoomsPanel({
           'model': new (_converse.RoomsPanelModel.extend({
-            'id': b64_sha1(`converse.roomspanel${_converse.bare_jid}`),
-            // Required by sessionStorage
-            'browserStorage': new Backbone.BrowserStorage[_converse.config.get('storage')](b64_sha1(`converse.roomspanel${_converse.bare_jid}`))
+            'id': `converse.roomspanel${_converse.bare_jid}`,
+            // Required by web storage
+            'browserStorage': new Backbone.BrowserStorage[_converse.config.get('storage')](`converse.roomspanel${_converse.bare_jid}`)
           }))()
         });
         this.roomspanel.model.fetch();
@@ -53294,12 +53505,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     _converse.api.settings.update({
       'auto_list_rooms': false,
       'muc_disable_moderator_commands': false,
+      'muc_domain': undefined,
+      'locked_muc_domain': undefined,
       'muc_show_join_leave': true,
       'roomconfig_whitelist': [],
       'visible_toolbar_buttons': {
         'toggle_occupants': true
       }
     });
+
+    if (_converse.locked_muc_domain && !_.isString(_converse.muc_domain)) {
+      throw new Error("Config Error: it makes no sense to set locked_muc_domain " + "to true when muc_domain is not set");
+    }
 
     function ___(str) {
       /* This is part of a hack to get gettext to scan strings to be
@@ -53450,22 +53667,31 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       initialize() {
         _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
 
+        if (_converse.muc_domain && !this.model.get('muc_domain')) {
+          this.model.save('muc_domain', _converse.muc_domain);
+        }
+
         this.model.on('change:muc_domain', this.onDomainChange, this);
       },
 
       toHTML() {
+        const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
+
         return templates_list_chatrooms_modal_html__WEBPACK_IMPORTED_MODULE_19___default()(_.extend(this.model.toJSON(), {
           'heading_list_chatrooms': __('Query for Groupchats'),
           'label_server_address': __('Server address'),
           'label_query': __('Show groupchats'),
-          'server_placeholder': __('conference.example.org')
+          'show_form': !_converse.locked_muc_domain,
+          'server_placeholder': muc_domain ? muc_domain : __('conference.example.org')
         }));
       },
 
       afterRender() {
-        this.el.addEventListener('shown.bs.modal', () => {
-          this.el.querySelector('input[name="server"]').focus();
-        }, false);
+        if (_converse.locked_muc_domain) {
+          this.updateRoomsList();
+        } else {
+          this.el.addEventListener('shown.bs.modal', () => this.el.querySelector('input[name="server"]').focus(), false);
+        }
       },
 
       openRoom(ev) {
@@ -53524,8 +53750,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         this.rooms = iq.querySelectorAll('query item');
 
         if (this.rooms.length) {
-          // For translators: %1$s is a variable and will be
-          // replaced with the XMPP server name
           available_chatrooms.innerHTML = templates_rooms_results_html__WEBPACK_IMPORTED_MODULE_24___default()({
             'feedback_text': __('Groupchats found:')
           });
@@ -53581,12 +53805,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         'submit form.add-chatroom': 'openChatRoom'
       },
 
+      initialize() {
+        _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
+
+        this.model.on('change:muc_domain', this.render, this);
+      },
+
       toHTML() {
+        let placeholder = '';
+
+        if (!_converse.locked_muc_domain) {
+          const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
+
+          placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
+        }
+
         return templates_add_chatroom_modal_html__WEBPACK_IMPORTED_MODULE_5___default()(_.extend(this.model.toJSON(), {
           'heading_new_chatroom': __('Enter a new Groupchat'),
-          'label_room_address': __('Groupchat address'),
+          'label_room_address': _converse.muc_domain ? __('Groupchat name') : __('Groupchat address'),
           'label_nickname': __('Optional nickname'),
-          'chatroom_placeholder': __('name@conference.example.org'),
+          'chatroom_placeholder': placeholder,
           'label_join': __('Join')
         }));
       },
@@ -53616,7 +53854,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           data.nick = undefined;
         }
 
-        _converse.api.rooms.open(data.jid, data);
+        let jid;
+
+        if (_converse.locked_muc_domain || _converse.muc_domain && !u.isValidJID(data.jid)) {
+          jid = `${Strophe.escapeNode(data.jid)}@${_converse.muc_domain}`;
+        } else {
+          jid = data.jid;
+        }
+
+        _converse.api.rooms.open(jid, _.extend(data, {
+          jid
+        }));
 
         this.modal.hide();
         ev.target.reset();
@@ -53700,30 +53948,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         this.enterRoom();
       },
 
-      enterRoom(ev) {
+      async enterRoom(ev) {
         if (ev) {
           ev.preventDefault();
         }
 
         if (this.model.get('connection_status') !== _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.ENTERED) {
-          const handler = () => {
-            if (!u.isPersistableModel(this.model)) {
-              // Happens during tests, nothing to do if this
-              // is a hanging chatbox (i.e. not in the collection anymore).
-              return;
-            }
+          await this.model.getRoomFeatures();
 
-            this.populateAndJoin();
+          if (!u.isPersistableModel(this.model)) {
+            // XXX: Happens during tests, nothing to do if this
+            // is a hanging chatbox (i.e. not in the collection anymore).
+            return;
+          }
 
-            _converse.emit('chatRoomOpened', this);
-          };
-
-          this.model.getRoomFeatures().then(handler, handler);
+          this.populateAndJoin();
         } else {
           this.fetchMessages();
-
-          _converse.emit('chatRoomOpened', this);
         }
+
+        _converse.emit('chatRoomOpened', this);
       },
 
       render() {
@@ -54173,7 +54417,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
             break;
 
           case 'help':
-            this.showHelpMessages(_.filter([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/destroy</strong>: ${__('Destroy room')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this groupchat")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`], line => _.every(disabled_commands, element => !line.startsWith(element + '<', 9))));
+            this.showHelpMessages(_.filter([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/destroy</strong>: ${__('Remove this groupchat')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this groupchat")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`], line => _.every(disabled_commands, element => !line.startsWith(element + '<', 9))));
             break;
 
           case 'kick':
@@ -55148,8 +55392,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       initialize() {
         Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
         this.chatroomview = this.model.chatroomview;
-        this.chatroomview.model.on('change:open', this.renderInviteWidget, this);
         this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
+        this.chatroomview.model.features.on('change:open', this.renderInviteWidget, this);
         this.chatroomview.model.features.on('change', this.renderRoomFeatures, this);
         this.render();
         this.model.fetch({
@@ -55236,7 +55480,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
 
         if (!jid || _.compact(jid.split('@')).length < 2) {
           evt.target.outerHTML = templates_chatroom_invite_html__WEBPACK_IMPORTED_MODULE_14___default()({
-            'error_message': __('Please enter a valid XMPP username'),
+            'error_message': __('Please enter a valid XMPP address'),
             'label_invitation': __('Invite')
           });
           this.initInviteWidget();
@@ -55253,7 +55497,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       },
 
       shouldInviteWidgetBeShown() {
-        return _converse.allow_muc_invitations && (this.chatroomview.model.get('open') || this.chatroomview.model.get('affiliation') === "owner");
+        return _converse.allow_muc_invitations && (this.chatroomview.model.features.get('open') || this.chatroomview.model.get('affiliation') === "owner");
       },
 
       initInviteWidget() {
@@ -55352,7 +55596,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       });
     });
 
-    _converse.on('controlboxInitialized', view => {
+    _converse.api.listen.on('clearSession', () => {
+      const view = _converse.chatboxviews.get('controlbox');
+
+      if (view && view.roomspanel) {
+        view.roomspanel.remove();
+        delete view.roomspanel;
+      }
+    });
+
+    _converse.api.listen.on('controlboxInitialized', view => {
       if (!_converse.allow_muc) {
         return;
       }
@@ -55389,6 +55642,43 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
        * @memberOf _converse.api
        */
       'roomviews': {
+        /**
+         * Retrieves a groupchat (aka chatroom) view. The chat should already be open.
+         *
+         * @method _converse.api.roomviews.get
+         * @param {String|string[]} name - e.g. 'coven@conference.shakespeare.lit' or
+         *  ['coven@conference.shakespeare.lit', 'cave@conference.shakespeare.lit']
+         * @returns {Backbone.View} Backbone.View representing the groupchat
+         *
+         * @example
+         * // To return a single view, provide the JID of the groupchat
+         * const view = _converse.api.roomviews.get('coven@conference.shakespeare.lit');
+         *
+         * @example
+         * // To return an array of views, provide an array of JIDs:
+         * const views = _converse.api.roomviews.get(['coven@conference.shakespeare.lit', 'cave@conference.shakespeare.lit']);
+         *
+         * @example
+         * // To return views of all open groupchats, call the method without any parameters::
+         * const views = _converse.api.roomviews.get();
+         *
+         */
+        get(jids) {
+          if (_.isArray(jids)) {
+            const views = _converse.api.chatviews.get(jids);
+
+            return views.filter(v => v.model.get('type') === _converse.CHATROOMS_TYPE);
+          } else {
+            const view = _converse.api.chatviews.get(jids);
+
+            if (view.model.get('type') === _converse.CHATROOMS_TYPE) {
+              return view;
+            } else {
+              return null;
+            }
+          }
+        },
+
         /**
          * Lets you close open chatrooms.
          *
@@ -55444,7 +55734,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, JC Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, JC Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
@@ -55773,7 +56063,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* global libsignal, ArrayBuffer, parseInt, crypto */
@@ -55789,8 +56079,7 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       $iq = _converse$env.$iq,
       $msg = _converse$env.$msg,
       _ = _converse$env._,
-      f = _converse$env.f,
-      b64_sha1 = _converse$env.b64_sha1;
+      f = _converse$env.f;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
 Strophe.addNamespace('OMEMO_DEVICELIST', Strophe.NS.OMEMO + ".devicelist");
 Strophe.addNamespace('OMEMO_VERIFICATION', Strophe.NS.OMEMO + ".verification");
@@ -55842,7 +56131,7 @@ function parseBundle(bundle_el) {
 
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-omemo', {
   enabled(_converse) {
-    return !_.isNil(window.libsignal) && !f.includes('converse-omemo', _converse.blacklisted_plugins);
+    return !_.isNil(window.libsignal) && !f.includes('converse-omemo', _converse.blacklisted_plugins) && _converse.config.get('trusted');
   },
 
   dependencies: ["converse-chatview", "converse-pubsub"],
@@ -57240,6 +57529,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
      */
     const _converse = this._converse,
           __ = _converse.__;
+
+    _converse.api.settings.update({
+      'show_client_info': true
+    });
+
     _converse.ProfileModal = _converse.BootstrapModal.extend({
       events: {
         'change input[type="file"': "updateFilePreview",
@@ -57510,7 +57804,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* This is a Converse.js plugin which add support for registering
@@ -58457,7 +58751,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js (A browser based XMPP chat client)
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* This is a non-core Converse.js plugin which shows a list of currently open
@@ -58471,7 +58765,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
@@ -58640,7 +58933,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         this.model.on('remove', this.showOrHide, this);
 
         const storage = _converse.config.get('storage'),
-              id = b64_sha1(`converse.roomslist${_converse.bare_jid}`);
+              id = `converse.roomslist${_converse.bare_jid}`;
 
         this.list_model = new _converse.RoomsList({
           'id': id
@@ -58752,7 +59045,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     const initRoomsListView = function initRoomsListView() {
       const storage = _converse.config.get('storage'),
-            id = b64_sha1(`converse.open-rooms-{_converse.bare_jid}`),
+            id = `converse.open-rooms-{_converse.bare_jid}`,
             model = new _converse.OpenRooms();
 
       model.browserStorage = new Backbone.BrowserStorage[storage](id);
@@ -58763,17 +59056,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       _converse.api.emit('roomsListInitialized');
     };
 
-    if (_converse.allow_bookmarks) {
-      _converse.api.waitUntil('bookmarksInitialized').then(initRoomsListView);
-    } else {
-      u.onMultipleEvents([{
-        'object': _converse,
-        'event': 'chatBoxesInitialized'
-      }, {
-        'object': _converse,
-        'event': 'roomsPanelRendered'
-      }], initRoomsListView);
-    }
+    _converse.on('connected', async () => {
+      if (_converse.allow_bookmarks) {
+        await _converse.api.waitUntil('bookmarksInitialized');
+      } else {
+        await Promise.all([_converse.api.waitUntil('chatBoxesFetched'), _converse.api.waitUntil('roomsPanelRendered')]);
+      }
+
+      initRoomsListView();
+    });
 
     _converse.api.listen.on('reconnected', initRoomsListView);
   }
@@ -58818,7 +59109,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -58852,17 +59143,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     // New functions which don't exist yet can also be added.
     afterReconnected() {
       this.__super__.afterReconnected.apply(this, arguments);
-    },
-
-    tearDown() {
-      /* Remove the rosterview when tearing down. It gets created
-       * anew when reconnecting or logging in.
-       */
-      this.__super__.tearDown.apply(this, arguments);
-
-      if (!_.isUndefined(this.rosterview)) {
-        this.rosterview.remove();
-      }
     },
 
     RosterGroups: {
@@ -58972,14 +59252,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       afterRender() {
         if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
           this.initXHRAutoComplete(this.el);
+          this.el.addEventListener('awesomplete-selectcomplete', ev => {
+            this.el.querySelector('input[name="name"]').value = ev.text.label;
+            this.el.querySelector('input[name="jid"]').value = ev.text.value;
+          });
         } else {
           this.initJIDAutoComplete(this.el);
         }
 
         const jid_input = this.el.querySelector('input[name="jid"]');
-        this.el.addEventListener('shown.bs.modal', () => {
-          jid_input.focus();
-        }, false);
+        this.el.addEventListener('shown.bs.modal', () => jid_input.focus(), false);
       },
 
       initJIDAutoComplete(root) {
@@ -58989,9 +59271,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         new awesomplete__WEBPACK_IMPORTED_MODULE_3___default.a(jid_input, {
           'list': list,
-          'data': function data(text, input) {
-            return input.slice(0, input.indexOf("@")) + "@" + text;
-          },
+          'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
           'filter': awesomplete__WEBPACK_IMPORTED_MODULE_3___default.a.FILTER_STARTSWITH
         });
       },
@@ -59022,10 +59302,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           xhr.open("GET", `${_converse.xhr_user_search_url}q=${name_input.value}`, true);
           xhr.send();
         }, 300));
-        this.el.addEventListener('awesomplete-selectcomplete', ev => {
-          jid_input.value = ev.text.value;
-          name_input.value = ev.text.label;
-        });
       },
 
       addContactFromForm(ev) {
@@ -59708,7 +59984,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       createRosterFilter() {
         // Create a model on which we can store filter properties
         const model = new _converse.RosterFilter();
-        model.id = b64_sha1(`_converse.rosterfilter${_converse.bare_jid}`);
+        model.id = `_converse.rosterfilter${_converse.bare_jid}`;
         model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
         this.filter_view = new _converse.RosterFilterView({
           'model': model
@@ -59846,7 +60122,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         return this.model.create({
           name,
-          id: b64_sha1(name)
+          'id': b64_sha1(name)
         });
       },
 
@@ -59926,6 +60202,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     _converse.api.listen.on('rosterInitialized', initRoster);
 
     _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
+
+    _converse.api.listen.on('afterTearDown', () => {
+      if (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview) {
+        _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview.model.off().reset();
+        _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview.each(groupview => groupview.removeAll().remove());
+        _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview.removeAll().remove();
+        delete _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview;
+      }
+    });
   }
 
 });
@@ -59946,7 +60231,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* converse-singleton
@@ -61294,7 +61579,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2012-2018, the Converse.js developers
+// Copyright (c) 2012-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -61544,11 +61829,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return {
           'bookmarked': false,
           'chat_state': undefined,
+          'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode),
+          'message_type': 'chat',
+          'nickname': undefined,
           'num_unread': 0,
           'type': _converse.PRIVATE_CHAT_TYPE,
-          'message_type': 'chat',
-          'url': '',
-          'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode)
+          'url': ''
         };
       },
 
@@ -61598,7 +61884,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
           'box_id': b64_sha1(this.get('jid')),
           'time_opened': this.get('time_opened') || moment().valueOf(),
-          'user_id': Strophe.getNodeFromJid(this.get('jid'))
+          'user_id': Strophe.getNodeFromJid(this.get('jid')),
+          'nickname': _.get(_converse.api.contacts.get(this.get('jid')), 'attributes.nickname')
         });
       },
 
@@ -61643,6 +61930,59 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
 
         return false;
+      },
+
+      findDuplicateFromOriginID(stanza) {
+        const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+
+        if (!origin_id) {
+          return false;
+        }
+
+        return this.messages.findWhere({
+          'origin_id': origin_id.getAttribute('id'),
+          'sender': 'me'
+        });
+      },
+
+      async hasDuplicateArchiveID(stanza) {
+        const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+
+        if (!result) {
+          return false;
+        }
+
+        const by_jid = stanza.getAttribute('from') || this.get('jid');
+        const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
+
+        if (!supported.length) {
+          return false;
+        }
+
+        const query = {};
+        query[`stanza_id ${by_jid}`] = result.getAttribute('id');
+        const msg = this.messages.findWhere(query);
+        return !_.isNil(msg);
+      },
+
+      async hasDuplicateStanzaID(stanza) {
+        const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+
+        if (!stanza_id) {
+          return false;
+        }
+
+        const by_jid = stanza_id.getAttribute('by');
+        const result = await _converse.api.disco.supports(Strophe.NS.SID, by_jid);
+
+        if (!result.length) {
+          return false;
+        }
+
+        const query = {};
+        query[`stanza_id ${by_jid}`] = stanza_id.getAttribute('id');
+        const msg = this.messages.findWhere(query);
+        return !_.isNil(msg);
       },
 
       sendMarker(to_jid, id, type) {
@@ -61967,6 +62307,24 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
+      getStanzaIDs(stanza) {
+        const attrs = {};
+        const stanza_ids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
+
+        if (stanza_ids.length) {
+          stanza_ids.forEach(s => attrs[`stanza_id ${s.getAttribute('by')}`] = s.getAttribute('id'));
+        }
+
+        const result = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+
+        if (result) {
+          const by_jid = stanza.getAttribute('from');
+          attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
+        }
+
+        return attrs;
+      },
+
       getMessageAttributesFromStanza(stanza, original_stanza) {
         /* Parses a passed in message stanza and returns an object
          * of attributes.
@@ -61982,21 +62340,23 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
               spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
               delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
+              text = _converse.chatboxes.getMessageBody(stanza) || undefined,
               chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
-        const attrs = {
+        const attrs = _.extend({
           'chat_state': chat_state,
           'is_archived': !_.isNil(archive),
           'is_delayed': !_.isNil(delay),
           'is_spoiler': !_.isNil(spoiler),
-          'message': _converse.chatboxes.getMessageBody(stanza) || undefined,
+          'is_single_emoji': text ? u.isSingleEmoji(text) : false,
+          'message': text,
           'msgid': stanza.getAttribute('id'),
           'references': this.getReferencesFromStanza(stanza),
           'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
           'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
           'time': delay ? delay.getAttribute('stamp') : moment().format(),
           'type': stanza.getAttribute('type')
-        };
+        }, this.getStanzaIDs(original_stanza));
 
         if (attrs.type === 'groupchat') {
           attrs.from = stanza.getAttribute('from');
@@ -62010,7 +62370,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             attrs.fullname = _converse.xmppstatus.get('fullname');
           } else {
             attrs.sender = 'them';
-            attrs.fullname = this.get('fullname');
+            attrs.fullname = this.get('fullname') || this.get('fullname');
           }
         }
 
@@ -62246,12 +62606,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
 
         const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0,
-              chatbox_attrs = {
-          'fullname': _.get(_converse.api.contacts.get(contact_jid), 'attributes.fullname')
-        },
-              chatbox = this.getChatBox(contact_jid, chatbox_attrs, has_body);
+              roster_nick = _.get(_converse.api.contacts.get(contact_jid), 'attributes.nickname'),
+              chatbox = this.getChatBox(contact_jid, {
+          'nickname': roster_nick
+        }, has_body);
 
-        if (chatbox && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
+        if (chatbox && !chatbox.findDuplicateFromOriginID(stanza) && !(await chatbox.hasDuplicateArchiveID(original_stanza)) && !(await chatbox.hasDuplicateStanzaID(stanza)) && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
           const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
 
           if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
@@ -62527,7 +62887,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -62594,7 +62954,7 @@ const _converse = {
   'templates': {},
   'promises': {}
 };
-_converse.VERSION_NAME = "v4.1.0";
+_converse.VERSION_NAME = "v4.1.2";
 
 _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.extend(_converse, Backbone.Events); // Make converse pluggable
 
@@ -62871,7 +63231,7 @@ function initClientConfig() {
    * What this means is that config values need to persist across
    * user sessions.
    */
-  const id = b64_sha1('converse.client-config');
+  const id = 'converse.client-config';
   _converse.config = new Backbone.Model({
     'id': id,
     'trusted': _converse.trusted && true || false,
@@ -62923,8 +63283,8 @@ function setUpXMLLogging() {
 }
 
 function finishInitialization() {
-  initPlugins();
   initClientConfig();
+  initPlugins();
 
   _converse.initConnection();
 
@@ -63014,6 +63374,14 @@ _converse.initialize = async function (settings, callback) {
       throw new Error("Config Error: you need to provide the server's " + "domain via the 'jid' option when using anonymous " + "authentication with auto_login.");
     }
   }
+
+  _converse.router.route(/^converse\?debug=(true|false)$/, 'debug', debug => {
+    if (debug === "true") {
+      _converse.debug = true;
+    } else {
+      _converse.debug = false;
+    }
+  });
   /* Localisation */
 
 
@@ -64432,7 +64800,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse developers
+// Copyright (c) 2013-2019, the Converse developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* This is a Converse plugin which add support for XEP-0030: Service Discovery */
@@ -64443,7 +64811,6 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
       $iq = _converse$env.$iq,
-      b64_sha1 = _converse$env.b64_sha1,
       utils = _converse$env.utils,
       _ = _converse$env._,
       f = _converse$env.f;
@@ -64467,18 +64834,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       initialize() {
         this.waitUntilFeaturesDiscovered = utils.getResolveablePromise();
         this.dataforms = new Backbone.Collection();
-        this.dataforms.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.dataforms-${this.get('jid')}`));
+        this.dataforms.browserStorage = new Backbone.BrowserStorage.session(`converse.dataforms-${this.get('jid')}`);
         this.features = new Backbone.Collection();
-        this.features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.features-${this.get('jid')}`));
+        this.features.browserStorage = new Backbone.BrowserStorage.session(`converse.features-${this.get('jid')}`);
         this.features.on('add', this.onFeatureAdded, this);
         this.fields = new Backbone.Collection();
-        this.fields.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.fields-${this.get('jid')}`));
+        this.fields.browserStorage = new Backbone.BrowserStorage.session(`converse.fields-${this.get('jid')}`);
         this.fields.on('add', this.onFieldAdded, this);
         this.identities = new Backbone.Collection();
-        this.identities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.identities-${this.get('jid')}`));
+        this.identities.browserStorage = new Backbone.BrowserStorage.session(`converse.identities-${this.get('jid')}`);
         this.fetchFeatures();
         this.items = new _converse.DiscoEntities();
-        this.items.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.disco-items-${this.get('jid')}`));
+        this.items.browserStorage = new Backbone.BrowserStorage.session(`converse.disco-items-${this.get('jid')}`);
         this.items.fetch();
       },
 
@@ -64680,7 +65047,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
 
     function initStreamFeatures() {
       _converse.stream_features = new Backbone.Collection();
-      _converse.stream_features.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.stream-features-${_converse.bare_jid}`));
+      _converse.stream_features.browserStorage = new Backbone.BrowserStorage.session(`converse.stream-features-${_converse.bare_jid}`);
 
       _converse.stream_features.fetch({
         success(collection) {
@@ -64705,7 +65072,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       _converse.connection.addHandler(onDiscoInfoRequest, Strophe.NS.DISCO_INFO, 'iq', 'get', null, null);
 
       _converse.disco_entities = new _converse.DiscoEntities();
-      _converse.disco_entities.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.disco-entities-${_converse.bare_jid}`));
+      _converse.disco_entities.browserStorage = new Backbone.BrowserStorage.session(`converse.disco-entities-${_converse.bare_jid}`);
       const collection = await _converse.disco_entities.fetchEntities();
 
       if (collection.length === 0 || !collection.get(_converse.domain)) {
@@ -65219,13 +65586,6 @@ function getMessageArchiveID(stanza) {
 
   if (!_.isUndefined(result)) {
     return result.getAttribute('id');
-  } // See: https://xmpp.org/extensions/xep-0313.html#archives_id
-
-
-  const stanza_id = sizzle__WEBPACK_IMPORTED_MODULE_3___default()(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-
-  if (!_.isUndefined(stanza_id)) {
-    return stanza_id.getAttribute('id');
   }
 }
 
@@ -65866,7 +66226,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -65985,7 +66345,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
       auto_join_on_invite: false,
       auto_join_rooms: [],
       auto_register_muc_nickname: false,
-      muc_domain: undefined,
       muc_history_max_stanzas: undefined,
       muc_instant_rooms: true,
       muc_nickname_from_jid: false
@@ -66061,7 +66420,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         this.features.browserStorage = new Backbone.BrowserStorage.session(id);
         this.features.fetch();
         this.occupants = new _converse.ChatRoomOccupants();
-        this.occupants.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`));
+        this.occupants.browserStorage = new Backbone.BrowserStorage.session(`converse.occupants-${_converse.bare_jid}${this.get('jid')}`);
         this.occupants.chatroom = this;
         this.registerHandlers();
       },
@@ -66942,29 +67301,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         return data;
       },
 
-      isDuplicate(message, original_stanza) {
-        // XXX: original_stanza is not used here, but in converse-mam
-        const msgid = message.getAttribute('id'),
-              jid = message.getAttribute('from');
-
-        if (msgid) {
-          const msg = this.messages.findWhere({
-            'msgid': msgid,
-            'from': jid
-          });
-
-          if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
-            msg.save({
-              'received': moment().format()
-            });
-          }
-
-          return msg;
-        }
-
-        return false;
-      },
-
       fetchFeaturesIfConfigurationChanged(stanza) {
         const configuration_changed = stanza.querySelector("status[code='104']"),
               logging_enabled = stanza.querySelector("status[code='170']"),
@@ -66988,7 +67324,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
                      acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
       },
 
-      reflectionHandled(stanza) {
+      handleReflection(stanza) {
         /* Handle a MUC reflected message and return true if so.
          *
          * Parameters:
@@ -66998,22 +67334,26 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
 
         if (own_message) {
-          const msgid = stanza.getAttribute('id'),
-                jid = stanza.getAttribute('from'); // TODO: use stanza-id?
+          const msg = this.findDuplicateFromOriginID(stanza);
 
-          if (msgid) {
-            const msg = this.messages.findWhere({
-              'msgid': msgid,
-              'from': jid
-            });
+          if (msg) {
+            const attrs = {};
+            const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+            const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
 
-            if (msg && msg.get('sender') === 'me' && !msg.get('received')) {
-              msg.save({
-                'received': moment().format()
-              });
-              return true;
+            if (by_jid) {
+              const key = `stanza_id ${by_jid}`;
+              attrs[key] = stanza_id.getAttribute('id');
             }
+
+            if (!msg.get('received')) {
+              attrs.received = moment().format();
+            }
+
+            msg.save(attrs);
           }
+
+          return msg ? true : false;
         }
       },
 
@@ -67067,17 +67407,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           stanza = forwarded.querySelector('message');
         }
 
-        if (this.isDuplicate(stanza, original_stanza)) {
-          return;
+        if (this.handleReflection(stanza) || (await this.hasDuplicateArchiveID(original_stanza)) || (await this.hasDuplicateStanzaID(stanza)) || this.handleMessageCorrection(stanza) || this.isReceipt(stanza) || this.isChatMarker(stanza)) {
+          return _converse.emit('message', {
+            'stanza': original_stanza
+          });
         }
 
         const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
 
-        if (!attrs.nick) {
-          return;
-        }
-
-        if (!this.handleMessageCorrection(stanza) && !this.isReceipt(stanza) && !this.isChatMarker(stanza) && !this.reflectionHandled(stanza) && !this.subjectChangeHandled(attrs) && !this.ignorableCSN(attrs) && (attrs['chat_state'] || !_utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isEmptyMessage(attrs))) {
+        if (attrs.nick && !this.subjectChangeHandled(attrs) && !this.ignorableCSN(attrs) && (attrs['chat_state'] || !_utils_form__WEBPACK_IMPORTED_MODULE_7__["default"].isEmptyMessage(attrs))) {
           const msg = this.messages.create(attrs);
           this.incrementUnreadMsgCounter(msg);
 
@@ -67088,13 +67426,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           }
         }
 
-        if (attrs.nick !== this.get('nick')) {
-          // We only emit an event if it's not our own message
-          _converse.emit('message', {
-            'stanza': original_stanza,
-            'chatbox': this
-          });
-        }
+        _converse.emit('message', {
+          'stanza': original_stanza,
+          'chatbox': this
+        });
       },
 
       onPresence(pres) {
@@ -67710,7 +68045,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // https://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 /* This is a Converse.js plugin which add support for application-level pings
@@ -67840,7 +68175,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2018, the Converse.js developers
+// Copyright (c) 2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -67852,7 +68187,6 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].env
       $build = _converse$env.$build,
       $msg = _converse$env.$msg,
       $pres = _converse$env.$pres,
-      b64_sha1 = _converse$env.b64_sha1,
       f = _converse$env.f,
       moment = _converse$env.moment,
       _ = _converse$env._;
@@ -67964,7 +68298,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env,
@@ -67973,7 +68307,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Strophe = _converse$env.Strophe,
       $iq = _converse$env.$iq,
       $pres = _converse$env.$pres,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
@@ -68013,16 +68346,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       const storage = _converse.config.get('storage');
 
       _converse.roster = new _converse.RosterContacts();
-      _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.contacts-${_converse.bare_jid}`));
+      _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](`converse.contacts-${_converse.bare_jid}`);
       _converse.roster.data = new Backbone.Model();
-      const id = b64_sha1(`converse-roster-model-${_converse.bare_jid}`);
+      const id = `converse-roster-model-${_converse.bare_jid}`;
       _converse.roster.data.id = id;
       _converse.roster.data.browserStorage = new Backbone.BrowserStorage[storage](id);
 
       _converse.roster.data.fetch();
 
       _converse.rostergroups = new _converse.RosterGroups();
-      _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.roster.groups${_converse.bare_jid}`));
+      _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](`converse.roster.groups${_converse.bare_jid}`);
 
       _converse.emit('rosterInitialized');
     };
@@ -68679,6 +69012,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           contact.save({
             'subscription': subscription,
             'ask': ask,
+            'nickname': item.getAttribute("name"),
             'requesting': null,
             'groups': groups
           });
@@ -68933,7 +69267,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         _converse.presences = new _converse.Presences();
       }
 
-      _converse.presences.browserStorage = new Backbone.BrowserStorage.session(b64_sha1(`converse.presences-${_converse.bare_jid}`));
+      _converse.presences.browserStorage = new Backbone.BrowserStorage.session(`converse.presences-${_converse.bare_jid}`);
 
       _converse.presences.fetch();
 
@@ -69058,7 +69392,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -69069,7 +69403,6 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env
       _ = _converse$env._,
       $iq = _converse$env.$iq,
       $build = _converse$env.$build,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment,
       sizzle = _converse$env.sizzle;
 const u = _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
@@ -69199,7 +69532,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
 
     _converse.initVCardCollection = function () {
       _converse.vcards = new _converse.VCards();
-      const id = b64_sha1(`${_converse.bare_jid}-converse.vcards`);
+      const id = `${_converse.bare_jid}-converse.vcards`;
       _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.config.get('storage')](id);
 
       _converse.vcards.fetch();
@@ -69751,7 +70084,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 // This is the utilities module.
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
@@ -91625,6 +91958,16 @@ function convert(unicode) {
   return twemoji__WEBPACK_IMPORTED_MODULE_0__["default"].convert.fromCodePoint(unicode);
 }
 
+_core__WEBPACK_IMPORTED_MODULE_2__["default"].isSingleEmoji = function (str) {
+  if (!str || str.length > 2) {
+    return;
+  }
+
+  const result = _lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.flow(_core__WEBPACK_IMPORTED_MODULE_2__["default"].shortnameToUnicode, twemoji__WEBPACK_IMPORTED_MODULE_0__["default"].parse)(str);
+
+  return result.match(/<img class="emoji" draggable="false" alt=".*?" src=".*?\.png"\/>/);
+};
+
 _core__WEBPACK_IMPORTED_MODULE_2__["default"].shortnameToUnicode = function (str) {
   /* will output unicode from shortname
    * useful for sending emojis back to mobile devices
@@ -91654,11 +91997,7 @@ _core__WEBPACK_IMPORTED_MODULE_2__["default"].shortnameToUnicode = function (str
 };
 
 _core__WEBPACK_IMPORTED_MODULE_2__["default"].addEmoji = function (_converse, text) {
-  if (_converse.use_system_emojis) {
-    return _core__WEBPACK_IMPORTED_MODULE_2__["default"].shortnameToUnicode(text);
-  } else {
-    return twemoji__WEBPACK_IMPORTED_MODULE_0__["default"].parse(text);
-  }
+  return _core__WEBPACK_IMPORTED_MODULE_2__["default"].getEmojiRenderer(_converse)(text);
 };
 
 _core__WEBPACK_IMPORTED_MODULE_2__["default"].getEmojisByCategory = function (_converse) {
@@ -91740,7 +92079,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 // This is the utilities module.
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -91790,7 +92129,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 // This is the utilities module.
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 
@@ -92591,7 +92930,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-id-card"></span>' +
 __e( o.__('Not anonymous') ) +
 ' - <em>' +
-__e( o.__('All other groupchat participants can see your XMPP username') ) +
+__e( o.__('All other groupchat participants can see your XMPP address') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -92599,7 +92938,7 @@ __p += '\n                        ';
 __p += '\n                        <li class="feature" ><span class="fa fa-user-secret"></span>' +
 __e( o.__('Semi-anonymous') ) +
 ' - <em>' +
-__e( o.__('Only moderators can see your XMPP username') ) +
+__e( o.__('Only moderators can see your XMPP address') ) +
 '</em></li>\n                        ';
  } ;
 __p += '\n                        ';
@@ -92739,7 +93078,7 @@ __e( o.__('Temporary') ) +
 __p += '\n';
  if (o.nonanonymous) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('All other groupchat participants can see your XMPP username') ) +
+__e( o.__('All other groupchat participants can see your XMPP address') ) +
 '"><span class="fa fa-id-card"></span>' +
 __e( o.__('Not anonymous') ) +
 '</li>\n';
@@ -92747,7 +93086,7 @@ __e( o.__('Not anonymous') ) +
 __p += '\n';
  if (o.semianonymous) { ;
 __p += '\n<li class="feature" title="' +
-__e( o.__('Only moderators can see your XMPP username') ) +
+__e( o.__('Only moderators can see your XMPP address') ) +
 '"><span class="fa fa-user-secret"></span>' +
 __e( o.__('Semi-anonymous') ) +
 '</li>\n';
@@ -93585,18 +93924,23 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/list_chatrooms_modal.html -->\n<div class="modal fade" id="list-chatrooms-modal" tabindex="-1" role="dialog" aria-labelledby="list-chatrooms-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title"\n                    id="list-chatrooms-modal-label">' +
 __e(o.heading_list_chatrooms) +
-'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form list-chatrooms">\n                    <div class="form-group">\n                        <label for="chatroom">' +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body d-flex flex-column">\n                ';
+ if (o.show_form) { ;
+__p += '\n                <form class="converse-form list-chatrooms">\n                    <div class="form-group">\n                        <label for="chatroom">' +
 __e(o.label_server_address) +
 ':</label>\n                        <input type="text" value="' +
 __e(o.muc_domain) +
 '" required="required" name="server" class="form-control" placeholder="' +
 __e(o.server_placeholder) +
-'"/>\n                    </div>\n                    <input type="submit" class="btn btn-primary" name="join" value="' +
+'"/>\n                    </div>\n                    <input type="submit" class="btn btn-primary" name="list" value="' +
 __e(o.label_query) +
-'"/>\n                </form>\n                <ul class="available-chatrooms list-group"></ul>\n            </div>\n        </div>\n    </div>\n</div>\n';
+'"/>\n                </form>\n                ';
+ } ;
+__p += '\n                <ul class="available-chatrooms list-group"></ul>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };
 
@@ -93634,7 +93978,7 @@ __p += '\n            <span class="spinner fa fa-spinner centered"/>\n        ';
 __p += '\n            ';
  if (o.authentication == o.LOGIN || o.authentication == o.EXTERNAL) { ;
 __p += '\n                <div class="form-group">\n                    <label for="converse-login-jid">' +
-__e(o.__("XMPP Username:")) +
+__e(o.__("XMPP Address:")) +
 '</label>\n                    <input id="converse-login-jid" class="form-control" autofocus required="required" type="text" name="jid" placeholder="' +
 __e(o.placeholder_username) +
 '"/>\n                </div>\n                ';
@@ -93780,7 +94124,11 @@ __p += '\n                    <div class="chat-msg__subject">' +
 __e( o.subject ) +
 '</div>\n                ';
  } ;
-__p += '\n                <div class="chat-msg__text';
+__p += '\n                <div class="chat-msg__text\n                    ';
+ if (o.is_single_emoji) { ;
+__p += ' chat-msg__text--larger';
+ } ;
+__p += '\n                    ';
  if (o.is_spoiler) { ;
 __p += ' spoiler collapsed';
  } ;
@@ -94111,9 +94459,13 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/profile_view.html -->\n<div class="userinfo controlbox-padded">\n<div class="controlbox-section profile d-flex">\n    <a class="show-profile" href="#">\n        <canvas class="avatar align-self-center" height="40" width="40"></canvas>\n    </a>\n    <span class="username w-100 align-self-center">' +
 __e(o.fullname) +
-'</span>\n    <a class="controlbox-heading__btn show-client-info fa fa-info-circle align-self-center" title="' +
+'</span>\n    ';
+ if (o._converse.show_client_info) { ;
+__p += '\n        <a class="controlbox-heading__btn show-client-info fa fa-info-circle align-self-center" title="' +
 __e(o.info_details) +
 '"></a>\n    ';
+ } ;
+__p += '\n    ';
  if (o._converse.allow_logout) { ;
 __p += '\n        <a class="controlbox-heading__btn logout fa fa-sign-out-alt align-self-center" title="' +
 __e(o.title_log_out) +
@@ -94627,7 +94979,25 @@ __p += '<!-- src/templates/roster_filter.html -->\n<form class="controlbox-padde
  if (!o.visible) { ;
 __p += ' hidden ';
  } ;
-__p += '">\n    <div class="form-inline flex-nowrap">\n        <div class="btn-group">\n            <input ';
+__p += '">\n    <div class="form-inline flex-nowrap">\n        <div class="filter-by d-flex flex-nowrap">\n            <span class="fa fa-user ';
+ if (o.filter_type === 'contacts') { ;
+__p += ' selected ';
+ } ;
+__p += '" data-type="contacts" title="' +
+__e(o.title_contact_filter) +
+'"></span>\n            <span class="fa fa-users ';
+ if (o.filter_type === 'groups') { ;
+__p += ' selected ';
+ } ;
+__p += '" data-type="groups" title="' +
+__e(o.title_group_filter) +
+'"></span>\n            <span class="fa fa-circle ';
+ if (o.filter_type === 'state') { ;
+__p += ' selected ';
+ } ;
+__p += '" data-type="state" title="' +
+__e(o.title_status_filter) +
+'"></span>\n        </div>\n\n        <div class="btn-group">\n            <input ';
  if (o.filter_text) { ;
 __p += ' value="' +
 __e(o.filter_text) +
@@ -94691,25 +95061,7 @@ __p += ' selected="selected" ';
  } ;
 __p += '\n                value="offline">' +
 __e(o.label_offline) +
-'</option>\n        </select>\n\n        <div class="filter-by d-flex flex-nowrap">\n            <span class="fa fa-user ';
- if (o.filter_type === 'contacts') { ;
-__p += ' selected ';
- } ;
-__p += '" data-type="contacts" title="' +
-__e(o.title_contact_filter) +
-'"></span>\n            <span class="fa fa-users ';
- if (o.filter_type === 'groups') { ;
-__p += ' selected ';
- } ;
-__p += '" data-type="groups" title="' +
-__e(o.title_group_filter) +
-'"></span>\n            <span class="fa fa-circle ';
- if (o.filter_type === 'state') { ;
-__p += ' selected ';
- } ;
-__p += '" data-type="state" title="' +
-__e(o.title_status_filter) +
-'"></span>\n        </div>\n    </div>\n</form>\n';
+'</option>\n        </select>\n    </div>\n</form>\n';
 return __p
 };
 
@@ -95263,7 +95615,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 // This is a form utilities module.
 //
-// Copyright (c) 2013-2018, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 
 

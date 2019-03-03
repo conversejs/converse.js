@@ -232,7 +232,7 @@ section {
     align-items: center;
     font-family: 'Baumans', cursive;
     font-size: 6em;
-    margin-top: 1em;
+    margin-top: 2em;
     margin-bottom: 0.5em;
     color: white;
 
@@ -266,6 +266,26 @@ section {
         }
         .cls-4{
             fill: white;
+        }
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .banner-social-buttons {
+        display: none;
+    }
+
+    .chatroom-name {
+        font-size: 16px;
+    }
+
+    .brand-heading {
+        flex-direction: column;
+        font-size: 4em;
+        margin-top: 1em;
+
+        .byline {
+            margin: auto;
         }
     }
 }

@@ -33,6 +33,10 @@ converse.plugins.add('converse-profile', {
         const { _converse } = this,
               { __ } = _converse;
 
+        _converse.api.settings.update({
+            'show_client_info': true
+        });
+
 
         _converse.ProfileModal = _converse.BootstrapModal.extend({
             events: {

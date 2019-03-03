@@ -1,7 +1,7 @@
 // Converse.js
 // http://conversejs.org
 //
-// Copyright (c) 2013-2018, the Converse.js developers
+// Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
 import "converse-chatboxviews";
@@ -872,16 +872,15 @@ converse.plugins.add('converse-chatview', {
                 textarea.setAttribute('disabled', 'disabled');
                 if (this.parseMessageForCommands(message) ||
                     await this.model.sendMessage(this.model.getOutgoingMessageAttributes(message, spoiler_hint))) {
+
                     hint_el.value = '';
                     textarea.value = '';
                     u.removeClass('correcting', textarea);
-                    // Trigger input event, so that the textarea resizes
-                    const event = document.createEvent('Event');
-                    event.initEvent('input', true, true);
-                    textarea.dispatchEvent(event);
+                    textarea.style.height = 'auto'; // Fixes weirdness
                     _converse.emit('messageSend', message);
                 }
                 textarea.removeAttribute('disabled');
+                u.removeClass('disabled', textarea);
                 textarea.focus();
                 // Suppress events, otherwise superfluous CSN gets set
                 // immediately after the message, causing rate-limiting issues.

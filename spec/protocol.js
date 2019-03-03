@@ -6,11 +6,12 @@
         "test-utils"], factory);
 } (this, function (jasmine, $, mock, test_utils) {
     "use strict";
-    var Strophe = converse.env.Strophe;
-    var $iq = converse.env.$iq;
-    var $pres = converse.env.$pres;
-    var _ = converse.env._;
-    var u = converse.env.utils;
+    const Strophe = converse.env.Strophe;
+    const $iq = converse.env.$iq;
+    const $pres = converse.env.$pres;
+    const _ = converse.env._;
+    const sizzle = converse.env.sizzle;
+    const u = converse.env.utils;
     // See:
     // https://xmpp.org/rfcs/rfc3921.html
 
@@ -270,7 +271,7 @@
                     .c('item', {
                         'jid': 'contact@example.org',
                         'subscription': 'to',
-                        'name': 'contact@example.org'});
+                        'name': 'Nicky'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 // Check that the IQ set was acknowledged.
                 expect(sent_stanza.toLocaleString()).toBe( // Strophe adds the xmlns attr (although not in spec)
@@ -280,21 +281,21 @@
 
                 // The contact should now be visible as an existing
                 // contact (but still offline).
-                await test_utils.waitUntil(function () {
-                    var $header = $('a:contains("My contacts")');
-                    var $contacts = $header.parent().find('li:visible');
-                    return $contacts.length;
+                await test_utils.waitUntil(() => {
+                    const header = sizzle('a:contains("My contacts")', _converse.rosterview.el);
+                    return sizzle('li', header[0].parentNode).filter(l => u.isVisible(l)).length;
                 }, 600);
-                $header = $('a:contains("My contacts")');
-                expect($header.length).toBe(1);
-                expect($header.is(":visible")).toBeTruthy();
-                $contacts = $header.parent().find('li');
-                expect($contacts.length).toBe(1);
+                const header = sizzle('a:contains("My contacts")', _converse.rosterview.el);
+                expect(header.length).toBe(1);
+                expect(u.isVisible(header[0])).toBeTruthy();
+                const contacts = header[0].parentNode.querySelectorAll('li');
+                expect(contacts.length).toBe(1);
                 // Check that it has the right classes and text
-                expect($contacts.hasClass('to')).toBeTruthy();
-                expect($contacts.hasClass('both')).toBeFalsy();
-                expect($contacts.hasClass('current-xmpp-contact')).toBeTruthy();
-                expect($contacts.text().trim()).toBe('Contact');
+                expect(u.hasClass('to', contacts[0])).toBeTruthy();
+                expect(u.hasClass('both', contacts[0])).toBeFalsy();
+                expect(u.hasClass('current-xmpp-contact', contacts[0])).toBeTruthy();
+                expect(contacts[0].textContent.trim()).toBe('Nicky');
+
                 expect(contact.presence.get('show')).toBe('offline');
 
                 /*  <presence

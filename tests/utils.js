@@ -62,7 +62,7 @@
     };
 
     utils.openControlBox = function () {
-        var toggle = document.querySelector(".toggle-controlbox");
+        const toggle = document.querySelector(".toggle-controlbox");
         if (!u.isVisible(document.querySelector("#controlbox"))) {
             if (!u.isVisible(toggle)) {
                 u.removeClass('hidden', toggle);
@@ -142,6 +142,8 @@
         features = features.length ? features : [
             'http://jabber.org/protocol/muc',
             'jabber:iq:register',
+            Strophe.NS.SID,
+            Strophe.NS.MAM,
             'muc_passwordprotected',
             'muc_hidden',
             'muc_temporary',
@@ -258,10 +260,45 @@
         return this;
     };
 
+    utils.waitForRoster = async function (_converse, type='current', length, include_nick=true) {
+        const iq = await utils.waitUntil(() =>
+            _.filter(
+                _converse.connection.IQ_stanzas,
+                iq => sizzle(`iq[type="get"] query[xmlns="${Strophe.NS.ROSTER}"]`, iq.nodeTree).length
+            ).pop());
+
+        const result = $iq({
+            'to': _converse.connection.jid,
+            'type': 'result',
+            'id': iq.nodeTree.getAttribute('id')
+        }).c('query', {
+            'xmlns': 'jabber:iq:roster'
+        });
+        if (type === 'pending' || type === 'all') {
+            mock.pend_names.slice(0, length).map(name =>
+                result.c('item', {
+                    jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                    name: include_nick ? name : undefined,
+                    subscription: 'to'
+                }).up()
+            );
+        } else if (type === 'current' || type === 'all') {
+            mock.cur_names.slice(0, length).map(name =>
+                result.c('item', {
+                    jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                    name: include_nick ? name : undefined,
+                    subscription: 'both'
+                }).up()
+            );
+        }
+        _converse.connection._dataRecv(utils.createRequest(result));
+        await _converse.api.waitUntil('rosterContactsFetched');
+    };
+
     utils.createGroupedContacts = function (converse) {
         /* Create grouped contacts
          */
-        var i=0, j=0;
+        let i=0, j=0;
         _.each(_.keys(mock.groups), function (name) {
             j = i;
             for (i=j; i<j+mock.groups[name]; i++) {

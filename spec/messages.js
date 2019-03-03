@@ -18,12 +18,11 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             test_utils.openControlBox();
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid);
-            const view = _converse.chatboxviews.get(contact_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
             const textarea = view.el.querySelector('textarea.chat-textarea');
 
             textarea.value = 'But soft, what light through yonder airlock breaks?';
@@ -123,8 +122,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             test_utils.openControlBox();
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid)
@@ -280,7 +278,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
 
             let message, msg;
@@ -314,7 +312,8 @@
                     .tree();
             await _converse.chatboxes.onMessage(msg);
             await test_utils.waitUntil(() => _converse.api.chats.get().length);
-            const view = _converse.chatboxviews.get(sender_jid);
+            const view = _converse.api.chatviews.get(sender_jid);
+
             msg = $msg({'id': 'aeb214', 'to': _converse.bare_jid})
                 .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
                     .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':'2017-12-31T22:08:25Z'}).up()
@@ -465,7 +464,7 @@
             null, ['rosterGroupsFetched'], {},
             async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
 
             /* Ideally we wouldn't have to filter out headline
@@ -501,7 +500,8 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            const include_nick = false;
+            await test_utils.waitForRoster(_converse, 'current', 2, include_nick);
             test_utils.openControlBox();
 
             // Send a message from a different resource
@@ -522,8 +522,9 @@
                         'to': _converse.bare_jid+'/another-resource',
                         'type': 'chat'
                 }).c('body').t(msgtext).tree();
+
             await _converse.chatboxes.onMessage(msg);
-            await test_utils.waitUntil(() => _converse.api.chats.get().length)
+            await test_utils.waitUntil(() => (_converse.api.chats.get().length > 1))
             const chatbox = _converse.chatboxes.get(sender_jid);
             const view = _converse.chatboxviews.get(sender_jid);
                 
@@ -533,7 +534,8 @@
             expect(chatbox.messages.length).toEqual(1);
             const msg_obj = chatbox.messages.models[0];
             expect(msg_obj.get('message')).toEqual(msgtext);
-            expect(msg_obj.get('fullname')).toEqual(mock.cur_names[1]);
+            expect(msg_obj.get('fullname')).toBeUndefined();
+            expect(msg_obj.get('nickname')).toBeUndefined();
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(false);
             // Now check that the message appears inside the chatbox in the DOM
@@ -552,8 +554,7 @@
                 async function (done, _converse) {
 
             await test_utils.waitUntilDiscoConfirmed(_converse, 'localhost', [], ['vcard-temp']);
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
 
             // Send a message from a different resource
@@ -600,7 +601,7 @@
             null, ['rosterGroupsFetched'], {},
             async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
             /* <message from="mallory@evil.example" to="b@xmpp.example">
              *    <received xmlns='urn:xmpp:carbons:2'>
@@ -650,8 +651,7 @@
             if (_converse.view_mode === 'fullscreen') {
                 return done();
             }
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             const contact_name = mock.cur_names[0];
             const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
             test_utils.openControlBox();
@@ -659,7 +659,7 @@
 
             await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
             await test_utils.openChatBoxFor(_converse, contact_jid);
-            const chatview = await _converse.api.chatviews.get(contact_jid);
+            const chatview = _converse.api.chatviews.get(contact_jid);
             expect(u.isVisible(chatview.el)).toBeTruthy();
             expect(chatview.model.get('minimized')).toBeFalsy();
             chatview.el.querySelector('.toggle-chatbox-button').click();
@@ -710,8 +710,8 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            const include_nick = false;
+            await test_utils.waitForRoster(_converse, 'current', 2, include_nick);
             test_utils.openControlBox();
             spyOn(_converse, 'emit');
             const contact_name = mock.cur_names[1];
@@ -741,7 +741,8 @@
             expect(chatbox.messages.length).toEqual(1);
             let msg_obj = chatbox.messages.models[0];
             expect(msg_obj.get('message')).toEqual(message);
-            expect(msg_obj.get('fullname')).toEqual(contact_name);
+            expect(msg_obj.get('fullname')).toBeUndefined();
+            expect(msg_obj.get('nickname')).toBeUndefined();
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(true);
             await test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')
@@ -787,7 +788,7 @@
             expect(chatbox.messages.length).toEqual(2);
             msg_obj = chatbox.messages.models[1];
             expect(msg_obj.get('message')).toEqual(message);
-            expect(msg_obj.get('fullname')).toEqual(contact_name);
+            expect(msg_obj.get('fullname')).toBeUndefined();
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(false);
             const msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
@@ -804,8 +805,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
             spyOn(_converse, 'emit');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -827,8 +827,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid)
@@ -848,8 +847,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid)
@@ -871,8 +869,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -910,13 +907,36 @@
             done();
         }));
 
+        it("will display larger if it's a single emoji",
+            mock.initConverse(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            await test_utils.waitForRoster(_converse, 'current');
+            const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+            _converse.chatboxes.onMessage($msg({
+                    'from': sender_jid,
+                    'to': _converse.connection.jid,
+                    'type': 'chat',
+                    'id': (new Date()).getTime()
+                }).c('body').t('😇').up()
+                .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
+            await new Promise(resolve => _converse.on('chatBoxOpened', resolve));
+            const view = _converse.api.chatviews.get(sender_jid);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+
+            const chat_content = view.el.querySelector('.chat-content');
+            const message = chat_content.querySelector('.chat-msg__text');
+            expect(u.hasClass('chat-msg__text--larger', message)).toBe(true);
+            done();
+        }));
+
         it("will render newlines",
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             const view = await test_utils.openChatBoxFor(_converse, contact_jid);
             let stanza = u.toStanza(`
@@ -955,8 +975,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             let base_url = 'https://conversejs.org';
             let message = base_url+"/logo/conversejs-filled.svg";
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1004,17 +1023,15 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
-
+            await test_utils.waitForRoster(_converse, 'current');
             _converse.time_format = 'hh:mm';
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid)
-            const view = _converse.chatboxviews.get(contact_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
             const message = 'This message is sent from this chatbox';
             await test_utils.sendMessage(view, message);
 
-            const chatbox = _converse.chatboxes.get(contact_jid);
+            const chatbox = _converse.api.chats.get(contact_jid);
             expect(chatbox.messages.models.length, 1);
             const msg_object = chatbox.messages.models[0];
 
@@ -1032,8 +1049,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
 
             let message, msg;
@@ -1055,7 +1071,7 @@
                 }).c('body').t('A message').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
             await new Promise(resolve => _converse.on('chatBoxOpened', resolve));
-            const view = await _converse.chatboxviews.get(sender_jid);
+            const view = _converse.api.chatviews.get(sender_jid);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             jasmine.clock().tick(3*ONE_MINUTE_LATER);
@@ -1199,8 +1215,8 @@
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+
+            await test_utils.waitForRoster(_converse, 'current');
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             const msg_id = u.getUniqueId();
             const sent_stanzas = [];
@@ -1215,7 +1231,9 @@
                 }).c('body').t('Message!').up()
                 .c('request', {'xmlns': Strophe.NS.RECEIPTS}).tree();
             await _converse.chatboxes.onMessage(msg);
-            const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_stanzas[1].tree()).pop();
+            const sent_messages = sent_stanzas.map(s => _.isElement(s) ? s : s.nodeTree).filter(s => s.nodeName === 'message');
+            expect(sent_messages.length).toBe(1);
+            const receipt = sizzle(`received[xmlns="${Strophe.NS.RECEIPTS}"]`, sent_messages[0]).pop();
             expect(Strophe.serialize(receipt)).toBe(`<received id="${msg_id}" xmlns="${Strophe.NS.RECEIPTS}"/>`);
             done();
         }));
@@ -1224,7 +1242,7 @@
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
-            test_utils.createContacts(_converse, 'current', 1);
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             const msg_id = u.getUniqueId();
             const sent_stanzas = [];
@@ -1255,7 +1273,7 @@
             mock.initConverse(
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
-            test_utils.createContacts(_converse, 'current', 1);
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const recipient_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             const msg_id = u.getUniqueId();
             const sent_stanzas = [];
@@ -1286,8 +1304,7 @@
                 null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
@@ -1346,11 +1363,11 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                const include_nick = false;
+                await test_utils.waitForRoster(_converse, 'current', 1, include_nick);
                 test_utils.openControlBox();
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
-                spyOn(_converse, 'emit');
+                spyOn(_converse, 'emit').and.callThrough();
                 const message = 'This is a received message';
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 // We don't already have an open chatbox for this user
@@ -1364,10 +1381,10 @@
                     }).c('body').t(message).up()
                     .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree()
                 );
-                await test_utils.waitUntil(() => _converse.api.chats.get().length === 2);
+                await test_utils.waitUntil(() => (_converse.api.chats.get().length === 2));
                 const chatbox = _converse.chatboxes.get(sender_jid);
                 expect(chatbox).toBeDefined();
-                const view = _converse.chatboxviews.get(sender_jid);
+                const view = _converse.api.chatviews.get(sender_jid);
                 expect(view).toBeDefined();
 
                 expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -1375,7 +1392,7 @@
                 expect(chatbox.messages.length).toEqual(1);
                 const msg_obj = chatbox.messages.models[0];
                 expect(msg_obj.get('message')).toEqual(message);
-                expect(msg_obj.get('fullname')).toEqual(mock.cur_names[0]);
+                expect(msg_obj.get('fullname')).toBeUndefined();
                 expect(msg_obj.get('sender')).toEqual('them');
                 expect(msg_obj.get('is_delayed')).toEqual(false);
                 // Now check that the message appears inside the chatbox in the DOM
@@ -1392,8 +1409,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 test_utils.openControlBox();
                 const message = 'This is a received message';
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1531,7 +1547,7 @@
                     // We don't already have an open chatbox for this user
                     expect(_converse.chatboxes.get(sender_jid)).not.toBeDefined();
 
-                    let chatbox = _converse.chatboxes.get(sender_jid);
+                    let chatbox = await _converse.api.chats.get(sender_jid);
                     expect(chatbox).not.toBeDefined();
                     // onMessage is a handler for received XMPP messages
                     await _converse.chatboxes.onMessage(msg);
@@ -1575,8 +1591,7 @@
                         null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                         async function (done, _converse) {
 
-                    test_utils.createContacts(_converse, 'current');
-                    _converse.emit('rosterContactsFetched');
+                    await test_utils.waitForRoster(_converse, 'current', 1);
                     test_utils.openControlBox();
 
                     // TODO: what could still be done for error
@@ -1600,7 +1615,7 @@
                     fullname = _.isEmpty(fullname)? _converse.bare_jid: fullname;
                     await _converse.api.chats.open(sender_jid)
                     var msg_text = 'This message will not be sent, due to an error';
-                    const view = _converse.chatboxviews.get(sender_jid);
+                    const view = _converse.api.chatviews.get(sender_jid);
                     let message = view.model.messages.create({
                         'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
                         'fullname': fullname,
@@ -1722,8 +1737,7 @@
 
                     // See #1317
                     // https://github.com/conversejs/converse.js/issues/1317
-                    test_utils.createContacts(_converse, 'current');
-                    _converse.emit('rosterContactsFetched');
+                    await test_utils.waitForRoster(_converse, 'current');
                     test_utils.openControlBox();
 
                     const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
@@ -1760,14 +1774,13 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const message = 'This message is received while the chat area is scrolled up';
                 await test_utils.openChatBoxFor(_converse, sender_jid)
-                const view = _converse.chatboxviews.get(sender_jid);
+                const view = _converse.api.chatviews.get(sender_jid);
                 spyOn(view, 'onScrolledDown').and.callThrough();
                 // Create enough messages so that there's a scrollbar.
                 const promises = [];
@@ -1814,9 +1827,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                test_utils.openControlBox();
-
+                await test_utils.waitForRoster(_converse, 'current');
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length)
                 // Send a message from a different resource
                 spyOn(_converse, 'log');
@@ -1866,11 +1877,10 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.openChatBoxFor(_converse, contact_jid);
-                const view = _converse.chatboxviews.get(contact_jid);
+                const view = _converse.api.chatviews.get(contact_jid);
                 spyOn(view.model, 'sendMessage').and.callThrough();
 
                 let stanza = u.toStanza(`
@@ -1884,7 +1894,9 @@
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg audio').length, 1000);
                 let msg = view.el.querySelector('.chat-msg .chat-msg__text');
-                expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you heard this funny audio?</div>');
+                expect(msg.classList.length).toEqual(1);
+                expect(u.hasClass('chat-msg__text', msg)).toBe(true);
+                expect(msg.textContent).toEqual('Have you heard this funny audio?');
                 let media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/audio.html -->'+
@@ -1917,11 +1929,10 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.openChatBoxFor(_converse, contact_jid)
-                const view = _converse.chatboxviews.get(contact_jid);
+                const view = _converse.api.chatviews.get(contact_jid);
                 spyOn(view.model, 'sendMessage').and.callThrough();
 
                 let stanza = u.toStanza(`
@@ -1934,7 +1945,8 @@
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg video').length, 2000)
                 let msg = view.el.querySelector('.chat-msg .chat-msg__text');
-                expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you seen this funny video?</div>');
+                expect(msg.classList.length).toBe(1);
+                expect(msg.textContent).toEqual('Have you seen this funny video?');
                 let media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/video.html -->'+
@@ -1966,11 +1978,10 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                test_utils.createContacts(_converse, 'current', 1);
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.openChatBoxFor(_converse, contact_jid);
-                const view = _converse.chatboxviews.get(contact_jid);
+                const view = _converse.api.chatviews.get(contact_jid);
                 spyOn(view.model, 'sendMessage').and.callThrough();
                 const stanza = u.toStanza(`
                     <message from="${contact_jid}"
@@ -1983,7 +1994,8 @@
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg a').length, 1000);
                 const msg = view.el.querySelector('.chat-msg .chat-msg__text');
-                expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you downloaded this funny file?</div>');
+                expect(u.hasClass('chat-msg__text', msg)).toBe(true);
+                expect(msg.textContent).toEqual('Have you downloaded this funny file?');
                 const media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     '<!-- src/templates/file.html -->'+
@@ -1997,11 +2009,10 @@
                     async function (done, _converse) {
 
                 const base_url = 'https://conversejs.org';
-                test_utils.createContacts(_converse, 'current');
-                _converse.emit('rosterContactsFetched');
+                await test_utils.waitForRoster(_converse, 'current', 1);
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.openChatBoxFor(_converse, contact_jid)
-                const view = await _converse.api.chatviews.get(contact_jid);
+                const view = _converse.api.chatviews.get(contact_jid);
                 spyOn(view.model, 'sendMessage').and.callThrough();
                 const url = base_url+"/logo/conversejs-filled.svg";
 
@@ -2016,7 +2027,8 @@
                 await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg img').length, 2000);
 
                 const msg = view.el.querySelector('.chat-msg .chat-msg__text');
-                expect(msg.outerHTML).toEqual('<div class="chat-msg__text">Have you seen this funny image?</div>');
+                expect(u.hasClass('chat-msg__text', msg)).toBe(true);
+                expect(msg.textContent).toEqual('Have you seen this funny image?');
                 const media = view.el.querySelector('.chat-msg .chat-msg__media');
                 expect(media.innerHTML.replace(/(\r\n|\n|\r)/gm, "")).toEqual(
                     `<!-- src/templates/image.html -->`+
@@ -2035,11 +2047,10 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            await test_utils.waitForRoster(_converse, 'current', 1);
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid);
-            const view = await _converse.api.chatviews.get(contact_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
             const msgid = u.getUniqueId();
             const stanza = u.toStanza(`
                 <message from='${contact_jid}'
@@ -2105,10 +2116,12 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current', 1);
+            await test_utils.waitForRoster(_converse, 'current', 1);
+            await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
+
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid);
-            const view = await _converse.api.chatviews.get(contact_jid);
+            const view = _converse.api.chatviews.get(contact_jid);
 
             let stanza = u.toStanza(`
                 <message xmlns="jabber:client"
@@ -2156,7 +2169,7 @@
                 async function (done, _converse) {
 
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-            const view = _converse.chatboxviews.get('lounge@localhost');
+            const view = _converse.api.chatviews.get('lounge@localhost');
             if (!view.el.querySelectorAll('.chat-area').length) { view.renderChatArea(); }
             const message = 'dummy: Your attention is required';
             const nick = mock.chatroom_names[0],
@@ -2171,7 +2184,6 @@
             expect(u.hasClass('mentioned', view.el.querySelector('.chat-msg'))).toBeTruthy();
             done();
         }));
-
 
         it("can not be expected to have a unique id attribute",
             mock.initConverse(
@@ -2204,14 +2216,58 @@
             done();
         }));
 
+        it("is ignored if it has the same stanza-id of an already received on",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            await test_utils.openAndEnterChatRoom(_converse, 'room', 'muc.example.com', 'dummy');
+            const view = _converse.chatboxviews.get('room@muc.example.com');
+            spyOn(view.model, 'hasDuplicateStanzaID').and.callThrough();
+            let stanza = u.toStanza(`
+                <message xmlns="jabber:client"
+                         from="room@muc.example.com/some1"
+                         to="${_converse.connection.jid}"
+                         type="groupchat">
+                    <body>Typical body text</body>
+                    <stanza-id xmlns="urn:xmpp:sid:0"
+                               id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
+                               by="room@muc.example.com"/>
+                    <origin-id xmlns="urn:xmpp:sid:0" id="de305d54-75b4-431b-adb2-eb6b9e546013"/>
+                </message>`);
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.api.chats.get().length);
+            await test_utils.waitUntil(() => view.model.messages.length === 1);
+            await test_utils.waitUntil(() => view.model.hasDuplicateStanzaID.calls.count() === 1);
+            let result = await view.model.hasDuplicateStanzaID.calls.all()[0].returnValue;
+            expect(result).toBe(false);
+
+            stanza = u.toStanza(`
+                <message xmlns="jabber:client"
+                         from="room@muc.example.com/some1"
+                         to="${_converse.connection.jid}"
+                         type="groupchat">
+                    <body>Typical body text</body>
+                    <stanza-id xmlns="urn:xmpp:sid:0"
+                               id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
+                               by="room@muc.example.com"/>
+                    <origin-id xmlns="urn:xmpp:sid:0" id="de305d54-75b4-431b-adb2-eb6b9e546013"/>
+                </message>`);
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => view.model.hasDuplicateStanzaID.calls.count() === 2);
+            result = await view.model.hasDuplicateStanzaID.calls.all()[1].returnValue;
+            expect(result).toBe(true);
+            expect(view.model.messages.length).toBe(1);
+            done();
+        }));
+
         it("keeps track whether you are the sender or not",
             mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-            const view = _converse.chatboxviews.get('lounge@localhost');
+            const view = _converse.api.chatviews.get('lounge@localhost');
             const msg = $msg({
                     from: 'lounge@localhost/dummy',
                     id: (new Date()).getTime(),
@@ -2231,7 +2287,7 @@
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
             const jid = 'lounge@localhost';
             const room = _converse.api.rooms.get(jid);
-            const view = _converse.chatboxviews.get(jid);
+            const view = _converse.api.chatviews.get(jid);
             const stanza = $pres({
                     to: 'dummy@localhost/_converse.js-29092160',
                     from: 'coven@chat.shakespeare.lit/newguy'
@@ -2297,7 +2353,7 @@
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
             const room_jid = 'lounge@localhost';
             const room = _converse.api.rooms.get(room_jid);
-            const view = _converse.chatboxviews.get(room_jid);
+            const view = _converse.api.chatviews.get(room_jid);
             const textarea = view.el.querySelector('textarea.chat-textarea');
             expect(textarea.value).toBe('');
             view.keyPressed({
@@ -2397,7 +2453,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
             const view = _converse.chatboxviews.get('lounge@localhost');
             const textarea = view.el.querySelector('textarea.chat-textarea');
@@ -2409,17 +2465,65 @@
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             const msg_obj = view.model.messages.at(0);
-            const msg_id = msg_obj.get('msgid');
-            const from = msg_obj.get('from');
-            const body = msg_obj.get('message');
-            const msg = $msg({
-                    'from': from,
-                    'id': msg_id,
-                    'to': 'dummy@localhost',
-                    'type': 'groupchat',
-                }).c('body').t(body).up().tree();
-            await view.model.onMessage(msg);
+            const stanza = u.toStanza(`
+                <message xmlns="jabber:client"
+                         from="${msg_obj.get('from')}"
+                         to="${_converse.connection.jid}"
+                         type="groupchat">
+                    <body>${msg_obj.get('message')}</body>
+                    <stanza-id xmlns="urn:xmpp:sid:0"
+                               id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
+                               by="lounge@localhost"/>
+                    <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
+                </message>`);
+            await view.model.onMessage(stanza);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(1);
+            done();
+        }));
+
+        it("gets updated with its stanza-id upon MUC reflection",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            await test_utils.openAndEnterChatRoom(_converse, 'room', 'muc.example.com', 'dummy');
+            const view = _converse.chatboxviews.get('room@muc.example.com');
+
+            const attrs = {
+                'id': _converse.connection.getUniqueId(),
+                'origin_id': _converse.connection.getUniqueId(),
+                'fullname': 'dummy',
+                'references': [],
+                'from': _converse.connection.jid,
+                'sender': 'me',
+                'time': moment().format(),
+                'message': 'Hello world',
+                'is_spoiler': false,
+                'type': 'groupchat' 
+            }
+            view.model.sendMessage(attrs);
+            await test_utils.waitUntil(() => _converse.api.chats.get().length);
+            await test_utils.waitUntil(() => view.model.messages.length === 1);
+            expect(view.model.messages.at(0).get('stanza_id')).toBeUndefined();
+            expect(view.model.messages.at(0).get('origin_id')).toBe(attrs.origin_id);
+
+            const stanza = u.toStanza(`
+                <message xmlns="jabber:client"
+                         from="room@muc.example.com/dummy"
+                         to="${_converse.connection.jid}"
+                         type="groupchat">
+                    <body>Hello world</body>
+                    <stanza-id xmlns="urn:xmpp:sid:0"
+                               id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
+                               by="room@muc.example.com"/>
+                    <origin-id xmlns="urn:xmpp:sid:0" id="${attrs.origin_id}"/>
+                </message>`);
+            spyOn(view.model, 'handleReflection').and.callThrough();
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => view.model.handleReflection.calls.count() === 1);
+            expect(view.model.messages.length).toBe(1);
+            expect(view.model.messages.at(0).get('stanza_id room@muc.example.com')).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");
+            expect(view.model.messages.at(0).get('origin_id')).toBe(attrs.origin_id);
             done();
         }));
 
@@ -2428,7 +2532,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
             const view = _converse.chatboxviews.get('lounge@localhost');
             const textarea = view.el.querySelector('textarea.chat-textarea');
@@ -2462,7 +2566,7 @@
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
-            test_utils.createContacts(_converse, 'current');
+            await test_utils.waitForRoster(_converse, 'current');
             await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
             const view = _converse.chatboxviews.get('lounge@localhost');
             const textarea = view.el.querySelector('textarea.chat-textarea');
@@ -2532,7 +2636,7 @@
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom');
-                const view = _converse.chatboxviews.get('lounge@localhost');
+                const view = _converse.api.chatviews.get('lounge@localhost');
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                     _converse.connection._dataRecv(test_utils.createRequest(
                         $pres({
@@ -2558,11 +2662,13 @@
                         .c('reference', {'xmlns':'urn:xmpp:reference:0', 'begin':'15', 'end':'23', 'type':'mention', 'uri':'xmpp:mr.robot@localhost'}).nodeTree;
                 await view.model.onMessage(msg);
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                expect(view.el.querySelectorAll('.chat-msg__text').length).toBe(1);
-                expect(view.el.querySelector('.chat-msg__text').outerHTML).toBe(
-                    '<div class="chat-msg__text">hello <span class="mention">z3r0</span> '+
+                const messages = view.el.querySelectorAll('.chat-msg__text');
+                expect(messages.length).toBe(1);
+                expect(messages[0].classList.length).toEqual(1);
+                expect(messages[0].innerHTML).toBe(
+                    'hello <span class="mention">z3r0</span> '+
                     '<span class="mention mention--self badge badge-info">tom</span> '+
-                    '<span class="mention">mr.robot</span>, how are you?</div>');
+                    '<span class="mention">mr.robot</span>, how are you?');
                 done();
             }));
         });
@@ -2575,7 +2681,7 @@
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom');
-                const view = _converse.chatboxviews.get('lounge@localhost');
+                const view = _converse.api.chatviews.get('lounge@localhost');
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh', 'Link Mauve'].forEach((nick) => {
                     _converse.connection._dataRecv(test_utils.createRequest(
                         $pres({
@@ -2636,7 +2742,7 @@
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom');
-                const view = _converse.chatboxviews.get('lounge@localhost');
+                const view = _converse.api.chatviews.get('lounge@localhost');
                 ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
                     _converse.connection._dataRecv(test_utils.createRequest(
                         $pres({
@@ -2707,50 +2813,48 @@
             it("includes XEP-0372 references to that person",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                        function (done, _converse) {
+                        async function (done, _converse) {
 
-                test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom')
-                .then(() => {
-                    const view = _converse.chatboxviews.get('lounge@localhost');
-                    ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
-                        _converse.connection._dataRecv(test_utils.createRequest(
-                            $pres({
-                                'to': 'tom@localhost/resource',
-                                'from': `lounge@localhost/${nick}`
-                            })
-                            .c('x', {xmlns: Strophe.NS.MUC_USER})
-                            .c('item', {
-                                'affiliation': 'none',
-                                'jid': `${nick}@localhost/resource`,
-                                'role': 'participant'
-                            })));
-                    });
+                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom');
+                const view = _converse.api.chatviews.get('lounge@localhost');
+                ['z3r0', 'mr.robot', 'gibson', 'sw0rdf1sh'].forEach((nick) => {
+                    _converse.connection._dataRecv(test_utils.createRequest(
+                        $pres({
+                            'to': 'tom@localhost/resource',
+                            'from': `lounge@localhost/${nick}`
+                        })
+                        .c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': `${nick}@localhost/resource`,
+                            'role': 'participant'
+                        })));
+                });
 
-                    spyOn(_converse.connection, 'send');
-                    const textarea = view.el.querySelector('textarea.chat-textarea');
-                    textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?'
-                    const enter_event = {
-                        'target': textarea,
-                        'preventDefault': _.noop,
-                        'stopPropagation': _.noop,
-                        'keyCode': 13 // Enter
-                    }
-                    view.keyPressed(enter_event);
+                spyOn(_converse.connection, 'send');
+                const textarea = view.el.querySelector('textarea.chat-textarea');
+                textarea.value = 'hello @z3r0 @gibson @mr.robot, how are you?'
+                const enter_event = {
+                    'target': textarea,
+                    'preventDefault': _.noop,
+                    'stopPropagation': _.noop,
+                    'keyCode': 13 // Enter
+                }
+                view.keyPressed(enter_event);
 
-                    const msg = _converse.connection.send.calls.all()[0].args[0];
-                    expect(msg.toLocaleString())
-                        .toBe(`<message from="dummy@localhost/resource" id="${msg.nodeTree.getAttribute("id")}" `+
-                                `to="lounge@localhost" type="groupchat" `+
-                                `xmlns="jabber:client">`+
-                                    `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
-                                    `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                                    `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@localhost" xmlns="urn:xmpp:reference:0"/>`+
-                                    `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
-                                    `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+
-                                    `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
-                              `</message>`);
-                    done();
-                }).catch(_.partial(console.error, _));
+                const msg = _converse.connection.send.calls.all()[0].args[0];
+                expect(msg.toLocaleString())
+                    .toBe(`<message from="dummy@localhost/resource" id="${msg.nodeTree.getAttribute("id")}" `+
+                            `to="lounge@localhost" type="groupchat" `+
+                            `xmlns="jabber:client">`+
+                                `<body>hello z3r0 gibson mr.robot, how are you?</body>`+
+                                `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
+                                `<reference begin="18" end="26" type="mention" uri="xmpp:mr.robot@localhost" xmlns="urn:xmpp:reference:0"/>`+
+                                `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
+                                `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+
+                                `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
+                            `</message>`);
+                done();
             }));
         });
     });

@@ -33,7 +33,7 @@
             expect(room_els.length).toBe(1);
             expect(room_els[0].innerText).toBe('lounge@localhost');
             list = controlbox.el.querySelector('div.rooms-list-container');
-            expect(_.includes(list.classList, 'hidden')).toBeFalsy();
+            test_utils.waitUntil(() => _.includes(list.classList, 'hidden'));
 
             view = _converse.chatboxviews.get('lounge@localhost');
             view.close();
@@ -220,7 +220,7 @@
                 'Hidden - This groupchat is not publicly searchable'+
                 'Open - Anyone can join this groupchat'+
                 'Temporary - This groupchat will disappear once the last person leaves'+
-                'Not anonymous - All other groupchat participants can see your XMPP username'+
+                'Not anonymous - All other groupchat participants can see your XMPP address'+
                 'Not moderated - Participants entering this groupchat can write right away'
             );
             presence = $pres({

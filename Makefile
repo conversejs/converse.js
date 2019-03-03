@@ -67,7 +67,7 @@ serve_bg: dev
 ########################################################################
 ## Translation machinery
 
-GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=4.1.0 -c
+GETTEXT = xgettext --language="JavaScript" --keyword=__ --keyword=___ --from-code=UTF-8 --output=locale/converse.pot dist/converse-no-dependencies.js --package-name=Converse.js --copyright-holder="Jan-Carel Brand" --package-version=4.1.2 -c
 
 .PHONY: pot
 pot: dist/converse-no-dependencies-es2015.js
@@ -100,9 +100,14 @@ release:
 	make po2json
 	make build
 	mkdir -p 'converse-assets-$(VERSION)'
-	$(INSTALL) -D dist/converse.min.js 'converse-assets-$(VERSION)/converse.js'
-	$(INSTALL) -D css/converse.min.css \
-		'converse-assets-$(VERSION)/css/converse.css'
+	$(INSTALL) -D dist/converse.js 'converse-assets-$(VERSION)/converse.js'
+	$(INSTALL) -D dist/converse.min.js 'converse-assets-$(VERSION)/converse.min.js'
+	$(INSTALL) -D dist/converse.min.js.map 'converse-assets-$(VERSION)/converse.min.js.map'
+	$(INSTALL) -D dist/converse-headless.js 'converse-assets-$(VERSION)/converse-headless.js'
+	$(INSTALL) -D dist/converse-headless.min.js 'converse-assets-$(VERSION)/converse-headless.min.js'
+	$(INSTALL) -D dist/converse-headless.min.js.map 'converse-assets-$(VERSION)/converse-headless.min.js.map'
+	$(INSTALL) -D css/converse.css 'converse-assets-$(VERSION)/css/converse.css'
+	$(INSTALL) -D css/converse.min.css 'converse-assets-$(VERSION)/css/converse.min.css'
 	cp -r css/webfonts 'converse-assets-$(VERSION)/css/'
 	cp -r sounds 'converse-assets-$(VERSION)/'
 	find locale -type f -name '*.json' \
@@ -124,7 +129,7 @@ stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 .PHONY: clean
 clean:
 	rm -rf node_modules stamp-npm
-	rm -f dist/*.min.js
+	rm -f dist/*.min.js*
 	rm -f css/*.min.css
 	rm -f css/*.map
 	rm -f css/*.zip

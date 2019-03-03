@@ -13,6 +13,7 @@
 - #1400: When a chat message is just an emoji, enlarge the emoji
 - #1437: List of groupchats in modal doesn't scroll
 - #1457: Wrong tooltip shown for "unbookmark" icon
+- #1474: Update Lithuanian (lt) translation
 
 ## 4.1.2 (2019-02-22)
 

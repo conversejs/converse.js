@@ -13,6 +13,9 @@ import converse from "@converse/headless/converse-core";
 const { _, Backbone } = converse.env,
       u = converse.env.utils;
 
+const KEYCODES_MAP = {
+    '@': 50
+}
 
 converse.plugins.add("converse-autocomplete", {
 
@@ -73,12 +76,12 @@ converse.plugins.add("converse-autocomplete", {
 
                 _.assignIn(this, {
                     'match_current_word': false, // Match only the current word, otherwise all input is matched
-                    'match_on_tab': false, // Whether matching should only start when tab's pressed
-                    'trigger_on_at': false, // Whether @ should trigger autocomplete
+                    'trigger_keycodes': [], // Array of keycodes that will trigger auto-complete
+                    'include_triggers': [], // Array of trigger keycodes which should be included in the returned value
                     'min_chars': 2,
                     'max_items': 10,
                     'auto_evaluate': true,
-                    'auto_first': false,
+                    'auto_first': false, // Should the first element be automatically selected?
                     'data': _.identity,
                     'filter': _converse.FILTER_CONTAINS,
                     'sort': config.sort === false ? false : SORT_BYLENGTH,
@@ -291,10 +294,11 @@ converse.plugins.add("converse-autocomplete", {
                         , ev.keyCode)) {
                     return;
                 }
-                if (this.match_on_tab && ev.keyCode === _converse.keycodes.TAB) {
-                    ev.preventDefault();
-                    this.auto_completing = true;
-                } else if (this.trigger_on_at && ev.keyCode === _converse.keycodes.AT) {
+
+                if (this.trigger_keycodes.includes(ev.keyCode)) {
+                    if (ev.keyCode === _converse.keycodes.TAB) {
+                        ev.preventDefault();
+                    }
                     this.auto_completing = true;
                 }
             }
@@ -316,7 +320,7 @@ converse.plugins.add("converse-autocomplete", {
                 let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
 
                 let ignore_min_chars = false;
-                if (this.trigger_on_at && value.startsWith('@')) {
+                if (this.trigger_keycodes.includes(KEYCODES_MAP[value[0]]) && !this.include_triggers.includes(ev.keyCode)) {
                     ignore_min_chars = true;
                     value = value.slice('1');
                 }

@@ -560,7 +560,7 @@ converse.plugins.add('converse-muc-views', {
                 this.renderHeading();
                 this.renderChatArea();
                 this.renderMessageForm();
-                this.initAutoComplete();
+                this.initMentionAutoComplete();
                 if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                     this.showSpinner();
                 }
@@ -587,16 +587,16 @@ converse.plugins.add('converse-muc-views', {
                 return this;
             },
 
-            initAutoComplete () {
+            initMentionAutoComplete () {
                 this.auto_complete = new _converse.AutoComplete(this.el, {
                     'auto_first': true,
                     'auto_evaluate': false,
                     'min_chars': 1,
                     'match_current_word': true,
-                    'match_on_tab': true,
                     'list': () => this.model.occupants.map(o => ({'label': o.getDisplayName(), 'value': `@${o.getDisplayName()}`})),
                     'filter': _converse.FILTER_STARTSWITH,
-                    'trigger_on_at': true
+                    'trigger_keycodes': [_converse.keycodes.AT, _converse.keycodes.TAB],
+                    'include_triggers': []
                 });
                 this.auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
             },

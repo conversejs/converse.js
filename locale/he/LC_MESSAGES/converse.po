@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-22 18:21+0100\n"
-"PO-Revision-Date: 2019-03-02 11:17+0000\n"
+"PO-Revision-Date: 2019-03-05 08:57+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 3.5-dev\n"
+"X-Generator: Weblate 3.5\n"
 "X-Language: he\n"
 "X-Source-Language: en\n"
 
@@ -802,9 +802,9 @@ msgid "Query for groupchats"
 msgstr "אסור משתמש מתוך חדר"
 
 #: dist/converse-no-dependencies.js:37215
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Click to mention %1$s in your message."
-msgstr "לחץ כדי לפתוח את חדר זה"
+msgstr "יש ללחוץ כדי לאזכר את %1$s בהודעה שלך."
 
 #: dist/converse-no-dependencies.js:37216
 #, fuzzy

@@ -2,7 +2,7 @@
 Contribution Guidelines
 =======================
 
-Thanks for contributing to `Converse.js <http://conversejs.org>`_.
+Thanks for contributing to `Converse.js <https://conversejs.org>`_.
 
 Support questions
 =================

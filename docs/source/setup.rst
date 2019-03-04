@@ -104,7 +104,7 @@ https://conversejs.org does), then you'll need a standalone connection manager.
 For a standalone manager, see for example `Punjab <https://github.com/twonds/punjab>`_
 and `node-xmpp-bosh <https://github.com/dhruvbird/node-xmpp-bosh>`_.
 
-The demo on the `Converse homepage <http://conversejs.org>`_ uses a connection
+The demo on the `Converse homepage <https://conversejs.org>`_ uses a connection
 manager located at https://conversejs.org/http-bind.
 
 This connection manager is available for testing purposes only, please don't

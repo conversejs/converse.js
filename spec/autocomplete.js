@@ -18,45 +18,44 @@
         it("shows all autocompletion options when the user presses @",
             mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-            test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom')
-            .then(() => {
-                const view = _converse.chatboxviews.get('lounge@localhost');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom');
+            const view = _converse.chatboxviews.get('lounge@localhost');
 
-                ['dick', 'harry'].forEach((nick) => {
-                    _converse.connection._dataRecv(test_utils.createRequest(
-                        $pres({
-                            'to': 'tom@localhost/resource',
-                            'from': `lounge@localhost/${nick}`
-                        })
-                        .c('x', {xmlns: Strophe.NS.MUC_USER})
-                        .c('item', {
-                            'affiliation': 'none',
-                            'jid': `${nick}@localhost/resource`,
-                            'role': 'participant'
-                        })));
-                });
+            ['dick', 'harry'].forEach((nick) => {
+                _converse.connection._dataRecv(test_utils.createRequest(
+                    $pres({
+                        'to': 'tom@localhost/resource',
+                        'from': `lounge@localhost/${nick}`
+                    })
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': `${nick}@localhost/resource`,
+                        'role': 'participant'
+                    })));
+            });
 
-                // Test that pressing @ brings up all options
-                const textarea = view.el.querySelector('textarea.chat-textarea');
-                const at_event = {
-                    'target': textarea,
-                    'preventDefault': _.noop,
-                    'stopPropagation': _.noop,
-                    'keyCode': 50
-                };
-                view.keyPressed(at_event);
-                textarea.value = '@';
-                view.keyUp(at_event);
+            // Test that pressing @ brings up all options
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            const at_event = {
+                'target': textarea,
+                'preventDefault': _.noop,
+                'stopPropagation': _.noop,
+                'keyCode': 50,
+                'key': '@'
+            };
+            view.keyPressed(at_event);
+            textarea.value = '@';
+            view.keyUp(at_event);
 
-                expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(3);
-                expect(view.el.querySelector('.suggestion-box__results li[aria-selected="true"]').textContent).toBe('tom');
-                expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('tom');
-                expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('dick');
-                expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('harry');
-                done();
-            }).catch(_.partial(console.error, _));
+            expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(3);
+            expect(view.el.querySelector('.suggestion-box__results li[aria-selected="true"]').textContent).toBe('tom');
+            expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('tom');
+            expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('dick');
+            expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('harry');
+            done();
         }));
 
         it("autocompletes when the user presses tab",
@@ -88,7 +87,8 @@
                 'target': textarea,
                 'preventDefault': _.noop,
                 'stopPropagation': _.noop,
-                'keyCode': 9
+                'keyCode': 9,
+                'key': 'Tab'
             }
             view.keyPressed(tab_event);
             view.keyUp(tab_event);

@@ -504,7 +504,7 @@ converse.plugins.add('converse-muc-views', {
                 'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                 'click .toggle-smiley': 'toggleEmojiMenu',
                 'click .upload-file': 'toggleFileUpload',
-                'keydown .chat-textarea': 'keyPressed',
+                'keypress .chat-textarea': 'keyPressed',
                 'keyup .chat-textarea': 'keyUp',
                 'input .chat-textarea': 'inputChanged'
             },
@@ -595,7 +595,7 @@ converse.plugins.add('converse-muc-views', {
                     'match_current_word': true,
                     'list': () => this.model.occupants.map(o => ({'label': o.getDisplayName(), 'value': `@${o.getDisplayName()}`})),
                     'filter': _converse.FILTER_STARTSWITH,
-                    'trigger_keycodes': [_converse.keycodes.AT, _converse.keycodes.TAB],
+                    'ac_triggers': ["Tab", "@"],
                     'include_triggers': []
                 });
                 this.auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
@@ -1837,9 +1837,7 @@ converse.plugins.add('converse-muc-views', {
                 const show = this.model.get('show');
                 return tpl_occupant(
                     _.extend(
-                        { '_': _, // XXX Normally this should already be included,
-                                  // but with the current webpack build,
-                                  // we only get a subset of the _ methods.
+                        { '_': _,
                           'jid': '',
                           'show': show,
                           'hint_show': _converse.PRETTY_CHAT_STATUS[show],

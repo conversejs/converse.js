@@ -47944,9 +47944,6 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       _ = _converse$env._,
       Backbone = _converse$env.Backbone,
       u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env.utils;
-const KEYCODES_MAP = {
-  '@': 50
-};
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add("converse-autocomplete", {
   initialize() {
     const _converse = this._converse;
@@ -48005,8 +48002,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         _.assignIn(this, {
           'match_current_word': false,
           // Match only the current word, otherwise all input is matched
-          'trigger_keycodes': [],
-          // Array of keycodes that will trigger auto-complete
+          'ac_triggers': [],
+          // Array of keys (`ev.key`) values that will trigger auto-complete
           'include_triggers': [],
           // Array of trigger keycodes which should be included in the returned value
           'min_chars': 2,
@@ -48245,8 +48242,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           return;
         }
 
-        if (this.trigger_keycodes.includes(ev.keyCode)) {
-          if (ev.keyCode === _converse.keycodes.TAB) {
+        if (this.ac_triggers.includes(ev.key)) {
+          if (ev.key === "Tab") {
             ev.preventDefault();
           }
 
@@ -48270,7 +48267,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
         let ignore_min_chars = false;
 
-        if (this.trigger_keycodes.includes(KEYCODES_MAP[value[0]]) && !this.include_triggers.includes(ev.keyCode)) {
+        if (this.ac_triggers.includes(value[0]) && !this.include_triggers.includes(ev.key)) {
           ignore_min_chars = true;
           value = value.slice('1');
         }
@@ -53923,7 +53920,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
         'click .toggle-smiley': 'toggleEmojiMenu',
         'click .upload-file': 'toggleFileUpload',
-        'keydown .chat-textarea': 'keyPressed',
+        'keypress .chat-textarea': 'keyPressed',
         'keyup .chat-textarea': 'keyUp',
         'input .chat-textarea': 'inputChanged'
       },
@@ -54022,7 +54019,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
             'value': `@${o.getDisplayName()}`
           })),
           'filter': _converse.FILTER_STARTSWITH,
-          'trigger_keycodes': [_converse.keycodes.AT, _converse.keycodes.TAB],
+          'ac_triggers': ["Tab", "@"],
           'include_triggers': []
         });
         this.auto_complete.on('suggestion-box-selectcomplete', () => this.auto_completing = false);
@@ -55363,9 +55360,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         const show = this.model.get('show');
         return templates_occupant_html__WEBPACK_IMPORTED_MODULE_20___default()(_.extend({
           '_': _,
-          // XXX Normally this should already be included,
-          // but with the current webpack build,
-          // we only get a subset of the _ methods.
           'jid': '',
           'show': show,
           'hint_show': _converse.PRETTY_CHAT_STATUS[show],

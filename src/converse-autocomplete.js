@@ -13,10 +13,6 @@ import converse from "@converse/headless/converse-core";
 const { _, Backbone } = converse.env,
       u = converse.env.utils;
 
-const KEYCODES_MAP = {
-    '@': 50
-}
-
 converse.plugins.add("converse-autocomplete", {
 
     initialize () {
@@ -76,7 +72,7 @@ converse.plugins.add("converse-autocomplete", {
 
                 _.assignIn(this, {
                     'match_current_word': false, // Match only the current word, otherwise all input is matched
-                    'trigger_keycodes': [], // Array of keycodes that will trigger auto-complete
+                    'ac_triggers': [], // Array of keys (`ev.key`) values that will trigger auto-complete
                     'include_triggers': [], // Array of trigger keycodes which should be included in the returned value
                     'min_chars': 2,
                     'max_items': 10,
@@ -295,8 +291,8 @@ converse.plugins.add("converse-autocomplete", {
                     return;
                 }
 
-                if (this.trigger_keycodes.includes(ev.keyCode)) {
-                    if (ev.keyCode === _converse.keycodes.TAB) {
+                if (this.ac_triggers.includes(ev.key)) {
+                    if (ev.key === "Tab") {
                         ev.preventDefault();
                     }
                     this.auto_completing = true;
@@ -320,7 +316,7 @@ converse.plugins.add("converse-autocomplete", {
                 let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
 
                 let ignore_min_chars = false;
-                if (this.trigger_keycodes.includes(KEYCODES_MAP[value[0]]) && !this.include_triggers.includes(ev.keyCode)) {
+                if (this.ac_triggers.includes(value[0]) && !this.include_triggers.includes(ev.key)) {
                     ignore_min_chars = true;
                     value = value.slice('1');
                 }

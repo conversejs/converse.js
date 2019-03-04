@@ -96178,86 +96178,82 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].xForm2webForm = fu
    *  Parameters:
    *      (XMLElement) field - the field to convert
    */
-  if (field.getAttribute('type')) {
-    if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
-      const values = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.map(_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].queryChildren(field, 'value'), _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.partial(_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get, _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a, 'textContent'));
+  if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
+    const values = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.map(_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].queryChildren(field, 'value'), _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.partial(_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get, _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a, 'textContent'));
 
-      const options = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.map(_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].queryChildren(field, 'option'), function (option) {
-        const value = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(option.querySelector('value'), 'textContent');
+    const options = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.map(_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].queryChildren(field, 'option'), function (option) {
+      const value = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(option.querySelector('value'), 'textContent');
 
-        return _templates_select_option_html__WEBPACK_IMPORTED_MODULE_14___default()({
-          'value': value,
-          'label': option.getAttribute('label'),
-          'selected': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.includes(values, value),
-          'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
-        });
-      });
-
-      return _templates_form_select_html__WEBPACK_IMPORTED_MODULE_9___default()({
-        'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
-        'name': field.getAttribute('var'),
-        'label': field.getAttribute('label'),
-        'options': options.join(''),
-        'multiple': field.getAttribute('type') === 'list-multi',
+      return _templates_select_option_html__WEBPACK_IMPORTED_MODULE_14___default()({
+        'value': value,
+        'label': option.getAttribute('label'),
+        'selected': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.includes(values, value),
         'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
       });
-    } else if (field.getAttribute('type') === 'fixed') {
-      const text = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent');
+    });
 
-      return '<p class="form-help">' + text + '</p>';
-    } else if (field.getAttribute('type') === 'jid-multi') {
-      return _templates_form_textarea_html__WEBPACK_IMPORTED_MODULE_10___default()({
-        'name': field.getAttribute('var'),
-        'label': field.getAttribute('label') || '',
-        'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent'),
-        'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
-      });
-    } else if (field.getAttribute('type') === 'boolean') {
-      return _templates_form_checkbox_html__WEBPACK_IMPORTED_MODULE_7___default()({
-        'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
-        'name': field.getAttribute('var'),
-        'label': field.getAttribute('label') || '',
-        'checked': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
-        'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
-      });
-    } else if (field.getAttribute('var') === 'url') {
-      return _templates_form_url_html__WEBPACK_IMPORTED_MODULE_11___default()({
-        'label': field.getAttribute('label') || '',
-        'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent')
-      });
-    } else if (field.getAttribute('var') === 'username') {
-      return _templates_form_username_html__WEBPACK_IMPORTED_MODULE_12___default()({
-        'domain': ' @' + domain,
-        'name': field.getAttribute('var'),
-        'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-        'label': field.getAttribute('label') || '',
-        'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent'),
-        'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
-      });
-    } else {
-      return _templates_form_input_html__WEBPACK_IMPORTED_MODULE_8___default()({
-        'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
-        'label': field.getAttribute('label') || '',
-        'name': field.getAttribute('var'),
-        'placeholder': null,
-        'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required')),
-        'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-        'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent')
-      });
-    }
+    return _templates_form_select_html__WEBPACK_IMPORTED_MODULE_9___default()({
+      'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
+      'name': field.getAttribute('var'),
+      'label': field.getAttribute('label'),
+      'options': options.join(''),
+      'multiple': field.getAttribute('type') === 'list-multi',
+      'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
+    });
+  } else if (field.getAttribute('type') === 'fixed') {
+    const text = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent');
+
+    return '<p class="form-help">' + text + '</p>';
+  } else if (field.getAttribute('type') === 'jid-multi') {
+    return _templates_form_textarea_html__WEBPACK_IMPORTED_MODULE_10___default()({
+      'name': field.getAttribute('var'),
+      'label': field.getAttribute('label') || '',
+      'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent'),
+      'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
+    });
+  } else if (field.getAttribute('type') === 'boolean') {
+    return _templates_form_checkbox_html__WEBPACK_IMPORTED_MODULE_7___default()({
+      'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
+      'name': field.getAttribute('var'),
+      'label': field.getAttribute('label') || '',
+      'checked': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
+      'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
+    });
+  } else if (field.getAttribute('var') === 'url') {
+    return _templates_form_url_html__WEBPACK_IMPORTED_MODULE_11___default()({
+      'label': field.getAttribute('label') || '',
+      'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent')
+    });
+  } else if (field.getAttribute('var') === 'username') {
+    return _templates_form_username_html__WEBPACK_IMPORTED_MODULE_12___default()({
+      'domain': ' @' + domain,
+      'name': field.getAttribute('var'),
+      'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+      'label': field.getAttribute('label') || '',
+      'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent'),
+      'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
+    });
+  } else if (field.getAttribute('var') === 'ocr') {
+    // Captcha
+    const uri = field.querySelector('uri');
+    const el = sizzle__WEBPACK_IMPORTED_MODULE_2___default()('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
+    return _templates_form_captcha_html__WEBPACK_IMPORTED_MODULE_6___default()({
+      'label': field.getAttribute('label'),
+      'name': field.getAttribute('var'),
+      'data': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(el, 'textContent'),
+      'type': uri.getAttribute('type'),
+      'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
+    });
   } else {
-    if (field.getAttribute('var') === 'ocr') {
-      // Captcha
-      const uri = field.querySelector('uri');
-      const el = sizzle__WEBPACK_IMPORTED_MODULE_2___default()('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
-      return _templates_form_captcha_html__WEBPACK_IMPORTED_MODULE_6___default()({
-        'label': field.getAttribute('label'),
-        'name': field.getAttribute('var'),
-        'data': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(el, 'textContent'),
-        'type': uri.getAttribute('type'),
-        'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
-      });
-    }
+    return _templates_form_input_html__WEBPACK_IMPORTED_MODULE_8___default()({
+      'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
+      'label': field.getAttribute('label') || '',
+      'name': field.getAttribute('var'),
+      'placeholder': null,
+      'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required')),
+      'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+      'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent')
+    });
   }
 };
 

@@ -2742,6 +2742,40 @@
                 done();
             }));
 
+            it("parses for mentions as indicated with an @ preceded by a space or at the start of the text",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom');
+                const view = _converse.api.chatviews.get('lounge@localhost');
+                ['NotAnAdress', 'darnuria'].forEach((nick) => {
+                    _converse.connection._dataRecv(test_utils.createRequest(
+                        $pres({
+                            'to': 'tom@localhost/resource',
+                            'from': `lounge@localhost/${nick}`
+                        })
+                        .c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': `${nick.replace(/\s/g, '-')}@localhost/resource`,
+                            'role': 'participant'
+                        })));
+                });
+
+                // Test that we don't match @nick in email adresses.
+                let [text, references] = view.model.parseTextForReferences('contact contact@NotAnAdress.eu');
+                expect(references.length).toBe(0);
+                expect(text).toBe('contact contact@NotAnAdress.eu');
+
+                // Test that we don't match @nick in url
+                [text, references] = view.model.parseTextForReferences('nice website https://darnuria.eu/@darnuria');
+                expect(references.length).toBe(0);
+                expect(text).toBe('nice website https://darnuria.eu/@darnuria');
+
+                done();
+            }));
+
             it("can get corrected and given new references",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},

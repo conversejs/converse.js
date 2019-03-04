@@ -347,7 +347,7 @@
                 // The user has just entered the room (because join was called)
                 // and receives their own presence from the server.
                 // See example 24:
-                // http://xmpp.org/extensions/xep-0045.html#enter-pres
+                // https://xmpp.org/extensions/xep-0045.html#enter-pres
                 //
                 /* <presence xmlns="jabber:client" to="jordie.langen@chat.example.org/converse.js-11659299" from="myroom@conference.chat.example.org/jc">
                  *    <x xmlns="http://jabber.org/protocol/muc#user">
@@ -1219,7 +1219,7 @@
 
                 /* Check that an IQ is sent out, asking for the
                  * configuration form.
-                 * See: // http://xmpp.org/extensions/xep-0045.html#example-163
+                 * See: // https://xmpp.org/extensions/xep-0045.html#example-163
                  *
                  *  <iq from='crone1@shakespeare.lit/desktop'
                  *      id='config1'
@@ -1234,7 +1234,7 @@
                     `</iq>`);
 
                 /* Server responds with the configuration form.
-                 * See: // http://xmpp.org/extensions/xep-0045.html#example-165
+                 * See: // https://xmpp.org/extensions/xep-0045.html#example-165
                  */
                 var config_stanza = $iq({from: 'coven@chat.shakespeare.lit',
                     'id': IQ_id,
@@ -1398,7 +1398,7 @@
                 for (var i=0; i<mock.chatroom_names.length; i++) {
                     name = mock.chatroom_names[i];
                     role = mock.chatroom_roles[name].role;
-                    // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
+                    // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
                     jid =
                     presence = $pres({
                             to:'dummy@localhost/pda',
@@ -1418,11 +1418,11 @@
                 }
 
                 // Test users leaving the groupchat
-                // http://xmpp.org/extensions/xep-0045.html#exit
+                // https://xmpp.org/extensions/xep-0045.html#exit
                 for (i=mock.chatroom_names.length-1; i>-1; i--) {
                     name = mock.chatroom_names[i];
                     role = mock.chatroom_roles[name].role;
-                    // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
+                    // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
                     presence = $pres({
                         to:'dummy@localhost/pda',
                         from:'lounge@localhost/'+name,
@@ -1452,7 +1452,7 @@
                 for (var i=0; i<mock.chatroom_names.length; i++) {
                     name = mock.chatroom_names[i];
                     role = mock.chatroom_roles[name].role;
-                    // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
+                    // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
                     jid =
                     presence = $pres({
                             to:'dummy@localhost/pda',
@@ -1472,11 +1472,11 @@
                 }
 
                 // Test users leaving the groupchat
-                // http://xmpp.org/extensions/xep-0045.html#exit
+                // https://xmpp.org/extensions/xep-0045.html#exit
                 for (i=mock.chatroom_names.length-1; i>-1; i--) {
                     name = mock.chatroom_names[i];
                     role = mock.chatroom_roles[name].role;
-                    // See example 21 http://xmpp.org/extensions/xep-0045.html#enter-pres
+                    // See example 21 https://xmpp.org/extensions/xep-0045.html#enter-pres
                     presence = $pres({
                         to:'dummy@localhost/pda',
                         from:'lounge@localhost/'+name,
@@ -1695,7 +1695,7 @@
                 // The user has just entered the groupchat (because join was called)
                 // and receives their own presence from the server.
                 // See example 24:
-                // http://xmpp.org/extensions/xep-0045.html#enter-pres
+                // https://xmpp.org/extensions/xep-0045.html#enter-pres
                 const presence = $pres({
                         to:'dummy@localhost/resource',
                         from:'lounge@localhost/thirdwitch',
@@ -1946,7 +1946,7 @@
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'jdev', 'conference.jabber.org', 'jc');
-                const text = 'Jabber/XMPP Development | RFCs and Extensions: http://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
+                const text = 'Jabber/XMPP Development | RFCs and Extensions: https://xmpp.org/ | Protocol and XSF discussions: xsf@muc.xmpp.org';
                 let stanza = u.toStanza(`
                     <message xmlns="jabber:client" to="jc@opkode.com/_converse.js-60429116" type="groupchat" from="jdev@conference.jabber.org/ralphm">
                         <subject>${text}</subject>
@@ -2008,7 +2008,7 @@
                  * nickname and one indicating availability for the new
                  * nickname.
                  *
-                 * See: http://xmpp.org/extensions/xep-0045.html#changenick
+                 * See: https://xmpp.org/extensions/xep-0045.html#changenick
                  *
                  *  <presence
                  *      from='coven@localhost/thirdwitch'
@@ -4082,7 +4082,7 @@
                 spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
 
-                // See: http://xmpp.org/extensions/xep-0045.html#disco-rooms
+                // See: https://xmpp.org/extensions/xep-0045.html#disco-rooms
                 expect(modal.el.querySelectorAll('.available-chatrooms li').length).toBe(0);
 
                 const server_input = modal.el.querySelector('input[name="server"]');
@@ -4299,7 +4299,7 @@
                     expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
                         .toBe("nomorenicks has entered the groupchat");
 
-                    // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
+                    // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
 
                     // <composing> state
                     let msg = $msg({
@@ -4475,7 +4475,7 @@
                     expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
                         .toBe("nomorenicks has entered the groupchat");
 
-                    // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
+                    // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
 
                     // <composing> state
                     var msg = $msg({

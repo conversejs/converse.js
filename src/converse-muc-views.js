@@ -128,7 +128,7 @@ converse.plugins.add('converse-muc-views', {
             return str;
         }
 
-        /* http://xmpp.org/extensions/xep-0045.html
+        /* https://xmpp.org/extensions/xep-0045.html
          * ----------------------------------------
          * 100 message      Entering a groupchat         Inform user that any occupant is allowed to see the user's full JID
          * 101 message (out of band)                     Affiliation change  Inform user that his or her affiliation changed while not in the groupchat
@@ -206,7 +206,7 @@ converse.plugins.add('converse-muc-views', {
              *  (XMLElement) stanza: The IQ stanza containing the groupchat
              *      info.
              */
-            // All MUC features found here: http://xmpp.org/registrar/disco-features.html
+            // All MUC features found here: https://xmpp.org/registrar/disco-features.html
             el.querySelector('span.spinner').remove();
             el.querySelector('a.room-info').classList.add('selected');
             el.insertAdjacentHTML(
@@ -812,7 +812,7 @@ converse.plugins.add('converse-muc-views', {
                  * ignore <gone/> notifications in groupchats.
                  *
                  * As laid out in the business rules in XEP-0085
-                 * http://xmpp.org/extensions/xep-0085.html#bizrules-groupchat
+                 * https://xmpp.org/extensions/xep-0085.html#bizrules-groupchat
                  */
                 if (message.get('fullname') === this.model.get('nick')) {
                     // Don't know about other servers, but OpenFire sends
@@ -1669,7 +1669,7 @@ converse.plugins.add('converse-muc-views', {
 
             showStatusMessages (stanza) {
                 /* Check for status codes and communicate their purpose to the user.
-                 * See: http://xmpp.org/registrar/mucstatus.html
+                 * See: https://xmpp.org/registrar/mucstatus.html
                  *
                  * Parameters:
                  *  (XMLElement) stanza: The message or presence stanza

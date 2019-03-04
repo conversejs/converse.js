@@ -538,7 +538,7 @@ converse.plugins.add('converse-muc', {
                 /* Send an IQ stanza to the server, asking it for the
                  * member-list of this groupchat.
                  *
-                 * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                 * See: https://xmpp.org/extensions/xep-0045.html#modifymember
                  *
                  * Parameters:
                  *  (String) affiliation: The specific member list to
@@ -559,7 +559,7 @@ converse.plugins.add('converse-muc', {
                 /* Send IQ stanzas to the server to set an affiliation for
                  * the provided JIDs.
                  *
-                 * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                 * See: https://xmpp.org/extensions/xep-0045.html#modifymember
                  *
                  * XXX: Prosody doesn't accept multiple JIDs' affiliations
                  * being set in one IQ stanza, so as a workaround we send
@@ -728,7 +728,7 @@ converse.plugins.add('converse-muc', {
                 /* Send IQ stanzas to the server to modify the
                  * affiliations in this groupchat.
                  *
-                 * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                 * See: https://xmpp.org/extensions/xep-0045.html#modifymember
                  *
                  * Parameters:
                  *  (Object) members: A map of jids, affiliations and optionally reasons
@@ -1498,7 +1498,7 @@ converse.plugins.add('converse-muc', {
                  *     configured automatically. Currently it doesn't make sense to specify
                  *     `roomconfig` values if `auto_configure` is set to `false`.
                  *     For a list of configuration values that can be passed in, refer to these values
-                 *     in the [XEP-0045 MUC specification](http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner).
+                 *     in the [XEP-0045 MUC specification](https://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner).
                  *     The values should be named without the `muc#roomconfig_` prefix.
                  * @param {boolean} [attrs.maximize] A boolean, indicating whether minimized rooms should also be
                  *     maximized, when opened. Set to `false` by default.

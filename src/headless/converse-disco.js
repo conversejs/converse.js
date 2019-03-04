@@ -217,7 +217,7 @@ converse.plugins.add('converse-disco', {
         });
 
         function addClientFeatures () {
-            // See http://xmpp.org/registrar/disco-categories.html
+            // See https://xmpp.org/registrar/disco-categories.html
             _converse.api.disco.own.identities.add('client', 'web', 'Converse');
 
             _converse.api.disco.own.features.add(Strophe.NS.BOSH);

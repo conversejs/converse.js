@@ -646,7 +646,7 @@ More info here: https://github.com/LeaVerou/awesomplete/pull/17082
 ## 2.0.4 (2016-12-13)
 - #737: Bugfix. Translations weren't being applied. [jcbrand]
 - Fetch room info and store it on the room model.
-  For context, see: http://xmpp.org/extensions/xep-0045.html#disco-roominfo [jcbrand]
+  For context, see: https://xmpp.org/extensions/xep-0045.html#disco-roominfo [jcbrand]
 - Bugfix. Switching from bookmarks form to config form shows only the spinner. [jcbrand]
 - Bugfix. Other room occupants sometimes not shown when reloading the page. [jcbrand]
 - Bugfix. Due to changes in `converse-core` the controlbox wasn't aware anymore of

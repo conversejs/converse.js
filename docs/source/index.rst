@@ -20,7 +20,7 @@ contribute, please read the :doc:`documentation` page.
 Introduction
 ============
 
-Converse is a free and open-source `XMPP <http://xmpp.org/about-xmpp/>`_
+Converse is a free and open-source `XMPP <https://xmpp.org/about-xmpp/>`_
 chat client written in JavaScript which can be tightly integrated into any website.
 
 The benefit of using converse.js as opposed to relying on a SaaS

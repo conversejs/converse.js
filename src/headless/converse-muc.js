@@ -369,9 +369,7 @@ converse.plugins.add('converse-muc', {
 
             extractReference (text, index) {
                 for (let i=index; i<text.length; i++) {
-                    if (text[i] !== '@') {
-                        continue
-                    } else {
+                    if (text[i] === '@' && (i === 0 || text[i - 1] === ' ')) {
                         const match = text.slice(i+1),
                               ref = this.getReferenceForMention(match, i);
                         if (ref) {

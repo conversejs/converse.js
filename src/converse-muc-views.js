@@ -504,7 +504,7 @@ converse.plugins.add('converse-muc-views', {
                 'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                 'click .toggle-smiley': 'toggleEmojiMenu',
                 'click .upload-file': 'toggleFileUpload',
-                'keypress .chat-textarea': 'keyPressed',
+                'keydown .chat-textarea': 'keyPressed',
                 'keyup .chat-textarea': 'keyUp',
                 'input .chat-textarea': 'inputChanged'
             },

@@ -48005,7 +48005,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'ac_triggers': [],
           // Array of keys (`ev.key`) values that will trigger auto-complete
           'include_triggers': [],
-          // Array of trigger keycodes which should be included in the returned value
+          // Array of trigger keys which should be included in the returned value
           'min_chars': 2,
           'max_items': 10,
           'auto_evaluate': true,
@@ -48248,6 +48248,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           }
 
           this.auto_completing = true;
+        } else if (ev.key === "Backspace") {
+          const word = u.getCurrentWord(ev.target, ev.target.selectionEnd - 1);
+
+          if (this.ac_triggers.includes(word[0])) {
+            this.auto_completing = true;
+          }
         }
       }
 
@@ -53920,7 +53926,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
         'click .toggle-smiley': 'toggleEmojiMenu',
         'click .upload-file': 'toggleFileUpload',
-        'keypress .chat-textarea': 'keyPressed',
+        'keydown .chat-textarea': 'keyPressed',
         'keyup .chat-textarea': 'keyUp',
         'input .chat-textarea': 'inputChanged'
       },
@@ -70419,9 +70425,12 @@ u.siblingIndex = function (el) {
   return i;
 };
 
-u.getCurrentWord = function (input) {
-  const cursor = input.selectionEnd || undefined;
-  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.last(input.value.slice(0, cursor).split(' '));
+u.getCurrentWord = function (input, index) {
+  if (!index) {
+    index = input.selectionEnd || undefined;
+  }
+
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.last(input.value.slice(0, index).split(' '));
 };
 
 u.replaceCurrentWord = function (input, new_value) {

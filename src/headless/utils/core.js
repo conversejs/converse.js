@@ -332,9 +332,11 @@ u.siblingIndex = function (el) {
     return i;
 };
 
-u.getCurrentWord = function (input) {
-    const cursor = input.selectionEnd || undefined;
-    return _.last(input.value.slice(0, cursor).split(' '));
+u.getCurrentWord = function (input, index) {
+    if (!index) {
+        index = input.selectionEnd || undefined;
+    }
+    return _.last(input.value.slice(0, index).split(' '));
 };
 
 u.replaceCurrentWord = function (input, new_value) {

@@ -73,7 +73,7 @@ converse.plugins.add("converse-autocomplete", {
                 _.assignIn(this, {
                     'match_current_word': false, // Match only the current word, otherwise all input is matched
                     'ac_triggers': [], // Array of keys (`ev.key`) values that will trigger auto-complete
-                    'include_triggers': [], // Array of trigger keycodes which should be included in the returned value
+                    'include_triggers': [], // Array of trigger keys which should be included in the returned value
                     'min_chars': 2,
                     'max_items': 10,
                     'auto_evaluate': true,
@@ -296,6 +296,11 @@ converse.plugins.add("converse-autocomplete", {
                         ev.preventDefault();
                     }
                     this.auto_completing = true;
+                } else if (ev.key === "Backspace") {
+                    const word = u.getCurrentWord(ev.target, ev.target.selectionEnd-1);
+                    if (this.ac_triggers.includes(word[0])) {
+                        this.auto_completing = true;
+                    }
                 }
             }
 

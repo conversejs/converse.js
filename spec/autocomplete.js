@@ -168,5 +168,46 @@
             expect(textarea.value).toBe('hello @z3r0 ');
             done();
         }));
+
+        it("autocompletes when the user presses backspace",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+            const view = _converse.chatboxviews.get('lounge@localhost');
+            expect(view.model.occupants.length).toBe(1);
+            const presence = $pres({
+                    'to': 'dummy@localhost/resource',
+                    'from': 'lounge@localhost/some1'
+                })
+                .c('x', {xmlns: Strophe.NS.MUC_USER})
+                .c('item', {
+                    'affiliation': 'none',
+                    'jid': 'some1@localhost/resource',
+                    'role': 'participant'
+                });
+            _converse.connection._dataRecv(test_utils.createRequest(presence));
+            expect(view.model.occupants.length).toBe(2);
+
+            const textarea = view.el.querySelector('textarea.chat-textarea');
+            textarea.value = "hello @some1 ";
+
+            // Press backspace
+            const backspace_event = {
+                'target': textarea,
+                'preventDefault': _.noop,
+                'stopPropagation': _.noop,
+                'keyCode': 8,
+                'key': 'Backspace'
+            }
+            view.keyPressed(backspace_event);
+            textarea.value = "hello @some1"; // Mimic backspace
+            view.keyUp(backspace_event);
+            expect(view.el.querySelector('.suggestion-box__results').hidden).toBeFalsy();
+            expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(1);
+            expect(view.el.querySelector('.suggestion-box__results li').textContent).toBe('some1');
+            done();
+        }));
     });
 }));

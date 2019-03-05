@@ -4368,10 +4368,8 @@
                     expect(notifications.length).toBe(2);
                     expect(notifications[0].textContent).toEqual('newguy is typing');
                     expect(notifications[1].textContent).toEqual('nomorenicks is typing');
-                    expect(timeout_functions.length).toBe(3);
 
-                    // Check that new messages appear under the chat state
-                    // notifications
+                    // Check that new messages appear under the chat state notifications
                     msg = $msg({
                         from: `${room_jid}/some1`,
                         id: (new Date()).getTime(),
@@ -4386,8 +4384,7 @@
                     expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
                     expect(view.el.querySelector('.chat-msg .chat-msg__text').textContent).toBe('hello world');
 
-                    // Test that the composing notifications get removed
-                    // via timeout.
+                    // Test that the composing notifications get removed via timeout.
                     timeout_functions[0]();
                     events = view.el.querySelectorAll('.chat-event');
                     expect(events.length).toBe(3);

@@ -506,7 +506,9 @@ converse.plugins.add('converse-muc-views', {
                 'click .upload-file': 'toggleFileUpload',
                 'keydown .chat-textarea': 'keyPressed',
                 'keyup .chat-textarea': 'keyUp',
-                'input .chat-textarea': 'inputChanged'
+                'input .chat-textarea': 'inputChanged',
+                'dragover .chat-textarea': 'onDragOver',
+                'drop .chat-textarea': 'onDrop',
             },
 
             initialize () {

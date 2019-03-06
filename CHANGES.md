@@ -2,8 +2,10 @@
 
 ## 4.1.3 (Unreleased)
 
+- Updated translation: lt
 - Upgrade to Backbone 1.4.0
 - Fix "flashing" of roster filter when you have less than 5 roster contacts.
+- Fix handling of CAPTCHAs offered by ejabberd.
 - Allow setting of debug mode via URL with `/#converse?debug=true`
 - New config setting [locked_muc_domain](https://conversejs.org/docs/html/configuration.html#locked-muc-domain)
 - New config setting [show_client_info](https://conversejs.org/docs/html/configuration.html#show-client-info)
@@ -13,7 +15,8 @@
 - #1400: When a chat message is just an emoji, enlarge the emoji
 - #1437: List of groupchats in modal doesn't scroll
 - #1457: Wrong tooltip shown for "unbookmark" icon
-- #1474: Update Lithuanian (lt) translation
+- #1479: Allow file upload by drag & drop also in MUCs
+
 
 ## 4.1.2 (2019-02-22)
 
@@ -647,7 +650,7 @@ More info here: https://github.com/LeaVerou/awesomplete/pull/17082
 ## 2.0.4 (2016-12-13)
 - #737: Bugfix. Translations weren't being applied. [jcbrand]
 - Fetch room info and store it on the room model.
-  For context, see: http://xmpp.org/extensions/xep-0045.html#disco-roominfo [jcbrand]
+  For context, see: https://xmpp.org/extensions/xep-0045.html#disco-roominfo [jcbrand]
 - Bugfix. Switching from bookmarks form to config form shows only the spinner. [jcbrand]
 - Bugfix. Other room occupants sometimes not shown when reloading the page. [jcbrand]
 - Bugfix. Due to changes in `converse-core` the controlbox wasn't aware anymore of

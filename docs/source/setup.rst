@@ -57,7 +57,7 @@ The various components
 An XMPP server
 ==============
 
-Converse uses `XMPP <http://xmpp.org/about-xmpp/>`_ as its
+Converse uses `XMPP <https://xmpp.org/about-xmpp/>`_ as its
 messaging protocol, and therefore needs to connect to an XMPP/Jabber
 server (Jabber® is an older and more user-friendly synonym for XMPP).
 
@@ -67,7 +67,7 @@ authentication sessions to log in users to the XMPP server (i.e. :ref:`session s
 then you'll have to set up your own XMPP server.
 
 You can find a list of public XMPP servers/providers on `compliance.conversations.im <http://compliance.conversations.im/>`_
-and a list of servers that you can set up yourself on `xmpp.org <http://xmpp.org/xmpp-software/servers/>`_.
+and a list of servers that you can set up yourself on `xmpp.org <https://xmpp.org/xmpp-software/servers/>`_.
 
 .. _`BOSH-section`:
 
@@ -90,7 +90,7 @@ server, we need a proxy which acts as a bridge between these two protocols.
 
 This is the job of a BOSH connection manager. BOSH (Bidirectional-streams Over
 Synchronous HTTP) is a protocol for allowing XMPP communication over HTTP. The
-protocol is defined in `XEP-0206: XMPP Over BOSH <http://xmpp.org/extensions/xep-0206.html>`_.
+protocol is defined in `XEP-0206: XMPP Over BOSH <https://xmpp.org/extensions/xep-0206.html>`_.
 
 Popular XMPP servers such as `Ejabberd <http://www.ejabberd.im>`_,
 Prosody `(mod_bosh) <http://prosody.im/doc/setting_up_bosh>`_ and
@@ -104,7 +104,7 @@ https://conversejs.org does), then you'll need a standalone connection manager.
 For a standalone manager, see for example `Punjab <https://github.com/twonds/punjab>`_
 and `node-xmpp-bosh <https://github.com/dhruvbird/node-xmpp-bosh>`_.
 
-The demo on the `Converse homepage <http://conversejs.org>`_ uses a connection
+The demo on the `Converse homepage <https://conversejs.org>`_ uses a connection
 manager located at https://conversejs.org/http-bind.
 
 This connection manager is available for testing purposes only, please don't
@@ -258,7 +258,7 @@ Option 1). Server-side authentication via BOSH prebinding
 ---------------------------------------------------------
 
 To **prebind** refers to a technique whereby your web application sets up an
-authenticated BOSH session with the XMPP server or a standalone `BOSH <http://xmpp.org/about-xmpp/technology-overview/bosh/>`_
+authenticated BOSH session with the XMPP server or a standalone `BOSH <https://xmpp.org/about-xmpp/technology-overview/bosh/>`_
 connection manager.
 
 Once authenticated, it receives RID and SID tokens which need to be passed

@@ -1050,7 +1050,7 @@ Room attributes that may be passed in:
   configured automatically. Currently it doesn't make sense to specify
   ``roomconfig`` values if ``auto_configure`` is set to ``false``.
   For a list of configuration values that can be passed in, refer to these values
-  in the `XEP-0045 MUC specification <http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner>`_.
+  in the `XEP-0045 MUC specification <https://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner>`_.
   The values should be named without the ``muc#roomconfig_`` prefix.
 * *maximize*: A boolean, indicating whether minimized rooms should also be
   maximized, when opened. Set to ``false`` by default.

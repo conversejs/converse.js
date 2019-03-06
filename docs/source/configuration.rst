@@ -222,7 +222,7 @@ allow_registration
 
 * Default:  ``true``
 
-Support for `XEP-0077: In band registration <http://xmpp.org/extensions/xep-0077.html>`_
+Support for `XEP-0077: In band registration <https://xmpp.org/extensions/xep-0077.html>`_
 
 Allow XMPP account registration showing the corresponding UI register form interface.
 
@@ -572,7 +572,7 @@ csi_waiting_time
 
 * Default: ``0``
 
-This option adds support for `XEP-0352 Client State Indication <http://xmpp.org/extensions/xep-0352.html>_`
+This option adds support for `XEP-0352 Client State Indication <https://xmpp.org/extensions/xep-0352.html>_`
 
 If Converse is idle for the configured amount of seconds, a chat state
 indication of ``inactive`` will be sent out to the XMPP server (if the server
@@ -806,7 +806,7 @@ See also:
     Currently the "keepalive" setting only works with BOSH and not with
     websockets. This is because XMPP over websocket does not use the same
     session token as with BOSH. A possible solution for this is to implement
-    `XEP-0198 <http://xmpp.org/extensions/xep-0198.html>`_, specifically
+    `XEP-0198 <https://xmpp.org/extensions/xep-0198.html>`_, specifically
     with regards to "stream resumption".
 
 .. _`locales`:
@@ -993,7 +993,7 @@ muc_instant_rooms
 
 Determines whether 'instant' (also called 'dynamic' in OpenFire) rooms are created.
 Otherwise rooms first have to be configured before they're available to other
-users (so-called "registered rooms" in `MUC-0045 <http://xmpp.org/extensions/xep-0045.html#createroom>`_).
+users (so-called "registered rooms" in `MUC-0045 <https://xmpp.org/extensions/xep-0045.html#createroom>`_).
 
 From a UX perspective, if this settings is `false`, then a configuration form will
 render, that has to be filled in first, before the room can be joined by other

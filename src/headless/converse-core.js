@@ -165,7 +165,7 @@ _converse.TIMEOUTS = { // Set as module attr so that we can override in tests.
 };
 
 // XEP-0085 Chat states
-// http://xmpp.org/extensions/xep-0085.html
+// https://xmpp.org/extensions/xep-0085.html
 _converse.INACTIVE = 'inactive';
 _converse.ACTIVE = 'active';
 _converse.COMPOSING = 'composing';

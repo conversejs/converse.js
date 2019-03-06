@@ -671,7 +671,7 @@
                         await test_utils.waitForRoster(_converse, 'current');
                         test_utils.openControlBox();
 
-                        // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
+                        // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse, 'emit');
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
@@ -817,7 +817,7 @@
                         test_utils.openControlBox();
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         // TODO: only show paused state if the previous state was composing
-                        // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
+                        // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse, 'emit').and.callThrough();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         const view = await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -985,7 +985,7 @@
                         await test_utils.waitForRoster(_converse, 'current');
                         test_utils.openControlBox();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        // See XEP-0085 http://xmpp.org/extensions/xep-0085.html#definitions
+                        // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
                         spyOn(_converse, 'emit');
                         await test_utils.openChatBoxFor(_converse, sender_jid);
                         const view = _converse.chatboxviews.get(sender_jid);

@@ -112,7 +112,7 @@
                 }).then(stanza => {
                     // The user has just entered the room (because join was called)
                     // and receives their own presence from the server.
-                    // See example 24: http://xmpp.org/extensions/xep-0045.html#enter-pres
+                    // See example 24: https://xmpp.org/extensions/xep-0045.html#enter-pres
                     const presence = $pres({
                             to: _converse.connection.jid,
                             from: room_jid,

@@ -2,6 +2,7 @@
 
 ## 4.1.3 (Unreleased)
 
+- Updated translation: lt
 - Upgrade to Backbone 1.4.0
 - Fix "flashing" of roster filter when you have less than 5 roster contacts.
 - Fix handling of CAPTCHAs offered by ejabberd.
@@ -15,6 +16,7 @@
 - #1437: List of groupchats in modal doesn't scroll
 - #1457: Wrong tooltip shown for "unbookmark" icon
 - #1479: Allow file upload by drag & drop also in MUCs
+
 
 ## 4.1.2 (2019-02-22)
 

@@ -9994,12 +9994,6 @@ body.converse-fullscreen {
     #conversejs .btn-danger:hover {
       background-color: var(--danger-color-dark);
       border-color: var(--danger-color-dark); }
-  #conversejs .chat-textarea-chatbox-selected {
-    border: 1px solid #578308;
-    margin: 0; }
-  #conversejs .chat-textarea-chatroom-selected {
-    border: 2px solid var(--link-color);
-    margin: 0; }
 
 @media screen and (max-width: 575px) {
   body .converse-brand {
@@ -10345,6 +10339,8 @@ body.converse-fullscreen {
       min-height: var(--chat-textarea-height);
       margin-bottom: -4px;
       resize: none; }
+      #conversejs .chatbox .sendXMPPMessage .chat-textarea:active, #conversejs .chatbox .sendXMPPMessage .chat-textarea:focus {
+        outline-color: var(--chat-head-color); }
       #conversejs .chatbox .sendXMPPMessage .chat-textarea.spoiler {
         height: 42px; }
       #conversejs .chatbox .sendXMPPMessage .chat-textarea.correcting {
@@ -11694,6 +11690,10 @@ body.converse-fullscreen {
   #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-textarea,
   #conversejs .chatroom .sendXMPPMessage .chat-textarea {
     border-bottom-right-radius: 0; }
+    #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-textarea:active, #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-textarea:focus,
+    #conversejs .chatroom .sendXMPPMessage .chat-textarea:active,
+    #conversejs .chatroom .sendXMPPMessage .chat-textarea:focus {
+      outline-color: var(--chatroom-head-color); }
     #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-textarea.correcting,
     #conversejs .chatroom .sendXMPPMessage .chat-textarea.correcting {
       background-color: var(--chatroom-correcting-color); }

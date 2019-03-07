@@ -61911,7 +61911,20 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return this.vcard.get('fullname') || this.get('jid');
       },
 
-      updateMessage(message, stanza) {// Overridden in converse-muc and converse-mam
+      getUpdatedMessageAttributes(message, stanza) {
+        // Overridden in converse-muc and converse-mam
+        return {};
+      },
+
+      updateMessage(message, stanza) {
+        // Overridden in converse-muc and converse-mam
+        const attrs = this.getUpdatedMessageAttributes(message, stanza);
+
+        if (attrs) {
+          message.save(attrs, {
+            'patch': true
+          });
+        }
       },
 
       handleMessageCorrection(stanza) {
@@ -65754,14 +65767,16 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
         return message;
       },
 
-      updateMessage(message, stanza) {
-        this.__super__.updateMessage.apply(this, arguments);
+      getUpdatedMessageAttributes(message, stanza) {
+        const attrs = this.__super__.getUpdatedMessageAttributes.apply(this, arguments);
 
         if (message && !message.get('is_archived')) {
-          message.save(_.extend({
+          return _.extend(attrs, {
             'is_archived': this.isArchived(stanza)
-          }, this.getStanzaIDs(stanza)));
+          }, this.getStanzaIDs(stanza));
         }
+
+        return attrs;
       }
 
     },
@@ -67388,17 +67403,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         return is_csn && (attrs.is_delayed || own_message);
       },
 
-      updateMessage(message, stanza) {
-        /* Make sure that the already cached message is updated with
-         * the stanza ID.
-         */
-        _converse.ChatBox.prototype.updateMessage.call(this, message, stanza);
+      getUpdatedMessageAttributes(message, stanza) {
+        // Overridden in converse-muc and converse-mam
+        const attrs = _converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, stanza);
 
         const from = stanza.getAttribute('from');
         const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
 
         if (own_message) {
-          const attrs = {};
           const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
           const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
 
@@ -67410,9 +67422,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           if (!message.get('received')) {
             attrs.received = moment().format();
           }
-
-          message.save(attrs);
         }
+
+        return attrs;
       },
 
       async onMessage(stanza) {

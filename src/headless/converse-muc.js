@@ -1000,15 +1000,12 @@ converse.plugins.add('converse-muc', {
                 return is_csn && (attrs.is_delayed || own_message);
             },
 
-            updateMessage (message, stanza) {
-                /* Make sure that the already cached message is updated with
-                 * the stanza ID.
-                 */
-                _converse.ChatBox.prototype.updateMessage.call(this, message, stanza);
+            getUpdatedMessageAttributes (message, stanza) {
+                // Overridden in converse-muc and converse-mam
+                const attrs = _converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, stanza);
                 const from = stanza.getAttribute('from');
                 const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
                 if (own_message) {
-                    const attrs = {};
                     const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
                     const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
                     if (by_jid) {
@@ -1018,8 +1015,8 @@ converse.plugins.add('converse-muc', {
                     if (!message.get('received')) {
                         attrs.received = moment().format();
                     }
-                    message.save(attrs);
                 }
+                return attrs;
             },
 
             async onMessage (stanza) {

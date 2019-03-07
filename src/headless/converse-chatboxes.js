@@ -290,8 +290,17 @@ converse.plugins.add('converse-chatboxes', {
                 return this.vcard.get('fullname') || this.get('jid');
             },
 
+            getUpdatedMessageAttributes (message, stanza) {
+                // Overridden in converse-muc and converse-mam
+                return {};
+            },
+
             updateMessage (message, stanza) {
                 // Overridden in converse-muc and converse-mam
+                const attrs = this.getUpdatedMessageAttributes(message, stanza);
+                if (attrs) {
+                    message.save(attrs, {'patch': true});
+                }
             },
 
             handleMessageCorrection (stanza) {

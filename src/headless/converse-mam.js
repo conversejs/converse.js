@@ -142,13 +142,14 @@ converse.plugins.add('converse-mam', {
             },
 
 
-            updateMessage (message, stanza) {
-                this.__super__.updateMessage.apply(this, arguments);
+            getUpdatedMessageAttributes (message, stanza) {
+                const attrs = this.__super__.getUpdatedMessageAttributes.apply(this, arguments);
                 if (message && !message.get('is_archived')) {
-                    message.save(_.extend({
+                    return _.extend(attrs, {
                         'is_archived': this.isArchived(stanza)
-                    }, this.getStanzaIDs(stanza)));
+                    }, this.getStanzaIDs(stanza))
                 }
+                return attrs;
             }
         },
 

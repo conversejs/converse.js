@@ -11044,7 +11044,7 @@ body.converse-fullscreen {
     @media screen and (max-width: 480px) {
       #conversejs.converse-fullscreen #controlbox .brand-heading-container .brand-heading,
       #conversejs.converse-mobile #controlbox .brand-heading-container .brand-heading {
-        font-size: 400%; } }
+        font-size: 300%; } }
   #conversejs.converse-fullscreen #controlbox.logged-out,
   #conversejs.converse-mobile #controlbox.logged-out {
     flex: 0 0 100%;

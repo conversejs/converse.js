@@ -1505,6 +1505,7 @@ visible_toolbar_buttons
 
     {
         call: false,
+        spoiler: false,
         emoji: true,
         toggle_occupants: true
     }
@@ -1524,6 +1525,8 @@ Allows you to show or hide buttons on the chatboxes' toolbars.
         });
 * *emoji*:
     Enables rendering of emoji and provides a toolbar button for choosing them.
+* *spoiler*:
+    Shows a button for showing`XEP-0382 <https://xmpp.org/extensions/xep-0382.html>`_ spoiler messages.
 * *toggle_occupants*:
     Shows a button for toggling (i.e. showing/hiding) the list of occupants in a chatroom.
 

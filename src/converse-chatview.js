@@ -405,10 +405,11 @@ converse.plugins.add('converse-chatview', {
             },
 
             onDrop (evt) {
-                if (evt.dataTransfer.files.length == 0)
+                if (evt.dataTransfer.files.length == 0) {
                     // There are no files to be dropped, so this isn’t a file
                     // transfer operation.
                     return;
+                }
                 evt.preventDefault();
                 this.model.sendFiles(evt.dataTransfer.files);
             },

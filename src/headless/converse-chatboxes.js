@@ -380,7 +380,7 @@ converse.plugins.add('converse-chatboxes', {
                     return false;
                 } else if (markers.length > 1) {
                     _converse.log(
-                        'onMessage: Ignoring incoming stanza with multiple message markers',
+                        'handleChatMarker: Ignoring incoming stanza with multiple message markers',
                         Strophe.LogLevel.ERROR
                     );
                     _converse.log(stanza, Strophe.LogLevel.ERROR);
@@ -508,10 +508,12 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             getOutgoingMessageAttributes (text, spoiler_hint) {
-                const is_spoiler = this.get('composing_spoiler');
+                const is_spoiler = this.get('composing_spoiler'),
+                      origin_id = _converse.connection.getUniqueId();
+
                 return _.extend(this.toJSON(), {
-                    'id': _converse.connection.getUniqueId(),
-                    'origin_id': _converse.connection.getUniqueId(),
+                    'id': origin_id,
+                    'origin_id': origin_id,
                     'fullname': _converse.xmppstatus.get('fullname'),
                     'from': _converse.bare_jid,
                     'sender': 'me',
@@ -628,6 +630,12 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             getStanzaIDs (stanza) {
+                /* Extract the XEP-0359 stanza IDs from the passed in stanza
+                 * and return a map containing them.
+                 *
+                 * Parameters:
+                 *    (XMLElement) stanza - The message stanza
+                 */
                 const attrs = {};
                 const stanza_ids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
                 if (stanza_ids.length) {
@@ -637,6 +645,11 @@ converse.plugins.add('converse-chatboxes', {
                 if (result) {
                     const by_jid = stanza.getAttribute('from');
                     attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
+                }
+
+                const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+                if (origin_id) {
+                    attrs['origin_id'] = origin_id.getAttribute('id');
                 }
                 return attrs;
             },
@@ -678,6 +691,7 @@ converse.plugins.add('converse-chatboxes', {
                     'type': stanza.getAttribute('type')
                 }, this.getStanzaIDs(original_stanza));
 
+
                 if (attrs.type === 'groupchat') {
                     attrs.from = stanza.getAttribute('from');
                     attrs.nick = Strophe.unescapeNode(Strophe.getResourceFromJid(attrs.from));
@@ -699,6 +713,8 @@ converse.plugins.add('converse-chatboxes', {
                 if (spoiler) {
                     attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
                 }
+                // We prefer to use one of the XEP-0359 unique and stable stanza IDs as the Model id, to avoid duplicates.
+                attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${attrs.from}`] || _converse.connection.getUniqueId();
                 return attrs;
             },
 

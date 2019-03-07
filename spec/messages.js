@@ -2223,7 +2223,7 @@
 
             await test_utils.openAndEnterChatRoom(_converse, 'room', 'muc.example.com', 'dummy');
             const view = _converse.chatboxviews.get('room@muc.example.com');
-            spyOn(view.model, 'hasDuplicateStanzaID').and.callThrough();
+            spyOn(view.model, 'findDuplicateFromStanzaID').and.callThrough();
             let stanza = u.toStanza(`
                 <message xmlns="jabber:client"
                          from="room@muc.example.com/some1"
@@ -2238,9 +2238,9 @@
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => _converse.api.chats.get().length);
             await test_utils.waitUntil(() => view.model.messages.length === 1);
-            await test_utils.waitUntil(() => view.model.hasDuplicateStanzaID.calls.count() === 1);
-            let result = await view.model.hasDuplicateStanzaID.calls.all()[0].returnValue;
-            expect(result).toBe(false);
+            await test_utils.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 1);
+            let result = await view.model.findDuplicateFromStanzaID.calls.all()[0].returnValue;
+            expect(result).toBe(undefined);
 
             stanza = u.toStanza(`
                 <message xmlns="jabber:client"
@@ -2254,9 +2254,9 @@
                     <origin-id xmlns="urn:xmpp:sid:0" id="de305d54-75b4-431b-adb2-eb6b9e546013"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.hasDuplicateStanzaID.calls.count() === 2);
-            result = await view.model.hasDuplicateStanzaID.calls.all()[1].returnValue;
-            expect(result).toBe(true);
+            await test_utils.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 2);
+            result = await view.model.findDuplicateFromStanzaID.calls.all()[1].returnValue;
+            expect(result instanceof _converse.Message).toBe(true);
             expect(view.model.messages.length).toBe(1);
             done();
         }));
@@ -2477,7 +2477,13 @@
                     <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
                 </message>`);
             await view.model.onMessage(stanza);
+            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-msg__receipt').length);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(1);
+            expect(view.model.messages.length).toBe(1);
+
+            const message = view.model.messages.at(0);
+            expect(message.get('stanza_id lounge@localhost')).toBe('5f3dbc5e-e1d3-4077-a492-693f3769c7ad');
+            expect(message.get('origin_id')).toBe(msg_obj.get('origin_id'));
             done();
         }));
 
@@ -2518,9 +2524,9 @@
                                by="room@muc.example.com"/>
                     <origin-id xmlns="urn:xmpp:sid:0" id="${attrs.origin_id}"/>
                 </message>`);
-            spyOn(view.model, 'handleReflection').and.callThrough();
+            spyOn(view.model, 'updateMessage').and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.handleReflection.calls.count() === 1);
+            await test_utils.waitUntil(() => view.model.updateMessage.calls.count() === 1);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('stanza_id room@muc.example.com')).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");
             expect(view.model.messages.at(0).get('origin_id')).toBe(attrs.origin_id);

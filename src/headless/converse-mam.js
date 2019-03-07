@@ -23,17 +23,6 @@ const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'cou
 const MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
 
-function getMessageArchiveID (stanza) {
-    // See https://xmpp.org/extensions/xep-0313.html#results
-    //
-    // The result messages MUST contain a <result/> element with an 'id'
-    // attribute that gives the current message's archive UID
-    const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
-    if (!_.isUndefined(result)) {
-        return result.getAttribute('id');
-    }
-}
-
 function queryForArchivedMessages (_converse, options, callback, errback) {
     /* Internal function, called by the "archive.query" API method.
      */
@@ -128,10 +117,38 @@ converse.plugins.add('converse-mam', {
         // New functions which don't exist yet can also be added.
         ChatBox: {
 
-            async getMessageAttributesFromStanza (message, original_stanza) {
-                const attrs = await this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
-                attrs.archive_id = getMessageArchiveID(original_stanza);
-                return attrs;
+            async findDuplicateFromArchiveID (stanza) {
+                const { _converse } = this.__super__;
+                const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+                if (!result) {
+                    return null;
+                }
+                const by_jid = stanza.getAttribute('from') || this.get('jid');
+                const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
+                if (!supported.length) {
+                    return null;
+                }
+                const query = {};
+                query[`stanza_id ${by_jid}`] = result.getAttribute('id');
+                return this.messages.findWhere(query);
+            },
+
+            async getDuplicateMessage (stanza) {
+                const message = await this.__super__.getDuplicateMessage.apply(this, arguments);
+                if (!message) {
+                    return this.findDuplicateFromArchiveID(stanza);
+                }
+                return message;
+            },
+
+
+            updateMessage (message, stanza) {
+                this.__super__.updateMessage.apply(this, arguments);
+                if (message && !message.get('is_archived')) {
+                    message.save(_.extend({
+                        'is_archived': this.isArchived(stanza)
+                    }, this.getStanzaIDs(stanza)));
+                }
             }
         },
 
@@ -155,15 +172,11 @@ converse.plugins.add('converse-mam', {
                 if (_.isNil(most_recent_msg)) {
                     this.fetchArchivedMessages();
                 } else {
-                    const archive_id = most_recent_msg.get('archive_id');
-                    if (archive_id) {
-                        this.fetchArchivedMessages({
-                            'after': most_recent_msg.get('archive_id')
-                        });
+                    const stanza_id = most_recent_msg.get(`stanza_id ${this.model.get('jid')}`);
+                    if (stanza_id) {
+                        this.fetchArchivedMessages({'after': stanza_id});
                     } else {
-                        this.fetchArchivedMessages({
-                            'start': most_recent_msg.get('time')
-                        });
+                        this.fetchArchivedMessages({'start': most_recent_msg.get('time')});
                     }
                 }
             },
@@ -250,11 +263,10 @@ converse.plugins.add('converse-mam', {
                 const { _converse } = this.__super__;
                 if (this.content.scrollTop === 0 && this.model.messages.length) {
                     const oldest_message = this.model.messages.at(0);
-                    const archive_id = oldest_message.get('archive_id');
-                    if (archive_id) {
-                        this.fetchArchivedMessages({
-                            'before': archive_id
-                        });
+                    const by_jid = this.model.get('jid');
+                    const stanza_id = oldest_message.get(`stanza_id ${by_jid}`);
+                    if (stanza_id) {
+                        this.fetchArchivedMessages({'before': stanza_id});
                     } else {
                         this.fetchArchivedMessages({
                             'end': oldest_message.get('time')
@@ -262,20 +274,6 @@ converse.plugins.add('converse-mam', {
                     }
                 }
             },
-        },
-
-        ChatRoom: {
-
-            isDuplicate (message, original_stanza) {
-                const result = this.__super__.isDuplicate.apply(this, arguments);
-                if (result) {
-                    return result;
-                }
-                const archive_id = getMessageArchiveID(original_stanza);
-                if (archive_id) {
-                    return this.messages.filter({'archive_id': archive_id}).length > 0;
-                }
-            }
         },
 
         ChatRoomView: {

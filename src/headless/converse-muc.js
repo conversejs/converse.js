@@ -972,33 +972,6 @@ converse.plugins.add('converse-muc', {
                      acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
             },
 
-            handleReflection (stanza) {
-                /* Handle a MUC reflected message and return true if so.
-                 *
-                 * Parameters:
-                 *  (XMLElement) stanza: The message stanza
-                 */
-                const from = stanza.getAttribute('from');
-                const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
-                if (own_message) {
-                    const msg = this.findDuplicateFromOriginID(stanza);
-                    if (msg) {
-                        const attrs = {};
-                        const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-                        const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
-                        if (by_jid) {
-                            const key = `stanza_id ${by_jid}`;
-                            attrs[key] = stanza_id.getAttribute('id');
-                        }
-                        if (!msg.get('received')) {
-                            attrs.received = moment().format();
-                        }
-                        msg.save(attrs);
-                    }
-                    return msg ? true : false;
-                }
-            },
-
             subjectChangeHandled (attrs) {
                 /* Handle a subject change and return `true` if so.
                  *
@@ -1029,6 +1002,28 @@ converse.plugins.add('converse-muc', {
                 return is_csn && (attrs.is_delayed || own_message);
             },
 
+            updateMessage (message, stanza) {
+                /* Make sure that the already cached message is updated with
+                 * the stanza ID.
+                 */
+                _converse.ChatBox.prototype.updateMessage.call(this, message, stanza);
+                const from = stanza.getAttribute('from');
+                const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
+                if (own_message) {
+                    const attrs = {};
+                    const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+                    const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
+                    if (by_jid) {
+                        const key = `stanza_id ${by_jid}`;
+                        attrs[key] = stanza_id.getAttribute('id');
+                    }
+                    if (!message.get('received')) {
+                        attrs.received = moment().format();
+                    }
+                    message.save(attrs);
+                }
+            },
+
             async onMessage (stanza) {
                 /* Handler for all MUC messages sent to this groupchat.
                  *
@@ -1042,9 +1037,11 @@ converse.plugins.add('converse-muc', {
                 if (forwarded) {
                     stanza = forwarded.querySelector('message');
                 }
-                if (this.handleReflection(stanza) ||
-                        await this.hasDuplicateArchiveID(original_stanza) ||
-                        await this.hasDuplicateStanzaID(stanza) ||
+                const message = await this.getDuplicateMessage(original_stanza);
+                if (message) {
+                    this.updateMessage(message, original_stanza);
+                }
+                if (message ||
                         this.handleMessageCorrection(stanza) ||
                         this.isReceipt(stanza) ||
                         this.isChatMarker(stanza)) {

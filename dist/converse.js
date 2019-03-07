@@ -61911,6 +61911,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return this.vcard.get('fullname') || this.get('jid');
       },
 
+      updateMessage(message, stanza) {// Overridden in converse-muc and converse-mam
+      },
+
       handleMessageCorrection(stanza) {
         const replace = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
 
@@ -61942,11 +61945,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return false;
       },
 
+      getDuplicateMessage(stanza) {
+        return this.findDuplicateFromOriginID(stanza) || this.findDuplicateFromStanzaID(stanza);
+      },
+
       findDuplicateFromOriginID(stanza) {
         const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
 
         if (!origin_id) {
-          return false;
+          return null;
         }
 
         return this.messages.findWhere({
@@ -61955,27 +61962,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
-      async hasDuplicateArchiveID(stanza) {
-        const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
-
-        if (!result) {
-          return false;
-        }
-
-        const by_jid = stanza.getAttribute('from') || this.get('jid');
-        const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
-
-        if (!supported.length) {
-          return false;
-        }
-
-        const query = {};
-        query[`stanza_id ${by_jid}`] = result.getAttribute('id');
-        const msg = this.messages.findWhere(query);
-        return !_.isNil(msg);
-      },
-
-      async hasDuplicateStanzaID(stanza) {
+      async findDuplicateFromStanzaID(stanza) {
         const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
 
         if (!stanza_id) {
@@ -61991,8 +61978,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
         const query = {};
         query[`stanza_id ${by_jid}`] = stanza_id.getAttribute('id');
-        const msg = this.messages.findWhere(query);
-        return !_.isNil(msg);
+        return this.messages.findWhere(query);
       },
 
       sendMarker(to_jid, id, type) {
@@ -62349,6 +62335,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return attrs;
       },
 
+      isArchived(original_stanza) {
+        return !_.isNil(sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop());
+      },
+
       getMessageAttributesFromStanza(stanza, original_stanza) {
         /* Parses a passed in message stanza and returns an object
          * of attributes.
@@ -62361,15 +62351,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          *      that contains the message stanza, if it was
          *      contained, otherwise it's the message stanza itself.
          */
-        const archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
-              spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
+        const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
               delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
               text = _converse.chatboxes.getMessageBody(stanza) || undefined,
               chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
         const attrs = _.extend({
           'chat_state': chat_state,
-          'is_archived': !_.isNil(archive),
+          'is_archived': this.isArchived(original_stanza),
           'is_delayed': !_.isNil(delay),
           'is_spoiler': !_.isNil(spoiler),
           'is_single_emoji': text ? u.isSingleEmoji(text) : false,
@@ -62637,12 +62626,20 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'nickname': roster_nick
         }, has_body);
 
-        if (chatbox && !chatbox.findDuplicateFromOriginID(stanza) && !(await chatbox.hasDuplicateArchiveID(original_stanza)) && !(await chatbox.hasDuplicateStanzaID(stanza)) && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
-          const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
+        if (chatbox) {
+          const message = await chatbox.getDuplicateMessage(stanza);
 
-          if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
-            const msg = chatbox.messages.create(attrs);
-            chatbox.incrementUnreadMsgCounter(msg);
+          if (message) {
+            chatbox.updateMessage(message, original_stanza);
+          }
+
+          if (!message && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
+            const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
+
+            if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
+              const msg = chatbox.messages.create(attrs);
+              chatbox.incrementUnreadMsgCounter(msg);
+            }
           }
         }
 
@@ -65603,18 +65600,6 @@ const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'cou
 
 const MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
-function getMessageArchiveID(stanza) {
-  // See https://xmpp.org/extensions/xep-0313.html#results
-  //
-  // The result messages MUST contain a <result/> element with an 'id'
-  // attribute that gives the current message's archive UID
-  const result = sizzle__WEBPACK_IMPORTED_MODULE_3___default()(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
-
-  if (!_.isUndefined(result)) {
-    return result.getAttribute('id');
-  }
-}
-
 function queryForArchivedMessages(_converse, options, callback, errback) {
   /* Internal function, called by the "archive.query" API method.
    */
@@ -65739,10 +65724,44 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
     //
     // New functions which don't exist yet can also be added.
     ChatBox: {
-      async getMessageAttributesFromStanza(message, original_stanza) {
-        const attrs = await this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
-        attrs.archive_id = getMessageArchiveID(original_stanza);
-        return attrs;
+      async findDuplicateFromArchiveID(stanza) {
+        const _converse = this.__super__._converse;
+        const result = sizzle__WEBPACK_IMPORTED_MODULE_3___default()(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+
+        if (!result) {
+          return null;
+        }
+
+        const by_jid = stanza.getAttribute('from') || this.get('jid');
+        const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
+
+        if (!supported.length) {
+          return null;
+        }
+
+        const query = {};
+        query[`stanza_id ${by_jid}`] = result.getAttribute('id');
+        return this.messages.findWhere(query);
+      },
+
+      async getDuplicateMessage(stanza) {
+        const message = await this.__super__.getDuplicateMessage.apply(this, arguments);
+
+        if (!message) {
+          return this.findDuplicateFromArchiveID(stanza);
+        }
+
+        return message;
+      },
+
+      updateMessage(message, stanza) {
+        this.__super__.updateMessage.apply(this, arguments);
+
+        if (message && !message.get('is_archived')) {
+          message.save(_.extend({
+            'is_archived': this.isArchived(stanza)
+          }, this.getStanzaIDs(stanza)));
+        }
       }
 
     },
@@ -65771,11 +65790,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
         if (_.isNil(most_recent_msg)) {
           this.fetchArchivedMessages();
         } else {
-          const archive_id = most_recent_msg.get('archive_id');
+          const stanza_id = most_recent_msg.get(`stanza_id ${this.model.get('jid')}`);
 
-          if (archive_id) {
+          if (stanza_id) {
             this.fetchArchivedMessages({
-              'after': most_recent_msg.get('archive_id')
+              'after': stanza_id
             });
           } else {
             this.fetchArchivedMessages({
@@ -65874,35 +65893,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
 
         if (this.content.scrollTop === 0 && this.model.messages.length) {
           const oldest_message = this.model.messages.at(0);
-          const archive_id = oldest_message.get('archive_id');
+          const by_jid = this.model.get('jid');
+          const stanza_id = oldest_message.get(`stanza_id ${by_jid}`);
 
-          if (archive_id) {
+          if (stanza_id) {
             this.fetchArchivedMessages({
-              'before': archive_id
+              'before': stanza_id
             });
           } else {
             this.fetchArchivedMessages({
               'end': oldest_message.get('time')
             });
           }
-        }
-      }
-
-    },
-    ChatRoom: {
-      isDuplicate(message, original_stanza) {
-        const result = this.__super__.isDuplicate.apply(this, arguments);
-
-        if (result) {
-          return result;
-        }
-
-        const archive_id = getMessageArchiveID(original_stanza);
-
-        if (archive_id) {
-          return this.messages.filter({
-            'archive_id': archive_id
-          }).length > 0;
         }
       }
 
@@ -67350,39 +67352,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
                      acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
       },
 
-      handleReflection(stanza) {
-        /* Handle a MUC reflected message and return true if so.
-         *
-         * Parameters:
-         *  (XMLElement) stanza: The message stanza
-         */
-        const from = stanza.getAttribute('from');
-        const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
-
-        if (own_message) {
-          const msg = this.findDuplicateFromOriginID(stanza);
-
-          if (msg) {
-            const attrs = {};
-            const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-            const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
-
-            if (by_jid) {
-              const key = `stanza_id ${by_jid}`;
-              attrs[key] = stanza_id.getAttribute('id');
-            }
-
-            if (!msg.get('received')) {
-              attrs.received = moment().format();
-            }
-
-            msg.save(attrs);
-          }
-
-          return msg ? true : false;
-        }
-      },
-
       subjectChangeHandled(attrs) {
         /* Handle a subject change and return `true` if so.
          *
@@ -67419,6 +67388,33 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         return is_csn && (attrs.is_delayed || own_message);
       },
 
+      updateMessage(message, stanza) {
+        /* Make sure that the already cached message is updated with
+         * the stanza ID.
+         */
+        _converse.ChatBox.prototype.updateMessage.call(this, message, stanza);
+
+        const from = stanza.getAttribute('from');
+        const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
+
+        if (own_message) {
+          const attrs = {};
+          const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+          const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
+
+          if (by_jid) {
+            const key = `stanza_id ${by_jid}`;
+            attrs[key] = stanza_id.getAttribute('id');
+          }
+
+          if (!message.get('received')) {
+            attrs.received = moment().format();
+          }
+
+          message.save(attrs);
+        }
+      },
+
       async onMessage(stanza) {
         /* Handler for all MUC messages sent to this groupchat.
          *
@@ -67433,7 +67429,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           stanza = forwarded.querySelector('message');
         }
 
-        if (this.handleReflection(stanza) || (await this.hasDuplicateArchiveID(original_stanza)) || (await this.hasDuplicateStanzaID(stanza)) || this.handleMessageCorrection(stanza) || this.isReceipt(stanza) || this.isChatMarker(stanza)) {
+        const message = await this.getDuplicateMessage(original_stanza);
+
+        if (message) {
+          this.updateMessage(message, original_stanza);
+        }
+
+        if (message || this.handleMessageCorrection(stanza) || this.isReceipt(stanza) || this.isChatMarker(stanza)) {
           return _converse.emit('message', {
             'stanza': original_stanza
           });

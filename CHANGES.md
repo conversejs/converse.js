@@ -17,6 +17,7 @@
 - #1437: List of groupchats in modal doesn't scroll
 - #1457: Wrong tooltip shown for "unbookmark" icon
 - #1479: Allow file upload by drag & drop also in MUCs
+- #1487: New config option [muc_respect_autojoin](https://conversejs.org/docs/html/configuration.html#muc-respect-autojoin)
 
 
 ## 4.1.2 (2019-02-22)

@@ -1014,6 +1014,16 @@ automatically be "john". If now john@differentdomain.com tries to join the
 room, his nickname will be "john-2", and if john@somethingelse.com joins, then
 his nickname will be "john-3", and so forth.
 
+muc_respect_autojoin
+--------------------
+
+* Default; ``true``
+
+Determines whether Converse will respect the autojoin-attribute of bookmarks. Per default
+all MUCs with set autojoin flag in their respective bookmarks will be joined on
+startup of Converse. When set to ``false`` no MUCs are automatically joined based on
+their bookmarks.
+
 muc_show_join_leave
 -------------------
 

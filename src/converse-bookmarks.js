@@ -202,7 +202,8 @@ converse.plugins.add('converse-bookmarks', {
         _converse.api.settings.update({
             allow_bookmarks: true,
             allow_public_bookmarks: false,
-            hide_open_bookmarks: true
+            hide_open_bookmarks: true,
+            muc_respect_autojoin: true
         });
         // Promises exposed by this plugin
         _converse.api.promises.add('bookmarksInitialized');
@@ -250,7 +251,7 @@ converse.plugins.add('converse-bookmarks', {
             },
 
             openBookmarkedRoom (bookmark) {
-                if (bookmark.get('autojoin')) {
+                if ( _converse.muc_respect_autojoin && bookmark.get('autojoin')) {
                     const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
                     if (!groupchat.get('hidden')) {
                         groupchat.trigger('show');

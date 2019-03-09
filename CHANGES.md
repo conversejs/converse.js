@@ -9,6 +9,7 @@
 - Allow setting of debug mode via URL with `/#converse?debug=true`
 - New config setting [locked_muc_domain](https://conversejs.org/docs/html/configuration.html#locked-muc-domain)
 - New config setting [show_client_info](https://conversejs.org/docs/html/configuration.html#show-client-info)
+- Render inline images served over HTTP if Converse itself was loaded on an unsecured (HTTP) page.
 - #1149: With `xhr_user_search_url`, contact requests are not being sent out
 - #1213: Switch roster filter input and icons
 - #1327: fix False mentions positives in URLs and Email addresses

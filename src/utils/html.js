@@ -90,7 +90,7 @@ u.isImageURL = function (url) {
         url = new URI(url);
     }
     const filename = url.filename().toLowerCase();
-    if (url.protocol().toLowerCase() !== "https") {
+    if (window.location.protocol === 'https:' && url.protocol().toLowerCase() !== "https") {
         return false;
     }
     return filename.endsWith('.jpg') || filename.endsWith('.jpeg') ||

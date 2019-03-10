@@ -8,7 +8,7 @@
 6. `git commit -am "New release 5.0.0"`
 7. `git tag -s v5.0.0
 8. Run `git push && git push --tags`
-9. Update http://conversejs.org
+9. Update https://conversejs.org
 10. Create `5.0.0` directory for the CDN.
     * Create a new version for the CDN by copying
     * Check out the correct tag

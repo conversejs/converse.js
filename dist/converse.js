@@ -47933,7 +47933,7 @@ exports["filterCSS"] = (filterCSS);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -48002,14 +48002,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         _.assignIn(this, {
           'match_current_word': false,
           // Match only the current word, otherwise all input is matched
-          'match_on_tab': false,
-          // Whether matching should only start when tab's pressed
-          'trigger_on_at': false,
-          // Whether @ should trigger autocomplete
+          'ac_triggers': [],
+          // Array of keys (`ev.key`) values that will trigger auto-complete
+          'include_triggers': [],
+          // Array of trigger keys which should be included in the returned value
           'min_chars': 2,
           'max_items': 10,
           'auto_evaluate': true,
           'auto_first': false,
+          // Should the first element be automatically selected?
           'data': _.identity,
           'filter': _converse.FILTER_CONTAINS,
           'sort': config.sort === false ? false : SORT_BYLENGTH,
@@ -48241,11 +48242,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           return;
         }
 
-        if (this.match_on_tab && ev.keyCode === _converse.keycodes.TAB) {
-          ev.preventDefault();
+        if (this.ac_triggers.includes(ev.key)) {
+          if (ev.key === "Tab") {
+            ev.preventDefault();
+          }
+
           this.auto_completing = true;
-        } else if (this.trigger_on_at && ev.keyCode === _converse.keycodes.AT) {
-          this.auto_completing = true;
+        } else if (ev.key === "Backspace") {
+          const word = u.getCurrentWord(ev.target, ev.target.selectionEnd - 1);
+
+          if (this.ac_triggers.includes(word[0])) {
+            this.auto_completing = true;
+          }
         }
       }
 
@@ -48265,7 +48273,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         let value = this.match_current_word ? u.getCurrentWord(this.input) : this.input.value;
         let ignore_min_chars = false;
 
-        if (this.trigger_on_at && value.startsWith('@')) {
+        if (this.ac_triggers.includes(value[0]) && !this.include_triggers.includes(ev.key)) {
           ignore_min_chars = true;
           value = value.slice('1');
         }
@@ -48391,7 +48399,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_chatroom_bookmark_toggle_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/chatroom_bookmark_toggle.html */ "./src/templates/chatroom_bookmark_toggle.html");
 /* harmony import */ var templates_chatroom_bookmark_toggle_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_chatroom_bookmark_toggle_html__WEBPACK_IMPORTED_MODULE_5__);
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
@@ -48611,7 +48619,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.api.settings.update({
       allow_bookmarks: true,
       allow_public_bookmarks: false,
-      hide_open_bookmarks: true
+      hide_open_bookmarks: true,
+      muc_respect_autojoin: true
     }); // Promises exposed by this plugin
 
 
@@ -48668,7 +48677,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       openBookmarkedRoom(bookmark) {
-        if (bookmark.get('autojoin')) {
+        if (_converse.muc_respect_autojoin && bookmark.get('autojoin')) {
           const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
 
           if (!groupchat.get('hidden')) {
@@ -49043,7 +49052,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -49128,7 +49137,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/chatboxes.html */ "./src/templates/chatboxes.html");
 /* harmony import */ var templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_chatboxes_html__WEBPACK_IMPORTED_MODULE_6__);
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2012-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -49366,7 +49375,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js");
 /* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(xss__WEBPACK_IMPORTED_MODULE_22__);
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -49774,9 +49783,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       onDrop(evt) {
-        if (evt.dataTransfer.files.length == 0) // There are no files to be dropped, so this isn’t a file
+        if (evt.dataTransfer.files.length == 0) {
+          // There are no files to be dropped, so this isn’t a file
           // transfer operation.
           return;
+        }
+
         evt.preventDefault();
         this.model.sendFiles(evt.dataTransfer.files);
       },
@@ -50812,7 +50824,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_login_panel_html__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! templates/login_panel.html */ "./src/templates/login_panel.html");
 /* harmony import */ var templates_login_panel_html__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(templates_login_panel_html__WEBPACK_IMPORTED_MODULE_10__);
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
@@ -51565,7 +51577,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_dragresize_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! templates/dragresize.html */ "./src/templates/dragresize.html");
 /* harmony import */ var templates_dragresize_html__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(templates_dragresize_html__WEBPACK_IMPORTED_MODULE_3__);
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
@@ -51986,7 +51998,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _converse_headless_converse_muc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @converse/headless/converse-muc */ "./src/headless/converse-muc.js");
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -52045,7 +52057,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_inverse_brand_heading_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/inverse_brand_heading.html */ "./src/templates/inverse_brand_heading.html");
 /* harmony import */ var templates_inverse_brand_heading_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_inverse_brand_heading_html__WEBPACK_IMPORTED_MODULE_5__);
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) JC Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
@@ -52117,7 +52129,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_chatbox_html__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! templates/chatbox.html */ "./src/templates/chatbox.html");
 /* harmony import */ var templates_chatbox_html__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(templates_chatbox_html__WEBPACK_IMPORTED_MODULE_2__);
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
@@ -52595,7 +52607,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_trimmed_chat_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/trimmed_chat.html */ "./src/templates/trimmed_chat.html");
 /* harmony import */ var templates_trimmed_chat_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_trimmed_chat_html__WEBPACK_IMPORTED_MODULE_5__);
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
@@ -53212,7 +53224,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_alert_modal_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! templates/alert_modal.html */ "./src/templates/alert_modal.html");
 /* harmony import */ var templates_alert_modal_html__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(templates_alert_modal_html__WEBPACK_IMPORTED_MODULE_3__);
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -53392,7 +53404,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js");
 /* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_26___default = /*#__PURE__*/__webpack_require__.n(xss__WEBPACK_IMPORTED_MODULE_26__);
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -53528,7 +53540,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
       */
       return str;
     }
-    /* http://xmpp.org/extensions/xep-0045.html
+    /* https://xmpp.org/extensions/xep-0045.html
      * ----------------------------------------
      * 100 message      Entering a groupchat         Inform user that any occupant is allowed to see the user's full JID
      * 101 message (out of band)                     Affiliation change  Inform user that his or her affiliation changed while not in the groupchat
@@ -53604,7 +53616,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
        *  (XMLElement) stanza: The IQ stanza containing the groupchat
        *      info.
        */
-      // All MUC features found here: http://xmpp.org/registrar/disco-features.html
+      // All MUC features found here: https://xmpp.org/registrar/disco-features.html
       el.querySelector('span.spinner').remove();
       el.querySelector('a.room-info').classList.add('selected');
       el.insertAdjacentHTML('beforeEnd', templates_room_description_html__WEBPACK_IMPORTED_MODULE_21___default()({
@@ -53920,7 +53932,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         'click .upload-file': 'toggleFileUpload',
         'keydown .chat-textarea': 'keyPressed',
         'keyup .chat-textarea': 'keyUp',
-        'input .chat-textarea': 'inputChanged'
+        'input .chat-textarea': 'inputChanged',
+        'dragover .chat-textarea': 'onDragOver',
+        'drop .chat-textarea': 'onDrop'
       },
 
       initialize() {
@@ -53976,7 +53990,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         this.renderHeading();
         this.renderChatArea();
         this.renderMessageForm();
-        this.initAutoComplete();
+        this.initMentionAutoComplete();
 
         if (this.model.get('connection_status') !== _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.ENTERED) {
           this.showSpinner();
@@ -54006,19 +54020,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         return this;
       },
 
-      initAutoComplete() {
+      initMentionAutoComplete() {
         this.auto_complete = new _converse.AutoComplete(this.el, {
           'auto_first': true,
           'auto_evaluate': false,
           'min_chars': 1,
           'match_current_word': true,
-          'match_on_tab': true,
           'list': () => this.model.occupants.map(o => ({
             'label': o.getDisplayName(),
             'value': `@${o.getDisplayName()}`
           })),
           'filter': _converse.FILTER_STARTSWITH,
-          'trigger_on_at': true
+          'ac_triggers': ["Tab", "@"],
+          'include_triggers': []
         });
         this.auto_complete.on('suggestion-box-selectcomplete', () => this.auto_completing = false);
       },
@@ -54261,7 +54275,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
          * ignore <gone/> notifications in groupchats.
          *
          * As laid out in the business rules in XEP-0085
-         * http://xmpp.org/extensions/xep-0085.html#bizrules-groupchat
+         * https://xmpp.org/extensions/xep-0085.html#bizrules-groupchat
          */
         if (message.get('fullname') === this.model.get('nick')) {
           // Don't know about other servers, but OpenFire sends
@@ -55179,7 +55193,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
 
       showStatusMessages(stanza) {
         /* Check for status codes and communicate their purpose to the user.
-         * See: http://xmpp.org/registrar/mucstatus.html
+         * See: https://xmpp.org/registrar/mucstatus.html
          *
          * Parameters:
          *  (XMLElement) stanza: The message or presence stanza
@@ -55358,9 +55372,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         const show = this.model.get('show');
         return templates_occupant_html__WEBPACK_IMPORTED_MODULE_20___default()(_.extend({
           '_': _,
-          // XXX Normally this should already be included,
-          // but with the current webpack build,
-          // we only get a subset of the _ methods.
           'jid': '',
           'show': show,
           'hint_show': _converse.PRETTY_CHAT_STATUS[show],
@@ -55732,7 +55743,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, JC Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
@@ -56061,7 +56072,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_toolbar_omemo_html__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! templates/toolbar_omemo.html */ "./src/templates/toolbar_omemo.html");
 /* harmony import */ var templates_toolbar_omemo_html__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(templates_toolbar_omemo_html__WEBPACK_IMPORTED_MODULE_1__);
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -57495,7 +57506,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_status_option_html__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! templates/status_option.html */ "./src/templates/status_option.html");
 /* harmony import */ var templates_status_option_html__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(templates_status_option_html__WEBPACK_IMPORTED_MODULE_9__);
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
@@ -57988,7 +57999,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_spinner_html__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(templates_spinner_html__WEBPACK_IMPORTED_MODULE_8__);
 /* harmony import */ var _converse_headless_utils_form__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @converse/headless/utils/form */ "./src/headless/utils/form.js");
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
@@ -58749,7 +58760,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_rooms_list_item_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! templates/rooms_list_item.html */ "./src/templates/rooms_list_item.html");
 /* harmony import */ var templates_rooms_list_item_html__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(templates_rooms_list_item_html__WEBPACK_IMPORTED_MODULE_3__);
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
@@ -59107,7 +59118,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var templates_search_contact_html__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! templates/search_contact.html */ "./src/templates/search_contact.html");
 /* harmony import */ var templates_search_contact_html__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(templates_search_contact_html__WEBPACK_IMPORTED_MODULE_13__);
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -60229,7 +60240,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var converse_chatview__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! converse-chatview */ "./src/converse-chatview.js");
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -61577,7 +61588,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var filesize__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js");
 /* harmony import */ var filesize__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(filesize__WEBPACK_IMPORTED_MODULE_3__);
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2012-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -61901,6 +61912,22 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return this.vcard.get('fullname') || this.get('jid');
       },
 
+      getUpdatedMessageAttributes(message, stanza) {
+        // Overridden in converse-muc and converse-mam
+        return {};
+      },
+
+      updateMessage(message, stanza) {
+        // Overridden in converse-muc and converse-mam
+        const attrs = this.getUpdatedMessageAttributes(message, stanza);
+
+        if (attrs) {
+          message.save(attrs, {
+            'patch': true
+          });
+        }
+      },
+
       handleMessageCorrection(stanza) {
         const replace = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
 
@@ -61932,11 +61959,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return false;
       },
 
+      getDuplicateMessage(stanza) {
+        return this.findDuplicateFromOriginID(stanza) || this.findDuplicateFromStanzaID(stanza);
+      },
+
       findDuplicateFromOriginID(stanza) {
         const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
 
         if (!origin_id) {
-          return false;
+          return null;
         }
 
         return this.messages.findWhere({
@@ -61945,27 +61976,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
-      async hasDuplicateArchiveID(stanza) {
-        const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
-
-        if (!result) {
-          return false;
-        }
-
-        const by_jid = stanza.getAttribute('from') || this.get('jid');
-        const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
-
-        if (!supported.length) {
-          return false;
-        }
-
-        const query = {};
-        query[`stanza_id ${by_jid}`] = result.getAttribute('id');
-        const msg = this.messages.findWhere(query);
-        return !_.isNil(msg);
-      },
-
-      async hasDuplicateStanzaID(stanza) {
+      async findDuplicateFromStanzaID(stanza) {
         const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
 
         if (!stanza_id) {
@@ -61981,8 +61992,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
         const query = {};
         query[`stanza_id ${by_jid}`] = stanza_id.getAttribute('id');
-        const msg = this.messages.findWhere(query);
-        return !_.isNil(msg);
+        return this.messages.findWhere(query);
       },
 
       sendMarker(to_jid, id, type) {
@@ -62011,7 +62021,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         if (markers.length === 0) {
           return false;
         } else if (markers.length > 1) {
-          _converse.log('onMessage: Ignoring incoming stanza with multiple message markers', Strophe.LogLevel.ERROR);
+          _converse.log('handleChatMarker: Ignoring incoming stanza with multiple message markers', Strophe.LogLevel.ERROR);
 
           _converse.log(stanza, Strophe.LogLevel.ERROR);
 
@@ -62180,10 +62190,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       },
 
       getOutgoingMessageAttributes(text, spoiler_hint) {
-        const is_spoiler = this.get('composing_spoiler');
+        const is_spoiler = this.get('composing_spoiler'),
+              origin_id = _converse.connection.getUniqueId();
+
         return _.extend(this.toJSON(), {
-          'id': _converse.connection.getUniqueId(),
-          'origin_id': _converse.connection.getUniqueId(),
+          'id': origin_id,
+          'origin_id': origin_id,
           'fullname': _converse.xmppstatus.get('fullname'),
           'from': _converse.bare_jid,
           'sender': 'me',
@@ -62308,6 +62320,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       },
 
       getStanzaIDs(stanza) {
+        /* Extract the XEP-0359 stanza IDs from the passed in stanza
+         * and return a map containing them.
+         *
+         * Parameters:
+         *    (XMLElement) stanza - The message stanza
+         */
         const attrs = {};
         const stanza_ids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
 
@@ -62322,7 +62340,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           attrs[`stanza_id ${by_jid}`] = result.getAttribute('id');
         }
 
+        const origin_id = sizzle(`origin-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+
+        if (origin_id) {
+          attrs['origin_id'] = origin_id.getAttribute('id');
+        }
+
         return attrs;
+      },
+
+      isArchived(original_stanza) {
+        return !_.isNil(sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop());
       },
 
       getMessageAttributesFromStanza(stanza, original_stanza) {
@@ -62337,15 +62365,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          *      that contains the message stanza, if it was
          *      contained, otherwise it's the message stanza itself.
          */
-        const archive = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop(),
-              spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
+        const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
               delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
               text = _converse.chatboxes.getMessageBody(stanza) || undefined,
               chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
         const attrs = _.extend({
           'chat_state': chat_state,
-          'is_archived': !_.isNil(archive),
+          'is_archived': this.isArchived(original_stanza),
           'is_delayed': !_.isNil(delay),
           'is_spoiler': !_.isNil(spoiler),
           'is_single_emoji': text ? u.isSingleEmoji(text) : false,
@@ -62381,8 +62408,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
         if (spoiler) {
           attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
-        }
+        } // We prefer to use one of the XEP-0359 unique and stable stanza IDs as the Model id, to avoid duplicates.
 
+
+        attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${attrs.from}`] || _converse.connection.getUniqueId();
         return attrs;
       },
 
@@ -62611,12 +62640,20 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'nickname': roster_nick
         }, has_body);
 
-        if (chatbox && !chatbox.findDuplicateFromOriginID(stanza) && !(await chatbox.hasDuplicateArchiveID(original_stanza)) && !(await chatbox.hasDuplicateStanzaID(stanza)) && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
-          const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
+        if (chatbox) {
+          const message = await chatbox.getDuplicateMessage(stanza);
 
-          if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
-            const msg = chatbox.messages.create(attrs);
-            chatbox.incrementUnreadMsgCounter(msg);
+          if (message) {
+            chatbox.updateMessage(message, original_stanza);
+          }
+
+          if (!message && !chatbox.handleMessageCorrection(stanza) && !chatbox.handleReceipt(stanza, from_jid, is_carbon, is_me) && !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
+            const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
+
+            if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
+              const msg = chatbox.messages.create(attrs);
+              chatbox.incrementUnreadMsgCounter(msg);
+            }
           }
         }
 
@@ -63029,7 +63066,7 @@ _converse.TIMEOUTS = {
   'PAUSED': 10000,
   'INACTIVE': 90000
 }; // XEP-0085 Chat states
-// http://xmpp.org/extensions/xep-0085.html
+// https://xmpp.org/extensions/xep-0085.html
 
 _converse.INACTIVE = 'inactive';
 _converse.ACTIVE = 'active';
@@ -64798,7 +64835,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sizzle__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js");
 /* harmony import */ var sizzle__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sizzle__WEBPACK_IMPORTED_MODULE_1__);
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -65024,7 +65061,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
     });
 
     function addClientFeatures() {
-      // See http://xmpp.org/registrar/disco-categories.html
+      // See https://xmpp.org/registrar/disco-categories.html
       _converse.api.disco.own.identities.add('client', 'web', 'Converse');
 
       _converse.api.disco.own.features.add(Strophe.NS.BOSH);
@@ -65553,7 +65590,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sizzle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js");
 /* harmony import */ var sizzle__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sizzle__WEBPACK_IMPORTED_MODULE_3__);
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
@@ -65576,18 +65613,6 @@ const u = _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env.utils;
 const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count']; // XEP-0313 Message Archive Management
 
 const MAM_ATTRIBUTES = ['with', 'start', 'end'];
-
-function getMessageArchiveID(stanza) {
-  // See https://xmpp.org/extensions/xep-0313.html#results
-  //
-  // The result messages MUST contain a <result/> element with an 'id'
-  // attribute that gives the current message's archive UID
-  const result = sizzle__WEBPACK_IMPORTED_MODULE_3___default()(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
-
-  if (!_.isUndefined(result)) {
-    return result.getAttribute('id');
-  }
-}
 
 function queryForArchivedMessages(_converse, options, callback, errback) {
   /* Internal function, called by the "archive.query" API method.
@@ -65713,9 +65738,45 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
     //
     // New functions which don't exist yet can also be added.
     ChatBox: {
-      async getMessageAttributesFromStanza(message, original_stanza) {
-        const attrs = await this.__super__.getMessageAttributesFromStanza.apply(this, arguments);
-        attrs.archive_id = getMessageArchiveID(original_stanza);
+      async findDuplicateFromArchiveID(stanza) {
+        const _converse = this.__super__._converse;
+        const result = sizzle__WEBPACK_IMPORTED_MODULE_3___default()(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
+
+        if (!result) {
+          return null;
+        }
+
+        const by_jid = stanza.getAttribute('from') || this.get('jid');
+        const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
+
+        if (!supported.length) {
+          return null;
+        }
+
+        const query = {};
+        query[`stanza_id ${by_jid}`] = result.getAttribute('id');
+        return this.messages.findWhere(query);
+      },
+
+      async getDuplicateMessage(stanza) {
+        const message = await this.__super__.getDuplicateMessage.apply(this, arguments);
+
+        if (!message) {
+          return this.findDuplicateFromArchiveID(stanza);
+        }
+
+        return message;
+      },
+
+      getUpdatedMessageAttributes(message, stanza) {
+        const attrs = this.__super__.getUpdatedMessageAttributes.apply(this, arguments);
+
+        if (message && !message.get('is_archived')) {
+          return _.extend(attrs, {
+            'is_archived': this.isArchived(stanza)
+          }, this.getStanzaIDs(stanza));
+        }
+
         return attrs;
       }
 
@@ -65745,11 +65806,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
         if (_.isNil(most_recent_msg)) {
           this.fetchArchivedMessages();
         } else {
-          const archive_id = most_recent_msg.get('archive_id');
+          const stanza_id = most_recent_msg.get(`stanza_id ${this.model.get('jid')}`);
 
-          if (archive_id) {
+          if (stanza_id) {
             this.fetchArchivedMessages({
-              'after': most_recent_msg.get('archive_id')
+              'after': stanza_id
             });
           } else {
             this.fetchArchivedMessages({
@@ -65848,35 +65909,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
 
         if (this.content.scrollTop === 0 && this.model.messages.length) {
           const oldest_message = this.model.messages.at(0);
-          const archive_id = oldest_message.get('archive_id');
+          const by_jid = this.model.get('jid');
+          const stanza_id = oldest_message.get(`stanza_id ${by_jid}`);
 
-          if (archive_id) {
+          if (stanza_id) {
             this.fetchArchivedMessages({
-              'before': archive_id
+              'before': stanza_id
             });
           } else {
             this.fetchArchivedMessages({
               'end': oldest_message.get('time')
             });
           }
-        }
-      }
-
-    },
-    ChatRoom: {
-      isDuplicate(message, original_stanza) {
-        const result = this.__super__.isDuplicate.apply(this, arguments);
-
-        if (result) {
-          return result;
-        }
-
-        const archive_id = getMessageArchiveID(original_stanza);
-
-        if (archive_id) {
-          return this.messages.filter({
-            'archive_id': archive_id
-          }).length > 0;
         }
       }
 
@@ -66224,7 +66268,7 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -66625,9 +66669,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
 
       extractReference(text, index) {
         for (let i = index; i < text.length; i++) {
-          if (text[i] !== '@') {
-            continue;
-          } else {
+          if (text[i] === '@' && (i === 0 || text[i - 1] === ' ')) {
             const match = text.slice(i + 1),
                   ref = this.getReferenceForMention(match, i);
 
@@ -66834,7 +66876,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         /* Send an IQ stanza to the server, asking it for the
          * member-list of this groupchat.
          *
-         * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+         * See: https://xmpp.org/extensions/xep-0045.html#modifymember
          *
          * Parameters:
          *  (String) affiliation: The specific member list to
@@ -66860,7 +66902,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         /* Send IQ stanzas to the server to set an affiliation for
          * the provided JIDs.
          *
-         * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+         * See: https://xmpp.org/extensions/xep-0045.html#modifymember
          *
          * XXX: Prosody doesn't accept multiple JIDs' affiliations
          * being set in one IQ stanza, so as a workaround we send
@@ -67059,7 +67101,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         /* Send IQ stanzas to the server to modify the
          * affiliations in this groupchat.
          *
-         * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+         * See: https://xmpp.org/extensions/xep-0045.html#modifymember
          *
          * Parameters:
          *  (Object) members: A map of jids, affiliations and optionally reasons
@@ -67324,39 +67366,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
                      acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
       },
 
-      handleReflection(stanza) {
-        /* Handle a MUC reflected message and return true if so.
-         *
-         * Parameters:
-         *  (XMLElement) stanza: The message stanza
-         */
-        const from = stanza.getAttribute('from');
-        const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
-
-        if (own_message) {
-          const msg = this.findDuplicateFromOriginID(stanza);
-
-          if (msg) {
-            const attrs = {};
-            const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-            const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
-
-            if (by_jid) {
-              const key = `stanza_id ${by_jid}`;
-              attrs[key] = stanza_id.getAttribute('id');
-            }
-
-            if (!msg.get('received')) {
-              attrs.received = moment().format();
-            }
-
-            msg.save(attrs);
-          }
-
-          return msg ? true : false;
-        }
-      },
-
       subjectChangeHandled(attrs) {
         /* Handle a subject change and return `true` if so.
          *
@@ -67393,6 +67402,30 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
         return is_csn && (attrs.is_delayed || own_message);
       },
 
+      getUpdatedMessageAttributes(message, stanza) {
+        // Overridden in converse-muc and converse-mam
+        const attrs = _converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, stanza);
+
+        const from = stanza.getAttribute('from');
+        const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
+
+        if (own_message) {
+          const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+          const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
+
+          if (by_jid) {
+            const key = `stanza_id ${by_jid}`;
+            attrs[key] = stanza_id.getAttribute('id');
+          }
+
+          if (!message.get('received')) {
+            attrs.received = moment().format();
+          }
+        }
+
+        return attrs;
+      },
+
       async onMessage(stanza) {
         /* Handler for all MUC messages sent to this groupchat.
          *
@@ -67407,7 +67440,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
           stanza = forwarded.querySelector('message');
         }
 
-        if (this.handleReflection(stanza) || (await this.hasDuplicateArchiveID(original_stanza)) || (await this.hasDuplicateStanzaID(stanza)) || this.handleMessageCorrection(stanza) || this.isReceipt(stanza) || this.isChatMarker(stanza)) {
+        const message = await this.getDuplicateMessage(original_stanza);
+
+        if (message) {
+          this.updateMessage(message, original_stanza);
+        }
+
+        if (message || this.handleMessageCorrection(stanza) || this.isReceipt(stanza) || this.isChatMarker(stanza)) {
           return _converse.emit('message', {
             'stanza': original_stanza
           });
@@ -67912,7 +67951,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins.add('converse-muc
          *     configured automatically. Currently it doesn't make sense to specify
          *     `roomconfig` values if `auto_configure` is set to `false`.
          *     For a list of configuration values that can be passed in, refer to these values
-         *     in the [XEP-0045 MUC specification](http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner).
+         *     in the [XEP-0045 MUC specification](https://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner).
          *     The values should be named without the `muc#roomconfig_` prefix.
          * @param {boolean} [attrs.maximize] A boolean, indicating whether minimized rooms should also be
          *     maximized, when opened. Set to `false` by default.
@@ -68173,7 +68212,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _converse_disco__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./converse-disco */ "./src/headless/converse-disco.js");
 /* harmony import */ var _converse_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./converse-core */ "./src/headless/converse-core.js");
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -68296,7 +68335,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-pub
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -69390,7 +69429,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _templates_vcard_html__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./templates/vcard.html */ "./src/headless/templates/vcard.html");
 /* harmony import */ var _templates_vcard_html__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_templates_vcard_html__WEBPACK_IMPORTED_MODULE_1__);
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -69714,7 +69753,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_30___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_30__);
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // This is the internationalization module.
 //
@@ -70080,7 +70119,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sizzle__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! sizzle */ "./node_modules/sizzle/dist/sizzle.js");
 /* harmony import */ var sizzle__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(sizzle__WEBPACK_IMPORTED_MODULE_4__);
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // This is the utilities module.
 //
@@ -70420,9 +70459,12 @@ u.siblingIndex = function (el) {
   return i;
 };
 
-u.getCurrentWord = function (input) {
-  const cursor = input.selectionEnd || undefined;
-  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.last(input.value.slice(0, cursor).split(' '));
+u.getCurrentWord = function (input, index) {
+  if (!index) {
+    index = input.selectionEnd || undefined;
+  }
+
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.last(input.value.slice(0, index).split(' '));
 };
 
 u.replaceCurrentWord = function (input, new_value) {
@@ -92075,7 +92117,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _templates_field_html__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_templates_field_html__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./core */ "./src/headless/utils/core.js");
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // This is the utilities module.
 //
@@ -92125,7 +92167,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./core */ "./src/headless/utils/core.js");
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // This is the utilities module.
 //
@@ -93907,7 +93949,7 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/inverse_brand_heading.html -->\n<div class="row">\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading brand-heading--inverse">\n            <svg class="converse-svg-logo"\n                xmlns:svg="http://www.w3.org/2000/svg"\n                xmlns="http://www.w3.org/2000/svg"\n                xmlns:xlink="http://www.w3.org/1999/xlink"\n                viewBox="0 0 364 364">\n                <title>Converse</title>\n                <g class="cls-1" id="g904">\n                    <g data-name="Layer 2">\n                        <g data-name="Layer 7">\n                            <path\n                                class="cls-3"\n                                d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" />\n                            <path\n                                class="cls-4"\n                                d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" />\n                        </g>\n                    </g>\n                </g>\n            </svg>\n            <span class="brand-name">\n                <span class="brand-name__text">converse<span class="subdued">.js</span></span>\n                <p class="byline">messaging freedom</p>\n            </span>\n        </h1>\n        <p class="brand-subtitle">' +
+__p += '<!-- src/templates/inverse_brand_heading.html -->\n<div>\n    <div class="container brand-heading-container">\n        <h1 class="brand-heading brand-heading--inverse">\n            <svg class="converse-svg-logo"\n                xmlns:svg="http://www.w3.org/2000/svg"\n                xmlns="http://www.w3.org/2000/svg"\n                xmlns:xlink="http://www.w3.org/1999/xlink"\n                viewBox="0 0 364 364">\n                <title>Converse</title>\n                <g class="cls-1" id="g904">\n                    <g data-name="Layer 2">\n                        <g data-name="Layer 7">\n                            <path\n                                class="cls-3"\n                                d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" />\n                            <path\n                                class="cls-4"\n                                d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" />\n                        </g>\n                    </g>\n                </g>\n            </svg>\n            <span class="brand-name">\n                <span class="brand-name__text">converse<span class="subdued">.js</span></span>\n                <p class="byline">messaging freedom</p>\n            </span>\n        </h1>\n        <p class="brand-subtitle">' +
 __e(o.version_name) +
 '</p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://conversejs.org">Open Source</a> XMPP chat client brought to you by <a target="_blank" rel="nofollow" href="https://opkode.com">Opkode</a> </p>\n        <p class="brand-subtitle"><a target="_blank" rel="nofollow" href="https://hosted.weblate.org/projects/conversejs/#languages">Translate</a> it into your own language</p>\n    </div>\n</div>\n';
 return __p
@@ -95611,7 +95653,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _templates_video_html__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(_templates_video_html__WEBPACK_IMPORTED_MODULE_15__);
 /* harmony import */ var _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../headless/utils/core */ "./src/headless/utils/core.js");
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // This is a form utilities module.
 //
@@ -96168,86 +96210,82 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].xForm2webForm = fu
    *  Parameters:
    *      (XMLElement) field - the field to convert
    */
-  if (field.getAttribute('type')) {
-    if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
-      const values = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.map(_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].queryChildren(field, 'value'), _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.partial(_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get, _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a, 'textContent'));
+  if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
+    const values = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.map(_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].queryChildren(field, 'value'), _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.partial(_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get, _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a, 'textContent'));
 
-      const options = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.map(_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].queryChildren(field, 'option'), function (option) {
-        const value = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(option.querySelector('value'), 'textContent');
+    const options = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.map(_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].queryChildren(field, 'option'), function (option) {
+      const value = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(option.querySelector('value'), 'textContent');
 
-        return _templates_select_option_html__WEBPACK_IMPORTED_MODULE_14___default()({
-          'value': value,
-          'label': option.getAttribute('label'),
-          'selected': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.includes(values, value),
-          'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
-        });
-      });
-
-      return _templates_form_select_html__WEBPACK_IMPORTED_MODULE_9___default()({
-        'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
-        'name': field.getAttribute('var'),
-        'label': field.getAttribute('label'),
-        'options': options.join(''),
-        'multiple': field.getAttribute('type') === 'list-multi',
+      return _templates_select_option_html__WEBPACK_IMPORTED_MODULE_14___default()({
+        'value': value,
+        'label': option.getAttribute('label'),
+        'selected': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.includes(values, value),
         'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
       });
-    } else if (field.getAttribute('type') === 'fixed') {
-      const text = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent');
+    });
 
-      return '<p class="form-help">' + text + '</p>';
-    } else if (field.getAttribute('type') === 'jid-multi') {
-      return _templates_form_textarea_html__WEBPACK_IMPORTED_MODULE_10___default()({
-        'name': field.getAttribute('var'),
-        'label': field.getAttribute('label') || '',
-        'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent'),
-        'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
-      });
-    } else if (field.getAttribute('type') === 'boolean') {
-      return _templates_form_checkbox_html__WEBPACK_IMPORTED_MODULE_7___default()({
-        'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
-        'name': field.getAttribute('var'),
-        'label': field.getAttribute('label') || '',
-        'checked': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
-        'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
-      });
-    } else if (field.getAttribute('var') === 'url') {
-      return _templates_form_url_html__WEBPACK_IMPORTED_MODULE_11___default()({
-        'label': field.getAttribute('label') || '',
-        'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent')
-      });
-    } else if (field.getAttribute('var') === 'username') {
-      return _templates_form_username_html__WEBPACK_IMPORTED_MODULE_12___default()({
-        'domain': ' @' + domain,
-        'name': field.getAttribute('var'),
-        'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-        'label': field.getAttribute('label') || '',
-        'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent'),
-        'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
-      });
-    } else {
-      return _templates_form_input_html__WEBPACK_IMPORTED_MODULE_8___default()({
-        'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
-        'label': field.getAttribute('label') || '',
-        'name': field.getAttribute('var'),
-        'placeholder': null,
-        'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required')),
-        'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-        'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent')
-      });
-    }
+    return _templates_form_select_html__WEBPACK_IMPORTED_MODULE_9___default()({
+      'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
+      'name': field.getAttribute('var'),
+      'label': field.getAttribute('label'),
+      'options': options.join(''),
+      'multiple': field.getAttribute('type') === 'list-multi',
+      'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
+    });
+  } else if (field.getAttribute('type') === 'fixed') {
+    const text = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent');
+
+    return '<p class="form-help">' + text + '</p>';
+  } else if (field.getAttribute('type') === 'jid-multi') {
+    return _templates_form_textarea_html__WEBPACK_IMPORTED_MODULE_10___default()({
+      'name': field.getAttribute('var'),
+      'label': field.getAttribute('label') || '',
+      'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent'),
+      'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
+    });
+  } else if (field.getAttribute('type') === 'boolean') {
+    return _templates_form_checkbox_html__WEBPACK_IMPORTED_MODULE_7___default()({
+      'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
+      'name': field.getAttribute('var'),
+      'label': field.getAttribute('label') || '',
+      'checked': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
+      'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
+    });
+  } else if (field.getAttribute('var') === 'url') {
+    return _templates_form_url_html__WEBPACK_IMPORTED_MODULE_11___default()({
+      'label': field.getAttribute('label') || '',
+      'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent')
+    });
+  } else if (field.getAttribute('var') === 'username') {
+    return _templates_form_username_html__WEBPACK_IMPORTED_MODULE_12___default()({
+      'domain': ' @' + domain,
+      'name': field.getAttribute('var'),
+      'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+      'label': field.getAttribute('label') || '',
+      'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent'),
+      'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
+    });
+  } else if (field.getAttribute('var') === 'ocr') {
+    // Captcha
+    const uri = field.querySelector('uri');
+    const el = sizzle__WEBPACK_IMPORTED_MODULE_2___default()('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
+    return _templates_form_captcha_html__WEBPACK_IMPORTED_MODULE_6___default()({
+      'label': field.getAttribute('label'),
+      'name': field.getAttribute('var'),
+      'data': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(el, 'textContent'),
+      'type': uri.getAttribute('type'),
+      'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
+    });
   } else {
-    if (field.getAttribute('var') === 'ocr') {
-      // Captcha
-      const uri = field.querySelector('uri');
-      const el = sizzle__WEBPACK_IMPORTED_MODULE_2___default()('data[cid="' + uri.textContent.replace(/^cid:/, '') + '"]', stanza)[0];
-      return _templates_form_captcha_html__WEBPACK_IMPORTED_MODULE_6___default()({
-        'label': field.getAttribute('label'),
-        'name': field.getAttribute('var'),
-        'data': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(el, 'textContent'),
-        'type': uri.getAttribute('type'),
-        'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
-      });
-    }
+    return _templates_form_input_html__WEBPACK_IMPORTED_MODULE_8___default()({
+      'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
+      'label': field.getAttribute('label') || '',
+      'name': field.getAttribute('var'),
+      'placeholder': null,
+      'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required')),
+      'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+      'value': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(field.querySelector('value'), 'textContent')
+    });
   }
 };
 

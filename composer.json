@@ -4,7 +4,7 @@
     "type": "library",
     "license": "MPL-2.0",
     "minimum-stability": "stable",
-    "homepage": "http://conversejs.org/",
+    "homepage": "https://conversejs.org/",
     "keywords": ["xmpp", "messaging", "chat", "presence"],
     "require": {}
 }

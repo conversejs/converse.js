@@ -274,6 +274,9 @@
                 min-height: var(--chat-textarea-height);
                 margin-bottom: -4px; // Not clear why this is necessar :(
                 resize: none;
+                &:active, &:focus{
+                    outline-color: var(--chat-head-color);
+                }
                 &.spoiler {
                     height: 42px;
                 }

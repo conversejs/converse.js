@@ -1,5 +1,5 @@
 // Converse.js (A browser based XMPP chat client)
-// http://conversejs.org
+// https://conversejs.org
 //
 // This is a form utilities module.
 //
@@ -90,7 +90,7 @@ u.isImageURL = function (url) {
         url = new URI(url);
     }
     const filename = url.filename().toLowerCase();
-    if (url.protocol().toLowerCase() !== "https") {
+    if (window.location.protocol === 'https:' && url.protocol().toLowerCase() !== "https") {
         return false;
     }
     return filename.endsWith('.jpg') || filename.endsWith('.jpeg') ||
@@ -539,89 +539,85 @@ u.xForm2webForm = function (field, stanza, domain) {
      *  Parameters:
      *      (XMLElement) field - the field to convert
      */
-    if (field.getAttribute('type')) {
-        if (field.getAttribute('type') === 'list-single' ||
-            field.getAttribute('type') === 'list-multi') {
+    if (field.getAttribute('type') === 'list-single' ||
+        field.getAttribute('type') === 'list-multi') {
 
-            const values = _.map(
-                u.queryChildren(field, 'value'),
-                _.partial(_.get, _, 'textContent')
-            );
-            const options = _.map(
-                u.queryChildren(field, 'option'),
-                function (option) {
-                    const value = _.get(option.querySelector('value'), 'textContent');
-                    return tpl_select_option({
-                        'value': value,
-                        'label': option.getAttribute('label'),
-                        'selected': _.includes(values, value),
-                        'required': !_.isNil(field.querySelector('required'))
-                    })
-                }
-            );
-            return tpl_form_select({
-                'id': u.getUniqueId(),
-                'name': field.getAttribute('var'),
-                'label': field.getAttribute('label'),
-                'options': options.join(''),
-                'multiple': (field.getAttribute('type') === 'list-multi'),
-                'required': !_.isNil(field.querySelector('required'))
-            });
-        } else if (field.getAttribute('type') === 'fixed') {
-            const text = _.get(field.querySelector('value'), 'textContent');
-            return '<p class="form-help">'+text+'</p>';
-        } else if (field.getAttribute('type') === 'jid-multi') {
-            return tpl_form_textarea({
-                'name': field.getAttribute('var'),
-                'label': field.getAttribute('label') || '',
-                'value': _.get(field.querySelector('value'), 'textContent'),
-                'required': !_.isNil(field.querySelector('required'))
-            });
-        } else if (field.getAttribute('type') === 'boolean') {
-            return tpl_form_checkbox({
-                'id': u.getUniqueId(),
-                'name': field.getAttribute('var'),
-                'label': field.getAttribute('label') || '',
-                'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
-                'required': !_.isNil(field.querySelector('required'))
-            });
-        } else if (field.getAttribute('var') === 'url') {
-            return tpl_form_url({
-                'label': field.getAttribute('label') || '',
-                'value': _.get(field.querySelector('value'), 'textContent')
-            });
-        } else if (field.getAttribute('var') === 'username') {
-            return tpl_form_username({
-                'domain': ' @'+domain,
-                'name': field.getAttribute('var'),
-                'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-                'label': field.getAttribute('label') || '',
-                'value': _.get(field.querySelector('value'), 'textContent'),
-                'required': !_.isNil(field.querySelector('required'))
-            });
-        } else {
-            return tpl_form_input({
-                'id': u.getUniqueId(),
-                'label': field.getAttribute('label') || '',
-                'name': field.getAttribute('var'),
-                'placeholder': null,
-                'required': !_.isNil(field.querySelector('required')),
-                'type': XFORM_TYPE_MAP[field.getAttribute('type')],
-                'value': _.get(field.querySelector('value'), 'textContent')
-            });
-        }
+        const values = _.map(
+            u.queryChildren(field, 'value'),
+            _.partial(_.get, _, 'textContent')
+        );
+        const options = _.map(
+            u.queryChildren(field, 'option'),
+            function (option) {
+                const value = _.get(option.querySelector('value'), 'textContent');
+                return tpl_select_option({
+                    'value': value,
+                    'label': option.getAttribute('label'),
+                    'selected': _.includes(values, value),
+                    'required': !_.isNil(field.querySelector('required'))
+                })
+            }
+        );
+        return tpl_form_select({
+            'id': u.getUniqueId(),
+            'name': field.getAttribute('var'),
+            'label': field.getAttribute('label'),
+            'options': options.join(''),
+            'multiple': (field.getAttribute('type') === 'list-multi'),
+            'required': !_.isNil(field.querySelector('required'))
+        });
+    } else if (field.getAttribute('type') === 'fixed') {
+        const text = _.get(field.querySelector('value'), 'textContent');
+        return '<p class="form-help">'+text+'</p>';
+    } else if (field.getAttribute('type') === 'jid-multi') {
+        return tpl_form_textarea({
+            'name': field.getAttribute('var'),
+            'label': field.getAttribute('label') || '',
+            'value': _.get(field.querySelector('value'), 'textContent'),
+            'required': !_.isNil(field.querySelector('required'))
+        });
+    } else if (field.getAttribute('type') === 'boolean') {
+        return tpl_form_checkbox({
+            'id': u.getUniqueId(),
+            'name': field.getAttribute('var'),
+            'label': field.getAttribute('label') || '',
+            'checked': _.get(field.querySelector('value'), 'textContent') === "1" && 'checked="1"' || '',
+            'required': !_.isNil(field.querySelector('required'))
+        });
+    } else if (field.getAttribute('var') === 'url') {
+        return tpl_form_url({
+            'label': field.getAttribute('label') || '',
+            'value': _.get(field.querySelector('value'), 'textContent')
+        });
+    } else if (field.getAttribute('var') === 'username') {
+        return tpl_form_username({
+            'domain': ' @'+domain,
+            'name': field.getAttribute('var'),
+            'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+            'label': field.getAttribute('label') || '',
+            'value': _.get(field.querySelector('value'), 'textContent'),
+            'required': !_.isNil(field.querySelector('required'))
+        });
+    } else if (field.getAttribute('var') === 'ocr') { // Captcha
+        const uri = field.querySelector('uri');
+        const el = sizzle('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]', stanza)[0];
+        return tpl_form_captcha({
+            'label': field.getAttribute('label'),
+            'name': field.getAttribute('var'),
+            'data': _.get(el, 'textContent'),
+            'type': uri.getAttribute('type'),
+            'required': !_.isNil(field.querySelector('required'))
+        });
     } else {
-        if (field.getAttribute('var') === 'ocr') { // Captcha
-            const uri = field.querySelector('uri');
-            const el = sizzle('data[cid="'+uri.textContent.replace(/^cid:/, '')+'"]', stanza)[0];
-            return tpl_form_captcha({
-                'label': field.getAttribute('label'),
-                'name': field.getAttribute('var'),
-                'data': _.get(el, 'textContent'),
-                'type': uri.getAttribute('type'),
-                'required': !_.isNil(field.querySelector('required'))
-            });
-        }
+        return tpl_form_input({
+            'id': u.getUniqueId(),
+            'label': field.getAttribute('label') || '',
+            'name': field.getAttribute('var'),
+            'placeholder': null,
+            'required': !_.isNil(field.querySelector('required')),
+            'type': XFORM_TYPE_MAP[field.getAttribute('type')],
+            'value': _.get(field.querySelector('value'), 'textContent')
+        });
     }
 }
 export default u;

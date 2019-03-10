@@ -1,5 +1,5 @@
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -369,9 +369,7 @@ converse.plugins.add('converse-muc', {
 
             extractReference (text, index) {
                 for (let i=index; i<text.length; i++) {
-                    if (text[i] !== '@') {
-                        continue
-                    } else {
+                    if (text[i] === '@' && (i === 0 || text[i - 1] === ' ')) {
                         const match = text.slice(i+1),
                               ref = this.getReferenceForMention(match, i);
                         if (ref) {
@@ -538,7 +536,7 @@ converse.plugins.add('converse-muc', {
                 /* Send an IQ stanza to the server, asking it for the
                  * member-list of this groupchat.
                  *
-                 * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                 * See: https://xmpp.org/extensions/xep-0045.html#modifymember
                  *
                  * Parameters:
                  *  (String) affiliation: The specific member list to
@@ -559,7 +557,7 @@ converse.plugins.add('converse-muc', {
                 /* Send IQ stanzas to the server to set an affiliation for
                  * the provided JIDs.
                  *
-                 * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                 * See: https://xmpp.org/extensions/xep-0045.html#modifymember
                  *
                  * XXX: Prosody doesn't accept multiple JIDs' affiliations
                  * being set in one IQ stanza, so as a workaround we send
@@ -728,7 +726,7 @@ converse.plugins.add('converse-muc', {
                 /* Send IQ stanzas to the server to modify the
                  * affiliations in this groupchat.
                  *
-                 * See: http://xmpp.org/extensions/xep-0045.html#modifymember
+                 * See: https://xmpp.org/extensions/xep-0045.html#modifymember
                  *
                  * Parameters:
                  *  (Object) members: A map of jids, affiliations and optionally reasons
@@ -972,33 +970,6 @@ converse.plugins.add('converse-muc', {
                      acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
             },
 
-            handleReflection (stanza) {
-                /* Handle a MUC reflected message and return true if so.
-                 *
-                 * Parameters:
-                 *  (XMLElement) stanza: The message stanza
-                 */
-                const from = stanza.getAttribute('from');
-                const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
-                if (own_message) {
-                    const msg = this.findDuplicateFromOriginID(stanza);
-                    if (msg) {
-                        const attrs = {};
-                        const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
-                        const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
-                        if (by_jid) {
-                            const key = `stanza_id ${by_jid}`;
-                            attrs[key] = stanza_id.getAttribute('id');
-                        }
-                        if (!msg.get('received')) {
-                            attrs.received = moment().format();
-                        }
-                        msg.save(attrs);
-                    }
-                    return msg ? true : false;
-                }
-            },
-
             subjectChangeHandled (attrs) {
                 /* Handle a subject change and return `true` if so.
                  *
@@ -1029,6 +1000,25 @@ converse.plugins.add('converse-muc', {
                 return is_csn && (attrs.is_delayed || own_message);
             },
 
+            getUpdatedMessageAttributes (message, stanza) {
+                // Overridden in converse-muc and converse-mam
+                const attrs = _converse.ChatBox.prototype.getUpdatedMessageAttributes.call(this, message, stanza);
+                const from = stanza.getAttribute('from');
+                const own_message = Strophe.getResourceFromJid(from) == this.get('nick');
+                if (own_message) {
+                    const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
+                    const by_jid = stanza_id ? stanza_id.getAttribute('by') : undefined;
+                    if (by_jid) {
+                        const key = `stanza_id ${by_jid}`;
+                        attrs[key] = stanza_id.getAttribute('id');
+                    }
+                    if (!message.get('received')) {
+                        attrs.received = moment().format();
+                    }
+                }
+                return attrs;
+            },
+
             async onMessage (stanza) {
                 /* Handler for all MUC messages sent to this groupchat.
                  *
@@ -1042,9 +1032,11 @@ converse.plugins.add('converse-muc', {
                 if (forwarded) {
                     stanza = forwarded.querySelector('message');
                 }
-                if (this.handleReflection(stanza) ||
-                        await this.hasDuplicateArchiveID(original_stanza) ||
-                        await this.hasDuplicateStanzaID(stanza) ||
+                const message = await this.getDuplicateMessage(original_stanza);
+                if (message) {
+                    this.updateMessage(message, original_stanza);
+                }
+                if (message ||
                         this.handleMessageCorrection(stanza) ||
                         this.isReceipt(stanza) ||
                         this.isChatMarker(stanza)) {
@@ -1498,7 +1490,7 @@ converse.plugins.add('converse-muc', {
                  *     configured automatically. Currently it doesn't make sense to specify
                  *     `roomconfig` values if `auto_configure` is set to `false`.
                  *     For a list of configuration values that can be passed in, refer to these values
-                 *     in the [XEP-0045 MUC specification](http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner).
+                 *     in the [XEP-0045 MUC specification](https://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner).
                  *     The values should be named without the `muc#roomconfig_` prefix.
                  * @param {boolean} [attrs.maximize] A boolean, indicating whether minimized rooms should also be
                  *     maximized, when opened. Set to `false` by default.

@@ -1270,7 +1270,7 @@
                     expect(_converse.roster.pluck('jid').length).toBe(1);
                     expect(_.includes(_converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
                     // Taken from the spec
-                    // http://xmpp.org/rfcs/rfc3921.html#rfc.section.7.3
+                    // https://xmpp.org/rfcs/rfc3921.html#rfc.section.7.3
                     stanza = $iq({
                         to: _converse.connection.jid,
                         type: 'result',

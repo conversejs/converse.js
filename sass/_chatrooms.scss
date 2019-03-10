@@ -316,6 +316,9 @@
                 }
             }
             .chat-textarea {
+                &:active, &:focus{
+                    outline-color: var(--chatroom-head-color);
+                }
                 border-bottom-right-radius: 0;
                 &.correcting {
                     background-color: var(--chatroom-correcting-color);

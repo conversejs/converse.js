@@ -576,15 +576,6 @@ body.converse-fullscreen {
             border-color: var(--danger-color-dark);
         }
     }
-
-    .chat-textarea-chatbox-selected {
-        border: 1px solid #578308;
-        margin: 0;
-    }
-    .chat-textarea-chatroom-selected {
-        border: 2px solid var(--link-color);
-        margin: 0;
-    }
 }
 
 @media screen and (max-width: 575px) {

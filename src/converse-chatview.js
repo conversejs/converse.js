@@ -1,5 +1,5 @@
 // Converse.js
-// http://conversejs.org
+// https://conversejs.org
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
@@ -405,10 +405,11 @@ converse.plugins.add('converse-chatview', {
             },
 
             onDrop (evt) {
-                if (evt.dataTransfer.files.length == 0)
+                if (evt.dataTransfer.files.length == 0) {
                     // There are no files to be dropped, so this isn’t a file
                     // transfer operation.
                     return;
+                }
                 evt.preventDefault();
                 this.model.sendFiles(evt.dataTransfer.files);
             },

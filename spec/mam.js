@@ -14,96 +14,147 @@
     describe("Message Archive Management", function () {
         // Implement the protocol defined in https://xmpp.org/extensions/xep-0313.html#config
 
-        describe("Archived Messages", function () {
+        describe("An archived message", function () {
 
-           it("aren't shown as duplicates by comparing their stanza id and archive id",
-                mock.initConverse(
-                    null, ['discoInitialized'], {},
-                    async function (done, _converse) {
+            describe("when recieved", function () {
 
-                await test_utils.openAndEnterChatRoom(_converse, 'trek-radio', 'conference.lightwitch.org', 'jcbrand');
-                const view = _converse.chatboxviews.get('trek-radio@conference.lightwitch.org');
-                let stanza = u.toStanza(
-                    `<message xmlns="jabber:client" to="jcbrand@lightwitch.org/converse.js-73057452" type="groupchat" from="trek-radio@conference.lightwitch.org/comndrdukath#0805 (STO)">
-                        <body>negan</body>
-                        <stanza-id xmlns="urn:xmpp:sid:0" id="45fbbf2a-1059-479d-9283-c8effaf05621" by="trek-radio@conference.lightwitch.org"/>
-                    </message>`);
-                _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
-                // Not sure whether such a race-condition might pose a problem
-                // in "real-world" situations.
-                stanza = u.toStanza(
-                    `<message xmlns="jabber:client"
-                              to="jcbrand@lightwitch.org/converse.js-73057452"
-                              from="trek-radio@conference.lightwitch.org">
-                        <result xmlns="urn:xmpp:mam:2" queryid="82d9db27-6cf8-4787-8c2c-5a560263d823" id="45fbbf2a-1059-479d-9283-c8effaf05621">
-                            <forwarded xmlns="urn:xmpp:forward:0">
-                                <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
-                                <message from="trek-radio@conference.lightwitch.org/comndrdukath#0805 (STO)" type="groupchat">
-                                    <body>negan</body>
-                                </message>
-                            </forwarded>
-                        </result>
-                    </message>`);
-                spyOn(view.model, 'hasDuplicateArchiveID').and.callThrough();
-                view.model.onMessage(stanza);
-                await test_utils.waitUntil(() => view.model.hasDuplicateArchiveID.calls.count());
-                expect(view.model.hasDuplicateArchiveID.calls.count()).toBe(1);
-                const result = await view.model.hasDuplicateArchiveID.calls.all()[0].returnValue
-                expect(result).toBe(true);
-                expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
-                done();
-            }));
+                it("updates the is_archived value of an already cached version",
+                    mock.initConverse(
+                        null, ['discoInitialized'], {},
+                        async function (done, _converse) {
 
-           it("aren't shown as duplicates by comparing only their archive id",
-                mock.initConverse(
-                    null, ['discoInitialized'], {},
-                    async function (done, _converse) {
+                    await test_utils.openAndEnterChatRoom(_converse, 'trek-radio', 'conference.lightwitch.org', 'dummy');
 
-                await test_utils.openAndEnterChatRoom(_converse, 'discuss', 'conference.conversejs.org', 'dummy');
-                const view = _converse.chatboxviews.get('discuss@conference.conversejs.org');
-                let stanza = u.toStanza(
-                    `<message xmlns="jabber:client" to="dummy@localhost/resource" from="discuss@conference.conversejs.org">
-                        <result xmlns="urn:xmpp:mam:2" queryid="06fea9ca-97c9-48c4-8583-009ff54ea2e8" id="7a9fde91-4387-4bf8-b5d3-978dab8f6bf3">
-                            <forwarded xmlns="urn:xmpp:forward:0">
-                                <delay xmlns="urn:xmpp:delay" stamp="2018-12-05T04:53:12Z"/>
-                                <message xmlns="jabber:client" to="discuss@conference.conversejs.org" type="groupchat" xml:lang="en" from="discuss@conference.conversejs.org/prezel">
-                                    <body>looks like omemo fails completely with "bundle is undefined" when there is a device in the devicelist that has no keys published</body>
-                                    <x xmlns="http://jabber.org/protocol/muc#user">
-                                        <item affiliation="none" jid="prezel@blubber.im" role="participant"/>
-                                    </x>
-                                </message>
-                            </forwarded>
-                        </result>
-                    </message>`);
-                view.model.onMessage(stanza);
-                await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
-                expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
+                    const view = _converse.chatboxviews.get('trek-radio@conference.lightwitch.org');
+                    let stanza = u.toStanza(
+                        `<message xmlns="jabber:client" to="dummy@localhost/resource" type="groupchat" from="trek-radio@conference.lightwitch.org/some1">
+                            <body>Hello</body>
+                            <stanza-id xmlns="urn:xmpp:sid:0" id="45fbbf2a-1059-479d-9283-c8effaf05621" by="trek-radio@conference.lightwitch.org"/>
+                        </message>`);
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
+                    expect(view.model.messages.length).toBe(1);
+                    expect(view.model.messages.at(0).get('is_archived')).toBe(false);
+                    expect(view.model.messages.at(0).get('stanza_id trek-radio@conference.lightwitch.org')).toBe('45fbbf2a-1059-479d-9283-c8effaf05621');
 
-                stanza = u.toStanza(
-                    `<message xmlns="jabber:client" to="dummy@localhost/resource" from="discuss@conference.conversejs.org">
-                        <result xmlns="urn:xmpp:mam:2" queryid="06fea9ca-97c9-48c4-8583-009ff54ea2e8" id="7a9fde91-4387-4bf8-b5d3-978dab8f6bf3">
-                            <forwarded xmlns="urn:xmpp:forward:0">
-                                <delay xmlns="urn:xmpp:delay" stamp="2018-12-05T04:53:12Z"/>
-                                <message xmlns="jabber:client" to="discuss@conference.conversejs.org" type="groupchat" xml:lang="en" from="discuss@conference.conversejs.org/prezel">
-                                    <body>looks like omemo fails completely with "bundle is undefined" when there is a device in the devicelist that has no keys published</body>
-                                    <x xmlns="http://jabber.org/protocol/muc#user">
-                                        <item affiliation="none" jid="prezel@blubber.im" role="participant"/>
-                                    </x>
-                                </message>
-                            </forwarded>
-                        </result>
-                    </message>`);
+                    stanza = u.toStanza(
+                        `<message xmlns="jabber:client"
+                                to="dummy@localhost/resource"
+                                from="trek-radio@conference.lightwitch.org">
+                            <result xmlns="urn:xmpp:mam:2" queryid="82d9db27-6cf8-4787-8c2c-5a560263d823" id="45fbbf2a-1059-479d-9283-c8effaf05621">
+                                <forwarded xmlns="urn:xmpp:forward:0">
+                                    <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                                    <message from="trek-radio@conference.lightwitch.org/some1" type="groupchat">
+                                        <body>Hello</body>
+                                    </message>
+                                </forwarded>
+                            </result>
+                        </message>`);
+                    spyOn(view.model, 'findDuplicateFromArchiveID').and.callThrough();
+                    spyOn(view.model, 'updateMessage').and.callThrough();
+                    view.model.onMessage(stanza);
+                    await test_utils.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count());
+                    expect(view.model.findDuplicateFromArchiveID.calls.count()).toBe(1);
+                    const result = await view.model.findDuplicateFromArchiveID.calls.all()[0].returnValue
+                    expect(result instanceof _converse.Message).toBe(true);
+                    expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
 
-                spyOn(view.model, 'hasDuplicateArchiveID').and.callThrough();
-                view.model.onMessage(stanza);
-                await test_utils.waitUntil(() => view.model.hasDuplicateArchiveID.calls.count());
-                expect(view.model.hasDuplicateArchiveID.calls.count()).toBe(1);
-                const result = await view.model.hasDuplicateArchiveID.calls.all()[0].returnValue
-                expect(result).toBe(true);
-                expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
-                done();
-            }))
+                    await test_utils.waitUntil(() => view.model.updateMessage.calls.count());
+                    expect(view.model.messages.length).toBe(1);
+                    expect(view.model.messages.at(0).get('is_archived')).toBe(true);
+                    expect(view.model.messages.at(0).get('stanza_id trek-radio@conference.lightwitch.org')).toBe('45fbbf2a-1059-479d-9283-c8effaf05621');
+                    done();
+                }));
+
+                it("isn't shown as duplicate by comparing its stanza id or archive id",
+                    mock.initConverse(
+                        null, ['discoInitialized'], {},
+                        async function (done, _converse) {
+
+                    await test_utils.openAndEnterChatRoom(_converse, 'trek-radio', 'conference.lightwitch.org', 'jcbrand');
+                    const view = _converse.chatboxviews.get('trek-radio@conference.lightwitch.org');
+                    let stanza = u.toStanza(
+                        `<message xmlns="jabber:client" to="jcbrand@lightwitch.org/converse.js-73057452" type="groupchat" from="trek-radio@conference.lightwitch.org/comndrdukath#0805 (STO)">
+                            <body>negan</body>
+                            <stanza-id xmlns="urn:xmpp:sid:0" id="45fbbf2a-1059-479d-9283-c8effaf05621" by="trek-radio@conference.lightwitch.org"/>
+                        </message>`);
+                    _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                    await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
+                    // Not sure whether such a race-condition might pose a problem
+                    // in "real-world" situations.
+                    stanza = u.toStanza(
+                        `<message xmlns="jabber:client"
+                                to="jcbrand@lightwitch.org/converse.js-73057452"
+                                from="trek-radio@conference.lightwitch.org">
+                            <result xmlns="urn:xmpp:mam:2" queryid="82d9db27-6cf8-4787-8c2c-5a560263d823" id="45fbbf2a-1059-479d-9283-c8effaf05621">
+                                <forwarded xmlns="urn:xmpp:forward:0">
+                                    <delay xmlns="urn:xmpp:delay" stamp="2018-01-09T06:17:23Z"/>
+                                    <message from="trek-radio@conference.lightwitch.org/comndrdukath#0805 (STO)" type="groupchat">
+                                        <body>negan</body>
+                                    </message>
+                                </forwarded>
+                            </result>
+                        </message>`);
+                    spyOn(view.model, 'findDuplicateFromArchiveID').and.callThrough();
+                    view.model.onMessage(stanza);
+                    await test_utils.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count());
+                    expect(view.model.findDuplicateFromArchiveID.calls.count()).toBe(1);
+                    const result = await view.model.findDuplicateFromArchiveID.calls.all()[0].returnValue
+                    expect(result instanceof _converse.Message).toBe(true);
+                    expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
+                    done();
+                }));
+
+                it("isn't shown as duplicate by comparing only the archive id",
+                    mock.initConverse(
+                        null, ['discoInitialized'], {},
+                        async function (done, _converse) {
+
+                    await test_utils.openAndEnterChatRoom(_converse, 'discuss', 'conference.conversejs.org', 'dummy');
+                    const view = _converse.chatboxviews.get('discuss@conference.conversejs.org');
+                    let stanza = u.toStanza(
+                        `<message xmlns="jabber:client" to="dummy@localhost/resource" from="discuss@conference.conversejs.org">
+                            <result xmlns="urn:xmpp:mam:2" queryid="06fea9ca-97c9-48c4-8583-009ff54ea2e8" id="7a9fde91-4387-4bf8-b5d3-978dab8f6bf3">
+                                <forwarded xmlns="urn:xmpp:forward:0">
+                                    <delay xmlns="urn:xmpp:delay" stamp="2018-12-05T04:53:12Z"/>
+                                    <message xmlns="jabber:client" to="discuss@conference.conversejs.org" type="groupchat" xml:lang="en" from="discuss@conference.conversejs.org/prezel">
+                                        <body>looks like omemo fails completely with "bundle is undefined" when there is a device in the devicelist that has no keys published</body>
+                                        <x xmlns="http://jabber.org/protocol/muc#user">
+                                            <item affiliation="none" jid="prezel@blubber.im" role="participant"/>
+                                        </x>
+                                    </message>
+                                </forwarded>
+                            </result>
+                        </message>`);
+                    view.model.onMessage(stanza);
+                    await test_utils.waitUntil(() => view.content.querySelectorAll('.chat-msg').length);
+                    expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
+
+                    stanza = u.toStanza(
+                        `<message xmlns="jabber:client" to="dummy@localhost/resource" from="discuss@conference.conversejs.org">
+                            <result xmlns="urn:xmpp:mam:2" queryid="06fea9ca-97c9-48c4-8583-009ff54ea2e8" id="7a9fde91-4387-4bf8-b5d3-978dab8f6bf3">
+                                <forwarded xmlns="urn:xmpp:forward:0">
+                                    <delay xmlns="urn:xmpp:delay" stamp="2018-12-05T04:53:12Z"/>
+                                    <message xmlns="jabber:client" to="discuss@conference.conversejs.org" type="groupchat" xml:lang="en" from="discuss@conference.conversejs.org/prezel">
+                                        <body>looks like omemo fails completely with "bundle is undefined" when there is a device in the devicelist that has no keys published</body>
+                                        <x xmlns="http://jabber.org/protocol/muc#user">
+                                            <item affiliation="none" jid="prezel@blubber.im" role="participant"/>
+                                        </x>
+                                    </message>
+                                </forwarded>
+                            </result>
+                        </message>`);
+
+                    spyOn(view.model, 'findDuplicateFromArchiveID').and.callThrough();
+                    view.model.onMessage(stanza);
+                    await test_utils.waitUntil(() => view.model.findDuplicateFromArchiveID.calls.count());
+                    expect(view.model.findDuplicateFromArchiveID.calls.count()).toBe(1);
+                    const result = await view.model.findDuplicateFromArchiveID.calls.all()[0].returnValue
+                    expect(result instanceof _converse.Message).toBe(true);
+                    expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
+                    done();
+                }))
+            });
         });
 
         describe("The archive.query API", function () {

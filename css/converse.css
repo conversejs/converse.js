@@ -1,6 +1,6 @@
 /*!
  * Converse.js (Web-based XMPP instant messaging client)
- * http://conversejs.org
+ * https://conversejs.org
  *
  * Copyright (c) 2013-2018, JC Brand <jc@opkode.com>
  * Licensed under the Mozilla Public License
@@ -9994,12 +9994,6 @@ body.converse-fullscreen {
     #conversejs .btn-danger:hover {
       background-color: var(--danger-color-dark);
       border-color: var(--danger-color-dark); }
-  #conversejs .chat-textarea-chatbox-selected {
-    border: 1px solid #578308;
-    margin: 0; }
-  #conversejs .chat-textarea-chatroom-selected {
-    border: 2px solid var(--link-color);
-    margin: 0; }
 
 @media screen and (max-width: 575px) {
   body .converse-brand {
@@ -10345,6 +10339,8 @@ body.converse-fullscreen {
       min-height: var(--chat-textarea-height);
       margin-bottom: -4px;
       resize: none; }
+      #conversejs .chatbox .sendXMPPMessage .chat-textarea:active, #conversejs .chatbox .sendXMPPMessage .chat-textarea:focus {
+        outline-color: var(--chat-head-color); }
       #conversejs .chatbox .sendXMPPMessage .chat-textarea.spoiler {
         height: 42px; }
       #conversejs .chatbox .sendXMPPMessage .chat-textarea.correcting {
@@ -11044,7 +11040,7 @@ body.converse-fullscreen {
     @media screen and (max-width: 480px) {
       #conversejs.converse-fullscreen #controlbox .brand-heading-container .brand-heading,
       #conversejs.converse-mobile #controlbox .brand-heading-container .brand-heading {
-        font-size: 400%; } }
+        font-size: 300%; } }
   #conversejs.converse-fullscreen #controlbox.logged-out,
   #conversejs.converse-mobile #controlbox.logged-out {
     flex: 0 0 100%;
@@ -11694,6 +11690,10 @@ body.converse-fullscreen {
   #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-textarea,
   #conversejs .chatroom .sendXMPPMessage .chat-textarea {
     border-bottom-right-radius: 0; }
+    #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-textarea:active, #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-textarea:focus,
+    #conversejs .chatroom .sendXMPPMessage .chat-textarea:active,
+    #conversejs .chatroom .sendXMPPMessage .chat-textarea:focus {
+      outline-color: var(--chatroom-head-color); }
     #conversejs.converse-embedded .chatroom .sendXMPPMessage .chat-textarea.correcting,
     #conversejs .chatroom .sendXMPPMessage .chat-textarea.correcting {
       background-color: var(--chatroom-correcting-color); }

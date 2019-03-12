@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-22 18:21+0100\n"
-"PO-Revision-Date: 2019-03-05 08:57+0000\n"
+"PO-Revision-Date: 2019-03-13 14:03+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 3.5\n"
+"X-Generator: Weblate 3.5.1\n"
 "X-Language: he\n"
 "X-Source-Language: en\n"
 
@@ -812,9 +812,8 @@ msgid "This user is a moderator."
 msgstr "משתמש זה הינו אחראי"
 
 #: dist/converse-no-dependencies.js:37217
-#, fuzzy
 msgid "This user can send messages in this groupchat."
-msgstr "משתמש זה מסוגל לשלוח הודעות בתוך חדר זה"
+msgstr "למשתמש זה יש הרשאה לשלוח הודעה בהתכתבות קבוצתית זו."
 
 #: dist/converse-no-dependencies.js:37218
 #, fuzzy

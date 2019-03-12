@@ -6,6 +6,7 @@
 - Upgrade to Backbone 1.4.0
 - Fix "flashing" of roster filter when you have less than 5 roster contacts.
 - Fix handling of CAPTCHAs offered by ejabberd.
+- Don't send out receipts or markers for MAM messages
 - Allow setting of debug mode via URL with `/#converse?debug=true`
 - New config setting [locked_muc_domain](https://conversejs.org/docs/html/configuration.html#locked-muc-domain)
 - New config setting [show_client_info](https://conversejs.org/docs/html/configuration.html#show-client-info)

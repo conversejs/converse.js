@@ -370,7 +370,7 @@ converse.plugins.add('converse-chatboxes', {
                 _converse.api.send(stanza);
             },
 
-            handleChatMarker (stanza, from_jid, is_carbon, is_roster_contact) {
+            handleChatMarker (stanza, from_jid, is_carbon, is_roster_contact, is_mam) {
                 const to_bare_jid = Strophe.getBareJidFromJid(stanza.getAttribute('to'));
                 if (to_bare_jid !== _converse.bare_jid) {
                     return false;
@@ -388,7 +388,7 @@ converse.plugins.add('converse-chatboxes', {
                 } else {
                     const marker = markers.pop();
                     if (marker.nodeName === 'markable') {
-                        if (is_roster_contact && !is_carbon) {
+                        if (is_roster_contact && !is_carbon && !is_mam) {
                             this.sendMarker(from_jid, stanza.getAttribute('id'), 'received');
                         }
                         return false;
@@ -416,7 +416,7 @@ converse.plugins.add('converse-chatboxes', {
                 _converse.api.send(receipt_stanza);
             },
 
-            handleReceipt (stanza, from_jid, is_carbon, is_me) {
+            handleReceipt (stanza, from_jid, is_carbon, is_me, is_mam) {
                 const requests_receipt = !_.isUndefined(sizzle(`request[xmlns="${Strophe.NS.RECEIPTS}"]`, stanza).pop());
                 if (requests_receipt && !is_carbon && !is_me) {
                     this.sendReceiptStanza(from_jid, stanza.getAttribute('id'));
@@ -882,7 +882,9 @@ converse.plugins.add('converse-chatboxes', {
                 }
 
                 let from_jid = stanza.getAttribute('from'),
-                    is_carbon = false;
+                    is_carbon = false,
+                    is_mam = false;
+
                 const forwarded = stanza.querySelector('forwarded'),
                       original_stanza = stanza;
 
@@ -890,6 +892,7 @@ converse.plugins.add('converse-chatboxes', {
                     const forwarded_message = forwarded.querySelector('message'),
                           forwarded_from = forwarded_message.getAttribute('from');
                     is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
+                    is_mam = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0;
 
                     if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
                         // Prevent message forging via carbons
@@ -936,8 +939,8 @@ converse.plugins.add('converse-chatboxes', {
                     }
                     if (!message &&
                             !chatbox.handleMessageCorrection(stanza) &&
-                            !chatbox.handleReceipt (stanza, from_jid, is_carbon, is_me) &&
-                            !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact)) {
+                            !chatbox.handleReceipt (stanza, from_jid, is_carbon, is_me, is_mam) &&
+                            !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact, is_mam)) {
 
                         const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
                         if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {

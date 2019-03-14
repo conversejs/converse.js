@@ -63302,6 +63302,8 @@ _converse.initConnection = function () {
     }
   }
 
+  setUpXMLLogging();
+
   _converse.emit('connectionInitialized');
 };
 
@@ -63326,8 +63328,6 @@ function finishInitialization() {
   initPlugins();
 
   _converse.initConnection();
-
-  setUpXMLLogging();
 
   _converse.logIn();
 

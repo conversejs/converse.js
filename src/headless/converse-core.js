@@ -396,6 +396,7 @@ _converse.initConnection = function () {
             throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");
         }
     }
+    setUpXMLLogging();
     _converse.emit('connectionInitialized');
 }
 
@@ -419,7 +420,6 @@ function finishInitialization () {
     initClientConfig();
     initPlugins();
     _converse.initConnection();
-    setUpXMLLogging();
     _converse.logIn();
     _converse.registerGlobalEventHandlers();
     if (!Backbone.history.started) {

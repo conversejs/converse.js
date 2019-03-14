@@ -3,8 +3,13 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
+//
+// XEP-0045 Multi-User Chat Views
 
 import "converse-modal";
+import "backbone.overview/backbone.orderedlistview";
+import "backbone.overview/backbone.overview";
+import "backbone.vdomview";
 import Awesomplete from "awesomplete";
 import _FormData from "formdata-polyfill";
 import converse from "@converse/headless/converse-core";

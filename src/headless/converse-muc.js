@@ -3,13 +3,12 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
+//
+// XEP-0045 Multi-User Chat
 
 import "./converse-disco";
 import "./utils/emoji";
 import "./utils/muc";
-import "backbone.overview/backbone.orderedlistview";
-import "backbone.overview/backbone.overview";
-import "backbone.vdomview";
 import converse from "./converse-core";
 import u from "./utils/form";
 
@@ -1314,11 +1313,15 @@ converse.plugins.add('converse-muc', {
                 }
             }
             if (result === true) {
-                const chatroom = _converse.openChatRoom(
-                    room_jid, {'password': x_el.getAttribute('password') });
+                const chatroom = _converse.openChatRoom(room_jid, {'password': x_el.getAttribute('password') });
 
                 if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
-                    _converse.chatboxviews.get(room_jid).join();
+                    // XXX: Leaky abstraction from views here
+                    if (_converse.chatboxviews) {
+                        _converse.chatboxviews.get(room_jid).join();
+                    } else {
+                        _converse.chatboxes.get(room_jid).join();
+                    }
                 }
             }
         };
@@ -1445,8 +1448,7 @@ converse.plugins.add('converse-muc', {
                  * Creates a new MUC chatroom (aka groupchat)
                  *
                  * Similar to {@link _converse.api.rooms.open}, but creates
-                 * the chatroom in the background (i.e. doesn't cause a
-                 * view to open).
+                 * the chatroom in the background (i.e. doesn't cause a view to open).
                  *
                  * @method _converse.api.rooms.create
                  * @param {(string[]|string)} jid|jids The JID or array of

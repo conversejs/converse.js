@@ -196,6 +196,8 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 BUILDS = dist/converse.js \
 	dist/converse.min.js \
 	dist/converse-headless.js \
+	src/headless/dist/converse-headless.js \
+	src/headless/dist/converse-headless.min.js \
 	dist/converse-headless.min.js \
 	dist/converse-no-dependencies.min.js \
 	dist/converse-no-dependencies.js \
@@ -207,8 +209,12 @@ dist/converse.min.js: src webpack.config.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=production
 dist/converse-headless.js: src webpack.config.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=development --type=headless
+src/headless/dist/converse-headless.js: dist/converse-headless.js
+	cp dist/converse-headless.js src/headless/dist/converse-headless.js
 dist/converse-headless.min.js: src webpack.config.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=production --type=headless
+src/headless/dist/converse-headless.min.js: dist/converse-headless.min.js
+	cp dist/converse-headless.min.js src/headless/dist/converse-headless.min.js
 dist/converse-no-dependencies.js: src webpack.config.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=development --type=nodeps
 dist/converse-no-dependencies.min.js: src webpack.config.js stamp-npm @converse/headless
@@ -229,11 +235,14 @@ build:: dev css $(BUILDS)
 
 .PHONY: eslint
 eslint: stamp-npm
-	$(ESLINT) src/
+	$(ESLINT) src/*.js
+	$(ESLINT) src/utils/*.js
+	$(ESLINT) src/headless/*.js
+	$(ESLINT) src/headless/utils/*.js
 	$(ESLINT) spec/
 
 .PHONY: check
-check: dist/converse.js eslint
+check: eslint dist/converse.js 
 	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --disable-gpu --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
 
 ########################################################################

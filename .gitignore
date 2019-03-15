@@ -1,4 +1,6 @@
 *~
+*.min.js
+*.min.css
 .sw?
 *.mo
 *.kpf
@@ -16,6 +18,8 @@ pip-selfcheck.json
 
 3rdparty/libsignal-protocol-javascript/
 *.map
+dist/converse-headless.js
+dist/converse-no-dependencies.js
 dist/converse-no-dependencies-es2015.js
 
 locale.zip

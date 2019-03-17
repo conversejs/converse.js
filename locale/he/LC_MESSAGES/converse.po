@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.8.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-22 18:21+0100\n"
-"PO-Revision-Date: 2019-03-13 14:03+0000\n"
+"PO-Revision-Date: 2019-03-19 14:03+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/conversejs/"
 "translations/he/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 3.5.1\n"
+"X-Generator: Weblate 3.6-dev\n"
 "X-Language: he\n"
 "X-Source-Language: en\n"
 
@@ -343,15 +343,15 @@ msgid "%1$s has been kicked out"
 msgstr "%1$s נבעט(ה)"
 
 #: dist/converse-no-dependencies.js:35464
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been removed because of an affiliation change"
-msgstr "%1$s הוסרה(ה) משום שינוי שיוך"
+msgstr "%1$s הוסר/ה עקב שינוי שיוך"
 
 # היותו(ה)
 #: dist/converse-no-dependencies.js:35465
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "%1$s has been removed for not being a member"
-msgstr "%1$s הוסר(ה) משום אי הימצאות במסגרת מעמד של חבר"
+msgstr "%1$s הוסר/ה עקב העדר מעמד חברות"
 
 #: dist/converse-no-dependencies.js:35468
 #, javascript-format
@@ -851,11 +851,13 @@ msgid "Invite"
 msgstr "הזמנה"
 
 #: dist/converse-no-dependencies.js:37308
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
-msgstr "באפשרותך להכליל הודעה, אשר  מסבירה את הסיבה להזמנה."
+msgstr ""
+"פעולה זו תוביל להזמנת %1$s להתכתבות הקבוצתית „%2$s”. ניתן לכלול הודעה "
+"שמסבירה את פשר ההזמנה."
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37693
@@ -896,7 +898,7 @@ msgstr "כבר לא מקוון"
 
 #: dist/converse-no-dependencies.js:37778
 msgid "wants to be your contact"
-msgstr ""
+msgstr "רוצה להצטרף לאנשי הקשר שלך"
 
 #: dist/converse-no-dependencies.js:38007
 msgid "Sorry, an error occurred while trying to remove the devices."

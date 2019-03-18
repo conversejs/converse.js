@@ -21,6 +21,7 @@
 - #1457: Wrong tooltip shown for "unbookmark" icon
 - #1479: Allow file upload by drag & drop also in MUCs
 - #1487: New config option [muc_respect_autojoin](https://conversejs.org/docs/html/configuration.html#muc-respect-autojoin)
+- #1501: Don't prompt for a reason if [auto_join_on_invite](https://conversejs.org/docs/html/configuration.html#auto-join-on-invite) is `true`
 
 
 

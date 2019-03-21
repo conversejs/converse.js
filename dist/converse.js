@@ -50312,7 +50312,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].addClass('disabled', textarea);
         textarea.setAttribute('disabled', 'disabled');
 
-        if (this.parseMessageForCommands(message) || (await this.model.sendMessage(this.model.getOutgoingMessageAttributes(message, spoiler_hint)))) {
+        if (this.parseMessageForCommands(message) || (await this.model.sendMessage(message, spoiler_hint))) {
           hint_el.value = '';
           textarea.value = '';
           _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeClass('correcting', textarea);
@@ -51597,6 +51597,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       'controlbox': {
         /**
          * Retrieves the controlbox view.
+         *
+         * @method _converse.api.controlbox.get
          *
          * @example
          * const view = _converse.api.controlbox.get();
@@ -56723,11 +56725,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
       },
 
-      async sendMessage(attrs) {
-        const _converse = this.__super__._converse,
-              __ = _converse.__;
-
-        if (this.get('omemo_active') && attrs.message) {
+      async sendMessage(text, spoiler_hint) {
+        if (this.get('omemo_active') && text) {
+          const _converse = this.__super__._converse;
+          const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
           attrs['is_encrypted'] = true;
           attrs['plaintext'] = attrs.message;
 
@@ -62134,6 +62135,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       model: _converse.Message,
       comparator: 'time'
     });
+    /**
+     * The "_converse.ChatBox" namespace
+     *
+     * @namespace _converse.ChatBox
+     * @memberOf _converse
+     */
+
     _converse.ChatBox = Backbone.Model.extend({
       defaults() {
         return {
@@ -62489,12 +62497,22 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
-      sendMessage(attrs) {
-        /* Responsible for sending off a text message.
-         *
-         *  Parameters:
-         *    (Message) message - The chat message
-         */
+      /**
+       * Responsible for sending off a text message inside an ongoing
+       * chat conversation.
+       *
+       * @method _converse.ChatBox#sendMessage
+       * @memberOf _converse.ChatBox
+       *
+       * @param {String} text - The chat message text
+       * @param {String} spoiler_hint - An optional hint, if the message being sent is a spoiler
+       *
+       * @example
+       * const chat = _converse.api.chats.get('buddy1@example.com');
+       * chat.sendMessage('hello world');
+       */
+      sendMessage(text, spoiler_hint) {
+        const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
         let message = this.messages.findWhere('correcting');
 
         if (message) {
@@ -63130,7 +63148,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          *
          * @method _converse.api.chats.get
          * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-         * @returns {Backbone.Model}
+         * @returns {_converse.ChatBox}
          *
          * @example
          * // To return a single chat, provide the JID of the contact you're chatting with in that chat:

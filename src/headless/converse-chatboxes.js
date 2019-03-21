@@ -219,6 +219,12 @@ converse.plugins.add('converse-chatboxes', {
         });
 
 
+        /**
+         * The "_converse.ChatBox" namespace
+         *
+         * @namespace _converse.ChatBox
+         * @memberOf _converse
+         */
         _converse.ChatBox = Backbone.Model.extend({
             defaults () {
                 return {
@@ -506,12 +512,22 @@ converse.plugins.add('converse-chatboxes', {
                 });
             },
 
-            sendMessage (attrs) {
-                /* Responsible for sending off a text message.
-                 *
-                 *  Parameters:
-                 *    (Message) message - The chat message
-                 */
+            /**
+             * Responsible for sending off a text message inside an ongoing
+             * chat conversation.
+             *
+             * @method _converse.ChatBox#sendMessage
+             * @memberOf _converse.ChatBox
+             *
+             * @param {String} text - The chat message text
+             * @param {String} spoiler_hint - An optional hint, if the message being sent is a spoiler
+             *
+             * @example
+             * const chat = _converse.api.chats.get('buddy1@example.com');
+             * chat.sendMessage('hello world');
+             */
+            sendMessage (text, spoiler_hint) {
+                const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
                 let message = this.messages.findWhere('correcting')
                 if (message) {
                     const older_versions = message.get('older_versions') || [];
@@ -1097,7 +1113,7 @@ converse.plugins.add('converse-chatboxes', {
                  *
                  * @method _converse.api.chats.get
                  * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-                 * @returns {Backbone.Model}
+                 * @returns {_converse.ChatBox}
                  *
                  * @example
                  * // To return a single chat, provide the JID of the contact you're chatting with in that chat:

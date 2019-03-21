@@ -198,6 +198,7 @@ _converse.default_settings = {
     debug: false,
     default_state: 'online',
     expose_rid_and_sid: false,
+    forward_messages: false,
     geouri_regex: /https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
     geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
     idle_presence_timeout: 300, // Seconds after which an idle presence is sent
@@ -1648,6 +1649,21 @@ _converse.api = {
      */
     'send' (stanza) {
         _converse.connection.send(stanza);
+
+         if (_converse.forward_messages) {
+            // Forward the message, so that other connected resources are also aware of it.
+            _converse.connection.send(
+               $msg({
+                  'to': _converse.bare_jid,
+                  'type': this.get('message_type'),
+               }).c('forwarded', {'xmlns': Strophe.NS.FORWARD})
+                     .c('delay', {
+                           'xmns': Strophe.NS.DELAY,
+                           'stamp': moment().format()
+                     }).up()
+                  .cnode(stanza.tree())
+            );
+         }
         _converse.emit('send', stanza);
     },
 

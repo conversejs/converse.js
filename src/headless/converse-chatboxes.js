@@ -36,7 +36,6 @@ converse.plugins.add('converse-chatboxes', {
         _converse.api.settings.update({
             'auto_join_private_chats': [],
             'filter_by_resource': false,
-            'forward_messages': false,
             'send_chat_state_notifications': true
         });
         _converse.api.promises.add([
@@ -261,7 +260,7 @@ converse.plugins.add('converse-chatboxes', {
 
                 this.messages.on('change:upload', (message) => {
                     if (message.get('upload') === _converse.SUCCESS) {
-                        this.sendMessageStanza(this.createMessageStanza(message));
+                        _converse.api.send(this.createMessageStanza(message));
                     }
                 });
 
@@ -489,24 +488,6 @@ converse.plugins.add('converse-chatboxes', {
                 return stanza;
             },
 
-            sendMessageStanza (stanza) {
-                _converse.api.send(stanza);
-                if (_converse.forward_messages) {
-                    // Forward the message, so that other connected resources are also aware of it.
-                    _converse.api.send(
-                        $msg({
-                            'to': _converse.bare_jid,
-                            'type': this.get('message_type'),
-                        }).c('forwarded', {'xmlns': Strophe.NS.FORWARD})
-                            .c('delay', {
-                                    'xmns': Strophe.NS.DELAY,
-                                    'stamp': moment().format()
-                            }).up()
-                          .cnode(stanza.tree())
-                    );
-                }
-            },
-
             getOutgoingMessageAttributes (text, spoiler_hint) {
                 const is_spoiler = this.get('composing_spoiler'),
                       origin_id = _converse.connection.getUniqueId();
@@ -545,7 +526,7 @@ converse.plugins.add('converse-chatboxes', {
                 } else {
                     message = this.messages.create(attrs);
                 }
-                this.sendMessageStanza(this.createMessageStanza(message));
+                _converse.api.send(this.createMessageStanza(message));
                 return true;
             },
 

@@ -32782,6 +32782,37 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+
 /***/ "./src/bosh.js":
 /*!*********************!*\
   !*** ./src/bosh.js ***!
@@ -33779,13 +33810,22 @@ Strophe.Bosh.prototype = {
 /*!*********************!*\
   !*** ./src/core.js ***!
   \*********************/
-/*! exports provided: default */
+/*! exports provided: Strophe, $build, $iq, $msg, $pres, SHA1, MD5, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Strophe", function() { return Strophe; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "$build", function() { return $build; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "$iq", function() { return $iq; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "$msg", function() { return $msg; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "$pres", function() { return $pres; });
 /* harmony import */ var md5__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! md5 */ "./src/md5.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MD5", function() { return md5__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
 /* harmony import */ var sha1__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sha1 */ "./src/sha1.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SHA1", function() { return sha1__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
 /* harmony import */ var utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! utils */ "./src/utils.js");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
@@ -33876,7 +33916,7 @@ function $pres(attrs) {
 
 var Strophe = {
   /** Constant: VERSION */
-  VERSION: "1.3.0",
+  VERSION: "1.3.2",
 
   /** Constants: XMPP Namespace Constants
    *  Common namespace constants from the XMPP RFCs and XEPs.
@@ -37334,7 +37374,7 @@ Strophe.SASLSHA1.prototype.test = function (connection) {
 };
 
 Strophe.SASLSHA1.prototype.onChallenge = function (connection, challenge, test_cnonce) {
-  var cnonce = test_cnonce || md5__WEBPACK_IMPORTED_MODULE_0__["default"].hexdigest(Math.random() * 1234567890);
+  var cnonce = test_cnonce || md5__WEBPACK_IMPORTED_MODULE_0__["default"].hexdigest("" + Math.random() * 1234567890);
   var auth_str = "n=" + utils__WEBPACK_IMPORTED_MODULE_2__["default"].utf16to8(connection.authcid);
   auth_str += ",r=";
   auth_str += cnonce;
@@ -37568,6 +37608,7 @@ Strophe.SASLXOAuth2.prototype.onChallenge = function (connection) {
   return utils__WEBPACK_IMPORTED_MODULE_2__["default"].utf16to8(auth_str);
 };
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   'Strophe': Strophe,
   '$build': $build,
@@ -37630,6 +37671,10 @@ var bit_rol = function bit_rol(num, cnt) {
 
 
 var str2binl = function str2binl(str) {
+  if (typeof str !== "string") {
+    throw new Error("str2binl was passed a non-string");
+  }
+
   var bin = [];
 
   for (var i = 0; i < str.length * 8; i += 8) {
@@ -38034,14 +38079,22 @@ var SHA1 = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var bosh__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bosh */ "./src/bosh.js");
-/* harmony import */ var websocket__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! websocket */ "./src/websocket.js");
-/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core */ "./src/core.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "default", function() { return core__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core */ "./src/core.js");
+/* harmony import */ var bosh__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bosh */ "./src/bosh.js");
+/* harmony import */ var websocket__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! websocket */ "./src/websocket.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "default", function() { return core__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/*global global*/
 
 
 
+global.Strophe = core__WEBPACK_IMPORTED_MODULE_0__["default"].Strophe;
+global.$build = core__WEBPACK_IMPORTED_MODULE_0__["default"].$build;
+global.$iq = core__WEBPACK_IMPORTED_MODULE_0__["default"].$iq;
+global.$msg = core__WEBPACK_IMPORTED_MODULE_0__["default"].$msg;
+global.$pres = core__WEBPACK_IMPORTED_MODULE_0__["default"].$pres;
 
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
@@ -40147,7 +40200,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
     _converse.api.settings.update({
       'auto_join_private_chats': [],
       'filter_by_resource': false,
-      'forward_messages': false,
       'send_chat_state_notifications': true
     });
 
@@ -40404,7 +40456,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         this.messages.chatbox = this;
         this.messages.on('change:upload', message => {
           if (message.get('upload') === _converse.SUCCESS) {
-            this.sendMessageStanza(this.createMessageStanza(message));
+            _converse.api.send(this.createMessageStanza(message));
           }
         });
         this.on('change:chat_state', this.sendChatState, this); // Models get saved immediately after creation, so no need to
@@ -40692,23 +40744,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return stanza;
       },
 
-      sendMessageStanza(stanza) {
-        _converse.api.send(stanza);
-
-        if (_converse.forward_messages) {
-          // Forward the message, so that other connected resources are also aware of it.
-          _converse.api.send($msg({
-            'to': _converse.bare_jid,
-            'type': this.get('message_type')
-          }).c('forwarded', {
-            'xmlns': Strophe.NS.FORWARD
-          }).c('delay', {
-            'xmns': Strophe.NS.DELAY,
-            'stamp': moment().format()
-          }).up().cnode(stanza.tree()));
-        }
-      },
-
       getOutgoingMessageAttributes(text, spoiler_hint) {
         const is_spoiler = this.get('composing_spoiler'),
               origin_id = _converse.connection.getUniqueId();
@@ -40749,7 +40784,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           message = this.messages.create(attrs);
         }
 
-        this.sendMessageStanza(this.createMessageStanza(message));
+        _converse.api.send(this.createMessageStanza(message));
+
         return true;
       },
 
@@ -41624,6 +41660,7 @@ _converse.default_settings = {
   debug: false,
   default_state: 'online',
   expose_rid_and_sid: false,
+  forward_messages: false,
   geouri_regex: /https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
   geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
   idle_presence_timeout: 300,
@@ -43202,6 +43239,19 @@ _converse.api = {
    */
   'send'(stanza) {
     _converse.connection.send(stanza);
+
+    if (_converse.forward_messages) {
+      // Forward the message, so that other connected resources are also aware of it.
+      _converse.connection.send(Object(strophe_js__WEBPACK_IMPORTED_MODULE_0__["$msg"])({
+        'to': _converse.bare_jid,
+        'type': this.get('message_type')
+      }).c('forwarded', {
+        'xmlns': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].NS.FORWARD
+      }).c('delay', {
+        'xmns': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].NS.DELAY,
+        'stamp': moment__WEBPACK_IMPORTED_MODULE_7___default()().format()
+      }).up().cnode(stanza.tree()));
+    }
 
     _converse.emit('send', stanza);
   },

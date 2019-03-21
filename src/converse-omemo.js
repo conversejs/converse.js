@@ -353,7 +353,7 @@ converse.plugins.add('converse-omemo', {
                     try {
                         const devices = await _converse.getBundlesAndBuildSessions(this);
                         const stanza = await _converse.createOMEMOMessageStanza(this, this.messages.create(attrs), devices);
-                        this.sendMessageStanza(stanza);
+                        _converse.api.send(stanza);
                     } catch (e) {
                         this.handleMessageSendError(e);
                         return false;

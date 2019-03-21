@@ -56734,7 +56734,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           try {
             const devices = await _converse.getBundlesAndBuildSessions(this);
             const stanza = await _converse.createOMEMOMessageStanza(this, this.messages.create(attrs), devices);
-            this.sendMessageStanza(stanza);
+
+            _converse.api.send(stanza);
           } catch (e) {
             this.handleMessageSendError(e);
             return false;
@@ -61926,7 +61927,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
     _converse.api.settings.update({
       'auto_join_private_chats': [],
       'filter_by_resource': false,
-      'forward_messages': false,
       'send_chat_state_notifications': true
     });
 
@@ -62183,7 +62183,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         this.messages.chatbox = this;
         this.messages.on('change:upload', message => {
           if (message.get('upload') === _converse.SUCCESS) {
-            this.sendMessageStanza(this.createMessageStanza(message));
+            _converse.api.send(this.createMessageStanza(message));
           }
         });
         this.on('change:chat_state', this.sendChatState, this); // Models get saved immediately after creation, so no need to
@@ -62471,23 +62471,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return stanza;
       },
 
-      sendMessageStanza(stanza) {
-        _converse.api.send(stanza);
-
-        if (_converse.forward_messages) {
-          // Forward the message, so that other connected resources are also aware of it.
-          _converse.api.send($msg({
-            'to': _converse.bare_jid,
-            'type': this.get('message_type')
-          }).c('forwarded', {
-            'xmlns': Strophe.NS.FORWARD
-          }).c('delay', {
-            'xmns': Strophe.NS.DELAY,
-            'stamp': moment().format()
-          }).up().cnode(stanza.tree()));
-        }
-      },
-
       getOutgoingMessageAttributes(text, spoiler_hint) {
         const is_spoiler = this.get('composing_spoiler'),
               origin_id = _converse.connection.getUniqueId();
@@ -62528,7 +62511,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           message = this.messages.create(attrs);
         }
 
-        this.sendMessageStanza(this.createMessageStanza(message));
+        _converse.api.send(this.createMessageStanza(message));
+
         return true;
       },
 
@@ -63403,6 +63387,7 @@ _converse.default_settings = {
   debug: false,
   default_state: 'online',
   expose_rid_and_sid: false,
+  forward_messages: false,
   geouri_regex: /https:\/\/www.openstreetmap.org\/.*#map=[0-9]+\/([\-0-9.]+)\/([\-0-9.]+)\S*/g,
   geouri_replacement: 'https://www.openstreetmap.org/?mlat=$1&mlon=$2#map=18/$1/$2',
   idle_presence_timeout: 300,
@@ -64981,6 +64966,19 @@ _converse.api = {
    */
   'send'(stanza) {
     _converse.connection.send(stanza);
+
+    if (_converse.forward_messages) {
+      // Forward the message, so that other connected resources are also aware of it.
+      _converse.connection.send(Object(strophe_js__WEBPACK_IMPORTED_MODULE_0__["$msg"])({
+        'to': _converse.bare_jid,
+        'type': this.get('message_type')
+      }).c('forwarded', {
+        'xmlns': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].NS.FORWARD
+      }).c('delay', {
+        'xmns': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].NS.DELAY,
+        'stamp': moment__WEBPACK_IMPORTED_MODULE_7___default()().format()
+      }).up().cnode(stanza.tree()));
+    }
 
     _converse.emit('send', stanza);
   },

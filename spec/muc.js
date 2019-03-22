@@ -3427,11 +3427,11 @@
                     'from': view.model.get('jid'),
                     'to': _converse.connection.jid
                 });
-                spyOn(view, 'close').and.callThrough();
                 spyOn(_converse, 'emit');
+                expect(_converse.chatboxes.length).toBe(2);
                 _converse.connection._dataRecv(test_utils.createRequest(result_stanza));
                 await test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));
-                expect(view.close).toHaveBeenCalled();
+                expect(_converse.chatboxes.length).toBe(1);
                 expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 done();
             }));

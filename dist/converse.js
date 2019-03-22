@@ -62474,7 +62474,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
               origin_id = _converse.connection.getUniqueId();
 
         return _.extend(this.toJSON(), {
-          'id': origin_id,
+          'msgid': origin_id,
           'origin_id': origin_id,
           'fullname': _converse.xmppstatus.get('fullname'),
           'from': _converse.bare_jid,

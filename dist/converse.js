@@ -52439,7 +52439,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         });
       },
 
-      fetchArchivedMessages(options) {
+      async fetchArchivedMessages(options) {
         const _converse = this.__super__._converse;
 
         if (this.disable_mam) {
@@ -52457,42 +52457,32 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           message_handler = _converse.chatboxes.onMessage.bind(_converse.chatboxes);
         }
 
-        _converse.api.disco.supports(Strophe.NS.MAM, mam_jid).then(results => {
+        const supported = await _converse.api.disco.supports(Strophe.NS.MAM, mam_jid);
+
+        if (!supported.length) {
+          return;
+        }
+
+        this.addSpinner();
+
+        _converse.api.archive.query(_.extend({
+          'groupchat': is_groupchat,
+          'before': '',
+          // Page backwards from the most recent message
+          'max': _converse.archived_messages_page_size,
+          'with': this.model.get('jid')
+        }, options), messages => {
           // Success
-          if (!results.length) {
-            return;
-          }
-
-          this.addSpinner();
-
-          _converse.api.archive.query( // TODO: only query from the last message we have
-          // in our history
-          _.extend({
-            'groupchat': is_groupchat,
-            'before': '',
-            // Page backwards from the most recent message
-            'max': _converse.archived_messages_page_size,
-            'with': this.model.get('jid')
-          }, options), messages => {
-            // Success
-            this.clearSpinner();
-
-            _.each(messages, message_handler);
-          }, e => {
-            // Error
-            this.clearSpinner();
-
-            _converse.log("Error or timeout while trying to fetch " + "archived messages", Strophe.LogLevel.ERROR);
-
-            _converse.log(e, Strophe.LogLevel.ERROR);
-          });
-        }, () => {
-          // Error
-          _converse.log("Error or timeout while checking for MAM support", Strophe.LogLevel.ERROR);
-        }).catch(msg => {
           this.clearSpinner();
 
-          _converse.log(msg, Strophe.LogLevel.FATAL);
+          _.each(messages, message_handler);
+        }, e => {
+          // Error
+          this.clearSpinner();
+
+          _converse.log("Error or timeout while trying to fetch " + "archived messages", Strophe.LogLevel.ERROR);
+
+          _converse.log(e, Strophe.LogLevel.ERROR);
         });
       },
 

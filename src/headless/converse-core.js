@@ -62,7 +62,7 @@ _.templateSettings = {
 const BOSH_WAIT = 59;
 
 /**
- * A private, closured object containing the private api (via `_converse.api`)
+ * A private, closured object containing the private api (via {@link _converse.api})
  * as well as private methods and internal data-structures.
  *
  * @namespace _converse
@@ -359,6 +359,28 @@ function initPlugins() {
         },
         '_converse': _converse
     }, whitelist, _converse.blacklisted_plugins);
+    /**
+     * Emitted once all plugins have been initialized. This is a useful event if you want to
+     * register event handlers but would like your own handlers to be overridable by
+     * plugins. In that case, you need to first wait until all plugins have been
+     * initialized, so that their overrides are active. One example where this is used
+     * is in [converse-notifications.js](https://github.com/jcbrand/converse.js/blob/master/src/converse-notification.js)`.
+     *
+     * Also available as an [ES2015 Promise](http://es6-features.org/#PromiseUsage)
+     * which can be listened to with `_converse.api.waitUntil`.
+     *
+     * @event _converse#pluginsInitialized
+     * @memberOf _converse
+     *
+     * @example
+     * _converse.api.listen.on('pluginsInitialized', () => { ... });
+     *
+     * @example
+     * // As an ES2015 Promise
+     * _converse.api.waitUntil('pluginsInitialized').then(() => {
+     *     // Your code here...
+     * });
+     */
     _converse.emit('pluginsInitialized');
 }
 
@@ -376,6 +398,15 @@ function initClientConfig () {
     });
     _converse.config.browserStorage = new Backbone.BrowserStorage.session(id);
     _converse.config.fetch();
+    /**
+     * Emitted once the XMPP-client configuration has been initialized.
+     * The client configuration is independent of any particular and its values
+     * persist across user sessions.
+     *
+     * @event _converse#clientConfigInitialized
+     * @example
+     * _converse.api.listen.on('clientConfigInitialized', () => { ... });
+     */
     _converse.emit('clientConfigInitialized');
 }
 
@@ -398,6 +429,12 @@ _converse.initConnection = function () {
         }
     }
     setUpXMLLogging();
+    /**
+     * Emitted once the `Strophe.Connection` constructor has been initialized, which
+     * will be responsible for managing the connection to the XMPP server.
+     *
+     * @event _converse#connectionInitialized
+     */
     _converse.emit('connectionInitialized');
 }
 
@@ -661,6 +698,15 @@ _converse.initialize = async function (settings, callback) {
         _converse.connection.reset();
         _converse.tearDown();
         _converse.clearSession();
+        /**
+         * Emitted after converse.js has disconnected from the XMPP server.
+         *
+         * @event _converse#disconnected
+         * @memberOf _converse
+         *
+         * @example
+         * _converse.api.listen.on('disconnected', () => { ... });
+         */
         _converse.emit('disconnected');
     };
 
@@ -688,6 +734,12 @@ _converse.initialize = async function (settings, callback) {
                 !_converse.auto_reconnect) {
             return _converse.disconnect();
         }
+        /**
+         * Emitted when the connection has dropped, but Converse will attempt
+         * to reconnect again.
+         *
+         * @event _converse#will-reconnect
+         */
         _converse.emit('will-reconnect');
         _converse.reconnect();
     };
@@ -810,6 +862,14 @@ _converse.initialize = async function (settings, callback) {
         _converse.session = new Backbone.Model({id});
         _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
         _converse.session.fetch();
+        /**
+         * Emitted once the session has been initialized. The session is a
+         * persistent object which stores session information in the browser
+         * storage.
+         *
+         * @event _converse#sessionInitialized
+         * @memberOf _converse
+         */
         _converse.emit('sessionInitialized');
     };
 
@@ -820,6 +880,13 @@ _converse.initialize = async function (settings, callback) {
         } else if (!_.isUndefined(this.session) && this.session.browserStorage) {
             this.session.browserStorage._clear();
         }
+        /**
+         * Emitted once the session information has been cleared,
+         * for example when the user has logged out or when Converse has
+         * disconnected for some other reason.
+         *
+         * @event _converse#clearSession
+         */
         _converse.emit('clearSession');
     };
 
@@ -833,7 +900,11 @@ _converse.initialize = async function (settings, callback) {
         }
         // Recreate all the promises
         _.each(_.keys(_converse.promises), addPromise);
-
+        /**
+         * Emitted once the user has logged out.
+         *
+         * @event _converse#logout
+         */
         _converse.emit('logout');
     };
 
@@ -903,12 +974,35 @@ _converse.initialize = async function (settings, callback) {
     };
 
     this.onStatusInitialized = function (reconnecting) {
+       /**
+        * Emitted when the user's own chat status has been initialized.
+        * Also available as an [ES2015 Promise](http://es6-features.org/#PromiseUsage).
+        *
+        * @event _converse#onStatusInitialized
+        * @example
+        * _converse.api.listen.on('statusInitialized', status => { ... });
+        * @example
+        * // As an ES2015 Promise
+        * _converse.api.waitUntil('statusInitialized').then(() => { ... });
+        */
         _converse.emit('statusInitialized', reconnecting);
         if (reconnecting) {
             _converse.emit('reconnected');
         } else {
             init_promise.resolve();
+            /**
+             * Emitted once converse.js has been initialized.
+             * See also {@link _converse#event:pluginsInitialized}.
+             *
+             * @event _converse#initialized
+             */
             _converse.emit('initialized');
+            /**
+             * Emitted after the connection has been established and Converse
+             * has got all its ducks in a row.
+             *
+             * @event _converse#initialized
+             */
             _converse.emit('connected');
         }
     };
@@ -940,9 +1034,7 @@ _converse.initialize = async function (settings, callback) {
         },
 
         initialize () {
-            this.on('change', () => {
-                _converse.emit('connfeedback', _converse.connfeedback);
-            });
+            this.on('change', () => _converse.emit('connfeedback', _converse.connfeedback));
         }
     });
     this.connfeedback = new this.ConnectionFeedback();
@@ -1798,6 +1890,20 @@ const converse = {
         'utils': u
     }
 };
+
 window.converse = converse;
+
+/**
+ * Once Converse.js has loaded, it'll dispatch a custom event with the name
+ * `converse-loaded`.
+ *
+ * You can listen for this event in order to be informed as soon
+ * as converse.js has been loaded and parsed, which would mean it's safe to call
+ * ``converse.initialize``.
+ *
+ * @event converse-loaded
+ * @example
+ *     window.addEventListener('converse-loaded', () => converse.initialize());
+ */
 window.dispatchEvent(new CustomEvent('converse-loaded'));
 export default converse;

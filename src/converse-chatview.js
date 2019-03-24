@@ -872,7 +872,7 @@ converse.plugins.add('converse-chatview', {
                 u.addClass('disabled', textarea);
                 textarea.setAttribute('disabled', 'disabled');
                 if (this.parseMessageForCommands(message) ||
-                    await this.model.sendMessage(this.model.getOutgoingMessageAttributes(message, spoiler_hint))) {
+                    await this.model.sendMessage(message, spoiler_hint)) {
 
                     hint_el.value = '';
                     textarea.value = '';

@@ -664,6 +664,8 @@ converse.plugins.add('converse-controlbox', {
                 /**
                  * Retrieves the controlbox view.
                  *
+                 * @method _converse.api.controlbox.get
+                 *
                  * @example
                  * const view = _converse.api.controlbox.get();
                  *

@@ -3,22 +3,27 @@
 ## 4.1.3 (Unreleased)
 
 - Updated translation: lt
-- Upgrade to Backbone 1.4.0
+- Upgrade to Backbone 1.4.0 and Strophe 1.3.2
 - Fix "flashing" of roster filter when you have less than 5 roster contacts.
 - Fix handling of CAPTCHAs offered by ejabberd.
+- Don't send out receipts or markers for MAM messages
 - Allow setting of debug mode via URL with `/#converse?debug=true`
 - New config setting [locked_muc_domain](https://conversejs.org/docs/html/configuration.html#locked-muc-domain)
 - New config setting [show_client_info](https://conversejs.org/docs/html/configuration.html#show-client-info)
 - Render inline images served over HTTP if Converse itself was loaded on an unsecured (HTTP) page.
+- Document new API method [sendMessage](https://conversejs.org/docs/html/api/-_converse.ChatBox.html#sendMessage)
 - #1149: With `xhr_user_search_url`, contact requests are not being sent out
 - #1213: Switch roster filter input and icons
 - #1327: fix False mentions positives in URLs and Email addresses
+- #1352: Add [Jed](https://github.com/messageformat/Jed) as dependency of `@converse/headless`
 - #1373: Re-add support for the [muc_domain](https://conversejs.org/docs/html/configuration.html#muc-domain) setting
 - #1400: When a chat message is just an emoji, enlarge the emoji
 - #1437: List of groupchats in modal doesn't scroll
 - #1457: Wrong tooltip shown for "unbookmark" icon
 - #1479: Allow file upload by drag & drop also in MUCs
 - #1487: New config option [muc_respect_autojoin](https://conversejs.org/docs/html/configuration.html#muc-respect-autojoin)
+- #1501: Don't prompt for a reason if [auto_join_on_invite](https://conversejs.org/docs/html/configuration.html#auto-join-on-invite) is `true`
+- #1507: Make message id and origin-id identical in order to fix LMC with Conversations
 
 
 ## 4.1.2 (2019-02-22)

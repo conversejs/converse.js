@@ -3,8 +3,13 @@
 //
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
+//
+// XEP-0045 Multi-User Chat Views
 
 import "converse-modal";
+import "backbone.overview/backbone.orderedlistview";
+import "backbone.overview/backbone.overview";
+import "backbone.vdomview";
 import Awesomplete from "awesomplete";
 import _FormData from "formdata-polyfill";
 import converse from "@converse/headless/converse-core";
@@ -1943,11 +1948,14 @@ converse.plugins.add('converse-muc-views', {
 
 
             promptForInvite (suggestion) {
-                const reason = prompt(
-                    __('You are about to invite %1$s to the groupchat "%2$s". '+
-                       'You may optionally include a message, explaining the reason for the invitation.',
-                       suggestion.text.label, this.model.get('id'))
-                );
+                let reason = '';
+                if (!_converse.auto_join_on_invite) {
+                    reason = prompt(
+                        __('You are about to invite %1$s to the groupchat "%2$s". '+
+                           'You may optionally include a message, explaining the reason for the invitation.',
+                           suggestion.text.label, this.model.get('id'))
+                    );
+                }
                 if (reason !== null) {
                     this.chatroomview.model.directInvite(suggestion.text.value, reason);
                 }

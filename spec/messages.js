@@ -2495,23 +2495,12 @@
             await test_utils.openAndEnterChatRoom(_converse, 'room', 'muc.example.com', 'dummy');
             const view = _converse.chatboxviews.get('room@muc.example.com');
 
-            const attrs = {
-                'id': _converse.connection.getUniqueId(),
-                'origin_id': _converse.connection.getUniqueId(),
-                'fullname': 'dummy',
-                'references': [],
-                'from': _converse.connection.jid,
-                'sender': 'me',
-                'time': moment().format(),
-                'message': 'Hello world',
-                'is_spoiler': false,
-                'type': 'groupchat' 
-            }
-            view.model.sendMessage(attrs);
+            view.model.sendMessage('hello world');
             await test_utils.waitUntil(() => _converse.api.chats.get().length);
             await test_utils.waitUntil(() => view.model.messages.length === 1);
-            expect(view.model.messages.at(0).get('stanza_id')).toBeUndefined();
-            expect(view.model.messages.at(0).get('origin_id')).toBe(attrs.origin_id);
+            const msg = view.model.messages.at(0);
+            expect(msg.get('stanza_id')).toBeUndefined();
+            expect(msg.get('origin_id')).toBe(msg.get('origin_id'));
 
             const stanza = u.toStanza(`
                 <message xmlns="jabber:client"
@@ -2522,14 +2511,14 @@
                     <stanza-id xmlns="urn:xmpp:sid:0"
                                id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
                                by="room@muc.example.com"/>
-                    <origin-id xmlns="urn:xmpp:sid:0" id="${attrs.origin_id}"/>
+                    <origin-id xmlns="urn:xmpp:sid:0" id="${msg.get('origin_id')}"/>
                 </message>`);
             spyOn(view.model, 'updateMessage').and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => view.model.updateMessage.calls.count() === 1);
             expect(view.model.messages.length).toBe(1);
             expect(view.model.messages.at(0).get('stanza_id room@muc.example.com')).toBe("5f3dbc5e-e1d3-4077-a492-693f3769c7ad");
-            expect(view.model.messages.at(0).get('origin_id')).toBe(attrs.origin_id);
+            expect(view.model.messages.at(0).get('origin_id')).toBe(msg.get('origin_id'));
             done();
         }));
 

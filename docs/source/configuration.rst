@@ -363,6 +363,7 @@ auto_join_on_invite
 * Default:  ``false``
 
 If true, the user will automatically join a chatroom on invite without any confirm.
+Also inviting users won't be prompted for a reason.
 
 
 auto_join_private_chats

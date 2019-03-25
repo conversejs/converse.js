@@ -498,7 +498,9 @@ converse.plugins.add('converse-chatboxes', {
                 const is_spoiler = this.get('composing_spoiler'),
                       origin_id = _converse.connection.getUniqueId();
 
-                return _.extend(this.toJSON(), {
+                return {
+                    'jid': this.get('jid'),
+                    'nickname': this.get('nickname'),
                     'msgid': origin_id,
                     'origin_id': origin_id,
                     'fullname': _converse.xmppstatus.get('fullname'),
@@ -509,7 +511,7 @@ converse.plugins.add('converse-chatboxes', {
                     'is_spoiler': is_spoiler,
                     'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
                     'type': this.get('message_type')
-                });
+                }
             },
 
             /**

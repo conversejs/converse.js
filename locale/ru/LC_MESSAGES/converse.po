@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-22 18:21+0100\n"
-"PO-Revision-Date: 2019-02-06 19:24+0000\n"
-"Last-Translator: Raov <djraov2004@gmail.com>\n"
+"PO-Revision-Date: 2019-03-26 14:37+0000\n"
+"Last-Translator: Vladislav <vladislavp@pm.me>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 3.5-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 3.6-dev\n"
 
 #: dist/converse-no-dependencies.js:30353
 #: dist/converse-no-dependencies.js:30410
@@ -553,9 +553,8 @@ msgid "Configure this groupchat"
 msgstr "Настроить комнату"
 
 #: dist/converse-no-dependencies.js:35973
-#, fuzzy
 msgid "Show more details about this groupchat"
-msgstr "Показать больше информации об этом чате"
+msgstr "Показать более подробную информацию об этом групповом чате"
 
 #: dist/converse-no-dependencies.js:36019
 msgid "Hide the list of participants"
@@ -569,6 +568,7 @@ msgstr "Запрещено: у вас нет необходимой роли д�
 msgid ""
 "Forbidden: you do not have the necessary affiliation in order to do that."
 msgstr ""
+"Запрещено: у вас нет необходимых связей для выполнения данного действия."
 
 #: dist/converse-no-dependencies.js:36192
 #, javascript-format
@@ -582,13 +582,15 @@ msgstr ""
 #: dist/converse-no-dependencies.js:36201
 #, javascript-format
 msgid "Error: couldn't find a groupchat participant \"%1$s\""
-msgstr ""
+msgstr "Ошибка: не удалось найти участника группового чата \"%1$s\""
 
 #: dist/converse-no-dependencies.js:36211
 msgid ""
 "Sorry, an error happened while running the command. Check your browser's "
 "developer console for details."
 msgstr ""
+"Извините, произошла ошибка во время выполнения команды. Подробности смотрите "
+"в консоли разработчика вашего браузера."
 
 #: dist/converse-no-dependencies.js:36268
 msgid "Change user's affiliation to admin"
@@ -663,7 +665,7 @@ msgstr "Разрешить заглушенным пользователям о�
 
 #: dist/converse-no-dependencies.js:36345
 msgid "Error: invalid number of arguments"
-msgstr ""
+msgstr "Ошибка: неверное количество аргументов"
 
 #: dist/converse-no-dependencies.js:36598
 msgid ""
@@ -787,7 +789,7 @@ msgstr "Эта комната достигла максимального кол
 
 #: dist/converse-no-dependencies.js:37076
 msgid "Remote server not found"
-msgstr ""
+msgstr "Удалённый сервер не найден"
 
 #: dist/converse-no-dependencies.js:37081
 #, fuzzy, javascript-format
@@ -800,22 +802,19 @@ msgid "Topic set by %1$s"
 msgstr "Тему установил(а) %1$s"
 
 #: dist/converse-no-dependencies.js:37134
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Topic cleared by %1$s"
-msgstr "Тему установил(а) %1$s"
+msgstr "Тема очищена %1$s"
 
 #: dist/converse-no-dependencies.js:37170
-#, fuzzy
 msgid "Groupchats"
-msgstr "Группы"
+msgstr "Конматы"
 
 #: dist/converse-no-dependencies.js:37171
-#, fuzzy
 msgid "Add a new groupchat"
-msgstr "Войти в новую комнату"
+msgstr "Добавить новую комнату"
 
 #: dist/converse-no-dependencies.js:37172
-#, fuzzy
 msgid "Query for groupchats"
 msgstr "Запросить список комнат"
 
@@ -829,40 +828,36 @@ msgid "This user is a moderator."
 msgstr "Этот пользователь является модератором."
 
 #: dist/converse-no-dependencies.js:37217
-#, fuzzy
 msgid "This user can send messages in this groupchat."
 msgstr "Этот пользователь может отправлять сообщения в этой комнате."
 
 #: dist/converse-no-dependencies.js:37218
-#, fuzzy
 msgid "This user can NOT send messages in this groupchat."
 msgstr "Этот пользователь НЕ может отправлять сообщения в этой комнате."
 
 #: dist/converse-no-dependencies.js:37219
-#, fuzzy
 msgid "Moderator"
-msgstr "Модерируемая"
+msgstr "Модератор"
 
 #: dist/converse-no-dependencies.js:37220
 msgid "Visitor"
-msgstr ""
+msgstr "Посетитель"
 
 #: dist/converse-no-dependencies.js:37221
 msgid "Owner"
-msgstr ""
+msgstr "Владелец"
 
 #: dist/converse-no-dependencies.js:37222
-#, fuzzy
 msgid "Member"
-msgstr "Только для членов"
+msgstr "Участник"
 
 #: dist/converse-no-dependencies.js:37223
 msgid "Admin"
-msgstr ""
+msgstr "Админ"
 
 #: dist/converse-no-dependencies.js:37257
 msgid "Participants"
-msgstr ""
+msgstr "Участники"
 
 #: dist/converse-no-dependencies.js:37275
 #: dist/converse-no-dependencies.js:37332
@@ -870,13 +865,13 @@ msgid "Invite"
 msgstr "Пригласить"
 
 #: dist/converse-no-dependencies.js:37308
-#, fuzzy, javascript-format
+#, javascript-format
 msgid ""
 "You are about to invite %1$s to the groupchat \"%2$s\". You may optionally "
 "include a message, explaining the reason for the invitation."
 msgstr ""
-"Вы собираетесь пригласить %1$s в комнату \"%2$s\". Вы можете по желанию "
-"прикрепить сообщение, объясняющее причину приглашения."
+"Вы собираетесь пригласить %1$s в комнату \"%2$s\". По желанию вы можете "
+"добавить сообщение с объяснением причины приглашения."
 
 #. workaround for Prosody which doesn't give type "headline"
 #: dist/converse-no-dependencies.js:37693
@@ -930,17 +925,22 @@ msgid ""
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
+"Вы уверены, что хотите сгенерировать новые OMEMO ключи? Это действие удалит "
+"все стырые ключи, и ранее зашифрованные сообщению не смогут быть "
+"расшифрованы на этом девайсе."
 
 #: dist/converse-no-dependencies.js:38098
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
-msgstr ""
+msgstr "К сожалению, не удалось расшифровать OMEMO сообщение."
 
 #: dist/converse-no-dependencies.js:38213
-#, javascript-format
+#, fuzzy, javascript-format
 msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
+"Извините, мы не можем отправить зашифрованное сообщение, потому что \"%1$s\" "
+"требует, быть подписанным на их профиль, чтобы увидеть информацию OMEMO"
 
 #: dist/converse-no-dependencies.js:38215
 #, javascript-format
@@ -948,10 +948,13 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
+"Извините, мы не можем отправить зашифрованное сообщение, так как не удаётся "
+"найти удалённый сервер для \"%1$s\""
 
 #: dist/converse-no-dependencies.js:38217
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr ""
+"Не удаётся отправить зашифрованное сообщение из-за непредвиденной ошибки."
 
 #: dist/converse-no-dependencies.js:38300
 #, javascript-format
@@ -981,7 +984,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:39363
 msgid "Your avatar image"
-msgstr ""
+msgstr "Ваш аватар"
 
 #: dist/converse-no-dependencies.js:39364
 msgid "Your Profile"
@@ -998,21 +1001,19 @@ msgstr "Закрыть"
 
 #: dist/converse-no-dependencies.js:39366
 msgid "Email"
-msgstr ""
+msgstr "Электронная почта"
 
 #: dist/converse-no-dependencies.js:39367
-#, fuzzy
 msgid "Full Name"
 msgstr "Имя"
 
 #: dist/converse-no-dependencies.js:39368
-#, fuzzy
 msgid "XMPP Address (JID)"
-msgstr "XMPP адрес"
+msgstr "XMPP адрес (JID)"
 
 #: dist/converse-no-dependencies.js:39370
 msgid "Role"
-msgstr ""
+msgstr "Роль"
 
 #: dist/converse-no-dependencies.js:39371
 msgid ""
@@ -1022,17 +1023,15 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:39372
 msgid "URL"
-msgstr ""
+msgstr "Ссылка"
 
 #: dist/converse-no-dependencies.js:39402
-#, fuzzy
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr ""
-"Извините, что-то пошло не так в момент попытки сохранить вашу закладку."
+msgstr "Извините, произошла ошибка при попытке сохранить данные вашего профиля."
 
 #: dist/converse-no-dependencies.js:39402
 msgid "You can check your browser's developer console for any error output."
-msgstr ""
+msgstr "Проверьте консоль вашего браузера для деталей об ошибках."
 
 #: dist/converse-no-dependencies.js:39451
 #: dist/converse-no-dependencies.js:41178
@@ -1781,36 +1780,35 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:77301
 msgid "Refresh"
-msgstr ""
+msgstr "Обновить"
 
 #: dist/converse-no-dependencies.js:77305
-#, fuzzy
 msgid "Remove as contact"
-msgstr "Добавть контакт"
+msgstr "Удалить из контактов"
 
 #: dist/converse-no-dependencies.js:77516
 #, javascript-format
 msgid "Download audio file \"%1$s\""
-msgstr ""
+msgstr "Скачать аудиофайл \"%1$s\""
 
 #: dist/converse-no-dependencies.js:77534
 #, javascript-format
 msgid "Download file \"%1$s\""
-msgstr ""
+msgstr "Скачать файл \"%1$s\""
 
 #: dist/converse-no-dependencies.js:77549
 #, javascript-format
 msgid "Download image \"%1$s\""
-msgstr ""
+msgstr "Скачать изображение \"%1$s\""
 
 #: dist/converse-no-dependencies.js:77579
 msgid "Download"
-msgstr ""
+msgstr "Скачать"
 
 #: dist/converse-no-dependencies.js:77596
 #, javascript-format
 msgid "Download video file \"%1$s\""
-msgstr ""
+msgstr "Скачать видеофайл \"%1$s\""
 
 #, fuzzy
 #~ msgid "Destroy room"

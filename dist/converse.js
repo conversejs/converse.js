@@ -48733,7 +48733,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         if (_converse.muc_respect_autojoin && bookmark.get('autojoin')) {
           const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
 
-          if (!groupchat.get('hidden')) {
+          if (!groupchat.get('hidden') && !groupchat.get('minimized')) {
             groupchat.trigger('show');
           }
         }

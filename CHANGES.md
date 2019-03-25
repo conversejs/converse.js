@@ -24,7 +24,7 @@
 - #1487: New config option [muc_respect_autojoin](https://conversejs.org/docs/html/configuration.html#muc-respect-autojoin)
 - #1501: Don't prompt for a reason if [auto_join_on_invite](https://conversejs.org/docs/html/configuration.html#auto-join-on-invite) is `true`
 - #1507: Make message id and origin-id identical in order to fix LMC with Conversations
-
+- #1508: Minimized bookmarked chatboxes should not be always maximized after page reload.
 
 ## 4.1.2 (2019-02-22)
 

@@ -1,11 +1,10 @@
 (function (root, factory) {
     define([
-        "jquery",
         "jasmine",
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, jasmine, mock, test_utils) {
+} (this, function (jasmine, mock, test_utils) {
     "use strict";
     const _ = converse.env._;
     const $iq = converse.env.$iq;
@@ -79,9 +78,10 @@
                 message = '/me is as well';
                 await test_utils.sendMessage(view, message);
                 expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(2);
-                await test_utils.waitUntil(() => $(view.el).find('.chat-msg__author:last').text().trim() === '**Max Mustermann');
-                expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe('is as well');
-                expect($(view.el).find('.chat-msg:last').hasClass('chat-msg--followup')).toBe(false);
+                await test_utils.waitUntil(() => sizzle('.chat-msg__author:last', view.el).pop().textContent.trim() === '**Max Mustermann');
+                const last_el = sizzle('.chat-msg__text:last', view.el).pop();
+                expect(last_el.textContent).toBe('is as well');
+                expect(u.hasClass('chat-msg--followup', last_el)).toBe(false);
                 // Check that /me messages after a normal message don't
                 // get the 'chat-msg--followup' class.
                 message = 'This a normal message';
@@ -249,7 +249,7 @@
 
                 const minimized_chat = _converse.minimized_chats.get(sender_jid);
                 expect(minimized_chat).toBeTruthy();
-                expect($(minimized_chat.el).is(':visible')).toBeTruthy();
+                expect(u.isVisible(minimized_chat.el)).toBeTruthy();
                 done();
             }));
 
@@ -382,8 +382,9 @@
                 expect(trimmedview.restore).toHaveBeenCalled();
                 expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
                 await test_utils.waitUntil(() => u.isVisible(chatview.el.querySelector('.chat-body')), 500);
-                expect($(chatview.el).find('.toggle-chatbox-button').hasClass('fa-minus')).toBeTruthy();
-                expect($(chatview.el).find('.toggle-chatbox-button').hasClass('fa-plus')).toBeFalsy();
+                const toggle_el = sizzle('.toggle-chatbox-button', chatview.el).pop();
+                expect(u.hasClass('fa-minus', toggle_el)).toBeTruthy();
+                expect(u.hasClass('fa-plus', toggle_el)).toBeFalsy();
                 expect(chatview.model.get('minimized')).toBeFalsy();
                 done();
             }));
@@ -584,12 +585,12 @@
                         const view = _converse.chatboxviews.get(contact_jid);
                         expect(view.model.get('chat_state')).toBe('active');
                         expect(_converse.connection.send).toHaveBeenCalled();
-                        const $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(3);
-                        expect($stanza.children().get(0).tagName).toBe('active');
-                        expect($stanza.children().get(1).tagName).toBe('no-store');
-                        expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+                        const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                        expect(stanza.getAttribute('to')).toBe(contact_jid);
+                        expect(stanza.childNodes.length).toBe(3);
+                        expect(stanza.childNodes[0].tagName).toBe('active');
+                        expect(stanza.childNodes[1].tagName).toBe('no-store');
+                        expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
                         done();
                     }));
 
@@ -603,7 +604,7 @@
 
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         await test_utils.openChatBoxFor(_converse, contact_jid);
-                        var view = _converse.chatboxviews.get(contact_jid);
+                        const view = _converse.chatboxviews.get(contact_jid);
                         view.model.minimize();
                         expect(view.model.get('chat_state')).toBe('inactive');
                         spyOn(_converse.connection, 'send');
@@ -614,12 +615,12 @@
                             return call.args[0] instanceof Strophe.Builder;
                         });
                         expect(calls.length).toBe(1);
-                        var $stanza = $(calls[0].args[0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(3);
-                        expect($stanza.children().get(0).tagName).toBe('active');
-                        expect($stanza.children().get(1).tagName).toBe('no-store');
-                        expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+                        const stanza = calls[0].args[0].tree();
+                        expect(stanza.getAttribute('to')).toBe(contact_jid);
+                        expect(stanza.childNodes.length).toBe(3);
+                        expect(stanza.childNodes[0].tagName).toBe('active');
+                        expect(stanza.childNodes[1].tagName).toBe('no-store');
+                        expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
                         done();
                     }));
                 });
@@ -647,11 +648,13 @@
                         });
                         expect(view.model.get('chat_state')).toBe('composing');
                         expect(_converse.connection.send).toHaveBeenCalled();
-                        var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().get(0).tagName).toBe('composing');
-                        expect($stanza.children().get(1).tagName).toBe('no-store');
-                        expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+
+                        const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                        expect(stanza.getAttribute('to')).toBe(contact_jid);
+                        expect(stanza.childNodes.length).toBe(3);
+                        expect(stanza.childNodes[0].tagName).toBe('composing');
+                        expect(stanza.childNodes[1].tagName).toBe('no-store');
+                        expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
 
                         // The notification is not sent again
                         view.keyPressed({
@@ -721,7 +724,7 @@
                         spyOn(_converse, 'log');
                         const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
                         const view = await test_utils.openChatBoxFor(_converse, recipient_jid);
-                        var msg = $msg({
+                        const msg = $msg({
                                 'from': _converse.bare_jid,
                                 'id': (new Date()).getTime(),
                                 'to': _converse.connection.jid,
@@ -738,15 +741,15 @@
                         await _converse.chatboxes.onMessage(msg);
                         await test_utils.waitUntil(() => view.model.messages.length);
                         // Check that the chatbox and its view now exist
-                        var chatbox = _converse.chatboxes.get(recipient_jid);
-                        var chatboxview = _converse.chatboxviews.get(recipient_jid);
+                        const chatbox = _converse.chatboxes.get(recipient_jid);
+                        const chatboxview = _converse.chatboxviews.get(recipient_jid);
                         // Check that the message was received and check the message parameters
                         expect(chatbox.messages.length).toEqual(1);
-                        var msg_obj = chatbox.messages.models[0];
+                        const msg_obj = chatbox.messages.models[0];
                         expect(msg_obj.get('sender')).toEqual('me');
                         expect(msg_obj.get('is_delayed')).toEqual(false);
-                        var $chat_content = $(chatboxview.el).find('.chat-content');
-                        var status_text = $chat_content.find('.chat-info.chat-state-notification').text();
+                        const chat_content = chatboxview.el.querySelector('.chat-content');
+                        const status_text = chat_content.querySelector('.chat-info.chat-state-notification').textContent;
                         expect(status_text).toBe('Typing from another device');
                         done();
                     }));
@@ -775,21 +778,21 @@
                         });
                         expect(view.model.get('chat_state')).toBe('composing');
                         expect(_converse.connection.send).toHaveBeenCalled();
-                        let $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-                        expect($stanza.children().get(0).tagName).toBe('composing');
+                        let stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                        expect(stanza.childNodes[0].tagName).toBe('composing');
                         await test_utils.waitUntil(() => view.model.get('chat_state') === 'paused', 500);
                         expect(_converse.connection.send).toHaveBeenCalled();
                         var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
                             return call.args[0] instanceof Strophe.Builder;
                         });
                         expect(calls.length).toBe(2);
-                        $stanza = $(calls[1].args[0].tree());
+                        stanza = calls[1].args[0].tree();
+                        expect(stanza.getAttribute('to')).toBe(contact_jid);
+                        expect(stanza.childNodes.length).toBe(3);
+                        expect(stanza.childNodes[0].tagName).toBe('paused');
+                        expect(stanza.childNodes[1].tagName).toBe('no-store');
+                        expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
 
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(3);
-                        expect($stanza.children().get(0).tagName).toBe('paused');
-                        expect($stanza.children().get(1).tagName).toBe('no-store');
-                        expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
                         // Test #359. A paused notification should not be sent
                         // out if the user simply types longer than the
                         // timeout.
@@ -866,15 +869,15 @@
                         await _converse.chatboxes.onMessage(msg);
                         await test_utils.waitUntil(() => view.model.messages.length);
                         // Check that the chatbox and its view now exist
-                        var chatbox = _converse.chatboxes.get(recipient_jid);
-                        var chatboxview = _converse.chatboxviews.get(recipient_jid);
+                        const chatbox = _converse.chatboxes.get(recipient_jid);
+                        const chatboxview = _converse.chatboxviews.get(recipient_jid);
                         // Check that the message was received and check the message parameters
                         expect(chatbox.messages.length).toEqual(1);
-                        var msg_obj = chatbox.messages.models[0];
+                        const msg_obj = chatbox.messages.models[0];
                         expect(msg_obj.get('sender')).toEqual('me');
                         expect(msg_obj.get('is_delayed')).toEqual(false);
-                        var $chat_content = $(chatboxview.el).find('.chat-content');
-                        var status_text = $chat_content.find('.chat-info.chat-state-notification').text();
+                        const chat_content = chatboxview.el.querySelector('.chat-content');
+                        const status_text = chat_content.querySelector('.chat-info.chat-state-notification').textContent;
                         expect(status_text).toBe('Stopped typing on the other device');
                         done();
                     }));
@@ -947,9 +950,9 @@
                         view.minimize();
                         expect(view.model.get('chat_state')).toBe('inactive');
                         expect(_converse.connection.send).toHaveBeenCalled();
-                        var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().get(0).tagName).toBe('inactive');
+                        var stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                        expect(stanza.getAttribute('to')).toBe(contact_jid);
+                        expect(stanza.childNodes[0].tagName).toBe('inactive');
                         done();
                     }));
 
@@ -968,12 +971,13 @@
                         view.close();
                         expect(view.model.get('chat_state')).toBe('inactive');
                         expect(_converse.connection.send).toHaveBeenCalled();
-                        var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(3);
-                        expect($stanza.children().get(0).tagName).toBe('inactive');
-                        expect($stanza.children().get(1).tagName).toBe('no-store');
-                        expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+                        var $stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                        const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                        expect(stanza.getAttribute('to')).toBe(contact_jid);
+                        expect(stanza.childNodes.length).toBe(3);
+                        expect(stanza.childNodes[0].tagName).toBe('inactive');
+                        expect(stanza.childNodes[1].tagName).toBe('no-store');
+                        expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
                         done();
                     }));
 
@@ -1538,8 +1542,8 @@
                 test_utils.sendMessage(view, message);
                 await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg').length, 1000);
                 expect(view.model.sendMessage).toHaveBeenCalled();
-                var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
-                expect(msg.html()).toEqual(
+                const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+                expect(msg.innerHTML).toEqual(
                     '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
                     'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.7869'+
                     '71&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');

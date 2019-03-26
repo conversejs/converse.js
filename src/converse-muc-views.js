@@ -104,7 +104,8 @@ converse.plugins.add('converse-muc-views', {
             'auto_list_rooms': false,
             'muc_disable_moderator_commands': false,
             'muc_domain': undefined,
-            'locked_muc_domain': undefined,
+            'locked_muc_nickname': false,
+            'locked_muc_domain': false,
             'muc_show_join_leave': true,
             'roomconfig_whitelist': [],
             'visible_toolbar_buttons': {
@@ -429,9 +430,18 @@ converse.plugins.add('converse-muc-views', {
                 const data = new FormData(form);
                 const jid = data.get('chatroom');
                 this.model.save('muc_domain', Strophe.getDomainFromJid(jid));
+                let nick;
+                if (_converse.locked_muc_nickname) {
+                    nick = _converse.getDefaultMUCNickname();
+                    if (!nick) {
+                        throw new Error("Using locked_muc_nickname but no nickname found!");
+                    }
+                } else {
+                    nick = data.get('nickname').trim();
+                }
                 return {
                     'jid': jid,
-                    'nick': data.get('nickname').trim()
+                    'nick': nick
                 }
             },
 

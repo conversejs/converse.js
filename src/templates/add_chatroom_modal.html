@@ -14,10 +14,12 @@
                         <label for="chatroom">{{{o.label_room_address}}}:</label>
                         <input type="text" required="required" name="chatroom" class="form-control" placeholder="{{{o.chatroom_placeholder}}}"/>
                     </div>
+                    {[ if (!o._converse.locked_muc_nickname) { ]}
                     <div class="form-group" >
                         <label for="nickname">{{{o.__('Nickname')}}}:</label>
                         <input type="text" pattern=".*\S+.*" title="{{{o.__('This field is required')}}}" required="required" name="nickname" value="{{{o.nick}}}" class="form-control"/>
                     </div>
+                    {[ } ]}
                     <input type="submit" class="btn btn-primary" name="join" value="{{{o.__('Join')}}}"/>
                 </form>
             </div>

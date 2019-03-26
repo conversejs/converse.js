@@ -886,6 +886,22 @@ locked_muc_domain
 This setting allows you to restrict the multi-user chat (MUC) domain to only the value
 specified in `muc_domain`_.
 
+locked_muc_nickname
+-------------------
+
+* Default: ``false``
+
+This setting allows you to restrict the multi-user chat (MUC) nickname that a
+user uses to a particular value.
+
+Where the nickname value comes from depends on other settings.
+
+The `nickname`_ configuration setting takes precedence ahead of any other
+nickname value. If that's not set, then the "nickname" value from the user's
+VCard is taken, and if that is not set but `muc_nickname_from_jid`_ is set to
+``true``, then the node of the user's JID (the part before the ``@``) is used.
+
+If no nickame value is found, then an error will be raised.
 
 message_archiving
 -----------------
@@ -1042,8 +1058,8 @@ This setting allows you to specify the nickname for the current user.
 The nickname will be included in presence requests to other users and will also
 be used as the default nickname when entering MUC chatrooms.
 
-This value will have first preference (i.e. used instead of any other nickname source,
-such as the VCard `nickname` value).
+This value will have first preference ahead of other nickname sources, such as
+the VCard `nickname` value.
 
 
 notify_all_room_messages

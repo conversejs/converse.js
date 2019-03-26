@@ -28,11 +28,6 @@
                 expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
                 expect(u.isVisible(_converse.chatboxviews.get('news@localhost').el)).toBeTruthy();
 
-                // XXX: bit of a cheat here. We want `cleanup()` to be
-                // called on the room. Either it's this or faking
-                // `sendPresence`.
-                _converse.connection.connected = false;
-
                 _converse.api.roomviews.close('lounge@localhost');
                 expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                 expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
@@ -3994,6 +3989,29 @@
                 done();
             }));
 
+            it("doesn't show the nickname field if locked_muc_nickname is true",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'locked_muc_nickname': true, 'muc_nickname_from_jid': true},
+                    async function (done, _converse) {
+
+                test_utils.openControlBox();
+                await test_utils.waitForRoster(_converse, 'current', 0);
+                const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                roomspanel.el.querySelector('.show-add-muc-modal').click();
+                test_utils.closeControlBox(_converse);
+                const modal = roomspanel.add_room_modal;
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
+                const name_input = modal.el.querySelector('input[name="chatroom"]');
+                name_input.value = 'lounge@localhost';
+                expect(modal.el.querySelector('label[for="nickname"]')).toBe(null);
+                expect(modal.el.querySelector('input[name="nickname"]')).toBe(null);
+                modal.el.querySelector('form input[type="submit"]').click();
+                await test_utils.waitUntil(() => _converse.chatboxes.length > 1);
+                const chatroom = _converse.chatboxes.get('lounge@localhost');
+                expect(chatroom.get('nick')).toBe('dummy');
+                done();
+            }));
+
             it("uses the JID node if muc_nickname_from_jid is set to true",
                 mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'muc_nickname_from_jid': true},
@@ -4012,7 +4030,6 @@
                 expect(nick_input.value).toBe('dummy');
                 done();
             }));
-
 
             it("uses the nickname passed in to converse.initialize",
                 mock.initConverse(

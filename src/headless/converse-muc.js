@@ -141,8 +141,11 @@ converse.plugins.add('converse-muc', {
 
 
         _converse.getDefaultMUCNickname = function () {
+            // XXX: if anything changes here, update the docs for the
+            // locked_muc_nickname setting.
             if (!_converse.xmppstatus) {
-                throw new Error("Can't call _converse.getNickname before the statusInitialized has been fired.");
+                throw new Error(
+                    "Can't call _converse.getDefaultMUCNickname before the statusInitialized has been fired.");
             }
             const nick = _converse.nickname || _converse.xmppstatus.vcard.get('nickname');
             if (nick) {

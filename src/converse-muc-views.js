@@ -412,11 +412,10 @@ converse.plugins.add('converse-muc-views', {
                     placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
                 }
                 return tpl_add_chatroom_modal(_.extend(this.model.toJSON(), {
-                    'heading_new_chatroom': __('Enter a new Groupchat'),
+                    '__': _converse.__,
+                    '_converse': _converse,
                     'label_room_address': _converse.muc_domain ? __('Groupchat name') :  __('Groupchat address'),
-                    'label_nickname': __('Optional nickname'),
-                    'chatroom_placeholder': placeholder,
-                    'label_join': __('Join'),
+                    'chatroom_placeholder': placeholder
                 }));
             },
 
@@ -432,7 +431,7 @@ converse.plugins.add('converse-muc-views', {
                 this.model.save('muc_domain', Strophe.getDomainFromJid(jid));
                 return {
                     'jid': jid,
-                    'nick': data.get('nickname')
+                    'nick': data.get('nickname').trim()
                 }
             },
 

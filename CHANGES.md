@@ -19,6 +19,7 @@
 - #1352: Add [Jed](https://github.com/messageformat/Jed) as dependency of `@converse/headless`
 - #1373: Re-add support for the [muc_domain](https://conversejs.org/docs/html/configuration.html#muc-domain) setting
 - #1400: When a chat message is just an emoji, enlarge the emoji
+- #1407: Silent errors when trying to use whitespace as MUC nickname
 - #1437: List of groupchats in modal doesn't scroll
 - #1457: Wrong tooltip shown for "unbookmark" icon
 - #1479: Allow file upload by drag & drop also in MUCs

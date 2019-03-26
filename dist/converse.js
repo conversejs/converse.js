@@ -54112,11 +54112,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins
         }
 
         return templates_add_chatroom_modal_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.toJSON(), {
-          'heading_new_chatroom': __('Enter a new Groupchat'),
+          '__': _converse.__,
+          '_converse': _converse,
           'label_room_address': _converse.muc_domain ? __('Groupchat name') : __('Groupchat address'),
-          'label_nickname': __('Optional nickname'),
-          'chatroom_placeholder': placeholder,
-          'label_join': __('Join')
+          'chatroom_placeholder': placeholder
         }));
       },
 
@@ -54132,7 +54131,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins
         this.model.save('muc_domain', Strophe.getDomainFromJid(jid));
         return {
           'jid': jid,
-          'nick': data.get('nickname')
+          'nick': data.get('nickname').trim()
         };
       },
 
@@ -92537,17 +92536,19 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
 __p += '<!-- src/templates/add_chatroom_modal.html -->\n<div class="modal fade" id="add-chatroom-modal" tabindex="-1" role="dialog" aria-labelledby="add-chatroom-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title"\n                    id="add-chatroom-modal-label">' +
-__e(o.heading_new_chatroom) +
+__e(o.__('Enter a new Groupchat')) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form add-chatroom">\n                    <div class="form-group">\n                        <label for="chatroom">' +
 __e(o.label_room_address) +
 ':</label>\n                        <input type="text" required="required" name="chatroom" class="form-control" placeholder="' +
 __e(o.chatroom_placeholder) +
-'"/>\n                    </div>\n                    <div class="form-group">\n                        <label for="nickname">' +
-__e(o.label_nickname) +
-':</label>\n                        <input type="text" name="nickname" value="' +
+'"/>\n                    </div>\n                    <div class="form-group" >\n                        <label for="nickname">' +
+__e(o.__('Nickname')) +
+':</label>\n                        <input type="text" pattern=".*\\S+.*" title="' +
+__e(o.__('This field is required')) +
+'" required="required" name="nickname" value="' +
 __e(o.nick) +
 '" class="form-control"/>\n                    </div>\n                    <input type="submit" class="btn btn-primary" name="join" value="' +
-__e(o.label_join) +
+__e(o.__('Join')) +
 '"/>\n                </form>\n            </div>\n        </div>\n    </div>\n</div>\n';
 return __p
 };

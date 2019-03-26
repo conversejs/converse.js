@@ -3972,9 +3972,10 @@
                 expect(name_input.placeholder).toBe('name@conference.example.org');
 
                 const label_nick = modal.el.querySelector('label[for="nickname"]');
-                expect(label_nick.textContent).toBe('Optional nickname:');
+                expect(label_nick.textContent).toBe('Nickname:');
                 const nick_input = modal.el.querySelector('input[name="nickname"]');
                 expect(nick_input.value).toBe('');
+                nick_input.value = 'dummy';
 
                 expect(modal.el.querySelector('.modal-title').textContent).toBe('Enter a new Groupchat');
                 spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
@@ -4006,7 +4007,7 @@
                 const modal = roomspanel.add_room_modal;
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
                 const label_nick = modal.el.querySelector('label[for="nickname"]');
-                expect(label_nick.textContent).toBe('Optional nickname:');
+                expect(label_nick.textContent).toBe('Nickname:');
                 const nick_input = modal.el.querySelector('input[name="nickname"]');
                 expect(nick_input.value).toBe('dummy');
                 done();
@@ -4026,7 +4027,7 @@
                 const modal = roomspanel.add_room_modal;
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
                 const label_nick = modal.el.querySelector('label[for="nickname"]');
-                expect(label_nick.textContent).toBe('Optional nickname:');
+                expect(label_nick.textContent).toBe('Nickname:');
                 const nick_input = modal.el.querySelector('input[name="nickname"]');
                 expect(nick_input.value).toBe('st.nick');
                 done();
@@ -4050,6 +4051,9 @@
                 let name_input = modal.el.querySelector('input[name="chatroom"]');
                 expect(name_input.placeholder).toBe('name@muc.example.org');
                 name_input.value = 'lounge';
+                let nick_input = modal.el.querySelector('input[name="nickname"]');
+                nick_input.value = 'max';
+
                 modal.el.querySelector('form input[type="submit"]').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.length);
                 await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
@@ -4060,6 +4064,8 @@
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
                 name_input = modal.el.querySelector('input[name="chatroom"]');
                 name_input.value = 'lounge@conference.example.org';
+                nick_input = modal.el.querySelector('input[name="nickname"]');
+                nick_input.value = 'max';
                 modal.el.querySelector('form input[type="submit"]').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.models.filter(c => c.get('type') === 'chatroom').length === 2);
                 await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 2);
@@ -4085,6 +4091,8 @@
                 let name_input = modal.el.querySelector('input[name="chatroom"]');
                 expect(name_input.placeholder).toBe('');
                 name_input.value = 'lounge';
+                let nick_input = modal.el.querySelector('input[name="nickname"]');
+                nick_input.value = 'max';
                 modal.el.querySelector('form input[type="submit"]').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.length);
                 await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
@@ -4095,6 +4103,8 @@
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
                 name_input = modal.el.querySelector('input[name="chatroom"]');
                 name_input.value = 'lounge@conference';
+                nick_input = modal.el.querySelector('input[name="nickname"]');
+                nick_input.value = 'max';
                 modal.el.querySelector('form input[type="submit"]').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.models.filter(c => c.get('type') === 'chatroom').length === 2);
                 await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 2);

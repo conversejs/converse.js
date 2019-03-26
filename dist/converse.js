@@ -93864,7 +93864,7 @@ __e(o.data) +
 __e(o.name) +
 '" type="text" ';
  if (o.required) { ;
-__p += ' class="required" ';
+__p += ' required="required" ';
  } ;
 __p += ' />\n\n\n';
 return __p
@@ -93942,7 +93942,7 @@ __e(o.value) +
  } ;
 __p += '\n        ';
  if (o.required) { ;
-__p += ' required ';
+__p += ' required="required" ';
  } ;
 __p += ' />\n</div>\n';
 return __p
@@ -94054,7 +94054,7 @@ __e(o.value) +
  } ;
 __p += '\n                ';
  if (o.required) { ;
-__p += ' class="required" ';
+__p += ' required="required" ';
  } ;
 __p += ' />\n            <div class="input-group-text col" title="' +
 __e(o.domain) +

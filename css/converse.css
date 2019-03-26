@@ -9943,9 +9943,10 @@ body.converse-fullscreen {
     background-color: var(--primary-color);
     border-color: var(--primary-color-dark); }
   #conversejs .badge {
-    text-shadow: none; }
-  #conversejs .badge {
+    text-shadow: none;
     color: white; }
+  #conversejs .badge-light {
+    color: var(--text-color); }
   #conversejs .btn-primary, #conversejs .button-primary, #conversejs .badge-primary {
     background-color: var(--primary-color);
     border-color: transparent; }

@@ -1262,7 +1262,7 @@
                  */
                 expect(_converse.roster.pluck('jid').length).toBe(0);
 
-                var stanza = $pres({from: 'data@enterprise/resource', type: 'subscribe'});
+                let stanza = $pres({from: 'data@enterprise/resource', type: 'subscribe'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 test_utils.waitUntil(function () {
                     return $('a:contains("Contact requests")').length;

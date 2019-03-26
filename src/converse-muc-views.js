@@ -77,11 +77,6 @@ converse.plugins.add('converse-muc-views', {
                 this.el.querySelector('.controlbox-pane').insertAdjacentElement(
                     'beforeEnd', this.roomspanel.render().el);
 
-                if (!this.roomspanel.model.get('nick')) {
-                    this.roomspanel.model.save({
-                        nick: _converse.xmppstatus.vcard.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
-                    });
-                }
                 _converse.emit('roomsPanelRendered');
             },
 
@@ -1259,7 +1254,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             onReservedNickNotFound (message) {
-                const nick = this.model.getDefaultNick();
+                const nick = _converse.getDefaultMUCNickname();
                 if (nick) {
                     this.join(nick);
                 } else {
@@ -1278,7 +1273,7 @@ converse.plugins.add('converse-muc-views', {
                  */
                 if (_converse.muc_nickname_from_jid) {
                     const nick = presence.getAttribute('from').split('/')[1];
-                    if (nick === this.model.getDefaultNick()) {
+                    if (nick === _converse.getDefaultMUCNickname()) {
                         this.join(nick + '-2');
                     } else {
                         const del= nick.lastIndexOf("-");

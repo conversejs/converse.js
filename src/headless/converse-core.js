@@ -108,7 +108,6 @@ _converse.keycodes = {
     META_RIGHT: 93
 };
 
-
 // Module-level constants
 _converse.STATUS_WEIGHTS = {
     'offline':      6,
@@ -847,9 +846,9 @@ _converse.initialize = async function (settings, callback) {
             _converse.onStatusInitialized(reconnecting);
         } else {
             const id = `converse.xmppstatus-${_converse.bare_jid}`;
-            this.xmppstatus = new this.XMPPStatus({'id': id});
-            this.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
-            this.xmppstatus.fetch({
+            _converse.xmppstatus = new this.XMPPStatus({'id': id});
+            _converse.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
+            _converse.xmppstatus.fetch({
                 'success': _.partial(_converse.onStatusInitialized, reconnecting),
                 'error': _.partial(_converse.onStatusInitialized, reconnecting)
             });

@@ -245,16 +245,16 @@ converse.plugins.add('converse-roster', {
 
             subscribe (message) {
                 /* Send a presence subscription request to this roster contact
-                *
-                * Parameters:
-                *    (String) message - An optional message to explain the
-                *      reason for the subscription request.
-                */
+                 *
+                 * Parameters:
+                 *    (String) message - An optional message to explain the
+                 *      reason for the subscription request.
+                 */
                 const pres = $pres({to: this.get('jid'), type: "subscribe"});
                 if (message && message !== "") {
                     pres.c("status").t(message).up();
                 }
-                const nick = _converse.xmppstatus.vcard.get('nickname') || _converse.xmppstatus.vcard.get('fullname');
+                const nick = _converse.nickname || _converse.xmppstatus.vcard.get('nickname') || _converse.xmppstatus.vcard.get('fullname');
                 if (nick) {
                     pres.c('nick', {'xmlns': Strophe.NS.NICK}).t(nick).up();
                 }
@@ -265,10 +265,10 @@ converse.plugins.add('converse-roster', {
 
             ackSubscribe () {
                 /* Upon receiving the presence stanza of type "subscribed",
-                * the user SHOULD acknowledge receipt of that subscription
-                * state notification by sending a presence stanza of type
-                * "subscribe" to the contact
-                */
+                 * the user SHOULD acknowledge receipt of that subscription
+                 * state notification by sending a presence stanza of type
+                 * "subscribe" to the contact
+                 */
                 _converse.api.send($pres({
                     'type': 'subscribe',
                     'to': this.get('jid')
@@ -291,9 +291,9 @@ converse.plugins.add('converse-roster', {
 
             unauthorize (message) {
                 /* Unauthorize this contact's presence subscription
-                * Parameters:
-                *   (String) message - Optional message to send to the person being unauthorized
-                */
+                 * Parameters:
+                 *   (String) message - Optional message to send to the person being unauthorized
+                 */
                 _converse.rejectPresenceSubscription(this.get('jid'), message);
                 return this;
             },

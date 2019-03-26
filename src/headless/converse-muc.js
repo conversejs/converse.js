@@ -140,6 +140,18 @@ converse.plugins.add('converse-muc', {
         _converse.router.route('converse/room?jid=:jid', openRoom);
 
 
+        _converse.getDefaultMUCNickname = function () {
+            if (!_converse.xmppstatus) {
+                throw new Error("Can't call _converse.getNickname before the statusInitialized has been fired.");
+            }
+            const nick = _converse.nickname || _converse.xmppstatus.vcard.get('nickname');
+            if (nick) {
+                return nick;
+            } else if (_converse.muc_nickname_from_jid) {
+                return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+            }
+        }
+
         _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
             /* Opens a groupchat, making sure that certain attributes
              * are correct, for example that the "type" is set to
@@ -777,20 +789,6 @@ converse.plugins.add('converse-muc', {
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             },
 
-            getDefaultNick () {
-                /* The default nickname (used when muc_nickname_from_jid is true)
-                 * is the node part of the user's JID.
-                 * We put this in a separate method so that it can be
-                 * overridden by plugins.
-                 */
-                const nick = _converse.xmppstatus.vcard.get('nickname');
-                if (nick) {
-                    return nick;
-                } else if (_converse.muc_nickname_from_jid) {
-                    return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
-                }
-            },
-
             async checkForReservedNick () {
                 /* Use service-discovery to ask the XMPP server whether
                  * this user has a reserved nickname for this groupchat.
@@ -1274,9 +1272,12 @@ converse.plugins.add('converse-muc', {
 
 
         _converse.RoomsPanelModel = Backbone.Model.extend({
-            defaults: {
-                'muc_domain': '',
-            },
+            defaults: function () {
+                return {
+                    'muc_domain': '',
+                    'nick': _converse.getDefaultMUCNickname()
+                }
+            }
         });
 
 

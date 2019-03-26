@@ -3971,6 +3971,11 @@
                 let name_input = modal.el.querySelector('input[name="chatroom"]');
                 expect(name_input.placeholder).toBe('name@conference.example.org');
 
+                const label_nick = modal.el.querySelector('label[for="nickname"]');
+                expect(label_nick.textContent).toBe('Optional nickname:');
+                const nick_input = modal.el.querySelector('input[name="nickname"]');
+                expect(nick_input.value).toBe('');
+
                 expect(modal.el.querySelector('.modal-title').textContent).toBe('Enter a new Groupchat');
                 spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -3985,6 +3990,45 @@
                 expect(label_name.textContent).toBe('Groupchat address:');
                 name_input = modal.el.querySelector('input[name="chatroom"]');
                 expect(name_input.placeholder).toBe('name@muc.example.org');
+                done();
+            }));
+
+            it("uses the JID node if muc_nickname_from_jid is set to true",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'muc_nickname_from_jid': true},
+                    async function (done, _converse) {
+
+                test_utils.openControlBox();
+                await test_utils.waitForRoster(_converse, 'current', 0);
+                const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                roomspanel.el.querySelector('.show-add-muc-modal').click();
+                test_utils.closeControlBox(_converse);
+                const modal = roomspanel.add_room_modal;
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
+                const label_nick = modal.el.querySelector('label[for="nickname"]');
+                expect(label_nick.textContent).toBe('Optional nickname:');
+                const nick_input = modal.el.querySelector('input[name="nickname"]');
+                expect(nick_input.value).toBe('dummy');
+                done();
+            }));
+
+
+            it("uses the nickname passed in to converse.initialize",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'nickname': 'st.nick'},
+                    async function (done, _converse) {
+
+                test_utils.openControlBox();
+                await test_utils.waitForRoster(_converse, 'current', 0);
+                const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                roomspanel.el.querySelector('.show-add-muc-modal').click();
+                test_utils.closeControlBox(_converse);
+                const modal = roomspanel.add_room_modal;
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
+                const label_nick = modal.el.querySelector('label[for="nickname"]');
+                expect(label_nick.textContent).toBe('Optional nickname:');
+                const nick_input = modal.el.querySelector('input[name="nickname"]');
+                expect(nick_input.value).toBe('st.nick');
                 done();
             }));
 

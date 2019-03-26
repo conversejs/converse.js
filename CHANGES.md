@@ -12,6 +12,7 @@
 - New config setting [show_client_info](https://conversejs.org/docs/html/configuration.html#show-client-info)
 - Render inline images served over HTTP if Converse itself was loaded on an unsecured (HTTP) page.
 - Document new API method [sendMessage](https://conversejs.org/docs/html/api/-_converse.ChatBox.html#sendMessage)
+- Make sure `nickname` passed in via `_converse.initialize` has first preference as MUC nickname
 - #1149: With `xhr_user_search_url`, contact requests are not being sent out
 - #1213: Switch roster filter input and icons
 - #1327: fix False mentions positives in URLs and Email addresses

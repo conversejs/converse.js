@@ -1042,6 +1042,10 @@ This setting allows you to specify the nickname for the current user.
 The nickname will be included in presence requests to other users and will also
 be used as the default nickname when entering MUC chatrooms.
 
+This value will have first preference (i.e. used instead of any other nickname source,
+such as the VCard `nickname` value).
+
+
 notify_all_room_messages
 ------------------------
 

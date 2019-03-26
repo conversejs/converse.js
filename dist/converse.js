@@ -53767,12 +53767,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins
         this.roomspanel.model.fetch();
         this.el.querySelector('.controlbox-pane').insertAdjacentElement('beforeEnd', this.roomspanel.render().el);
 
-        if (!this.roomspanel.model.get('nick')) {
-          this.roomspanel.model.save({
-            nick: _converse.xmppstatus.vcard.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
-          });
-        }
-
         _converse.emit('roomsPanelRendered');
       },
 
@@ -55017,7 +55011,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins
       },
 
       onReservedNickNotFound(message) {
-        const nick = this.model.getDefaultNick();
+        const nick = _converse.getDefaultMUCNickname();
 
         if (nick) {
           this.join(nick);
@@ -55038,7 +55032,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins
         if (_converse.muc_nickname_from_jid) {
           const nick = presence.getAttribute('from').split('/')[1];
 
-          if (nick === this.model.getDefaultNick()) {
+          if (nick === _converse.getDefaultMUCNickname()) {
             this.join(nick + '-2');
           } else {
             const del = nick.lastIndexOf("-");
@@ -64109,11 +64103,12 @@ _converse.initialize = async function (settings, callback) {
       _converse.onStatusInitialized(reconnecting);
     } else {
       const id = `converse.xmppstatus-${_converse.bare_jid}`;
-      this.xmppstatus = new this.XMPPStatus({
+      _converse.xmppstatus = new this.XMPPStatus({
         'id': id
       });
-      this.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
-      this.xmppstatus.fetch({
+      _converse.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
+
+      _converse.xmppstatus.fetch({
         'success': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.onStatusInitialized, reconnecting),
         'error': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.onStatusInitialized, reconnecting)
       });
@@ -66646,6 +66641,20 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
     _converse.router.route('converse/room?jid=:jid', openRoom);
 
+    _converse.getDefaultMUCNickname = function () {
+      if (!_converse.xmppstatus) {
+        throw new Error("Can't call _converse.getNickname before the statusInitialized has been fired.");
+      }
+
+      const nick = _converse.nickname || _converse.xmppstatus.vcard.get('nickname');
+
+      if (nick) {
+        return nick;
+      } else if (_converse.muc_nickname_from_jid) {
+        return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+      }
+    };
+
     _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
       /* Opens a groupchat, making sure that certain attributes
        * are correct, for example that the "type" is set to
@@ -67382,21 +67391,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         this.getJidsWithAffiliations(affiliations).then(old_members => this.setAffiliations(deltaFunc(members, old_members))).then(() => this.occupants.fetchMembers()).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
       },
 
-      getDefaultNick() {
-        /* The default nickname (used when muc_nickname_from_jid is true)
-         * is the node part of the user's JID.
-         * We put this in a separate method so that it can be
-         * overridden by plugins.
-         */
-        const nick = _converse.xmppstatus.vcard.get('nickname');
-
-        if (nick) {
-          return nick;
-        } else if (_converse.muc_nickname_from_jid) {
-          return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
-        }
-      },
-
       async checkForReservedNick() {
         /* Use service-discovery to ask the XMPP server whether
          * this user has a reserved nickname for this groupchat.
@@ -67956,8 +67950,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
     });
     _converse.RoomsPanelModel = Backbone.Model.extend({
-      defaults: {
-        'muc_domain': ''
+      defaults: function defaults() {
+        return {
+          'muc_domain': '',
+          'nick': _converse.getDefaultMUCNickname()
+        };
       }
     });
 
@@ -68831,11 +68828,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       subscribe(message) {
         /* Send a presence subscription request to this roster contact
-        *
-        * Parameters:
-        *    (String) message - An optional message to explain the
-        *      reason for the subscription request.
-        */
+         *
+         * Parameters:
+         *    (String) message - An optional message to explain the
+         *      reason for the subscription request.
+         */
         const pres = $pres({
           to: this.get('jid'),
           type: "subscribe"
@@ -68845,7 +68842,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           pres.c("status").t(message).up();
         }
 
-        const nick = _converse.xmppstatus.vcard.get('nickname') || _converse.xmppstatus.vcard.get('fullname');
+        const nick = _converse.nickname || _converse.xmppstatus.vcard.get('nickname') || _converse.xmppstatus.vcard.get('fullname');
 
         if (nick) {
           pres.c('nick', {
@@ -68862,10 +68859,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       ackSubscribe() {
         /* Upon receiving the presence stanza of type "subscribed",
-        * the user SHOULD acknowledge receipt of that subscription
-        * state notification by sending a presence stanza of type
-        * "subscribe" to the contact
-        */
+         * the user SHOULD acknowledge receipt of that subscription
+         * state notification by sending a presence stanza of type
+         * "subscribe" to the contact
+         */
         _converse.api.send($pres({
           'type': 'subscribe',
           'to': this.get('jid')
@@ -68892,9 +68889,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       unauthorize(message) {
         /* Unauthorize this contact's presence subscription
-        * Parameters:
-        *   (String) message - Optional message to send to the person being unauthorized
-        */
+         * Parameters:
+         *   (String) message - Optional message to send to the person being unauthorized
+         */
         _converse.rejectPresenceSubscription(this.get('jid'), message);
 
         return this;

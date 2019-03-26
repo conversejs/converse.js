@@ -62486,6 +62486,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'origin_id': origin_id,
           'fullname': _converse.xmppstatus.get('fullname'),
           'from': _converse.bare_jid,
+          'is_single_emoji': text ? u.isSingleEmoji(text) : false,
           'sender': 'me',
           'time': moment().format(),
           'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
@@ -66969,10 +66970,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
         text = _this$parseTextForRef2[0];
         references = _this$parseTextForRef2[1];
+
+        const origin_id = _converse.connection.getUniqueId();
+
         return {
-          'origin_id': _converse.connection.getUniqueId(),
+          'msgid': origin_id,
+          'origin_id': origin_id,
           'from': `${this.get('jid')}/${this.get('nick')}`,
           'fullname': this.get('nick'),
+          'is_single_emoji': text ? _utils_form__WEBPACK_IMPORTED_MODULE_4__["default"].isSingleEmoji(text) : false,
           'is_spoiler': is_spoiler,
           'message': text ? _utils_form__WEBPACK_IMPORTED_MODULE_4__["default"].httpToGeoUri(_utils_form__WEBPACK_IMPORTED_MODULE_4__["default"].shortnameToUnicode(text), _converse) : undefined,
           'nick': this.get('nick'),

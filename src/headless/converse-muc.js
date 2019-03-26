@@ -414,11 +414,14 @@ converse.plugins.add('converse-muc', {
                 const is_spoiler = this.get('composing_spoiler');
                 var references;
                 [text, references] = this.parseTextForReferences(text);
+                const origin_id = _converse.connection.getUniqueId();
 
                 return {
-                    'origin_id': _converse.connection.getUniqueId(),
+                    'msgid': origin_id,
+                    'origin_id': origin_id,
                     'from': `${this.get('jid')}/${this.get('nick')}`,
                     'fullname': this.get('nick'),
+                    'is_single_emoji': text ? u.isSingleEmoji(text) : false,
                     'is_spoiler': is_spoiler,
                     'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
                     'nick': this.get('nick'),

@@ -505,6 +505,7 @@ converse.plugins.add('converse-chatboxes', {
                     'origin_id': origin_id,
                     'fullname': _converse.xmppstatus.get('fullname'),
                     'from': _converse.bare_jid,
+                    'is_single_emoji': text ? u.isSingleEmoji(text) : false,
                     'sender': 'me',
                     'time': moment().format(),
                     'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,

@@ -3,7 +3,7 @@
 ## 4.1.3 (Unreleased)
 
 - Updated translation: lt
-- Upgrade to Backbone 1.4.0 and Strophe 1.3.2
+- Upgrade to Backbone 1.4.0, Strophe 1.3.2 and Jasmine 2.99.2
 - Fix "flashing" of roster filter when you have less than 5 roster contacts.
 - Fix handling of CAPTCHAs offered by ejabberd.
 - Don't send out receipts or markers for MAM messages

@@ -92162,11 +92162,7 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/add_contact_modal.html -->\n<!-- Add contact Modal -->\n<div class="modal fade" id="add-contact-modal" tabindex="-1" role="dialog" aria-labelledby="addContactModalLabel" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="addContactModalLabel">' +
 __e(o.heading_new_contact) +
-'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>\n            </div>\n            <form class="converse-form add-xmpp-contact">\n                <div class="modal-body">\n                    <div class="form-group ';
- if (o._converse.xhr_user_search_url) { ;
-__p += ' hidden ';
- } ;
-__p += '">\n                        <label class="clearfix" for="jid">' +
+'</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>\n            </div>\n            <form class="converse-form add-xmpp-contact">\n                <div class="modal-body">\n                    <div class="form-group">\n                        <label class="clearfix" for="jid">' +
 __e(o.label_xmpp_address) +
 ':</label>\n                        <div class="suggestion-box suggestion-box__jid">\n                            <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>\n                            <input type="text" name="jid"\n                                   ';
  if (!o._converse.xhr_user_search_url) { ;

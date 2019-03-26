@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-22 18:21+0100\n"
-"PO-Revision-Date: 2019-03-03 14:31+0000\n"
+"PO-Revision-Date: 2019-03-26 22:07+0100\n"
 "Last-Translator: Oleg Kazak <oleg@wroot.lt>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/conversejs/"
 "translations/lt/>\n"
@@ -597,7 +597,7 @@ msgid ""
 "Error: the \"%1$s\" command takes two arguments, the user's nickname and "
 "optionally a reason."
 msgstr ""
-"Klaida: \""%1$s\" komandai reikalingi du argumentai, vartotojo vardas ir "
+"Klaida: \"%1$s\" komandai reikalingi du argumentai, vartotojo vardas ir "
 "neprivalomai priežastis."
 
 #: dist/converse-no-dependencies.js:36201
@@ -939,7 +939,7 @@ msgid ""
 msgstr ""
 "Ar esate tikri, kad norite sugeneruoti naujus OMEMO raktus? Šis veiksmas "
 "pašalins senus raktus ir visi anksčiau šifruoti pranešimai daugiau negalės "
-"būti iššifruoti šiame įrenginyje".
+"būti iššifruoti šiame įrenginyje."
 
 #: dist/converse-no-dependencies.js:38098
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -1393,7 +1393,7 @@ msgid ""
 "The size of your file, %1$s, exceeds the maximum allowed by your server, "
 "which is %2$s."
 msgstr ""
-"Jūsų failo dydis, %1$s, viršyja serverio maksimalų leistiną", kuris yra "
+"Jūsų failo dYdis, %1$s, viršyja serverio maksimalų leistiną, kuris yra "
 "%2$s."
 
 #: dist/converse-no-dependencies.js:44340

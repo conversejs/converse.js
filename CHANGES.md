@@ -34,6 +34,7 @@
 - #1501: Don't prompt for a reason if [auto_join_on_invite](https://conversejs.org/docs/html/configuration.html#auto-join-on-invite) is `true`
 - #1507: Make message id and origin-id identical in order to fix LMC with Conversations
 - #1508: Minimized bookmarked chatboxes should not be always maximized after page reload.
+- #1512: Allow manual entry of jid even with [xhr_user_search_url](https://conversejs.org/docs/html/configuration.html#xhr-user-search-url)
 
 ## 4.1.2 (2019-02-22)
 

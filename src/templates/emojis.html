@@ -3,7 +3,7 @@
     <ul class="emoji-picker emoji-picker-{{{category}}} {[ if (o.current_category !== category) { ]} hidden {[ } ]}">
         {[ o._.forEach(o.emojis_by_category[category], function (emoji) { ]}
         <li class="emoji insert-emoji {[ if (o.shouldBeHidden(emoji._shortname, o.current_skintone, o.toned_emojis)) { ]} hidden {[ }; ]}"
-            data-emoji="{{{emoji._shortname}}}">
+            data-emoji="{{{emoji._shortname}}}" title="{{{emoji._shortname}}}">
                 <a href="#" data-emoji="{{{emoji._shortname}}}"> {{ o.transform(emoji._shortname) }}  </a>
         </li>
         {[ }); ]}

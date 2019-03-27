@@ -93742,6 +93742,8 @@ __p += ' hidden ';
  }; ;
 __p += '"\n            data-emoji="' +
 __e(emoji._shortname) +
+'" title="' +
+__e(emoji._shortname) +
 '">\n                <a href="#" data-emoji="' +
 __e(emoji._shortname) +
 '"> ' +

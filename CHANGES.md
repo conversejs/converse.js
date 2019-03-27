@@ -24,6 +24,7 @@
 - #1407: Silent errors when trying to use whitespace as MUC nickname
 - #1437: List of groupchats in modal doesn't scroll
 - #1457: Wrong tooltip shown for "unbookmark" icon
+- #1467: Fix rendering of URLs enclosed with sharp brackets such as <https://example.org>
 - #1479: Allow file upload by drag & drop also in MUCs
 - #1487: New config option [muc_respect_autojoin](https://conversejs.org/docs/html/configuration.html#muc-respect-autojoin)
 - #1501: Don't prompt for a reason if [auto_join_on_invite](https://conversejs.org/docs/html/configuration.html#auto-join-on-invite) is `true`

@@ -52577,23 +52577,25 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
-/* harmony import */ var filesize__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js");
-/* harmony import */ var filesize__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(filesize__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _utils_html__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils/html */ "./src/utils/html.js");
-/* harmony import */ var templates_csn_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! templates/csn.html */ "./src/templates/csn.html");
-/* harmony import */ var templates_csn_html__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(templates_csn_html__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var templates_file_progress_html__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! templates/file_progress.html */ "./src/templates/file_progress.html");
-/* harmony import */ var templates_file_progress_html__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(templates_file_progress_html__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var templates_info_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/info.html */ "./src/templates/info.html");
-/* harmony import */ var templates_info_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_info_html__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var templates_message_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/message.html */ "./src/templates/message.html");
-/* harmony import */ var templates_message_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_message_html__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var templates_message_versions_modal_html__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! templates/message_versions_modal.html */ "./src/templates/message_versions_modal.html");
-/* harmony import */ var templates_message_versions_modal_html__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(templates_message_versions_modal_html__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @converse/headless/utils/emoji */ "./src/headless/utils/emoji.js");
-/* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js");
-/* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(xss__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var urijs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! urijs */ "./node_modules/urijs/src/URI.js");
+/* harmony import */ var urijs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(urijs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
+/* harmony import */ var filesize__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! filesize */ "./node_modules/filesize/lib/filesize.js");
+/* harmony import */ var filesize__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(filesize__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _utils_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/html */ "./src/utils/html.js");
+/* harmony import */ var templates_csn_html__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! templates/csn.html */ "./src/templates/csn.html");
+/* harmony import */ var templates_csn_html__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(templates_csn_html__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var templates_file_progress_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/file_progress.html */ "./src/templates/file_progress.html");
+/* harmony import */ var templates_file_progress_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_file_progress_html__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var templates_info_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/info.html */ "./src/templates/info.html");
+/* harmony import */ var templates_info_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_info_html__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var templates_message_html__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! templates/message.html */ "./src/templates/message.html");
+/* harmony import */ var templates_message_html__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(templates_message_html__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var templates_message_versions_modal_html__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! templates/message_versions_modal.html */ "./src/templates/message_versions_modal.html");
+/* harmony import */ var templates_message_versions_modal_html__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(templates_message_versions_modal_html__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @converse/headless/utils/emoji */ "./src/headless/utils/emoji.js");
+/* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! xss */ "./node_modules/xss/dist/xss.js");
+/* harmony import */ var xss__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(xss__WEBPACK_IMPORTED_MODULE_10__);
 // Converse.js
 // https://conversejs.org
 //
@@ -52609,11 +52611,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env,
+
+const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].env,
       Backbone = _converse$env.Backbone,
       _ = _converse$env._,
       moment = _converse$env.moment;
-_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-message-view', {
+_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-message-view', {
   dependencies: ["converse-modal", "converse-chatboxviews"],
 
   initialize() {
@@ -52623,13 +52626,45 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     const _converse = this._converse,
           __ = _converse.__;
 
+    function onTagFoundDuringXSSFilter(tag, html, options) {
+      /* This function gets called by the XSS library whenever it finds
+       * what it thinks is a new HTML tag.
+       *
+       * It thinks that something like <https://example.com> is an HTML
+       * tag and then escapes the <> chars.
+       *
+       * We want to avoid this, because it prevents these URLs from being
+       * shown properly (whithout the trailing &gt;).
+       *
+       * The URI lib correctly trims a trailing >, but not a trailing &gt;
+       */
+      if (options.isClosing) {
+        // Closing tags don't match our use-case
+        return;
+      }
+
+      const uri = new urijs__WEBPACK_IMPORTED_MODULE_0___default.a(tag);
+      const protocol = uri.protocol().toLowerCase();
+
+      if (!_.includes(["https", "http", "xmpp", "ftp"], protocol)) {
+        // Not a URL, the tag will get filtered as usual
+        return;
+      }
+
+      if (uri.equals(tag) && `<${tag}>` === html.toLocaleLowerCase()) {
+        // We have something like <https://example.com>, and don't want
+        // to filter it.
+        return html;
+      }
+    }
+
     _converse.api.settings.update({
       'show_images_inline': true
     });
 
     _converse.MessageVersionsModal = _converse.BootstrapModal.extend({
       toHTML() {
-        return templates_message_versions_modal_html__WEBPACK_IMPORTED_MODULE_7___default()(_.extend(this.model.toJSON(), {
+        return templates_message_versions_modal_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.toJSON(), {
           '__': __
         }));
       }
@@ -52650,7 +52685,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       async render() {
-        const is_followup = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].hasClass('chat-msg--followup', this.el);
+        const is_followup = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].hasClass('chat-msg--followup', this.el);
 
         if (this.model.isOnlyChatStateNotification()) {
           this.renderChatStateNotification();
@@ -52669,7 +52704,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
 
         if (is_followup) {
-          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addClass('chat-msg--followup', this.el);
+          _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].addClass('chat-msg--followup', this.el);
         }
 
         return this.el;
@@ -52699,8 +52734,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           return;
         }
 
-        this.el.addEventListener('animationend', () => _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].removeClass('onload', this.el));
-        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addClass('onload', this.el);
+        this.el.addEventListener('animationend', () => _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].removeClass('onload', this.el));
+        _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].addClass('onload', this.el);
       },
 
       replaceElement(msg) {
@@ -52717,7 +52752,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
               moment_time = moment(this.model.get('time')),
               role = this.model.vcard ? this.model.vcard.get('role') : null,
               roles = role ? role.split(',') : [];
-        const msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_message_html__WEBPACK_IMPORTED_MODULE_6___default()(_.extend(this.model.toJSON(), {
+        const msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].stringToElement(templates_message_html__WEBPACK_IMPORTED_MODULE_7___default()(_.extend(this.model.toJSON(), {
           '__': __,
           'is_me_message': is_me_message,
           'roles': roles,
@@ -52730,7 +52765,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         const url = this.model.get('oob_url');
 
         if (url) {
-          msg.querySelector('.chat-msg__media').innerHTML = _.flow(_.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderFileURL, _converse), _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderMovieURL, _converse), _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderAudioURL, _converse), _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderImageURL, _converse))(url);
+          msg.querySelector('.chat-msg__media').innerHTML = _.flow(_.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].renderFileURL, _converse), _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].renderMovieURL, _converse), _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].renderAudioURL, _converse), _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].renderImageURL, _converse))(url);
         }
 
         let text = this.getMessageText();
@@ -52741,13 +52776,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
             text = text.substring(4);
           }
 
-          text = xss__WEBPACK_IMPORTED_MODULE_9___default.a.filterXSS(text, {
-            'whiteList': {}
+          text = xss__WEBPACK_IMPORTED_MODULE_10___default.a.filterXSS(text, {
+            'whiteList': {},
+            'onTag': onTagFoundDuringXSSFilter
           });
-          msg_content.innerHTML = _.flow(_.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].geoUriToHttp, _, _converse.geouri_replacement), _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox), _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addHyperlinks, _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderNewLines, _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].addEmoji, _converse, _))(text);
+          msg_content.innerHTML = _.flow(_.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].geoUriToHttp, _, _converse.geouri_replacement), _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox), _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].addHyperlinks, _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].renderNewLines, _.partial(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].addEmoji, _converse, _))(text);
         }
 
-        const promise = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].renderImageURLs(_converse, msg_content);
+        const promise = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].renderImageURLs(_converse, msg_content);
 
         if (this.model.get('type') !== 'headline') {
           this.renderAvatar(msg);
@@ -52760,7 +52796,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       renderErrorMessage() {
         const moment_time = moment(this.model.get('time')),
-              msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_info_html__WEBPACK_IMPORTED_MODULE_5___default()(_.extend(this.model.toJSON(), {
+              msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].stringToElement(templates_info_html__WEBPACK_IMPORTED_MODULE_6___default()(_.extend(this.model.toJSON(), {
           'extra_classes': 'chat-error',
           'isodate': moment_time.format()
         })));
@@ -52791,7 +52827,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
 
         const isodate = moment().format();
-        this.replaceElement(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_csn_html__WEBPACK_IMPORTED_MODULE_3___default()({
+        this.replaceElement(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].stringToElement(templates_csn_html__WEBPACK_IMPORTED_MODULE_4___default()({
           'message': text,
           'from': from,
           'isodate': isodate
@@ -52799,10 +52835,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       renderFileUploadProgresBar() {
-        const msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].stringToElement(templates_file_progress_html__WEBPACK_IMPORTED_MODULE_4___default()(_.extend(this.model.toJSON(), {
+        const msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].stringToElement(templates_file_progress_html__WEBPACK_IMPORTED_MODULE_5___default()(_.extend(this.model.toJSON(), {
           '__': __,
           'filename': this.model.file.name,
-          'filesize': filesize__WEBPACK_IMPORTED_MODULE_1___default()(this.model.file.size)
+          'filesize': filesize__WEBPACK_IMPORTED_MODULE_2___default()(this.model.file.size)
         })));
         this.replaceElement(msg);
         this.renderAvatar();
@@ -52840,7 +52876,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       processMessageText() {
         var text = this.get('message');
-        text = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_8__["default"].geoUriToHttp(text, _converse.geouri_replacement);
+        text = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].geoUriToHttp(text, _converse.geouri_replacement);
       },
 
       getExtraMessageClasses() {

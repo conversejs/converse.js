@@ -897,12 +897,21 @@
             expect(msg.textContent).toEqual(message);
             expect(msg.innerHTML).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">'+message+'</a>');
 
-            message = "https://en.wikipedia.org/wiki/Ender's_Game";
+            message = "<https://bugs.documentfoundation.org/show_bug.cgi?id=123737>";
             await test_utils.sendMessage(view, message);
 
             msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
             expect(msg.textContent).toEqual(message);
-            expect(msg.innerHTML).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">'+message+'</a>');
+            expect(msg.innerHTML).toEqual(
+                `&lt;<a target="_blank" rel="noopener" href="https://bugs.documentfoundation.org/show_bug.cgi?id=123737">https://bugs.documentfoundation.org/show_bug.cgi?id=123737</a>&gt;`);
+
+            message = '<http://www.opkode.com/"onmouseover="alert(1)"whatever>';
+            await test_utils.sendMessage(view, message);
+
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+            expect(msg.textContent).toEqual(message);
+            expect(msg.innerHTML).toEqual(
+                '&lt;<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>&gt;');
             done();
         }));
 

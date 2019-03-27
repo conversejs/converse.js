@@ -4,6 +4,7 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
+import URI from "urijs";
 import converse from  "@converse/headless/converse-core";
 import filesize from "filesize";
 import html from "./utils/html";
@@ -28,6 +29,36 @@ converse.plugins.add('converse-message-view', {
          */
         const { _converse } = this,
             { __ } = _converse;
+
+
+        function onTagFoundDuringXSSFilter (tag, html, options) {
+            /* This function gets called by the XSS library whenever it finds
+             * what it thinks is a new HTML tag.
+             *
+             * It thinks that something like <https://example.com> is an HTML
+             * tag and then escapes the <> chars.
+             *
+             * We want to avoid this, because it prevents these URLs from being
+             * shown properly (whithout the trailing &gt;).
+             *
+             * The URI lib correctly trims a trailing >, but not a trailing &gt;
+             */
+            if (options.isClosing) {
+                // Closing tags don't match our use-case
+                return;
+            }
+            const uri = new URI(tag);
+            const protocol = uri.protocol().toLowerCase();
+            if (!_.includes(["https", "http", "xmpp", "ftp"], protocol)) {
+                // Not a URL, the tag will get filtered as usual
+                return;
+            }
+            if (uri.equals(tag) && `<${tag}>` === html.toLocaleLowerCase()) {
+                // We have something like <https://example.com>, and don't want
+                // to filter it.
+                return html;
+            }
+        }
 
 
         _converse.api.settings.update({
@@ -146,7 +177,7 @@ converse.plugins.add('converse-message-view', {
                     if (is_me_message) {
                         text = text.substring(4);
                     }
-                    text = xss.filterXSS(text, {'whiteList': {}});
+                    text = xss.filterXSS(text, {'whiteList': {}, 'onTag': onTagFoundDuringXSSFilter});
                     msg_content.innerHTML = _.flow(
                         _.partial(u.geoUriToHttp, _, _converse.geouri_replacement),
                         _.partial(u.addMentionsMarkup, _, this.model.get('references'), this.model.collection.chatbox),

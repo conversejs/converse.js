@@ -138,7 +138,6 @@ u.renderFileURL = function (_converse, url) {
     })
 };
 
-
 u.renderImageURL = function (_converse, url) {
     if (!_converse.show_images_inline) {
         return u.addHyperlinks(url);

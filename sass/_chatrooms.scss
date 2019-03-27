@@ -185,6 +185,8 @@
                     }
                     .occupants-heading {
                         font-family: var(--heading-font);
+                        margin-bottom: 0.5em;
+                        padding-left: 0;
                     }
                     .chatroom-features {
                         display: var(--occupants-features-display);
@@ -496,10 +498,14 @@
 }
 
 @include media-breakpoint-up(md) {
-    .occupants {
-        .occupants-header {
-            .hide-occupants {
-                display: none;
+    .chatroom {
+        .box-flyout {
+            .occupants {
+                .occupants-header {
+                    .hide-occupants {
+                        display: none;
+                    }
+                }
             }
         }
     }

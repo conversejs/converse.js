@@ -11350,9 +11350,10 @@ body.converse-fullscreen {
     #conversejs .items-list .list-item .list-item-action {
       opacity: 0;
       font-size: var(--font-size-tiny);
-      padding: 0;
+      padding: 0.3em 0 0 0;
       margin: 0 0 0 var(--inline-action-margin);
       width: 2em;
+      height: 2em;
       color: var(--subdued-color); }
       #conversejs .items-list .list-item .list-item-action:before {
         font-size: var(--font-size); }
@@ -11571,7 +11572,9 @@ body.converse-fullscreen {
             cursor: pointer; }
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .occupants-heading,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .occupants-heading {
-          font-family: var(--heading-font); }
+          font-family: var(--heading-font);
+          margin-bottom: 0.5em;
+          padding-left: 0; }
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .occupants .chatroom-features,
         #conversejs .chatroom .box-flyout .chatroom-body .occupants .chatroom-features {
           display: var(--occupants-features-display); }
@@ -11805,7 +11808,7 @@ body.converse-fullscreen {
   margin: 0 0 0.5em -1px; }
 
 @media (min-width: 768px) {
-  .occupants .occupants-header .hide-occupants {
+  .chatroom .box-flyout .occupants .occupants-header .hide-occupants {
     display: none; } }
 
 #conversejs .chatbox.headlines .chat-head.chat-head-chatbox {

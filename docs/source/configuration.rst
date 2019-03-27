@@ -882,9 +882,13 @@ locked_muc_domain
 -----------------
 
 * Default: ``false``
+* Allowed values: ``false``, ``true``, ``'hidden'``
 
-This setting allows you to restrict the multi-user chat (MUC) domain to only the value
+By setting this value to something truthy, you restrict the multi-user chat (MUC) domain to only the value
 specified in `muc_domain`_.
+
+If the value is set to `'hidden'` (which is also truthy), then the MUC domain
+will not be shown to users.
 
 locked_muc_nickname
 -------------------

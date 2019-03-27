@@ -54467,6 +54467,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_6__["default"].plugins
         /* Returns the heading HTML to be rendered.
          */
         return templates_chatroom_head_html__WEBPACK_IMPORTED_MODULE_16___default()(_.extend(this.model.toJSON(), {
+          '_converse': _converse,
           'Strophe': Strophe,
           'info_close': __('Close and leave this groupchat'),
           'info_configure': __('Configure this groupchat'),
@@ -93495,12 +93496,20 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/chatroom_head.html -->\n<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>\n<div class="chatbox-title">\n    <div class="chat-title" title="' +
+__p += '<!-- src/templates/chatroom_head.html -->\n<div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>\n<div class="chatbox-title">\n    <div class="chat-title" ';
+ if (o._converse.locked_muc_domain !== 'hidden') { ;
+__p += ' title="' +
 __e(o.jid) +
-'">\n        ';
+'" ';
+ } ;
+__p += ' >\n        ';
  if (o.name && o.name !== o.Strophe.getNodeFromJid(o.jid)) { ;
 __p += '\n            ' +
 __e( o.name ) +
+'\n        ';
+ } else if (o._converse.locked_muc_domain === 'hidden') { ;
+__p += '\n            ' +
+__e( o.Strophe.getNodeFromJid(o.jid) ) +
 '\n        ';
  } else { ;
 __p += '\n            ' +

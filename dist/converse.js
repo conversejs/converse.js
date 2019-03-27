@@ -48940,9 +48940,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'id': id
         });
         this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
-        this.list_model.fetch();
-        this.render();
-        this.sortAndPositionAllItems();
+
+        const render = () => {
+          this.render();
+          this.sortAndPositionAllItems();
+        };
+
+        this.list_model.fetch({
+          'success': render,
+          'error': render
+        });
       },
 
       render() {

@@ -440,9 +440,12 @@ converse.plugins.add('converse-bookmarks', {
                       id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
                 this.list_model = new _converse.BookmarksList({'id': id});
                 this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
-                this.list_model.fetch();
-                this.render();
-                this.sortAndPositionAllItems();
+
+                const render = () => {
+                    this.render();
+                    this.sortAndPositionAllItems();
+                }
+                this.list_model.fetch({'success': render, 'error': render});
             },
 
             render () {

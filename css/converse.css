@@ -9302,14 +9302,18 @@ readers do not read off random characters that represent icons */
 #conversejs, #conversejs-bg, .converse-fullscreen {
   --subdued-color: #A8ABA1;
   --subdued-color-lighten-25-percent: #e6e7e4;
-  --chat-status-online: #3AA569;
-  --chat-status-busy: #E77051;
-  --chat-status-away: #E7A151;
+  --green: #3AA569;
+  --redder-orange: #E77051;
+  --orange: #E7A151;
+  --light-blue: #578EA9;
+  --chat-status-online: var(--green);
+  --chat-status-busy: var(--redder-orange);
+  --chat-status-away: var(--orange);
   --brand-heading-color: #387592;
   --completion-light-color: #FFB9A7;
-  --completion-normal-color: #E77051;
+  --completion-normal-color: var(--redder-orange);
   --completion-dark-color: #D24E2B;
-  --link-color: #578EA9;
+  --link-color: var(--light-blue);
   --link-color-darken-20-percent: #345566;
   --link-color-lighten-10-percent: #79a5ba;
   --dark-link-color: #206485;
@@ -9319,8 +9323,8 @@ readers do not read off random characters that represent icons */
   --text-color: #666;
   --text-color-lighten-15-percent: #8c8c8c;
   --message-text-color: #555;
-  --message-receipt-color: #3AA569;
-  --save-button-color: #3AA569;
+  --message-receipt-color: var(--green);
+  --save-button-color: var(--green);
   --message-avatar-width: 36px;
   --message-avatar-height: 36px;
   --chat-textarea-color: #666;
@@ -9332,7 +9336,7 @@ readers do not read off random characters that represent icons */
   --inline-action-margin: 0.75em;
   --roster-height: 194px;
   --flyout-padding: 1.2em;
-  --chat-head-color: #3AA569;
+  --chat-head-color: var(--green);
   --chat-head-color-dark: #1E9652;
   --chat-head-color-darker: #0E763B;
   --chat-head-color-lighten-50-percent: #e7f7ee;
@@ -9341,11 +9345,11 @@ readers do not read off random characters that represent icons */
   --chat-topic-display: block;
   --chat-info-display: block;
   --highlight-color: #DCF9F6;
-  --primary-color: #578EA9;
+  --primary-color: var(--light-blue);
   --primary-color-dark:  #397491;
   --secondary-color: #818479;
   --secondary-color-dark: #585B51;
-  --warning-color: #E7A151;
+  --warning-color: var(--orange);
   --warning-color-dark: #D2842B;
   --danger-color: #D24E2B;
   --danger-color-dark: #A93415;
@@ -9355,7 +9359,7 @@ readers do not read off random characters that represent icons */
   --button-border-radius: 5px;
   --chatbox-border-radius: 4px;
   --controlbox-width: 250px;
-  --controlbox-head-color: #578EA9;
+  --controlbox-head-color: var(--light-blue);
   --controlbox-head-color-lighten-45-percent: #eff4f7;
   --controlbox-pane-background-color: white;
   --controlbox-heading-color: inherit;
@@ -9369,7 +9373,7 @@ readers do not read off random characters that represent icons */
   --branding-font: 'Baumans', cursive;
   --heading-display: block;
   --heading-color: white;
-  --chatroom-head-color: #E77051;
+  --chatroom-head-color: var(--redder-orange);
   --chatroom-head-color-dark: #D24E2B;
   --chatroom-head-color-lighten-25-percent: #f6ccc1;
   --chatroom-head-button-color: var(--chatroom-head-color);
@@ -9385,7 +9389,7 @@ readers do not read off random characters that represent icons */
   --chatroom-correcting-color: #fadfd7;
   --chatroom-badge-color: var(--chatroom-head-color);
   --chatroom-badge-hover-color: var(--chatroom-head-color-dark);
-  --headline-head-color: #E7A151;
+  --headline-head-color: var(--orange);
   --headline-message-color: #D2842B;
   --chatbox-button-size: 14px;
   --fullpage-chatbox-button-size: 16px;
@@ -9465,7 +9469,7 @@ readers do not read off random characters that represent icons */
   --chatroom-head-description-padding-left: 12px;
   --chatroom-head-border-bottom: 1px solid #EEE;
   --chatroom-correcting-color: #FFFFC0;
-  --chatroom-badge-color: #E77051;
+  --chatroom-badge-color: var(--redder-orange);
   --chatroom-badge-hover-color: #D24E2B;
   --occupants-background-color: #F3F3F3;
   /* TODO: find a way to allow that and reflow the chat-area properly.

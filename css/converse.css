@@ -11736,6 +11736,8 @@ body.converse-fullscreen {
     max-width: 41.66667%; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .occupants-heading {
     padding: 0; }
+  #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .occupant-list {
+    border-bottom: none; }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants .chatroom-features .feature {
     font-size: var(--font-size-tiny); }
   #conversejs.converse-overlayed .chatbox.chatroom .chatroom-body .occupants ul .occupant .occupant-nick-badge .occupant-badges {

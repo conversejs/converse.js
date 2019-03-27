@@ -494,3 +494,13 @@
         }
     }
 }
+
+@include media-breakpoint-up(md) {
+    .occupants {
+        .occupants-header {
+            .hide-occupants {
+                display: none;
+            }
+        }
+    }
+}

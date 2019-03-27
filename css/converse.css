@@ -11800,6 +11800,10 @@ body.converse-fullscreen {
 #conversejs.converse-mobile .chatroom .room-invite span .invited-contact {
   margin: 0 0 0.5em -1px; }
 
+@media (min-width: 768px) {
+  .occupants .occupants-header .hide-occupants {
+    display: none; } }
+
 #conversejs .chatbox.headlines .chat-head.chat-head-chatbox {
   background-color: var(--headline-head-color); }
 

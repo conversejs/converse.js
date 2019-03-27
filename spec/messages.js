@@ -1,11 +1,10 @@
 (function (root, factory) {
     define([
-        "jquery",
         "jasmine",
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, jasmine, mock, test_utils) {
+} (this, function (jasmine, mock, test_utils) {
     "use strict";
     const { Backbone, Promise, Strophe, $iq, $msg, $pres, b64_sha1, moment, sizzle, _ } = converse.env;
     const u = converse.env.utils;
@@ -836,9 +835,9 @@
             spyOn(view.model, 'sendMessage').and.callThrough();
             await test_utils.sendMessage(view, message);
             expect(view.model.sendMessage).toHaveBeenCalled();
-            const msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
-            expect(msg.text()).toEqual(message);
-            expect(msg.html()).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
+            const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+            expect(msg.textContent).toEqual(message);
+            expect(msg.innerHTML).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
             done();
         }));
 
@@ -857,9 +856,9 @@
             test_utils.sendMessage(view, message);
             expect(view.model.sendMessage).toHaveBeenCalled();
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-            const msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
-            expect(msg.text()).toEqual(message);
-            expect(msg.html())
+            const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+            expect(msg.textContent).toEqual(message);
+            expect(msg.innerHTML)
                 .toEqual('This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
             done();
         }));
@@ -879,31 +878,31 @@
             let message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
             await test_utils.sendMessage(view, message);
 
-            let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
             expect(msg.textContent).toEqual(message);
-            expect($(msg).html())
+            expect(msg.innerHTML)
                 .toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%27onmouseover=%27alert%281%29%27whatever">http://www.opkode.com/\'onmouseover=\'alert(1)\'whatever</a>');
 
             message = 'http://www.opkode.com/"onmouseover="alert(1)"whatever';
             await test_utils.sendMessage(view, message);
 
-            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
             expect(msg.textContent).toEqual(message);
-            expect($(msg).html()).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>');
+            expect(msg.innerHTML).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>');
 
             message = "https://en.wikipedia.org/wiki/Ender's_Game";
             await test_utils.sendMessage(view, message);
 
-            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
             expect(msg.textContent).toEqual(message);
-            expect($(msg).html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">'+message+'</a>');
+            expect(msg.innerHTML).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">'+message+'</a>');
 
             message = "https://en.wikipedia.org/wiki/Ender's_Game";
             await test_utils.sendMessage(view, message);
 
-            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
             expect(msg.textContent).toEqual(message);
-            expect($(msg).html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">'+message+'</a>');
+            expect(msg.innerHTML).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">'+message+'</a>');
             done();
         }));
 
@@ -985,8 +984,8 @@
             test_utils.sendMessage(view, message);
             await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length, 1000)
             expect(view.model.sendMessage).toHaveBeenCalled();
-            let msg = $(view.el).find('.chat-content .chat-msg').last().find('.chat-msg__text');
-            expect(msg.html().trim()).toEqual(
+            let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            expect(msg.innerHTML.trim()).toEqual(
                 '<!-- src/templates/image.html -->\n'+
                 '<a href="'+base_url+'/logo/conversejs-filled.svg" target="_blank" rel="noopener"><img class="chat-image img-thumbnail"'+
                 ' src="' + message + '"></a>');
@@ -994,8 +993,8 @@
             test_utils.sendMessage(view, message);
             await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
-            msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
-            expect(msg.html().trim()).toEqual(
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            expect(msg.innerHTML.trim()).toEqual(
                 '<!-- src/templates/image.html -->\n'+
                 '<a href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2" target="_blank" rel="noopener"><img'+
                 ' class="chat-image img-thumbnail" src="'+message.replace(/&/g, '&amp;')+'"></a>')
@@ -1005,9 +1004,9 @@
             test_utils.sendMessage(view, message);
             await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 4, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
-            msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
-            expect(msg[0].textContent.trim()).toEqual('hello world');
-            expect(msg[0].querySelectorAll('img').length).toEqual(2);
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            expect(msg.textContent.trim()).toEqual('hello world');
+            expect(msg.querySelectorAll('img').length).toEqual(2);
 
             // Non-https images aren't rendered
             base_url = document.URL.split(window.location.pathname)[0];
@@ -1862,8 +1861,8 @@
                 const view = _converse.chatboxviews.get(sender_jid);
                 await test_utils.waitUntil(() => view.model.messages.length);
                 expect(_converse.chatboxes.getChatBox).toHaveBeenCalled();
-                var chat_content = $(view.el).find('.chat-content:last')[0];
-                var msg_txt = chat_content.querySelector('.chat-msg .chat-msg__text').textContent;
+                const chat_content = sizzle('.chat-content:last', view.el).pop();
+                const msg_txt = chat_content.querySelector('.chat-msg .chat-msg__text').textContent;
                 expect(msg_txt).toEqual(message);
                 done();
             }));

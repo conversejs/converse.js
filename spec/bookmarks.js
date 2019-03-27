@@ -154,6 +154,7 @@
                 [{'category': 'pubsub', 'type': 'pep'}],
                 ['http://jabber.org/protocol/pubsub#publish-options']
             );
+            await test_utils.waitUntil(() => _converse.bookmarks);
             let jid = 'lounge@localhost';
             _converse.bookmarks.create({
                 'jid': jid,
@@ -171,6 +172,17 @@
                 'nick': ' Othello'
             });
             expect(_.isUndefined(_converse.chatboxviews.get(jid))).toBeFalsy();
+
+            // Check that we don't auto-join if muc_respect_autojoin is false
+            _converse.muc_respect_autojoin = false;
+            jid = 'balcony@conference.shakespeare.lit';
+            _converse.bookmarks.create({
+                'jid': jid,
+                'autojoin': true,
+                'name':  'Balcony',
+                'nick': ' Othello'
+            });
+            expect(_.isUndefined(_converse.chatboxviews.get(jid))).toBe(true);
             done();
         }));
 

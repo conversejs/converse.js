@@ -37,7 +37,6 @@
     "@babel/preset-env": "^7.2.3",
     "@converse/headless": "^4.0.2",
     "@fortawesome/fontawesome-free": "5.3.1",
-    "awesomplete-avoid-xss": "^1.1.2",
     "babel-loader": "^8.0.4",
     "backbone.nativeview": "conversejs/Backbone.NativeView#5997c8197ca594e6b8469447f28310c78bd1d95e",
     "backbone.overview": "^1.0.2",

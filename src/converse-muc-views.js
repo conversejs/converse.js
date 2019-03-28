@@ -10,7 +10,6 @@ import "converse-modal";
 import "backbone.overview/backbone.orderedlistview";
 import "backbone.overview/backbone.overview";
 import "backbone.vdomview";
-import Awesomplete from "awesomplete";
 import _FormData from "formdata-polyfill";
 import converse from "@converse/headless/converse-core";
 import muc_utils from "@converse/headless/utils/muc";
@@ -599,7 +598,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             initMentionAutoComplete () {
-                this.auto_complete = new _converse.AutoComplete(this.el, {
+                this.mention_auto_complete = new _converse.AutoComplete(this.el, {
                     'auto_first': true,
                     'auto_evaluate': false,
                     'min_chars': 1,
@@ -609,18 +608,18 @@ converse.plugins.add('converse-muc-views', {
                     'ac_triggers': ["Tab", "@"],
                     'include_triggers': []
                 });
-                this.auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
+                this.mention_auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
             },
 
             keyPressed (ev) {
-                if (this.auto_complete.keyPressed(ev)) {
+                if (this.mention_auto_complete.keyPressed(ev)) {
                     return;
                 }
                 return _converse.ChatBoxView.prototype.keyPressed.apply(this, arguments);
             },
 
             keyUp (ev) {
-                this.auto_complete.evaluate(ev);
+                this.mention_auto_complete.evaluate(ev);
             },
 
             showRoomDetailsModal (ev) {
@@ -1905,17 +1904,15 @@ converse.plugins.add('converse-muc-views', {
                     })
                 );
                 if (_converse.allow_muc_invitations) {
-                    _converse.api.waitUntil('rosterContactsFetched').then(
-                        this.renderInviteWidget.bind(this)
-                    );
+                    _converse.api.waitUntil('rosterContactsFetched').then(() => this.renderInviteWidget());
                 }
                 return this.renderRoomFeatures();
             },
 
             renderInviteWidget () {
-                const form = this.el.querySelector('form.room-invite');
+                const widget = this.el.querySelector('.room-invite');
                 if (this.shouldInviteWidgetBeShown()) {
-                    if (_.isNull(form)) {
+                    if (_.isNull(widget)) {
                         const heading = this.el.querySelector('.occupants-heading');
                         heading.insertAdjacentHTML(
                             'afterend',
@@ -1926,8 +1923,8 @@ converse.plugins.add('converse-muc-views', {
                         );
                         this.initInviteWidget();
                     }
-                } else if (!_.isNull(form)) {
-                    form.remove();
+                } else if (!_.isNull(widget)) {
+                    widget.remove();
                 }
                 return this;
             },
@@ -1964,12 +1961,13 @@ converse.plugins.add('converse-muc-views', {
                 if (reason !== null) {
                     this.chatroomview.model.directInvite(suggestion.text.value, reason);
                 }
-                const form = suggestion.target.form,
-                      error = form.querySelector('.pure-form-message.error');
+                const form = this.el.querySelector('.room-invite form'),
+                      input = form.querySelector('.invited-contact'),
+                      error = form.querySelector('.error');
                 if (!_.isNull(error)) {
                     error.parentNode.removeChild(error);
                 }
-                suggestion.target.value = '';
+                input.value = '';
             },
 
             inviteFormSubmitted (evt) {
@@ -2000,22 +1998,26 @@ converse.plugins.add('converse-muc-views', {
             },
 
             initInviteWidget () {
-                const form = this.el.querySelector('form.room-invite');
+                const form = this.el.querySelector('.room-invite form');
                 if (_.isNull(form)) {
                     return;
                 }
                 form.addEventListener('submit', this.inviteFormSubmitted.bind(this), false);
-                const el = this.el.querySelector('input.invited-contact');
-                const list = _converse.roster.map(function (item) {
-                        const label = item.get('fullname') || item.get('jid');
-                        return {'label': label, 'value':item.get('jid')};
-                    });
-                const awesomplete = new Awesomplete(el, {
-                    'minChars': 1,
+                const list = _converse.roster.map(i => ({'label': i.get('fullname') || i.get('jid'), 'value': i.get('jid')}));
+                const el = this.el.querySelector('.suggestion-box').parentElement;
+
+                if (this.invite_auto_complete) {
+                    this.invite_auto_complete.destroy();
+                }
+                this.invite_auto_complete = new _converse.AutoComplete(el, {
+                    'min_chars': 1,
                     'list': list
                 });
-                el.addEventListener('awesomplete-selectcomplete',
-                    this.promptForInvite.bind(this));
+                this.invite_auto_complete.on('suggestion-box-selectcomplete', ev => this.promptForInvite(ev));
+                this.invite_auto_complete.ul.setAttribute(
+                    'style',
+                    `max-height: calc(${this.el.offsetHeight}px - 80px);`
+                );
             }
         });
 

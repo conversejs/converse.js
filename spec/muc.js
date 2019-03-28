@@ -1756,10 +1756,10 @@
                 spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
                     sent_stanza = stanza;
                 });
-                const hint = input.nextSibling.firstElementChild;
+                const results_el =  view.occupantsview.el.querySelector('.suggestion-box__results');
+                const hint = results_el.firstElementChild;
                 expect(input.value).toBe('Felix');
                 expect(hint.textContent).toBe('Felix Amsel');
-                expect(input.nextSibling.childNodes.length).toBe(1);
 
                 evt = new Event('mousedown', {'bubbles': true});
                 evt.button = 0; // For some reason awesomplete wants this

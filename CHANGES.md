@@ -4,8 +4,9 @@
 
 - Updated translation: lt
 - Upgrade to Backbone 1.4.0, Strophe 1.3.2 and Jasmine 2.99.2
-- Fix "flashing" of roster filter when you have less than 5 roster contacts.
-- Fix handling of CAPTCHAs offered by ejabberd.
+- Remove dependency on (our fork of) Awesomplete
+- Fix "flashing" of roster filter when you have less than 5 roster contacts
+- Fix handling of CAPTCHAs offered by ejabberd
 - Don't send out receipts or markers for MAM messages
 - Allow setting of debug mode via URL with `/#converse?debug=true`
 - New config setting [locked_muc_domain](https://conversejs.org/docs/html/configuration.html#locked-muc-domain)

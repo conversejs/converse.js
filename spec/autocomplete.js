@@ -51,10 +51,9 @@
             view.keyUp(at_event);
 
             expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(3);
-            expect(view.el.querySelector('.suggestion-box__results li[aria-selected="true"]').textContent).toBe('tom');
-            expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('tom');
-            expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('dick');
-            expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('harry');
+            expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
+            expect(view.el.querySelector('.suggestion-box__results li:nth-child(2)').textContent).toBe('harry');
+            expect(view.el.querySelector('.suggestion-box__results li:nth-child(3)').textContent).toBe('tom');
             done();
         }));
 

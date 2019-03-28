@@ -7,14 +7,12 @@
     }
 
     .form-group {
-        .suggestion-box,
-        .awesomplete {
+        .suggestion-box {
             width: 100%;
         }
     }
 
-    .suggestion-box,
-    .awesomplete {
+    .suggestion-box {
         position: relative;
         mark {
             background: var(--completion-light-color);
@@ -39,7 +37,7 @@
                 border-bottom: 0;
                 -webkit-transform: rotate(45deg);
                 transform: rotate(45deg);
-                z-index: 1;
+                z-index: -1;
             }
             position: absolute;
             left: 0;
@@ -64,6 +62,9 @@
                 cursor: pointer;
                 padding: 1em;
             }
+        }
+        .suggestion-box__results--below {
+            top: 2em;
         }
         .suggestion-box__results--above {
             bottom: 4.5em;
@@ -90,23 +91,18 @@
     }
 
     .suggestion-box > ul[hidden],
-    .suggestion-box > ul:empty,
-    div.awesomplete > ul[hidden],
-    div.awesomplete > ul:empty {
+    .suggestion-box > ul:empty {
         display: none;
     }
 
     @supports (transform: scale(0)) {
-        .suggestion-box > ul,
-        div.awesomplete > ul {
+        .suggestion-box > ul {
             transition: .3s cubic-bezier(.4,.2,.5,1.4);
             transform-origin: 1.43em -.43em;
         }
         
         .suggestion-box > ul[hidden],
-        .suggestion-box > ul:empty,
-        div.awesomplete > ul[hidden],
-        div.awesomplete > ul:empty {
+        .suggestion-box > ul:empty {
             opacity: 0;
             transform: scale(0);
             display: block;
@@ -114,20 +110,17 @@
         }
     }
     
-    .suggestion-box > ul > li[aria-selected="true"],
-    div.awesomplete > ul > li[aria-selected="true"] {
+    .suggestion-box > ul > li[aria-selected="true"] {
         background: var(--completion-dark-color);
         color: var(--inverse-link-color);
     }
     
-    .suggestion-box li:hover mark,
-    div.awesomplete li:hover mark {
+    .suggestion-box li:hover mark {
         background: var(--completion-light-color);
         color: var(--inverse-link-color);
     }
     
-    .suggestion-box li[aria-selected="true"] mark,
-    div.awesomplete li[aria-selected="true"] mark {
+    .suggestion-box li[aria-selected="true"] mark {
         background: var(--completion-normal-color);
         color: inherit;
     }

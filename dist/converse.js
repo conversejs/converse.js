@@ -59548,7 +59548,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
         } catch (e) {
           _converse.log(e, Strophe.LogLevel.ERROR);
 
-          _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Sorry, there was an error while trying to remove %1$s as a contact.', name));
+          _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Sorry, there was an error while trying to remove %1$s as a contact.', this.model.getDisplayName()));
         }
       },
 
@@ -68687,7 +68687,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         } catch (e) {
           _converse.log(e, Strophe.LogLevel.ERROR);
 
-          alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
+          alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name || jid));
           return e;
         }
 

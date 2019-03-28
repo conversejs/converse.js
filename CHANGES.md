@@ -30,6 +30,7 @@
 - #1467: Fix rendering of URLs enclosed with sharp brackets such as <https://example.org>
 - #1479: Allow file upload by drag & drop also in MUCs
 - #1487: New config option [muc_respect_autojoin](https://conversejs.org/docs/html/configuration.html#muc-respect-autojoin)
+- #1488: In error message, fall back to JID if name is not available.
 - #1501: Don't prompt for a reason if [auto_join_on_invite](https://conversejs.org/docs/html/configuration.html#auto-join-on-invite) is `true`
 - #1507: Make message id and origin-id identical in order to fix LMC with Conversations
 - #1508: Minimized bookmarked chatboxes should not be always maximized after page reload.

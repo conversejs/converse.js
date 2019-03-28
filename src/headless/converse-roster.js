@@ -478,7 +478,7 @@ converse.plugins.add('converse-roster', {
                     await this.sendContactAddIQ(jid, name, groups);
                 } catch (e) {
                     _converse.log(e, Strophe.LogLevel.ERROR);
-                    alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
+                    alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name || jid));
                     return e;
                 }
                 return this.create(_.assignIn({

@@ -90,7 +90,6 @@ converse.plugins.add("converse-autocomplete", {
                     this.container = el.querySelector('.suggestion-box');
                 }
                 this.input = this.container.querySelector('.suggestion-box__input');
-                this.input.setAttribute("autocomplete", "off");
                 this.input.setAttribute("aria-autocomplete", "list");
 
                 this.ul = this.container.querySelector('.suggestion-box__results');
@@ -215,15 +214,6 @@ converse.plugins.add("converse-autocomplete", {
                 //remove events from the input and its form
                 helpers.unbind(this.input, this._events.input);
                 helpers.unbind(this.input.form, this._events.form);
-
-                //move the input out of the suggestion-box container and remove the container and its children
-                const parentNode = this.container.parentNode;
-
-                parentNode.insertBefore(this.input, this.container);
-                parentNode.removeChild(this.container);
-
-                //remove autocomplete and aria-autocomplete attributes
-                this.input.removeAttribute("autocomplete");
                 this.input.removeAttribute("aria-autocomplete");
             }
 

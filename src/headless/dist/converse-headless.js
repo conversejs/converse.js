@@ -40755,18 +40755,21 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const is_spoiler = this.get('composing_spoiler'),
               origin_id = _converse.connection.getUniqueId();
 
-        return _.extend(this.toJSON(), {
-          'id': origin_id,
+        return {
+          'jid': this.get('jid'),
+          'nickname': this.get('nickname'),
+          'msgid': origin_id,
           'origin_id': origin_id,
           'fullname': _converse.xmppstatus.get('fullname'),
           'from': _converse.bare_jid,
+          'is_single_emoji': text ? u.isSingleEmoji(text) : false,
           'sender': 'me',
           'time': moment().format(),
           'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
           'is_spoiler': is_spoiler,
           'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
           'type': this.get('message_type')
-        });
+        };
       },
 
       /**
@@ -41556,7 +41559,7 @@ _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.templateSettings = {
 
 const BOSH_WAIT = 59;
 /**
- * A private, closured object containing the private api (via `_converse.api`)
+ * A private, closured object containing the private api (via {@link _converse.api})
  * as well as private methods and internal data-structures.
  *
  * @namespace _converse
@@ -41834,6 +41837,29 @@ function initPlugins() {
 
     '_converse': _converse
   }, whitelist, _converse.blacklisted_plugins);
+  /**
+   * Emitted once all plugins have been initialized. This is a useful event if you want to
+   * register event handlers but would like your own handlers to be overridable by
+   * plugins. In that case, you need to first wait until all plugins have been
+   * initialized, so that their overrides are active. One example where this is used
+   * is in [converse-notifications.js](https://github.com/jcbrand/converse.js/blob/master/src/converse-notification.js)`.
+   *
+   * Also available as an [ES2015 Promise](http://es6-features.org/#PromiseUsage)
+   * which can be listened to with `_converse.api.waitUntil`.
+   *
+   * @event _converse#pluginsInitialized
+   * @memberOf _converse
+   *
+   * @example
+   * _converse.api.listen.on('pluginsInitialized', () => { ... });
+   *
+   * @example
+   * // As an ES2015 Promise
+   * _converse.api.waitUntil('pluginsInitialized').then(() => {
+   *     // Your code here...
+   * });
+   */
+
 
   _converse.emit('pluginsInitialized');
 }
@@ -41853,6 +41879,16 @@ function initClientConfig() {
   _converse.config.browserStorage = new Backbone.BrowserStorage.session(id);
 
   _converse.config.fetch();
+  /**
+   * Emitted once the XMPP-client configuration has been initialized.
+   * The client configuration is independent of any particular and its values
+   * persist across user sessions.
+   *
+   * @event _converse#clientConfigInitialized
+   * @example
+   * _converse.api.listen.on('clientConfigInitialized', () => { ... });
+   */
+
 
   _converse.emit('clientConfigInitialized');
 }
@@ -41877,6 +41913,12 @@ _converse.initConnection = function () {
   }
 
   setUpXMLLogging();
+  /**
+   * Emitted once the `Strophe.Connection` constructor has been initialized, which
+   * will be responsible for managing the connection to the XMPP server.
+   *
+   * @event _converse#connectionInitialized
+   */
 
   _converse.emit('connectionInitialized');
 };
@@ -42184,6 +42226,16 @@ _converse.initialize = async function (settings, callback) {
     _converse.tearDown();
 
     _converse.clearSession();
+    /**
+     * Emitted after converse.js has disconnected from the XMPP server.
+     *
+     * @event _converse#disconnected
+     * @memberOf _converse
+     *
+     * @example
+     * _converse.api.listen.on('disconnected', () => { ... });
+     */
+
 
     _converse.emit('disconnected');
   };
@@ -42209,6 +42261,13 @@ _converse.initialize = async function (settings, callback) {
     } else if (_converse.disconnection_cause === _converse.LOGOUT || !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(reason) && reason === _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"], 'ErrorCondition.NO_AUTH_MECH') || reason === "host-unknown" || reason === "remote-connection-failed" || !_converse.auto_reconnect) {
       return _converse.disconnect();
     }
+    /**
+     * Emitted when the connection has dropped, but Converse will attempt
+     * to reconnect again.
+     *
+     * @event _converse#will-reconnect
+     */
+
 
     _converse.emit('will-reconnect');
 
@@ -42333,11 +42392,12 @@ _converse.initialize = async function (settings, callback) {
       _converse.onStatusInitialized(reconnecting);
     } else {
       const id = `converse.xmppstatus-${_converse.bare_jid}`;
-      this.xmppstatus = new this.XMPPStatus({
+      _converse.xmppstatus = new this.XMPPStatus({
         'id': id
       });
-      this.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
-      this.xmppstatus.fetch({
+      _converse.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
+
+      _converse.xmppstatus.fetch({
         'success': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.onStatusInitialized, reconnecting),
         'error': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.partial(_converse.onStatusInitialized, reconnecting)
       });
@@ -42352,6 +42412,15 @@ _converse.initialize = async function (settings, callback) {
     _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
 
     _converse.session.fetch();
+    /**
+     * Emitted once the session has been initialized. The session is a
+     * persistent object which stores session information in the browser
+     * storage.
+     *
+     * @event _converse#sessionInitialized
+     * @memberOf _converse
+     */
+
 
     _converse.emit('sessionInitialized');
   };
@@ -42363,6 +42432,14 @@ _converse.initialize = async function (settings, callback) {
     } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(this.session) && this.session.browserStorage) {
       this.session.browserStorage._clear();
     }
+    /**
+     * Emitted once the session information has been cleared,
+     * for example when the user has logged out or when Converse has
+     * disconnected for some other reason.
+     *
+     * @event _converse#clearSession
+     */
+
 
     _converse.emit('clearSession');
   };
@@ -42380,6 +42457,12 @@ _converse.initialize = async function (settings, callback) {
 
 
     _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.promises), addPromise);
+    /**
+     * Emitted once the user has logged out.
+     *
+     * @event _converse#logout
+     */
+
 
     _converse.emit('logout');
   };
@@ -42463,14 +42546,38 @@ _converse.initialize = async function (settings, callback) {
   };
 
   this.onStatusInitialized = function (reconnecting) {
+    /**
+     * Emitted when the user's own chat status has been initialized.
+     * Also available as an [ES2015 Promise](http://es6-features.org/#PromiseUsage).
+     *
+     * @event _converse#onStatusInitialized
+     * @example
+     * _converse.api.listen.on('statusInitialized', status => { ... });
+     * @example
+     * // As an ES2015 Promise
+     * _converse.api.waitUntil('statusInitialized').then(() => { ... });
+     */
     _converse.emit('statusInitialized', reconnecting);
 
     if (reconnecting) {
       _converse.emit('reconnected');
     } else {
       init_promise.resolve();
+      /**
+       * Emitted once converse.js has been initialized.
+       * See also {@link _converse#event:pluginsInitialized}.
+       *
+       * @event _converse#initialized
+       */
 
       _converse.emit('initialized');
+      /**
+       * Emitted after the connection has been established and Converse
+       * has got all its ducks in a row.
+       *
+       * @event _converse#initialized
+       */
+
 
       _converse.emit('connected');
     }
@@ -42508,9 +42615,7 @@ _converse.initialize = async function (settings, callback) {
     },
 
     initialize() {
-      this.on('change', () => {
-        _converse.emit('connfeedback', _converse.connfeedback);
-      });
+      this.on('change', () => _converse.emit('connfeedback', _converse.connfeedback));
     }
 
   });
@@ -43408,6 +43513,19 @@ const converse = {
   }
 };
 window.converse = converse;
+/**
+ * Once Converse.js has loaded, it'll dispatch a custom event with the name
+ * `converse-loaded`.
+ *
+ * You can listen for this event in order to be informed as soon
+ * as converse.js has been loaded and parsed, which would mean it's safe to call
+ * ``converse.initialize``.
+ *
+ * @event converse-loaded
+ * @example
+ *     window.addEventListener('converse-loaded', () => converse.initialize());
+ */
+
 window.dispatchEvent(new CustomEvent('converse-loaded'));
 /* harmony default export */ __webpack_exports__["default"] = (converse);
 
@@ -44812,6 +44930,22 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
     _converse.router.route('converse/room?jid=:jid', openRoom);
 
+    _converse.getDefaultMUCNickname = function () {
+      // XXX: if anything changes here, update the docs for the
+      // locked_muc_nickname setting.
+      if (!_converse.xmppstatus) {
+        throw new Error("Can't call _converse.getDefaultMUCNickname before the statusInitialized has been fired.");
+      }
+
+      const nick = _converse.nickname || _converse.xmppstatus.vcard.get('nickname');
+
+      if (nick) {
+        return nick;
+      } else if (_converse.muc_nickname_from_jid) {
+        return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+      }
+    };
+
     _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
       /* Opens a groupchat, making sure that certain attributes
        * are correct, for example that the "type" is set to
@@ -45112,10 +45246,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
         text = _this$parseTextForRef2[0];
         references = _this$parseTextForRef2[1];
+
+        const origin_id = _converse.connection.getUniqueId();
+
         return {
-          'origin_id': _converse.connection.getUniqueId(),
+          'msgid': origin_id,
+          'origin_id': origin_id,
           'from': `${this.get('jid')}/${this.get('nick')}`,
           'fullname': this.get('nick'),
+          'is_single_emoji': text ? _utils_form__WEBPACK_IMPORTED_MODULE_4__["default"].isSingleEmoji(text) : false,
           'is_spoiler': is_spoiler,
           'message': text ? _utils_form__WEBPACK_IMPORTED_MODULE_4__["default"].httpToGeoUri(_utils_form__WEBPACK_IMPORTED_MODULE_4__["default"].shortnameToUnicode(text), _converse) : undefined,
           'nick': this.get('nick'),
@@ -45546,21 +45685,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
          *  to update the list.
          */
         this.getJidsWithAffiliations(affiliations).then(old_members => this.setAffiliations(deltaFunc(members, old_members))).then(() => this.occupants.fetchMembers()).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-      },
-
-      getDefaultNick() {
-        /* The default nickname (used when muc_nickname_from_jid is true)
-         * is the node part of the user's JID.
-         * We put this in a separate method so that it can be
-         * overridden by plugins.
-         */
-        const nick = _converse.xmppstatus.vcard.get('nickname');
-
-        if (nick) {
-          return nick;
-        } else if (_converse.muc_nickname_from_jid) {
-          return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
-        }
       },
 
       async checkForReservedNick() {
@@ -46122,8 +46246,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
     });
     _converse.RoomsPanelModel = Backbone.Model.extend({
-      defaults: {
-        'muc_domain': ''
+      defaults: function defaults() {
+        return {
+          'muc_domain': '',
+          'nick': _converse.getDefaultMUCNickname()
+        };
       }
     });
 
@@ -46997,11 +47124,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       subscribe(message) {
         /* Send a presence subscription request to this roster contact
-        *
-        * Parameters:
-        *    (String) message - An optional message to explain the
-        *      reason for the subscription request.
-        */
+         *
+         * Parameters:
+         *    (String) message - An optional message to explain the
+         *      reason for the subscription request.
+         */
         const pres = $pres({
           to: this.get('jid'),
           type: "subscribe"
@@ -47011,7 +47138,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           pres.c("status").t(message).up();
         }
 
-        const nick = _converse.xmppstatus.vcard.get('nickname') || _converse.xmppstatus.vcard.get('fullname');
+        const nick = _converse.nickname || _converse.xmppstatus.vcard.get('nickname') || _converse.xmppstatus.vcard.get('fullname');
 
         if (nick) {
           pres.c('nick', {
@@ -47028,10 +47155,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       ackSubscribe() {
         /* Upon receiving the presence stanza of type "subscribed",
-        * the user SHOULD acknowledge receipt of that subscription
-        * state notification by sending a presence stanza of type
-        * "subscribe" to the contact
-        */
+         * the user SHOULD acknowledge receipt of that subscription
+         * state notification by sending a presence stanza of type
+         * "subscribe" to the contact
+         */
         _converse.api.send($pres({
           'type': 'subscribe',
           'to': this.get('jid')
@@ -47058,9 +47185,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       unauthorize(message) {
         /* Unauthorize this contact's presence subscription
-        * Parameters:
-        *   (String) message - Optional message to send to the person being unauthorized
-        */
+         * Parameters:
+         *   (String) message - Optional message to send to the person being unauthorized
+         */
         _converse.rejectPresenceSubscription(this.get('jid'), message);
 
         return this;

@@ -317,12 +317,16 @@
                   'xhr_user_search_url': 'http://example.org/?' },
                 async function (done, _converse) {
 
+            test_utils.createContacts(_converse, 'all').openControlBox();
             var modal;
             const xhr = {
                 'open': _.noop,
                 'send': function () {
                     const value = modal.el.querySelector('input[name="name"]').value;
-                    if (value === 'dummy') {
+                    if (value === 'existing') {
+                        const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        xhr.responseText = JSON.stringify([{"jid": contact_jid, "fullname": mock.cur_names[0]}]);
+                    } else if (value === 'dummy') {
                         xhr.responseText = JSON.stringify([{"jid": "dummy@localhost", "fullname": "Max Mustermann"}]);
                     } else if (value === 'ambiguous') {
                         xhr.responseText = JSON.stringify([
@@ -374,6 +378,11 @@
             modal.el.querySelector('button[type="submit"]').click();
             feedback_el = modal.el.querySelector('.invalid-feedback');
             expect(feedback_el.textContent).toBe('You cannot add yourself as a contact');
+
+            input_el.value = 'existing';
+            modal.el.querySelector('button[type="submit"]').click();
+            feedback_el = modal.el.querySelector('.invalid-feedback');
+            expect(feedback_el.textContent).toBe('This contact has already been added');
 
             input_el.value = 'Marty McFly';
             modal.el.querySelector('button[type="submit"]').click();

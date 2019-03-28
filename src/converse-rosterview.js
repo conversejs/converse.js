@@ -215,6 +215,10 @@ converse.plugins.add('converse-rosterview', {
                     el.textContent = __('You cannot add yourself as a contact')
                     u.addClass('d-block', el);
                     return false;
+                } else if (_converse.roster.get(Strophe.getBareJidFromJid(jid))) {
+                    el.textContent = __('This contact has already been added')
+                    u.addClass('d-block', el);
+                    return false;
                 }
                 u.removeClass('d-block', el);
                 return true;

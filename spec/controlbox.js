@@ -322,7 +322,9 @@
                 'open': _.noop,
                 'send': function () {
                     const value = modal.el.querySelector('input[name="name"]').value;
-                    if (value === 'ambiguous') {
+                    if (value === 'dummy') {
+                        xhr.responseText = JSON.stringify([{"jid": "dummy@localhost", "fullname": "Max Mustermann"}]);
+                    } else if (value === 'ambiguous') {
                         xhr.responseText = JSON.stringify([
                             {"jid": "marty@mcfly.net", "fullname": "Marty McFly"},
                             {"jid": "doc@brown.com", "fullname": "Doc Brown"}
@@ -358,16 +360,20 @@
             const input_el = modal.el.querySelector('input[name="name"]');
             input_el.value = 'ambiguous';
             modal.el.querySelector('button[type="submit"]').click();
-
-            let feedback_el = modal.el.querySelector('.suggestion-box__name .invalid-feedback');
+            let feedback_el = modal.el.querySelector('.invalid-feedback');
             expect(feedback_el.textContent).toBe('Sorry, could not find a contact with that name');
             feedback_el.textContent = '';
 
             input_el.value = 'insufficient';
             modal.el.querySelector('button[type="submit"]').click();
-
-            feedback_el = modal.el.querySelector('.suggestion-box__name .invalid-feedback');
+            feedback_el = modal.el.querySelector('.invalid-feedback');
             expect(feedback_el.textContent).toBe('Sorry, could not find a contact with that name');
+            feedback_el.textContent = '';
+
+            input_el.value = 'dummy';
+            modal.el.querySelector('button[type="submit"]').click();
+            feedback_el = modal.el.querySelector('.invalid-feedback');
+            expect(feedback_el.textContent).toBe('You cannot add yourself as a contact');
 
             input_el.value = 'Marty McFly';
             modal.el.querySelector('button[type="submit"]').click();

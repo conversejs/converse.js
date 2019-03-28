@@ -5,6 +5,7 @@
 - Updated translation: lt
 - Upgrade to Backbone 1.4.0, Strophe 1.3.2 and Jasmine 2.99.2
 - Remove dependency on (our fork of) Awesomplete
+- Prevent user from adding themselves as contact
 - Fix "flashing" of roster filter when you have less than 5 roster contacts
 - Fix handling of CAPTCHAs offered by ejabberd
 - Don't send out receipts or markers for MAM messages

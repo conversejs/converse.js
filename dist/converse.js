@@ -59145,7 +59145,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
             }));
 
             if (list.length !== 1) {
-              const el = this.el.querySelector('.suggestion-box__name .invalid-feedback');
+              const el = this.el.querySelector('.invalid-feedback');
               el.textContent = __('Sorry, could not find a contact with that name');
               u.addClass('d-block', el);
               return;
@@ -59163,16 +59163,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       },
 
       validateSubmission(jid) {
+        const el = this.el.querySelector('.invalid-feedback');
+
         if (!jid || _.compact(jid.split('@')).length < 2) {
-          // XXX: we used to have to do this manually, instead of via
-          // toHTML because Awesomplete messes things up and
-          // confuses Snabbdom
-          // We now use _converse.AutoComplete, can this be removed?
           u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
-          u.addClass('d-block', this.el.querySelector('.suggestion-box__jid .invalid-feedback'));
+          u.addClass('d-block', el);
+          return false;
+        } else if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
+          el.textContent = __('You cannot add yourself as a contact');
+          u.addClass('d-block', el);
           return false;
         }
 
+        u.removeClass('d-block', el);
         return true;
       },
 
@@ -92176,17 +92179,15 @@ __p += '\n                                   value="' +
 __e(o.jid) +
 '"\n                                   class="form-control suggestion-box__input"\n                                   placeholder="' +
 __e(o.contact_placeholder) +
-'"/>\n                            <div class="invalid-feedback">' +
-__e(o.error_message) +
-'</div>\n                            <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>\n                        </div>\n                    </div>\n                    <div class="form-group">\n                        <label class="clearfix" for="name">' +
+'"/>\n                            <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>\n                        </div>\n                    </div>\n                    <div class="form-group">\n                        <label class="clearfix" for="name">' +
 __e(o.label_nickname) +
 ':</label>\n                        <div class="suggestion-box suggestion-box__name">\n                            <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>\n                            <input type="text" name="name" value="' +
 __e(o.nickname) +
 '"\n                                   class="form-control suggestion-box__input"\n                                   placeholder="' +
 __e(o.nickname_placeholder) +
-'"/>\n                            <div class="invalid-feedback">' +
+'"/>\n                            <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>\n                        </div>\n                    </div>\n                    <div class="form-group">\n                        <div class="invalid-feedback">' +
 __e(o.error_message) +
-'</div>\n                            <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>\n                        </div>\n\n                    </div>\n                    <button type="submit" class="btn btn-primary">' +
+'</div>\n                    </div>\n                    <button type="submit" class="btn btn-primary">' +
 __e(o.label_add) +
 '</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
 return __p

@@ -190,7 +190,7 @@ converse.plugins.add('converse-rosterview', {
                         const r = this.xhr.responseText;
                         const list = JSON.parse(r).map(i => ({'label': i.fullname || i.jid, 'value': i.jid}));
                         if (list.length !== 1) {
-                            const el = this.el.querySelector('.suggestion-box__name .invalid-feedback');
+                            const el = this.el.querySelector('.invalid-feedback');
                             el.textContent = __('Sorry, could not find a contact with that name')
                             u.addClass('d-block', el);
                             return;
@@ -206,15 +206,17 @@ converse.plugins.add('converse-rosterview', {
             },
 
             validateSubmission (jid) {
+                const el = this.el.querySelector('.invalid-feedback');
                 if (!jid || _.compact(jid.split('@')).length < 2) {
-                    // XXX: we used to have to do this manually, instead of via
-                    // toHTML because Awesomplete messes things up and
-                    // confuses Snabbdom
-                    // We now use _converse.AutoComplete, can this be removed?
                     u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
-                    u.addClass('d-block', this.el.querySelector('.suggestion-box__jid .invalid-feedback'));
+                    u.addClass('d-block', el);
+                    return false;
+                } else if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
+                    el.textContent = __('You cannot add yourself as a contact')
+                    u.addClass('d-block', el);
                     return false;
                 }
+                u.removeClass('d-block', el);
                 return true;
             },
 

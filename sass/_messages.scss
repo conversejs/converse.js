@@ -72,7 +72,7 @@
             width: 100%;
             flex-direction: row;
             overflow: auto; // Ensures that content stays inside
-            padding: 0.25rem 1rem;
+            padding: 0.125rem 1rem;
 
             &.onload {
                 animation: colorchange-chatmessage 1s;

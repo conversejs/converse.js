@@ -1762,7 +1762,7 @@
                 expect(hint.textContent).toBe('Felix Amsel');
 
                 evt = new Event('mousedown', {'bubbles': true});
-                evt.button = 0; // For some reason awesomplete wants this
+                evt.button = 0;
                 hint.dispatchEvent(evt);
                 expect(window.prompt).toHaveBeenCalled();
                 expect(view.model.directInvite).toHaveBeenCalled();

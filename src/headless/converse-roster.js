@@ -453,7 +453,7 @@ converse.plugins.add('converse-roster', {
                  *    (Function) callback - A function to call once the IQ is returned
                  *    (Function) errback - A function to call if an error occurred
                  */
-                name = _.isEmpty(name)? jid: name;
+                name = _.isEmpty(name) ? null : name;
                 const iq = $iq({'type': 'set'})
                     .c('query', {'xmlns': Strophe.NS.ROSTER})
                     .c('item', { jid, name });

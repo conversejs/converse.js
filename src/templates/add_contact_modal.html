@@ -12,7 +12,9 @@
                         <label class="clearfix" for="jid">{{{o.label_xmpp_address}}}:</label>
                         <div class="suggestion-box suggestion-box__jid">
                             <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>
-                            <input type="text" name="jid" required="required" value="{{{o.jid}}}"
+                            <input type="text" name="jid"
+                                   {[ if (!o._converse.xhr_user_search_url) { ]} required="required" {[ } ]}
+                                   value="{{{o.jid}}}"
                                    class="form-control suggestion-box__input"
                                    placeholder="{{{o.contact_placeholder}}}"/>
                             <div class="invalid-feedback">{{{o.error_message}}}</div>

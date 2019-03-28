@@ -55,13 +55,14 @@ converse.plugins.add('converse-rosterview', {
               { __ } = _converse;
 
         _converse.api.settings.update({
+            'autocomplete_add_contact': true,
             'allow_chat_pending_contacts': true,
             'allow_contact_removal': true,
             'hide_offline_users': false,
             'roster_groups': true,
             'show_only_online_users': false,
             'show_toolbar': true,
-            'xhr_user_search_url': null
+            'xhr_user_search_url': null,
         });
         _converse.api.promises.add('rosterViewInitialized');
 
@@ -132,10 +133,6 @@ converse.plugins.add('converse-rosterview', {
             afterRender () {
                 if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
                     this.initXHRAutoComplete();
-                    this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
-                        this.el.querySelector('input[name="name"]').value = ev.text.label;
-                        this.el.querySelector('input[name="jid"]').value = ev.text.value;
-                    });
                 } else {
                     this.initJIDAutoComplete();
                 }
@@ -144,6 +141,9 @@ converse.plugins.add('converse-rosterview', {
             },
 
             initJIDAutoComplete () {
+                if (!_converse.autocomplete_add_contact) {
+                    return;
+                }
                 const el = this.el.querySelector('.suggestion-box__jid').parentElement;
                 this.jid_auto_complete = new _converse.AutoComplete(el, {
                     'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
@@ -153,6 +153,9 @@ converse.plugins.add('converse-rosterview', {
             },
 
             initXHRAutoComplete () {
+                if (!_converse.autocomplete_add_contact) {
+                    return this.initXHRFetch();
+                }
                 const el = this.el.querySelector('.suggestion-box__name').parentElement;
                 this.name_auto_complete = new _converse.AutoComplete(el, {
                     'auto_evaluate': false,
@@ -174,25 +177,66 @@ converse.plugins.add('converse-rosterview', {
                     xhr.open("GET", `${_converse.xhr_user_search_url}q=${input_el.value}`, true);
                     xhr.send()
                 } , 300));
+                this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
+                    this.el.querySelector('input[name="name"]').value = ev.text.label;
+                    this.el.querySelector('input[name="jid"]').value = ev.text.value;
+                });
             },
 
-            addContactFromForm (ev) {
-                ev.preventDefault();
-                const data = new FormData(ev.target),
-                      jid = data.get('jid'),
-                      name = data.get('name');
+            initXHRFetch () {
+                this.xhr = new window.XMLHttpRequest();
+                this.xhr.onload = () => {
+                    if (this.xhr.responseText) {
+                        const r = this.xhr.responseText;
+                        const list = JSON.parse(r).map(i => ({'label': i.fullname || i.jid, 'value': i.jid}));
+                        if (list.length !== 1) {
+                            const el = this.el.querySelector('.suggestion-box__name .invalid-feedback');
+                            el.textContent = __('Sorry, could not find a contact with that name')
+                            u.addClass('d-block', el);
+                            return;
+                        }
+                        const jid = list[0].value;
+                        if (this.validateSubmission(jid)) {
+                            const form = this.el.querySelector('form');
+                                const name = list[0].label;
+                            this.afterSubmission(form, jid, name);
+                        }
+                    }
+                };
+            },
+
+            validateSubmission (jid) {
                 if (!jid || _.compact(jid.split('@')).length < 2) {
                     // XXX: we used to have to do this manually, instead of via
                     // toHTML because Awesomplete messes things up and
                     // confuses Snabbdom
                     // We now use _converse.AutoComplete, can this be removed?
                     u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
-                    u.addClass('d-block', this.el.querySelector('.invalid-feedback'));
-                } else {
-                    ev.target.reset();
-                    _converse.roster.addAndSubscribe(jid, name);
-                    this.model.clear();
-                    this.modal.hide();
+                    u.addClass('d-block', this.el.querySelector('.suggestion-box__jid .invalid-feedback'));
+                    return false;
+                }
+                return true;
+            },
+
+            afterSubmission (form, jid, name) {
+                _converse.roster.addAndSubscribe(jid, name);
+                this.model.clear();
+                this.modal.hide();
+            },
+
+            addContactFromForm (ev) {
+                ev.preventDefault();
+                const data = new FormData(ev.target),
+                      jid = data.get('jid');
+
+                if (!jid && _converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
+                    const input_el = this.el.querySelector('input[name="name"]');
+                    this.xhr.open("GET", `${_converse.xhr_user_search_url}q=${input_el.value}`, true);
+                    this.xhr.send()
+                    return;
+                }
+                if (this.validateSubmission(jid)) {
+                    this.afterSubmission(ev.target, jid, data.get('name'));
                 }
             }
         });

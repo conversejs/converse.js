@@ -218,13 +218,44 @@
             done();
         }));
 
+        it("can be configured to not provide search suggestions",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {'autocomplete_add_contact': false},
+                async function (done, _converse) {
+
+            test_utils.openControlBox();
+            const panel = _converse.chatboxviews.get('controlbox').contactspanel;
+            const cbview = _converse.chatboxviews.get('controlbox');
+            cbview.el.querySelector('.add-contact').click()
+            const modal = _converse.rosterview.add_contact_modal;
+            expect(modal.jid_auto_complete).toBe(undefined);
+            expect(modal.name_auto_complete).toBe(undefined);
+
+            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+            const sendIQ = _converse.connection.sendIQ;
+            let sent_stanza;
+            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                sent_stanza = iq;
+                sendIQ.bind(this)(iq, callback, errback);
+            });
+            expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
+            const input_jid = modal.el.querySelector('input[name="jid"]');
+            const input_name = modal.el.querySelector('input[name="name"]');
+            input_jid.value = 'someone@localhost';
+            modal.el.querySelector('button[type="submit"]').click();
+            await test_utils.waitUntil(() => sent_stanza.nodeTree.matches('iq'));
+            expect(sent_stanza.toLocaleString()).toEqual(
+            `<iq id="${sent_stanza.nodeTree.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                `<query xmlns="jabber:iq:roster"><item jid="someone@localhost"/></query>`+
+            `</iq>`);
+            done();
+        }));
+
 
         it("integrates with xhr_user_search_url to search for contacts", 
             mock.initConverse(
                 null, ['rosterGroupsFetched'],
-                { 'xhr_user_search': true,
-                  'xhr_user_search_url': 'http://example.org/?'
-                },
+                { 'xhr_user_search_url': 'http://example.org/?' },
                 async function (done, _converse) {
 
             const xhr = {
@@ -270,6 +301,75 @@
 
             expect(input_el.value).toBe('Marty McFly');
             expect(modal.el.querySelector('input[name="jid"]').value).toBe('marty@mcfly.net');
+            modal.el.querySelector('button[type="submit"]').click();
+            expect(sent_stanza.toLocaleString()).toEqual(
+            `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                `<query xmlns="jabber:iq:roster"><item jid="marty@mcfly.net" name="Marty McFly"/></query>`+
+            `</iq>`);
+            window.XMLHttpRequest = XMLHttpRequestBackup;
+            done();
+        }));
+
+        it("can be configured to not provide search suggestions for XHR search results",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'],
+                { 'autocomplete_add_contact': false,
+                  'xhr_user_search_url': 'http://example.org/?' },
+                async function (done, _converse) {
+
+            var modal;
+            const xhr = {
+                'open': _.noop,
+                'send': function () {
+                    const value = modal.el.querySelector('input[name="name"]').value;
+                    if (value === 'ambiguous') {
+                        xhr.responseText = JSON.stringify([
+                            {"jid": "marty@mcfly.net", "fullname": "Marty McFly"},
+                            {"jid": "doc@brown.com", "fullname": "Doc Brown"}
+                        ]);
+                    } else if (value === 'insufficient') {
+                        xhr.responseText = JSON.stringify([]);
+                    } else {
+                        xhr.responseText = JSON.stringify([{"jid": "marty@mcfly.net", "fullname": "Marty McFly"}]);
+                    }
+                    xhr.onload();
+                }
+            };
+            const XMLHttpRequestBackup = window.XMLHttpRequest;
+            window.XMLHttpRequest = jasmine.createSpy('XMLHttpRequest');
+            XMLHttpRequest.and.callFake(() => xhr);
+
+            const panel = _converse.chatboxviews.get('controlbox').contactspanel;
+            const cbview = _converse.chatboxviews.get('controlbox');
+            cbview.el.querySelector('.add-contact').click()
+            modal = _converse.rosterview.add_contact_modal;
+            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+
+            expect(modal.jid_auto_complete).toBe(undefined);
+            expect(modal.name_auto_complete).toBe(undefined);
+
+            const sendIQ = _converse.connection.sendIQ;
+            let sent_stanza, IQ_id;
+            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                sent_stanza = iq;
+                IQ_id = sendIQ.bind(this)(iq, callback, errback);
+            });
+
+            const input_el = modal.el.querySelector('input[name="name"]');
+            input_el.value = 'ambiguous';
+            modal.el.querySelector('button[type="submit"]').click();
+
+            let feedback_el = modal.el.querySelector('.suggestion-box__name .invalid-feedback');
+            expect(feedback_el.textContent).toBe('Sorry, could not find a contact with that name');
+            feedback_el.textContent = '';
+
+            input_el.value = 'insufficient';
+            modal.el.querySelector('button[type="submit"]').click();
+
+            feedback_el = modal.el.querySelector('.suggestion-box__name .invalid-feedback');
+            expect(feedback_el.textContent).toBe('Sorry, could not find a contact with that name');
+
+            input_el.value = 'Marty McFly';
             modal.el.querySelector('button[type="submit"]').click();
             expect(sent_stanza.toLocaleString()).toEqual(
             `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+

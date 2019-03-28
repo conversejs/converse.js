@@ -250,6 +250,13 @@ available) and the amount returned will be no more than the page size.
 You will be able to query for even older messages by scrolling upwards in the chatbox or room
 (the so-called infinite scrolling pattern).
 
+autocomplete_add_contact
+------------------------
+
+* Default: ``true``
+
+Determines whether search suggestions are shown in the "Add Contact" modal.
+
 auto_list_rooms
 ---------------
 

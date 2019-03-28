@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.1.3 (Unreleased)
+## 4.2.0 (Unreleased)
 
 - Updated translation: lt
 - Upgrade to Backbone 1.4.0, Strophe 1.3.2 and Jasmine 2.99.2
@@ -9,13 +9,14 @@
 - Fix handling of CAPTCHAs offered by ejabberd
 - Don't send out receipts or markers for MAM messages
 - Allow setting of debug mode via URL with `/#converse?debug=true`
+- Render inline images served over HTTP if Converse itself was loaded on an unsecured (HTTP) page.
+- Make sure `nickname` passed in via `_converse.initialize` has first preference as MUC nickname
+- Make sure required registration fields have "required" attribute
+- New config setting [autocomplete_add_contact](https://conversejs.org/docs/html/configuration.html#autocomplete-add-contact)
 - New config setting [locked_muc_domain](https://conversejs.org/docs/html/configuration.html#locked-muc-domain)
 - New config setting [locked_muc_nickname](https://conversejs.org/docs/html/configuration.html#locked-muc-nickname)
 - New config setting [show_client_info](https://conversejs.org/docs/html/configuration.html#show-client-info)
-- Render inline images served over HTTP if Converse itself was loaded on an unsecured (HTTP) page.
 - Document new API method [sendMessage](https://conversejs.org/docs/html/api/-_converse.ChatBox.html#sendMessage)
-- Make sure `nickname` passed in via `_converse.initialize` has first preference as MUC nickname
-- Make sure required registration fields have "required" attribute
 - #1149: With `xhr_user_search_url`, contact requests are not being sent out
 - #1213: Switch roster filter input and icons
 - #1327: fix False mentions positives in URLs and Email addresses

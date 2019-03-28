@@ -117,7 +117,7 @@
                 expect(sent_stanza.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
                         `<query xmlns="jabber:iq:roster">`+
-                            `<item jid="contact@example.org" name="contact@example.org"/>`+
+                            `<item jid="contact@example.org"/>`+
                         `</query>`+
                     `</iq>`
                 );

@@ -58987,6 +58987,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
           __ = _converse.__;
 
     _converse.api.settings.update({
+      'autocomplete_add_contact': true,
       'allow_chat_pending_contacts': true,
       'allow_contact_removal': true,
       'hide_offline_users': false,
@@ -59075,10 +59076,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       afterRender() {
         if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
           this.initXHRAutoComplete();
-          this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
-            this.el.querySelector('input[name="name"]').value = ev.text.label;
-            this.el.querySelector('input[name="jid"]').value = ev.text.value;
-          });
         } else {
           this.initJIDAutoComplete();
         }
@@ -59088,6 +59085,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       },
 
       initJIDAutoComplete() {
+        if (!_converse.autocomplete_add_contact) {
+          return;
+        }
+
         const el = this.el.querySelector('.suggestion-box__jid').parentElement;
         this.jid_auto_complete = new _converse.AutoComplete(el, {
           'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
@@ -59097,6 +59098,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       },
 
       initXHRAutoComplete() {
+        if (!_converse.autocomplete_add_contact) {
+          return this.initXHRFetch();
+        }
+
         const el = this.el.querySelector('.suggestion-box__name').parentElement;
         this.name_auto_complete = new _converse.AutoComplete(el, {
           'auto_evaluate': false,
@@ -59122,28 +59127,76 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
           xhr.open("GET", `${_converse.xhr_user_search_url}q=${input_el.value}`, true);
           xhr.send();
         }, 300));
+        this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
+          this.el.querySelector('input[name="name"]').value = ev.text.label;
+          this.el.querySelector('input[name="jid"]').value = ev.text.value;
+        });
       },
 
-      addContactFromForm(ev) {
-        ev.preventDefault();
-        const data = new FormData(ev.target),
-              jid = data.get('jid'),
-              name = data.get('name');
+      initXHRFetch() {
+        this.xhr = new window.XMLHttpRequest();
 
+        this.xhr.onload = () => {
+          if (this.xhr.responseText) {
+            const r = this.xhr.responseText;
+            const list = JSON.parse(r).map(i => ({
+              'label': i.fullname || i.jid,
+              'value': i.jid
+            }));
+
+            if (list.length !== 1) {
+              const el = this.el.querySelector('.suggestion-box__name .invalid-feedback');
+              el.textContent = __('Sorry, could not find a contact with that name');
+              u.addClass('d-block', el);
+              return;
+            }
+
+            const jid = list[0].value;
+
+            if (this.validateSubmission(jid)) {
+              const form = this.el.querySelector('form');
+              const name = list[0].label;
+              this.afterSubmission(form, jid, name);
+            }
+          }
+        };
+      },
+
+      validateSubmission(jid) {
         if (!jid || _.compact(jid.split('@')).length < 2) {
           // XXX: we used to have to do this manually, instead of via
           // toHTML because Awesomplete messes things up and
           // confuses Snabbdom
           // We now use _converse.AutoComplete, can this be removed?
           u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
-          u.addClass('d-block', this.el.querySelector('.invalid-feedback'));
-        } else {
-          ev.target.reset();
+          u.addClass('d-block', this.el.querySelector('.suggestion-box__jid .invalid-feedback'));
+          return false;
+        }
 
-          _converse.roster.addAndSubscribe(jid, name);
+        return true;
+      },
 
-          this.model.clear();
-          this.modal.hide();
+      afterSubmission(form, jid, name) {
+        _converse.roster.addAndSubscribe(jid, name);
+
+        this.model.clear();
+        this.modal.hide();
+      },
+
+      addContactFromForm(ev) {
+        ev.preventDefault();
+        const data = new FormData(ev.target),
+              jid = data.get('jid');
+
+        if (!jid && _converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
+          const input_el = this.el.querySelector('input[name="name"]');
+          this.xhr.open("GET", `${_converse.xhr_user_search_url}q=${input_el.value}`, true);
+          this.xhr.send();
+          return;
+        }
+
+        if (this.validateSubmission(jid)) {
+          this.afterSubmission(ev.target, jid, data.get('name'));
         }
       }
 
@@ -68597,7 +68650,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          *    (Function) callback - A function to call once the IQ is returned
          *    (Function) errback - A function to call if an error occurred
          */
-        name = _.isEmpty(name) ? jid : name;
+        name = _.isEmpty(name) ? null : name;
         const iq = $iq({
           'type': 'set'
         }).c('query', {
@@ -92115,7 +92168,11 @@ __p += ' hidden ';
  } ;
 __p += '">\n                        <label class="clearfix" for="jid">' +
 __e(o.label_xmpp_address) +
-':</label>\n                        <div class="suggestion-box suggestion-box__jid">\n                            <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>\n                            <input type="text" name="jid" required="required" value="' +
+':</label>\n                        <div class="suggestion-box suggestion-box__jid">\n                            <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>\n                            <input type="text" name="jid"\n                                   ';
+ if (!o._converse.xhr_user_search_url) { ;
+__p += ' required="required" ';
+ } ;
+__p += '\n                                   value="' +
 __e(o.jid) +
 '"\n                                   class="form-control suggestion-box__input"\n                                   placeholder="' +
 __e(o.contact_placeholder) +

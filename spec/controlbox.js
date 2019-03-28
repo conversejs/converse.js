@@ -207,7 +207,7 @@
             input_jid.value = 'someone@';
             const evt = new Event('input');
             input_jid.dispatchEvent(evt);
-            expect(modal.el.querySelector('.awesomplete li').textContent).toBe('someone@localhost');
+            expect(modal.el.querySelector('.suggestion-box li').textContent).toBe('someone@localhost');
             input_jid.value = 'someone@localhost';
             input_name.value = 'Someone';
             modal.el.querySelector('button[type="submit"]').click();
@@ -246,30 +246,28 @@
             cbview.el.querySelector('.add-contact').click()
             const modal = _converse.rosterview.add_contact_modal;
             await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
+
+            // We only have autocomplete for the name input
+            expect(modal.jid_auto_complete).toBe(undefined);
+            expect(modal.name_auto_complete instanceof _converse.AutoComplete).toBe(true);
+
             const input_el = modal.el.querySelector('input[name="name"]');
             input_el.value = 'marty';
-            let evt = new Event('input');
-            input_el.dispatchEvent(evt);
-            await test_utils.waitUntil(() => modal.el.querySelector('.awesomplete li'), 1000);
+            input_el.dispatchEvent(new Event('input'));
+            await test_utils.waitUntil(() => modal.el.querySelector('.suggestion-box li'), 1000);
             const sendIQ = _converse.connection.sendIQ;
             let sent_stanza, IQ_id;
             spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                 sent_stanza = iq;
                 IQ_id = sendIQ.bind(this)(iq, callback, errback);
             });
-            expect(modal.el.querySelectorAll('.awesomplete li').length).toBe(1);
-            const suggestion = modal.el.querySelector('.awesomplete li');
+            expect(modal.el.querySelectorAll('.suggestion-box li').length).toBe(1);
+            const suggestion = modal.el.querySelector('.suggestion-box li');
             expect(suggestion.textContent).toBe('Marty McFly');
 
-            // Can't trigger "mousedown" event so trigger the Awesomplete
-            // custom event which would have been triggered upon mousedown.
-            evt = document.createEvent("HTMLEvents");
-            evt.initEvent('awesomplete-selectcomplete', true, true );
-            evt.text = {
-                'label': 'Marty McFly',
-                'value': 'marty@mcfly.net'
-            }
-            modal.el.dispatchEvent(evt);
+            // Mock selection
+            modal.name_auto_complete.select(suggestion);
+
             expect(input_el.value).toBe('Marty McFly');
             expect(modal.el.querySelector('input[name="jid"]').value).toBe('marty@mcfly.net');
             modal.el.querySelector('button[type="submit"]').click();

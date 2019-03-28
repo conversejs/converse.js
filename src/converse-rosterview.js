@@ -7,7 +7,6 @@
 import "@converse/headless/converse-roster";
 import "@converse/headless/converse-chatboxes";
 import "converse-modal";
-import Awesomplete from "awesomplete";
 import _FormData from "formdata-polyfill";
 import converse from "@converse/headless/converse-core";
 import tpl_add_contact_modal from "templates/add_contact_modal.html";
@@ -119,7 +118,7 @@ converse.plugins.add('converse-rosterview', {
 
             toHTML () {
                 const label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
-                return  tpl_add_contact_modal(_.extend(this.model.toJSON(), {
+                return tpl_add_contact_modal(_.extend(this.model.toJSON(), {
                     '_converse': _converse,
                     'heading_new_contact': __('Add a Contact'),
                     'label_xmpp_address': __('XMPP Address'),
@@ -132,47 +131,47 @@ converse.plugins.add('converse-rosterview', {
 
             afterRender () {
                 if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
-                    this.initXHRAutoComplete(this.el);
-                    this.el.addEventListener('awesomplete-selectcomplete', ev => {
+                    this.initXHRAutoComplete();
+                    this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
                         this.el.querySelector('input[name="name"]').value = ev.text.label;
                         this.el.querySelector('input[name="jid"]').value = ev.text.value;
                     });
                 } else {
-                    this.initJIDAutoComplete(this.el);
+                    this.initJIDAutoComplete();
                 }
                 const jid_input = this.el.querySelector('input[name="jid"]');
                 this.el.addEventListener('shown.bs.modal', () => jid_input.focus(), false);
             },
 
-            initJIDAutoComplete (root) {
-                const jid_input = root.querySelector('input[name="jid"]');
-                const list = _.uniq(_converse.roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))));
-                new Awesomplete(jid_input, {
-                    'list': list,
+            initJIDAutoComplete () {
+                const el = this.el.querySelector('.suggestion-box__jid').parentElement;
+                this.jid_auto_complete = new _converse.AutoComplete(el, {
                     'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
-                    'filter': Awesomplete.FILTER_STARTSWITH
+                    'filter': _converse.FILTER_STARTSWITH,
+                    'list': _.uniq(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))
                 });
             },
 
-            initXHRAutoComplete (root) {
-                const name_input = this.el.querySelector('input[name="name"]');
-                const jid_input = this.el.querySelector('input[name="jid"]');
-                const awesomplete = new Awesomplete(name_input, {
-                    'minChars': 1,
+            initXHRAutoComplete () {
+                const el = this.el.querySelector('.suggestion-box__name').parentElement;
+                this.name_auto_complete = new _converse.AutoComplete(el, {
+                    'auto_evaluate': false,
+                    'filter': _converse.FILTER_STARTSWITH,
                     'list': []
                 });
                 const xhr = new window.XMLHttpRequest();
                 // `open` must be called after `onload` for mock/testing purposes.
-                xhr.onload = function () {
+                xhr.onload = () => {
                     if (xhr.responseText) {
-                        awesomplete.list = JSON.parse(xhr.responseText).map((i) => { //eslint-disable-line arrow-body-style
-                            return {'label': i.fullname || i.jid, 'value': i.jid};
-                        });
-                        awesomplete.evaluate();
+                        const r = xhr.responseText;
+                        this.name_auto_complete.list = JSON.parse(r).map(i => ({'label': i.fullname || i.jid, 'value': i.jid}));
+                        this.name_auto_complete.auto_completing = true;
+                        this.name_auto_complete.evaluate();
                     }
                 };
-                name_input.addEventListener('input', _.debounce(() => {
-                    xhr.open("GET", `${_converse.xhr_user_search_url}q=${name_input.value}`, true);
+                const input_el = this.el.querySelector('input[name="name"]');
+                input_el.addEventListener('input', _.debounce(() => {
+                    xhr.open("GET", `${_converse.xhr_user_search_url}q=${input_el.value}`, true);
                     xhr.send()
                 } , 300));
             },
@@ -183,9 +182,10 @@ converse.plugins.add('converse-rosterview', {
                       jid = data.get('jid'),
                       name = data.get('name');
                 if (!jid || _.compact(jid.split('@')).length < 2) {
-                    // XXX: we have to do this manually, instead of via
+                    // XXX: we used to have to do this manually, instead of via
                     // toHTML because Awesomplete messes things up and
                     // confuses Snabbdom
+                    // We now use _converse.AutoComplete, can this be removed?
                     u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
                     u.addClass('d-block', this.el.querySelector('.invalid-feedback'));
                 } else {

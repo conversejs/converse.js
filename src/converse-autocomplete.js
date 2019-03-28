@@ -53,6 +53,32 @@ converse.plugins.add("converse-autocomplete", {
         };
 
 
+        class Suggestion extends String {
+
+            constructor (data) {
+                super();
+                const o = Array.isArray(data)
+                    ? { label: data[0], value: data[1] }
+                    : typeof data === "object" && "label" in data && "value" in data ? data : { label: data, value: data };
+
+                this.label = o.label || o.value;
+                this.value = o.value;
+            }
+
+            get lenth () {
+                return this.label.length;
+            }
+
+            toString () {
+                return "" + this.label;
+            }
+
+            valueOf () {
+                return this.toString();
+            }
+        }
+
+
         class AutoComplete {
 
             constructor (el, config={}) {
@@ -76,7 +102,7 @@ converse.plugins.add("converse-autocomplete", {
                     'include_triggers': [], // Array of trigger keys which should be included in the returned value
                     'min_chars': 2,
                     'max_items': 10,
-                    'auto_evaluate': true,
+                    'auto_evaluate': true, // Should evaluation happen automatically without any particular key as trigger?
                     'auto_first': false, // Should the first element be automatically selected?
                     'data': _.identity,
                     'filter': _converse.FILTER_CONTAINS,
@@ -129,7 +155,7 @@ converse.plugins.add("converse-autocomplete", {
                     list = helpers.getElement(list);
                     if (list && list.children) {
                         const items = [];
-                        slice.apply(list.children).forEach(function (el) {
+                        Array.prototype.slice.apply(list.children).forEach(function (el) {
                             if (!el.disabled) {
                                 const text = el.textContent.trim(),
                                     value = el.value || text,
@@ -230,7 +256,7 @@ converse.plugins.add("converse-autocomplete", {
                 }
             }
 
-            select (selected, origin) {
+            select (selected) {
                 if (selected) {
                     this.index = u.siblingIndex(selected);
                 } else {
@@ -305,11 +331,11 @@ converse.plugins.add("converse-autocomplete", {
             }
 
             evaluate (ev) {
-                const arrow_pressed = (
+                const selecting = this.selected && ev && (
                     ev.keyCode === _converse.keycodes.UP_ARROW ||
                     ev.keyCode === _converse.keycodes.DOWN_ARROW
                 );
-                if (!this.auto_completing || (this.selected && arrow_pressed)) {
+                if (!this.auto_evaluate && !this.auto_completing || selecting) {
                     return;
                 }
 
@@ -339,7 +365,7 @@ converse.plugins.add("converse-autocomplete", {
                         this.suggestions = this.suggestions.sort(this.sort);
                     }
                     this.suggestions = this.suggestions.slice(0, this.max_items);
-                    this.suggestions.forEach((text) => this.ul.appendChild(this.item(text, value)));
+                    this.suggestions.forEach(text => this.ul.appendChild(this.item(text, value)));
 
                     if (this.ul.children.length === 0) {
                         this.close({'reason': 'nomatches'});
@@ -356,28 +382,6 @@ converse.plugins.add("converse-autocomplete", {
         // Make it an event emitter
         _.extend(AutoComplete.prototype, Backbone.Events);
 
-
-        // Private functions
-
-        function Suggestion(data) {
-            const o = Array.isArray(data)
-                ? { label: data[0], value: data[1] }
-                : typeof data === "object" && "label" in data && "value" in data ? data : { label: data, value: data };
-
-            this.label = o.label || o.value;
-            this.value = o.value;
-        }
-
-        Object.defineProperty(Suggestion.prototype = Object.create(String.prototype), "length", {
-            get: function() { return this.label.length; }
-        });
-
-        Suggestion.prototype.toString = Suggestion.prototype.valueOf = function () {
-            return "" + this.label;
-        };
-
-        // Helpers
-        var slice = Array.prototype.slice;
 
         const helpers = {
 

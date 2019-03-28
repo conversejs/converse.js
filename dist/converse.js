@@ -48035,6 +48035,34 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       return element;
     };
 
+    class Suggestion extends String {
+      constructor(data) {
+        super();
+        const o = Array.isArray(data) ? {
+          label: data[0],
+          value: data[1]
+        } : typeof data === "object" && "label" in data && "value" in data ? data : {
+          label: data,
+          value: data
+        };
+        this.label = o.label || o.value;
+        this.value = o.value;
+      }
+
+      get lenth() {
+        return this.label.length;
+      }
+
+      toString() {
+        return "" + this.label;
+      }
+
+      valueOf() {
+        return this.toString();
+      }
+
+    }
+
     class AutoComplete {
       constructor(el) {
         let config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -48062,6 +48090,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'min_chars': 2,
           'max_items': 10,
           'auto_evaluate': true,
+          // Should evaluation happen automatically without any particular key as trigger?
           'auto_first': false,
           // Should the first element be automatically selected?
           'data': _.identity,
@@ -48121,7 +48150,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
           if (list && list.children) {
             const items = [];
-            slice.apply(list.children).forEach(function (el) {
+            Array.prototype.slice.apply(list.children).forEach(function (el) {
               if (!el.disabled) {
                 const text = el.textContent.trim(),
                       value = el.value || text,
@@ -48230,7 +48259,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
       }
 
-      select(selected, origin) {
+      select(selected) {
         if (selected) {
           this.index = u.siblingIndex(selected);
         } else {
@@ -48311,9 +48340,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       }
 
       evaluate(ev) {
-        const arrow_pressed = ev.keyCode === _converse.keycodes.UP_ARROW || ev.keyCode === _converse.keycodes.DOWN_ARROW;
+        const selecting = this.selected && ev && (ev.keyCode === _converse.keycodes.UP_ARROW || ev.keyCode === _converse.keycodes.DOWN_ARROW);
 
-        if (!this.auto_completing || this.selected && arrow_pressed) {
+        if (!this.auto_evaluate && !this.auto_completing || selecting) {
           return;
         }
 
@@ -48362,33 +48391,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     } // Make it an event emitter
 
 
-    _.extend(AutoComplete.prototype, Backbone.Events); // Private functions
+    _.extend(AutoComplete.prototype, Backbone.Events);
 
-
-    function Suggestion(data) {
-      const o = Array.isArray(data) ? {
-        label: data[0],
-        value: data[1]
-      } : typeof data === "object" && "label" in data && "value" in data ? data : {
-        label: data,
-        value: data
-      };
-      this.label = o.label || o.value;
-      this.value = o.value;
-    }
-
-    Object.defineProperty(Suggestion.prototype = Object.create(String.prototype), "length", {
-      get: function get() {
-        return this.label.length;
-      }
-    });
-
-    Suggestion.prototype.toString = Suggestion.prototype.valueOf = function () {
-      return "" + this.label;
-    }; // Helpers
-
-
-    var slice = Array.prototype.slice;
     const helpers = {
       getElement(expr, el) {
         return typeof expr === "string" ? (el || document).querySelector(expr) : expr || null;
@@ -52193,7 +52197,7 @@ __webpack_require__.r(__webpack_exports__);
 // Converse.js (A browser based XMPP chat client)
 // https://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 
 
@@ -59435,27 +59439,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _converse_headless_converse_roster__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @converse/headless/converse-roster */ "./src/headless/converse-roster.js");
 /* harmony import */ var _converse_headless_converse_chatboxes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @converse/headless/converse-chatboxes */ "./src/headless/converse-chatboxes.js");
 /* harmony import */ var converse_modal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! converse-modal */ "./src/converse-modal.js");
-/* harmony import */ var awesomplete__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! awesomplete */ "./node_modules/awesomplete-avoid-xss/awesomplete.js");
-/* harmony import */ var awesomplete__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(awesomplete__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js");
-/* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(formdata_polyfill__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
-/* harmony import */ var templates_add_contact_modal_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/add_contact_modal.html */ "./src/templates/add_contact_modal.html");
-/* harmony import */ var templates_add_contact_modal_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_add_contact_modal_html__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var templates_group_header_html__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! templates/group_header.html */ "./src/templates/group_header.html");
-/* harmony import */ var templates_group_header_html__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(templates_group_header_html__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var templates_pending_contact_html__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! templates/pending_contact.html */ "./src/templates/pending_contact.html");
-/* harmony import */ var templates_pending_contact_html__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(templates_pending_contact_html__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var templates_requesting_contact_html__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! templates/requesting_contact.html */ "./src/templates/requesting_contact.html");
-/* harmony import */ var templates_requesting_contact_html__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(templates_requesting_contact_html__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var templates_roster_html__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! templates/roster.html */ "./src/templates/roster.html");
-/* harmony import */ var templates_roster_html__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(templates_roster_html__WEBPACK_IMPORTED_MODULE_10__);
-/* harmony import */ var templates_roster_filter_html__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! templates/roster_filter.html */ "./src/templates/roster_filter.html");
-/* harmony import */ var templates_roster_filter_html__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(templates_roster_filter_html__WEBPACK_IMPORTED_MODULE_11__);
-/* harmony import */ var templates_roster_item_html__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! templates/roster_item.html */ "./src/templates/roster_item.html");
-/* harmony import */ var templates_roster_item_html__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(templates_roster_item_html__WEBPACK_IMPORTED_MODULE_12__);
-/* harmony import */ var templates_search_contact_html__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! templates/search_contact.html */ "./src/templates/search_contact.html");
-/* harmony import */ var templates_search_contact_html__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(templates_search_contact_html__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! formdata-polyfill */ "./node_modules/formdata-polyfill/FormData.js");
+/* harmony import */ var formdata_polyfill__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(formdata_polyfill__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
+/* harmony import */ var templates_add_contact_modal_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! templates/add_contact_modal.html */ "./src/templates/add_contact_modal.html");
+/* harmony import */ var templates_add_contact_modal_html__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(templates_add_contact_modal_html__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var templates_group_header_html__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! templates/group_header.html */ "./src/templates/group_header.html");
+/* harmony import */ var templates_group_header_html__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(templates_group_header_html__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var templates_pending_contact_html__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! templates/pending_contact.html */ "./src/templates/pending_contact.html");
+/* harmony import */ var templates_pending_contact_html__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(templates_pending_contact_html__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var templates_requesting_contact_html__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! templates/requesting_contact.html */ "./src/templates/requesting_contact.html");
+/* harmony import */ var templates_requesting_contact_html__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(templates_requesting_contact_html__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var templates_roster_html__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! templates/roster.html */ "./src/templates/roster.html");
+/* harmony import */ var templates_roster_html__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(templates_roster_html__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var templates_roster_filter_html__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! templates/roster_filter.html */ "./src/templates/roster_filter.html");
+/* harmony import */ var templates_roster_filter_html__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(templates_roster_filter_html__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var templates_roster_item_html__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! templates/roster_item.html */ "./src/templates/roster_item.html");
+/* harmony import */ var templates_roster_item_html__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(templates_roster_item_html__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var templates_search_contact_html__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! templates/search_contact.html */ "./src/templates/search_contact.html");
+/* harmony import */ var templates_search_contact_html__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(templates_search_contact_html__WEBPACK_IMPORTED_MODULE_12__);
 // Converse.js
 // https://conversejs.org
 //
@@ -59474,16 +59476,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].env,
+const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].env,
       Backbone = _converse$env.Backbone,
       Strophe = _converse$env.Strophe,
       $iq = _converse$env.$iq,
       b64_sha1 = _converse$env.b64_sha1,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
-const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].env.utils;
-_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins.add('converse-rosterview', {
+const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].env.utils;
+_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins.add('converse-rosterview', {
   dependencies: ["converse-roster", "converse-modal"],
   overrides: {
     // Overrides mentioned here will be picked up by converse.js's
@@ -59588,7 +59589,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       toHTML() {
         const label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
-        return templates_add_contact_modal_html__WEBPACK_IMPORTED_MODULE_6___default()(_.extend(this.model.toJSON(), {
+        return templates_add_contact_modal_html__WEBPACK_IMPORTED_MODULE_5___default()(_.extend(this.model.toJSON(), {
           '_converse': _converse,
           'heading_new_contact': __('Add a Contact'),
           'label_xmpp_address': __('XMPP Address'),
@@ -59601,55 +59602,52 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       afterRender() {
         if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
-          this.initXHRAutoComplete(this.el);
-          this.el.addEventListener('awesomplete-selectcomplete', ev => {
+          this.initXHRAutoComplete();
+          this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
             this.el.querySelector('input[name="name"]').value = ev.text.label;
             this.el.querySelector('input[name="jid"]').value = ev.text.value;
           });
         } else {
-          this.initJIDAutoComplete(this.el);
+          this.initJIDAutoComplete();
         }
 
         const jid_input = this.el.querySelector('input[name="jid"]');
         this.el.addEventListener('shown.bs.modal', () => jid_input.focus(), false);
       },
 
-      initJIDAutoComplete(root) {
-        const jid_input = root.querySelector('input[name="jid"]');
-
-        const list = _.uniq(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))));
-
-        new awesomplete__WEBPACK_IMPORTED_MODULE_3___default.a(jid_input, {
-          'list': list,
+      initJIDAutoComplete() {
+        const el = this.el.querySelector('.suggestion-box__jid').parentElement;
+        this.jid_auto_complete = new _converse.AutoComplete(el, {
           'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
-          'filter': awesomplete__WEBPACK_IMPORTED_MODULE_3___default.a.FILTER_STARTSWITH
+          'filter': _converse.FILTER_STARTSWITH,
+          'list': _.uniq(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))
         });
       },
 
-      initXHRAutoComplete(root) {
-        const name_input = this.el.querySelector('input[name="name"]');
-        const jid_input = this.el.querySelector('input[name="jid"]');
-        const awesomplete = new awesomplete__WEBPACK_IMPORTED_MODULE_3___default.a(name_input, {
-          'minChars': 1,
+      initXHRAutoComplete() {
+        const el = this.el.querySelector('.suggestion-box__name').parentElement;
+        this.name_auto_complete = new _converse.AutoComplete(el, {
+          'auto_evaluate': false,
+          'filter': _converse.FILTER_STARTSWITH,
           'list': []
         });
         const xhr = new window.XMLHttpRequest(); // `open` must be called after `onload` for mock/testing purposes.
 
-        xhr.onload = function () {
+        xhr.onload = () => {
           if (xhr.responseText) {
-            awesomplete.list = JSON.parse(xhr.responseText).map(i => {
-              //eslint-disable-line arrow-body-style
-              return {
-                'label': i.fullname || i.jid,
-                'value': i.jid
-              };
-            });
-            awesomplete.evaluate();
+            const r = xhr.responseText;
+            this.name_auto_complete.list = JSON.parse(r).map(i => ({
+              'label': i.fullname || i.jid,
+              'value': i.jid
+            }));
+            this.name_auto_complete.auto_completing = true;
+            this.name_auto_complete.evaluate();
           }
         };
 
-        name_input.addEventListener('input', _.debounce(() => {
-          xhr.open("GET", `${_converse.xhr_user_search_url}q=${name_input.value}`, true);
+        const input_el = this.el.querySelector('input[name="name"]');
+        input_el.addEventListener('input', _.debounce(() => {
+          xhr.open("GET", `${_converse.xhr_user_search_url}q=${input_el.value}`, true);
           xhr.send();
         }, 300));
       },
@@ -59661,9 +59659,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
               name = data.get('name');
 
         if (!jid || _.compact(jid.split('@')).length < 2) {
-          // XXX: we have to do this manually, instead of via
+          // XXX: we used to have to do this manually, instead of via
           // toHTML because Awesomplete messes things up and
           // confuses Snabbdom
+          // We now use _converse.AutoComplete, can this be removed?
           u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
           u.addClass('d-block', this.el.querySelector('.invalid-feedback'));
         } else {
@@ -59704,7 +59703,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       toHTML() {
-        return templates_roster_filter_html__WEBPACK_IMPORTED_MODULE_11___default()(_.extend(this.model.toJSON(), {
+        return templates_roster_filter_html__WEBPACK_IMPORTED_MODULE_10___default()(_.extend(this.model.toJSON(), {
           visible: this.shouldBeVisible(),
           placeholder: __('Filter'),
           title_contact_filter: __('Filter by contact name'),
@@ -59896,7 +59895,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
            */
           const display_name = this.model.getDisplayName();
           this.el.classList.add('pending-xmpp-contact');
-          this.el.innerHTML = templates_pending_contact_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.toJSON(), {
+          this.el.innerHTML = templates_pending_contact_html__WEBPACK_IMPORTED_MODULE_7___default()(_.extend(this.model.toJSON(), {
             'display_name': display_name,
             'desc_remove': __('Click to remove %1$s as a contact', display_name),
             'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
@@ -59904,7 +59903,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         } else if (requesting === true) {
           const display_name = this.model.getDisplayName();
           this.el.classList.add('requesting-xmpp-contact');
-          this.el.innerHTML = templates_requesting_contact_html__WEBPACK_IMPORTED_MODULE_9___default()(_.extend(this.model.toJSON(), {
+          this.el.innerHTML = templates_requesting_contact_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.toJSON(), {
             'display_name': display_name,
             'desc_accept': __("Click to accept the contact request from %1$s", display_name),
             'desc_decline': __("Click to decline the contact request from %1$s", display_name),
@@ -59951,7 +59950,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         const display_name = item.getDisplayName();
-        this.el.innerHTML = templates_roster_item_html__WEBPACK_IMPORTED_MODULE_12___default()(_.extend(item.toJSON(), {
+        this.el.innerHTML = templates_roster_item_html__WEBPACK_IMPORTED_MODULE_11___default()(_.extend(item.toJSON(), {
           'display_name': display_name,
           'desc_status': STATUSES[show],
           'status_icon': status_icon,
@@ -60077,7 +60076,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       render() {
         this.el.setAttribute('data-group', this.model.get('name'));
-        this.el.innerHTML = templates_group_header_html__WEBPACK_IMPORTED_MODULE_7___default()({
+        this.el.innerHTML = templates_group_header_html__WEBPACK_IMPORTED_MODULE_6___default()({
           'label_group': this.model.get('name'),
           'desc_group_toggle': this.model.get('description'),
           'toggle_state': this.model.get('state'),
@@ -60309,7 +60308,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       render() {
-        this.el.innerHTML = templates_roster_html__WEBPACK_IMPORTED_MODULE_10___default()({
+        this.el.innerHTML = templates_roster_html__WEBPACK_IMPORTED_MODULE_9___default()({
           'allow_contact_requests': _converse.allow_contact_requests,
           'heading_contacts': __('Contacts'),
           'title_add_contact': __('Add a contact'),
@@ -60554,11 +60553,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);
 
     _converse.api.listen.on('afterTearDown', () => {
-      if (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview) {
-        _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview.model.off().reset();
-        _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview.each(groupview => groupview.removeAll().remove());
-        _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview.removeAll().remove();
-        delete _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].rosterview;
+      if (_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].rosterview) {
+        _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].rosterview.model.off().reset();
+        _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].rosterview.each(groupview => groupview.removeAll().remove());
+        _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].rosterview.removeAll().remove();
+        delete _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].rosterview;
       }
     });
   }
@@ -92644,19 +92643,21 @@ __p += ' hidden ';
  } ;
 __p += '">\n                        <label class="clearfix" for="jid">' +
 __e(o.label_xmpp_address) +
-':</label>\n                        <input type="text" name="jid" required="required" value="' +
+':</label>\n                        <div class="suggestion-box suggestion-box__jid">\n                            <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>\n                            <input type="text" name="jid" required="required" value="' +
 __e(o.jid) +
-'"\n                               class="form-control"\n                               placeholder="' +
+'"\n                                   class="form-control suggestion-box__input"\n                                   placeholder="' +
 __e(o.contact_placeholder) +
-'"/>\n                        <div class="invalid-feedback">' +
+'"/>\n                            <div class="invalid-feedback">' +
 __e(o.error_message) +
-'</div>\n                    </div>\n                    <div class="form-group">\n                        <label class="clearfix" for="name">' +
+'</div>\n                            <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>\n                        </div>\n                    </div>\n                    <div class="form-group">\n                        <label class="clearfix" for="name">' +
 __e(o.label_nickname) +
-':</label>\n                        <input type="text" name="name" value="' +
+':</label>\n                        <div class="suggestion-box suggestion-box__name">\n                            <ul class="suggestion-box__results suggestion-box__results--above" hidden=""></ul>\n                            <input type="text" name="name" value="' +
 __e(o.nickname) +
-'"\n                               class="form-control"\n                               placeholder="' +
+'"\n                                   class="form-control suggestion-box__input"\n                                   placeholder="' +
 __e(o.nickname_placeholder) +
-'"/>\n                    </div>\n                    <button type="submit" class="btn btn-primary">' +
+'"/>\n                            <div class="invalid-feedback">' +
+__e(o.error_message) +
+'</div>\n                            <span class="suggestion-box__additions visually-hidden" role="status" aria-live="assertive" aria-relevant="additions"></span>\n                        </div>\n\n                    </div>\n                    <button type="submit" class="btn btn-primary">' +
 __e(o.label_add) +
 '</button>\n                </div>\n            </form>\n        </div>\n    </div>\n</div>\n';
 return __p

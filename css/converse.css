@@ -12198,14 +12198,14 @@ body.converse-fullscreen {
       display: none; }
     #conversejs .suggestion-box .suggestion-box__results--above:after,
     #conversejs .awesomplete .suggestion-box__results--above:after {
-      z-index: 1;
+      z-index: -1;
       content: "";
       position: absolute;
-      bottom: -.43em;
+      bottom: -0.43em;
       left: 1em;
       width: 0;
       height: 0;
-      padding: .4em;
+      padding: 0.4em;
       background: white;
       border: inherit;
       border-left: 0;
@@ -12252,7 +12252,7 @@ body.converse-fullscreen {
   bottom: 4.5em; }
 
 #conversejs.converse-overlayed .suggestion-box__results--above {
-  bottom: 5.5em; }
+  bottom: 3.5em; }
 
 #conversejs.converse-embedded {
   -webkit-box-sizing: border-box;

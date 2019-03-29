@@ -63,6 +63,14 @@ converse.plugins.add('converse-roster', {
             _converse.rostergroups = new _converse.RosterGroups();
             _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](
                 `converse.roster.groups${_converse.bare_jid}`);
+            /**
+             * Triggered once the `_converse.RosterContacts` and `_converse.RosterGroups` have
+             * been created, but not yet populated with data.
+             * This event is useful when you want to create views for these collections.
+             * @event _converse#chatBoxMaximized
+             * @example _converse.api.listen.on('rosterInitialized', () => { ... });
+             * @example _converse.api.waitUntil('rosterInitialized').then(() => { ... });
+             */
             _converse.api.emit('rosterInitialized');
         };
 
@@ -80,6 +88,12 @@ converse.plugins.add('converse-roster', {
                 _converse.send_initial_presence = true;
                 try {
                     await _converse.roster.fetchFromServer();
+                    /**
+                     * Triggered once roster contacts have been fetched. Used by the
+                     * `converse-rosterview.js` plugin to know when it can start to show the roster.
+                     * @event _converse#rosterContactsFetched
+                     * @example _converse.api.listen.on('rosterContactsFetched', () => { ... });
+                     */
                     _converse.api.emit('rosterContactsFetched');
                 } catch (reason) {
                     _converse.log(reason, Strophe.LogLevel.ERROR);
@@ -89,6 +103,13 @@ converse.plugins.add('converse-roster', {
             } else {
                 try {
                     await _converse.rostergroups.fetchRosterGroups();
+                    /**
+                     * Triggered once roster groups have been fetched. Used by the
+                     * `converse-rosterview.js` plugin to know when it can start alphabetically
+                     * position roster groups.
+                     * @event _converse#rosterGroupsFetched
+                     * @example _converse.api.listen.on('rosterGroupsFetched', () => { ... });
+                     */
                     _converse.api.emit('rosterGroupsFetched');
                     await _converse.roster.fetchRosterContacts();
                     _converse.api.emit('rosterContactsFetched');
@@ -223,6 +244,13 @@ converse.plugins.add('converse-roster', {
 
                 this.setChatBox();
 
+                /**
+                 * When a contact's presence status has changed.
+                 * The presence status is either `online`, `offline`, `dnd`, `away` or `xa`.
+                 * @event _converse#contactPresenceChanged
+                 * @type { _converse.RosterContact }
+                 * @example _converse.api.listen.on('contactPresenceChanged', contact => { ... });
+                 */
                 this.presence.on('change:show', () => _converse.api.emit('contactPresenceChanged', this));
                 this.presence.on('change:show', () => this.trigger('presenceChanged'));
             },
@@ -404,6 +432,13 @@ converse.plugins.add('converse-roster', {
                     _converse.send_initial_presence = true;
                     return _converse.roster.fetchFromServer();
                 } else {
+                    /**
+                     * The contacts roster has been retrieved from the local cache (`sessionStorage`).
+                     * @event _converse#cachedRoster
+                     * @type { _converse.RosterContacts }
+                     * @example _converse.api.listen.on('cachedRoster', (items) => { ... });
+                     * @example _converse.api.waitUntil('cachedRoster').then(items => { ... });
+                     */
                     _converse.api.emit('cachedRoster', collection);
                 }
             },
@@ -549,6 +584,12 @@ converse.plugins.add('converse-roster', {
                     return;
                 }
                 this.updateContact(items.pop());
+                /**
+                 * When the roster receives a push event from server (i.e. new entry in your contacts roster).
+                 * @event _converse#rosterPush
+                 * @type { XMLElement }
+                 * @example _converse.api.listen.on('rosterPush', iq => { ... });
+                 */
                 _converse.api.emit('rosterPush', iq);
                 return;
             },
@@ -590,6 +631,15 @@ converse.plugins.add('converse-roster', {
                     this.data.save('version', query.getAttribute('ver'));
                     _converse.session.save('roster_fetched', true);
                 }
+                /**
+                 * When the roster has been received from the XMPP server.
+                 * See also the `cachedRoster` event further up, which gets called instead of
+                 * `roster` if its already in `sessionStorage`.
+                 * @event _converse#roster
+                 * @type { XMLElement }
+                 * @example _converse.api.listen.on('roster', iq => { ... });
+                 * @example _converse.api.waitUntil('roster').then(iq => { ... });
+                 */
                 _converse.api.emit('roster', iq);
             },
 
@@ -644,6 +694,12 @@ converse.plugins.add('converse-roster', {
                     'requesting': true,
                     'nickname': nickname
                 };
+                /**
+                 * Triggered when someone has requested to subscribe to your presence (i.e. to be your contact).
+                 * @event _converse#contactRequest
+                 * @type { _converse.RosterContact }
+                 * @example _converse.api.listen.on('contactRequest', contact => { ... });
+                 */
                 _converse.api.emit('contactRequest', this.create(user_data));
             },
 
@@ -856,15 +912,27 @@ converse.plugins.add('converse-roster', {
             _converse.presences.browserStorage =
                 new Backbone.BrowserStorage.session(`converse.presences-${_converse.bare_jid}`);
             _converse.presences.fetch();
+            /**
+             * Triggered once the _converse.Presences collection has been
+             * initialized and its cached data fetched.
+             * Returns a boolean indicating whether this event has fired due to
+             * Converse having reconnected.
+             * @event _converse#presencesInitialized
+             * @type { bool }
+             * @example _converse.api.listen.on('presencesInitialized', reconnecting => { ... });
+             */
             _converse.api.emit('presencesInitialized', reconnecting);
         });
 
         _converse.api.listen.on('presencesInitialized', (reconnecting) => {
             if (reconnecting) {
-                // No need to recreate the roster, otherwise we lose our
-                // cached data. However we still emit an event, to give
-                // event handlers a chance to register views for the
-                // roster and its groups, before we start populating.
+                /**
+                 * Similar to `rosterInitialized`, but instead pertaining to reconnection.
+                 * This event indicates that the roster and its groups are now again
+                 * available after Converse.js has reconnected.
+                 * @event _converse#rosterReadyAfterReconnection
+                 * @example _converse.api.listen.on('rosterReadyAfterReconnection', () => { ... });
+                 */
                 _converse.api.emit('rosterReadyAfterReconnection');
             } else {
                 _converse.registerIntervalHandler();

@@ -177,6 +177,12 @@ converse.plugins.add('converse-roomslist', {
                 this.list_model.fetch();
                 this.render();
                 this.sortAndPositionAllItems();
+                /**
+                 * Triggered once the _converse.RoomsListView has been created and initialized.
+                 * @event _converse#roomsListInitialized
+                 * @example _converse.api.listen.on('roomsListInitialized', status => { ... });
+                 */
+                _converse.api.emit('roomsListInitialized');
             },
 
             render () {
@@ -270,7 +276,6 @@ converse.plugins.add('converse-roomslist', {
 
             model.browserStorage = new Backbone.BrowserStorage[storage](id);
             _converse.rooms_list_view = new _converse.RoomsListView({'model': model});
-            _converse.api.emit('roomsListInitialized');
         };
 
         _converse.api.listen.on('connected', async () =>  {

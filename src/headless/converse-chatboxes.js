@@ -220,8 +220,9 @@ converse.plugins.add('converse-chatboxes', {
 
 
         /**
-         * The "_converse.ChatBox" namespace
+         * Represents an open/ongoing chat conversation.
          *
+         * @class
          * @namespace _converse.ChatBox
          * @memberOf _converse
          */
@@ -760,6 +761,16 @@ converse.plugins.add('converse-chatboxes', {
                 return new _converse.ChatBox(attrs, options);
             },
 
+            initialize () {
+                /**
+                 * Triggered once the _converse.ChatBoxes collection has been initialized.
+                 * @event _converse#chatBoxesInitialized
+                 * @example _converse.api.listen.on('chatBoxesInitialized', () => { ... });
+                 * @example _converse.api.waitUntil('chatBoxesInitialized').then(() => { ... });
+                 */
+                _converse.api.emit('chatBoxesInitialized');
+            },
+
             registerMessageHandler () {
                 _converse.connection.addHandler(stanza => {
                     this.onMessage(stanza);
@@ -796,6 +807,15 @@ converse.plugins.add('converse-chatboxes', {
                         chatbox.trigger('show');
                     }
                 });
+                /**
+                 * Triggered when a message stanza is been received and processed.
+                 * @event _converse#message
+                 * @type { object }
+                 * @property { _converse.ChatBox | _converse.ChatRoom } chatbox
+                 * @property { XMLElement } stanza
+                 * @example _converse.api.listen.on('message', obj => { ... });
+                 * @example _converse.api.waitUntil('chatBoxesFetched').then(() => { ... });
+                 */
                 _converse.api.emit('chatBoxesFetched');
             },
 
@@ -949,6 +969,14 @@ converse.plugins.add('converse-chatboxes', {
                         }
                     }
                 }
+                /**
+                 * Triggered when a message stanza is been received and processed
+                 * @event _converse#message
+                 * @type { object }
+                 * @property { _converse.ChatBox | _converse.ChatRoom } chatbox
+                 * @property { XMLElement } stanza
+                 * @example _converse.api.listen.on('message', obj => { ... });
+                 */
                 _converse.api.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
             },
 
@@ -998,6 +1026,14 @@ converse.plugins.add('converse-chatboxes', {
                         Strophe.LogLevel.ERROR);
                 }
             });
+            /**
+             * Triggered once any private chats have been automatically joined as
+             * specified by the `auto_join_private_chats` setting.
+             * See: https://conversejs.org/docs/html/configuration.html#auto-join-private-chats
+             * @event _converse#privateChatsAutoJoined
+             * @example _converse.api.listen.on('privateChatsAutoJoined', () => { ... });
+             * @example _converse.api.waitUntil('privateChatsAutoJoined').then(() => { ... });
+             */
             _converse.api.emit('privateChatsAutoJoined');
         }
 
@@ -1012,11 +1048,7 @@ converse.plugins.add('converse-chatboxes', {
             _converse.api.disco.own.features.add(Strophe.NS.OUTOFBAND);
         });
 
-        _converse.api.listen.on('pluginsInitialized', () => {
-            _converse.chatboxes = new _converse.ChatBoxes();
-            _converse.api.emit('chatBoxesInitialized');
-        });
-
+        _converse.api.listen.on('pluginsInitialized', () => (_converse.chatboxes = new _converse.ChatBoxes()));
         _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
         /************************ END Event Handlers ************************/
 

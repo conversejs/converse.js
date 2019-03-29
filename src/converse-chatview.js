@@ -180,6 +180,14 @@ converse.plugins.add('converse-chatview', {
 
             onStatusMessageChanged (item) {
                 this.render();
+                /**
+                 * When a contact's custom status message has changed.
+                 * @event _converse#contactStatusMessageChanged
+                 * @type {object}
+                 * @property { object } contact - The chat buddy
+                 * @property { string } message - The message text
+                 * @example _converse.api.listen.on('contactStatusMessageChanged', obj => { ... });
+                 */
                 _converse.api.emit('contactStatusMessageChanged', {
                     'contact': item.attributes,
                     'message': item.get('status')
@@ -201,6 +209,12 @@ converse.plugins.add('converse-chatview', {
                 this.model.on('contactAdded', this.registerContactEventHandlers, this);
                 this.model.on('change', this.render, this);
                 this.registerContactEventHandlers();
+                /**
+                 * Triggered once the _converse.UserDetailsModal has been initialized
+                 * @event _converse#userDetailsModalInitialized
+                 * @type { _converse.ChatBox }
+                 * @example _converse.api.listen.on('userDetailsModalInitialized', chatbox => { ... });
+                 */
                 _converse.api.emit('userDetailsModalInitialized', this.model);
             },
 
@@ -275,6 +289,13 @@ converse.plugins.add('converse-chatview', {
         });
 
 
+        /**
+         * The View of an open/ongoing chat conversation.
+         *
+         * @class
+         * @namespace _converse.ChatBoxView
+         * @memberOf _converse
+         */
         _converse.ChatBoxView = Backbone.NativeView.extend({
             length: 200,
             className: 'chatbox hidden',
@@ -315,7 +336,13 @@ converse.plugins.add('converse-chatview', {
                 this.render();
 
                 this.fetchMessages();
-                _converse.api.emit('chatBoxOpened', this);
+                _converse.api.emit('chatBoxOpened', this); // TODO: remove
+                /**
+                 * Triggered once the _converse.ChatBoxView has been initialized
+                 * @event _converse#chatBoxInitialized
+                 * @type { _converse.ChatBoxView | _converse.HeadlinesBoxView }
+                 * @example _converse.api.listen.on('chatBoxInitialized', view => { ... });
+                 */
                 _converse.api.emit('chatBoxInitialized', this);
             },
 
@@ -351,6 +378,12 @@ converse.plugins.add('converse-chatview', {
                 this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
                 this.addSpoilerButton(options);
                 this.addFileUploadButton();
+                /**
+                 * Triggered once the _converse.ChatBoxView's toolbar has been rendered
+                 * @event _converse#renderToolbar
+                 * @type { _converse.ChatBoxView }
+                 * @example _converse.api.listen.on('renderToolbar', view => { ... });
+                 */
                 _converse.api.emit('renderToolbar', this);
                 return this;
             },
@@ -485,6 +518,13 @@ converse.plugins.add('converse-chatview', {
                 this.insertIntoDOM();
                 this.scrollDown();
                 this.content.addEventListener('scroll', this.markScrolled.bind(this));
+                /**
+                 * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
+                 * `sessionStorage` but **NOT** from the server.
+                 * @event _converse#afterMessagesFetched 
+                 * @type {_converse.ChatBoxView | _converse.ChatRoomView}
+                 * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
+                 */
                 _converse.api.emit('afterMessagesFetched', this);
             },
 
@@ -792,6 +832,14 @@ converse.plugins.add('converse-chatview', {
                 if (message.get('correcting')) {
                     this.insertIntoTextArea(message.get('message'), true, true);
                 }
+                /**
+                 * Triggered once a message has been added to a chatbox.
+                 * @event _converse#messageAdded
+                 * @type {object}
+                 * @property { _converse.Message } message - The message instance
+                 * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
+                 * @example _converse.api.listen.on('messageAdded', data => { ... });
+                 */
                 _converse.api.emit('messageAdded', {
                     'message': message,
                     'chatbox': this.model
@@ -878,6 +926,12 @@ converse.plugins.add('converse-chatview', {
                     textarea.value = '';
                     u.removeClass('correcting', textarea);
                     textarea.style.height = 'auto'; // Fixes weirdness
+                    /**
+                     * Triggered just before an HTML5 message notification will be sent out.
+                     * @event _converse#messageSend
+                     * @type { _converse.Message }
+                     * @example _converse.api.listen.on('messageSend', data => { ... });
+                     */
                     _converse.api.emit('messageSend', message);
                 }
                 textarea.removeAttribute('disabled');
@@ -1081,6 +1135,14 @@ converse.plugins.add('converse-chatview', {
 
             toggleCall (ev) {
                 ev.stopPropagation();
+                /**
+                 * When a call button (i.e. with class .toggle-call) on a chatbox has been clicked.
+                 * @event _converse#callButtonClicked
+                 * @type { object }
+                 * @property { Strophe.Connection } _converse.connection - The XMPP Connection object
+                 * @property { _converse.ChatBox | _converse.ChatRoom } _converse.connection - The XMPP Connection object
+                 * @example _converse.api.listen.on('callButtonClicked', (connection, model) => { ... });
+                 */
                 _converse.api.emit('callButtonClicked', {
                     connection: _converse.connection,
                     model: this.model
@@ -1162,6 +1224,12 @@ converse.plugins.add('converse-chatview', {
                     _converse.log(e, Strophe.LogLevel.ERROR);
                 }
                 this.remove();
+                /**
+                 * Triggered once a chatbox has been closed.
+                 * @event _converse#chatBoxClosed
+                 * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+                 * @example _converse.api.listen.on('chatBoxClosed', view => { ... });
+                 */
                 _converse.api.emit('chatBoxClosed', this);
                 return this;
             },
@@ -1182,6 +1250,12 @@ converse.plugins.add('converse-chatview', {
                 const textarea_el = this.el.querySelector('.chat-textarea');
                 if (!_.isNull(textarea_el)) {
                     textarea_el.focus();
+                    /**
+                     * Triggered when the focus has been moved to a particular chat.
+                     * @event _converse#chatBoxFocused
+                     * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+                     * @example _converse.api.listen.on('chatBoxFocused', view => { ... });
+                     */
                     _converse.api.emit('chatBoxFocused', this);
                 }
                 return this;
@@ -1265,7 +1339,14 @@ converse.plugins.add('converse-chatview', {
                 if (_converse.windowState !== 'hidden') {
                     this.model.clearUnreadMsgCounter();
                 }
-                _converse.api.emit('chatBoxScrolledDown', {'chatbox': this.model});
+                /**
+                 * Triggered once the chat's message area has been scrolled down to the bottom.
+                 * @event _converse#chatBoxScrolledDown
+                 * @type {object}
+                 * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
+                 * @example _converse.api.listen.on('chatBoxScrolledDown', obj => { ... });
+                 */
+                _converse.api.emit('chatBoxScrolledDown', {'chatbox': this.model}); // TODO: clean up
             },
 
             onWindowStateChanged (state) {

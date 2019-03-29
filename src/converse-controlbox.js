@@ -224,6 +224,14 @@ converse.plugins.add('converse-controlbox', {
                 if (this.model.get('connected')) {
                     this.insertRoster();
                 }
+                /**
+                 * Triggered when the _converse.ControlBoxView has been initialized and therefore
+                 * exists. The controlbox contains the login and register forms when the user is
+                 * logged out and a list of the user's contacts and group chats when logged in.
+                 * @event _converse#chatBoxInitialized
+                 * @type { _converse.ControlBoxView }
+                 * @example _converse.api.listen.on('controlboxInitialized', view => { ... });
+                 */
                 _converse.api.emit('controlboxInitialized', this);
             },
 

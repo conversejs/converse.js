@@ -76,6 +76,12 @@ converse.plugins.add('converse-muc-views', {
                 this.el.querySelector('.controlbox-pane').insertAdjacentElement(
                     'beforeEnd', this.roomspanel.render().el);
 
+                /**
+                 * Triggered once the section of the _converse.ControlBoxView
+                 * which shows gropuchats has been rendered.
+                 * @event _converse#roomsPanelRendered
+                 * @example _converse.api.listen.on('roomsPanelRendered', () => { ... });
+                 */
                 _converse.api.emit('roomsPanelRendered');
             },
 
@@ -488,6 +494,13 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
+        /**
+         * The View of an open/ongoing groupchat conversation
+         *
+         * @class
+         * @namespace _converse.ChatRoomView
+         * @memberOf _converse
+         */
         _converse.ChatRoomView = _converse.ChatBoxView.extend({
             /* Backbone.NativeView which renders a groupchat, based upon the view
              * for normal one-on-one chat boxes.
@@ -561,6 +574,12 @@ converse.plugins.add('converse-muc-views', {
                 } else {
                     this.fetchMessages();
                 }
+                /**
+                 * Triggered once a groupchat has been opened
+                 * @event _converse#chatRoomOpened
+                 * @type { _converse.ChatRoomView }
+                 * @example _converse.api.listen.on('chatRoomOpened', view => { ... });
+                 */
                 _converse.api.emit('chatRoomOpened', this);
             },
 

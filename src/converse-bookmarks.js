@@ -545,6 +545,16 @@ converse.plugins.add('converse-bookmarks', {
                 _converse.bookmarksview = new _converse.BookmarksView({'model': _converse.bookmarks});
                 await _converse.bookmarks.fetchBookmarks();
             }
+            /**
+             * Triggered once the _converse.Bookmarks collection and _converse.BookmarksView view
+             * has been created and cached bookmarks have been fetched.
+             *
+             * Also gets emitted if it was determined that the server doesn't
+             * have sufficient support for PEP-based bookmarks (in which case
+             * the above two instances don't get created).
+             * @event _converse#bookmarksInitialized
+             * @example _converse.api.listen.on('bookmarksInitialized', () => { ... });
+             */
             _converse.api.emit('bookmarksInitialized');
         }
 

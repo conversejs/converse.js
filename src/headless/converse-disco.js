@@ -94,11 +94,24 @@ converse.plugins.add('converse-disco', {
 
             onFeatureAdded (feature) {
                 feature.entity = this;
+                /**
+                 * Triggered when Converse has learned of a service provided by the XMPP server.
+                 * See XEP-0030.
+                 * @event _converse#serviceDiscovered
+                 * @type { Backbone.Model }
+                 * @example _converse.api.listen.on('featuresDiscovered', feature => { ... });
+                 */
                 _converse.api.emit('serviceDiscovered', feature);
             },
 
             onFieldAdded (field) {
                 field.entity = this;
+                /**
+                 * Triggered when Converse has learned of a disco extension field.
+                 * See XEP-0030.
+                 * @event _converse#discoExtensionFieldDiscovered
+                 * @example _converse.api.listen.on('discoExtensionFieldDiscovered', () => { ... });
+                 */
                 _converse.api.emit('discoExtensionFieldDiscovered', field);
             },
 
@@ -227,6 +240,12 @@ converse.plugins.add('converse-disco', {
             if (_converse.message_carbons) {
                 _converse.api.disco.own.features.add(Strophe.NS.CARBONS);
             }
+            /**
+             * Triggered in converse-disco once the core disco features of
+             * Converse have been added.
+             * @event _converse#addClientFeatures
+             * @example _converse.api.listen.on('addClientFeatures', () => { ... });
+             */
             _converse.api.emit('addClientFeatures');
             return this;
         }
@@ -250,6 +269,13 @@ converse.plugins.add('converse-disco', {
                     }
                 }
             });
+            /**
+             * Triggered as soon as Converse has processed the stream features as advertised by
+             * the server. If you want to check whether a stream feature is supported before
+             * proceeding, then you'll first want to wait for this event.
+             * @event _converse#streamFeaturesAdded
+             * @example _converse.api.listen.on('streamFeaturesAdded', () => { ... });
+             */
             _converse.api.emit('streamFeaturesAdded');
         }
 
@@ -268,6 +294,13 @@ converse.plugins.add('converse-disco', {
                 // create one.
                 _converse.disco_entities.create({'jid': _converse.domain});
             }
+            /**
+             * Triggered once the `converse-disco` plugin has been initialized and the
+             * `_converse.disco_entities` collection will be available and populated with at
+             * least the service discovery features of the user's own server.
+             * @event _converse#discoInitialized
+             * @example _converse.api.listen.on('discoInitialized', () => { ... });
+             */
             _converse.api.emit('discoInitialized');
         }
 

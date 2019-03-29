@@ -168,6 +168,13 @@ converse.plugins.add('converse-muc', {
             return chatbox;
         }
 
+        /**
+         * Represents an open/ongoing groupchat conversation.
+         *
+         * @class
+         * @namespace _converse.ChatRoom
+         * @memberOf _converse
+         */
         _converse.ChatRoom = _converse.ChatBox.extend({
 
             defaults () {
@@ -474,7 +481,6 @@ converse.plugins.add('converse-muc', {
 
             directInvite (recipient, reason) {
                 /* Send a direct invitation as per XEP-0249
-                 *
                  * Parameters:
                  *    (String) recipient - JID of the person being invited
                  *    (String) reason - Optional reason for the invitation
@@ -505,6 +511,16 @@ converse.plugins.add('converse-muc', {
                     'id': _converse.connection.getUniqueId()
                 }).c('x', attrs);
                 _converse.api.send(invitation);
+                /**
+                 * After the user has sent out a direct invitation (as per XEP-0249),
+                 * to a roster contact, asking them to join a room.
+                 * @event _converse#chatBoxMaximized
+                 * @type { object }
+                 * @property { _converse.ChatRoom } room
+                 * @property { string } recipient - The JID of the person being invited
+                 * @property { string } reason - The original reason for the invitation
+                 * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
+                 */
                 _converse.api.emit('roomInviteSent', {
                     'room': this,
                     'recipient': recipient,
@@ -1106,6 +1122,14 @@ converse.plugins.add('converse-muc', {
                         // Accept default configuration
                         this.saveConfiguration().then(() => this.refreshRoomFeatures());
                     } else {
+                        /**
+                         * Triggered when a new room has been created which first needs to be configured
+                         * and when `auto_configure` is set to `false`.
+                         * Used by `_converse.ChatRoomView` in order to know when to render the
+                         * configuration form for a new room.
+                         * @event _converse.ChatRoom#configurationNeeded
+                         * @example _converse.api.listen.on('configurationNeeded', () => { ... });
+                         */
                         this.trigger('configurationNeeded');
                         return; // We haven't yet entered the groupchat, so bail here.
                     }
@@ -1380,6 +1404,13 @@ converse.plugins.add('converse-muc', {
                         Strophe.LogLevel.ERROR);
                 }
             });
+            /**
+             * Triggered once any rooms that have been configured to be automatically joined,
+             * specified via the _`auto_join_rooms` setting, have been entered.
+             * @event _converse#roomsAutoJoined
+             * @example _converse.api.listen.on('roomsAutoJoined', () => { ... });
+             * @example _converse.api.waitUntil('roomsAutoJoined').then(() => { ... });
+             */
             _converse.api.emit('roomsAutoJoined');
         }
 

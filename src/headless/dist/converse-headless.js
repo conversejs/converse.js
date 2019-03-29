@@ -40408,8 +40408,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       comparator: 'time'
     });
     /**
-     * The "_converse.ChatBox" namespace
+     * Represents an open/ongoing chat conversation.
      *
+     * @class
      * @namespace _converse.ChatBox
      * @memberOf _converse
      */
@@ -41037,6 +41038,16 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return new _converse.ChatBox(attrs, options);
       },
 
+      initialize() {
+        /**
+         * Triggered once the _converse.ChatBoxes collection has been initialized.
+         * @event _converse#chatBoxesInitialized
+         * @example _converse.api.listen.on('chatBoxesInitialized', () => { ... });
+         * @example _converse.api.waitUntil('chatBoxesInitialized').then(() => { ... });
+         */
+        _converse.api.emit('chatBoxesInitialized');
+      },
+
       registerMessageHandler() {
         _converse.connection.addHandler(stanza => {
           this.onMessage(stanza);
@@ -41074,6 +41085,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             chatbox.trigger('show');
           }
         });
+        /**
+         * Triggered when a message stanza is been received and processed.
+         * @event _converse#message
+         * @type { object }
+         * @property { _converse.ChatBox | _converse.ChatRoom } chatbox
+         * @property { XMLElement } stanza
+         * @example _converse.api.listen.on('message', obj => { ... });
+         * @example _converse.api.waitUntil('chatBoxesFetched').then(() => { ... });
+         */
 
         _converse.api.emit('chatBoxesFetched');
       },
@@ -41234,6 +41254,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             }
           }
         }
+        /**
+         * Triggered when a message stanza is been received and processed
+         * @event _converse#message
+         * @type { object }
+         * @property { _converse.ChatBox | _converse.ChatRoom } chatbox
+         * @property { XMLElement } stanza
+         * @example _converse.api.listen.on('message', obj => { ... });
+         */
+
 
         _converse.api.emit('message', {
           'stanza': original_stanza,
@@ -41298,6 +41327,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           _converse.log('Invalid jid criteria specified for "auto_join_private_chats"', Strophe.LogLevel.ERROR);
         }
       });
+      /**
+       * Triggered once any private chats have been automatically joined as
+       * specified by the `auto_join_private_chats` setting.
+       * See: https://conversejs.org/docs/html/configuration.html#auto-join-private-chats
+       * @event _converse#privateChatsAutoJoined
+       * @example _converse.api.listen.on('privateChatsAutoJoined', () => { ... });
+       * @example _converse.api.waitUntil('privateChatsAutoJoined').then(() => { ... });
+       */
+
 
       _converse.api.emit('privateChatsAutoJoined');
     }
@@ -41314,11 +41352,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       _converse.api.disco.own.features.add(Strophe.NS.OUTOFBAND);
     });
 
-    _converse.api.listen.on('pluginsInitialized', () => {
-      _converse.chatboxes = new _converse.ChatBoxes();
-
-      _converse.api.emit('chatBoxesInitialized');
-    });
+    _converse.api.listen.on('pluginsInitialized', () => _converse.chatboxes = new _converse.ChatBoxes());
 
     _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
     /************************ END Event Handlers ************************/
@@ -41838,7 +41872,7 @@ function initPlugins() {
     '_converse': _converse
   }, whitelist, _converse.blacklisted_plugins);
   /**
-   * Emitted once all plugins have been initialized. This is a useful event if you want to
+   * Triggered once all plugins have been initialized. This is a useful event if you want to
    * register event handlers but would like your own handlers to be overridable by
    * plugins. In that case, you need to first wait until all plugins have been
    * initialized, so that their overrides are active. One example where this is used
@@ -41849,15 +41883,8 @@ function initPlugins() {
    *
    * @event _converse#pluginsInitialized
    * @memberOf _converse
-   *
-   * @example
-   * _converse.api.listen.on('pluginsInitialized', () => { ... });
-   *
-   * @example
-   * // As an ES2015 Promise
-   * _converse.api.waitUntil('pluginsInitialized').then(() => {
-   *     // Your code here...
-   * });
+   * @example _converse.api.listen.on('pluginsInitialized', () => { ... });
+   * @example _converse.api.waitUntil('pluginsInitialized').then(() => { ... });
    */
 
 
@@ -41880,7 +41907,7 @@ function initClientConfig() {
 
   _converse.config.fetch();
   /**
-   * Emitted once the XMPP-client configuration has been initialized.
+   * Triggered once the XMPP-client configuration has been initialized.
    * The client configuration is independent of any particular and its values
    * persist across user sessions.
    *
@@ -41914,7 +41941,7 @@ _converse.initConnection = function () {
 
   setUpXMLLogging();
   /**
-   * Emitted once the `Strophe.Connection` constructor has been initialized, which
+   * Triggered once the `Strophe.Connection` constructor has been initialized, which
    * will be responsible for managing the connection to the XMPP server.
    *
    * @event _converse#connectionInitialized
@@ -42227,13 +42254,10 @@ _converse.initialize = async function (settings, callback) {
 
     _converse.clearSession();
     /**
-     * Emitted after converse.js has disconnected from the XMPP server.
-     *
+     * Triggered after converse.js has disconnected from the XMPP server.
      * @event _converse#disconnected
      * @memberOf _converse
-     *
-     * @example
-     * _converse.api.listen.on('disconnected', () => { ... });
+     * @example _converse.api.listen.on('disconnected', () => { ... });
      */
 
 
@@ -42262,7 +42286,7 @@ _converse.initialize = async function (settings, callback) {
       return _converse.disconnect();
     }
     /**
-     * Emitted when the connection has dropped, but Converse will attempt
+     * Triggered when the connection has dropped, but Converse will attempt
      * to reconnect again.
      *
      * @event _converse#will-reconnect
@@ -42413,10 +42437,8 @@ _converse.initialize = async function (settings, callback) {
 
     _converse.session.fetch();
     /**
-     * Emitted once the session has been initialized. The session is a
-     * persistent object which stores session information in the browser
-     * storage.
-     *
+     * Triggered once the session has been initialized. The session is a
+     * persistent object which stores session information in the browser storage.
      * @event _converse#sessionInitialized
      * @memberOf _converse
      */
@@ -42433,10 +42455,9 @@ _converse.initialize = async function (settings, callback) {
       this.session.browserStorage._clear();
     }
     /**
-     * Emitted once the session information has been cleared,
+     * Triggered once the session information has been cleared,
      * for example when the user has logged out or when Converse has
      * disconnected for some other reason.
-     *
      * @event _converse#clearSession
      */
 
@@ -42458,8 +42479,7 @@ _converse.initialize = async function (settings, callback) {
 
     _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.promises), addPromise);
     /**
-     * Emitted once the user has logged out.
-     *
+     * Triggered once the user has logged out.
      * @event _converse#logout
      */
 
@@ -42493,6 +42513,14 @@ _converse.initialize = async function (settings, callback) {
     }
 
     _converse.windowState = state;
+    /**
+     * Triggered when window state has changed.
+     * Used to determine when a user left the page and when came back.
+     * @event _converse#windowStateChanged
+     * @type { object }
+     * @property{ string } state - Either "hidden" or "visible"
+     * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
+     */
 
     _converse.api.emit('windowStateChanged', {
       state
@@ -42505,6 +42533,15 @@ _converse.initialize = async function (settings, callback) {
     _converse.saveWindowState({
       'type': document.hidden ? "blur" : "focus"
     }); // Set initial state
+
+    /**
+     * Called once Converse has registered its global event handlers
+     * (for events such as window resize or unload).
+     * Plugins can listen to this event as cue to register their own
+     * global event handlers.
+     * @event _converse#registeredGlobalEventHandlers
+     * @example _converse.api.listen.on('registeredGlobalEventHandlers', () => { ... });
+     */
 
 
     _converse.api.emit('registeredGlobalEventHandlers');
@@ -42547,34 +42584,34 @@ _converse.initialize = async function (settings, callback) {
 
   this.onStatusInitialized = function (reconnecting) {
     /**
-     * Emitted when the user's own chat status has been initialized.
-     * Also available as an [ES2015 Promise](http://es6-features.org/#PromiseUsage).
-     *
-     * @event _converse#onStatusInitialized
-     * @example
-     * _converse.api.listen.on('statusInitialized', status => { ... });
-     * @example
-     * // As an ES2015 Promise
-     * _converse.api.waitUntil('statusInitialized').then(() => { ... });
+     * Triggered when the user's own chat status has been initialized.
+     * @event _converse#statusInitialized
+     * @example _converse.api.listen.on('statusInitialized', status => { ... });
+     * @example _converse.api.waitUntil('statusInitialized').then(() => { ... });
      */
     _converse.api.emit('statusInitialized', reconnecting);
 
     if (reconnecting) {
+      /**
+       * After the connection has dropped and converse.js has reconnected.
+       * Any Strophe stanza handlers (as registered via `converse.listen.stanza`) will
+       * have to be registered anew.
+       * @event _converse#reconnected
+       * @example _converse.api.listen.on('reconnected', () => { ... });
+       */
       _converse.api.emit('reconnected');
     } else {
       init_promise.resolve();
       /**
-       * Emitted once converse.js has been initialized.
+       * Triggered once converse.js has been initialized.
        * See also {@link _converse#event:pluginsInitialized}.
-       *
        * @event _converse#initialized
        */
 
       _converse.api.emit('initialized');
       /**
-       * Emitted after the connection has been established and Converse
+       * Triggered after the connection has been established and Converse
        * has got all its ducks in a row.
-       *
        * @event _converse#initialized
        */
 
@@ -42642,12 +42679,24 @@ _converse.initialize = async function (settings, callback) {
       this.on('change:status', item => {
         const status = this.get('status');
         this.sendPresence(status);
+        /**
+         * Triggered when the current user's status has changed
+         * @event _converse#statusChanged
+         * @type { string }
+         * @example _converse.api.listen.on('statusChanged', status => { ... });
+         */
 
         _converse.api.emit('statusChanged', status);
       });
       this.on('change:status_message', () => {
         const status_message = this.get('status_message');
         this.sendPresence(this.get('status'), status_message);
+        /**
+         * Triggered when the current user's custom status message has changed.
+         * @event _converse#statusMessageChanged
+         * @type { string }
+         * @example _converse.api.listen.on('statusMessageChanged', message => { ... });
+         */
 
         _converse.api.emit('statusMessageChanged', status_message);
       });
@@ -42742,6 +42791,12 @@ _converse.initialize = async function (settings, callback) {
 
     xhr.onerror = function () {
       delete _converse.connection;
+      /**
+       * Triggered when keepalive=true but there aren't any stored prebind tokens.
+       * @event _converse#noResumeableSession
+       * @type { _converse }
+       * @example _converse.api.listen.on('noResumeableSession', _converse => { ... });
+       */
 
       _converse.api.emit('noResumeableSession', this);
     };
@@ -43308,13 +43363,11 @@ _converse.api = {
 
     /**
      * Subscribe to an incoming stanza
-     *
-     * Every a matched stanza is received, the callback method specified by `callback` will be called.
-     *
+     * Every a matched stanza is received, the callback method specified by
+     * `callback` will be called.
      * @method _converse.api.listen.stanza
      * @param {string} name The stanza's name
-     * @param {object} options Matching options
-     * (e.g. 'ns' for namespace, 'type' for stanza type, also 'id' and 'from');
+     * @param {object} options Matching options (e.g. 'ns' for namespace, 'type' for stanza type, also 'id' and 'from');
      * @param {function} handler The callback method to be called when the stanza appears
      */
     'stanza'(name, options, handler) {
@@ -43332,7 +43385,6 @@ _converse.api = {
 
   /**
    * Wait until a promise is resolved
-   *
    * @method _converse.api.waitUntil
    * @param {string} name The name of the promise
    * @returns {Promise}
@@ -43349,7 +43401,6 @@ _converse.api = {
 
   /**
    * Allows you to send XML stanzas.
-   *
    * @method _converse.api.send
    * @example
    * const msg = converse.env.$msg({
@@ -43380,7 +43431,6 @@ _converse.api = {
 
   /**
    * Send an IQ stanza and receive a promise
-   *
    * @method _converse.api.sendIQ
    * @returns {Promise} A promise which resolves when we receive a `result` stanza
    * or is rejected when we receive an `error` stanza.
@@ -43411,11 +43461,9 @@ const converse = {
   /**
    * Public API method which initializes Converse.
    * This method must always be called when using Converse.
-   *
    * @memberOf converse
    * @method initialize
    * @param {object} config A map of [configuration-settings](https://conversejs.org/docs/html/configuration.html#configuration-settings).
-   *
    * @example
    * converse.initialize({
    *     auto_list_rooms: false,
@@ -43440,7 +43488,6 @@ const converse = {
    * if you want to have access to the private API methods defined further down below.
    *
    * For more information on plugins, read the documentation on [writing a plugin](/docs/html/plugin_development.html).
-   *
    * @namespace plugins
    * @memberOf converse
    */
@@ -43450,9 +43497,7 @@ const converse = {
      * @method converse.plugins.add
      * @param {string} name The name of the plugin
      * @param {object} plugin The plugin object
-     *
      * @example
-     *
      *  const plugin = {
      *      initialize: function () {
      *          // Gets called as soon as the plugin has been loaded.
@@ -43514,16 +43559,11 @@ const converse = {
 };
 window.converse = converse;
 /**
- * Once Converse.js has loaded, it'll dispatch a custom event with the name
- * `converse-loaded`.
- *
- * You can listen for this event in order to be informed as soon
- * as converse.js has been loaded and parsed, which would mean it's safe to call
- * ``converse.initialize``.
- *
+ * Once Converse.js has loaded, it'll dispatch a custom event with the name `converse-loaded`.
+ * You can listen for this event in order to be informed as soon as converse.js has been
+ * loaded and parsed, which would mean it's safe to call `converse.initialize`.
  * @event converse-loaded
- * @example
- *     window.addEventListener('converse-loaded', () => converse.initialize());
+ * @example window.addEventListener('converse-loaded', () => converse.initialize());
  */
 
 window.dispatchEvent(new CustomEvent('converse-loaded'));
@@ -43628,12 +43668,25 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
 
       onFeatureAdded(feature) {
         feature.entity = this;
+        /**
+         * Triggered when Converse has learned of a service provided by the XMPP server.
+         * See XEP-0030.
+         * @event _converse#serviceDiscovered
+         * @type { Backbone.Model }
+         * @example _converse.api.listen.on('featuresDiscovered', feature => { ... });
+         */
 
         _converse.api.emit('serviceDiscovered', feature);
       },
 
       onFieldAdded(field) {
         field.entity = this;
+        /**
+         * Triggered when Converse has learned of a disco extension field.
+         * See XEP-0030.
+         * @event _converse#discoExtensionFieldDiscovered
+         * @example _converse.api.listen.on('discoExtensionFieldDiscovered', () => { ... });
+         */
 
         _converse.api.emit('discoExtensionFieldDiscovered', field);
       },
@@ -43785,6 +43838,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       if (_converse.message_carbons) {
         _converse.api.disco.own.features.add(Strophe.NS.CARBONS);
       }
+      /**
+       * Triggered in converse-disco once the core disco features of
+       * Converse have been added.
+       * @event _converse#addClientFeatures
+       * @example _converse.api.listen.on('addClientFeatures', () => { ... });
+       */
+
 
       _converse.api.emit('addClientFeatures');
 
@@ -43808,6 +43868,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         }
 
       });
+      /**
+       * Triggered as soon as Converse has processed the stream features as advertised by
+       * the server. If you want to check whether a stream feature is supported before
+       * proceeding, then you'll first want to wait for this event.
+       * @event _converse#streamFeaturesAdded
+       * @example _converse.api.listen.on('streamFeaturesAdded', () => { ... });
+       */
+
 
       _converse.api.emit('streamFeaturesAdded');
     }
@@ -43828,6 +43896,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
           'jid': _converse.domain
         });
       }
+      /**
+       * Triggered once the `converse-disco` plugin has been initialized and the
+       * `_converse.disco_entities` collection will be available and populated with at
+       * least the service discovery features of the user's own server.
+       * @event _converse#discoInitialized
+       * @example _converse.api.listen.on('discoInitialized', () => { ... });
+       */
+
 
       _converse.api.emit('discoInitialized');
     }
@@ -44960,6 +45036,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
       chatbox.trigger('show', true);
       return chatbox;
     };
+    /**
+     * Represents an open/ongoing groupchat conversation.
+     *
+     * @class
+     * @namespace _converse.ChatRoom
+     * @memberOf _converse
+     */
+
 
     _converse.ChatRoom = _converse.ChatBox.extend({
       defaults() {
@@ -45317,7 +45401,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
       directInvite(recipient, reason) {
         /* Send a direct invitation as per XEP-0249
-         *
          * Parameters:
          *    (String) recipient - JID of the person being invited
          *    (String) reason - Optional reason for the invitation
@@ -45359,6 +45442,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         }).c('x', attrs);
 
         _converse.api.send(invitation);
+        /**
+         * After the user has sent out a direct invitation (as per XEP-0249),
+         * to a roster contact, asking them to join a room.
+         * @event _converse#chatBoxMaximized
+         * @type { object }
+         * @property { _converse.ChatRoom } room
+         * @property { string } recipient - The JID of the person being invited
+         * @property { string } reason - The original reason for the invitation
+         * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
+         */
+
 
         _converse.api.emit('roomInviteSent', {
           'room': this,
@@ -46045,6 +46139,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
             // Accept default configuration
             this.saveConfiguration().then(() => this.refreshRoomFeatures());
           } else {
+            /**
+             * Triggered when a new room has been created which first needs to be configured
+             * and when `auto_configure` is set to `false`.
+             * Used by `_converse.ChatRoomView` in order to know when to render the
+             * configuration form for a new room.
+             * @event _converse.ChatRoom#configurationNeeded
+             * @example _converse.api.listen.on('configurationNeeded', () => { ... });
+             */
             this.trigger('configurationNeeded');
             return; // We haven't yet entered the groupchat, so bail here.
           }
@@ -46350,6 +46452,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
           _converse.log('Invalid groupchat criteria specified for "auto_join_rooms"', Strophe.LogLevel.ERROR);
         }
       });
+      /**
+       * Triggered once any rooms that have been configured to be automatically joined,
+       * specified via the _`auto_join_rooms` setting, have been entered.
+       * @event _converse#roomsAutoJoined
+       * @example _converse.api.listen.on('roomsAutoJoined', () => { ... });
+       * @example _converse.api.waitUntil('roomsAutoJoined').then(() => { ... });
+       */
+
 
       _converse.api.emit('roomsAutoJoined');
     }
@@ -46926,6 +47036,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       _converse.rostergroups = new _converse.RosterGroups();
       _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](`converse.roster.groups${_converse.bare_jid}`);
+      /**
+       * Triggered once the `_converse.RosterContacts` and `_converse.RosterGroups` have
+       * been created, but not yet populated with data.
+       * This event is useful when you want to create views for these collections.
+       * @event _converse#chatBoxMaximized
+       * @example _converse.api.listen.on('rosterInitialized', () => { ... });
+       * @example _converse.api.waitUntil('rosterInitialized').then(() => { ... });
+       */
 
       _converse.api.emit('rosterInitialized');
     };
@@ -46946,6 +47064,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         try {
           await _converse.roster.fetchFromServer();
+          /**
+           * Triggered once roster contacts have been fetched. Used by the
+           * `converse-rosterview.js` plugin to know when it can start to show the roster.
+           * @event _converse#rosterContactsFetched
+           * @example _converse.api.listen.on('rosterContactsFetched', () => { ... });
+           */
 
           _converse.api.emit('rosterContactsFetched');
         } catch (reason) {
@@ -46956,6 +47080,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       } else {
         try {
           await _converse.rostergroups.fetchRosterGroups();
+          /**
+           * Triggered once roster groups have been fetched. Used by the
+           * `converse-rosterview.js` plugin to know when it can start alphabetically
+           * position roster groups.
+           * @event _converse#rosterGroupsFetched
+           * @example _converse.api.listen.on('rosterGroupsFetched', () => { ... });
+           */
 
           _converse.api.emit('rosterGroupsFetched');
 
@@ -47100,6 +47231,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'user_id': Strophe.getNodeFromJid(jid)
         }, attributes));
         this.setChatBox();
+        /**
+         * When a contact's presence status has changed.
+         * The presence status is either `online`, `offline`, `dnd`, `away` or `xa`.
+         * @event _converse#contactPresenceChanged
+         * @type { _converse.RosterContact }
+         * @example _converse.api.listen.on('contactPresenceChanged', contact => { ... });
+         */
+
         this.presence.on('change:show', () => _converse.api.emit('contactPresenceChanged', this));
         this.presence.on('change:show', () => this.trigger('presenceChanged'));
       },
@@ -47310,6 +47449,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           _converse.send_initial_presence = true;
           return _converse.roster.fetchFromServer();
         } else {
+          /**
+           * The contacts roster has been retrieved from the local cache (`sessionStorage`).
+           * @event _converse#cachedRoster
+           * @type { _converse.RosterContacts }
+           * @example _converse.api.listen.on('cachedRoster', (items) => { ... });
+           * @example _converse.api.waitUntil('cachedRoster').then(items => { ... });
+           */
           _converse.api.emit('cachedRoster', collection);
         }
       },
@@ -47358,7 +47504,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          *    (Function) callback - A function to call once the IQ is returned
          *    (Function) errback - A function to call if an error occurred
          */
-        name = _.isEmpty(name) ? jid : name;
+        name = _.isEmpty(name) ? null : name;
         const iq = $iq({
           'type': 'set'
         }).c('query', {
@@ -47392,7 +47538,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         } catch (e) {
           _converse.log(e, Strophe.LogLevel.ERROR);
 
-          alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name));
+          alert(__('Sorry, there was an error while trying to add %1$s as a contact.', name || jid));
           return e;
         }
 
@@ -47484,6 +47630,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
 
         this.updateContact(items.pop());
+        /**
+         * When the roster receives a push event from server (i.e. new entry in your contacts roster).
+         * @event _converse#rosterPush
+         * @type { XMLElement }
+         * @example _converse.api.listen.on('rosterPush', iq => { ... });
+         */
 
         _converse.api.emit('rosterPush', iq);
 
@@ -47537,6 +47689,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
           _converse.session.save('roster_fetched', true);
         }
+        /**
+         * When the roster has been received from the XMPP server.
+         * See also the `cachedRoster` event further up, which gets called instead of
+         * `roster` if its already in `sessionStorage`.
+         * @event _converse#roster
+         * @type { XMLElement }
+         * @example _converse.api.listen.on('roster', iq => { ... });
+         * @example _converse.api.waitUntil('roster').then(iq => { ... });
+         */
+
 
         _converse.api.emit('roster', iq);
       },
@@ -47600,6 +47762,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'requesting': true,
           'nickname': nickname
         };
+        /**
+         * Triggered when someone has requested to subscribe to your presence (i.e. to be your contact).
+         * @event _converse#contactRequest
+         * @type { _converse.RosterContact }
+         * @example _converse.api.listen.on('contactRequest', contact => { ... });
+         */
 
         _converse.api.emit('contactRequest', this.create(user_data));
       },
@@ -47840,16 +48008,29 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       _converse.presences.browserStorage = new Backbone.BrowserStorage.session(`converse.presences-${_converse.bare_jid}`);
 
       _converse.presences.fetch();
+      /**
+       * Triggered once the _converse.Presences collection has been
+       * initialized and its cached data fetched.
+       * Returns a boolean indicating whether this event has fired due to
+       * Converse having reconnected.
+       * @event _converse#presencesInitialized
+       * @type { bool }
+       * @example _converse.api.listen.on('presencesInitialized', reconnecting => { ... });
+       */
+
 
       _converse.api.emit('presencesInitialized', reconnecting);
     });
 
     _converse.api.listen.on('presencesInitialized', reconnecting => {
       if (reconnecting) {
-        // No need to recreate the roster, otherwise we lose our
-        // cached data. However we still emit an event, to give
-        // event handlers a chance to register views for the
-        // roster and its groups, before we start populating.
+        /**
+         * Similar to `rosterInitialized`, but instead pertaining to reconnection.
+         * This event indicates that the roster and its groups are now again
+         * available after Converse.js has reconnected.
+         * @event _converse#rosterReadyAfterReconnection
+         * @example _converse.api.listen.on('rosterReadyAfterReconnection', () => { ... });
+         */
         _converse.api.emit('rosterReadyAfterReconnection');
       } else {
         _converse.registerIntervalHandler();

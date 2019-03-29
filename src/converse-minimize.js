@@ -131,7 +131,13 @@ converse.plugins.add('converse-minimize', {
                     this.model.clearUnreadMsgCounter();
                 }
                 this.show();
-                this.__super__._converse.api.emit('chatBoxMaximized', this);
+                /**
+                 * Triggered when a previously minimized chat gets maximized
+                 * @event _converse#chatBoxMaximized
+                 * @type { _converse.ChatBoxView }
+                 * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
+                 */
+                _converse.api.emit('chatBoxMaximized', this);
                 return this;
             },
 
@@ -146,6 +152,12 @@ converse.plugins.add('converse-minimize', {
                 }
                 this.setChatState(_converse.INACTIVE).model.minimize();
                 this.hide();
+                /**
+                 * Triggered when a previously maximized chat gets Minimized
+                 * @event _converse#chatBoxMinimized
+                 * @type { _converse.ChatBoxView }
+                 * @example _converse.api.listen.on('chatBoxMinimized', view => { ... });
+                 */
                 _converse.api.emit('chatBoxMinimized', this);
             },
         },
@@ -388,6 +400,12 @@ converse.plugins.add('converse-minimize', {
                 this.model.on("destroy", this.removeChat, this);
                 this.model.on("change:minimized", this.onChanged, this);
                 this.model.on('change:num_unread', this.updateUnreadMessagesCounter, this);
+                /**
+                 * Triggered once the _converse.MinimizedChats instance has been * initialized
+                 * @event _converse#minimizedChatsInitialized
+                 * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
+                 */
+                _converse.api.emit('minimizedChatsInitialized');
             },
 
             render () {
@@ -515,7 +533,6 @@ converse.plugins.add('converse-minimize', {
             _converse.minimized_chats = new _converse.MinimizedChats({
                 model: _converse.chatboxes
             });
-            _converse.api.emit('minimizedChatsInitialized');
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
 

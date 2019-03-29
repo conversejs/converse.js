@@ -1132,6 +1132,11 @@ converse.plugins.add('converse-omemo', {
             await fetchOwnDevices();
             await restoreOMEMOSession();
             await _converse.omemo_store.publishBundle();
+            /**
+             * Triggered once OMEMO support has been initialized
+             * @event _converse#OMEMOInitialized
+             * @example _converse.api.listen.on('OMEMOInitialized', () => { ... });
+             */
             _converse.api.emit('OMEMOInitialized');
         }
 

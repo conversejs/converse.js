@@ -260,6 +260,13 @@ converse.plugins.add('converse-notification', {
             if (!_converse.shouldNotifyOfMessage(message)) {
                 return false;
             }
+            /**
+             * Triggered when a notification (sound or HTML5 notification) for a new
+             * message has will be made.
+             * @event _converse#messageNotification
+             * @type { XMLElement }
+             * @example _converse.api.listen.on('messageNotification', stanza => { ... });
+             */
             _converse.api.emit('messageNotification', message);
             _converse.playSoundNotification();
             _converse.showMessageNotification(message);

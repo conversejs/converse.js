@@ -82,7 +82,7 @@ converse.plugins.add('converse-muc-views', {
                  * @event _converse#roomsPanelRendered
                  * @example _converse.api.listen.on('roomsPanelRendered', () => { ... });
                  */
-                _converse.api.emit('roomsPanelRendered');
+                _converse.api.trigger('roomsPanelRendered');
             },
 
             renderControlBoxPane () {
@@ -580,7 +580,7 @@ converse.plugins.add('converse-muc-views', {
                  * @type { _converse.ChatRoomView }
                  * @example _converse.api.listen.on('chatRoomOpened', view => { ... });
                  */
-                _converse.api.emit('chatRoomOpened', this);
+                _converse.api.trigger('chatRoomOpened', this);
             },
 
             render () {

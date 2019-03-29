@@ -8,11 +8,11 @@
             this.callback = function () {};
             spyOn(this, 'callback');
             _converse.on('connected', this.callback);
-            _converse.emit('connected');
+            _converse.api.trigger('connected');
             expect(this.callback).toHaveBeenCalled();
-            _converse.emit('connected');
+            _converse.api.trigger('connected');
             expect(this.callback.calls.count(), 2);
-            _converse.emit('connected');
+            _converse.api.trigger('connected');
             expect(this.callback.calls.count(), 3);
             done();
         }));
@@ -21,11 +21,11 @@
             this.callback = function () {};
             spyOn(this, 'callback');
             _converse.once('connected', this.callback);
-            _converse.emit('connected');
+            _converse.api.trigger('connected');
             expect(this.callback).toHaveBeenCalled();
-            _converse.emit('connected');
+            _converse.api.trigger('connected');
             expect(this.callback.calls.count(), 1);
-            _converse.emit('connected');
+            _converse.api.trigger('connected');
             expect(this.callback.calls.count(), 1);
             done();
         }));
@@ -41,20 +41,20 @@
             _converse.on('connected', this.callback);
             _converse.on('connected', this.anotherCallback);
 
-            _converse.emit('connected');
+            _converse.api.trigger('connected');
             expect(this.callback).toHaveBeenCalled();
             expect(this.anotherCallback).toHaveBeenCalled();
 
             _converse.off('connected', this.callback);
 
-            _converse.emit('connected');
+            _converse.api.trigger('connected');
             expect(this.callback.calls.count(), 1);
             expect(this.anotherCallback.calls.count(), 2);
 
             _converse.once('connected', this.neverCalled);
             _converse.off('connected', this.neverCalled);
 
-            _converse.emit('connected');
+            _converse.api.trigger('connected');
             expect(this.callback.calls.count(), 1);
             expect(this.anotherCallback.calls.count(), 3);
             expect(this.neverCalled).not.toHaveBeenCalled();

@@ -267,7 +267,7 @@ converse.plugins.add('converse-notification', {
              * @type { XMLElement }
              * @example _converse.api.listen.on('messageNotification', stanza => { ... });
              */
-            _converse.api.emit('messageNotification', message);
+            _converse.api.trigger('messageNotification', message);
             _converse.playSoundNotification();
             _converse.showMessageNotification(message);
         };

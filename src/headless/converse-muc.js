@@ -521,7 +521,7 @@ converse.plugins.add('converse-muc', {
                  * @property { string } reason - The original reason for the invitation
                  * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
                  */
-                _converse.api.emit('roomInviteSent', {
+                _converse.api.trigger('roomInviteSent', {
                     'room': this,
                     'recipient': recipient,
                     'reason': reason
@@ -1059,7 +1059,7 @@ converse.plugins.add('converse-muc', {
                         this.handleMessageCorrection(stanza) ||
                         this.isReceipt(stanza) ||
                         this.isChatMarker(stanza)) {
-                    return _converse.api.emit('message', {'stanza': original_stanza});
+                    return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
                 const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
                 if (attrs.nick &&
@@ -1073,7 +1073,7 @@ converse.plugins.add('converse-muc', {
                         msg.save({'received': moment().format()});
                     }
                 }
-                _converse.api.emit('message', {'stanza': original_stanza, 'chatbox': this});
+                _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': this});
             },
 
             onPresence (pres) {
@@ -1411,7 +1411,7 @@ converse.plugins.add('converse-muc', {
              * @example _converse.api.listen.on('roomsAutoJoined', () => { ... });
              * @example _converse.api.waitUntil('roomsAutoJoined').then(() => { ... });
              */
-            _converse.api.emit('roomsAutoJoined');
+            _converse.api.trigger('roomsAutoJoined');
         }
 
         function disconnectChatRooms () {

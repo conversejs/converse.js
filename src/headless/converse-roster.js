@@ -71,7 +71,7 @@ converse.plugins.add('converse-roster', {
              * @example _converse.api.listen.on('rosterInitialized', () => { ... });
              * @example _converse.api.waitUntil('rosterInitialized').then(() => { ... });
              */
-            _converse.api.emit('rosterInitialized');
+            _converse.api.trigger('rosterInitialized');
         };
 
 
@@ -94,7 +94,7 @@ converse.plugins.add('converse-roster', {
                      * @event _converse#rosterContactsFetched
                      * @example _converse.api.listen.on('rosterContactsFetched', () => { ... });
                      */
-                    _converse.api.emit('rosterContactsFetched');
+                    _converse.api.trigger('rosterContactsFetched');
                 } catch (reason) {
                     _converse.log(reason, Strophe.LogLevel.ERROR);
                 } finally {
@@ -110,9 +110,9 @@ converse.plugins.add('converse-roster', {
                      * @event _converse#rosterGroupsFetched
                      * @example _converse.api.listen.on('rosterGroupsFetched', () => { ... });
                      */
-                    _converse.api.emit('rosterGroupsFetched');
+                    _converse.api.trigger('rosterGroupsFetched');
                     await _converse.roster.fetchRosterContacts();
-                    _converse.api.emit('rosterContactsFetched');
+                    _converse.api.trigger('rosterContactsFetched');
                 } catch (reason) {
                     _converse.log(reason, Strophe.LogLevel.ERROR);
                 } finally {
@@ -251,7 +251,7 @@ converse.plugins.add('converse-roster', {
                  * @type { _converse.RosterContact }
                  * @example _converse.api.listen.on('contactPresenceChanged', contact => { ... });
                  */
-                this.presence.on('change:show', () => _converse.api.emit('contactPresenceChanged', this));
+                this.presence.on('change:show', () => _converse.api.trigger('contactPresenceChanged', this));
                 this.presence.on('change:show', () => this.trigger('presenceChanged'));
             },
 
@@ -439,7 +439,7 @@ converse.plugins.add('converse-roster', {
                      * @example _converse.api.listen.on('cachedRoster', (items) => { ... });
                      * @example _converse.api.waitUntil('cachedRoster').then(items => { ... });
                      */
-                    _converse.api.emit('cachedRoster', collection);
+                    _converse.api.trigger('cachedRoster', collection);
                 }
             },
 
@@ -590,7 +590,7 @@ converse.plugins.add('converse-roster', {
                  * @type { XMLElement }
                  * @example _converse.api.listen.on('rosterPush', iq => { ... });
                  */
-                _converse.api.emit('rosterPush', iq);
+                _converse.api.trigger('rosterPush', iq);
                 return;
             },
 
@@ -640,7 +640,7 @@ converse.plugins.add('converse-roster', {
                  * @example _converse.api.listen.on('roster', iq => { ... });
                  * @example _converse.api.waitUntil('roster').then(iq => { ... });
                  */
-                _converse.api.emit('roster', iq);
+                _converse.api.trigger('roster', iq);
             },
 
             updateContact (item) {
@@ -700,7 +700,7 @@ converse.plugins.add('converse-roster', {
                  * @type { _converse.RosterContact }
                  * @example _converse.api.listen.on('contactRequest', contact => { ... });
                  */
-                _converse.api.emit('contactRequest', this.create(user_data));
+                _converse.api.trigger('contactRequest', this.create(user_data));
             },
 
             handleIncomingSubscription (presence) {
@@ -921,7 +921,7 @@ converse.plugins.add('converse-roster', {
              * @type { bool }
              * @example _converse.api.listen.on('presencesInitialized', reconnecting => { ... });
              */
-            _converse.api.emit('presencesInitialized', reconnecting);
+            _converse.api.trigger('presencesInitialized', reconnecting);
         });
 
         _converse.api.listen.on('presencesInitialized', (reconnecting) => {
@@ -933,7 +933,7 @@ converse.plugins.add('converse-roster', {
                  * @event _converse#rosterReadyAfterReconnection
                  * @example _converse.api.listen.on('rosterReadyAfterReconnection', () => { ... });
                  */
-                _converse.api.emit('rosterReadyAfterReconnection');
+                _converse.api.trigger('rosterReadyAfterReconnection');
             } else {
                 _converse.registerIntervalHandler();
                 _converse.initRoster();

@@ -137,7 +137,7 @@ converse.plugins.add('converse-minimize', {
                  * @type { _converse.ChatBoxView }
                  * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
                  */
-                _converse.api.emit('chatBoxMaximized', this);
+                _converse.api.trigger('chatBoxMaximized', this);
                 return this;
             },
 
@@ -158,7 +158,7 @@ converse.plugins.add('converse-minimize', {
                  * @type { _converse.ChatBoxView }
                  * @example _converse.api.listen.on('chatBoxMinimized', view => { ... });
                  */
-                _converse.api.emit('chatBoxMinimized', this);
+                _converse.api.trigger('chatBoxMinimized', this);
             },
         },
 
@@ -370,7 +370,7 @@ converse.plugins.add('converse-minimize', {
                     view.close();
                 } else {
                     this.model.destroy();
-                    _converse.api.emit('chatBoxClosed', this);
+                    _converse.api.trigger('chatBoxClosed', this);
                 }
                 return this;
             },
@@ -405,7 +405,7 @@ converse.plugins.add('converse-minimize', {
                  * @event _converse#minimizedChatsInitialized
                  * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
                  */
-                _converse.api.emit('minimizedChatsInitialized');
+                _converse.api.trigger('minimizedChatsInitialized');
             },
 
             render () {

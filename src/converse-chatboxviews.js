@@ -173,7 +173,7 @@ converse.plugins.add('converse-chatboxviews', {
              * @event _converse#chatBoxViewsInitialized
              * @example _converse.api.listen.on('chatBoxViewsInitialized', () => { ... });
              */
-            _converse.api.emit('chatBoxViewsInitialized');
+            _converse.api.trigger('chatBoxViewsInitialized');
         });
 
         _converse.api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());

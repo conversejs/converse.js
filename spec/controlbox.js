@@ -23,13 +23,13 @@
             expect(u.isVisible(el)).toBe(false);
             spyOn(_converse.controlboxtoggle, 'onClick').and.callThrough();
             spyOn(_converse.controlboxtoggle, 'showControlBox').and.callThrough();
-            spyOn(_converse, 'emit');
+            spyOn(_converse.api, "trigger");
             // Redelegate so that the spies are now registered as the event handlers (specifically for 'onClick')
             _converse.controlboxtoggle.delegateEvents();
             document.querySelector('.toggle-controlbox').click();
             expect(_converse.controlboxtoggle.onClick).toHaveBeenCalled();
             expect(_converse.controlboxtoggle.showControlBox).toHaveBeenCalled();
-            expect(_converse.emit).toHaveBeenCalledWith('controlBoxOpened', jasmine.any(Object));
+            expect(_converse.api.trigger).toHaveBeenCalledWith('controlBoxOpened', jasmine.any(Object));
             el = document.querySelector("div#controlbox");
             expect(u.isVisible(el)).toBe(true);
             done();
@@ -42,7 +42,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 test_utils.openControlBox();
                 // Adding two contacts one with Capital initials and one with small initials of same JID (Case sensitive check)
@@ -71,7 +71,7 @@
                     async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'all').openControlBox();
-                _converse.emit('rosterContactsFetched');
+                _converse.api.trigger('rosterContactsFetched');
 
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -140,11 +140,11 @@
 
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
                 const view = _converse.xmppstatusview;
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 modal.el.querySelector('label[for="radio-busy"]').click(); // Change status to "dnd"
                 modal.el.querySelector('[type="submit"]').click();
 
-                expect(_converse.emit).toHaveBeenCalledWith('statusChanged', 'dnd');
+                expect(_converse.api.trigger).toHaveBeenCalledWith('statusChanged', 'dnd');
                 const first_child = view.el.querySelector('.xmpp-status span:first-child');
                 expect(u.hasClass('online', first_child)).toBe(false);
                 expect(u.hasClass('dnd', first_child)).toBe(true);
@@ -165,13 +165,13 @@
 
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
                 const view = _converse.xmppstatusview;
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
 
                 const msg = 'I am happy';
                 modal.el.querySelector('input[name="status_message"]').value = msg;
                 modal.el.querySelector('[type="submit"]').click();
 
-                expect(_converse.emit).toHaveBeenCalledWith('statusMessageChanged', msg);
+                expect(_converse.api.trigger).toHaveBeenCalledWith('statusMessageChanged', msg);
                 const first_child = view.el.querySelector('.xmpp-status span:first-child');
                 expect(u.hasClass('online', first_child)).toBe(true);
                 expect(view.el.querySelector('.xmpp-status span:first-child').textContent.trim()).toBe(msg);

@@ -101,7 +101,7 @@ converse.plugins.add('converse-disco', {
                  * @type { Backbone.Model }
                  * @example _converse.api.listen.on('featuresDiscovered', feature => { ... });
                  */
-                _converse.api.emit('serviceDiscovered', feature);
+                _converse.api.trigger('serviceDiscovered', feature);
             },
 
             onFieldAdded (field) {
@@ -112,7 +112,7 @@ converse.plugins.add('converse-disco', {
                  * @event _converse#discoExtensionFieldDiscovered
                  * @example _converse.api.listen.on('discoExtensionFieldDiscovered', () => { ... });
                  */
-                _converse.api.emit('discoExtensionFieldDiscovered', field);
+                _converse.api.trigger('discoExtensionFieldDiscovered', field);
             },
 
             fetchFeatures () {
@@ -246,7 +246,7 @@ converse.plugins.add('converse-disco', {
              * @event _converse#addClientFeatures
              * @example _converse.api.listen.on('addClientFeatures', () => { ... });
              */
-            _converse.api.emit('addClientFeatures');
+            _converse.api.trigger('addClientFeatures');
             return this;
         }
 
@@ -276,7 +276,7 @@ converse.plugins.add('converse-disco', {
              * @event _converse#streamFeaturesAdded
              * @example _converse.api.listen.on('streamFeaturesAdded', () => { ... });
              */
-            _converse.api.emit('streamFeaturesAdded');
+            _converse.api.trigger('streamFeaturesAdded');
         }
 
         async function initializeDisco () {
@@ -301,7 +301,7 @@ converse.plugins.add('converse-disco', {
              * @event _converse#discoInitialized
              * @example _converse.api.listen.on('discoInitialized', () => { ... });
              */
-            _converse.api.emit('discoInitialized');
+            _converse.api.trigger('discoInitialized');
         }
 
         _converse.api.listen.on('sessionInitialized', initStreamFeatures);

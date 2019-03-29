@@ -188,7 +188,7 @@ converse.plugins.add('converse-chatview', {
                  * @property { string } message - The message text
                  * @example _converse.api.listen.on('contactStatusMessageChanged', obj => { ... });
                  */
-                _converse.api.emit('contactStatusMessageChanged', {
+                _converse.api.trigger('contactStatusMessageChanged', {
                     'contact': item.attributes,
                     'message': item.get('status')
                 });
@@ -215,7 +215,7 @@ converse.plugins.add('converse-chatview', {
                  * @type { _converse.ChatBox }
                  * @example _converse.api.listen.on('userDetailsModalInitialized', chatbox => { ... });
                  */
-                _converse.api.emit('userDetailsModalInitialized', this.model);
+                _converse.api.trigger('userDetailsModalInitialized', this.model);
             },
 
             toHTML () {
@@ -336,14 +336,14 @@ converse.plugins.add('converse-chatview', {
                 this.render();
 
                 this.fetchMessages();
-                _converse.api.emit('chatBoxOpened', this); // TODO: remove
+                _converse.api.trigger('chatBoxOpened', this); // TODO: remove
                 /**
                  * Triggered once the _converse.ChatBoxView has been initialized
                  * @event _converse#chatBoxInitialized
                  * @type { _converse.ChatBoxView | _converse.HeadlinesBoxView }
                  * @example _converse.api.listen.on('chatBoxInitialized', view => { ... });
                  */
-                _converse.api.emit('chatBoxInitialized', this);
+                _converse.api.trigger('chatBoxInitialized', this);
             },
 
             initDebounced () {
@@ -384,7 +384,7 @@ converse.plugins.add('converse-chatview', {
                  * @type { _converse.ChatBoxView }
                  * @example _converse.api.listen.on('renderToolbar', view => { ... });
                  */
-                _converse.api.emit('renderToolbar', this);
+                _converse.api.trigger('renderToolbar', this);
                 return this;
             },
 
@@ -525,7 +525,7 @@ converse.plugins.add('converse-chatview', {
                  * @type {_converse.ChatBoxView | _converse.ChatRoomView}
                  * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
                  */
-                _converse.api.emit('afterMessagesFetched', this);
+                _converse.api.trigger('afterMessagesFetched', this);
             },
 
             fetchMessages () {
@@ -840,7 +840,7 @@ converse.plugins.add('converse-chatview', {
                  * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
                  * @example _converse.api.listen.on('messageAdded', data => { ... });
                  */
-                _converse.api.emit('messageAdded', {
+                _converse.api.trigger('messageAdded', {
                     'message': message,
                     'chatbox': this.model
                 });
@@ -932,7 +932,7 @@ converse.plugins.add('converse-chatview', {
                      * @type { _converse.Message }
                      * @example _converse.api.listen.on('messageSend', data => { ... });
                      */
-                    _converse.api.emit('messageSend', message);
+                    _converse.api.trigger('messageSend', message);
                 }
                 textarea.removeAttribute('disabled');
                 u.removeClass('disabled', textarea);
@@ -1143,7 +1143,7 @@ converse.plugins.add('converse-chatview', {
                  * @property { _converse.ChatBox | _converse.ChatRoom } _converse.connection - The XMPP Connection object
                  * @example _converse.api.listen.on('callButtonClicked', (connection, model) => { ... });
                  */
-                _converse.api.emit('callButtonClicked', {
+                _converse.api.trigger('callButtonClicked', {
                     connection: _converse.connection,
                     model: this.model
                 });
@@ -1230,7 +1230,7 @@ converse.plugins.add('converse-chatview', {
                  * @type { _converse.ChatBoxView | _converse.ChatRoomView }
                  * @example _converse.api.listen.on('chatBoxClosed', view => { ... });
                  */
-                _converse.api.emit('chatBoxClosed', this);
+                _converse.api.trigger('chatBoxClosed', this);
                 return this;
             },
 
@@ -1256,7 +1256,7 @@ converse.plugins.add('converse-chatview', {
                      * @type { _converse.ChatBoxView | _converse.ChatRoomView }
                      * @example _converse.api.listen.on('chatBoxFocused', view => { ... });
                      */
-                    _converse.api.emit('chatBoxFocused', this);
+                    _converse.api.trigger('chatBoxFocused', this);
                 }
                 return this;
             },
@@ -1346,7 +1346,7 @@ converse.plugins.add('converse-chatview', {
                  * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
                  * @example _converse.api.listen.on('chatBoxScrolledDown', obj => { ... });
                  */
-                _converse.api.emit('chatBoxScrolledDown', {'chatbox': this.model}); // TODO: clean up
+                _converse.api.trigger('chatBoxScrolledDown', {'chatbox': this.model}); // TODO: clean up
             },
 
             onWindowStateChanged (state) {

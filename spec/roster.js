@@ -36,10 +36,10 @@
                 async function (done, _converse) {
 
             const IQs = _converse.connection.IQ_stanzas;
-            await test_utils.waitUntil(() => _converse.emit.calls.all().map(c => c.args[0]).includes('rosterGroupsFetched'));
+            await test_utils.waitUntil(() => _converse.api.trigger.calls.all().map(c => c.args[0]).includes('rosterGroupsFetched'));
             const node = await test_utils.waitUntil(
                 () => _.filter(IQs, iq => iq.nodeTree.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
-            expect(_converse.emit.calls.all().map(c => c.args[0]).includes('rosterContactsFetched')).toBeFalsy();
+            expect(_converse.api.trigger.calls.all().map(c => c.args[0]).includes('rosterContactsFetched')).toBeFalsy();
 
             expect(node.toLocaleString()).toBe(
                 `<iq id="${node.nodeTree.getAttribute('id')}" type="get" xmlns="jabber:client">`+
@@ -54,7 +54,7 @@
             }).c('item', {'jid': 'nurse@example.com'}).up()
               .c('item', {'jid': 'romeo@example.com'})
             _converse.connection._dataRecv(test_utils.createRequest(result));
-            await test_utils.waitUntil(() => _converse.emit.calls.all().map(c => c.args[0]).includes('rosterContactsFetched'));
+            await test_utils.waitUntil(() => _converse.api.trigger.calls.all().map(c => c.args[0]).includes('rosterContactsFetched'));
             done();
         }));
 

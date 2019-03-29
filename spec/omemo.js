@@ -82,7 +82,7 @@
 
             const message = 'This message will be encrypted'
             test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            _converse.api.trigger('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             const view = await test_utils.openChatBoxFor(_converse, contact_jid);
             const payload = await view.model.encryptMessage(message);
@@ -99,7 +99,7 @@
 
             let sent_stanza;
             test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            _converse.api.trigger('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.waitUntil(() => initializedOMEMO(_converse));
             await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -513,7 +513,7 @@
             _converse.NUM_PREKEYS = 5; // Restrict to 5, otherwise the resulting stanza is too large to easily test
             let view, sent_stanza;
             test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            _converse.api.trigger('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             await test_utils.waitUntil(() => initializedOMEMO(_converse));
@@ -934,7 +934,7 @@
             _converse.NUM_PREKEYS = 2; // Restrict to 2, otherwise the resulting stanza is too large to easily test
 
             test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            _converse.api.trigger('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
             let stanza = $iq({
@@ -1011,7 +1011,7 @@
             );
 
             test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            _converse.api.trigger('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
@@ -1358,11 +1358,11 @@
             );
 
             test_utils.createContacts(_converse, 'current', 1);
-            _converse.emit('rosterContactsFetched');
+            _converse.api.trigger('rosterContactsFetched');
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid)
             // We simply emit, to avoid doing all the setup work
-            _converse.emit('OMEMOInitialized');
+            _converse.api.trigger('OMEMOInitialized');
 
             const view = _converse.chatboxviews.get(contact_jid);
             const show_modal_button = view.el.querySelector('.show-user-details-modal');

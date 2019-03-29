@@ -182,7 +182,7 @@ converse.plugins.add('converse-roomslist', {
                  * @event _converse#roomsListInitialized
                  * @example _converse.api.listen.on('roomsListInitialized', status => { ... });
                  */
-                _converse.api.emit('roomsListInitialized');
+                _converse.api.trigger('roomsListInitialized');
             },
 
             render () {

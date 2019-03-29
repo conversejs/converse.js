@@ -1137,7 +1137,7 @@ converse.plugins.add('converse-omemo', {
              * @event _converse#OMEMOInitialized
              * @example _converse.api.listen.on('OMEMOInitialized', () => { ... });
              */
-            _converse.api.emit('OMEMOInitialized');
+            _converse.api.trigger('OMEMOInitialized');
         }
 
         async function onOccupantAdded (chatroom, occupant) {

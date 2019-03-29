@@ -555,7 +555,7 @@ converse.plugins.add('converse-bookmarks', {
              * @event _converse#bookmarksInitialized
              * @example _converse.api.listen.on('bookmarksInitialized', () => { ... });
              */
-            _converse.api.emit('bookmarksInitialized');
+            _converse.api.trigger('bookmarksInitialized');
         }
 
         _converse.api.listen.on('clearSession', () => {

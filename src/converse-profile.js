@@ -54,7 +54,7 @@ converse.plugins.add('converse-profile', {
                  * @type { _converse.XMPPStatus }
                  * @example _converse.api.listen.on('profileModalInitialized', status => { ... });
                  */
-                _converse.api.emit('profileModalInitialized', this.model);
+                _converse.api.trigger('profileModalInitialized', this.model);
             },
 
             toHTML () {

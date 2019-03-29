@@ -831,7 +831,7 @@ converse.plugins.add('converse-rosterview', {
                  * @event _converse#rosterViewInitialized
                  * @example _converse.api.listen.on('rosterViewInitialized', () => { ... });
                  */
-                _converse.api.emit('rosterViewInitialized');
+                _converse.api.trigger('rosterViewInitialized');
             },
 
             render () {

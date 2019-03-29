@@ -304,12 +304,13 @@ function addPromise (promise) {
 }
 
 _converse.emit = function (name) {
-    /* Event emitter and promise resolver */
-    _converse.trigger.apply(this, arguments);
-    const promise = _converse.promises[name];
-    if (!_.isUndefined(promise)) {
-        promise.resolve();
-    }
+   _converse.log(
+      "(DEPRECATION) "+
+      "_converse.emit has been has been deprecated. "+
+      "Please use `_converse.api.trigger` instead.",
+      Strophe.LogLevel.WARN
+   )
+   _converse.api.emit.apply(_converse, arguments);
 };
 
 _converse.isUniView = function () {
@@ -373,7 +374,7 @@ function initPlugins() {
      * @example _converse.api.listen.on('pluginsInitialized', () => { ... });
      * @example _converse.api.waitUntil('pluginsInitialized').then(() => { ... });
      */
-    _converse.api.emit('pluginsInitialized');
+    _converse.api.trigger('pluginsInitialized');
 }
 
 function initClientConfig () {
@@ -399,7 +400,7 @@ function initClientConfig () {
      * @example
      * _converse.api.listen.on('clientConfigInitialized', () => { ... });
      */
-    _converse.api.emit('clientConfigInitialized');
+    _converse.api.trigger('clientConfigInitialized');
 }
 
 _converse.initConnection = function () {
@@ -427,7 +428,7 @@ _converse.initConnection = function () {
      *
      * @event _converse#connectionInitialized
      */
-    _converse.api.emit('connectionInitialized');
+    _converse.api.trigger('connectionInitialized');
 }
 
 
@@ -465,7 +466,7 @@ function finishInitialization () {
 
 function unregisterGlobalEventHandlers () {
     document.removeEventListener("visibilitychange", _converse.saveWindowState);
-    _converse.api.emit('unregisteredGlobalEventHandlers');
+    _converse.api.trigger('unregisteredGlobalEventHandlers');
 }
 
 function cleanup () {
@@ -696,7 +697,7 @@ _converse.initialize = async function (settings, callback) {
          * @memberOf _converse
          * @example _converse.api.listen.on('disconnected', () => { ... });
          */
-        _converse.api.emit('disconnected');
+        _converse.api.trigger('disconnected');
     };
 
     this.onDisconnected = function () {
@@ -711,7 +712,7 @@ _converse.initialize = async function (settings, callback) {
                 /* In this case, we reconnect, because we might be receiving
                  * expirable tokens from the credentials_url.
                  */
-                _converse.api.emit('will-reconnect');
+                _converse.api.trigger('will-reconnect');
                 return _converse.reconnect();
             } else {
                 return _converse.disconnect();
@@ -729,7 +730,7 @@ _converse.initialize = async function (settings, callback) {
          *
          * @event _converse#will-reconnect
          */
-        _converse.api.emit('will-reconnect');
+        _converse.api.trigger('will-reconnect');
         _converse.reconnect();
     };
 
@@ -857,7 +858,7 @@ _converse.initialize = async function (settings, callback) {
          * @event _converse#sessionInitialized
          * @memberOf _converse
          */
-        _converse.api.emit('sessionInitialized');
+        _converse.api.trigger('sessionInitialized');
     };
 
     this.clearSession = function () {
@@ -873,7 +874,7 @@ _converse.initialize = async function (settings, callback) {
          * disconnected for some other reason.
          * @event _converse#clearSession
          */
-        _converse.api.emit('clearSession');
+        _converse.api.trigger('clearSession');
     };
 
     this.logOut = function () {
@@ -890,7 +891,7 @@ _converse.initialize = async function (settings, callback) {
          * Triggered once the user has logged out.
          * @event _converse#logout
          */
-        _converse.api.emit('logout');
+        _converse.api.trigger('logout');
     };
 
     this.saveWindowState = function (ev) {
@@ -924,7 +925,7 @@ _converse.initialize = async function (settings, callback) {
          * @property{ string } state - Either "hidden" or "visible"
          * @example _converse.api.listen.on('windowStateChanged', obj => { ... });
          */
-        _converse.api.emit('windowStateChanged', {state});
+        _converse.api.trigger('windowStateChanged', {state});
     };
 
     this.registerGlobalEventHandlers = function () {
@@ -938,7 +939,7 @@ _converse.initialize = async function (settings, callback) {
          * @event _converse#registeredGlobalEventHandlers
          * @example _converse.api.listen.on('registeredGlobalEventHandlers', () => { ... });
          */
-        _converse.api.emit('registeredGlobalEventHandlers');
+        _converse.api.trigger('registeredGlobalEventHandlers');
     };
 
     this.enableCarbons = function () {
@@ -981,7 +982,7 @@ _converse.initialize = async function (settings, callback) {
         * @example _converse.api.listen.on('statusInitialized', status => { ... });
         * @example _converse.api.waitUntil('statusInitialized').then(() => { ... });
         */
-        _converse.api.emit('statusInitialized', reconnecting);
+        _converse.api.trigger('statusInitialized', reconnecting);
         if (reconnecting) {
             /**
              * After the connection has dropped and converse.js has reconnected.
@@ -990,7 +991,7 @@ _converse.initialize = async function (settings, callback) {
              * @event _converse#reconnected
              * @example _converse.api.listen.on('reconnected', () => { ... });
              */
-            _converse.api.emit('reconnected');
+            _converse.api.trigger('reconnected');
         } else {
             init_promise.resolve();
             /**
@@ -998,13 +999,13 @@ _converse.initialize = async function (settings, callback) {
              * See also {@link _converse#event:pluginsInitialized}.
              * @event _converse#initialized
              */
-            _converse.api.emit('initialized');
+            _converse.api.trigger('initialized');
             /**
              * Triggered after the connection has been established and Converse
              * has got all its ducks in a row.
              * @event _converse#initialized
              */
-            _converse.api.emit('connected');
+            _converse.api.trigger('connected');
         }
     };
 
@@ -1013,7 +1014,7 @@ _converse.initialize = async function (settings, callback) {
         _converse.bare_jid = Strophe.getBareJidFromJid(_converse.connection.jid);
         _converse.resource = Strophe.getResourceFromJid(_converse.connection.jid);
         _converse.domain = Strophe.getDomainFromJid(_converse.connection.jid);
-        _converse.api.emit('setUserJID');
+        _converse.api.trigger('setUserJID');
     };
 
     this.onConnected = function (reconnecting) {
@@ -1035,7 +1036,7 @@ _converse.initialize = async function (settings, callback) {
         },
 
         initialize () {
-            this.on('change', () => _converse.api.emit('connfeedback', _converse.connfeedback));
+            this.on('change', () => _converse.api.trigger('connfeedback', _converse.connfeedback));
         }
     });
     this.connfeedback = new this.ConnectionFeedback();
@@ -1065,7 +1066,7 @@ _converse.initialize = async function (settings, callback) {
                  * @type { string }
                  * @example _converse.api.listen.on('statusChanged', status => { ... });
                  */
-                _converse.api.emit('statusChanged', status);
+                _converse.api.trigger('statusChanged', status);
             });
 
             this.on('change:status_message', () => {
@@ -1077,7 +1078,7 @@ _converse.initialize = async function (settings, callback) {
                  * @type { string }
                  * @example _converse.api.listen.on('statusMessageChanged', message => { ... });
                  */
-                _converse.api.emit('statusMessageChanged', status_message);
+                _converse.api.trigger('statusMessageChanged', status_message);
             });
         },
 
@@ -1140,7 +1141,7 @@ _converse.initialize = async function (settings, callback) {
             };
             xhr.onerror = function () {
                 delete _converse.connection;
-                _converse.api.emit('noResumeableSession', this);
+                _converse.api.trigger('noResumeableSession', this);
                 reject(xhr.responseText);
             };
             xhr.send();
@@ -1168,7 +1169,7 @@ _converse.initialize = async function (settings, callback) {
              * @type { _converse }
              * @example _converse.api.listen.on('noResumeableSession', _converse => { ... });
              */
-            _converse.api.emit('noResumeableSession', this);
+            _converse.api.trigger('noResumeableSession', this);
         };
         xhr.send();
     };
@@ -1310,7 +1311,7 @@ _converse.initialize = async function (settings, callback) {
     };
 
     this.tearDown = function () {
-        _converse.api.emit('beforeTearDown');
+        _converse.api.trigger('beforeTearDown');
         if (!_.isUndefined(_converse.session)) {
             _converse.session.destroy();
         }
@@ -1320,7 +1321,7 @@ _converse.initialize = async function (settings, callback) {
         window.removeEventListener('mousemove', _converse.onUserActivity);
         window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
         window.clearInterval(_converse.everySecondTrigger);
-        _converse.api.emit('afterTearDown');
+        _converse.api.trigger('afterTearDown');
         return _converse;
     };
 
@@ -1388,14 +1389,28 @@ _converse.api = {
     },
 
     /**
-     * Lets you emit (i.e. trigger) events, which can be listened to via
-     * {@link _converse.api.listen.on} or {@link _converse.api.listen.once}
-     * (see [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)).
-     *
+     * Lets you emit (i.e. trigger) events.
+     * @deprecated since version 4.2.0. Use _converse.api.trigger instead.
      * @method _converse.api.emit
      */
     'emit' () {
-        _converse.emit.apply(_converse, arguments);
+         _converse.api.trigger.apply(this, arguments);
+    },
+
+    /**
+     * Lets you trigger events, which can be listened to via
+     * {@link _converse.api.listen.on} or {@link _converse.api.listen.once}
+     * (see [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)).
+     *
+     * @method _converse.api.trigger
+     */
+    'trigger' () {
+         /* Event emitter and promise resolver */
+         _converse.trigger.apply(this, arguments);
+         const promise = _converse.promises[name];
+         if (!_.isUndefined(promise)) {
+            promise.resolve();
+         }
     },
 
     /**
@@ -1581,7 +1596,7 @@ _converse.api = {
     },
 
     /**
-     * Converse and its plugins emit various events which you can listen to via the
+     * Converse and its plugins trigger various events which you can listen to via the
      * {@link _converse.api.listen} namespace.
      *
      * Some of these events are also available as [ES2015 Promises](http://es6-features.org/#PromiseUsage)
@@ -1616,7 +1631,7 @@ _converse.api = {
          * Generally, it's the responsibility of the plugin which adds the promise to
          * also resolve it.
          *
-         * This is done by calling {@link _converse.api.emit}, which not only resolves the
+         * This is done by calling {@link _converse.api.trigger}, which not only resolves the
          * promise, but also emits an event with the same name (which can be listened to
          * via {@link _converse.api.listen}).
          *
@@ -1771,7 +1786,7 @@ _converse.api = {
                   .cnode(stanza.tree())
             );
          }
-        _converse.api.emit('send', stanza);
+        _converse.api.trigger('send', stanza);
     },
 
     /**
@@ -1783,7 +1798,7 @@ _converse.api = {
     'sendIQ' (stanza, timeout) {
         return new Promise((resolve, reject) => {
             _converse.connection.sendIQ(stanza, resolve, reject, timeout || _converse.IQ_TIMEOUT);
-            _converse.api.emit('send', stanza);
+            _converse.api.trigger('send', stanza);
         });
     }
 };

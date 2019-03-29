@@ -768,7 +768,7 @@ converse.plugins.add('converse-chatboxes', {
                  * @example _converse.api.listen.on('chatBoxesInitialized', () => { ... });
                  * @example _converse.api.waitUntil('chatBoxesInitialized').then(() => { ... });
                  */
-                _converse.api.emit('chatBoxesInitialized');
+                _converse.api.trigger('chatBoxesInitialized');
             },
 
             registerMessageHandler () {
@@ -816,7 +816,7 @@ converse.plugins.add('converse-chatboxes', {
                  * @example _converse.api.listen.on('message', obj => { ... });
                  * @example _converse.api.waitUntil('chatBoxesFetched').then(() => { ... });
                  */
-                _converse.api.emit('chatBoxesFetched');
+                _converse.api.trigger('chatBoxesFetched');
             },
 
             onConnected () {
@@ -977,7 +977,7 @@ converse.plugins.add('converse-chatboxes', {
                  * @property { XMLElement } stanza
                  * @example _converse.api.listen.on('message', obj => { ... });
                  */
-                _converse.api.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
+                _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': chatbox});
             },
 
             getChatBox (jid, attrs={}, create) {
@@ -1034,7 +1034,7 @@ converse.plugins.add('converse-chatboxes', {
              * @example _converse.api.listen.on('privateChatsAutoJoined', () => { ... });
              * @example _converse.api.waitUntil('privateChatsAutoJoined').then(() => { ... });
              */
-            _converse.api.emit('privateChatsAutoJoined');
+            _converse.api.trigger('privateChatsAutoJoined');
         }
 
 

@@ -330,7 +330,7 @@
             );
             await test_utils.waitUntil(() => _converse.bookmarks);
             // Emit here instead of mocking fetching of bookmarks.
-            _converse.emit('bookmarksInitialized');
+            _converse.api.trigger('bookmarksInitialized');
 
             /* The stored data is automatically pushed to all of the user's
              * connected resources.
@@ -638,7 +638,7 @@
             _converse.bookmarksview = new _converse.BookmarksView(
                 {'model': _converse.bookmarks}
             );
-            _converse.emit('bookmarksInitialized');
+            _converse.api.trigger('bookmarksInitialized');
 
             // Check that it's there
             _converse.bookmarks.create({

@@ -142,7 +142,7 @@
                 null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
-                _converse.emit('rosterContactsFetched');
+                _converse.api.trigger('rosterContactsFetched');
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const stanza = u.toStanza(`
                     <message from="${sender_jid}"
@@ -269,11 +269,11 @@
                 const view = await test_utils.openChatBoxFor(_converse, contact_jid);
                 const el = sizzle('a.open-chat:contains("'+view.model.getDisplayName()+'")', _converse.rosterview.el).pop();
                 const jid = el.textContent.replace(/ /g,'.').toLowerCase() + '@localhost';
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 el.click();
-                await test_utils.waitUntil(() => _converse.emit.calls.count(), 500);
+                await test_utils.waitUntil(() => _converse.api.trigger.calls.count(), 500);
                 expect(_converse.chatboxes.length).toEqual(2);
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
                 done();
             }));
 
@@ -285,7 +285,7 @@
                 await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 spyOn(_converse.chatboxviews, 'trimChats');
                 test_utils.openControlBox();
 
@@ -329,7 +329,7 @@
 
                 spyOn(chatview, 'close').and.callThrough();
                 spyOn(controlview, 'close').and.callThrough();
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
 
                 // We need to rebind all events otherwise our spy won't be called
                 controlview.delegateEvents();
@@ -338,13 +338,13 @@
                 controlview.el.querySelector('.close-chatbox-button').click();
 
                 expect(controlview.close).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                expect(_converse.emit.calls.count(), 1);
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                expect(_converse.api.trigger.calls.count(), 1);
                 chatview.el.querySelector('.close-chatbox-button').click();
 
                 expect(chatview.close).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                expect(_converse.emit.calls.count(), 2);
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                expect(_converse.api.trigger.calls.count(), 2);
                 done();
             }));
 
@@ -362,15 +362,15 @@
                 const trimmed_chatboxes = _converse.minimized_chats;
                 const chatview = _converse.chatboxviews.get(contact_jid);
                 spyOn(chatview, 'minimize').and.callThrough();
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 // We need to rebind all events otherwise our spy won't be called
                 chatview.delegateEvents();
 
                 chatview.el.querySelector('.toggle-chatbox-button').click();
 
                 expect(chatview.minimize).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
-                expect(_converse.emit.calls.count(), 2);
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
+                expect(_converse.api.trigger.calls.count(), 2);
                 expect(u.isVisible(chatview.el)).toBeFalsy();
                 expect(chatview.model.get('minimized')).toBeTruthy();
                 chatview.el.querySelector('.toggle-chatbox-button').click();
@@ -380,7 +380,7 @@
                 trimmedview.el.querySelector("a.restore-chat").click();
 
                 expect(trimmedview.restore).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
                 await test_utils.waitUntil(() => u.isVisible(chatview.el.querySelector('.chat-body')), 500);
                 const toggle_el = sizzle('.toggle-chatbox-button', chatview.el).pop();
                 expect(u.hasClass('fa-minus', toggle_el)).toBeTruthy();
@@ -397,25 +397,25 @@
                 await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 spyOn(_converse.chatboxviews, 'trimChats');
                 _converse.chatboxes.browserStorage._clear();
 
                 test_utils.closeControlBox();
 
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 expect(_converse.chatboxes.length).toEqual(1);
                 expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
                 test_utils.openChatBoxes(_converse, 6);
                 await test_utils.waitUntil(() => _converse.chatboxes.length == 7)
                 expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
                 expect(_converse.chatboxes.length).toEqual(7);
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxOpened', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxOpened', jasmine.any(Object));
                 test_utils.closeAllChatBoxes(_converse);
 
                 expect(_converse.chatboxes.length).toEqual(1);
                 expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 var newchatboxes = new _converse.ChatBoxes();
                 expect(newchatboxes.length).toEqual(0);
                 expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
@@ -489,7 +489,7 @@
 
                     let toolbar, call_button;
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    spyOn(_converse, 'emit');
+                    spyOn(_converse.api, "trigger");
                     // First check that the button doesn't show if it's not enabled
                     // via "visible_toolbar_buttons"
                     _converse.visible_toolbar_buttons.call = false;
@@ -507,7 +507,7 @@
                     toolbar = view.el.querySelector('ul.chat-toolbar');
                     call_button = toolbar.querySelector('.toggle-call');
                     call_button.click();
-                    expect(_converse.emit).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
+                    expect(_converse.api.trigger).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
                     done();
                 }));
             });
@@ -554,7 +554,7 @@
                     await test_utils.waitForRoster(_converse, 'current');
                     test_utils.openControlBox();
 
-                    spyOn(_converse, 'emit');
+                    spyOn(_converse.api, "trigger");
                     const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     // <composing> state
                     const msg = $msg({
@@ -564,7 +564,7 @@
                             'id': (new Date()).getTime()
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                     await _converse.chatboxes.onMessage(msg);
-                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                    expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                     expect(_converse.api.chats.get().length).toBe(1);
                     done();
                 }));
@@ -641,7 +641,7 @@
                         var view = _converse.chatboxviews.get(contact_jid);
                         expect(view.model.get('chat_state')).toBe('active');
                         spyOn(_converse.connection, 'send');
-                        spyOn(_converse, 'emit');
+                        spyOn(_converse.api, "trigger");
                         view.keyPressed({
                             target: view.el.querySelector('textarea.chat-textarea'),
                             keyCode: 1
@@ -662,7 +662,7 @@
                             keyCode: 1
                         });
                         expect(view.model.get('chat_state')).toBe('composing');
-                        expect(_converse.emit.calls.count(), 1);
+                        expect(_converse.api.trigger.calls.count(), 1);
                         done();
                     }));
 
@@ -675,7 +675,7 @@
                         test_utils.openControlBox();
 
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(_converse, 'emit');
+                        spyOn(_converse.api, "trigger");
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -688,7 +688,7 @@
                                 id: (new Date()).getTime()
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.chatboxes.onMessage(msg);
-                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         var view = _converse.chatboxviews.get(sender_jid);
                         expect(view).toBeDefined();
 
@@ -821,7 +821,7 @@
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         // TODO: only show paused state if the previous state was composing
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(_converse, 'emit').and.callThrough();
+                        spyOn(_converse.api, "trigger").and.callThrough();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         const view = await test_utils.openChatBoxFor(_converse, sender_jid);
                         // <paused> state
@@ -832,7 +832,7 @@
                                 id: (new Date()).getTime()
                             }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.chatboxes.onMessage(msg);
-                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         await test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
                         var event = view.el.querySelector('.chat-info.chat-state-notification');
                         expect(event.textContent).toEqual(mock.cur_names[1] + ' has stopped typing');
@@ -990,7 +990,7 @@
                         test_utils.openControlBox();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(_converse, 'emit');
+                        spyOn(_converse.api, "trigger");
                         await test_utils.openChatBoxFor(_converse, sender_jid);
                         const view = _converse.chatboxviews.get(sender_jid);
                         expect(view.el.querySelectorAll('.chat-event').length).toBe(0);
@@ -1015,7 +1015,7 @@
                             }).c('body').c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.chatboxes.onMessage(msg);
                         await test_utils.waitUntil(() => (view.model.messages.length > 1));
-                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(0);
                         done();
                     }));
@@ -1031,7 +1031,7 @@
                         await test_utils.waitForRoster(_converse, 'current', 3);
                         test_utils.openControlBox();
 
-                        spyOn(_converse, 'emit');
+                        spyOn(_converse.api, "trigger");
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         // <paused> state
                         const msg = $msg({
@@ -1041,7 +1041,7 @@
                                 id: (new Date()).getTime()
                             }).c('body').c('gone', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.chatboxes.onMessage(msg);
-                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         const view = _converse.chatboxviews.get(sender_jid);
                         await test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1]);
                         const event = view.el.querySelector('.chat-state-notification');
@@ -1063,7 +1063,7 @@
                 test_utils.openControlBox();
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 await test_utils.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
                 let message = 'This message is another sent from this chatbox';
@@ -1088,8 +1088,8 @@
                 expect(window.confirm).toHaveBeenCalled();
                 expect(view.model.messages.length, 0); // The messages must be removed from the chatbox
                 expect(view.model.messages.browserStorage.records.length, 0); // And also from browserStorage
-                expect(_converse.emit.calls.count(), 1);
-                expect(_converse.emit.calls.mostRecent().args, ['messageSend', message]);
+                expect(_converse.api.trigger.calls.count(), 1);
+                expect(_converse.api.trigger.calls.mostRecent().args, ['messageSend', message]);
                 done();
             }));
         });
@@ -1121,7 +1121,7 @@
                       .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                 _converse.windowState = 'hidden';
 
-                spyOn(_converse, 'emit').and.callThrough();
+                spyOn(_converse.api, "trigger").and.callThrough();
                 spyOn(_converse, 'incrementMsgCounter').and.callThrough();
                 spyOn(_converse, 'clearMsgCounter').and.callThrough();
 
@@ -1130,7 +1130,7 @@
                 expect(_converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
                 expect(_converse.msg_counter).toBe(1);
-                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                 _converse.windowSate = previous_state;
                 done();
             }));

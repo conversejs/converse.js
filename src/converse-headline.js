@@ -81,8 +81,8 @@ converse.plugins.add('converse-headline', {
                 this.model.on('change:minimized', this.onMinimizedChanged, this);
 
                 this.render().insertHeading().fetchMessages().insertIntoDOM().hide();
-                _converse.api.emit('chatBoxOpened', this); // TODO: remove
-                _converse.api.emit('chatBoxInitialized', this);
+                _converse.api.trigger('chatBoxOpened', this); // TODO: remove
+                _converse.api.trigger('chatBoxInitialized', this);
             },
 
             render () {
@@ -127,7 +127,7 @@ converse.plugins.add('converse-headline', {
                 });
                 const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
                 await chatbox.messages.create(attrs);
-                _converse.api.emit('message', {'chatbox': chatbox, 'stanza': message});
+                _converse.api.trigger('message', {'chatbox': chatbox, 'stanza': message});
             }
         }
 

@@ -232,7 +232,7 @@ converse.plugins.add('converse-controlbox', {
                  * @type { _converse.ControlBoxView }
                  * @example _converse.api.listen.on('controlboxInitialized', view => { ... });
                  */
-                _converse.api.emit('controlboxInitialized', this);
+                _converse.api.trigger('controlboxInitialized', this);
             },
 
             render () {
@@ -339,7 +339,7 @@ converse.plugins.add('converse-controlbox', {
                 } else {
                     this.model.trigger('hide');
                 }
-                _converse.api.emit('controlBoxClosed', this);
+                _converse.api.trigger('controlBoxClosed', this);
                 return this;
             },
 
@@ -356,7 +356,7 @@ converse.plugins.add('converse-controlbox', {
                     return;
                 }
                 u.addClass('hidden', this.el);
-                _converse.api.emit('chatBoxClosed', this);
+                _converse.api.trigger('chatBoxClosed', this);
                 if (!_converse.connection.connected) {
                     _converse.controlboxtoggle.render();
                 }
@@ -367,7 +367,7 @@ converse.plugins.add('converse-controlbox', {
             onControlBoxToggleHidden () {
                 this.model.set('closed', false);
                 this.el.classList.remove('hidden');
-                _converse.api.emit('controlBoxOpened', this);
+                _converse.api.trigger('controlBoxOpened', this);
             },
 
             show () {

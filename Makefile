@@ -162,7 +162,7 @@ watchcss: dev
 	$(SASS) --watch --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) -o ./css/ ./sass/
 
 .PHONY: watchjs
-watchjs: dev dist/converse-headless.js
+watchjs: dev src/headless/dist/converse-headless.js
 	$(NPX)  webpack --mode=development  --watch
 
 .PHONY: watchjsheadless
@@ -195,10 +195,8 @@ logo/conversejs-filled%.png:: logo/conversejs-filled.svg
 
 BUILDS = dist/converse.js \
 	dist/converse.min.js \
-	dist/converse-headless.js \
 	src/headless/dist/converse-headless.js \
 	src/headless/dist/converse-headless.min.js \
-	dist/converse-headless.min.js \
 	dist/converse-no-dependencies.min.js \
 	dist/converse-no-dependencies.js \
 	dist/converse-no-dependencies-es2015.js
@@ -207,14 +205,10 @@ dist/converse.js: src webpack.config.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=development
 dist/converse.min.js: src webpack.config.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=production
-dist/converse-headless.js: src webpack.config.js stamp-npm @converse/headless
+src/headless/dist/converse-headless.js: src webpack.config.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=development --type=headless
-src/headless/dist/converse-headless.js: dist/converse-headless.js
-	cp dist/converse-headless.js src/headless/dist/converse-headless.js
-dist/converse-headless.min.js: src webpack.config.js stamp-npm @converse/headless
+src/headless/dist/converse-headless.min.js: src webpack.config.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=production --type=headless
-src/headless/dist/converse-headless.min.js: dist/converse-headless.min.js
-	cp dist/converse-headless.min.js src/headless/dist/converse-headless.min.js
 dist/converse-no-dependencies.js: src webpack.config.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=development --type=nodeps
 dist/converse-no-dependencies.min.js: src webpack.config.js stamp-npm @converse/headless

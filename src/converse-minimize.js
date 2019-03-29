@@ -400,12 +400,6 @@ converse.plugins.add('converse-minimize', {
                 this.model.on("destroy", this.removeChat, this);
                 this.model.on("change:minimized", this.onChanged, this);
                 this.model.on('change:num_unread', this.updateUnreadMessagesCounter, this);
-                /**
-                 * Triggered once the _converse.MinimizedChats instance has been * initialized
-                 * @event _converse#minimizedChatsInitialized
-                 * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
-                 */
-                _converse.api.trigger('minimizedChatsInitialized');
             },
 
             render () {
@@ -533,6 +527,12 @@ converse.plugins.add('converse-minimize', {
             _converse.minimized_chats = new _converse.MinimizedChats({
                 model: _converse.chatboxes
             });
+            /**
+             * Triggered once the _converse.MinimizedChats instance has been * initialized
+             * @event _converse#minimizedChatsInitialized
+             * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
+             */
+            _converse.api.trigger('minimizedChatsInitialized');
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
 

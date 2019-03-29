@@ -359,6 +359,7 @@ function initPlugins() {
         },
         '_converse': _converse
     }, whitelist, _converse.blacklisted_plugins);
+    
     /**
      * Triggered once all plugins have been initialized. This is a useful event if you want to
      * register event handlers but would like your own handlers to be overridable by
@@ -1404,9 +1405,9 @@ _converse.api = {
      *
      * @method _converse.api.trigger
      */
-    'trigger' () {
+    'trigger' (name) {
          /* Event emitter and promise resolver */
-         _converse.trigger.apply(this, arguments);
+         _converse.trigger.apply(_converse, arguments);
          const promise = _converse.promises[name];
          if (!_.isUndefined(promise)) {
             promise.resolve();

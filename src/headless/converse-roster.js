@@ -109,6 +109,7 @@ converse.plugins.add('converse-roster', {
                      * position roster groups.
                      * @event _converse#rosterGroupsFetched
                      * @example _converse.api.listen.on('rosterGroupsFetched', () => { ... });
+                     * @example _converse.api.waitUntil('rosterGroupsFetched').then(() => { ... });
                      */
                     _converse.api.trigger('rosterGroupsFetched');
                     await _converse.roster.fetchRosterContacts();

@@ -32,11 +32,11 @@
 
         it("is populated once we have registered a presence handler",
             mock.initConverse(
-                {'_converse': ['emit']}, null, {},
+                null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
 
+            spyOn(_converse.api, "trigger").and.callThrough();
             const IQs = _converse.connection.IQ_stanzas;
-            await test_utils.waitUntil(() => _converse.api.trigger.calls.all().map(c => c.args[0]).includes('rosterGroupsFetched'));
             const node = await test_utils.waitUntil(
                 () => _.filter(IQs, iq => iq.nodeTree.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
             expect(_converse.api.trigger.calls.all().map(c => c.args[0]).includes('rosterContactsFetched')).toBeFalsy();

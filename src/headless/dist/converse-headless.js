@@ -41038,16 +41038,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return new _converse.ChatBox(attrs, options);
       },
 
-      initialize() {
-        /**
-         * Triggered once the _converse.ChatBoxes collection has been initialized.
-         * @event _converse#chatBoxesInitialized
-         * @example _converse.api.listen.on('chatBoxesInitialized', () => { ... });
-         * @example _converse.api.waitUntil('chatBoxesInitialized').then(() => { ... });
-         */
-        _converse.api.trigger('chatBoxesInitialized');
-      },
-
       registerMessageHandler() {
         _converse.connection.addHandler(stanza => {
           this.onMessage(stanza);
@@ -41352,7 +41342,20 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       _converse.api.disco.own.features.add(Strophe.NS.OUTOFBAND);
     });
 
-    _converse.api.listen.on('pluginsInitialized', () => _converse.chatboxes = new _converse.ChatBoxes());
+    _converse.api.listen.on('pluginsInitialized', () => {
+      _converse.chatboxes = new _converse.ChatBoxes();
+
+      _converse.emit('chatBoxesInitialized');
+      /**
+       * Triggered once the _converse.ChatBoxes collection has been initialized.
+       * @event _converse#chatBoxesInitialized
+       * @example _converse.api.listen.on('chatBoxesInitialized', () => { ... });
+       * @example _converse.api.waitUntil('chatBoxesInitialized').then(() => { ... });
+       */
+
+
+      _converse.api.trigger('chatBoxesInitialized');
+    });
 
     _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
     /************************ END Event Handlers ************************/

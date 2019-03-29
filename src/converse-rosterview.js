@@ -824,14 +824,6 @@ converse.plugins.add('converse-rosterview', {
                     this.trigger('rosterContactsFetchedAndProcessed');
                 });
                 this.createRosterFilter();
-
-                _converse.rosterview.render();
-                /**
-                 * Triggered once the _converse.RosterView instance has been created and initialized.
-                 * @event _converse#rosterViewInitialized
-                 * @example _converse.api.listen.on('rosterViewInitialized', () => { ... });
-                 */
-                _converse.api.trigger('rosterViewInitialized');
             },
 
             render () {
@@ -1039,6 +1031,13 @@ converse.plugins.add('converse-rosterview', {
             _converse.rosterview = new _converse.RosterView({
                 'model': _converse.rostergroups
             });
+            _converse.rosterview.render();
+            /**
+             * Triggered once the _converse.RosterView instance has been created and initialized.
+             * @event _converse#rosterViewInitialized
+             * @example _converse.api.listen.on('rosterViewInitialized', () => { ... });
+             */
+            _converse.api.trigger('rosterViewInitialized');
         }
         _converse.api.listen.on('rosterInitialized', initRoster);
         _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);

@@ -239,13 +239,11 @@
             promise_names = null
             settings = null;
         }
-        return done => {
-            initConverse(settings, spies).then(_converse => {
-                const promises = _.map(promise_names, _converse.api.waitUntil);
-                Promise.all(promises)
-                    .then(_.partial(func, done, _converse))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-            });
+        return async done => {
+            const _converse = await initConverse(settings, spies);
+            const promises = _.map(promise_names, _converse.api.waitUntil);
+            await Promise.all(promises);
+            func(done, _converse);
         }
     };
     return mock;

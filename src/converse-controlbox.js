@@ -378,11 +378,6 @@ converse.plugins.add('converse-controlbox', {
             },
 
             showHelpMessages () {
-                /* Override showHelpMessages in ChatBoxView, for now do nothing.
-                 *
-                 * Parameters:
-                 *  (Array) msgs: Array of messages
-                 */
                 return;
             }
         });

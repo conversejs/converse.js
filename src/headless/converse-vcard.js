@@ -100,12 +100,6 @@ converse.plugins.add('converse-vcard', {
         }
 
         async function getVCard (_converse, jid) {
-            /* Request the VCard of another user. Returns a promise.
-             *
-             * Parameters:
-             *    (String) jid - The Jabber ID of the user whose VCard
-             *      is being requested.
-             */
             const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
             let iq;
             try {

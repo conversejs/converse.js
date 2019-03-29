@@ -225,20 +225,19 @@ _converse.default_settings = {
 };
 
 
+/**
+ * Logs messages to the browser's developer console.
+ * Available loglevels are 0 for 'debug', 1 for 'info', 2 for 'warn',
+ * 3 for 'error' and 4 for 'fatal'.
+ * When using the 'error' or 'warn' loglevels, a full stacktrace will be
+ * logged as well.
+ * @method log
+ * @private
+ * @memberOf _converse
+ * @param { string } message - The message to be logged
+ * @param { integer } level - The loglevel which allows for filtering of log messages
+ */
 _converse.log = function (message, level, style='') {
-    /* Logs messages to the browser's developer console.
-     *
-     * Parameters:
-     *      (String) message - The message to be logged.
-     *      (Integer) level - The loglevel which allows for filtering of log
-     *                       messages.
-     *
-     *  Available loglevels are 0 for 'debug', 1 for 'info', 2 for 'warn',
-     *  3 for 'error' and 4 for 'fatal'.
-     *
-     *  When using the 'error' or 'warn' loglevels, a full stacktrace will be
-     *  logged as well.
-     */
     if (level === Strophe.LogLevel.ERROR || level === Strophe.LogLevel.FATAL) {
         style = style || 'color: maroon';
     }
@@ -275,12 +274,15 @@ Strophe.log = function (level, msg) { _converse.log(level+' '+msg, level); };
 Strophe.error = function (msg) { _converse.log(msg, Strophe.LogLevel.ERROR); };
 
 
+/**
+ * Translate the given string based on the current locale.
+ * Handles all MUC presence stanzas.
+ * @method __
+ * @private
+ * @memberOf _converse
+ * @param { String } str - The string to translate
+ */
 _converse.__ = function (str) {
-    /* Translate the given string based on the current locale.
-     *
-     * Parameters:
-     *      (String) str - The string to translate.
-     */
     if (_.isUndefined(i18n)) {
         return str;
     }
@@ -565,12 +567,14 @@ _converse.initialize = async function (settings, callback) {
 
     this.generateResource = () => `/converse.js-${Math.floor(Math.random()*139749528).toString()}`;
 
+    /**
+     * Send out a Chat Status Notification (XEP-0352)
+     * @private
+     * @method sendCSI
+     * @memberOf _converse
+     * @param { String } stat - The user's chat status
+     */
     this.sendCSI = function (stat) {
-        /* Send out a Chat Status Notification (XEP-0352)
-         *
-         * Parameters:
-         *  (String) stat: The user's chat status
-         */
         _converse.api.send($build(stat, {xmlns: Strophe.NS.CSI}));
         _converse.inactive = (stat === _converse.INACTIVE) ? true : false;
     };
@@ -661,14 +665,15 @@ _converse.initialize = async function (settings, callback) {
         });
     };
 
+    /**
+     * Reject or cancel another user's subscription to our presence updates.
+     * @method rejectPresenceSubscription
+     * @private
+     * @memberOf _converse
+     * @param { String } jid - The Jabber ID of the user whose subscription is being canceled
+     * @param { String } message - An optional message to the user
+     */
     this.rejectPresenceSubscription = function (jid, message) {
-        /* Reject or cancel another user's subscription to our presence updates.
-         *
-         *  Parameters:
-         *    (String) jid - The Jabber ID of the user whose subscription
-         *      is being canceled.
-         *    (String) message - An optional message to the user
-         */
         const pres = $pres({to: jid, type: "unsubscribed"});
         if (message && message !== "") { pres.c("status").t(message); }
         _converse.api.send(pres);

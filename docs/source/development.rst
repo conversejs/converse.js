@@ -41,6 +41,5 @@ to fix a bug or to add new functionality.
    plugin_development
    api/index
    testing
-   events 
    other_frameworks
    builds

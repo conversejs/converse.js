@@ -442,13 +442,13 @@ converse.plugins.add('converse-chatboxes', {
                 return false;
             },
 
+            /**
+             * Given a {@link _converse.Message} return the XML stanza that represents it.
+             * @private
+             * @method _converse.ChatBox#createMessageStanza
+             * @param { _converse.Message } message - The message object
+             */
             createMessageStanza (message) {
-                /* Given a _converse.Message Backbone.Model, return the XML
-                 * stanza that represents it.
-                 *
-                 *  Parameters:
-                 *    (Object) message - The Backbone.Model representing the message
-                 */
                 const stanza = $msg({
                         'from': _converse.connection.jid,
                         'to': this.get('jid'),
@@ -630,13 +630,14 @@ converse.plugins.add('converse-chatboxes', {
                 });
             },
 
+            /**
+             * Extract the XEP-0359 stanza IDs from the passed in stanza
+             * and return a map containing them.
+             * @private
+             * @method _converse.ChatBox#getStanzaIDs
+             * @param { XMLElement } stanza - The message stanza
+             */
             getStanzaIDs (stanza) {
-                /* Extract the XEP-0359 stanza IDs from the passed in stanza
-                 * and return a map containing them.
-                 *
-                 * Parameters:
-                 *    (XMLElement) stanza - The message stanza
-                 */
                 const attrs = {};
                 const stanza_ids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
                 if (stanza_ids.length) {
@@ -659,18 +660,17 @@ converse.plugins.add('converse-chatboxes', {
                 return !_.isNil(sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop());
             },
 
+            /**
+             * Parses a passed in message stanza and returns an object
+             * of attributes.
+             * @private
+             * @method _converse.ChatBox#getMessageAttributesFromStanza
+             * @param { XMLElement } stanza - The message stanza
+             * @param { XMLElement } delay - The <delay> node from the stanza, if there was one.
+             * @param { XMLElement } original_stanza - The original stanza, that contains the
+             *  message stanza, if it was contained, otherwise it's the message stanza itself.
+             */
             getMessageAttributesFromStanza (stanza, original_stanza) {
-                /* Parses a passed in message stanza and returns an object
-                 * of attributes.
-                 *
-                 * Parameters:
-                 *    (XMLElement) stanza - The message stanza
-                 *    (XMLElement) delay - The <delay> node from the
-                 *      stanza, if there was one.
-                 *    (XMLElement) original_stanza - The original stanza,
-                 *      that contains the message stanza, if it was
-                 *      contained, otherwise it's the message stanza itself.
-                 */
                 const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
                       delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
                       text = _converse.chatboxes.getMessageBody(stanza) || undefined,
@@ -864,13 +864,13 @@ converse.plugins.add('converse-chatboxes', {
                 }
             },
 
+            /**
+             * Handler method for all incoming single-user chat "message" stanzas.
+             * @private
+             * @method _converse.ChatBox#onMessage
+             * @param { XMLElement } stanza - The incoming message stanza
+             */
             async onMessage (stanza) {
-                /* Handler method for all incoming single-user chat "message"
-                 * stanzas.
-                 *
-                 * Parameters:
-                 *    (XMLElement) stanza - The incoming message stanza
-                 */
                 let to_jid = stanza.getAttribute('to');
                 const to_resource = Strophe.getResourceFromJid(to_jid);
 
@@ -970,15 +970,16 @@ converse.plugins.add('converse-chatboxes', {
                 _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': chatbox});
             },
 
+            /**
+             * Returns a chat box or optionally return a newly
+             * created one if one doesn't exist.
+             * @private
+             * @method _converse.ChatBox#getChatBox
+             * @param { string } jid - The JID of the user whose chat box we want
+             * @param { boolean } create - Should a new chat box be created if none exists?
+             * @param { object } attrs - Optional chat box atributes.
+             */
             getChatBox (jid, attrs={}, create) {
-                /* Returns a chat box or optionally return a newly
-                 * created one if one doesn't exist.
-                 *
-                 * Parameters:
-                 *    (String) jid - The JID of the user whose chat box we want
-                 *    (Boolean) create - Should a new chat box be created if none exists?
-                 *    (Object) attrs - Optional chat box atributes.
-                 */
                 if (_.isObject(jid)) {
                     create = attrs;
                     attrs = jid;

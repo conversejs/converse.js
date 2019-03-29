@@ -45,10 +45,13 @@ converse.plugins.add('converse-roster', {
         };
 
 
+        /**
+         * Initialize the Bakcbone collections that represent the contats
+         * roster and the roster groups.
+         * @private
+         * @method _converse.initRoster
+         */
         _converse.initRoster = function () {
-            /* Initialize the Bakcbone collections that represent the contats
-             * roster and the roster groups.
-             */
             const storage = _converse.config.get('storage');
             _converse.roster = new _converse.RosterContacts();
             _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](
@@ -75,15 +78,16 @@ converse.plugins.add('converse-roster', {
         };
 
 
+        /**
+         * Fetch all the roster groups, and then the roster contacts.
+         * Emit an event after fetching is done in each case.
+         * @private
+         * @method _converse.populateRoster
+         * @param { Bool } ignore_cache - If set to to true, the local cache
+         *      will be ignored it's guaranteed that the XMPP server
+         *      will be queried for the roster.
+         */
         _converse.populateRoster = async function (ignore_cache=false) {
-            /* Fetch all the roster groups, and then the roster contacts.
-             * Emit an event after fetching is done in each case.
-             *
-             * Parameters:
-             *    (Bool) ignore_cache - If set to to true, the local cache
-             *      will be ignored it's guaranteed that the XMPP server
-             *      will be queried for the roster.
-             */
             if (ignore_cache) {
                 _converse.send_initial_presence = true;
                 try {
@@ -272,13 +276,14 @@ converse.plugins.add('converse-roster', {
                 return this.vcard.get('fullname');
             },
 
+            /**
+             * Send a presence subscription request to this roster contact
+             * @private
+             * @method _converse.RosterContacts#subscribe
+             * @param { String } message - An optional message to explain the
+             *      reason for the subscription request.
+             */
             subscribe (message) {
-                /* Send a presence subscription request to this roster contact
-                 *
-                 * Parameters:
-                 *    (String) message - An optional message to explain the
-                 *      reason for the subscription request.
-                 */
                 const pres = $pres({to: this.get('jid'), type: "subscribe"});
                 if (message && message !== "") {
                     pres.c("status").t(message).up();
@@ -292,46 +297,55 @@ converse.plugins.add('converse-roster', {
                 return this;
             },
 
+            /**
+             * Upon receiving the presence stanza of type "subscribed",
+             * the user SHOULD acknowledge receipt of that subscription
+             * state notification by sending a presence stanza of type
+             * "subscribe" to the contact
+             * @private
+             * @method _converse.RosterContacts#ackSubscribe
+             */
             ackSubscribe () {
-                /* Upon receiving the presence stanza of type "subscribed",
-                 * the user SHOULD acknowledge receipt of that subscription
-                 * state notification by sending a presence stanza of type
-                 * "subscribe" to the contact
-                 */
                 _converse.api.send($pres({
                     'type': 'subscribe',
                     'to': this.get('jid')
                 }));
             },
 
+            /**
+             * Upon receiving the presence stanza of type "unsubscribed",
+             * the user SHOULD acknowledge receipt of that subscription state
+             * notification by sending a presence stanza of type "unsubscribe"
+             * this step lets the user's server know that it MUST no longer
+             * send notification of the subscription state change to the user.
+             * @private
+             * @method _converse.RosterContacts#ackUnsubscribe
+             * @param { String } jid - The Jabber ID of the user who is unsubscribing
+             */
             ackUnsubscribe () {
-                /* Upon receiving the presence stanza of type "unsubscribed",
-                 * the user SHOULD acknowledge receipt of that subscription state
-                 * notification by sending a presence stanza of type "unsubscribe"
-                 * this step lets the user's server know that it MUST no longer
-                 * send notification of the subscription state change to the user.
-                 *  Parameters:
-                 *    (String) jid - The Jabber ID of the user who is unsubscribing
-                 */
                 _converse.api.send($pres({'type': 'unsubscribe', 'to': this.get('jid')}));
                 this.removeFromRoster();
                 this.destroy();
             },
 
+            /**
+             * Unauthorize this contact's presence subscription
+             * @private
+             * @method _converse.RosterContacts#unauthorize
+             * @param { String } message - Optional message to send to the person being unauthorized
+             */
             unauthorize (message) {
-                /* Unauthorize this contact's presence subscription
-                 * Parameters:
-                 *   (String) message - Optional message to send to the person being unauthorized
-                 */
                 _converse.rejectPresenceSubscription(this.get('jid'), message);
                 return this;
             },
 
+            /**
+             * Authorize presence subscription
+             * @private
+             * @method _converse.RosterContacts#authorize
+             * @param { String } message - Optional message to send to the person being authorized
+             */
             authorize (message) {
-                /* Authorize presence subscription
-                 * Parameters:
-                 *   (String) message - Optional message to send to the person being authorized
-                 */
                 const pres = $pres({'to': this.get('jid'), 'type': "subscribed"});
                 if (message && message !== "") {
                     pres.c("status").t(message);
@@ -340,11 +354,13 @@ converse.plugins.add('converse-roster', {
                 return this;
             },
 
+            /**
+             * Instruct the XMPP server to remove this contact from our roster
+             * @private
+             * @method _converse.RosterContacts#
+             * @returns { Promise } 
+             */
             removeFromRoster () {
-                /* Instruct the XMPP server to remove this contact from our roster
-                 * Parameters:
-                 *   (Function) callback
-                 */
                 const iq = $iq({type: 'set'})
                     .c('query', {xmlns: Strophe.NS.ROSTER})
                     .c('item', {jid: this.get('jid'), subscription: "remove"});
@@ -352,7 +368,11 @@ converse.plugins.add('converse-roster', {
             }
         });
 
-
+        /**
+         * @class
+         * @namespace _converse.RosterContacts
+         * @memberOf _converse
+         */
         _converse.RosterContacts = Backbone.Collection.extend({
             model: _converse.RosterContact,
 
@@ -460,17 +480,18 @@ converse.plugins.add('converse-roster', {
                 return u.isSameBareJID(jid, _converse.connection.jid);
             },
 
+            /**
+             * Add a roster contact and then once we have confirmation from
+             * the XMPP server we subscribe to that contact's presence updates.
+             * @private
+             * @method _converse.RosterContacts#addAndSubscribe
+             * @param { String } jid - The Jabber ID of the user being added and subscribed to.
+             * @param { String } name - The name of that user
+             * @param { Array.String } groups - Any roster groups the user might belong to
+             * @param { String } message - An optional message to explain the reason for the subscription request.
+             * @param { Object } attributes - Any additional attributes to be stored on the user's model.
+             */
             addAndSubscribe (jid, name, groups, message, attributes) {
-                /* Add a roster contact and then once we have confirmation from
-                 * the XMPP server we subscribe to that contact's presence updates.
-                 *  Parameters:
-                 *    (String) jid - The Jabber ID of the user being added and subscribed to.
-                 *    (String) name - The name of that user
-                 *    (Array of Strings) groups - Any roster groups the user might belong to
-                 *    (String) message - An optional message to explain the
-                 *      reason for the subscription request.
-                 *    (Object) attributes - Any additional attributes to be stored on the user's model.
-                 */
                 const handler = (contact) => {
                     if (contact instanceof _converse.RosterContact) {
                         contact.subscribe(message);
@@ -479,16 +500,17 @@ converse.plugins.add('converse-roster', {
                 this.addContactToRoster(jid, name, groups, attributes).then(handler, handler);
             },
 
+            /**
+             * Send an IQ stanza to the XMPP server to add a new roster contact.
+             * @private
+             * @method _converse.RosterContacts#sendContactAddIQ
+             * @param { String } jid - The Jabber ID of the user being added
+             * @param { String } name - The name of that user
+             * @param { Array.String } groups - Any roster groups the user might belong to
+             * @param { Function } callback - A function to call once the IQ is returned
+             * @param { Function } errback - A function to call if an error occurred
+             */
             sendContactAddIQ (jid, name, groups) {
-                /*  Send an IQ stanza to the XMPP server to add a new roster contact.
-                 *
-                 *  Parameters:
-                 *    (String) jid - The Jabber ID of the user being added
-                 *    (String) name - The name of that user
-                 *    (Array of Strings) groups - Any roster groups the user might belong to
-                 *    (Function) callback - A function to call once the IQ is returned
-                 *    (Function) errback - A function to call if an error occurred
-                 */
                 name = _.isEmpty(name) ? null : name;
                 const iq = $iq({'type': 'set'})
                     .c('query', {'xmlns': Strophe.NS.ROSTER})
@@ -497,18 +519,18 @@ converse.plugins.add('converse-roster', {
                 return _converse.api.sendIQ(iq);
             },
 
+            /**
+             * Adds a RosterContact instance to _converse.roster and
+             * registers the contact on the XMPP server.
+             * Returns a promise which is resolved once the XMPP server has responded.
+             * @private
+             * @method _converse.RosterContacts#addContactToRoster
+             * @param { String } jid - The Jabber ID of the user being added and subscribed to.
+             * @param { String } name - The name of that user
+             * @param { Array.String } groups - Any roster groups the user might belong to
+             * @param { Object } attributes - Any additional attributes to be stored on the user's model.
+             */
             async addContactToRoster (jid, name, groups, attributes) {
-                /* Adds a RosterContact instance to _converse.roster and
-                 * registers the contact on the XMPP server.
-                 * Returns a promise which is resolved once the XMPP server has
-                 * responded.
-                 *
-                 *  Parameters:
-                 *    (String) jid - The Jabber ID of the user being added and subscribed to.
-                 *    (String) name - The name of that user
-                 *    (Array of Strings) groups - Any roster groups the user might belong to
-                 *    (Object) attributes - Any additional attributes to be stored on the user's model.
-                 */
                 groups = groups || [];
                 try {
                     await this.sendContactAddIQ(jid, name, groups);
@@ -551,13 +573,14 @@ converse.plugins.add('converse-roster', {
                 return _.sum(this.models.filter((model) => !_.includes(ignored, model.presence.get('show'))));
             },
 
+            /**
+             * Handle roster updates from the XMPP server.
+             * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
+             * @private
+             * @method _converse.RosterContacts#onRosterPush
+             * @param { XMLElement } IQ - The IQ stanza received from the XMPP server.
+             */
             onRosterPush (iq) {
-                /* Handle roster updates from the XMPP server.
-                 * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-                 *
-                 * Parameters:
-                 *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
-                 */
                 const id = iq.getAttribute('id');
                 const from = iq.getAttribute('from');
                 if (from && from !== _converse.bare_jid) {

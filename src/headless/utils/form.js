@@ -10,12 +10,13 @@ import _ from "../lodash.noconflict";
 import tpl_field from "../templates/field.html";
 import u from "./core";
 
+/**
+ * Takes an HTML DOM and turns it into an XForm field.
+ * @private
+ * @method u#webForm2xForm
+ * @param { DOMElement } field - the field to convert
+ */
 u.webForm2xForm = function (field) {
-    /* Takes an HTML DOM and turns it into an XForm field.
-     *
-     * Parameters:
-     *      (DOMElement) field - the field to convert
-     */
     let value;
     if (field.getAttribute('type') === 'checkbox') {
         value = field.checked && 1 || 0;

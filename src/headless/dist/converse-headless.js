@@ -40680,13 +40680,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return false;
       },
 
+      /**
+       * Given a {@link _converse.Message} return the XML stanza that represents it.
+       * @private
+       * @method _converse.ChatBox#createMessageStanza
+       * @param { _converse.Message } message - The message object
+       */
       createMessageStanza(message) {
-        /* Given a _converse.Message Backbone.Model, return the XML
-         * stanza that represents it.
-         *
-         *  Parameters:
-         *    (Object) message - The Backbone.Model representing the message
-         */
         const stanza = $msg({
           'from': _converse.connection.jid,
           'to': this.get('jid'),
@@ -40896,13 +40896,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
+      /**
+       * Extract the XEP-0359 stanza IDs from the passed in stanza
+       * and return a map containing them.
+       * @private
+       * @method _converse.ChatBox#getStanzaIDs
+       * @param { XMLElement } stanza - The message stanza
+       */
       getStanzaIDs(stanza) {
-        /* Extract the XEP-0359 stanza IDs from the passed in stanza
-         * and return a map containing them.
-         *
-         * Parameters:
-         *    (XMLElement) stanza - The message stanza
-         */
         const attrs = {};
         const stanza_ids = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza);
 
@@ -40930,18 +40931,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return !_.isNil(sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop());
       },
 
+      /**
+       * Parses a passed in message stanza and returns an object
+       * of attributes.
+       * @private
+       * @method _converse.ChatBox#getMessageAttributesFromStanza
+       * @param { XMLElement } stanza - The message stanza
+       * @param { XMLElement } delay - The <delay> node from the stanza, if there was one.
+       * @param { XMLElement } original_stanza - The original stanza, that contains the
+       *  message stanza, if it was contained, otherwise it's the message stanza itself.
+       */
       getMessageAttributesFromStanza(stanza, original_stanza) {
-        /* Parses a passed in message stanza and returns an object
-         * of attributes.
-         *
-         * Parameters:
-         *    (XMLElement) stanza - The message stanza
-         *    (XMLElement) delay - The <delay> node from the
-         *      stanza, if there was one.
-         *    (XMLElement) original_stanza - The original stanza,
-         *      that contains the message stanza, if it was
-         *      contained, otherwise it's the message stanza itself.
-         */
         const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
               delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
               text = _converse.chatboxes.getMessageBody(stanza) || undefined,
@@ -41152,13 +41152,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
       },
 
+      /**
+       * Handler method for all incoming single-user chat "message" stanzas.
+       * @private
+       * @method _converse.ChatBox#onMessage
+       * @param { XMLElement } stanza - The incoming message stanza
+       */
       async onMessage(stanza) {
-        /* Handler method for all incoming single-user chat "message"
-         * stanzas.
-         *
-         * Parameters:
-         *    (XMLElement) stanza - The incoming message stanza
-         */
         let to_jid = stanza.getAttribute('to');
         const to_resource = Strophe.getResourceFromJid(to_jid);
 
@@ -41260,18 +41260,19 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         });
       },
 
+      /**
+       * Returns a chat box or optionally return a newly
+       * created one if one doesn't exist.
+       * @private
+       * @method _converse.ChatBox#getChatBox
+       * @param { string } jid - The JID of the user whose chat box we want
+       * @param { boolean } create - Should a new chat box be created if none exists?
+       * @param { object } attrs - Optional chat box atributes.
+       */
       getChatBox(jid) {
         let attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         let create = arguments.length > 2 ? arguments[2] : undefined;
 
-        /* Returns a chat box or optionally return a newly
-         * created one if one doesn't exist.
-         *
-         * Parameters:
-         *    (String) jid - The JID of the user whose chat box we want
-         *    (Boolean) create - Should a new chat box be created if none exists?
-         *    (Object) attrs - Optional chat box atributes.
-         */
         if (_.isObject(jid)) {
           create = attrs;
           attrs = jid;
@@ -41344,15 +41345,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
     _converse.api.listen.on('pluginsInitialized', () => {
       _converse.chatboxes = new _converse.ChatBoxes();
-
-      _converse.emit('chatBoxesInitialized');
       /**
        * Triggered once the _converse.ChatBoxes collection has been initialized.
        * @event _converse#chatBoxesInitialized
        * @example _converse.api.listen.on('chatBoxesInitialized', () => { ... });
        * @example _converse.api.waitUntil('chatBoxesInitialized').then(() => { ... });
        */
-
 
       _converse.api.trigger('chatBoxesInitialized');
     });
@@ -41741,23 +41739,22 @@ _converse.default_settings = {
   websocket_url: undefined,
   whitelisted_plugins: []
 };
+/**
+ * Logs messages to the browser's developer console.
+ * Available loglevels are 0 for 'debug', 1 for 'info', 2 for 'warn',
+ * 3 for 'error' and 4 for 'fatal'.
+ * When using the 'error' or 'warn' loglevels, a full stacktrace will be
+ * logged as well.
+ * @method log
+ * @private
+ * @memberOf _converse
+ * @param { string } message - The message to be logged
+ * @param { integer } level - The loglevel which allows for filtering of log messages
+ */
 
 _converse.log = function (message, level) {
   let style = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
 
-  /* Logs messages to the browser's developer console.
-   *
-   * Parameters:
-   *      (String) message - The message to be logged.
-   *      (Integer) level - The loglevel which allows for filtering of log
-   *                       messages.
-   *
-   *  Available loglevels are 0 for 'debug', 1 for 'info', 2 for 'warn',
-   *  3 for 'error' and 4 for 'fatal'.
-   *
-   *  When using the 'error' or 'warn' loglevels, a full stacktrace will be
-   *  logged as well.
-   */
   if (level === strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR || level === strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL) {
     style = style || 'color: maroon';
   }
@@ -41801,13 +41798,17 @@ strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].log = function (level, msg) {
 strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].error = function (msg) {
   _converse.log(msg, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
 };
+/**
+ * Translate the given string based on the current locale.
+ * Handles all MUC presence stanzas.
+ * @method __
+ * @private
+ * @memberOf _converse
+ * @param { String } str - The string to translate
+ */
+
 
 _converse.__ = function (str) {
-  /* Translate the given string based on the current locale.
-   *
-   * Parameters:
-   *      (String) str - The string to translate.
-   */
   if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"])) {
     return str;
   }
@@ -42095,13 +42096,16 @@ _converse.initialize = async function (settings, callback) {
   // ----------------------
 
   this.generateResource = () => `/converse.js-${Math.floor(Math.random() * 139749528).toString()}`;
+  /**
+   * Send out a Chat Status Notification (XEP-0352)
+   * @private
+   * @method sendCSI
+   * @memberOf _converse
+   * @param { String } stat - The user's chat status
+   */
+
 
   this.sendCSI = function (stat) {
-    /* Send out a Chat Status Notification (XEP-0352)
-     *
-     * Parameters:
-     *  (String) stat: The user's chat status
-     */
     _converse.api.send(Object(strophe_js__WEBPACK_IMPORTED_MODULE_0__["$build"])(stat, {
       xmlns: strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].NS.CSI
     }));
@@ -42204,15 +42208,17 @@ _converse.initialize = async function (settings, callback) {
       'message': message
     });
   };
+  /**
+   * Reject or cancel another user's subscription to our presence updates.
+   * @method rejectPresenceSubscription
+   * @private
+   * @memberOf _converse
+   * @param { String } jid - The Jabber ID of the user whose subscription is being canceled
+   * @param { String } message - An optional message to the user
+   */
+
 
   this.rejectPresenceSubscription = function (jid, message) {
-    /* Reject or cancel another user's subscription to our presence updates.
-     *
-     *  Parameters:
-     *    (String) jid - The Jabber ID of the user whose subscription
-     *      is being canceled.
-     *    (String) message - An optional message to the user
-     */
     const pres = Object(strophe_js__WEBPACK_IMPORTED_MODULE_0__["$pres"])({
       to: jid,
       type: "unsubscribed"
@@ -43038,9 +43044,9 @@ _converse.api = {
    *
    * @method _converse.api.trigger
    */
-  'trigger'() {
+  'trigger'(name) {
     /* Event emitter and promise resolver */
-    _converse.trigger.apply(this, arguments);
+    _converse.trigger.apply(_converse, arguments);
 
     const promise = _converse.promises[name];
 
@@ -43622,6 +43628,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
     const _converse = this._converse; // Promises exposed by this plugin
 
     _converse.api.promises.add('discoInitialized');
+    /**
+     * @class
+     * @namespace _converse.DiscoEntity
+     * @memberOf _converse
+     */
+
 
     _converse.DiscoEntity = Backbone.Model.extend({
       /* A Disco Entity is a JID addressable entity that can be queried
@@ -43649,14 +43661,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         this.items.fetch();
       },
 
+      /**
+       * Returns a Promise which resolves with a map indicating
+       * whether a given identity is provided by this entity.
+       * @private
+       * @method _converse.DiscoEntity#getIdentity
+       * @param { String } category - The identity category
+       * @param { String } type - The identity type
+       */
       async getIdentity(category, type) {
-        /* Returns a Promise which resolves with a map indicating
-         * whether a given identity is provided by this entity.
-         *
-         * Parameters:
-         *    (String) category - The identity category
-         *    (String) type - The identity type
-         */
         await this.waitUntilFeaturesDiscovered;
         return this.identities.findWhere({
           'category': category,
@@ -43664,13 +43677,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         });
       },
 
+      /**
+       * Returns a Promise which resolves with a map indicating
+       * whether a given feature is supported.
+       * @private
+       * @method _converse.DiscoEntity#hasFeature
+       * @param { String } feature - The feature that might be supported.
+       */
       async hasFeature(feature) {
-        /* Returns a Promise which resolves with a map indicating
-         * whether a given feature is supported.
-         *
-         * Parameters:
-         *    (String) feature - The feature that might be supported.
-         */
         await this.waitUntilFeaturesDiscovered;
 
         if (this.features.findWhere({
@@ -45176,14 +45190,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         return this.get('name') || this.get('jid');
       },
 
+      /**
+       * Join the groupchat.
+       * @private
+       * @method _converse.ChatRoom#join
+       * @param { String } nick - The user's nickname
+       * @param { String } password - Optional password, if required by the groupchat.
+       */
       join(nick, password) {
-        /* Join the groupchat.
-         *
-         * Parameters:
-         *  (String) nick: The user's nickname
-         *  (String) password: Optional password, if required by
-         *      the groupchat.
-         */
         nick = nick ? nick : this.get('nick');
 
         if (!nick) {
@@ -45216,13 +45230,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         return this;
       },
 
+      /* Leave the groupchat.
+       * @private
+       * @method _converse.ChatRoom#leave
+       * @param { string } exit_msg - Optional message to indicate your reason for leaving
+       */
       leave(exit_msg) {
-        /* Leave the groupchat.
-         *
-         * Parameters:
-         *  (String) exit_msg: Optional message to indicate your
-         *      reason for leaving.
-         */
         this.features.destroy();
 
         this.occupants.browserStorage._clear();
@@ -45413,12 +45426,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         }));
       },
 
+      /**
+       * Send a direct invitation as per XEP-0249
+       * @private
+       * @method _converse.ChatRoom#directInvite
+       * @param { String } recipient - JID of the person being invited
+       * @param { String } reason - Optional reason for the invitation
+       */
       directInvite(recipient, reason) {
-        /* Send a direct invitation as per XEP-0249
-         * Parameters:
-         *    (String) recipient - JID of the person being invited
-         *    (String) reason - Optional reason for the invitation
-         */
         if (this.features.get('membersonly')) {
           // When inviting to a members-only groupchat, we first add
           // the person to the member list by giving them an
@@ -45519,20 +45534,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         this.features.save(attrs);
       },
 
+      /* Send an IQ stanza to the server, asking it for the
+       * member-list of this groupchat.
+       * See: https://xmpp.org/extensions/xep-0045.html#modifymember
+       * @private
+       * @method _converse.ChatRoom#requestMemberList
+       * @param { string } affiliation - The specific member list to
+       *      fetch. 'admin', 'owner' or 'member'.
+       * @returns:
+       *  A promise which resolves once the list has been retrieved.
+       */
       requestMemberList(affiliation) {
-        /* Send an IQ stanza to the server, asking it for the
-         * member-list of this groupchat.
-         *
-         * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-         *
-         * Parameters:
-         *  (String) affiliation: The specific member list to
-         *      fetch. 'admin', 'owner' or 'member'.
-         *
-         * Returns:
-         *  A promise which resolves once the list has been
-         *  retrieved.
-         */
         affiliation = affiliation || 'member';
         const iq = $iq({
           to: this.get('jid'),
@@ -45545,28 +45557,26 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         return _converse.api.sendIQ(iq);
       },
 
+      /**
+       * Send IQ stanzas to the server to set an affiliation for
+       * the provided JIDs.
+       * See: https://xmpp.org/extensions/xep-0045.html#modifymember
+       *
+       * Prosody doesn't accept multiple JIDs' affiliations
+       * being set in one IQ stanza, so as a workaround we send
+       * a separate stanza for each JID.
+       * Related ticket: https://issues.prosody.im/345
+       *
+       * @private
+       * @method _converse.ChatRoom#setAffiliation
+       * @param { string } affiliation - The affiliation
+       * @param { object } members - A map of jids, affiliations and
+       *      optionally reasons. Only those entries with the
+       *      same affiliation as being currently set will be considered.
+       * @returns
+       *  A promise which resolves and fails depending on the XMPP server response.
+       */
       setAffiliation(affiliation, members) {
-        /* Send IQ stanzas to the server to set an affiliation for
-         * the provided JIDs.
-         *
-         * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-         *
-         * XXX: Prosody doesn't accept multiple JIDs' affiliations
-         * being set in one IQ stanza, so as a workaround we send
-         * a separate stanza for each JID.
-         * Related ticket: https://issues.prosody.im/345
-         *
-         * Parameters:
-         *  (String) affiliation: The affiliation
-         *  (Object) members: A map of jids, affiliations and
-         *      optionally reasons. Only those entries with the
-         *      same affiliation as being currently set will be
-         *      considered.
-         *
-         * Returns:
-         *  A promise which resolves and fails depending on the
-         *  XMPP server response.
-         */
         members = _.filter(members, member => // We only want those members who have the right
         // affiliation (or none, which implies the provided one).
         _.isUndefined(member.affiliation) || member.affiliation === affiliation);
@@ -45576,18 +45586,19 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         return Promise.all(promises);
       },
 
+      /**
+       * Submit the groupchat configuration form by sending an IQ
+       * stanza to the server.
+       * @private
+       * @method _converse.ChatRoom#saveConfiguration
+       * @param { HTMLElement } form - The configuration form DOM element.
+       *      If no form is provided, the default configuration
+       *      values will be used.
+       * @returns { promise }
+       * Returns a promise which resolves once the XMPP server
+       * has return a response IQ.
+       */
       saveConfiguration(form) {
-        /* Submit the groupchat configuration form by sending an IQ
-         * stanza to the server.
-         *
-         * Returns a promise which resolves once the XMPP server
-         * has return a response IQ.
-         *
-         * Parameters:
-         *  (HTMLElement) form: The configuration form DOM element.
-         *      If no form is provided, the default configuration
-         *      values will be used.
-         */
         return new Promise((resolve, reject) => {
           const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
                 configArray = _.map(inputs, _utils_form__WEBPACK_IMPORTED_MODULE_4__["default"].webForm2xForm);
@@ -45656,20 +45667,21 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         }));
       },
 
+      /**
+       * Send an IQ stanza with the groupchat configuration.
+       * @private
+       * @method _converse.ChatRoom#sendConfiguration
+       * @param { Array } config - The groupchat configuration
+       * @param { Function } callback - Callback upon succesful IQ response
+       *      The first parameter passed in is IQ containing the
+       *      groupchat configuration.
+       *      The second is the response IQ from the server.
+       * @param { Function } errback - Callback upon error IQ response
+       *      The first parameter passed in is IQ containing the
+       *      groupchat configuration.
+       *      The second is the response IQ from the server.
+       */
       sendConfiguration(config, callback, errback) {
-        /* Send an IQ stanza with the groupchat configuration.
-         *
-         * Parameters:
-         *  (Array) config: The groupchat configuration
-         *  (Function) callback: Callback upon succesful IQ response
-         *      The first parameter passed in is IQ containing the
-         *      groupchat configuration.
-         *      The second is the response IQ from the server.
-         *  (Function) errback: Callback upon error IQ response
-         *      The first parameter passed in is IQ containing the
-         *      groupchat configuration.
-         *      The second is the response IQ from the server.
-         */
         const iq = $iq({
           to: this.get('jid'),
           type: "set"
@@ -45689,13 +45701,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         return _converse.api.sendIQ(iq).then(callback).catch(errback);
       },
 
+      /**
+       * Parse the presence stanza for the current user's affiliation.
+       * @private
+       * @method _converse.ChatRoom#saveAffiliationAndRole
+       * @param { XMLElement } pres - A <presence> stanza.
+       */
       saveAffiliationAndRole(pres) {
-        /* Parse the presence stanza for the current user's
-         * affiliation.
-         *
-         * Parameters:
-         *  (XMLElement) pres: A <presence> stanza.
-         */
         const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, pres).pop();
         const is_self = pres.querySelector("status[code='110']");
 
@@ -45717,15 +45729,16 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         }
       },
 
+      /**
+       * Send an IQ stanza specifying an affiliation change.
+       * @private
+       * @method _converse.ChatRoom#
+       * @param { String } affiliation: affiliation
+       *     (could also be stored on the member object).
+       * @param { Object } member: Map containing the member's jid and
+       *     optionally a reason and affiliation.
+       */
       sendAffiliationIQ(affiliation, member) {
-        /* Send an IQ stanza specifying an affiliation change.
-         *
-         * Paremeters:
-         *  (String) affiliation: affiliation (could also be stored
-         *      on the member object).
-         *  (Object) member: Map containing the member's jid and
-         *      optionally a reason and affiliation.
-         */
         const iq = $iq({
           to: this.get('jid'),
           type: "set"
@@ -45744,17 +45757,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         return _converse.api.sendIQ(iq);
       },
 
+      /**
+       * Send IQ stanzas to the server to modify the
+       * affiliations in this groupchat.
+       * See: https://xmpp.org/extensions/xep-0045.html#modifymember
+       * @private
+       * @method _converse.ChatRoom#setAffiliations
+       * @param { object } members - A map of jids, affiliations and optionally reasons
+       * @param { function } onSuccess - callback for a succesful response
+       * @param { function } onError - callback for an error response
+       */
       setAffiliations(members) {
-        /* Send IQ stanzas to the server to modify the
-         * affiliations in this groupchat.
-         *
-         * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-         *
-         * Parameters:
-         *  (Object) members: A map of jids, affiliations and optionally reasons
-         *  (Function) onSuccess: callback for a succesful response
-         *  (Function) onError: callback for an error response
-         */
         const affiliations = _.uniq(_.map(members, 'affiliation'));
 
         return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
@@ -45774,36 +45787,36 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         return [].concat.apply([], result).filter(p => p);
       },
 
+      /**
+       * Fetch the lists of users with the given affiliations.
+       * Then compute the delta between those users and
+       * the passed in members, and if it exists, send the delta
+       * to the XMPP server to update the member list.
+       * @private
+       * @method _converse.ChatRoom#updateMemberLists
+       * @param { object } members - Map of member jids and affiliations.
+       * @param { string|array } affiliation - An array of affiliations or
+       *      a string if only one affiliation.
+       * @param { function } deltaFunc - The function to compute the delta
+       *      between old and new member lists.
+       * @returns { promise } 
+       *  A promise which is resolved once the list has been
+       *  updated or once it's been established there's no need
+       *  to update the list.
+       */
       updateMemberLists(members, affiliations, deltaFunc) {
-        /* Fetch the lists of users with the given affiliations.
-         * Then compute the delta between those users and
-         * the passed in members, and if it exists, send the delta
-         * to the XMPP server to update the member list.
-         *
-         * Parameters:
-         *  (Object) members: Map of member jids and affiliations.
-         *  (String|Array) affiliation: An array of affiliations or
-         *      a string if only one affiliation.
-         *  (Function) deltaFunc: The function to compute the delta
-         *      between old and new member lists.
-         *
-         * Returns:
-         *  A promise which is resolved once the list has been
-         *  updated or once it's been established there's no need
-         *  to update the list.
-         */
         this.getJidsWithAffiliations(affiliations).then(old_members => this.setAffiliations(deltaFunc(members, old_members))).then(() => this.occupants.fetchMembers()).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
       },
 
+      /**
+       * Use service-discovery to ask the XMPP server whether
+       * this user has a reserved nickname for this groupchat.
+       * If so, we'll use that, otherwise we render the nickname form.
+       * @private
+       * @method _converse.ChatRoom#checkForReservedNick
+       * @returns { promise } A promise which resolves with the response IQ
+       */
       async checkForReservedNick() {
-        /* Use service-discovery to ask the XMPP server whether
-         * this user has a reserved nickname for this groupchat.
-         * If so, we'll use that, otherwise we render the nickname form.
-         *
-         * Parameters:
-         *  (Function) callback: Callback upon succesful IQ response
-         *  (Function) errback: Callback upon error IQ response
-         */
         const iq = await _converse.api.sendIQ($iq({
           'to': this.get('jid'),
           'from': _converse.connection.jid,
@@ -45885,13 +45898,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         }
       },
 
+      /**
+       * Given a presence stanza, update the occupant model
+       * based on its contents.
+       * @private
+       * @method _converse.ChatRoom#updateOccupantsOnPresence
+       * @param { XMLElement } pres - The presence stanza
+       */
       updateOccupantsOnPresence(pres) {
-        /* Given a presence stanza, update the occupant model
-         * based on its contents.
-         *
-         * Parameters:
-         *  (XMLElement) pres: The presence stanza
-         */
         const data = this.parsePresence(pres);
 
         if (data.type === 'error' || !data.jid && !data.nick) {
@@ -45998,12 +46012,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
                      acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
       },
 
+      /**
+       * Handle a subject change and return `true` if so.
+       * @private
+       * @method _converse.ChatRoom#subjectChangeHandled
+       * @param { object } attrs - The message attributes
+       */
       subjectChangeHandled(attrs) {
-        /* Handle a subject change and return `true` if so.
-         *
-         * Parameters:
-         *  (Object) attrs: The message attributes
-         */
         if (attrs.subject && !attrs.thread && !attrs.message) {
           // https://xmpp.org/extensions/xep-0045.html#subject-mod
           // -----------------------------------------------------
@@ -46022,13 +46037,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         return false;
       },
 
+      /**
+       * Is this a chat state notification that can be ignored,
+       * because it's old or because it's from us.
+       * @private
+       * @method _converse.ChatRoom#ignorableCSN
+       * @param { Object } attrs - The message attributes
+       */
       ignorableCSN(attrs) {
-        /* Is this a chat state notification that can be ignored,
-         * because it's old or because it's from us.
-         *
-         * Parameters:
-         *  (Object) attrs: The message attributes
-         */
         const is_csn = _utils_form__WEBPACK_IMPORTED_MODULE_4__["default"].isOnlyChatStateNotification(attrs),
               own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
         return is_csn && (attrs.is_delayed || own_message);
@@ -46058,12 +46074,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         return attrs;
       },
 
+      /**
+       * Handler for all MUC messages sent to this groupchat.
+       * @private
+       * @method _converse.ChatRoom#onMessage
+       * @param { XMLElement } stanza - The message stanza.
+       */
       async onMessage(stanza) {
-        /* Handler for all MUC messages sent to this groupchat.
-         *
-         * Parameters:
-         *  (XMLElement) stanza: The message stanza.
-         */
         this.fetchFeaturesIfConfigurationChanged(stanza);
         const original_stanza = stanza,
               forwarded = sizzle(`forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).pop();
@@ -46103,12 +46120,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         });
       },
 
+      /**
+       * Handles all MUC presence stanzas.
+       * @private
+       * @method _converse.ChatRoom#onPresence
+       * @param { XMLElement } pres - The stanza
+       */
       onPresence(pres) {
-        /* Handles all MUC presence stanzas.
-         *
-         * Parameters:
-         *  (XMLElement) pres: The stanza
-         */
         if (pres.getAttribute('type') === 'error') {
           this.save('connection_status', _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.DISCONNECTED);
           return;
@@ -46127,22 +46145,22 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         }
       },
 
+      /**
+       * Handles a received presence relating to the current user.
+       *
+       * For locked groupchats (which are by definition "new"), the
+       * groupchat will either be auto-configured or created instantly
+       * (with default config) or a configuration groupchat will be
+       * rendered.
+       *
+       * If the groupchat is not locked, then the groupchat will be
+       * auto-configured only if applicable and if the current
+       * user is the groupchat's owner.
+       * @private
+       * @method _converse.ChatRoom#onOwnPresence
+       * @param { XMLElement } pres - The stanza
+       */
       onOwnPresence(pres) {
-        /* Handles a received presence relating to the current
-         * user.
-         *
-         * For locked groupchats (which are by definition "new"), the
-         * groupchat will either be auto-configured or created instantly
-         * (with default config) or a configuration groupchat will be
-         * rendered.
-         *
-         * If the groupchat is not locked, then the groupchat will be
-         * auto-configured only if applicable and if the current
-         * user is the groupchat's owner.
-         *
-         * Parameters:
-         *  (XMLElement) pres: The stanza
-         */
         this.saveAffiliationAndRole(pres);
         const locked_room = pres.querySelector("status[code='201']");
 
@@ -46180,13 +46198,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         this.save('connection_status', _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.ENTERED);
       },
 
+      /**
+       * Returns a boolean to indicate whether the current user
+       * was mentioned in a message.
+       * @private
+       * @method _converse.ChatRoom#isUserMentioned
+       * @param { String } - The text message
+       */
       isUserMentioned(message) {
-        /* Returns a boolean to indicate whether the current user
-         * was mentioned in a message.
-         *
-         * Parameters:
-         *  (String): The text message
-         */
         const nick = this.get('nick');
 
         if (message.get('references').length) {
@@ -46197,13 +46216,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         }
       },
 
+      /* Given a newly received message, update the unread counter if necessary.
+       * @private
+       * @method _converse.ChatRoom#incrementUnreadMsgCounter
+       * @param { XMLElement } - The <messsage> stanza
+       */
       incrementUnreadMsgCounter(message) {
-        /* Given a newly received message, update the unread counter if
-         * necessary.
-         *
-         * Parameters:
-         *  (XMLElement): The <messsage> stanza
-         */
         if (!message) {
           return;
         }
@@ -46369,15 +46387,15 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         };
       }
     });
+    /**
+     * A direct MUC invitation to join a groupchat has been received
+     * See XEP-0249: Direct MUC invitations.
+     * @private
+     * @method _converse.ChatRoom#onDirectMUCInvitation
+     * @param { XMLElement } message - The message stanza containing the invitation.
+     */
 
     _converse.onDirectMUCInvitation = function (message) {
-      /* A direct MUC invitation to join a groupchat has been received
-       * See XEP-0249: Direct MUC invitations.
-       *
-       * Parameters:
-       *  (XMLElement) message: The message stanza containing the
-       *        invitation.
-       */
       const x_el = sizzle('x[xmlns="jabber:x:conference"]', message).pop(),
             from = Strophe.getBareJidFromJid(message.getAttribute('from')),
             room_jid = x_el.getAttribute('jid'),
@@ -47032,11 +47050,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return true;
       }, null, 'presence', null);
     };
+    /**
+     * Initialize the Bakcbone collections that represent the contats
+     * roster and the roster groups.
+     * @private
+     * @method _converse.initRoster
+     */
+
 
     _converse.initRoster = function () {
-      /* Initialize the Bakcbone collections that represent the contats
-       * roster and the roster groups.
-       */
       const storage = _converse.config.get('storage');
 
       _converse.roster = new _converse.RosterContacts();
@@ -47061,18 +47083,20 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       _converse.api.trigger('rosterInitialized');
     };
+    /**
+     * Fetch all the roster groups, and then the roster contacts.
+     * Emit an event after fetching is done in each case.
+     * @private
+     * @method _converse.populateRoster
+     * @param { Bool } ignore_cache - If set to to true, the local cache
+     *      will be ignored it's guaranteed that the XMPP server
+     *      will be queried for the roster.
+     */
+
 
     _converse.populateRoster = async function () {
       let ignore_cache = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-      /* Fetch all the roster groups, and then the roster contacts.
-       * Emit an event after fetching is done in each case.
-       *
-       * Parameters:
-       *    (Bool) ignore_cache - If set to to true, the local cache
-       *      will be ignored it's guaranteed that the XMPP server
-       *      will be queried for the roster.
-       */
       if (ignore_cache) {
         _converse.send_initial_presence = true;
 
@@ -47100,6 +47124,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
            * position roster groups.
            * @event _converse#rosterGroupsFetched
            * @example _converse.api.listen.on('rosterGroupsFetched', () => { ... });
+           * @example _converse.api.waitUntil('rosterGroupsFetched').then(() => { ... });
            */
 
           _converse.api.trigger('rosterGroupsFetched');
@@ -47275,13 +47300,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return this.vcard.get('fullname');
       },
 
+      /**
+       * Send a presence subscription request to this roster contact
+       * @private
+       * @method _converse.RosterContacts#subscribe
+       * @param { String } message - An optional message to explain the
+       *      reason for the subscription request.
+       */
       subscribe(message) {
-        /* Send a presence subscription request to this roster contact
-         *
-         * Parameters:
-         *    (String) message - An optional message to explain the
-         *      reason for the subscription request.
-         */
         const pres = $pres({
           to: this.get('jid'),
           type: "subscribe"
@@ -47306,27 +47332,32 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return this;
       },
 
+      /**
+       * Upon receiving the presence stanza of type "subscribed",
+       * the user SHOULD acknowledge receipt of that subscription
+       * state notification by sending a presence stanza of type
+       * "subscribe" to the contact
+       * @private
+       * @method _converse.RosterContacts#ackSubscribe
+       */
       ackSubscribe() {
-        /* Upon receiving the presence stanza of type "subscribed",
-         * the user SHOULD acknowledge receipt of that subscription
-         * state notification by sending a presence stanza of type
-         * "subscribe" to the contact
-         */
         _converse.api.send($pres({
           'type': 'subscribe',
           'to': this.get('jid')
         }));
       },
 
+      /**
+       * Upon receiving the presence stanza of type "unsubscribed",
+       * the user SHOULD acknowledge receipt of that subscription state
+       * notification by sending a presence stanza of type "unsubscribe"
+       * this step lets the user's server know that it MUST no longer
+       * send notification of the subscription state change to the user.
+       * @private
+       * @method _converse.RosterContacts#ackUnsubscribe
+       * @param { String } jid - The Jabber ID of the user who is unsubscribing
+       */
       ackUnsubscribe() {
-        /* Upon receiving the presence stanza of type "unsubscribed",
-         * the user SHOULD acknowledge receipt of that subscription state
-         * notification by sending a presence stanza of type "unsubscribe"
-         * this step lets the user's server know that it MUST no longer
-         * send notification of the subscription state change to the user.
-         *  Parameters:
-         *    (String) jid - The Jabber ID of the user who is unsubscribing
-         */
         _converse.api.send($pres({
           'type': 'unsubscribe',
           'to': this.get('jid')
@@ -47336,21 +47367,25 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         this.destroy();
       },
 
+      /**
+       * Unauthorize this contact's presence subscription
+       * @private
+       * @method _converse.RosterContacts#unauthorize
+       * @param { String } message - Optional message to send to the person being unauthorized
+       */
       unauthorize(message) {
-        /* Unauthorize this contact's presence subscription
-         * Parameters:
-         *   (String) message - Optional message to send to the person being unauthorized
-         */
         _converse.rejectPresenceSubscription(this.get('jid'), message);
 
         return this;
       },
 
+      /**
+       * Authorize presence subscription
+       * @private
+       * @method _converse.RosterContacts#authorize
+       * @param { String } message - Optional message to send to the person being authorized
+       */
       authorize(message) {
-        /* Authorize presence subscription
-         * Parameters:
-         *   (String) message - Optional message to send to the person being authorized
-         */
         const pres = $pres({
           'to': this.get('jid'),
           'type': "subscribed"
@@ -47365,11 +47400,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return this;
       },
 
+      /**
+       * Instruct the XMPP server to remove this contact from our roster
+       * @private
+       * @method _converse.RosterContacts#
+       * @returns { Promise } 
+       */
       removeFromRoster() {
-        /* Instruct the XMPP server to remove this contact from our roster
-         * Parameters:
-         *   (Function) callback
-         */
         const iq = $iq({
           type: 'set'
         }).c('query', {
@@ -47382,6 +47419,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       }
 
     });
+    /**
+     * @class
+     * @namespace _converse.RosterContacts
+     * @memberOf _converse
+     */
+
     _converse.RosterContacts = Backbone.Collection.extend({
       model: _converse.RosterContact,
 
@@ -47488,17 +47531,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return u.isSameBareJID(jid, _converse.connection.jid);
       },
 
+      /**
+       * Add a roster contact and then once we have confirmation from
+       * the XMPP server we subscribe to that contact's presence updates.
+       * @private
+       * @method _converse.RosterContacts#addAndSubscribe
+       * @param { String } jid - The Jabber ID of the user being added and subscribed to.
+       * @param { String } name - The name of that user
+       * @param { Array.String } groups - Any roster groups the user might belong to
+       * @param { String } message - An optional message to explain the reason for the subscription request.
+       * @param { Object } attributes - Any additional attributes to be stored on the user's model.
+       */
       addAndSubscribe(jid, name, groups, message, attributes) {
-        /* Add a roster contact and then once we have confirmation from
-         * the XMPP server we subscribe to that contact's presence updates.
-         *  Parameters:
-         *    (String) jid - The Jabber ID of the user being added and subscribed to.
-         *    (String) name - The name of that user
-         *    (Array of Strings) groups - Any roster groups the user might belong to
-         *    (String) message - An optional message to explain the
-         *      reason for the subscription request.
-         *    (Object) attributes - Any additional attributes to be stored on the user's model.
-         */
         const handler = contact => {
           if (contact instanceof _converse.RosterContact) {
             contact.subscribe(message);
@@ -47508,16 +47552,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         this.addContactToRoster(jid, name, groups, attributes).then(handler, handler);
       },
 
+      /**
+       * Send an IQ stanza to the XMPP server to add a new roster contact.
+       * @private
+       * @method _converse.RosterContacts#sendContactAddIQ
+       * @param { String } jid - The Jabber ID of the user being added
+       * @param { String } name - The name of that user
+       * @param { Array.String } groups - Any roster groups the user might belong to
+       * @param { Function } callback - A function to call once the IQ is returned
+       * @param { Function } errback - A function to call if an error occurred
+       */
       sendContactAddIQ(jid, name, groups) {
-        /*  Send an IQ stanza to the XMPP server to add a new roster contact.
-         *
-         *  Parameters:
-         *    (String) jid - The Jabber ID of the user being added
-         *    (String) name - The name of that user
-         *    (Array of Strings) groups - Any roster groups the user might belong to
-         *    (Function) callback - A function to call once the IQ is returned
-         *    (Function) errback - A function to call if an error occurred
-         */
         name = _.isEmpty(name) ? null : name;
         const iq = $iq({
           'type': 'set'
@@ -47533,18 +47578,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return _converse.api.sendIQ(iq);
       },
 
+      /**
+       * Adds a RosterContact instance to _converse.roster and
+       * registers the contact on the XMPP server.
+       * Returns a promise which is resolved once the XMPP server has responded.
+       * @private
+       * @method _converse.RosterContacts#addContactToRoster
+       * @param { String } jid - The Jabber ID of the user being added and subscribed to.
+       * @param { String } name - The name of that user
+       * @param { Array.String } groups - Any roster groups the user might belong to
+       * @param { Object } attributes - Any additional attributes to be stored on the user's model.
+       */
       async addContactToRoster(jid, name, groups, attributes) {
-        /* Adds a RosterContact instance to _converse.roster and
-         * registers the contact on the XMPP server.
-         * Returns a promise which is resolved once the XMPP server has
-         * responded.
-         *
-         *  Parameters:
-         *    (String) jid - The Jabber ID of the user being added and subscribed to.
-         *    (String) name - The name of that user
-         *    (Array of Strings) groups - Any roster groups the user might belong to
-         *    (Object) attributes - Any additional attributes to be stored on the user's model.
-         */
         groups = groups || [];
 
         try {
@@ -47599,13 +47644,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         return _.sum(this.models.filter(model => !_.includes(ignored, model.presence.get('show'))));
       },
 
+      /**
+       * Handle roster updates from the XMPP server.
+       * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
+       * @private
+       * @method _converse.RosterContacts#onRosterPush
+       * @param { XMLElement } IQ - The IQ stanza received from the XMPP server.
+       */
       onRosterPush(iq) {
-        /* Handle roster updates from the XMPP server.
-         * See: https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
-         *
-         * Parameters:
-         *    (XMLElement) IQ - The IQ stanza received from the XMPP server.
-         */
         const id = iq.getAttribute('id');
         const from = iq.getAttribute('from');
 
@@ -48271,12 +48317,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
     }
 
     async function getVCard(_converse, jid) {
-      /* Request the VCard of another user. Returns a promise.
-       *
-       * Parameters:
-       *    (String) jid - The Jabber ID of the user whose VCard
-       *      is being requested.
-       */
       const to = Strophe.getBareJidFromJid(jid) === _converse.bare_jid ? null : jid;
       let iq;
 
@@ -48568,10 +48608,8 @@ __webpack_require__.r(__webpack_exports__);
 function detectLocale(library_check) {
   /* Determine which locale is supported by the user's system as well
    * as by the relevant library (e.g. converse.js or moment.js).
-   *
-   * Parameters:
-   *      (Function) library_check - Returns a boolean indicating whether
-   *                                 the locale is supported.
+   * @param { Function } library_check - Returns a boolean indicating whether
+   *   the locale is supported.
    */
   var locale, i;
 
@@ -48617,14 +48655,13 @@ function getLocale(preferred_locale, isSupportedByLibrary) {
 
   return detectLocale(isSupportedByLibrary) || 'en';
 }
+/* Check whether the locale or sub locale (e.g. en-US, en) is supported.
+ * @param { String } locale - The locale to check for
+ * @param { Function } available - Returns a boolean indicating whether the locale is supported
+ */
+
 
 function isLocaleAvailable(locale, available) {
-  /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
-   *
-   * Parameters:
-   *      (String) locale - The locale to check for
-   *      (Function) available - returns a boolean indicating whether the locale is supported
-   */
   if (available(locale)) {
     return locale;
   } else {
@@ -48637,6 +48674,10 @@ function isLocaleAvailable(locale, available) {
 }
 
 let jed_instance;
+/**
+ * @namespace i18n
+ */
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   setLocales(preferred_locale, _converse) {
     _converse.locale = getLocale(preferred_locale, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_29___default.a.partial(isConverseLocale, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_29___default.a, _converse.locales));
@@ -48648,7 +48689,7 @@ let jed_instance;
       return jed__WEBPACK_IMPORTED_MODULE_27___default.a.sprintf.apply(jed__WEBPACK_IMPORTED_MODULE_27___default.a, arguments);
     }
 
-    var t = jed_instance.translate(str);
+    const t = jed_instance.translate(str);
 
     if (arguments.length > 1) {
       return t.fetch.apply(t, [].slice.call(arguments, 1));
@@ -48657,15 +48698,15 @@ let jed_instance;
     }
   },
 
+  /**
+   * Fetch the translations for the given local at the given URL.
+   * @private
+   * @method i18n#fetchTranslations
+   * @param { String } locale -The given i18n locale
+   * @param { Array } supported_locales -  List of locales supported
+   * @param { String } locale_url - The URL from which the translations should be fetched
+   */
   fetchTranslations(locale, supported_locales, locale_url) {
-    /* Fetch the translations for the given local at the given URL.
-     *
-     * Parameters:
-     *  (String) locale:            The given i18n locale
-     *  (Array) supported_locales:  List of locales supported
-     *  (String) locale_url:        The URL from which the translations
-     *                              should be fetched.
-     */
     return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_28___default.a((resolve, reject) => {
       if (!isConverseLocale(locale, supported_locales) || locale === 'en') {
         return resolve();
@@ -48904,6 +48945,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+/**
+ * The utils object
+ * @namespace u
+ */
+
 const u = {};
 
 u.toStanza = function (string) {
@@ -49035,15 +49081,17 @@ u.applyUserSettings = function applyUserSettings(context, settings, user_setting
     }
   }
 };
+/**
+ * Converts an HTML string into a DOM Node.
+ * Expects that the HTML string has only one top-level element,
+ * i.e. not multiple ones.
+ * @private
+ * @method u#stringToNode
+ * @param { String } s - The HTML string
+ */
+
 
 u.stringToNode = function (s) {
-  /* Converts an HTML string into a DOM Node.
-   * Expects that the HTML string has only one top-level element,
-   * i.e. not multiple ones.
-   *
-   * Parameters:
-   *      (String) s - The HTML string
-   */
   var div = document.createElement('div');
   div.innerHTML = s;
   return div.firstElementChild;
@@ -49061,40 +49109,44 @@ u.getOuterWidth = function (el) {
   width += parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
   return width;
 };
+/**
+ * Converts an HTML string into a DOM element.
+ * Expects that the HTML string has only one top-level element,
+ * i.e. not multiple ones.
+ * @private
+ * @method u#stringToElement
+ * @param { String } s - The HTML string
+ */
+
 
 u.stringToElement = function (s) {
-  /* Converts an HTML string into a DOM element.
-   * Expects that the HTML string has only one top-level element,
-   * i.e. not multiple ones.
-   *
-   * Parameters:
-   *      (String) s - The HTML string
-   */
   var div = document.createElement('div');
   div.innerHTML = s;
   return div.firstElementChild;
 };
+/**
+ * Checks whether the DOM element matches the given selector.
+ * @private
+ * @method u#matchesSelector
+ * @param { DOMElement } el - The DOM element
+ * @param { String } selector - The selector
+ */
+
 
 u.matchesSelector = function (el, selector) {
-  /* Checks whether the DOM element matches the given selector.
-   *
-   * Parameters:
-   *      (DOMElement) el - The DOM element
-   *      (String) selector - The selector
-   */
   const match = el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector;
   return match ? match.call(el, selector) : false;
 };
+/**
+ * Returns a list of children of the DOM element that match the selector.
+ * @private
+ * @method u#queryChildren
+ * @param { DOMElement } el - the DOM element
+ * @param { String } selector - the selector they should be matched against
+ */
+
 
 u.queryChildren = function (el, selector) {
-  /* Returns a list of children of the DOM element that match the
-   * selector.
-   *
-   *  Parameters:
-   *      (DOMElement) el - the DOM element
-   *      (String) selector - the selector they should be matched
-   *          against.
-   */
   return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.filter(el.childNodes, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a.partial(u.matchesSelector, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_3___default.a, selector));
 };
 
@@ -49187,20 +49239,21 @@ u.interpolate = function (string, o) {
     return typeof r === 'string' || typeof r === 'number' ? r : a;
   });
 };
+/**
+ * Call the callback once all the events have been triggered
+ * @private
+ * @method u#onMultipleEvents
+ * @param { Array } events: An array of objects, with keys `object` and
+ *   `event`, representing the event name and the object it's
+ *    triggered upon.
+ * @param { Function } callback: The function to call once all events have
+ *    been triggered.
+ */
+
 
 u.onMultipleEvents = function () {
   let events = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   let callback = arguments.length > 1 ? arguments[1] : undefined;
-
-  /* Call the callback once all the events have been triggered
-   *
-   * Parameters:
-   *  (Array) events: An array of objects, with keys `object` and
-   *      `event`, representing the event name and the object it's
-   *      triggered upon.
-   *  (Function) callback: The function to call once all events have
-   *      been triggered.
-   */
   let triggered = [];
 
   function handler(result) {
@@ -70897,13 +70950,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+/**
+ * Takes an HTML DOM and turns it into an XForm field.
+ * @private
+ * @method u#webForm2xForm
+ * @param { DOMElement } field - the field to convert
+ */
 
 _core__WEBPACK_IMPORTED_MODULE_2__["default"].webForm2xForm = function (field) {
-  /* Takes an HTML DOM and turns it into an XForm field.
-   *
-   * Parameters:
-   *      (DOMElement) field - the field to convert
-   */
   let value;
 
   if (field.getAttribute('type') === 'checkbox') {
@@ -70953,34 +71007,35 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Strophe = _converse$env.Strophe,
       sizzle = _converse$env.sizzle,
       _ = _converse$env._;
+/**
+ * Given two lists of objects with 'jid', 'affiliation' and
+ * 'reason' properties, return a new list containing
+ * those objects that are new, changed or removed
+ * (depending on the 'remove_absentees' boolean).
+ *
+ * The affiliations for new and changed members stay the
+ * same, for removed members, the affiliation is set to 'none'.
+ *
+ * The 'reason' property is not taken into account when
+ * comparing whether affiliations have been changed.
+ * @private
+ * @method u#computeAffiliationsDelta
+ * @param { boolean } exclude_existing - Indicates whether JIDs from
+ *      the new list which are also in the old list
+ *      (regardless of affiliation) should be excluded
+ *      from the delta. One reason to do this
+ *      would be when you want to add a JID only if it
+ *      doesn't have *any* existing affiliation at all.
+ * @param { boolean } remove_absentees - Indicates whether JIDs
+ *      from the old list which are not in the new list
+ *      should be considered removed and therefore be
+ *      included in the delta with affiliation set
+ *      to 'none'.
+ * @param { array } new_list - Array containing the new affiliations
+ * @param { array } old_list - Array containing the old affiliations
+ */
 
 _core__WEBPACK_IMPORTED_MODULE_1__["default"].computeAffiliationsDelta = function computeAffiliationsDelta(exclude_existing, remove_absentees, new_list, old_list) {
-  /* Given two lists of objects with 'jid', 'affiliation' and
-   * 'reason' properties, return a new list containing
-   * those objects that are new, changed or removed
-   * (depending on the 'remove_absentees' boolean).
-   *
-   * The affiliations for new and changed members stay the
-   * same, for removed members, the affiliation is set to 'none'.
-   *
-   * The 'reason' property is not taken into account when
-   * comparing whether affiliations have been changed.
-   *
-   * Parameters:
-   *  (Boolean) exclude_existing: Indicates whether JIDs from
-   *      the new list which are also in the old list
-   *      (regardless of affiliation) should be excluded
-   *      from the delta. One reason to do this
-   *      would be when you want to add a JID only if it
-   *      doesn't have *any* existing affiliation at all.
-   *  (Boolean) remove_absentees: Indicates whether JIDs
-   *      from the old list which are not in the new list
-   *      should be considered removed and therefore be
-   *      included in the delta with affiliation set
-   *      to 'none'.
-   *  (Array) new_list: Array containing the new affiliations
-   *  (Array) old_list: Array containing the old affiliations
-   */
   const new_jids = _.map(new_list, 'jid');
 
   const old_jids = _.map(old_list, 'jid'); // Get the new affiliations

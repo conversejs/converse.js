@@ -586,18 +586,18 @@ converse.plugins.add('converse-chatview', {
                 );
             },
 
+            /**
+             * Inserts an indicator into the chat area, showing the
+             * day as given by the passed in date.
+             * The indicator is only inserted if necessary.
+             * @private
+             * @method _converse.ChatBoxView#insertDayIndicator
+             * @param { HTMLElement } next_msg_el - The message element before
+             *      which the day indicator element must be inserted.
+             *      This element must have a "data-isodate" attribute
+             *      which specifies its creation date.
+             */
             insertDayIndicator (next_msg_el) {
-                /* Inserts an indicator into the chat area, showing the
-                 * day as given by the passed in date.
-                 *
-                 * The indicator is only inserted if necessary.
-                 *
-                 * Parameters:
-                 *  (HTMLElement) next_msg_el - The message element before
-                 *      which the day indicator element must be inserted.
-                 *      This element must have a "data-isodate" attribute
-                 *      which specifies its creation date.
-                 */
                 const prev_msg_el = u.getPreviousElement(next_msg_el, ".message:not(.chat-state-notification)"),
                       prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
                       next_msg_date = next_msg_el.getAttribute('data-isodate');
@@ -616,13 +616,14 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
+            /**
+             * Return the ISO8601 format date of the latest message.
+             * @private
+             * @method _converse.ChatBoxView#getLastMessageDate
+             * @param { object } cutoff - Moment Date cutoff date. The last
+             *      message received cutoff this date will be returned.
+             */
             getLastMessageDate (cutoff) {
-                /* Return the ISO8601 format date of the latest message.
-                 *
-                 * Parameters:
-                 *  (Object) cutoff: Moment Date cutoff date. The last
-                 *      message received cutoff this date will be returned.
-                 */
                 const first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-state-notification)'),
                       oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
                 if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
@@ -713,13 +714,14 @@ converse.plugins.add('converse-chatview', {
                 return !u.isVisible(this.el);
             },
 
+            /**
+             * Given a view representing a message, insert it into the
+             * content area of the chat box.
+             * @private
+             * @method _converse.ChatBoxView#insertMessage
+             * @param { Backbone.View } message - The message Backbone.View
+             */
             insertMessage (view) {
-                /* Given a view representing a message, insert it into the
-                 * content area of the chat box.
-                 *
-                 * Parameters:
-                 *  (Backbone.View) message: The message Backbone.View
-                 */
                 if (view.model.get('type') === 'error') {
                     const previous_msg_el = this.content.querySelector(`[data-msgid="${view.model.get('msgid')}"]`);
                     if (previous_msg_el) {
@@ -746,20 +748,22 @@ converse.plugins.add('converse-chatview', {
                 return this.trigger('messageInserted', view.el);
             },
 
+            /**
+             * Given a message element, determine wether it should be
+             * marked as a followup message to the previous element.
+             *
+             * Also determine whether the element following it is a
+             * followup message or not.
+             *
+             * Followup messages are subsequent ones written by the same
+             * author with no other conversation elements inbetween and
+             * posted within 10 minutes of one another.
+             *
+             * @private
+             * @method _converse.ChatBoxView#markFollowups
+             * @param { HTMLElement } el - The message element
+             */
             markFollowups (el) {
-                /* Given a message element, determine wether it should be
-                 * marked as a followup message to the previous element.
-                 *
-                 * Also determine whether the element following it is a
-                 * followup message or not.
-                 *
-                 * Followup messages are subsequent ones written by the same
-                 * author with no other conversation elements inbetween and
-                 * posted within 10 minutes of one another.
-                 *
-                 * Parameters:
-                 *  (HTMLElement) el - The message element.
-                 */
                 const from = el.getAttribute('data-from'),
                       previous_el = el.previousElementSibling,
                       date = moment(el.getAttribute('data-isodate')),
@@ -783,15 +787,14 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
+            /**
+             * Inserts a chat message into the content area of the chat box.
+             * Will also insert a new day indicator if the message is on a different day.
+             * @private
+             * @method _converse.ChatBoxView#showMessage
+             * @param { _converse.Message } message - The message object
+             */
             async showMessage (message) {
-                /* Inserts a chat message into the content area of the chat box.
-                 *
-                 * Will also insert a new day indicator if the message is on a
-                 * different day.
-                 *
-                 * Parameters:
-                 *  (Backbone.Model) message: The message object
-                 */
                 if (!u.isNewMessage(message) && u.isEmptyMessage(message)) {
                     // Handle archived or delayed messages without any message
                     // text to show.
@@ -822,12 +825,13 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
+            /**
+             * Handler that gets called when a new message object is created.
+             * @private
+             * @method _converse.ChatBoxView#onMessageAdded
+             * @param { object } message - The message Backbone object that was added.
+             */
             onMessageAdded (message) {
-                /* Handler that gets called when a new message object is created.
-                 *
-                 * Parameters:
-                 *    (Object) message - The message Backbone object that was added.
-                 */
                 this.showMessage(message);
                 if (message.get('correcting')) {
                     this.insertIntoTextArea(message.get('message'), true, true);
@@ -865,17 +869,18 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
+            /**
+             * Mutator for setting the chat state of this chat session.
+             * Handles clearing of any chat state notification timeouts and
+             * setting new ones if necessary.
+             * Timeouts are set when the  state being set is COMPOSING or PAUSED.
+             * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
+             * See XEP-0085 Chat State Notifications.
+             * @private
+             * @method _converse.ChatBoxView#setChatState
+             * @param { string } state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
+             */
             setChatState (state, options) {
-                /* Mutator for setting the chat state of this chat session.
-                 * Handles clearing of any chat state notification timeouts and
-                 * setting new ones if necessary.
-                 * Timeouts are set when the  state being set is COMPOSING or PAUSED.
-                 * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
-                 * See XEP-0085 Chat State Notifications.
-                 *
-                 *  Parameters:
-                 *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
-                 */
                 if (!_.isUndefined(this.chat_state_timeout)) {
                     window.clearTimeout(this.chat_state_timeout);
                     delete this.chat_state_timeout;

@@ -15,33 +15,34 @@ import u from "./core";
 const { Strophe, sizzle, _ } = converse.env;
 
 
+/**
+ * Given two lists of objects with 'jid', 'affiliation' and
+ * 'reason' properties, return a new list containing
+ * those objects that are new, changed or removed
+ * (depending on the 'remove_absentees' boolean).
+ *
+ * The affiliations for new and changed members stay the
+ * same, for removed members, the affiliation is set to 'none'.
+ *
+ * The 'reason' property is not taken into account when
+ * comparing whether affiliations have been changed.
+ * @private
+ * @method u#computeAffiliationsDelta
+ * @param { boolean } exclude_existing - Indicates whether JIDs from
+ *      the new list which are also in the old list
+ *      (regardless of affiliation) should be excluded
+ *      from the delta. One reason to do this
+ *      would be when you want to add a JID only if it
+ *      doesn't have *any* existing affiliation at all.
+ * @param { boolean } remove_absentees - Indicates whether JIDs
+ *      from the old list which are not in the new list
+ *      should be considered removed and therefore be
+ *      included in the delta with affiliation set
+ *      to 'none'.
+ * @param { array } new_list - Array containing the new affiliations
+ * @param { array } old_list - Array containing the old affiliations
+ */
 u.computeAffiliationsDelta = function computeAffiliationsDelta (exclude_existing, remove_absentees, new_list, old_list) {
-    /* Given two lists of objects with 'jid', 'affiliation' and
-     * 'reason' properties, return a new list containing
-     * those objects that are new, changed or removed
-     * (depending on the 'remove_absentees' boolean).
-     *
-     * The affiliations for new and changed members stay the
-     * same, for removed members, the affiliation is set to 'none'.
-     *
-     * The 'reason' property is not taken into account when
-     * comparing whether affiliations have been changed.
-     *
-     * Parameters:
-     *  (Boolean) exclude_existing: Indicates whether JIDs from
-     *      the new list which are also in the old list
-     *      (regardless of affiliation) should be excluded
-     *      from the delta. One reason to do this
-     *      would be when you want to add a JID only if it
-     *      doesn't have *any* existing affiliation at all.
-     *  (Boolean) remove_absentees: Indicates whether JIDs
-     *      from the old list which are not in the new list
-     *      should be considered removed and therefore be
-     *      included in the delta with affiliation set
-     *      to 'none'.
-     *  (Array) new_list: Array containing the new affiliations
-     *  (Array) old_list: Array containing the old affiliations
-     */
     const new_jids = _.map(new_list, 'jid');
     const old_jids = _.map(old_list, 'jid');
 

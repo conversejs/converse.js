@@ -261,4 +261,4 @@ html: dev docsdev apidoc
 
 PHONY: apidoc
 apidoc:
-	$(JSDOC) --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/*.js src/utils/*.js src/headless/*.js src/headless/utils/*.js
+	$(JSDOC) --private --readme docs/source/jsdoc_intro.md -c docs/source/conf.json -d docs/html/api src/*.js src/utils/*.js src/headless/*.js src/headless/utils/*.js

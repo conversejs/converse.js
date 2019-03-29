@@ -23,6 +23,11 @@ converse.plugins.add('converse-disco', {
         _converse.api.promises.add('discoInitialized');
 
 
+        /**
+         * @class
+         * @namespace _converse.DiscoEntity
+         * @memberOf _converse
+         */
         _converse.DiscoEntity = Backbone.Model.extend({
             /* A Disco Entity is a JID addressable entity that can be queried
              * for features.
@@ -64,14 +69,15 @@ converse.plugins.add('converse-disco', {
                 this.items.fetch();
             },
 
+            /**
+             * Returns a Promise which resolves with a map indicating
+             * whether a given identity is provided by this entity.
+             * @private
+             * @method _converse.DiscoEntity#getIdentity
+             * @param { String } category - The identity category
+             * @param { String } type - The identity type
+             */
             async getIdentity (category, type) {
-                /* Returns a Promise which resolves with a map indicating
-                 * whether a given identity is provided by this entity.
-                 *
-                 * Parameters:
-                 *    (String) category - The identity category
-                 *    (String) type - The identity type
-                 */
                 await this.waitUntilFeaturesDiscovered;
                 return this.identities.findWhere({
                     'category': category,
@@ -79,13 +85,14 @@ converse.plugins.add('converse-disco', {
                 });
             },
 
+            /**
+             * Returns a Promise which resolves with a map indicating
+             * whether a given feature is supported.
+             * @private
+             * @method _converse.DiscoEntity#hasFeature
+             * @param { String } feature - The feature that might be supported.
+             */
             async hasFeature (feature) {
-                /* Returns a Promise which resolves with a map indicating
-                 * whether a given feature is supported.
-                 *
-                 * Parameters:
-                 *    (String) feature - The feature that might be supported.
-                 */
                 await this.waitUntilFeaturesDiscovered
                 if (this.features.findWhere({'var': feature})) {
                     return this;

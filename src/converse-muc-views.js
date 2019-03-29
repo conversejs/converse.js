@@ -203,15 +203,12 @@ converse.plugins.add('converse-muc-views', {
         };
 
 
+        /* Insert groupchat info (based on returned #disco IQ stanza)
+         * @function insertRoomInfo
+         * @param { HTMLElement } el - The HTML DOM element that contains the info.
+         * @param { XMLElement } stanza - The IQ stanza containing the groupchat info.
+         */
         function insertRoomInfo (el, stanza) {
-            /* Insert groupchat info (based on returned #disco IQ stanza)
-             *
-             * Parameters:
-             *  (HTMLElement) el: The HTML DOM element that should
-             *      contain the info.
-             *  (XMLElement) stanza: The IQ stanza containing the groupchat
-             *      info.
-             */
             // All MUC features found here: https://xmpp.org/registrar/disco-features.html
             el.querySelector('span.spinner').remove();
             el.querySelector('a.room-info').classList.add('selected');
@@ -1110,12 +1107,13 @@ converse.plugins.add('converse-muc-views', {
                 this.model.addHandler('message', 'ChatRoomView.showStatusMessages', this.showStatusMessages.bind(this));
             },
 
+            /**
+             * Handles all MUC presence stanzas.
+             * @private
+             * @method _converse.ChatRoomView#onPresence
+             * @param { XMLElement } pres - The stanza
+             */
             onPresence (pres) {
-                /* Handles all MUC presence stanzas.
-                 *
-                 * Parameters:
-                 *  (XMLElement) pres: The stanza
-                 */
                 // XXX: Current thinking is that excessive stanza
                 // processing inside a view is a "code smell".
                 // Instead stanza processing should happen inside the
@@ -1138,14 +1136,14 @@ converse.plugins.add('converse-muc-views', {
                 this.fetchMessages();
             },
 
+            /**
+             * Join the groupchat.
+             * @private
+             * @method _converse.ChatRoomView#join
+             * @param { String } nick - The user's nickname
+             * @param { String } password - Optional password, if required by the groupchat
+             */
             join (nick, password) {
-                /* Join the groupchat.
-                 *
-                 * Parameters:
-                 *  (String) nick: The user's nickname
-                 *  (String) password: Optional password, if required by
-                 *      the groupchat.
-                 */
                 if (!nick && !this.model.get('nick')) {
                     this.checkForReservedNick();
                     return this;
@@ -1154,17 +1152,16 @@ converse.plugins.add('converse-muc-views', {
                 return this;
             },
 
+            /**
+             * Renders a form given an IQ stanza containing the current
+             * groupchat configuration.
+             * Returns a promise which resolves once the user has
+             * either submitted the form, or canceled it.
+             * @private
+             * @method _converse.ChatRoomView#renderConfigurationForm
+             * @param { XMLElement } stanza: The IQ stanza containing the groupchat config.
+             */
             renderConfigurationForm (stanza) {
-                /* Renders a form given an IQ stanza containing the current
-                 * groupchat configuration.
-                 *
-                 * Returns a promise which resolves once the user has
-                 * either submitted the form, or canceled it.
-                 *
-                 * Parameters:
-                 *  (XMLElement) stanza: The IQ stanza containing the groupchat
-                 *      config.
-                 */
                 const container_el = this.el.querySelector('.chatroom-body');
                 _.each(container_el.querySelectorAll('.chatroom-form-container'), u.removeElement);
                 _.each(container_el.children, u.hideElement);
@@ -1420,13 +1417,14 @@ converse.plugins.add('converse-muc-views', {
                 u.showElement(container);
             },
 
+            /**
+             * @private
+             * @method _converse.ChatRoomView#getMessageFromStatus
+             * @param { XMLElement } stat: A <status> element
+             * @param { Boolean } is_self: Whether the element refers to the current user
+             * @param { XMLElement } stanza: The original stanza received
+             */
             getMessageFromStatus (stat, stanza, is_self) {
-                /* Parameters:
-                 *  (XMLElement) stat: A <status> element.
-                 *  (Boolean) is_self: Whether the element refers to the
-                 *                     current user.
-                 *  (XMLElement) stanza: The original stanza received.
-                 */
                 const code = stat.getAttribute('code');
                 if (code === '110' || (code === '100' && !is_self)) { return; }
                 if (code in _converse.muc.info_messages) {
@@ -1697,14 +1695,14 @@ converse.plugins.add('converse-muc-views', {
                 this.scrollDown();
             },
 
+            /**
+             * Check for status codes and communicate their purpose to the user.
+             * See: https://xmpp.org/registrar/mucstatus.html
+             * @private
+             * @method _converse.ChatRoomView#showStatusMessages
+             * @param { XMLElement } stanza - The message or presence stanza containing the status codes
+             */
             showStatusMessages (stanza) {
-                /* Check for status codes and communicate their purpose to the user.
-                 * See: https://xmpp.org/registrar/mucstatus.html
-                 *
-                 * Parameters:
-                 *  (XMLElement) stanza: The message or presence stanza
-                 *      containing the status codes.
-                 */
                 const elements = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"]`, stanza);
                 const is_self = stanza.querySelectorAll("status[code='110']").length;
                 const iteratee = _.partial(this.parseXUserElement.bind(this), _, stanza, is_self);

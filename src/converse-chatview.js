@@ -180,7 +180,7 @@ converse.plugins.add('converse-chatview', {
 
             onStatusMessageChanged (item) {
                 this.render();
-                _converse.emit('contactStatusMessageChanged', {
+                _converse.api.emit('contactStatusMessageChanged', {
                     'contact': item.attributes,
                     'message': item.get('status')
                 });
@@ -201,7 +201,7 @@ converse.plugins.add('converse-chatview', {
                 this.model.on('contactAdded', this.registerContactEventHandlers, this);
                 this.model.on('change', this.render, this);
                 this.registerContactEventHandlers();
-                _converse.emit('userDetailsModalInitialized', this.model);
+                _converse.api.emit('userDetailsModalInitialized', this.model);
             },
 
             toHTML () {
@@ -315,8 +315,8 @@ converse.plugins.add('converse-chatview', {
                 this.render();
 
                 this.fetchMessages();
-                _converse.emit('chatBoxOpened', this);
-                _converse.emit('chatBoxInitialized', this);
+                _converse.api.emit('chatBoxOpened', this);
+                _converse.api.emit('chatBoxInitialized', this);
             },
 
             initDebounced () {
@@ -351,7 +351,7 @@ converse.plugins.add('converse-chatview', {
                 this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
                 this.addSpoilerButton(options);
                 this.addFileUploadButton();
-                _converse.emit('renderToolbar', this);
+                _converse.api.emit('renderToolbar', this);
                 return this;
             },
 
@@ -485,7 +485,7 @@ converse.plugins.add('converse-chatview', {
                 this.insertIntoDOM();
                 this.scrollDown();
                 this.content.addEventListener('scroll', this.markScrolled.bind(this));
-                _converse.emit('afterMessagesFetched', this);
+                _converse.api.emit('afterMessagesFetched', this);
             },
 
             fetchMessages () {
@@ -792,7 +792,7 @@ converse.plugins.add('converse-chatview', {
                 if (message.get('correcting')) {
                     this.insertIntoTextArea(message.get('message'), true, true);
                 }
-                _converse.emit('messageAdded', {
+                _converse.api.emit('messageAdded', {
                     'message': message,
                     'chatbox': this.model
                 });
@@ -878,7 +878,7 @@ converse.plugins.add('converse-chatview', {
                     textarea.value = '';
                     u.removeClass('correcting', textarea);
                     textarea.style.height = 'auto'; // Fixes weirdness
-                    _converse.emit('messageSend', message);
+                    _converse.api.emit('messageSend', message);
                 }
                 textarea.removeAttribute('disabled');
                 u.removeClass('disabled', textarea);
@@ -1081,7 +1081,7 @@ converse.plugins.add('converse-chatview', {
 
             toggleCall (ev) {
                 ev.stopPropagation();
-                _converse.emit('callButtonClicked', {
+                _converse.api.emit('callButtonClicked', {
                     connection: _converse.connection,
                     model: this.model
                 });
@@ -1162,7 +1162,7 @@ converse.plugins.add('converse-chatview', {
                     _converse.log(e, Strophe.LogLevel.ERROR);
                 }
                 this.remove();
-                _converse.emit('chatBoxClosed', this);
+                _converse.api.emit('chatBoxClosed', this);
                 return this;
             },
 
@@ -1182,7 +1182,7 @@ converse.plugins.add('converse-chatview', {
                 const textarea_el = this.el.querySelector('.chat-textarea');
                 if (!_.isNull(textarea_el)) {
                     textarea_el.focus();
-                    _converse.emit('chatBoxFocused', this);
+                    _converse.api.emit('chatBoxFocused', this);
                 }
                 return this;
             },
@@ -1265,7 +1265,7 @@ converse.plugins.add('converse-chatview', {
                 if (_converse.windowState !== 'hidden') {
                     this.model.clearUnreadMsgCounter();
                 }
-                _converse.emit('chatBoxScrolledDown', {'chatbox': this.model});
+                _converse.api.emit('chatBoxScrolledDown', {'chatbox': this.model});
             },
 
             onWindowStateChanged (state) {
@@ -1283,7 +1283,7 @@ converse.plugins.add('converse-chatview', {
             }
         });
 
-        _converse.on('chatBoxViewsInitialized', () => {
+        _converse.api.listen.on('chatBoxViewsInitialized', () => {
             const that = _converse.chatboxviews;
             _converse.chatboxes.on('add', item => {
                 if (!that.get(item.get('id')) && item.get('type') === _converse.PRIVATE_CHAT_TYPE) {
@@ -1292,7 +1292,7 @@ converse.plugins.add('converse-chatview', {
             });
         });
 
-        _converse.on('connected', () => {
+        _converse.api.listen.on('connected', () => {
             // Advertise that we support XEP-0382 Message Spoilers
             _converse.api.disco.own.features.add(Strophe.NS.SPOILER);
         });

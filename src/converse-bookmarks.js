@@ -545,19 +545,19 @@ converse.plugins.add('converse-bookmarks', {
                 _converse.bookmarksview = new _converse.BookmarksView({'model': _converse.bookmarks});
                 await _converse.bookmarks.fetchBookmarks();
             }
-            _converse.emit('bookmarksInitialized');
+            _converse.api.emit('bookmarksInitialized');
         }
 
-        _converse.on('clearSession', () => {
+        _converse.api.listen.on('clearSession', () => {
             if (!_.isUndefined(_converse.bookmarks)) {
                 _converse.bookmarks.browserStorage._clear();
                 window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
             }
         });
 
-        _converse.on('reconnected', initBookmarks);
+        _converse.api.listen.on('reconnected', initBookmarks);
 
-        _converse.on('connected', async () =>  {
+        _converse.api.listen.on('connected', async () =>  {
             // Add a handler for bookmarks pushed from other connected clients
             // (from the same user obviously)
             _converse.connection.addHandler(message => {

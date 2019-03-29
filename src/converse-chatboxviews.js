@@ -168,7 +168,7 @@ converse.plugins.add('converse-chatboxviews', {
             _converse.chatboxviews = new _converse.ChatBoxViews({
                 'model': _converse.chatboxes
             });
-            _converse.emit('chatBoxViewsInitialized');
+            _converse.api.emit('chatBoxViewsInitialized');
         });
 
         _converse.api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());

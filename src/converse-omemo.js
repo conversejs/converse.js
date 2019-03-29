@@ -1132,7 +1132,7 @@ converse.plugins.add('converse-omemo', {
             await fetchOwnDevices();
             await restoreOMEMOSession();
             await _converse.omemo_store.publishBundle();
-            _converse.emit('OMEMOInitialized');
+            _converse.api.emit('OMEMOInitialized');
         }
 
         async function onOccupantAdded (chatroom, occupant) {

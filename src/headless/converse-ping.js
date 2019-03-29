@@ -87,7 +87,7 @@ converse.plugins.add('converse-ping', {
             // Wrapper so that we can spy on registerPingHandler in tests
             _converse.registerPingHandler();
         };
-        _converse.on('connected', onConnected);
-        _converse.on('reconnected', onConnected);
+        _converse.api.listen.on('connected', onConnected);
+        _converse.api.listen.on('reconnected', onConnected);
     }
 });

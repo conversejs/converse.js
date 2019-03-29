@@ -224,7 +224,7 @@ converse.plugins.add('converse-controlbox', {
                 if (this.model.get('connected')) {
                     this.insertRoster();
                 }
-                _converse.emit('controlboxInitialized', this);
+                _converse.api.emit('controlboxInitialized', this);
             },
 
             render () {
@@ -331,7 +331,7 @@ converse.plugins.add('converse-controlbox', {
                 } else {
                     this.model.trigger('hide');
                 }
-                _converse.emit('controlBoxClosed', this);
+                _converse.api.emit('controlBoxClosed', this);
                 return this;
             },
 
@@ -348,7 +348,7 @@ converse.plugins.add('converse-controlbox', {
                     return;
                 }
                 u.addClass('hidden', this.el);
-                _converse.emit('chatBoxClosed', this);
+                _converse.api.emit('chatBoxClosed', this);
                 if (!_converse.connection.connected) {
                     _converse.controlboxtoggle.render();
                 }
@@ -359,7 +359,7 @@ converse.plugins.add('converse-controlbox', {
             onControlBoxToggleHidden () {
                 this.model.set('closed', false);
                 this.el.classList.remove('hidden');
-                _converse.emit('controlBoxOpened', this);
+                _converse.api.emit('controlBoxOpened', this);
             },
 
             show () {
@@ -591,7 +591,7 @@ converse.plugins.add('converse-controlbox', {
             }
         });
 
-        _converse.on('chatBoxViewsInitialized', () => {
+        _converse.api.listen.on('chatBoxViewsInitialized', () => {
             const that = _converse.chatboxviews;
             _converse.chatboxes.on('add', item => {
                 if (item.get('type') === _converse.CONTROLBOX_TYPE) {
@@ -606,7 +606,7 @@ converse.plugins.add('converse-controlbox', {
             });
         });
 
-        _converse.on('clearSession', () => {
+        _converse.api.listen.on('clearSession', () => {
             if (_converse.config.get('trusted')) {
                 const chatboxes = _.get(_converse, 'chatboxes', null);
                 if (!_.isNil(chatboxes)) {
@@ -625,7 +625,7 @@ converse.plugins.add('converse-controlbox', {
             _converse.api.waitUntil('chatBoxViewsInitialized')
         ]).then(addControlBox).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
-        _converse.on('chatBoxesFetched', () => {
+        _converse.api.listen.on('chatBoxesFetched', () => {
             const controlbox = _converse.chatboxes.get('controlbox') || addControlBox();
             controlbox.save({connected:true});
         });

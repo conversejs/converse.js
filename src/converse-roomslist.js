@@ -273,7 +273,7 @@ converse.plugins.add('converse-roomslist', {
             _converse.api.emit('roomsListInitialized');
         };
 
-        _converse.on('connected', async () =>  {
+        _converse.api.listen.on('connected', async () =>  {
             if (_converse.allow_bookmarks) {
                 await _converse.api.waitUntil('bookmarksInitialized');
             } else {

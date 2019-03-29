@@ -63,7 +63,7 @@ converse.plugins.add('converse-roster', {
             _converse.rostergroups = new _converse.RosterGroups();
             _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](
                 `converse.roster.groups${_converse.bare_jid}`);
-            _converse.emit('rosterInitialized');
+            _converse.api.emit('rosterInitialized');
         };
 
 
@@ -80,7 +80,7 @@ converse.plugins.add('converse-roster', {
                 _converse.send_initial_presence = true;
                 try {
                     await _converse.roster.fetchFromServer();
-                    _converse.emit('rosterContactsFetched');
+                    _converse.api.emit('rosterContactsFetched');
                 } catch (reason) {
                     _converse.log(reason, Strophe.LogLevel.ERROR);
                 } finally {
@@ -89,9 +89,9 @@ converse.plugins.add('converse-roster', {
             } else {
                 try {
                     await _converse.rostergroups.fetchRosterGroups();
-                    _converse.emit('rosterGroupsFetched');
+                    _converse.api.emit('rosterGroupsFetched');
                     await _converse.roster.fetchRosterContacts();
-                    _converse.emit('rosterContactsFetched');
+                    _converse.api.emit('rosterContactsFetched');
                 } catch (reason) {
                     _converse.log(reason, Strophe.LogLevel.ERROR);
                 } finally {
@@ -223,7 +223,7 @@ converse.plugins.add('converse-roster', {
 
                 this.setChatBox();
 
-                this.presence.on('change:show', () => _converse.emit('contactPresenceChanged', this));
+                this.presence.on('change:show', () => _converse.api.emit('contactPresenceChanged', this));
                 this.presence.on('change:show', () => this.trigger('presenceChanged'));
             },
 
@@ -404,7 +404,7 @@ converse.plugins.add('converse-roster', {
                     _converse.send_initial_presence = true;
                     return _converse.roster.fetchFromServer();
                 } else {
-                    _converse.emit('cachedRoster', collection);
+                    _converse.api.emit('cachedRoster', collection);
                 }
             },
 
@@ -549,7 +549,7 @@ converse.plugins.add('converse-roster', {
                     return;
                 }
                 this.updateContact(items.pop());
-                _converse.emit('rosterPush', iq);
+                _converse.api.emit('rosterPush', iq);
                 return;
             },
 
@@ -590,7 +590,7 @@ converse.plugins.add('converse-roster', {
                     this.data.save('version', query.getAttribute('ver'));
                     _converse.session.save('roster_fetched', true);
                 }
-                _converse.emit('roster', iq);
+                _converse.api.emit('roster', iq);
             },
 
             updateContact (item) {
@@ -644,7 +644,7 @@ converse.plugins.add('converse-roster', {
                     'requesting': true,
                     'nickname': nickname
                 };
-                _converse.emit('contactRequest', this.create(user_data));
+                _converse.api.emit('contactRequest', this.create(user_data));
             },
 
             handleIncomingSubscription (presence) {
@@ -856,7 +856,7 @@ converse.plugins.add('converse-roster', {
             _converse.presences.browserStorage =
                 new Backbone.BrowserStorage.session(`converse.presences-${_converse.bare_jid}`);
             _converse.presences.fetch();
-            _converse.emit('presencesInitialized', reconnecting);
+            _converse.api.emit('presencesInitialized', reconnecting);
         });
 
         _converse.api.listen.on('presencesInitialized', (reconnecting) => {
@@ -865,7 +865,7 @@ converse.plugins.add('converse-roster', {
                 // cached data. However we still emit an event, to give
                 // event handlers a chance to register views for the
                 // roster and its groups, before we start populating.
-                _converse.emit('rosterReadyAfterReconnection');
+                _converse.api.emit('rosterReadyAfterReconnection');
             } else {
                 _converse.registerIntervalHandler();
                 _converse.initRoster();

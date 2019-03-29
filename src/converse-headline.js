@@ -81,8 +81,8 @@ converse.plugins.add('converse-headline', {
                 this.model.on('change:minimized', this.onMinimizedChanged, this);
 
                 this.render().insertHeading().fetchMessages().insertIntoDOM().hide();
-                _converse.emit('chatBoxOpened', this);
-                _converse.emit('chatBoxInitialized', this);
+                _converse.api.emit('chatBoxOpened', this);
+                _converse.api.emit('chatBoxInitialized', this);
             },
 
             render () {
@@ -127,7 +127,7 @@ converse.plugins.add('converse-headline', {
                 });
                 const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
                 await chatbox.messages.create(attrs);
-                _converse.emit('message', {'chatbox': chatbox, 'stanza': message});
+                _converse.api.emit('message', {'chatbox': chatbox, 'stanza': message});
             }
         }
 
@@ -137,11 +137,11 @@ converse.plugins.add('converse-headline', {
                 return true
             }, null, 'message');
         }
-        _converse.on('connected', registerHeadlineHandler);
-        _converse.on('reconnected', registerHeadlineHandler);
+        _converse.api.listen.on('connected', registerHeadlineHandler);
+        _converse.api.listen.on('reconnected', registerHeadlineHandler);
 
 
-        _converse.on('chatBoxViewsInitialized', () => {
+        _converse.api.listen.on('chatBoxViewsInitialized', () => {
             const that = _converse.chatboxviews;
             _converse.chatboxes.on('add', item => {
                 if (!that.get(item.get('id')) && item.get('type') === _converse.HEADLINES_TYPE) {

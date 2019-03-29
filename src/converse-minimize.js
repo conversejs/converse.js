@@ -131,7 +131,7 @@ converse.plugins.add('converse-minimize', {
                     this.model.clearUnreadMsgCounter();
                 }
                 this.show();
-                this.__super__._converse.emit('chatBoxMaximized', this);
+                this.__super__._converse.api.emit('chatBoxMaximized', this);
                 return this;
             },
 
@@ -146,7 +146,7 @@ converse.plugins.add('converse-minimize', {
                 }
                 this.setChatState(_converse.INACTIVE).model.minimize();
                 this.hide();
-                _converse.emit('chatBoxMinimized', this);
+                _converse.api.emit('chatBoxMinimized', this);
             },
         },
 
@@ -358,7 +358,7 @@ converse.plugins.add('converse-minimize', {
                     view.close();
                 } else {
                     this.model.destroy();
-                    _converse.emit('chatBoxClosed', this);
+                    _converse.api.emit('chatBoxClosed', this);
                 }
                 return this;
             },
@@ -515,7 +515,7 @@ converse.plugins.add('converse-minimize', {
             _converse.minimized_chats = new _converse.MinimizedChats({
                 model: _converse.chatboxes
             });
-            _converse.emit('minimizedChatsInitialized');
+            _converse.api.emit('minimizedChatsInitialized');
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
 

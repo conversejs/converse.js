@@ -815,9 +815,9 @@ converse.plugins.add('converse-rosterview', {
                 // just this group's) have been fetched from browser
                 // storage or the XMPP server and once they've been
                 // assigned to their various groups.
-                _converse.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this));
+                _converse.api.listen.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this));
 
-                _converse.on('rosterContactsFetched', () => {
+                _converse.api.listen.on('rosterContactsFetched', () => {
                     _converse.roster.each((contact) => this.addRosterContact(contact, {'silent': true}));
                     this.update();
                     this.updateFilter();
@@ -1032,7 +1032,7 @@ converse.plugins.add('converse-rosterview', {
                 'model': _converse.rostergroups
             });
             _converse.rosterview.render();
-            _converse.emit('rosterViewInitialized');
+            _converse.api.emit('rosterViewInitialized');
         }
         _converse.api.listen.on('rosterInitialized', initRoster);
         _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);

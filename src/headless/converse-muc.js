@@ -1043,7 +1043,7 @@ converse.plugins.add('converse-muc', {
                         this.handleMessageCorrection(stanza) ||
                         this.isReceipt(stanza) ||
                         this.isChatMarker(stanza)) {
-                    return _converse.emit('message', {'stanza': original_stanza});
+                    return _converse.api.emit('message', {'stanza': original_stanza});
                 }
                 const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
                 if (attrs.nick &&
@@ -1057,7 +1057,7 @@ converse.plugins.add('converse-muc', {
                         msg.save({'received': moment().format()});
                     }
                 }
-                _converse.emit('message', {'stanza': original_stanza, 'chatbox': this});
+                _converse.api.emit('message', {'stanza': original_stanza, 'chatbox': this});
             },
 
             onPresence (pres) {
@@ -1341,8 +1341,8 @@ converse.plugins.add('converse-muc', {
                         return true;
                     }, 'jabber:x:conference', 'message');
             };
-            _converse.on('connected', registerDirectInvitationHandler);
-            _converse.on('reconnected', registerDirectInvitationHandler);
+            _converse.api.listen.on('connected', registerDirectInvitationHandler);
+            _converse.api.listen.on('reconnected', registerDirectInvitationHandler);
         }
 
         const getChatRoom = function (jid, attrs, create) {
@@ -1380,7 +1380,7 @@ converse.plugins.add('converse-muc', {
                         Strophe.LogLevel.ERROR);
                 }
             });
-            _converse.emit('roomsAutoJoined');
+            _converse.api.emit('roomsAutoJoined');
         }
 
         function disconnectChatRooms () {
@@ -1415,7 +1415,7 @@ converse.plugins.add('converse-muc', {
 
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.on('addClientFeatures', () => {
+        _converse.api.listen.on('addClientFeatures', () => {
             if (_converse.allow_muc) {
                 _converse.api.disco.own.features.add(Strophe.NS.MUC);
             }

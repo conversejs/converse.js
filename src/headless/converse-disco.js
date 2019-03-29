@@ -94,12 +94,12 @@ converse.plugins.add('converse-disco', {
 
             onFeatureAdded (feature) {
                 feature.entity = this;
-                _converse.emit('serviceDiscovered', feature);
+                _converse.api.emit('serviceDiscovered', feature);
             },
 
             onFieldAdded (field) {
                 field.entity = this;
-                _converse.emit('discoExtensionFieldDiscovered', field);
+                _converse.api.emit('discoExtensionFieldDiscovered', field);
             },
 
             fetchFeatures () {
@@ -227,7 +227,7 @@ converse.plugins.add('converse-disco', {
             if (_converse.message_carbons) {
                 _converse.api.disco.own.features.add(Strophe.NS.CARBONS);
             }
-            _converse.emit('addClientFeatures');
+            _converse.api.emit('addClientFeatures');
             return this;
         }
 
@@ -250,7 +250,7 @@ converse.plugins.add('converse-disco', {
                     }
                 }
             });
-            _converse.emit('streamFeaturesAdded');
+            _converse.api.emit('streamFeaturesAdded');
         }
 
         async function initializeDisco () {
@@ -268,7 +268,7 @@ converse.plugins.add('converse-disco', {
                 // create one.
                 _converse.disco_entities.create({'jid': _converse.domain});
             }
-            _converse.emit('discoInitialized');
+            _converse.api.emit('discoInitialized');
         }
 
         _converse.api.listen.on('sessionInitialized', initStreamFeatures);

@@ -796,7 +796,7 @@ converse.plugins.add('converse-chatboxes', {
                         chatbox.trigger('show');
                     }
                 });
-                _converse.emit('chatBoxesFetched');
+                _converse.api.emit('chatBoxesFetched');
             },
 
             onConnected () {
@@ -949,7 +949,7 @@ converse.plugins.add('converse-chatboxes', {
                         }
                     }
                 }
-                _converse.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
+                _converse.api.emit('message', {'stanza': original_stanza, 'chatbox': chatbox});
             },
 
             getChatBox (jid, attrs={}, create) {
@@ -998,15 +998,15 @@ converse.plugins.add('converse-chatboxes', {
                         Strophe.LogLevel.ERROR);
                 }
             });
-            _converse.emit('privateChatsAutoJoined');
+            _converse.api.emit('privateChatsAutoJoined');
         }
 
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.on('chatBoxesFetched', autoJoinChats);
+        _converse.api.listen.on('chatBoxesFetched', autoJoinChats);
 
 
-        _converse.on('addClientFeatures', () => {
+        _converse.api.listen.on('addClientFeatures', () => {
             _converse.api.disco.own.features.add(Strophe.NS.MESSAGE_CORRECT);
             _converse.api.disco.own.features.add(Strophe.NS.HTTPUPLOAD);
             _converse.api.disco.own.features.add(Strophe.NS.OUTOFBAND);
@@ -1014,7 +1014,7 @@ converse.plugins.add('converse-chatboxes', {
 
         _converse.api.listen.on('pluginsInitialized', () => {
             _converse.chatboxes = new _converse.ChatBoxes();
-            _converse.emit('chatBoxesInitialized');
+            _converse.api.emit('chatBoxesInitialized');
         });
 
         _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());

@@ -380,7 +380,7 @@ function initPlugins() {
      *     // Your code here...
      * });
      */
-    _converse.emit('pluginsInitialized');
+    _converse.api.emit('pluginsInitialized');
 }
 
 function initClientConfig () {
@@ -406,7 +406,7 @@ function initClientConfig () {
      * @example
      * _converse.api.listen.on('clientConfigInitialized', () => { ... });
      */
-    _converse.emit('clientConfigInitialized');
+    _converse.api.emit('clientConfigInitialized');
 }
 
 _converse.initConnection = function () {
@@ -434,7 +434,7 @@ _converse.initConnection = function () {
      *
      * @event _converse#connectionInitialized
      */
-    _converse.emit('connectionInitialized');
+    _converse.api.emit('connectionInitialized');
 }
 
 
@@ -463,7 +463,7 @@ function finishInitialization () {
         Backbone.history.start();
     }
     if (_converse.idle_presence_timeout > 0) {
-        _converse.on('addClientFeatures', () => {
+        _converse.api.listen.on('addClientFeatures', () => {
             _converse.api.disco.own.features.add(Strophe.NS.IDLE);
         });
     }
@@ -472,7 +472,7 @@ function finishInitialization () {
 
 function unregisterGlobalEventHandlers () {
     document.removeEventListener("visibilitychange", _converse.saveWindowState);
-    _converse.emit('unregisteredGlobalEventHandlers');
+    _converse.api.emit('unregisteredGlobalEventHandlers');
 }
 
 function cleanup () {
@@ -706,7 +706,7 @@ _converse.initialize = async function (settings, callback) {
          * @example
          * _converse.api.listen.on('disconnected', () => { ... });
          */
-        _converse.emit('disconnected');
+        _converse.api.emit('disconnected');
     };
 
     this.onDisconnected = function () {
@@ -721,7 +721,7 @@ _converse.initialize = async function (settings, callback) {
                 /* In this case, we reconnect, because we might be receiving
                  * expirable tokens from the credentials_url.
                  */
-                _converse.emit('will-reconnect');
+                _converse.api.emit('will-reconnect');
                 return _converse.reconnect();
             } else {
                 return _converse.disconnect();
@@ -739,7 +739,7 @@ _converse.initialize = async function (settings, callback) {
          *
          * @event _converse#will-reconnect
          */
-        _converse.emit('will-reconnect');
+        _converse.api.emit('will-reconnect');
         _converse.reconnect();
     };
 
@@ -869,7 +869,7 @@ _converse.initialize = async function (settings, callback) {
          * @event _converse#sessionInitialized
          * @memberOf _converse
          */
-        _converse.emit('sessionInitialized');
+        _converse.api.emit('sessionInitialized');
     };
 
     this.clearSession = function () {
@@ -886,7 +886,7 @@ _converse.initialize = async function (settings, callback) {
          *
          * @event _converse#clearSession
          */
-        _converse.emit('clearSession');
+        _converse.api.emit('clearSession');
     };
 
     this.logOut = function () {
@@ -904,7 +904,7 @@ _converse.initialize = async function (settings, callback) {
          *
          * @event _converse#logout
          */
-        _converse.emit('logout');
+        _converse.api.emit('logout');
     };
 
     this.saveWindowState = function (ev) {
@@ -930,13 +930,13 @@ _converse.initialize = async function (settings, callback) {
             _converse.clearMsgCounter();
         }
         _converse.windowState = state;
-        _converse.emit('windowStateChanged', {state});
+        _converse.api.emit('windowStateChanged', {state});
     };
 
     this.registerGlobalEventHandlers = function () {
         document.addEventListener("visibilitychange", _converse.saveWindowState);
         _converse.saveWindowState({'type': document.hidden ? "blur" : "focus"}); // Set initial state
-        _converse.emit('registeredGlobalEventHandlers');
+        _converse.api.emit('registeredGlobalEventHandlers');
     };
 
     this.enableCarbons = function () {
@@ -984,9 +984,9 @@ _converse.initialize = async function (settings, callback) {
         * // As an ES2015 Promise
         * _converse.api.waitUntil('statusInitialized').then(() => { ... });
         */
-        _converse.emit('statusInitialized', reconnecting);
+        _converse.api.emit('statusInitialized', reconnecting);
         if (reconnecting) {
-            _converse.emit('reconnected');
+            _converse.api.emit('reconnected');
         } else {
             init_promise.resolve();
             /**
@@ -995,14 +995,14 @@ _converse.initialize = async function (settings, callback) {
              *
              * @event _converse#initialized
              */
-            _converse.emit('initialized');
+            _converse.api.emit('initialized');
             /**
              * Emitted after the connection has been established and Converse
              * has got all its ducks in a row.
              *
              * @event _converse#initialized
              */
-            _converse.emit('connected');
+            _converse.api.emit('connected');
         }
     };
 
@@ -1011,7 +1011,7 @@ _converse.initialize = async function (settings, callback) {
         _converse.bare_jid = Strophe.getBareJidFromJid(_converse.connection.jid);
         _converse.resource = Strophe.getResourceFromJid(_converse.connection.jid);
         _converse.domain = Strophe.getDomainFromJid(_converse.connection.jid);
-        _converse.emit('setUserJID');
+        _converse.api.emit('setUserJID');
     };
 
     this.onConnected = function (reconnecting) {
@@ -1033,7 +1033,7 @@ _converse.initialize = async function (settings, callback) {
         },
 
         initialize () {
-            this.on('change', () => _converse.emit('connfeedback', _converse.connfeedback));
+            this.on('change', () => _converse.api.emit('connfeedback', _converse.connfeedback));
         }
     });
     this.connfeedback = new this.ConnectionFeedback();
@@ -1057,13 +1057,13 @@ _converse.initialize = async function (settings, callback) {
             this.on('change:status', (item) => {
                 const status = this.get('status');
                 this.sendPresence(status);
-                _converse.emit('statusChanged', status);
+                _converse.api.emit('statusChanged', status);
             });
 
             this.on('change:status_message', () => {
                 const status_message = this.get('status_message');
                 this.sendPresence(this.get('status'), status_message);
-                _converse.emit('statusMessageChanged', status_message);
+                _converse.api.emit('statusMessageChanged', status_message);
             });
         },
 
@@ -1126,7 +1126,7 @@ _converse.initialize = async function (settings, callback) {
             };
             xhr.onerror = function () {
                 delete _converse.connection;
-                _converse.emit('noResumeableSession', this);
+                _converse.api.emit('noResumeableSession', this);
                 reject(xhr.responseText);
             };
             xhr.send();
@@ -1148,7 +1148,7 @@ _converse.initialize = async function (settings, callback) {
         };
         xhr.onerror = function () {
             delete _converse.connection;
-            _converse.emit('noResumeableSession', this);
+            _converse.api.emit('noResumeableSession', this);
         };
         xhr.send();
     };
@@ -1290,7 +1290,7 @@ _converse.initialize = async function (settings, callback) {
     };
 
     this.tearDown = function () {
-        _converse.emit('beforeTearDown');
+        _converse.api.emit('beforeTearDown');
         if (!_.isUndefined(_converse.session)) {
             _converse.session.destroy();
         }
@@ -1300,7 +1300,7 @@ _converse.initialize = async function (settings, callback) {
         window.removeEventListener('mousemove', _converse.onUserActivity);
         window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
         window.clearInterval(_converse.everySecondTrigger);
-        _converse.emit('afterTearDown');
+        _converse.api.emit('afterTearDown');
         return _converse;
     };
 
@@ -1755,7 +1755,7 @@ _converse.api = {
                   .cnode(stanza.tree())
             );
          }
-        _converse.emit('send', stanza);
+        _converse.api.emit('send', stanza);
     },
 
     /**
@@ -1768,7 +1768,7 @@ _converse.api = {
     'sendIQ' (stanza, timeout) {
         return new Promise((resolve, reject) => {
             _converse.connection.sendIQ(stanza, resolve, reject, timeout || _converse.IQ_TIMEOUT);
-            _converse.emit('send', stanza);
+            _converse.api.emit('send', stanza);
         });
     }
 };

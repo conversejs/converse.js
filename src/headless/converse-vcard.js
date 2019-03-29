@@ -130,7 +130,7 @@ converse.plugins.add('converse-vcard', {
         _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
 
 
-        _converse.on('addClientFeatures', () => {
+        _converse.api.listen.on('addClientFeatures', () => {
             _converse.api.disco.own.features.add(Strophe.NS.VCARD);
         });
 

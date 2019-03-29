@@ -76,7 +76,7 @@ converse.plugins.add('converse-muc-views', {
                 this.el.querySelector('.controlbox-pane').insertAdjacentElement(
                     'beforeEnd', this.roomspanel.render().el);
 
-                _converse.emit('roomsPanelRendered');
+                _converse.api.emit('roomsPanelRendered');
             },
 
             renderControlBoxPane () {
@@ -561,7 +561,7 @@ converse.plugins.add('converse-muc-views', {
                 } else {
                     this.fetchMessages();
                 }
-                _converse.emit('chatRoomOpened', this);
+                _converse.api.emit('chatRoomOpened', this);
             },
 
             render () {
@@ -2063,7 +2063,7 @@ converse.plugins.add('converse-muc-views', {
         }
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.on('chatBoxViewsInitialized', () => {
+        _converse.api.listen.on('chatBoxViewsInitialized', () => {
 
             function openChatRoomFromURIClicked (ev) {
                 ev.preventDefault();
@@ -2107,7 +2107,7 @@ converse.plugins.add('converse-muc-views', {
                 }
             });
         }
-        _converse.on('reconnected', reconnectToChatRooms);
+        _converse.api.listen.on('reconnected', reconnectToChatRooms);
         /************************ END Event Handlers ************************/
 
 

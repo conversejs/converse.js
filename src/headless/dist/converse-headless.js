@@ -41075,7 +41075,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           }
         });
 
-        _converse.emit('chatBoxesFetched');
+        _converse.api.emit('chatBoxesFetched');
       },
 
       onConnected() {
@@ -41235,7 +41235,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           }
         }
 
-        _converse.emit('message', {
+        _converse.api.emit('message', {
           'stanza': original_stanza,
           'chatbox': chatbox
         });
@@ -41299,14 +41299,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
       });
 
-      _converse.emit('privateChatsAutoJoined');
+      _converse.api.emit('privateChatsAutoJoined');
     }
     /************************ BEGIN Event Handlers ************************/
 
 
-    _converse.on('chatBoxesFetched', autoJoinChats);
+    _converse.api.listen.on('chatBoxesFetched', autoJoinChats);
 
-    _converse.on('addClientFeatures', () => {
+    _converse.api.listen.on('addClientFeatures', () => {
       _converse.api.disco.own.features.add(Strophe.NS.MESSAGE_CORRECT);
 
       _converse.api.disco.own.features.add(Strophe.NS.HTTPUPLOAD);
@@ -41317,7 +41317,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
     _converse.api.listen.on('pluginsInitialized', () => {
       _converse.chatboxes = new _converse.ChatBoxes();
 
-      _converse.emit('chatBoxesInitialized');
+      _converse.api.emit('chatBoxesInitialized');
     });
 
     _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
@@ -41861,7 +41861,7 @@ function initPlugins() {
    */
 
 
-  _converse.emit('pluginsInitialized');
+  _converse.api.emit('pluginsInitialized');
 }
 
 function initClientConfig() {
@@ -41890,7 +41890,7 @@ function initClientConfig() {
    */
 
 
-  _converse.emit('clientConfigInitialized');
+  _converse.api.emit('clientConfigInitialized');
 }
 
 _converse.initConnection = function () {
@@ -41920,7 +41920,7 @@ _converse.initConnection = function () {
    * @event _converse#connectionInitialized
    */
 
-  _converse.emit('connectionInitialized');
+  _converse.api.emit('connectionInitialized');
 };
 
 function setUpXMLLogging() {
@@ -41954,7 +41954,7 @@ function finishInitialization() {
   }
 
   if (_converse.idle_presence_timeout > 0) {
-    _converse.on('addClientFeatures', () => {
+    _converse.api.listen.on('addClientFeatures', () => {
       _converse.api.disco.own.features.add(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].NS.IDLE);
     });
   }
@@ -41963,7 +41963,7 @@ function finishInitialization() {
 function unregisterGlobalEventHandlers() {
   document.removeEventListener("visibilitychange", _converse.saveWindowState);
 
-  _converse.emit('unregisteredGlobalEventHandlers');
+  _converse.api.emit('unregisteredGlobalEventHandlers');
 }
 
 function cleanup() {
@@ -42237,7 +42237,7 @@ _converse.initialize = async function (settings, callback) {
      */
 
 
-    _converse.emit('disconnected');
+    _converse.api.emit('disconnected');
   };
 
   this.onDisconnected = function () {
@@ -42252,7 +42252,7 @@ _converse.initialize = async function (settings, callback) {
         /* In this case, we reconnect, because we might be receiving
          * expirable tokens from the credentials_url.
          */
-        _converse.emit('will-reconnect');
+        _converse.api.emit('will-reconnect');
 
         return _converse.reconnect();
       } else {
@@ -42269,7 +42269,7 @@ _converse.initialize = async function (settings, callback) {
      */
 
 
-    _converse.emit('will-reconnect');
+    _converse.api.emit('will-reconnect');
 
     _converse.reconnect();
   };
@@ -42422,7 +42422,7 @@ _converse.initialize = async function (settings, callback) {
      */
 
 
-    _converse.emit('sessionInitialized');
+    _converse.api.emit('sessionInitialized');
   };
 
   this.clearSession = function () {
@@ -42441,7 +42441,7 @@ _converse.initialize = async function (settings, callback) {
      */
 
 
-    _converse.emit('clearSession');
+    _converse.api.emit('clearSession');
   };
 
   this.logOut = function () {
@@ -42464,7 +42464,7 @@ _converse.initialize = async function (settings, callback) {
      */
 
 
-    _converse.emit('logout');
+    _converse.api.emit('logout');
   };
 
   this.saveWindowState = function (ev) {
@@ -42494,7 +42494,7 @@ _converse.initialize = async function (settings, callback) {
 
     _converse.windowState = state;
 
-    _converse.emit('windowStateChanged', {
+    _converse.api.emit('windowStateChanged', {
       state
     });
   };
@@ -42507,7 +42507,7 @@ _converse.initialize = async function (settings, callback) {
     }); // Set initial state
 
 
-    _converse.emit('registeredGlobalEventHandlers');
+    _converse.api.emit('registeredGlobalEventHandlers');
   };
 
   this.enableCarbons = function () {
@@ -42557,10 +42557,10 @@ _converse.initialize = async function (settings, callback) {
      * // As an ES2015 Promise
      * _converse.api.waitUntil('statusInitialized').then(() => { ... });
      */
-    _converse.emit('statusInitialized', reconnecting);
+    _converse.api.emit('statusInitialized', reconnecting);
 
     if (reconnecting) {
-      _converse.emit('reconnected');
+      _converse.api.emit('reconnected');
     } else {
       init_promise.resolve();
       /**
@@ -42570,7 +42570,7 @@ _converse.initialize = async function (settings, callback) {
        * @event _converse#initialized
        */
 
-      _converse.emit('initialized');
+      _converse.api.emit('initialized');
       /**
        * Emitted after the connection has been established and Converse
        * has got all its ducks in a row.
@@ -42579,7 +42579,7 @@ _converse.initialize = async function (settings, callback) {
        */
 
 
-      _converse.emit('connected');
+      _converse.api.emit('connected');
     }
   };
 
@@ -42589,7 +42589,7 @@ _converse.initialize = async function (settings, callback) {
     _converse.resource = strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getResourceFromJid(_converse.connection.jid);
     _converse.domain = strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getDomainFromJid(_converse.connection.jid);
 
-    _converse.emit('setUserJID');
+    _converse.api.emit('setUserJID');
   };
 
   this.onConnected = function (reconnecting) {
@@ -42615,7 +42615,7 @@ _converse.initialize = async function (settings, callback) {
     },
 
     initialize() {
-      this.on('change', () => _converse.emit('connfeedback', _converse.connfeedback));
+      this.on('change', () => _converse.api.emit('connfeedback', _converse.connfeedback));
     }
 
   });
@@ -42643,13 +42643,13 @@ _converse.initialize = async function (settings, callback) {
         const status = this.get('status');
         this.sendPresence(status);
 
-        _converse.emit('statusChanged', status);
+        _converse.api.emit('statusChanged', status);
       });
       this.on('change:status_message', () => {
         const status_message = this.get('status_message');
         this.sendPresence(this.get('status'), status_message);
 
-        _converse.emit('statusMessageChanged', status_message);
+        _converse.api.emit('statusMessageChanged', status_message);
       });
     },
 
@@ -42717,7 +42717,7 @@ _converse.initialize = async function (settings, callback) {
     xhr.onerror = function () {
       delete _converse.connection;
 
-      _converse.emit('noResumeableSession', this);
+      _converse.api.emit('noResumeableSession', this);
 
       reject(xhr.responseText);
     };
@@ -42743,7 +42743,7 @@ _converse.initialize = async function (settings, callback) {
     xhr.onerror = function () {
       delete _converse.connection;
 
-      _converse.emit('noResumeableSession', this);
+      _converse.api.emit('noResumeableSession', this);
     };
 
     xhr.send();
@@ -42882,7 +42882,7 @@ _converse.initialize = async function (settings, callback) {
   };
 
   this.tearDown = function () {
-    _converse.emit('beforeTearDown');
+    _converse.api.emit('beforeTearDown');
 
     if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_converse.session)) {
       _converse.session.destroy();
@@ -42895,7 +42895,7 @@ _converse.initialize = async function (settings, callback) {
     window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
     window.clearInterval(_converse.everySecondTrigger);
 
-    _converse.emit('afterTearDown');
+    _converse.api.emit('afterTearDown');
 
     return _converse;
   }; // Initialization
@@ -43375,7 +43375,7 @@ _converse.api = {
       }).up().cnode(stanza.tree()));
     }
 
-    _converse.emit('send', stanza);
+    _converse.api.emit('send', stanza);
   },
 
   /**
@@ -43389,7 +43389,7 @@ _converse.api = {
     return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
       _converse.connection.sendIQ(stanza, resolve, reject, timeout || _converse.IQ_TIMEOUT);
 
-      _converse.emit('send', stanza);
+      _converse.api.emit('send', stanza);
     });
   }
 
@@ -43629,13 +43629,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       onFeatureAdded(feature) {
         feature.entity = this;
 
-        _converse.emit('serviceDiscovered', feature);
+        _converse.api.emit('serviceDiscovered', feature);
       },
 
       onFieldAdded(field) {
         field.entity = this;
 
-        _converse.emit('discoExtensionFieldDiscovered', field);
+        _converse.api.emit('discoExtensionFieldDiscovered', field);
       },
 
       fetchFeatures() {
@@ -43786,7 +43786,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         _converse.api.disco.own.features.add(Strophe.NS.CARBONS);
       }
 
-      _converse.emit('addClientFeatures');
+      _converse.api.emit('addClientFeatures');
 
       return this;
     }
@@ -43809,7 +43809,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
 
       });
 
-      _converse.emit('streamFeaturesAdded');
+      _converse.api.emit('streamFeaturesAdded');
     }
 
     async function initializeDisco() {
@@ -43829,7 +43829,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         });
       }
 
-      _converse.emit('discoInitialized');
+      _converse.api.emit('discoInitialized');
     }
 
     _converse.api.listen.on('sessionInitialized', initStreamFeatures);
@@ -44557,7 +44557,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
     /************************ BEGIN Event Handlers ************************/
 
 
-    _converse.on('serviceDiscovered', feature => {
+    _converse.api.listen.on('serviceDiscovered', feature => {
       const prefs = feature.get('preferences') || {};
 
       if (feature.get('var') === Strophe.NS.MAM && prefs['default'] !== _converse.message_archiving && // eslint-disable-line dot-notation
@@ -44571,7 +44571,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
       }
     });
 
-    _converse.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
+    _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
     /************************ END Event Handlers ************************/
 
     /************************ BEGIN API ************************/
@@ -45971,7 +45971,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         }
 
         if (message || this.handleMessageCorrection(stanza) || this.isReceipt(stanza) || this.isChatMarker(stanza)) {
-          return _converse.emit('message', {
+          return _converse.api.emit('message', {
             'stanza': original_stanza
           });
         }
@@ -45989,7 +45989,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
           }
         }
 
-        _converse.emit('message', {
+        _converse.api.emit('message', {
           'stanza': original_stanza,
           'chatbox': this
         });
@@ -46308,9 +46308,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         }, 'jabber:x:conference', 'message');
       };
 
-      _converse.on('connected', registerDirectInvitationHandler);
+      _converse.api.listen.on('connected', registerDirectInvitationHandler);
 
-      _converse.on('reconnected', registerDirectInvitationHandler);
+      _converse.api.listen.on('reconnected', registerDirectInvitationHandler);
     }
 
     const getChatRoom = function getChatRoom(jid, attrs, create) {
@@ -46351,7 +46351,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         }
       });
 
-      _converse.emit('roomsAutoJoined');
+      _converse.api.emit('roomsAutoJoined');
     }
 
     function disconnectChatRooms() {
@@ -46384,7 +46384,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
     /************************ BEGIN Event Handlers ************************/
 
 
-    _converse.on('addClientFeatures', () => {
+    _converse.api.listen.on('addClientFeatures', () => {
       if (_converse.allow_muc) {
         _converse.api.disco.own.features.add(Strophe.NS.MUC);
       }
@@ -46722,9 +46722,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-pin
       _converse.registerPingHandler();
     };
 
-    _converse.on('connected', onConnected);
+    _converse.api.listen.on('connected', onConnected);
 
-    _converse.on('reconnected', onConnected);
+    _converse.api.listen.on('reconnected', onConnected);
   }
 
 });
@@ -46927,7 +46927,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       _converse.rostergroups = new _converse.RosterGroups();
       _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](`converse.roster.groups${_converse.bare_jid}`);
 
-      _converse.emit('rosterInitialized');
+      _converse.api.emit('rosterInitialized');
     };
 
     _converse.populateRoster = async function () {
@@ -46947,7 +46947,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         try {
           await _converse.roster.fetchFromServer();
 
-          _converse.emit('rosterContactsFetched');
+          _converse.api.emit('rosterContactsFetched');
         } catch (reason) {
           _converse.log(reason, Strophe.LogLevel.ERROR);
         } finally {
@@ -46957,11 +46957,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         try {
           await _converse.rostergroups.fetchRosterGroups();
 
-          _converse.emit('rosterGroupsFetched');
+          _converse.api.emit('rosterGroupsFetched');
 
           await _converse.roster.fetchRosterContacts();
 
-          _converse.emit('rosterContactsFetched');
+          _converse.api.emit('rosterContactsFetched');
         } catch (reason) {
           _converse.log(reason, Strophe.LogLevel.ERROR);
         } finally {
@@ -47100,7 +47100,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'user_id': Strophe.getNodeFromJid(jid)
         }, attributes));
         this.setChatBox();
-        this.presence.on('change:show', () => _converse.emit('contactPresenceChanged', this));
+        this.presence.on('change:show', () => _converse.api.emit('contactPresenceChanged', this));
         this.presence.on('change:show', () => this.trigger('presenceChanged'));
       },
 
@@ -47310,7 +47310,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           _converse.send_initial_presence = true;
           return _converse.roster.fetchFromServer();
         } else {
-          _converse.emit('cachedRoster', collection);
+          _converse.api.emit('cachedRoster', collection);
         }
       },
 
@@ -47485,7 +47485,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         this.updateContact(items.pop());
 
-        _converse.emit('rosterPush', iq);
+        _converse.api.emit('rosterPush', iq);
 
         return;
       },
@@ -47538,7 +47538,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           _converse.session.save('roster_fetched', true);
         }
 
-        _converse.emit('roster', iq);
+        _converse.api.emit('roster', iq);
       },
 
       updateContact(item) {
@@ -47601,7 +47601,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'nickname': nickname
         };
 
-        _converse.emit('contactRequest', this.create(user_data));
+        _converse.api.emit('contactRequest', this.create(user_data));
       },
 
       handleIncomingSubscription(presence) {
@@ -47841,7 +47841,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       _converse.presences.fetch();
 
-      _converse.emit('presencesInitialized', reconnecting);
+      _converse.api.emit('presencesInitialized', reconnecting);
     });
 
     _converse.api.listen.on('presencesInitialized', reconnecting => {
@@ -47850,7 +47850,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         // cached data. However we still emit an event, to give
         // event handlers a chance to register views for the
         // roster and its groups, before we start populating.
-        _converse.emit('rosterReadyAfterReconnection');
+        _converse.api.emit('rosterReadyAfterReconnection');
       } else {
         _converse.registerIntervalHandler();
 
@@ -48110,7 +48110,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
 
     _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
 
-    _converse.on('addClientFeatures', () => {
+    _converse.api.listen.on('addClientFeatures', () => {
       _converse.api.disco.own.features.add(Strophe.NS.VCARD);
     });
 

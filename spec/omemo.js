@@ -179,6 +179,7 @@
                     `<encrypted xmlns="eu.siacs.conversations.axolotl">`+
                         `<header sid="123456789">`+
                             `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+
+                            `<key rid="123456789">YzFwaDNSNzNYNw==</key>`+
                             `<key rid="555">YzFwaDNSNzNYNw==</key>`+
                             `<iv>${sent_stanza.nodeTree.querySelector("iv").textContent}</iv>`+
                         `</header>`+
@@ -258,6 +259,7 @@
             toggle.click();
             expect(view.model.get('omemo_active')).toBe(true);
 
+            // newguy enters the room
             const contact_jid = 'newguy@localhost';
             let stanza = $pres({
                     'to': 'dummy@localhost/resource',
@@ -271,6 +273,7 @@
                 }).tree();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
+            // Wait for Converse to fetch newguy's device list
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
             expect(iq_stanza.toLocaleString()).toBe(
                 `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
@@ -279,6 +282,7 @@
                     `</pubsub>`+
                 `</iq>`);
 
+            // The server returns his device list
             stanza = $iq({
                 'from': contact_jid,
                 'id': iq_stanza.nodeTree.getAttribute('id'),
@@ -366,6 +370,7 @@
                     `<encrypted xmlns="eu.siacs.conversations.axolotl">`+
                         `<header sid="123456789">`+
                             `<key rid="482886413b977930064a5888b92134fe">YzFwaDNSNzNYNw==</key>`+
+                            `<key rid="123456789">YzFwaDNSNzNYNw==</key>`+
                             `<key rid="4e30f35051b7b8b42abe083742187228">YzFwaDNSNzNYNw==</key>`+
                             `<iv>${sent_stanza.nodeTree.querySelector("iv").textContent}</iv>`+
                         `</header>`+

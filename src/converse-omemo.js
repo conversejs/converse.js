@@ -549,20 +549,14 @@ converse.plugins.add('converse-omemo', {
 
         _converse.getBundlesAndBuildSessions = async function (chatbox) {
             let devices;
-            const id = _converse.omemo_store.get('device_id');
             if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
                 const collections = await Promise.all(chatbox.occupants.map(o => getDevicesForContact(o.get('jid'))));
                 devices = collections.reduce((a, b) => _.concat(a, b.models), []);
-
             } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                 const their_devices = await getDevicesForContact(chatbox.get('jid')),
-                      devicelist = _converse.devicelists.get(_converse.bare_jid),
-                      own_devices = devicelist.devices.filter(d => d.get('id') !== id);
-                devices = _.concat(own_devices, their_devices.models);
+                      own_devices = _converse.devicelists.get(_converse.bare_jid).devices;
+                devices = _.concat(own_devices.models, their_devices.models);
             }
-            // Filter out our own device
-            devices = devices.filter(d => d.get('id') !== id);
-
             await Promise.all(devices.map(d => d.getBundle()));
             await Promise.all(devices.map(d => getSession(d)));
             return devices;
@@ -613,7 +607,7 @@ converse.plugins.add('converse-omemo', {
             // and they are separately encrypted using the
             // session corresponding to the counterpart device.
             stanza.c('encrypted', {'xmlns': Strophe.NS.OMEMO})
-                .c('header', {'sid':  _converse.omemo_store.get('device_id')});
+                  .c('header', {'sid':  _converse.omemo_store.get('device_id')});
 
             return chatbox.encryptMessage(message.get('message')).then(obj => {
                 // The 16 bytes key and the GCM authentication tag (The tag

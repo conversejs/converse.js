@@ -56624,17 +56624,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.getBundlesAndBuildSessions = async function (chatbox) {
       let devices;
 
-      const id = _converse.omemo_store.get('device_id');
-
       if (chatbox.get('type') === _converse.CHATROOMS_TYPE) {
         const collections = await Promise.all(chatbox.occupants.map(o => getDevicesForContact(o.get('jid'))));
         devices = collections.reduce((a, b) => _.concat(a, b.models), []);
       } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
         const their_devices = await getDevicesForContact(chatbox.get('jid')),
-              devicelist = _converse.devicelists.get(_converse.bare_jid),
-              own_devices = devicelist.devices;
+              own_devices = _converse.devicelists.get(_converse.bare_jid).devices;
 
-        devices = _.concat(own_devices, their_devices.models);
+        devices = _.concat(own_devices.models, their_devices.models);
       }
 
       await Promise.all(devices.map(d => d.getBundle()));

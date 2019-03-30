@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-22 18:21+0100\n"
-"PO-Revision-Date: 2019-03-19 14:03+0000\n"
+"PO-Revision-Date: 2019-03-30 12:10+0100\n"
 "Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -944,7 +944,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38217
 msgid "Unable to send an encrypted message due to an unexpected error."
 msgstr ""
-"Die verschlüsselte Nachricht konnte aufgrund eines unerwarteten Fehler nicht "
+"Die verschlüsselte Nachricht konnte aufgrund eines unerwarteten Fehlers nicht "
 "versendet werden."
 
 #: dist/converse-no-dependencies.js:38300

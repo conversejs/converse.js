@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: <?js= title ?></title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <title>Converse.js API Documentation <?js= title ?></title>
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="./analytics.js"></script>
+    <script src="/dist/converse.min.js"></script>
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
     <link type="text/css" rel="stylesheet" href="/docs/source/_static/api.css">
+    <link type="text/css" rel="stylesheet" href="/css/converse.min.css">
+    <link rel="shortcut icon" href="/css/images/favicon.ico"/>
 </head>
 
 <body>
@@ -45,11 +45,11 @@
     </h1>
 
     <h1 class="page-title"><?js= title ?></h1>
-
     <?js= content ?>
 </div>
 
 <nav>
+    <h2><a href="/docs/html/index.html">Docs Entrypoint</a></h2>
     <?js= this.nav ?>
 </nav>
 
@@ -61,5 +61,6 @@
 
 <script> prettyPrint(); </script>
 <script src="scripts/linenumber.js"> </script>
+<script>converse.initialize({'bosh_service_url': 'https://conversejs.org/http-bind/'});</script>
 </body>
 </html>

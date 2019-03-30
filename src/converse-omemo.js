@@ -234,7 +234,7 @@ converse.plugins.add('converse-omemo', {
                       session_cipher = this.getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
 
                 // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
-                if (attrs.encrypted.prekey === 'true') {
+                if (attrs.encrypted.prekey === true) {
                     let plaintext;
                     return session_cipher.decryptPreKeyWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary')
                         .then(key_and_tag => {
@@ -284,7 +284,7 @@ converse.plugins.add('converse-omemo', {
                         'iv': header.querySelector('iv').textContent,
                         'key': key.textContent,
                         'payload': _.get(encrypted.querySelector('payload'), 'textContent', null),
-                        'prekey': key.getAttribute('prekey')
+                        'prekey': _.includes(['true', '1'], key.getAttribute('prekey'))
                     }
                     return this.decrypt(attrs);
                 } else {

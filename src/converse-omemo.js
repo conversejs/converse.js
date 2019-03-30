@@ -338,6 +338,9 @@ converse.plugins.add('converse-omemo', {
                     }
                     _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), err_msgs);
                     _converse.log(e, Strophe.LogLevel.ERROR);
+                } else if (e.user_facing) {
+                    _converse.api.alert.show(Strophe.LogLevel.ERROR, __('Error'), [e.message]);
+                    _converse.log(e, Strophe.LogLevel.ERROR);
                 } else {
                     throw e;
                 }
@@ -553,8 +556,13 @@ converse.plugins.add('converse-omemo', {
                 const collections = await Promise.all(chatbox.occupants.map(o => getDevicesForContact(o.get('jid'))));
                 devices = collections.reduce((a, b) => _.concat(a, b.models), []);
             } else if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
-                const their_devices = await getDevicesForContact(chatbox.get('jid')),
-                      own_devices = _converse.devicelists.get(_converse.bare_jid).devices;
+                const their_devices = await getDevicesForContact(chatbox.get('jid'));
+                if (their_devices.length === 0) {
+                    const err = new Error(__("Sorry, we aren't able to fetch any devices to send an OMEMO encrypted message to."));
+                    err.user_facing = true;
+                    throw err;
+                }
+                const own_devices = _converse.devicelists.get(_converse.bare_jid).devices;
                 devices = _.concat(own_devices.models, their_devices.models);
             }
             await Promise.all(devices.map(d => d.getBundle()));

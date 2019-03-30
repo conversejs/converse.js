@@ -701,8 +701,11 @@
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
             expect(_converse.devicelists.length).toBe(2);
-            expect(devices.length).toBe(2);
-            expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('4223,4224');
+            expect(devices.length).toBe(3);
+            expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('1234,4223,4224');
+            expect(devices.get('1234').get('active')).toBe(false);
+            expect(devices.get('4223').get('active')).toBe(true);
+            expect(devices.get('4224').get('active')).toBe(true);
 
             // Check that own devicelist gets updated
             stanza = $msg({
@@ -723,6 +726,9 @@
             devices = _converse.devicelists.get(_converse.bare_jid).devices;
             expect(devices.length).toBe(3);
             expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('123456789,555,777');
+            expect(devices.get('123456789').get('active')).toBe(true);
+            expect(devices.get('555').get('active')).toBe(true);
+            expect(devices.get('777').get('active')).toBe(true);
 
             _converse.connection.IQ_stanzas = [];
 
@@ -769,8 +775,12 @@
             devices = _converse.devicelists.get(_converse.bare_jid).devices;
             // The device id for this device (123456789) was also generated and added to the list,
             // which is why we have 2 devices now.
-            expect(devices.length).toBe(2);
-            expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('123456789,444');
+            expect(devices.length).toBe(4);
+            expect(_.map(devices.models, 'attributes.id').sort().join()).toBe('123456789,444,555,777');
+            expect(devices.get('123456789').get('active')).toBe(true);
+            expect(devices.get('444').get('active')).toBe(true);
+            expect(devices.get('555').get('active')).toBe(false);
+            expect(devices.get('777').get('active')).toBe(false);
             done();
         }));
 

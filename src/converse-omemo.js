@@ -154,7 +154,7 @@ converse.plugins.add('converse-omemo', {
             initialize () {
                 const { _converse } = this.__super__;
                 const jid = this.model.get('jid');
-                this.devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid});
+                this.devicelist = _converse.devicelists.getDeviceList(jid);
                 this.devicelist.devices.on('change:bundle', this.render, this);
                 this.devicelist.devices.on('change:trusted', this.render, this);
                 this.devicelist.devices.on('remove', this.render, this);
@@ -229,6 +229,24 @@ converse.plugins.add('converse-omemo', {
                 _converse.log(`${e.name} ${e.message}`, Strophe.LogLevel.ERROR);
             },
 
+            async handleDecryptedWhisperMessage (encrypted, key_and_tag) {
+                const { _converse } = this.__super__,
+                      devicelist = _converse.devicelists.getDeviceList(this.get('jid'));
+
+                this.save('omemo_supported', true);
+                let device = devicelist.get(encrypted.device_id);
+                if (!device) {
+                    device = devicelist.devices.create({'id': encrypted.device_id, 'jid': this.get('jid')});
+                }
+                if (encrypted.payload) {
+                    const key = key_and_tag.slice(0, 16),
+                          tag = key_and_tag.slice(16);
+                    const result = await this.decryptMessage(_.extend(encrypted, {'key': key, 'tag': tag}));
+                    device.save('active', true);
+                    return result;
+                }
+            },
+
             decrypt (attrs) {
                 const { _converse } = this.__super__,
                       session_cipher = this.getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10));
@@ -237,14 +255,8 @@ converse.plugins.add('converse-omemo', {
                 if (attrs.encrypted.prekey === true) {
                     let plaintext;
                     return session_cipher.decryptPreKeyWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary')
-                        .then(key_and_tag => {
-                            if (attrs.encrypted.payload) {
-                                const key = key_and_tag.slice(0, 16),
-                                      tag = key_and_tag.slice(16);
-                                return this.decryptMessage(_.extend(attrs.encrypted, {'key': key, 'tag': tag}));
-                            }
-                            return Promise.resolve();
-                        }).then(pt => {
+                        .then(key_and_tag => this.handleDecryptedWhisperMessage(attrs.encrypted, key_and_tag))
+                        .then(pt => {
                             plaintext = pt;
                             return _converse.omemo_store.generateMissingPreKeys();
                         }).then(() => _converse.omemo_store.publishBundle())
@@ -260,15 +272,12 @@ converse.plugins.add('converse-omemo', {
                         });
                 } else {
                     return session_cipher.decryptWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary')
-                        .then(key_and_tag => {
-                            const key = key_and_tag.slice(0, 16),
-                                  tag = key_and_tag.slice(16);
-                            return this.decryptMessage(_.extend(attrs.encrypted, {'key': key, 'tag': tag}));
-                        }).then(plaintext => _.extend(attrs, {'plaintext': plaintext}))
-                          .catch(e => {
-                              this.reportDecryptionError(e);
-                              return attrs;
-                          });
+                        .then(key_and_tag => this.handleDecryptedWhisperMessage(attrs.encrypted, key_and_tag))
+                        .then(plaintext => _.extend(attrs, {'plaintext': plaintext}))
+                        .catch(e => {
+                            this.reportDecryptionError(e);
+                            return attrs;
+                        });
                 }
             },
 
@@ -625,7 +634,7 @@ converse.plugins.add('converse-omemo', {
                 // concatenation is encrypted using the corresponding
                 // long-standing SignalProtocol session.
                 const promises = devices
-                    .filter(device => device.get('trusted') != UNTRUSTED)
+                    .filter(device => (device.get('trusted') != UNTRUSTED && device.get('active')))
                     .map(device => chatbox.encryptKey(obj.key_and_tag, device));
 
                 return Promise.all(promises)
@@ -890,7 +899,8 @@ converse.plugins.add('converse-omemo', {
 
         _converse.Device = Backbone.Model.extend({
             defaults: {
-                'trusted': UNDECIDED
+                'trusted': UNDECIDED,
+                'active': true
             },
 
             getRandomPreKey () {
@@ -939,6 +949,11 @@ converse.plugins.add('converse-omemo', {
             model: _converse.Device,
         });
 
+        /**
+         * @class
+         * @namespace _converse.DeviceList
+         * @memberOf _converse
+         */
         _converse.DeviceList = Backbone.Model.extend({
             idAttribute: 'jid',
 
@@ -1016,7 +1031,7 @@ converse.plugins.add('converse-omemo', {
 
             publishDevices () {
                 const item = $build('item').c('list', {'xmlns': Strophe.NS.OMEMO})
-                this.devices.each(d => item.c('device', {'id': d.get('id')}).up());
+                this.devices.filter(d => d.get('active')).forEach(d => item.c('device', {'id': d.get('id')}).up());
                 const options = {'pubsub#access_model': 'open'};
                 return _converse.api.pubsub.publish(null, Strophe.NS.OMEMO_DEVICELIST, item, options, false);
             },
@@ -1030,8 +1045,23 @@ converse.plugins.add('converse-omemo', {
             }
         });
 
+        /**
+         * @class
+         * @namespace _converse.DeviceLists
+         * @memberOf _converse
+         */
         _converse.DeviceLists = Backbone.Collection.extend({
             model: _converse.DeviceList,
+            /**
+             * Returns the {@link _converse.DeviceList} for a particular JID.
+             * The device list will be created if it doesn't exist already.
+             * @private
+             * @method _converse.DeviceLists#getDeviceList
+             * @param { String } jid - The Jabber ID for which the device list will be returned.
+             */
+            getDeviceList (jid) {
+                return this.get(jid) || this.create({'jid': jid});
+            }
         });
 
 
@@ -1056,7 +1086,7 @@ converse.plugins.add('converse-omemo', {
             const device_id = items_el.getAttribute('node').split(':')[1],
                   jid = stanza.getAttribute('from'),
                   bundle_el = sizzle(`item > bundle`, items_el).pop(),
-                  devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid}),
+                  devicelist = _converse.devicelists.getDeviceList(jid),
                   device = devicelist.devices.get(device_id) || devicelist.devices.create({'id': device_id, 'jid': jid});
             device.save({'bundle': parseBundle(bundle_el)});
         }
@@ -1071,27 +1101,28 @@ converse.plugins.add('converse-omemo', {
                 (device) => device.getAttribute('id')
             );
             const jid = stanza.getAttribute('from'),
-                  devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({'jid': jid}),
+                  devicelist = _converse.devicelists.getDeviceList(jid),
                   devices = devicelist.devices,
                   removed_ids = _.difference(devices.pluck('id'), device_ids);
 
             _.forEach(removed_ids, (id) => {
                 if (jid === _converse.bare_jid && id === _converse.omemo_store.get('device_id')) {
-                    // We don't remove the current device
-                    return
+                    return // We don't set the current device as inactive
                 }
-                devices.get(id).destroy();
+                devices.get(id).save('active', false);
             });
-
             _.forEach(device_ids, (device_id) => {
-                if (!devices.get(device_id)) {
+                const device = devices.get(device_id);
+                if (device) {
+                    device.save('active', true);
+                } else {
                     devices.create({'id': device_id, 'jid': jid})
                 }
             });
-            if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
-                // Make sure our own device is on the list (i.e. if it was
-                // removed, add it again.
-                _converse.devicelists.get(_converse.bare_jid).publishCurrentDevice(device_ids);
+            if (u.isSameBareJID(jid, _converse.bare_jid)) {
+                // Make sure our own device is on the list
+                // (i.e. if it was removed, add it again).
+                devicelist.publishCurrentDevice(device_ids);
             }
         }
 

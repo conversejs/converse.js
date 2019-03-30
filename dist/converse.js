@@ -56201,9 +56201,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       initialize() {
         const _converse = this.__super__._converse;
         const jid = this.model.get('jid');
-        this.devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({
-          'jid': jid
-        });
+        this.devicelist = _converse.devicelists.getDeviceList(jid);
         this.devicelist.devices.on('change:bundle', this.render, this);
         this.devicelist.devices.on('change:trusted', this.render, this);
         this.devicelist.devices.on('remove', this.render, this);
@@ -56276,24 +56274,39 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         _converse.log(`${e.name} ${e.message}`, Strophe.LogLevel.ERROR);
       },
 
+      async handleDecryptedWhisperMessage(encrypted, key_and_tag) {
+        const _converse = this.__super__._converse,
+              devicelist = _converse.devicelists.getDeviceList(this.get('jid'));
+
+        this.save('omemo_supported', true);
+        let device = devicelist.get(encrypted.device_id);
+
+        if (!device) {
+          device = devicelist.devices.create({
+            'id': encrypted.device_id,
+            'jid': this.get('jid')
+          });
+        }
+
+        if (encrypted.payload) {
+          const key = key_and_tag.slice(0, 16),
+                tag = key_and_tag.slice(16);
+          const result = await this.decryptMessage(_.extend(encrypted, {
+            'key': key,
+            'tag': tag
+          }));
+          device.save('active', true);
+          return result;
+        }
+      },
+
       decrypt(attrs) {
         const _converse = this.__super__._converse,
               session_cipher = this.getSessionCipher(attrs.from, parseInt(attrs.encrypted.device_id, 10)); // https://xmpp.org/extensions/xep-0384.html#usecases-receiving
 
         if (attrs.encrypted.prekey === true) {
           let plaintext;
-          return session_cipher.decryptPreKeyWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary').then(key_and_tag => {
-            if (attrs.encrypted.payload) {
-              const key = key_and_tag.slice(0, 16),
-                    tag = key_and_tag.slice(16);
-              return this.decryptMessage(_.extend(attrs.encrypted, {
-                'key': key,
-                'tag': tag
-              }));
-            }
-
-            return Promise.resolve();
-          }).then(pt => {
+          return session_cipher.decryptPreKeyWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary').then(key_and_tag => this.handleDecryptedWhisperMessage(attrs.encrypted, key_and_tag)).then(pt => {
             plaintext = pt;
             return _converse.omemo_store.generateMissingPreKeys();
           }).then(() => _converse.omemo_store.publishBundle()).then(() => {
@@ -56311,14 +56324,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
             return attrs;
           });
         } else {
-          return session_cipher.decryptWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary').then(key_and_tag => {
-            const key = key_and_tag.slice(0, 16),
-                  tag = key_and_tag.slice(16);
-            return this.decryptMessage(_.extend(attrs.encrypted, {
-              'key': key,
-              'tag': tag
-            }));
-          }).then(plaintext => _.extend(attrs, {
+          return session_cipher.decryptWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary').then(key_and_tag => this.handleDecryptedWhisperMessage(attrs.encrypted, key_and_tag)).then(plaintext => _.extend(attrs, {
             'plaintext': plaintext
           })).catch(e => {
             this.reportDecryptionError(e);
@@ -56717,7 +56723,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         // devices associated with the contact, the result of this
         // concatenation is encrypted using the corresponding
         // long-standing SignalProtocol session.
-        const promises = devices.filter(device => device.get('trusted') != UNTRUSTED).map(device => chatbox.encryptKey(obj.key_and_tag, device));
+        const promises = devices.filter(device => device.get('trusted') != UNTRUSTED && device.get('active')).map(device => chatbox.encryptKey(obj.key_and_tag, device));
         return Promise.all(promises).then(dicts => addKeysToMessageStanza(stanza, dicts, obj.iv)).then(stanza => {
           stanza.c('payload').t(obj.payload).up().up();
           stanza.c('store', {
@@ -57013,7 +57019,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     });
     _converse.Device = Backbone.Model.extend({
       defaults: {
-        'trusted': UNDECIDED
+        'trusted': UNDECIDED,
+        'active': true
       },
 
       getRandomPreKey() {
@@ -57066,6 +57073,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.Devices = Backbone.Collection.extend({
       model: _converse.Device
     });
+    /**
+     * @class
+     * @namespace _converse.DeviceList
+     * @memberOf _converse
+     */
+
     _converse.DeviceList = Backbone.Model.extend({
       idAttribute: 'jid',
 
@@ -57079,35 +57092,32 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         this.fetchDevices();
       },
 
+      async onDevicesFound(collection) {
+        if (collection.length === 0) {
+          let ids;
+
+          try {
+            ids = await this.fetchDevicesFromServer();
+          } catch (e) {
+            _converse.log(`Could not fetch devices for ${this.get('jid')}`);
+
+            _converse.log(e, Strophe.LogLevel.ERROR);
+
+            this.destroy();
+          }
+
+          if (this.get('jid') === _converse.bare_jid) {
+            await this.publishCurrentDevice(ids);
+          }
+        }
+      },
+
       fetchDevices() {
         if (_.isUndefined(this._devices_promise)) {
           this._devices_promise = new Promise(resolve => {
             this.devices.fetch({
-              'success': async collection => {
-                if (collection.length === 0) {
-                  let ids;
-
-                  try {
-                    ids = await this.fetchDevicesFromServer();
-                  } catch (e) {
-                    _converse.log(`Could not fetch devices for ${this.get('jid')}`);
-
-                    _converse.log(e, Strophe.LogLevel.ERROR);
-
-                    this.destroy();
-                    return resolve(e);
-                  }
-
-                  await this.publishCurrentDevice(ids);
-                }
-
-                resolve();
-              },
-              'error': e => {
-                _converse.log(e, Strophe.LogLevel.ERROR);
-
-                resolve(e);
-              }
+              'success': _.flow(c => this.onDevicesFound(c), resolve),
+              'error': _.flow(_.partial(_converse.log, _, Strophe.LogLevel.ERROR), resolve)
             });
           });
         }
@@ -57117,8 +57127,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       async publishCurrentDevice(device_ids) {
         if (this.get('jid') !== _converse.bare_jid) {
-          // We only publish for ourselves.
-          return;
+          return; // We only publish for ourselves.
         }
 
         await restoreOMEMOSession();
@@ -57172,7 +57181,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         const item = $build('item').c('list', {
           'xmlns': Strophe.NS.OMEMO
         });
-        this.devices.each(d => item.c('device', {
+        this.devices.filter(d => d.get('active')).forEach(d => item.c('device', {
           'id': d.get('id')
         }).up());
         const options = {
@@ -57192,8 +57201,28 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       }
 
     });
+    /**
+     * @class
+     * @namespace _converse.DeviceLists
+     * @memberOf _converse
+     */
+
     _converse.DeviceLists = Backbone.Collection.extend({
-      model: _converse.DeviceList
+      model: _converse.DeviceList,
+
+      /**
+       * Returns the {@link _converse.DeviceList} for a particular JID.
+       * The device list will be created if it doesn't exist already.
+       * @private
+       * @method _converse.DeviceLists#getDeviceList
+       * @param { String } jid - The Jabber ID for which the device list will be returned.
+       */
+      getDeviceList(jid) {
+        return this.get(jid) || this.create({
+          'jid': jid
+        });
+      }
+
     });
 
     function fetchDeviceLists() {
@@ -57227,9 +57256,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       const device_id = items_el.getAttribute('node').split(':')[1],
             jid = stanza.getAttribute('from'),
             bundle_el = sizzle(`item > bundle`, items_el).pop(),
-            devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({
-        'jid': jid
-      }),
+            devicelist = _converse.devicelists.getDeviceList(jid),
             device = devicelist.devices.get(device_id) || devicelist.devices.create({
         'id': device_id,
         'jid': jid
@@ -57250,23 +57277,24 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       const device_ids = _.map(sizzle(`item list[xmlns="${Strophe.NS.OMEMO}"] device`, items_el), device => device.getAttribute('id'));
 
       const jid = stanza.getAttribute('from'),
-            devicelist = _converse.devicelists.get(jid) || _converse.devicelists.create({
-        'jid': jid
-      }),
+            devicelist = _converse.devicelists.getDeviceList(jid),
             devices = devicelist.devices,
             removed_ids = _.difference(devices.pluck('id'), device_ids);
 
       _.forEach(removed_ids, id => {
         if (jid === _converse.bare_jid && id === _converse.omemo_store.get('device_id')) {
-          // We don't remove the current device
-          return;
+          return; // We don't set the current device as inactive
         }
 
-        devices.get(id).destroy();
+        devices.get(id).save('active', false);
       });
 
       _.forEach(device_ids, device_id => {
-        if (!devices.get(device_id)) {
+        const device = devices.get(device_id);
+
+        if (device) {
+          device.save('active', true);
+        } else {
           devices.create({
             'id': device_id,
             'jid': jid
@@ -57274,10 +57302,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
       });
 
-      if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
-        // Make sure our own device is on the list (i.e. if it was
-        // removed, add it again.
-        _converse.devicelists.get(_converse.bare_jid).publishCurrentDevice(device_ids);
+      if (u.isSameBareJID(jid, _converse.bare_jid)) {
+        // Make sure our own device is on the list
+        // (i.e. if it was removed, add it again).
+        devicelist.publishCurrentDevice(device_ids);
       }
     }
 

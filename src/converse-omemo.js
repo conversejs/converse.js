@@ -950,29 +950,28 @@ converse.plugins.add('converse-omemo', {
                 this.fetchDevices();
             },
 
+            async onDevicesFound (collection) {
+                if (collection.length === 0) {
+                    let ids;
+                    try {
+                        ids = await this.fetchDevicesFromServer()
+                    } catch (e) {
+                        _converse.log(`Could not fetch devices for ${this.get('jid')}`);
+                        _converse.log(e, Strophe.LogLevel.ERROR);
+                        this.destroy();
+                    }
+                    if (this.get('jid') === _converse.bare_jid) {
+                        await this.publishCurrentDevice(ids);
+                    }
+                }
+            },
+
             fetchDevices () {
                 if (_.isUndefined(this._devices_promise)) {
                     this._devices_promise = new Promise(resolve => {
                         this.devices.fetch({
-                            'success': async collection => {
-                                if (collection.length === 0) {
-                                    let ids;
-                                    try {
-                                        ids = await this.fetchDevicesFromServer()
-                                    } catch (e) {
-                                        _converse.log(`Could not fetch devices for ${this.get('jid')}`);
-                                        _converse.log(e, Strophe.LogLevel.ERROR);
-                                        this.destroy();
-                                        return resolve(e);
-                                    }
-                                    await this.publishCurrentDevice(ids);
-                                }
-                                resolve();
-                            },
-                            'error': e => {
-                                _converse.log(e, Strophe.LogLevel.ERROR);
-                                resolve(e);
-                            }
+                            'success': _.flow(c => this.onDevicesFound(c), resolve),
+                            'error': _.flow(_.partial(_converse.log, _, Strophe.LogLevel.ERROR), resolve)
                         });
                     });
                 }
@@ -981,8 +980,7 @@ converse.plugins.add('converse-omemo', {
 
             async publishCurrentDevice (device_ids) {
                 if (this.get('jid') !== _converse.bare_jid) {
-                    // We only publish for ourselves.
-                    return
+                    return // We only publish for ourselves.
                 }
                 await restoreOMEMOSession();
                 let device_id = _converse.omemo_store.get('device_id');

@@ -844,7 +844,6 @@ converse.plugins.add('converse-omemo', {
                  * generated integer between 1 and 2^31 - 1.
                  */
                 const identity_keypair = await libsignal.KeyHelper.generateIdentityKeyPair();
-
                 const bundle = {},
                       identity_key = u.arrayBufferToBase64(identity_keypair.pubKey),
                       device_id = generateDeviceID();
@@ -882,13 +881,13 @@ converse.plugins.add('converse-omemo', {
                         this.fetch({
                             'success': () => {
                                 if (!_converse.omemo_store.get('device_id')) {
-                                    this.generateBundle().then(resolve).catch(resolve);
+                                    this.generateBundle().then(resolve).catch(reject);
                                 } else {
                                     resolve();
                                 }
                             },
                             'error': () => {
-                                this.generateBundle().then(resolve).catch(resolve);
+                                this.generateBundle().then(resolve).catch(reject);
                             }
                         });
                     });
@@ -1160,9 +1159,15 @@ converse.plugins.add('converse-omemo', {
                   id = `converse.devicelists-${_converse.bare_jid}`;
             _converse.devicelists.browserStorage = new Backbone.BrowserStorage[storage](id);
 
-            await fetchOwnDevices();
-            await restoreOMEMOSession();
-            await _converse.omemo_store.publishBundle();
+            try {
+                await fetchOwnDevices();
+                await restoreOMEMOSession();
+                await _converse.omemo_store.publishBundle();
+            } catch (e) {
+                _converse.log("Could not initialize OMEMO support", Strophe.LogLevel.ERROR);
+                _converse.log(e, Strophe.LogLevel.ERROR);
+                return;
+            }
             /**
              * Triggered once OMEMO support has been initialized
              * @event _converse#OMEMOInitialized

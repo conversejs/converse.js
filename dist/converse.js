@@ -57001,13 +57001,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
             this.fetch({
               'success': () => {
                 if (!_converse.omemo_store.get('device_id')) {
-                  this.generateBundle().then(resolve).catch(resolve);
+                  this.generateBundle().then(resolve).catch(reject);
                 } else {
                   resolve();
                 }
               },
               'error': () => {
-                this.generateBundle().then(resolve).catch(resolve);
+                this.generateBundle().then(resolve).catch(reject);
               }
             });
           });
@@ -57350,14 +57350,24 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
             id = `converse.devicelists-${_converse.bare_jid}`;
 
       _converse.devicelists.browserStorage = new Backbone.BrowserStorage[storage](id);
-      await fetchOwnDevices();
-      await restoreOMEMOSession();
-      await _converse.omemo_store.publishBundle();
+
+      try {
+        await fetchOwnDevices();
+        await restoreOMEMOSession();
+        await _converse.omemo_store.publishBundle();
+      } catch (e) {
+        _converse.log("Could not initialize OMEMO support", Strophe.LogLevel.ERROR);
+
+        _converse.log(e, Strophe.LogLevel.ERROR);
+
+        return;
+      }
       /**
        * Triggered once OMEMO support has been initialized
        * @event _converse#OMEMOInitialized
        * @example _converse.api.listen.on('OMEMOInitialized', () => { ... });
        */
+
 
       _converse.api.trigger('OMEMOInitialized');
     }

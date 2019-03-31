@@ -336,7 +336,7 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             getDuplicateMessage (stanza) {
-                return  this.findDuplicateFromOriginID(stanza) || this.findDuplicateFromStanzaID(stanza);
+                return this.findDuplicateFromOriginID(stanza) || this.findDuplicateFromStanzaID(stanza);
             },
 
             findDuplicateFromOriginID  (stanza) {
@@ -773,7 +773,7 @@ converse.plugins.add('converse-chatboxes', {
                         // TODO: currently Strophe has no way to register a handler
                         // for stanzas without a `type` attribute.
                         // We could update it to accept null to mean no attribute,
-                        // but that would be a backward-incompatible chnge
+                        // but that would be a backward-incompatible change
                         return true; // Gets handled above.
                     }
                     this.onMessage(stanza);
@@ -900,15 +900,15 @@ converse.plugins.add('converse-chatboxes', {
 
                 if (!_.isNull(forwarded)) {
                     const forwarded_message = forwarded.querySelector('message'),
-                          forwarded_from = forwarded_message.getAttribute('from');
-                    is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
-                    is_mam = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0;
-
+                          forwarded_from = forwarded_message.getAttribute('from'),
+                          xmlns = Strophe.NS.CARBONS;
+                    is_carbon = sizzle(`received[xmlns="${xmlns}"]`, stanza).length > 0;
                     if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
                         // Prevent message forging via carbons
                         // https://xmpp.org/extensions/xep-0280.html#security
                         return true;
                     }
+                    is_mam = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0;
                     stanza = forwarded_message;
                     from_jid = stanza.getAttribute('from');
                     to_jid = stanza.getAttribute('to');

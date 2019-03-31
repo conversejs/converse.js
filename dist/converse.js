@@ -56274,8 +56274,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         _converse.log(`${e.name} ${e.message}`, Strophe.LogLevel.ERROR);
       },
 
-      async handleDecryptedWhisperMessage(encrypted, key_and_tag) {
+      async handleDecryptedWhisperMessage(attrs, key_and_tag) {
         const _converse = this.__super__._converse,
+              encrypted = attrs.encrypted,
               devicelist = _converse.devicelists.getDeviceList(this.get('jid'));
 
         this.save('omemo_supported', true);
@@ -56284,7 +56285,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         if (!device) {
           device = devicelist.devices.create({
             'id': encrypted.device_id,
-            'jid': this.get('jid')
+            'jid': attrs.from
           });
         }
 
@@ -56306,7 +56307,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         if (attrs.encrypted.prekey === true) {
           let plaintext;
-          return session_cipher.decryptPreKeyWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary').then(key_and_tag => this.handleDecryptedWhisperMessage(attrs.encrypted, key_and_tag)).then(pt => {
+          return session_cipher.decryptPreKeyWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary').then(key_and_tag => this.handleDecryptedWhisperMessage(attrs, key_and_tag)).then(pt => {
             plaintext = pt;
             return _converse.omemo_store.generateMissingPreKeys();
           }).then(() => _converse.omemo_store.publishBundle()).then(() => {
@@ -56324,7 +56325,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
             return attrs;
           });
         } else {
-          return session_cipher.decryptWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary').then(key_and_tag => this.handleDecryptedWhisperMessage(attrs.encrypted, key_and_tag)).then(plaintext => _.extend(attrs, {
+          return session_cipher.decryptWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary').then(key_and_tag => this.handleDecryptedWhisperMessage(attrs, key_and_tag)).then(plaintext => _.extend(attrs, {
             'plaintext': plaintext
           })).catch(e => {
             this.reportDecryptionError(e);
@@ -57006,7 +57007,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
                   resolve();
                 }
               },
-              'error': () => {
+              'error': (model, resp) => {
+                _converse.log("Could not fetch OMEMO session from cache, we'll generate a new one.", Strophe.LogLevel.WARN);
+
+                _converse.log(resp, Strophe.LogLevel.WARN);
+
                 this.generateBundle().then(resolve).catch(reject);
               }
             });
@@ -65275,9 +65280,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
           const stanza = await _converse.api.disco.info(this.get('jid'), null);
           this.onInfo(stanza);
         } catch (iq) {
-          this.waitUntilFeaturesDiscovered.resolve(this);
-
           _converse.log(iq, Strophe.LogLevel.ERROR);
+
+          this.waitUntilFeaturesDiscovered.resolve(this);
         }
       },
 

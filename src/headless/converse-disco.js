@@ -141,9 +141,9 @@ converse.plugins.add('converse-disco', {
                 try {
                     const stanza = await _converse.api.disco.info(this.get('jid'), null);
                     this.onInfo(stanza);
-                } catch(iq) {
-                    this.waitUntilFeaturesDiscovered.resolve(this);
+                } catch (iq) {
                     _converse.log(iq, Strophe.LogLevel.ERROR);
+                    this.waitUntilFeaturesDiscovered.resolve(this);
                 }
             },
 

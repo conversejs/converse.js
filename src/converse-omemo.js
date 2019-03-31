@@ -229,14 +229,15 @@ converse.plugins.add('converse-omemo', {
                 _converse.log(`${e.name} ${e.message}`, Strophe.LogLevel.ERROR);
             },
 
-            async handleDecryptedWhisperMessage (encrypted, key_and_tag) {
+            async handleDecryptedWhisperMessage (attrs, key_and_tag) {
                 const { _converse } = this.__super__,
+                      encrypted = attrs.encrypted,
                       devicelist = _converse.devicelists.getDeviceList(this.get('jid'));
 
                 this.save('omemo_supported', true);
                 let device = devicelist.get(encrypted.device_id);
                 if (!device) {
-                    device = devicelist.devices.create({'id': encrypted.device_id, 'jid': this.get('jid')});
+                    device = devicelist.devices.create({'id': encrypted.device_id, 'jid': attrs.from});
                 }
                 if (encrypted.payload) {
                     const key = key_and_tag.slice(0, 16),
@@ -255,7 +256,7 @@ converse.plugins.add('converse-omemo', {
                 if (attrs.encrypted.prekey === true) {
                     let plaintext;
                     return session_cipher.decryptPreKeyWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary')
-                        .then(key_and_tag => this.handleDecryptedWhisperMessage(attrs.encrypted, key_and_tag))
+                        .then(key_and_tag => this.handleDecryptedWhisperMessage(attrs, key_and_tag))
                         .then(pt => {
                             plaintext = pt;
                             return _converse.omemo_store.generateMissingPreKeys();
@@ -272,7 +273,7 @@ converse.plugins.add('converse-omemo', {
                         });
                 } else {
                     return session_cipher.decryptWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary')
-                        .then(key_and_tag => this.handleDecryptedWhisperMessage(attrs.encrypted, key_and_tag))
+                        .then(key_and_tag => this.handleDecryptedWhisperMessage(attrs, key_and_tag))
                         .then(plaintext => _.extend(attrs, {'plaintext': plaintext}))
                         .catch(e => {
                             this.reportDecryptionError(e);
@@ -886,7 +887,12 @@ converse.plugins.add('converse-omemo', {
                                     resolve();
                                 }
                             },
-                            'error': () => {
+                            'error': (model, resp) => {
+                                _converse.log(
+                                    "Could not fetch OMEMO session from cache, we'll generate a new one.",
+                                    Strophe.LogLevel.WARN
+                                );
+                                _converse.log(resp, Strophe.LogLevel.WARN);
                                 this.generateBundle().then(resolve).catch(reject);
                             }
                         });
@@ -926,8 +932,8 @@ converse.plugins.add('converse-omemo', {
                     throw new IQError("Could not fetch bundle", iq);
                 }
                 const publish_el = sizzle(`items[node="${Strophe.NS.OMEMO_BUNDLES}:${this.get('id')}"]`, iq).pop(),
-                        bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop(),
-                        bundle = parseBundle(bundle_el);
+                      bundle_el = sizzle(`bundle[xmlns="${Strophe.NS.OMEMO}"]`, publish_el).pop(),
+                      bundle = parseBundle(bundle_el);
                 this.save('bundle', bundle);
                 return bundle;
             },

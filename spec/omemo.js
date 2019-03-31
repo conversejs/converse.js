@@ -31,7 +31,7 @@
     function bundleFetched (_converse, jid, device_id) {
         return _.filter(
             _converse.connection.IQ_stanzas,
-            (iq) => iq.nodeTree.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.bundles:${device_id}"]`)
+            iq => iq.nodeTree.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.bundles:${device_id}"]`)
         ).pop();
     }
 
@@ -378,6 +378,98 @@
                     `</encrypted>`+
                     `<store xmlns="urn:xmpp:hints"/>`+
                 `</message>`);
+            done();
+        }));
+
+        it("will create a new device based on a received carbon message",
+            mock.initConverse(
+                null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                async function (done, _converse) {
+
+            await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], [Strophe.NS.SID]);
+
+            let sent_stanza;
+            test_utils.createContacts(_converse, 'current', 1);
+            _converse.api.trigger('rosterContactsFetched');
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            await test_utils.waitUntil(() => initializedOMEMO(_converse));
+            await test_utils.openChatBoxFor(_converse, contact_jid);
+            let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
+            const stanza = $iq({
+                    'from': contact_jid,
+                    'id': iq_stanza.nodeTree.getAttribute('id'),
+                    'to': _converse.connection.jid,
+                    'type': 'result',
+                }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
+                    .c('items', {'node': "eu.siacs.conversations.axolotl.devicelist"})
+                        .c('item', {'xmlns': "http://jabber.org/protocol/pubsub"}) // TODO: must have an id attribute
+                            .c('list', {'xmlns': "eu.siacs.conversations.axolotl"})
+                                .c('device', {'id': '555'});
+            _converse.connection._dataRecv(test_utils.createRequest(stanza));
+            await test_utils.waitUntil(() => _converse.omemo_store);
+            const devicelist = _converse.devicelists.get({'jid': contact_jid});
+            await test_utils.waitUntil(() => devicelist.devices.length === 1);
+
+            const view = _converse.chatboxviews.get(contact_jid);
+            view.model.set('omemo_active', true);
+
+            // Test reception of an encrypted carbon message
+            const obj = await view.model.encryptMessage('This is an encrypted carbon message from another device of mine')
+            const carbon = u.toStanza(`
+                <message xmlns="jabber:client" to="dummy@localhost/resource" from="dummy@localhost" type="chat">
+                    <sent xmlns="urn:xmpp:carbons:2">
+                        <forwarded xmlns="urn:xmpp:forward:0">
+                        <message xmlns="jabber:client"
+                                 from="dummy@localhost/gajim.HE02SW1L"
+                                 xml:lang="en"
+                                 to="${contact_jid}/gajim.0LATM5V2"
+                                 type="chat" id="87141781-61d6-4eb3-9a31-429935a61b76">
+
+                            <archived xmlns="urn:xmpp:mam:tmp" by="dummy@localhost" id="1554033877043470"/>
+                            <stanza-id xmlns="urn:xmpp:sid:0" by="dummy@localhost" id="1554033877043470"/>
+                            <request xmlns="urn:xmpp:receipts"/>
+                            <active xmlns="http://jabber.org/protocol/chatstates"/>
+                            <origin-id xmlns="urn:xmpp:sid:0" id="87141781-61d6-4eb3-9a31-429935a61b76"/>
+                            <encrypted xmlns="eu.siacs.conversations.axolotl">
+                                <header sid="988349631">
+                                    <key rid="${_converse.omemo_store.get('device_id')}"
+                                         prekey="true">${u.arrayBufferToBase64(obj.key_and_tag)}</key>
+                                    <iv>${obj.iv}</iv>
+                                </header>
+                                <payload>${obj.payload}</payload>
+                            </encrypted>
+                            <encryption xmlns="urn:xmpp:eme:0" namespace="eu.siacs.conversations.axolotl" name="OMEMO"/>
+                            <store xmlns="urn:xmpp:hints"/>
+                        </message>
+                        </forwarded>
+                    </sent>
+                </message>
+            `);
+            _converse.connection._dataRecv(test_utils.createRequest(carbon));
+            await new Promise(resolve => view.once('messageInserted', resolve));
+            expect(view.model.messages.length).toBe(1);
+            expect(view.el.querySelector('.chat-msg__body').textContent.trim())
+                .toBe('This is an encrypted carbon message from another device of mine');
+
+            expect(devicelist.devices.length).toBe(2);
+            expect(devicelist.devices.at(0).get('id')).toBe('555');
+            expect(devicelist.devices.at(1).get('id')).toBe('988349631');
+            expect(devicelist.devices.get('988349631').get('active')).toBe(true);
+
+            const textarea = view.el.querySelector('.chat-textarea');
+            textarea.value = 'This is an encrypted message from this device';
+            view.keyPressed({
+                target: textarea,
+                preventDefault: _.noop,
+                keyCode: 13 // Enter
+            });
+            iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '988349631'));
+            expect(iq_stanza.toLocaleString()).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${_converse.bare_jid}" type="get" xmlns="jabber:client">`+
+                    `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
+                        `<items node="eu.siacs.conversations.axolotl.bundles:988349631"/>`+
+                    `</pubsub>`+
+                `</iq>`);
             done();
         }));
 

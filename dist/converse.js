@@ -59683,12 +59683,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
         if (_converse.isUniView()) {
           const chatbox = _converse.chatboxes.get(this.model.get('jid'));
 
-          if (chatbox) {
-            if (chatbox.get('hidden')) {
-              this.el.classList.remove('open');
-            } else {
-              this.el.classList.add('open');
-            }
+          if (chatbox && chatbox.get('hidden') || !chatbox) {
+            this.el.classList.remove('open');
+          } else {
+            this.el.classList.add('open');
           }
         }
       },
@@ -60278,15 +60276,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
     /* -------- Event Handlers ----------- */
 
     _converse.api.listen.on('chatBoxesInitialized', () => {
-      _converse.chatboxes.on('change:hidden', chatbox => {
+      function highlightRosterItem(chatbox) {
         const contact = _converse.roster.findWhere({
           'jid': chatbox.get('jid')
         });
 
         if (!_.isUndefined(contact)) {
-          contact.trigger('highlight', contact);
+          contact.trigger('highlight');
         }
-      });
+      }
+
+      _converse.chatboxes.on('destroy', chatbox => highlightRosterItem(chatbox));
+
+      _converse.chatboxes.on('change:hidden', chatbox => highlightRosterItem(chatbox));
     });
 
     function initRoster() {

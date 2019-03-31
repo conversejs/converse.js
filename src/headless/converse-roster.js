@@ -229,7 +229,7 @@ converse.plugins.add('converse-roster', {
                 'image': _converse.DEFAULT_IMAGE,
                 'image_type': _converse.DEFAULT_IMAGE_TYPE,
                 'num_unread': 0,
-                'status': '',
+                'status': undefined,
             },
 
             initialize (attributes) {

@@ -92319,7 +92319,7 @@ function convert(unicode) {
 }
 
 _core__WEBPACK_IMPORTED_MODULE_2__["default"].isSingleEmoji = function (str) {
-  if (!str || str.length > 2) {
+  if (!str || str.length > 2 && !str.startsWith(':')) {
     return;
   }
 

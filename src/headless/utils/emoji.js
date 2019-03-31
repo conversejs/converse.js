@@ -161,7 +161,7 @@ function convert (unicode) {
 }
 
 u.isSingleEmoji = function (str) {
-    if (!str || str.length > 2) {
+    if (!str || (str.length > 2 && !str.startsWith(':'))) {
         return;
     }
     const result = _.flow(u.shortnameToUnicode, twemoji.default.parse)(str)

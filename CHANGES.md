@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.2.0 (Unreleased)
+## 4.2.0 (2019-04-04)
 
 - Updated translation: lt
 - Upgrade to Backbone 1.4.0, Strophe 1.3.2 and Jasmine 2.99.2

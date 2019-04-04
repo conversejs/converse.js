@@ -41050,7 +41050,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             // TODO: currently Strophe has no way to register a handler
             // for stanzas without a `type` attribute.
             // We could update it to accept null to mean no attribute,
-            // but that would be a backward-incompatible chnge
+            // but that would be a backward-incompatible change
             return true; // Gets handled above.
           }
 
@@ -41183,9 +41183,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
         if (!_.isNull(forwarded)) {
           const forwarded_message = forwarded.querySelector('message'),
-                forwarded_from = forwarded_message.getAttribute('from');
-          is_carbon = !_.isNull(stanza.querySelector(`received[xmlns="${Strophe.NS.CARBONS}"]`));
-          is_mam = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0;
+                forwarded_from = forwarded_message.getAttribute('from'),
+                xmlns = Strophe.NS.CARBONS;
+          is_carbon = sizzle(`received[xmlns="${xmlns}"]`, stanza).length > 0;
 
           if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
             // Prevent message forging via carbons
@@ -41193,6 +41193,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             return true;
           }
 
+          is_mam = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0;
           stanza = forwarded_message;
           from_jid = stanza.getAttribute('from');
           to_jid = stanza.getAttribute('to');
@@ -41604,7 +41605,7 @@ const _converse = {
   'templates': {},
   'promises': {}
 };
-_converse.VERSION_NAME = "v4.1.2";
+_converse.VERSION_NAME = "v4.2.0";
 
 _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.extend(_converse, Backbone.Events); // Make converse pluggable
 
@@ -43741,9 +43742,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
           const stanza = await _converse.api.disco.info(this.get('jid'), null);
           this.onInfo(stanza);
         } catch (iq) {
-          this.waitUntilFeaturesDiscovered.resolve(this);
-
           _converse.log(iq, Strophe.LogLevel.ERROR);
+
+          this.waitUntilFeaturesDiscovered.resolve(this);
         }
       },
 
@@ -47253,7 +47254,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         'image': _converse.DEFAULT_IMAGE,
         'image_type': _converse.DEFAULT_IMAGE_TYPE,
         'num_unread': 0,
-        'status': ''
+        'status': undefined
       },
 
       initialize(attributes) {
@@ -70825,7 +70826,7 @@ function convert(unicode) {
 }
 
 _core__WEBPACK_IMPORTED_MODULE_2__["default"].isSingleEmoji = function (str) {
-  if (!str || str.length > 2) {
+  if (!str || str.length > 2 && !str.startsWith(':')) {
     return;
   }
 

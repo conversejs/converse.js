@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-02-25 09:17+0000\n"
+"PO-Revision-Date: 2019-04-06 17:03+0000\n"
 "Last-Translator: Arnaud Jacquemin <arnaud.jacquemin+weblate@free.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/conversejs/"
 "translations/fr/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.5-dev\n"
+"X-Generator: Weblate 3.6-dev\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
 "lang: fr\n"
 "Language-Code: fr\n"
@@ -475,9 +475,8 @@ msgid "name@conference.example.org"
 msgstr "nom@chat.example.org"
 
 #: dist/converse-no-dependencies.js:36387
-#, fuzzy
 msgid "Groupchat name"
-msgstr "Adresse du salon"
+msgstr "Nom du salon"
 
 #: dist/converse-no-dependencies.js:36387
 msgid "Groupchat address"
@@ -605,9 +604,8 @@ msgid "Change user role to participant"
 msgstr "Changer le rôle de l’utilisateur en participant"
 
 #: dist/converse-no-dependencies.js:37010
-#, fuzzy
 msgid "Remove this groupchat"
-msgstr "Quitter ce salon"
+msgstr "Supprimer ce salon"
 
 #: dist/converse-no-dependencies.js:37010
 msgid "Kick user from groupchat"
@@ -966,6 +964,8 @@ msgid ""
 "Sorry, we aren't able to fetch any devices to send an OMEMO encrypted "
 "message to."
 msgstr ""
+"Désolé, impossible de trouver un appareil auquel envoyer un message chiffré "
+"avec OMEMO."
 
 #: dist/converse-no-dependencies.js:39310
 msgid ""
@@ -1278,17 +1278,15 @@ msgstr "Ajouter"
 
 #: dist/converse-no-dependencies.js:42000
 msgid "Sorry, could not find a contact with that name"
-msgstr ""
+msgstr "Désolé, impossible de trouver un contact avec ce nom"
 
 #: dist/converse-no-dependencies.js:42024
-#, fuzzy
 msgid "You cannot add yourself as a contact"
-msgstr "Cliquer pour ajouter aux contacts"
+msgstr "Vous ne pouvez vous ajouter en contact"
 
 #: dist/converse-no-dependencies.js:42028
-#, fuzzy
 msgid "This contact has already been added"
-msgstr "Ce contact est absent"
+msgstr "Ce contact est déjà enregistré"
 
 #: dist/converse-no-dependencies.js:42091
 msgid "Filter"
@@ -1480,7 +1478,7 @@ msgstr "Entrer dans un nouveau salon"
 
 #: dist/converse-no-dependencies.js:75256
 msgid "This field is required"
-msgstr ""
+msgstr "Ce champ est requis"
 
 #: dist/converse-no-dependencies.js:75262
 msgid "Join"

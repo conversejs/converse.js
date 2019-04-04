@@ -2,6 +2,13 @@
 
 ## 4.2.0 (2019-04-04)
 
+**Note:** This release introduces a hard requirement on [MAM:2](https://xmpp.org/extensions/xep-0313.html),
+specifically the requirement that the MAM archive ID matches the [XEP-0359 stanza-id](https://xmpp.org/extensions/xep-0359.html).
+Patches intended to make Converse work with MAM:1 will cause problems and
+unexpected behaviour due to the above requirement, which is not met with MAM:1.
+This will affect OpenFire users who use the [monitoring plugin](https://www.igniterealtime.org/projects/openfire/plugin-archive.jsp?plugin=monitoring)
+version 1.7.0 and below. You're advised to stay on Converse version 4.1.2 until an update to that plugin has been released.
+
 - Updated translation: af, cz, de, es, gl, he, lt, nl, nl_BE, ru
 - Upgrade to Backbone 1.4.0, Strophe 1.3.2 and Jasmine 2.99.2
 - Remove dependency on (our fork of) Awesomplete

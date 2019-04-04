@@ -2,7 +2,7 @@
 
 ## 4.2.0 (2019-04-04)
 
-- Updated translation: lt
+- Updated translation: af, cz, de, es, gl, he, lt, nl, nl_BE, ru
 - Upgrade to Backbone 1.4.0, Strophe 1.3.2 and Jasmine 2.99.2
 - Remove dependency on (our fork of) Awesomplete
 - Prevent user from adding themselves as contact

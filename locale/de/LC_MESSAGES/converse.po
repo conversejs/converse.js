@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-03-30 12:10+0100\n"
+"PO-Revision-Date: 2019-04-06 17:03+0000\n"
 "Last-Translator: nautilusx <mail.ka@mailbox.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/conversejs/"
 "translations/de/>\n"
@@ -114,7 +114,7 @@ msgstr "Dieses Chat-Fenster schließen"
 
 #: dist/converse-no-dependencies.js:31806
 msgid "Sorry, something went wrong while trying to refresh"
-msgstr "Bei der Aktualisierung ist leider etwas schief gelaufen."
+msgstr "Leider ist bei der Aktualisierung etwas schief gelaufen"
 
 #: dist/converse-no-dependencies.js:31822
 #: dist/converse-no-dependencies.js:42386
@@ -244,7 +244,7 @@ msgstr "Unentschlüsselbare OMEMO Nachricht"
 #: dist/converse-no-dependencies.js:35322
 #: dist/converse-no-dependencies.js:35368
 msgid "Minimize this chat box"
-msgstr "Minimiere dieses Gesprächsfenster"
+msgstr "Dieses Chatfenster minimieren"
 
 #: dist/converse-no-dependencies.js:35503
 msgid "Click to restore this chat"
@@ -455,7 +455,7 @@ msgstr "Gruppen"
 
 #: dist/converse-no-dependencies.js:36246
 msgid "conference.example.org"
-msgstr "z.B. conference.example.org"
+msgstr "konferenz.beispiel.org"
 
 #: dist/converse-no-dependencies.js:36299
 msgid "No groupchats found"
@@ -470,9 +470,8 @@ msgid "name@conference.example.org"
 msgstr "name@conference.beispiel.org"
 
 #: dist/converse-no-dependencies.js:36387
-#, fuzzy
 msgid "Groupchat name"
-msgstr "Gruppenchat-Adresse"
+msgstr "Gruppenchatname"
 
 #: dist/converse-no-dependencies.js:36387
 msgid "Groupchat address"
@@ -600,9 +599,8 @@ msgid "Change user role to participant"
 msgstr "Rolle zu Teilnehmer ändern"
 
 #: dist/converse-no-dependencies.js:37010
-#, fuzzy
 msgid "Remove this groupchat"
-msgstr "Diesen Gruppenchat verlassen"
+msgstr "Diesen Gruppenchat entfernen"
 
 #: dist/converse-no-dependencies.js:37010
 msgid "Kick user from groupchat"
@@ -900,8 +898,7 @@ msgstr "möchte Ihr Kontakt sein"
 #: dist/converse-no-dependencies.js:38800
 msgid "Sorry, an error occurred while trying to remove the devices."
 msgstr ""
-"Tut mir leid, es ist beim Versuch, die Geräte zu entfernen, ein Fehler "
-"aufgetreten."
+"Leider ist beim Versuch, die Geräte zu entfernen, ein Fehler aufgetreten."
 
 #: dist/converse-no-dependencies.js:38810
 msgid ""
@@ -916,8 +913,8 @@ msgstr ""
 #: dist/converse-no-dependencies.js:38889
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
 msgstr ""
-"Tut mir leid, konnte eine empfangene OMEMO-Nachricht aufgrund eines Fehlers "
-"nicht entschlüsseln."
+"Leider konnte eine empfangene OMEMO-Nachricht aufgrund eines Fehlers nicht "
+"entschlüsselt werden."
 
 #: dist/converse-no-dependencies.js:39013
 #, javascript-format
@@ -925,8 +922,9 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because %1$s requires you "
 "to be subscribed to their presence in order to see their OMEMO information"
 msgstr ""
-"Sorry, wir können keine verschlüsselte Nachricht senden, da %1$s verlangt,  "
-"dass Sie anwesenden sind, um dessen OMEMO-Informationen zu sehen"
+"Leider können wir keine verschlüsselte Nachricht senden, da %1$s erfordert, "
+"dass Sie für ihre Teilnahme angemeldet sind, um ihre OMEMO-Informationen zu "
+"sehen"
 
 #: dist/converse-no-dependencies.js:39015
 #, javascript-format
@@ -934,8 +932,8 @@ msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
 msgstr ""
-"Sorry, wir können keine verschlüsselte Nachricht senden, da der Remote-"
-"Server für %1$s nicht gefunden wurde"
+"Leider können wir keine verschlüsselte Nachricht senden, da der Remote-"
+"Server für %1$s nicht gefunden werden konnte"
 
 #: dist/converse-no-dependencies.js:39017
 msgid "Unable to send an encrypted message due to an unexpected error."
@@ -966,6 +964,8 @@ msgid ""
 "Sorry, we aren't able to fetch any devices to send an OMEMO encrypted "
 "message to."
 msgstr ""
+"Leider können wir keine Geräte finden, an die wir eine OMEMO-verschlüsselte "
+"Nachricht senden können."
 
 #: dist/converse-no-dependencies.js:39310
 msgid ""
@@ -1032,7 +1032,7 @@ msgstr "URL"
 
 #: dist/converse-no-dependencies.js:40261
 msgid "Sorry, an error happened while trying to save your profile data."
-msgstr "Leider konnte das Lesezeichen nicht gespeichert werden."
+msgstr "Leider ist beim Speichern deiner Profildaten ein Fehler aufgetreten."
 
 #: dist/converse-no-dependencies.js:40261
 msgid "You can check your browser's developer console for any error output."
@@ -1170,9 +1170,8 @@ msgid ""
 "Sorry, the given provider does not support in band account registration. "
 "Please try with a different provider."
 msgstr ""
-"Entschuldigung: Dieser Provider erlaubt keine direkte Benutzer- "
-"Registrierung. Versuchen Sie einen anderen Provider oder erstellen Sie einen "
-"Zugang beim Provider direkt."
+"Leider unterstützt der angegebene Anbieter die keine Benutzerregistrierung. "
+"Bitte versuche es bei einem anderen Anbieter."
 
 #: dist/converse-no-dependencies.js:40946
 #, javascript-format
@@ -1282,17 +1281,15 @@ msgstr "Hinzufügen"
 
 #: dist/converse-no-dependencies.js:42000
 msgid "Sorry, could not find a contact with that name"
-msgstr ""
+msgstr "Leider konnte kein Kontakt mit diesem Namen gefunden werden"
 
 #: dist/converse-no-dependencies.js:42024
-#, fuzzy
 msgid "You cannot add yourself as a contact"
-msgstr "Hier klicken, um diesen als Chat-Kontakt hinzuzufügen"
+msgstr "Du kannst dich nicht selbst als Kontakt hinzufügen"
 
 #: dist/converse-no-dependencies.js:42028
-#, fuzzy
 msgid "This contact has already been added"
-msgstr "Dieser Kontakt ist für längere Zeit abwesend"
+msgstr "Dieser Kontakt wurde bereits hinzugefügt"
 
 #: dist/converse-no-dependencies.js:42091
 msgid "Filter"
@@ -1365,11 +1362,11 @@ msgstr "Resynchronisieren Sie Ihre Kontakte"
 
 #: dist/converse-no-dependencies.js:44498
 msgid "Sorry, could not determine upload URL."
-msgstr "Die URL für das Hochladen der Datei konnte nicht ermittelt werden."
+msgstr "Leider konnte die Upload-URL nicht ermittelt werden."
 
 #: dist/converse-no-dependencies.js:44512
 msgid "Sorry, could not determine file upload URL."
-msgstr "Die URL für das Hochladen der Datei konnte nicht ermittelt werden."
+msgstr "Leider konnte die Upload-URL für die Datei nicht ermittelt werden."
 
 #: dist/converse-no-dependencies.js:44546
 #, javascript-format
@@ -1377,17 +1374,19 @@ msgid ""
 "Sorry, could not succesfully upload your file. Your server’s response: \"%1$s"
 "\""
 msgstr ""
-"Die Datei konnte nicht hochgeladen werden. Der Server antwortete: \"%1$s\""
+"Leider konnte die Datei nicht hochgeladen werden. Der Server antwortete: \""
+"%1$s\""
 
 #: dist/converse-no-dependencies.js:44548
 msgid "Sorry, could not succesfully upload your file."
-msgstr "Konnte die Datei leider nicht erfolgreich hochladen."
+msgstr "Leider konnte die Datei nicht erfolgreich hochgeladen werden."
 
 #: dist/converse-no-dependencies.js:44997
 #: dist/converse-no-dependencies.js:45014
 msgid "Sorry, looks like file upload is not supported by your server."
 msgstr ""
-"Scheint als würde das Hochladen von Dateien auf dem Server nicht unterstützt."
+"Leider sieht es so aus, als ob der Datei-Upload von deinem Server nicht "
+"unterstützt wird."
 
 #: dist/converse-no-dependencies.js:45023
 #, javascript-format
@@ -1400,7 +1399,7 @@ msgstr ""
 
 #: dist/converse-no-dependencies.js:45307
 msgid "Sorry, an error occurred:"
-msgstr "Es ist leider ein Fehler aufgetreten:"
+msgstr "Leider ist ein Fehler aufgetreten:"
 
 #: dist/converse-no-dependencies.js:46533
 msgid "The XMPP server did not offer a supported authentication mechanism"
@@ -1412,7 +1411,7 @@ msgstr ""
 #, javascript-format
 msgid "Sorry, we could not connect to the XMPP host with domain: %1$s"
 msgstr ""
-"Leider konnten wir keine Verbindung zum XMPP-Host mit der Domain „%1$s” "
+"Leider konnten wir keine Verbindung zum XMPP-Host mit der Domain %1$s "
 "herstellen"
 
 #: dist/converse-no-dependencies.js:50014
@@ -1460,7 +1459,7 @@ msgstr "Fehler: Der Gruppenchat %1$s existiert nicht."
 
 #: dist/converse-no-dependencies.js:50681
 msgid "Sorry, you're not allowed to register in this groupchat"
-msgstr "Sorry, Sie dürfen sich an diesem Gruppenchat nicht anmelden"
+msgstr "Leider ist es dir nicht erlaubt, dich in diesem Gruppenchat zu anmelden"
 
 #: dist/converse-no-dependencies.js:51759
 #, javascript-format
@@ -1482,7 +1481,7 @@ msgstr "Einem neuen Gruppenchat beitreten"
 
 #: dist/converse-no-dependencies.js:75256
 msgid "This field is required"
-msgstr ""
+msgstr "Dieses Feld ist ein Pflichtfeld"
 
 #: dist/converse-no-dependencies.js:75262
 msgid "Join"

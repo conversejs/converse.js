@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Converse JS 0.8.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-01-14 13:20+0000\n"
+"PO-Revision-Date: 2019-04-06 17:04+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "conversejs/translations/nb_NO/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.4-dev\n"
+"X-Generator: Weblate 3.6-dev\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "domain: converse\n"
@@ -989,6 +989,8 @@ msgid ""
 "Sorry, we aren't able to fetch any devices to send an OMEMO encrypted "
 "message to."
 msgstr ""
+"Beklager, kunne ikke hente noen enheter å sende en OMEMO-kryptert melding "
+"til."
 
 #: dist/converse-no-dependencies.js:39310
 msgid ""
@@ -1302,7 +1304,7 @@ msgstr "Legg Til"
 
 #: dist/converse-no-dependencies.js:42000
 msgid "Sorry, could not find a contact with that name"
-msgstr ""
+msgstr "Fant ingen slik kontakt"
 
 #: dist/converse-no-dependencies.js:42024
 #, fuzzy
@@ -1503,7 +1505,7 @@ msgstr "Ta del i nytt rom"
 
 #: dist/converse-no-dependencies.js:75256
 msgid "This field is required"
-msgstr ""
+msgstr "Påkrevd felt"
 
 #: dist/converse-no-dependencies.js:75262
 msgid "Join"

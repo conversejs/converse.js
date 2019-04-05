@@ -250,6 +250,13 @@ available) and the amount returned will be no more than the page size.
 You will be able to query for even older messages by scrolling upwards in the chatbox or room
 (the so-called infinite scrolling pattern).
 
+autocomplete_add_contact
+------------------------
+
+* Default: ``true``
+
+Determines whether search suggestions are shown in the "Add Contact" modal.
+
 auto_list_rooms
 ---------------
 
@@ -882,10 +889,30 @@ locked_muc_domain
 -----------------
 
 * Default: ``false``
+* Allowed values: ``false``, ``true``, ``'hidden'``
 
-This setting allows you to restrict the multi-user chat (MUC) domain to only the value
+By setting this value to something truthy, you restrict the multi-user chat (MUC) domain to only the value
 specified in `muc_domain`_.
 
+If the value is set to `'hidden'` (which is also truthy), then the MUC domain
+will not be shown to users.
+
+locked_muc_nickname
+-------------------
+
+* Default: ``false``
+
+This setting allows you to restrict the multi-user chat (MUC) nickname that a
+user uses to a particular value.
+
+Where the nickname value comes from depends on other settings.
+
+The `nickname`_ configuration setting takes precedence ahead of any other
+nickname value. If that's not set, then the "nickname" value from the user's
+VCard is taken, and if that is not set but `muc_nickname_from_jid`_ is set to
+``true``, then the node of the user's JID (the part before the ``@``) is used.
+
+If no nickame value is found, then an error will be raised.
 
 message_archiving
 -----------------
@@ -1041,6 +1068,10 @@ nickname
 This setting allows you to specify the nickname for the current user.
 The nickname will be included in presence requests to other users and will also
 be used as the default nickname when entering MUC chatrooms.
+
+This value will have first preference ahead of other nickname sources, such as
+the VCard `nickname` value.
+
 
 notify_all_room_messages
 ------------------------

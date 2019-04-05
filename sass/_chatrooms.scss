@@ -185,20 +185,22 @@
                     }
                     .occupants-heading {
                         font-family: var(--heading-font);
+                        margin-bottom: 0.5em;
+                        padding-left: 0;
                     }
                     .chatroom-features {
                         display: var(--occupants-features-display);
                     }
-                    .awesomplete {
+                    .suggestion-box{
                         ul {
                             padding: 0;
                             li {
-                                padding: .5em;
+                                padding: 0.5em;
                             }
                         }
                     }
                     ul {
-                        padding: 0.5em 0 0 0;
+                        padding: 0;
                         margin-bottom: 0.5em;
                         overflow-x: hidden;
                         overflow-y: auto;
@@ -305,6 +307,10 @@
         }
 
         .sendXMPPMessage {
+
+            .suggestion-box__results--above {
+                bottom: 4.5em;
+            }
             .chat-toolbar {
                 background-color: white;
                 border-top: var(--message-input-border-top);
@@ -330,7 +336,6 @@
         }
 
         .room-invite {
-            padding-bottom: 1em;
             .invited-contact {
                 margin: -1px 0 0 -1px;
                 width: 100%;
@@ -368,6 +373,9 @@
                 .occupants {
                     .occupants-heading {
                         padding: 0;
+                    }
+                    .occupant-list {
+                        border-bottom: none;
                     }
                     .chatroom-features {
                         .feature {
@@ -489,6 +497,20 @@
             span {
                 .invited-contact {
                     margin: 0 0 0.5em -1px;
+                }
+            }
+        }
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .chatroom {
+        .box-flyout {
+            .occupants {
+                .occupants-header {
+                    .hide-occupants {
+                        display: none;
+                    }
                 }
             }
         }

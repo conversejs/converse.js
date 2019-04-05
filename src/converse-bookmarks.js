@@ -67,8 +67,14 @@ converse.plugins.add('converse-bookmarks', {
                             __('Bookmark this groupchat'),
                         'bookmarked': this.model.get('bookmarked')
                     }));
-                const close_button = this.el.querySelector('.close-chatbox-button');
-                close_button.insertAdjacentHTML('afterend', bookmark_button);
+
+                const buttons_row = this.el.querySelector('.chatbox-buttons')
+                const close_button = buttons_row.querySelector('.close-chatbox-button');
+                if (close_button) {
+                    close_button.insertAdjacentHTML('afterend', bookmark_button);
+                } else {
+                    buttons_row.insertAdjacentHTML('beforeEnd', bookmark_button);
+                }
             },
 
             async renderHeading () {
@@ -253,7 +259,7 @@ converse.plugins.add('converse-bookmarks', {
             openBookmarkedRoom (bookmark) {
                 if ( _converse.muc_respect_autojoin && bookmark.get('autojoin')) {
                     const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
-                    if (!groupchat.get('hidden')) {
+                    if (!groupchat.get('hidden') && !groupchat.get('minimized')) {
                         groupchat.trigger('show');
                     }
                 }
@@ -440,9 +446,12 @@ converse.plugins.add('converse-bookmarks', {
                       id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
                 this.list_model = new _converse.BookmarksList({'id': id});
                 this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
-                this.list_model.fetch();
-                this.render();
-                this.sortAndPositionAllItems();
+
+                const render = () => {
+                    this.render();
+                    this.sortAndPositionAllItems();
+                }
+                this.list_model.fetch({'success': render, 'error': render});
             },
 
             render () {
@@ -542,19 +551,29 @@ converse.plugins.add('converse-bookmarks', {
                 _converse.bookmarksview = new _converse.BookmarksView({'model': _converse.bookmarks});
                 await _converse.bookmarks.fetchBookmarks();
             }
-            _converse.emit('bookmarksInitialized');
+            /**
+             * Triggered once the _converse.Bookmarks collection and _converse.BookmarksView view
+             * has been created and cached bookmarks have been fetched.
+             *
+             * Also gets emitted if it was determined that the server doesn't
+             * have sufficient support for PEP-based bookmarks (in which case
+             * the above two instances don't get created).
+             * @event _converse#bookmarksInitialized
+             * @example _converse.api.listen.on('bookmarksInitialized', () => { ... });
+             */
+            _converse.api.trigger('bookmarksInitialized');
         }
 
-        _converse.on('clearSession', () => {
+        _converse.api.listen.on('clearSession', () => {
             if (!_.isUndefined(_converse.bookmarks)) {
                 _converse.bookmarks.browserStorage._clear();
                 window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
             }
         });
 
-        _converse.on('reconnected', initBookmarks);
+        _converse.api.listen.on('reconnected', initBookmarks);
 
-        _converse.on('connected', async () =>  {
+        _converse.api.listen.on('connected', async () =>  {
             // Add a handler for bookmarks pushed from other connected clients
             // (from the same user obviously)
             _converse.connection.addHandler(message => {

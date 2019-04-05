@@ -504,10 +504,11 @@ body.converse-fullscreen {
 
     .badge {
         text-shadow: none;
+        color: white;
     }
 
-    .badge {
-        color: white;
+    .badge-light {
+        color: var(--text-color);
     }
 
     .btn-primary, .button-primary, .badge-primary {

@@ -1,11 +1,10 @@
 (function (root, factory) {
     define([
-        "jquery",
         "jasmine",
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, jasmine, mock, test_utils) {
+} (this, function (jasmine, mock, test_utils) {
     "use strict";
     const _ = converse.env._;
     const $iq = converse.env.$iq;
@@ -79,9 +78,10 @@
                 message = '/me is as well';
                 await test_utils.sendMessage(view, message);
                 expect(view.el.querySelectorAll('.chat-msg--action').length).toBe(2);
-                await test_utils.waitUntil(() => $(view.el).find('.chat-msg__author:last').text().trim() === '**Max Mustermann');
-                expect(sizzle('.chat-msg__text:last', view.el).pop().textContent).toBe('is as well');
-                expect($(view.el).find('.chat-msg:last').hasClass('chat-msg--followup')).toBe(false);
+                await test_utils.waitUntil(() => sizzle('.chat-msg__author:last', view.el).pop().textContent.trim() === '**Max Mustermann');
+                const last_el = sizzle('.chat-msg__text:last', view.el).pop();
+                expect(last_el.textContent).toBe('is as well');
+                expect(u.hasClass('chat-msg--followup', last_el)).toBe(false);
                 // Check that /me messages after a normal message don't
                 // get the 'chat-msg--followup' class.
                 message = 'This a normal message';
@@ -142,7 +142,7 @@
                 null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
-                _converse.emit('rosterContactsFetched');
+                _converse.api.trigger('rosterContactsFetched');
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const stanza = u.toStanza(`
                     <message from="${sender_jid}"
@@ -249,7 +249,7 @@
 
                 const minimized_chat = _converse.minimized_chats.get(sender_jid);
                 expect(minimized_chat).toBeTruthy();
-                expect($(minimized_chat.el).is(':visible')).toBeTruthy();
+                expect(u.isVisible(minimized_chat.el)).toBeTruthy();
                 done();
             }));
 
@@ -269,11 +269,11 @@
                 const view = await test_utils.openChatBoxFor(_converse, contact_jid);
                 const el = sizzle('a.open-chat:contains("'+view.model.getDisplayName()+'")', _converse.rosterview.el).pop();
                 const jid = el.textContent.replace(/ /g,'.').toLowerCase() + '@localhost';
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 el.click();
-                await test_utils.waitUntil(() => _converse.emit.calls.count(), 500);
+                await test_utils.waitUntil(() => _converse.api.trigger.calls.count(), 500);
                 expect(_converse.chatboxes.length).toEqual(2);
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
                 done();
             }));
 
@@ -285,7 +285,7 @@
                 await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
 
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 spyOn(_converse.chatboxviews, 'trimChats');
                 test_utils.openControlBox();
 
@@ -329,7 +329,7 @@
 
                 spyOn(chatview, 'close').and.callThrough();
                 spyOn(controlview, 'close').and.callThrough();
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
 
                 // We need to rebind all events otherwise our spy won't be called
                 controlview.delegateEvents();
@@ -338,13 +338,13 @@
                 controlview.el.querySelector('.close-chatbox-button').click();
 
                 expect(controlview.close).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                expect(_converse.emit.calls.count(), 1);
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                expect(_converse.api.trigger.calls.count(), 1);
                 chatview.el.querySelector('.close-chatbox-button').click();
 
                 expect(chatview.close).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
-                expect(_converse.emit.calls.count(), 2);
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                expect(_converse.api.trigger.calls.count(), 2);
                 done();
             }));
 
@@ -362,15 +362,15 @@
                 const trimmed_chatboxes = _converse.minimized_chats;
                 const chatview = _converse.chatboxviews.get(contact_jid);
                 spyOn(chatview, 'minimize').and.callThrough();
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 // We need to rebind all events otherwise our spy won't be called
                 chatview.delegateEvents();
 
                 chatview.el.querySelector('.toggle-chatbox-button').click();
 
                 expect(chatview.minimize).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
-                expect(_converse.emit.calls.count(), 2);
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
+                expect(_converse.api.trigger.calls.count(), 2);
                 expect(u.isVisible(chatview.el)).toBeFalsy();
                 expect(chatview.model.get('minimized')).toBeTruthy();
                 chatview.el.querySelector('.toggle-chatbox-button').click();
@@ -380,10 +380,11 @@
                 trimmedview.el.querySelector("a.restore-chat").click();
 
                 expect(trimmedview.restore).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
                 await test_utils.waitUntil(() => u.isVisible(chatview.el.querySelector('.chat-body')), 500);
-                expect($(chatview.el).find('.toggle-chatbox-button').hasClass('fa-minus')).toBeTruthy();
-                expect($(chatview.el).find('.toggle-chatbox-button').hasClass('fa-plus')).toBeFalsy();
+                const toggle_el = sizzle('.toggle-chatbox-button', chatview.el).pop();
+                expect(u.hasClass('fa-minus', toggle_el)).toBeTruthy();
+                expect(u.hasClass('fa-plus', toggle_el)).toBeFalsy();
                 expect(chatview.model.get('minimized')).toBeFalsy();
                 done();
             }));
@@ -396,25 +397,25 @@
                 await test_utils.waitForRoster(_converse, 'current');
                 test_utils.openControlBox();
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 spyOn(_converse.chatboxviews, 'trimChats');
                 _converse.chatboxes.browserStorage._clear();
 
                 test_utils.closeControlBox();
 
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 expect(_converse.chatboxes.length).toEqual(1);
                 expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
                 test_utils.openChatBoxes(_converse, 6);
                 await test_utils.waitUntil(() => _converse.chatboxes.length == 7)
                 expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
                 expect(_converse.chatboxes.length).toEqual(7);
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxOpened', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxOpened', jasmine.any(Object));
                 test_utils.closeAllChatBoxes(_converse);
 
                 expect(_converse.chatboxes.length).toEqual(1);
                 expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 var newchatboxes = new _converse.ChatBoxes();
                 expect(newchatboxes.length).toEqual(0);
                 expect(_converse.chatboxes.pluck('id')).toEqual(['controlbox']);
@@ -488,7 +489,7 @@
 
                     let toolbar, call_button;
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
-                    spyOn(_converse, 'emit');
+                    spyOn(_converse.api, "trigger");
                     // First check that the button doesn't show if it's not enabled
                     // via "visible_toolbar_buttons"
                     _converse.visible_toolbar_buttons.call = false;
@@ -506,7 +507,7 @@
                     toolbar = view.el.querySelector('ul.chat-toolbar');
                     call_button = toolbar.querySelector('.toggle-call');
                     call_button.click();
-                    expect(_converse.emit).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
+                    expect(_converse.api.trigger).toHaveBeenCalledWith('callButtonClicked', jasmine.any(Object));
                     done();
                 }));
             });
@@ -553,7 +554,7 @@
                     await test_utils.waitForRoster(_converse, 'current');
                     test_utils.openControlBox();
 
-                    spyOn(_converse, 'emit');
+                    spyOn(_converse.api, "trigger");
                     const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                     // <composing> state
                     const msg = $msg({
@@ -563,7 +564,7 @@
                             'id': (new Date()).getTime()
                         }).c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                     await _converse.chatboxes.onMessage(msg);
-                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                    expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                     expect(_converse.api.chats.get().length).toBe(1);
                     done();
                 }));
@@ -584,12 +585,12 @@
                         const view = _converse.chatboxviews.get(contact_jid);
                         expect(view.model.get('chat_state')).toBe('active');
                         expect(_converse.connection.send).toHaveBeenCalled();
-                        const $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(3);
-                        expect($stanza.children().get(0).tagName).toBe('active');
-                        expect($stanza.children().get(1).tagName).toBe('no-store');
-                        expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+                        const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                        expect(stanza.getAttribute('to')).toBe(contact_jid);
+                        expect(stanza.childNodes.length).toBe(3);
+                        expect(stanza.childNodes[0].tagName).toBe('active');
+                        expect(stanza.childNodes[1].tagName).toBe('no-store');
+                        expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
                         done();
                     }));
 
@@ -603,7 +604,7 @@
 
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         await test_utils.openChatBoxFor(_converse, contact_jid);
-                        var view = _converse.chatboxviews.get(contact_jid);
+                        const view = _converse.chatboxviews.get(contact_jid);
                         view.model.minimize();
                         expect(view.model.get('chat_state')).toBe('inactive');
                         spyOn(_converse.connection, 'send');
@@ -614,12 +615,12 @@
                             return call.args[0] instanceof Strophe.Builder;
                         });
                         expect(calls.length).toBe(1);
-                        var $stanza = $(calls[0].args[0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(3);
-                        expect($stanza.children().get(0).tagName).toBe('active');
-                        expect($stanza.children().get(1).tagName).toBe('no-store');
-                        expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+                        const stanza = calls[0].args[0].tree();
+                        expect(stanza.getAttribute('to')).toBe(contact_jid);
+                        expect(stanza.childNodes.length).toBe(3);
+                        expect(stanza.childNodes[0].tagName).toBe('active');
+                        expect(stanza.childNodes[1].tagName).toBe('no-store');
+                        expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
                         done();
                     }));
                 });
@@ -640,18 +641,20 @@
                         var view = _converse.chatboxviews.get(contact_jid);
                         expect(view.model.get('chat_state')).toBe('active');
                         spyOn(_converse.connection, 'send');
-                        spyOn(_converse, 'emit');
+                        spyOn(_converse.api, "trigger");
                         view.keyPressed({
                             target: view.el.querySelector('textarea.chat-textarea'),
                             keyCode: 1
                         });
                         expect(view.model.get('chat_state')).toBe('composing');
                         expect(_converse.connection.send).toHaveBeenCalled();
-                        var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().get(0).tagName).toBe('composing');
-                        expect($stanza.children().get(1).tagName).toBe('no-store');
-                        expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+
+                        const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                        expect(stanza.getAttribute('to')).toBe(contact_jid);
+                        expect(stanza.childNodes.length).toBe(3);
+                        expect(stanza.childNodes[0].tagName).toBe('composing');
+                        expect(stanza.childNodes[1].tagName).toBe('no-store');
+                        expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
 
                         // The notification is not sent again
                         view.keyPressed({
@@ -659,7 +662,7 @@
                             keyCode: 1
                         });
                         expect(view.model.get('chat_state')).toBe('composing');
-                        expect(_converse.emit.calls.count(), 1);
+                        expect(_converse.api.trigger.calls.count(), 1);
                         done();
                     }));
 
@@ -672,7 +675,7 @@
                         test_utils.openControlBox();
 
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(_converse, 'emit');
+                        spyOn(_converse.api, "trigger");
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         await test_utils.openChatBoxFor(_converse, sender_jid);
@@ -685,7 +688,7 @@
                                 id: (new Date()).getTime()
                             }).c('body').c('composing', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.chatboxes.onMessage(msg);
-                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         var view = _converse.chatboxviews.get(sender_jid);
                         expect(view).toBeDefined();
 
@@ -721,7 +724,7 @@
                         spyOn(_converse, 'log');
                         const recipient_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
                         const view = await test_utils.openChatBoxFor(_converse, recipient_jid);
-                        var msg = $msg({
+                        const msg = $msg({
                                 'from': _converse.bare_jid,
                                 'id': (new Date()).getTime(),
                                 'to': _converse.connection.jid,
@@ -738,15 +741,15 @@
                         await _converse.chatboxes.onMessage(msg);
                         await test_utils.waitUntil(() => view.model.messages.length);
                         // Check that the chatbox and its view now exist
-                        var chatbox = _converse.chatboxes.get(recipient_jid);
-                        var chatboxview = _converse.chatboxviews.get(recipient_jid);
+                        const chatbox = _converse.chatboxes.get(recipient_jid);
+                        const chatboxview = _converse.chatboxviews.get(recipient_jid);
                         // Check that the message was received and check the message parameters
                         expect(chatbox.messages.length).toEqual(1);
-                        var msg_obj = chatbox.messages.models[0];
+                        const msg_obj = chatbox.messages.models[0];
                         expect(msg_obj.get('sender')).toEqual('me');
                         expect(msg_obj.get('is_delayed')).toEqual(false);
-                        var $chat_content = $(chatboxview.el).find('.chat-content');
-                        var status_text = $chat_content.find('.chat-info.chat-state-notification').text();
+                        const chat_content = chatboxview.el.querySelector('.chat-content');
+                        const status_text = chat_content.querySelector('.chat-info.chat-state-notification').textContent;
                         expect(status_text).toBe('Typing from another device');
                         done();
                     }));
@@ -775,21 +778,21 @@
                         });
                         expect(view.model.get('chat_state')).toBe('composing');
                         expect(_converse.connection.send).toHaveBeenCalled();
-                        let $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-                        expect($stanza.children().get(0).tagName).toBe('composing');
+                        let stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                        expect(stanza.childNodes[0].tagName).toBe('composing');
                         await test_utils.waitUntil(() => view.model.get('chat_state') === 'paused', 500);
                         expect(_converse.connection.send).toHaveBeenCalled();
                         var calls = _.filter(_converse.connection.send.calls.all(), function (call) {
                             return call.args[0] instanceof Strophe.Builder;
                         });
                         expect(calls.length).toBe(2);
-                        $stanza = $(calls[1].args[0].tree());
+                        stanza = calls[1].args[0].tree();
+                        expect(stanza.getAttribute('to')).toBe(contact_jid);
+                        expect(stanza.childNodes.length).toBe(3);
+                        expect(stanza.childNodes[0].tagName).toBe('paused');
+                        expect(stanza.childNodes[1].tagName).toBe('no-store');
+                        expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
 
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(3);
-                        expect($stanza.children().get(0).tagName).toBe('paused');
-                        expect($stanza.children().get(1).tagName).toBe('no-store');
-                        expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
                         // Test #359. A paused notification should not be sent
                         // out if the user simply types longer than the
                         // timeout.
@@ -818,7 +821,7 @@
                         await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
                         // TODO: only show paused state if the previous state was composing
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(_converse, 'emit').and.callThrough();
+                        spyOn(_converse.api, "trigger").and.callThrough();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         const view = await test_utils.openChatBoxFor(_converse, sender_jid);
                         // <paused> state
@@ -829,7 +832,7 @@
                                 id: (new Date()).getTime()
                             }).c('paused', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.chatboxes.onMessage(msg);
-                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         await test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1])
                         var event = view.el.querySelector('.chat-info.chat-state-notification');
                         expect(event.textContent).toEqual(mock.cur_names[1] + ' has stopped typing');
@@ -866,15 +869,15 @@
                         await _converse.chatboxes.onMessage(msg);
                         await test_utils.waitUntil(() => view.model.messages.length);
                         // Check that the chatbox and its view now exist
-                        var chatbox = _converse.chatboxes.get(recipient_jid);
-                        var chatboxview = _converse.chatboxviews.get(recipient_jid);
+                        const chatbox = _converse.chatboxes.get(recipient_jid);
+                        const chatboxview = _converse.chatboxviews.get(recipient_jid);
                         // Check that the message was received and check the message parameters
                         expect(chatbox.messages.length).toEqual(1);
-                        var msg_obj = chatbox.messages.models[0];
+                        const msg_obj = chatbox.messages.models[0];
                         expect(msg_obj.get('sender')).toEqual('me');
                         expect(msg_obj.get('is_delayed')).toEqual(false);
-                        var $chat_content = $(chatboxview.el).find('.chat-content');
-                        var status_text = $chat_content.find('.chat-info.chat-state-notification').text();
+                        const chat_content = chatboxview.el.querySelector('.chat-content');
+                        const status_text = chat_content.querySelector('.chat-info.chat-state-notification').textContent;
                         expect(status_text).toBe('Stopped typing on the other device');
                         done();
                     }));
@@ -947,9 +950,9 @@
                         view.minimize();
                         expect(view.model.get('chat_state')).toBe('inactive');
                         expect(_converse.connection.send).toHaveBeenCalled();
-                        var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().get(0).tagName).toBe('inactive');
+                        var stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                        expect(stanza.getAttribute('to')).toBe(contact_jid);
+                        expect(stanza.childNodes[0].tagName).toBe('inactive');
                         done();
                     }));
 
@@ -968,12 +971,13 @@
                         view.close();
                         expect(view.model.get('chat_state')).toBe('inactive');
                         expect(_converse.connection.send).toHaveBeenCalled();
-                        var $stanza = $(_converse.connection.send.calls.argsFor(0)[0].tree());
-                        expect($stanza.attr('to')).toBe(contact_jid);
-                        expect($stanza.children().length).toBe(3);
-                        expect($stanza.children().get(0).tagName).toBe('inactive');
-                        expect($stanza.children().get(1).tagName).toBe('no-store');
-                        expect($stanza.children().get(2).tagName).toBe('no-permanent-store');
+                        var $stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                        const stanza = _converse.connection.send.calls.argsFor(0)[0].tree();
+                        expect(stanza.getAttribute('to')).toBe(contact_jid);
+                        expect(stanza.childNodes.length).toBe(3);
+                        expect(stanza.childNodes[0].tagName).toBe('inactive');
+                        expect(stanza.childNodes[1].tagName).toBe('no-store');
+                        expect(stanza.childNodes[2].tagName).toBe('no-permanent-store');
                         done();
                     }));
 
@@ -986,7 +990,7 @@
                         test_utils.openControlBox();
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         // See XEP-0085 https://xmpp.org/extensions/xep-0085.html#definitions
-                        spyOn(_converse, 'emit');
+                        spyOn(_converse.api, "trigger");
                         await test_utils.openChatBoxFor(_converse, sender_jid);
                         const view = _converse.chatboxviews.get(sender_jid);
                         expect(view.el.querySelectorAll('.chat-event').length).toBe(0);
@@ -1011,7 +1015,7 @@
                             }).c('body').c('inactive', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.chatboxes.onMessage(msg);
                         await test_utils.waitUntil(() => (view.model.messages.length > 1));
-                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         expect(view.el.querySelectorAll('.chat-state-notification').length).toBe(0);
                         done();
                     }));
@@ -1027,7 +1031,7 @@
                         await test_utils.waitForRoster(_converse, 'current', 3);
                         test_utils.openControlBox();
 
-                        spyOn(_converse, 'emit');
+                        spyOn(_converse.api, "trigger");
                         const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                         // <paused> state
                         const msg = $msg({
@@ -1037,7 +1041,7 @@
                                 id: (new Date()).getTime()
                             }).c('body').c('gone', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                         await _converse.chatboxes.onMessage(msg);
-                        expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                        expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                         const view = _converse.chatboxviews.get(sender_jid);
                         await test_utils.waitUntil(() => view.model.vcard.get('fullname') === mock.cur_names[1]);
                         const event = view.el.querySelector('.chat-state-notification');
@@ -1059,7 +1063,7 @@
                 test_utils.openControlBox();
                 const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 await test_utils.openChatBoxFor(_converse, contact_jid);
                 const view = _converse.chatboxviews.get(contact_jid);
                 let message = 'This message is another sent from this chatbox';
@@ -1084,8 +1088,8 @@
                 expect(window.confirm).toHaveBeenCalled();
                 expect(view.model.messages.length, 0); // The messages must be removed from the chatbox
                 expect(view.model.messages.browserStorage.records.length, 0); // And also from browserStorage
-                expect(_converse.emit.calls.count(), 1);
-                expect(_converse.emit.calls.mostRecent().args, ['messageSend', message]);
+                expect(_converse.api.trigger.calls.count(), 1);
+                expect(_converse.api.trigger.calls.mostRecent().args, ['messageSend', message]);
                 done();
             }));
         });
@@ -1117,7 +1121,7 @@
                       .c('active', {'xmlns': Strophe.NS.CHATSTATES}).tree();
                 _converse.windowState = 'hidden';
 
-                spyOn(_converse, 'emit').and.callThrough();
+                spyOn(_converse.api, "trigger").and.callThrough();
                 spyOn(_converse, 'incrementMsgCounter').and.callThrough();
                 spyOn(_converse, 'clearMsgCounter').and.callThrough();
 
@@ -1126,7 +1130,7 @@
                 expect(_converse.incrementMsgCounter).toHaveBeenCalled();
                 expect(_converse.clearMsgCounter).not.toHaveBeenCalled();
                 expect(_converse.msg_counter).toBe(1);
-                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                 _converse.windowSate = previous_state;
                 done();
             }));
@@ -1538,8 +1542,8 @@
                 test_utils.sendMessage(view, message);
                 await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-msg').length, 1000);
                 expect(view.model.sendMessage).toHaveBeenCalled();
-                var msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
-                expect(msg.html()).toEqual(
+                const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+                expect(msg.innerHTML).toEqual(
                     '<a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=37.786971&amp;'+
                     'mlon=-122.399677#map=18/37.786971/-122.399677">https://www.openstreetmap.org/?mlat=37.7869'+
                     '71&amp;mlon=-122.399677#map=18/37.786971/-122.399677</a>');

@@ -32,10 +32,6 @@ const config = {
             use: 'imports-loader?backbone.nativeview'
         },
         {
-            test: path.resolve(__dirname, "node_modules/awesomplete-avoid-xss/awesomplete"),
-            use: "exports-loader?Awesomplete"
-        },
-        {
             test: path.resolve(__dirname, "node_modules/xss/dist/xss"),
             use: "exports-loader?filterXSS,filterCSS"
         },
@@ -91,7 +87,6 @@ const config = {
         alias: {
             "IPv6":                     path.resolve(__dirname, "node_modules/urijs/src/IPv6"),
             "SecondLevelDomains":       path.resolve(__dirname, "node_modules/urijs/src/SecondLevelDomains"),
-            "awesomplete":              path.resolve(__dirname, "node_modules/awesomplete-avoid-xss/awesomplete"),
             "formdata-polyfill":        path.resolve(__dirname, "node_modules/formdata-polyfill/FormData"),
             "jquery":                   path.resolve(__dirname, "src/jquery-stub"),
             "punycode":                 path.resolve(__dirname, "node_modules/urijs/src/punycode"),
@@ -127,7 +122,7 @@ function parameterize () {
         extend(config, {
             entry: "@converse/headless/headless.js",
             output: {
-                path: path.resolve(__dirname, 'dist'),
+                path: path.resolve(__dirname, 'src/headless/dist'),
                 filename: 'converse-headless.js'
             },
         });
@@ -138,7 +133,6 @@ function parameterize () {
         extend(config, {
             entry: path.resolve(__dirname, 'src/converse.js'),
             externals: [{
-                "awesomplete": "awesomplete",
                 "backbone.browserStorage": "backbone.browserStorage",
                 "backbone.overview": "backbone.overview",
                 "es6-promise": "es6-promise",

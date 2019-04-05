@@ -156,7 +156,7 @@
                 it("an HTML5 Notification is received", mock.initConverse((done, _converse) => {
                     spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                     spyOn(_converse, 'showContactRequestNotification');
-                    _converse.emit('contactRequest', {'fullname': 'Peter Parker', 'jid': 'peter@parker.com'});
+                    _converse.api.trigger('contactRequest', {'fullname': 'Peter Parker', 'jid': 'peter@parker.com'});
                     expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                     expect(_converse.showContactRequestNotification).toHaveBeenCalled();
                     done();

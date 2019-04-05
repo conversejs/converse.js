@@ -131,7 +131,13 @@ converse.plugins.add('converse-minimize', {
                     this.model.clearUnreadMsgCounter();
                 }
                 this.show();
-                this.__super__._converse.emit('chatBoxMaximized', this);
+                /**
+                 * Triggered when a previously minimized chat gets maximized
+                 * @event _converse#chatBoxMaximized
+                 * @type { _converse.ChatBoxView }
+                 * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
+                 */
+                _converse.api.trigger('chatBoxMaximized', this);
                 return this;
             },
 
@@ -146,7 +152,13 @@ converse.plugins.add('converse-minimize', {
                 }
                 this.setChatState(_converse.INACTIVE).model.minimize();
                 this.hide();
-                _converse.emit('chatBoxMinimized', this);
+                /**
+                 * Triggered when a previously maximized chat gets Minimized
+                 * @event _converse#chatBoxMinimized
+                 * @type { _converse.ChatBoxView }
+                 * @example _converse.api.listen.on('chatBoxMinimized', view => { ... });
+                 */
+                _converse.api.trigger('chatBoxMinimized', this);
             },
         },
 
@@ -195,12 +207,14 @@ converse.plugins.add('converse-minimize', {
                 const html = this.__super__.generateHeadingHTML.apply(this, arguments);
                 const div = document.createElement('div');
                 div.innerHTML = html;
-                const button = div.querySelector('.close-chatbox-button');
-                button.insertAdjacentHTML('afterend',
-                    tpl_chatbox_minimize({
-                        'info_minimize': __('Minimize this chat box')
-                    })
-                );
+                const buttons_row = div.querySelector('.chatbox-buttons')
+                const button = buttons_row.querySelector('.close-chatbox-button');
+                const minimize_el = tpl_chatbox_minimize({'info_minimize': __('Minimize this chat box')})
+                if (button) {
+                    button.insertAdjacentHTML('afterend', minimize_el);
+                } else {
+                    buttons_row.insertAdjacentHTML('beforeEnd', minimize_el);
+                }
                 return div.innerHTML;
             }
         },
@@ -358,7 +372,7 @@ converse.plugins.add('converse-minimize', {
                     view.close();
                 } else {
                     this.model.destroy();
-                    _converse.emit('chatBoxClosed', this);
+                    _converse.api.trigger('chatBoxClosed', this);
                 }
                 return this;
             },
@@ -515,7 +529,12 @@ converse.plugins.add('converse-minimize', {
             _converse.minimized_chats = new _converse.MinimizedChats({
                 model: _converse.chatboxes
             });
-            _converse.emit('minimizedChatsInitialized');
+            /**
+             * Triggered once the _converse.MinimizedChats instance has been * initialized
+             * @event _converse#minimizedChatsInitialized
+             * @example _converse.api.listen.on('minimizedChatsInitialized', () => { ... });
+             */
+            _converse.api.trigger('minimizedChatsInitialized');
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
 

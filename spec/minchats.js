@@ -14,7 +14,7 @@
                 function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            _converse.api.trigger('rosterContactsFetched');
 
             test_utils.openControlBox();
             _converse.minimized_chats.toggleview.model.browserStorage._clear();
@@ -53,7 +53,7 @@
                 function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            _converse.api.trigger('rosterContactsFetched');
 
             test_utils.openControlBox();
             _converse.minimized_chats.toggleview.model.browserStorage._clear();
@@ -84,7 +84,7 @@
                 function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            _converse.api.trigger('rosterContactsFetched');
 
             test_utils.openControlBox();
             _converse.minimized_chats.toggleview.model.browserStorage._clear();

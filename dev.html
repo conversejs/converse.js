@@ -10,7 +10,7 @@
     <meta name="keywords" content="xmpp chat webchat converse.js" />
     <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
-    <script src="3rdparty/libsignal-protocol-javascript/dist/libsignal-protocol.js"></script>
+    <script src="3rdparty/libsignal-protocol.js"></script>
     <script src="dist/converse.js"></script>
 </head>
 
@@ -30,6 +30,7 @@
         notify_all_room_messages: [
             'discuss@conference.conversejs.org'
         ],
+        muc_respect_autojoin: false,
         // bosh_service_url: 'http://chat.example.org:5280/http-bind/',
         bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
         message_archiving: 'always',

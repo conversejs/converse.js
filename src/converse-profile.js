@@ -48,7 +48,13 @@ converse.plugins.add('converse-profile', {
             initialize () {
                 this.model.on('change', this.render, this);
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-                _converse.emit('profileModalInitialized', this.model);
+                /**
+                 * Triggered when the _converse.ProfileModal has been created and initialized.
+                 * @event _converse#profileModalInitialized
+                 * @type { _converse.XMPPStatus }
+                 * @example _converse.api.listen.on('profileModalInitialized', status => { ... });
+                 */
+                _converse.api.trigger('profileModalInitialized', this.model);
             },
 
             toHTML () {

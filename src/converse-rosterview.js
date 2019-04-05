@@ -7,7 +7,6 @@
 import "@converse/headless/converse-roster";
 import "@converse/headless/converse-chatboxes";
 import "converse-modal";
-import Awesomplete from "awesomplete";
 import _FormData from "formdata-polyfill";
 import converse from "@converse/headless/converse-core";
 import tpl_add_contact_modal from "templates/add_contact_modal.html";
@@ -56,13 +55,14 @@ converse.plugins.add('converse-rosterview', {
               { __ } = _converse;
 
         _converse.api.settings.update({
+            'autocomplete_add_contact': true,
             'allow_chat_pending_contacts': true,
             'allow_contact_removal': true,
             'hide_offline_users': false,
             'roster_groups': true,
             'show_only_online_users': false,
             'show_toolbar': true,
-            'xhr_user_search_url': null
+            'xhr_user_search_url': null,
         });
         _converse.api.promises.add('rosterViewInitialized');
 
@@ -119,7 +119,7 @@ converse.plugins.add('converse-rosterview', {
 
             toHTML () {
                 const label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
-                return  tpl_add_contact_modal(_.extend(this.model.toJSON(), {
+                return tpl_add_contact_modal(_.extend(this.model.toJSON(), {
                     '_converse': _converse,
                     'heading_new_contact': __('Add a Contact'),
                     'label_xmpp_address': __('XMPP Address'),
@@ -132,67 +132,117 @@ converse.plugins.add('converse-rosterview', {
 
             afterRender () {
                 if (_converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
-                    this.initXHRAutoComplete(this.el);
-                    this.el.addEventListener('awesomplete-selectcomplete', ev => {
-                        this.el.querySelector('input[name="name"]').value = ev.text.label;
-                        this.el.querySelector('input[name="jid"]').value = ev.text.value;
-                    });
+                    this.initXHRAutoComplete();
                 } else {
-                    this.initJIDAutoComplete(this.el);
+                    this.initJIDAutoComplete();
                 }
                 const jid_input = this.el.querySelector('input[name="jid"]');
                 this.el.addEventListener('shown.bs.modal', () => jid_input.focus(), false);
             },
 
-            initJIDAutoComplete (root) {
-                const jid_input = root.querySelector('input[name="jid"]');
-                const list = _.uniq(_converse.roster.map((item) => Strophe.getDomainFromJid(item.get('jid'))));
-                new Awesomplete(jid_input, {
-                    'list': list,
+            initJIDAutoComplete () {
+                if (!_converse.autocomplete_add_contact) {
+                    return;
+                }
+                const el = this.el.querySelector('.suggestion-box__jid').parentElement;
+                this.jid_auto_complete = new _converse.AutoComplete(el, {
                     'data': (text, input) => `${input.slice(0, input.indexOf("@"))}@${text}`,
-                    'filter': Awesomplete.FILTER_STARTSWITH
+                    'filter': _converse.FILTER_STARTSWITH,
+                    'list': _.uniq(_converse.roster.map(item => Strophe.getDomainFromJid(item.get('jid'))))
                 });
             },
 
-            initXHRAutoComplete (root) {
-                const name_input = this.el.querySelector('input[name="name"]');
-                const jid_input = this.el.querySelector('input[name="jid"]');
-                const awesomplete = new Awesomplete(name_input, {
-                    'minChars': 1,
+            initXHRAutoComplete () {
+                if (!_converse.autocomplete_add_contact) {
+                    return this.initXHRFetch();
+                }
+                const el = this.el.querySelector('.suggestion-box__name').parentElement;
+                this.name_auto_complete = new _converse.AutoComplete(el, {
+                    'auto_evaluate': false,
+                    'filter': _converse.FILTER_STARTSWITH,
                     'list': []
                 });
                 const xhr = new window.XMLHttpRequest();
                 // `open` must be called after `onload` for mock/testing purposes.
-                xhr.onload = function () {
+                xhr.onload = () => {
                     if (xhr.responseText) {
-                        awesomplete.list = JSON.parse(xhr.responseText).map((i) => { //eslint-disable-line arrow-body-style
-                            return {'label': i.fullname || i.jid, 'value': i.jid};
-                        });
-                        awesomplete.evaluate();
+                        const r = xhr.responseText;
+                        this.name_auto_complete.list = JSON.parse(r).map(i => ({'label': i.fullname || i.jid, 'value': i.jid}));
+                        this.name_auto_complete.auto_completing = true;
+                        this.name_auto_complete.evaluate();
                     }
                 };
-                name_input.addEventListener('input', _.debounce(() => {
-                    xhr.open("GET", `${_converse.xhr_user_search_url}q=${name_input.value}`, true);
+                const input_el = this.el.querySelector('input[name="name"]');
+                input_el.addEventListener('input', _.debounce(() => {
+                    xhr.open("GET", `${_converse.xhr_user_search_url}q=${input_el.value}`, true);
                     xhr.send()
                 } , 300));
+                this.name_auto_complete.on('suggestion-box-selectcomplete', ev => {
+                    this.el.querySelector('input[name="name"]').value = ev.text.label;
+                    this.el.querySelector('input[name="jid"]').value = ev.text.value;
+                });
+            },
+
+            initXHRFetch () {
+                this.xhr = new window.XMLHttpRequest();
+                this.xhr.onload = () => {
+                    if (this.xhr.responseText) {
+                        const r = this.xhr.responseText;
+                        const list = JSON.parse(r).map(i => ({'label': i.fullname || i.jid, 'value': i.jid}));
+                        if (list.length !== 1) {
+                            const el = this.el.querySelector('.invalid-feedback');
+                            el.textContent = __('Sorry, could not find a contact with that name')
+                            u.addClass('d-block', el);
+                            return;
+                        }
+                        const jid = list[0].value;
+                        if (this.validateSubmission(jid)) {
+                            const form = this.el.querySelector('form');
+                                const name = list[0].label;
+                            this.afterSubmission(form, jid, name);
+                        }
+                    }
+                };
+            },
+
+            validateSubmission (jid) {
+                const el = this.el.querySelector('.invalid-feedback');
+                if (!jid || _.compact(jid.split('@')).length < 2) {
+                    u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
+                    u.addClass('d-block', el);
+                    return false;
+                } else if (Strophe.getBareJidFromJid(jid) === _converse.bare_jid) {
+                    el.textContent = __('You cannot add yourself as a contact')
+                    u.addClass('d-block', el);
+                    return false;
+                } else if (_converse.roster.get(Strophe.getBareJidFromJid(jid))) {
+                    el.textContent = __('This contact has already been added')
+                    u.addClass('d-block', el);
+                    return false;
+                }
+                u.removeClass('d-block', el);
+                return true;
+            },
+
+            afterSubmission (form, jid, name) {
+                _converse.roster.addAndSubscribe(jid, name);
+                this.model.clear();
+                this.modal.hide();
             },
 
             addContactFromForm (ev) {
                 ev.preventDefault();
                 const data = new FormData(ev.target),
-                      jid = data.get('jid'),
-                      name = data.get('name');
-                if (!jid || _.compact(jid.split('@')).length < 2) {
-                    // XXX: we have to do this manually, instead of via
-                    // toHTML because Awesomplete messes things up and
-                    // confuses Snabbdom
-                    u.addClass('is-invalid', this.el.querySelector('input[name="jid"]'));
-                    u.addClass('d-block', this.el.querySelector('.invalid-feedback'));
-                } else {
-                    ev.target.reset();
-                    _converse.roster.addAndSubscribe(jid, name);
-                    this.model.clear();
-                    this.modal.hide();
+                      jid = data.get('jid');
+
+                if (!jid && _converse.xhr_user_search_url && _.isString(_converse.xhr_user_search_url)) {
+                    const input_el = this.el.querySelector('input[name="name"]');
+                    this.xhr.open("GET", `${_converse.xhr_user_search_url}q=${input_el.value}`, true);
+                    this.xhr.send()
+                    return;
+                }
+                if (this.validateSubmission(jid)) {
+                    this.afterSubmission(ev.target, jid, data.get('name'));
                 }
             }
         });
@@ -435,12 +485,10 @@ converse.plugins.add('converse-rosterview', {
                  */
                 if (_converse.isUniView()) {
                     const chatbox = _converse.chatboxes.get(this.model.get('jid'));
-                    if (chatbox) {
-                        if (chatbox.get('hidden')) {
-                            this.el.classList.remove('open');
-                        } else {
-                            this.el.classList.add('open');
-                        }
+                    if ((chatbox && chatbox.get('hidden')) || !chatbox) {
+                        this.el.classList.remove('open');
+                    } else {
+                        this.el.classList.add('open');
                     }
                 }
             },
@@ -517,7 +565,7 @@ converse.plugins.add('converse-rosterview', {
                     _converse.log(e, Strophe.LogLevel.ERROR);
                     _converse.api.alert.show(
                         Strophe.LogLevel.ERROR,
-                        __('Sorry, there was an error while trying to remove %1$s as a contact.', name)
+                        __('Sorry, there was an error while trying to remove %1$s as a contact.', this.model.getDisplayName())
                     );
                 }
             },
@@ -765,9 +813,9 @@ converse.plugins.add('converse-rosterview', {
                 // just this group's) have been fetched from browser
                 // storage or the XMPP server and once they've been
                 // assigned to their various groups.
-                _converse.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this));
+                _converse.api.listen.on('rosterGroupsFetched', this.sortAndPositionAllItems.bind(this));
 
-                _converse.on('rosterContactsFetched', () => {
+                _converse.api.listen.on('rosterContactsFetched', () => {
                     _converse.roster.each((contact) => this.addRosterContact(contact, {'silent': true}));
                     this.update();
                     this.updateFilter();
@@ -959,16 +1007,16 @@ converse.plugins.add('converse-rosterview', {
             }
         });
 
-
         /* -------- Event Handlers ----------- */
         _converse.api.listen.on('chatBoxesInitialized', () => {
-
-            _converse.chatboxes.on('change:hidden', (chatbox) => {
+            function highlightRosterItem (chatbox) {
                 const contact = _converse.roster.findWhere({'jid': chatbox.get('jid')});
                 if (!_.isUndefined(contact)) {
-                    contact.trigger('highlight', contact);
+                    contact.trigger('highlight');
                 }
-            });
+            }
+            _converse.chatboxes.on('destroy', chatbox => highlightRosterItem(chatbox));
+            _converse.chatboxes.on('change:hidden', chatbox => highlightRosterItem(chatbox));
         });
 
         function initRoster () {
@@ -982,7 +1030,12 @@ converse.plugins.add('converse-rosterview', {
                 'model': _converse.rostergroups
             });
             _converse.rosterview.render();
-            _converse.emit('rosterViewInitialized');
+            /**
+             * Triggered once the _converse.RosterView instance has been created and initialized.
+             * @event _converse#rosterViewInitialized
+             * @example _converse.api.listen.on('rosterViewInitialized', () => { ... });
+             */
+            _converse.api.trigger('rosterViewInitialized');
         }
         _converse.api.listen.on('rosterInitialized', initRoster);
         _converse.api.listen.on('rosterReadyAfterReconnection', initRoster);

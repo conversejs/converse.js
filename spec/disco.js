@@ -187,11 +187,11 @@
                     null, ['discoInitialized'], {},
                     function (done, _converse) {
 
-                sinon.spy(_converse, 'emit');
+                sinon.spy(_converse.api, "trigger");
                 _converse.disco_entities.get(_converse.domain).features.create({'var': Strophe.NS.MAM});
-                expect(_converse.emit.called).toBe(true);
-                expect(_converse.emit.args[0][0]).toBe('serviceDiscovered');
-                expect(_converse.emit.args[0][1].get('var')).toBe(Strophe.NS.MAM);
+                expect(_converse.api.trigger.called).toBe(true);
+                expect(_converse.api.trigger.args[0][0]).toBe('serviceDiscovered');
+                expect(_converse.api.trigger.args[0][1].get('var')).toBe(Strophe.NS.MAM);
                 done();
             }));
         });

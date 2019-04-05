@@ -180,7 +180,15 @@ converse.plugins.add('converse-chatview', {
 
             onStatusMessageChanged (item) {
                 this.render();
-                _converse.emit('contactStatusMessageChanged', {
+                /**
+                 * When a contact's custom status message has changed.
+                 * @event _converse#contactStatusMessageChanged
+                 * @type {object}
+                 * @property { object } contact - The chat buddy
+                 * @property { string } message - The message text
+                 * @example _converse.api.listen.on('contactStatusMessageChanged', obj => { ... });
+                 */
+                _converse.api.trigger('contactStatusMessageChanged', {
                     'contact': item.attributes,
                     'message': item.get('status')
                 });
@@ -201,7 +209,13 @@ converse.plugins.add('converse-chatview', {
                 this.model.on('contactAdded', this.registerContactEventHandlers, this);
                 this.model.on('change', this.render, this);
                 this.registerContactEventHandlers();
-                _converse.emit('userDetailsModalInitialized', this.model);
+                /**
+                 * Triggered once the _converse.UserDetailsModal has been initialized
+                 * @event _converse#userDetailsModalInitialized
+                 * @type { _converse.ChatBox }
+                 * @example _converse.api.listen.on('userDetailsModalInitialized', chatbox => { ... });
+                 */
+                _converse.api.trigger('userDetailsModalInitialized', this.model);
             },
 
             toHTML () {
@@ -275,6 +289,13 @@ converse.plugins.add('converse-chatview', {
         });
 
 
+        /**
+         * The View of an open/ongoing chat conversation.
+         *
+         * @class
+         * @namespace _converse.ChatBoxView
+         * @memberOf _converse
+         */
         _converse.ChatBoxView = Backbone.NativeView.extend({
             length: 200,
             className: 'chatbox hidden',
@@ -315,8 +336,14 @@ converse.plugins.add('converse-chatview', {
                 this.render();
 
                 this.fetchMessages();
-                _converse.emit('chatBoxOpened', this);
-                _converse.emit('chatBoxInitialized', this);
+                _converse.api.trigger('chatBoxOpened', this); // TODO: remove
+                /**
+                 * Triggered once the _converse.ChatBoxView has been initialized
+                 * @event _converse#chatBoxInitialized
+                 * @type { _converse.ChatBoxView | _converse.HeadlinesBoxView }
+                 * @example _converse.api.listen.on('chatBoxInitialized', view => { ... });
+                 */
+                _converse.api.trigger('chatBoxInitialized', this);
             },
 
             initDebounced () {
@@ -351,7 +378,13 @@ converse.plugins.add('converse-chatview', {
                 this.el.querySelector('.chat-toolbar').innerHTML = toolbar(options);
                 this.addSpoilerButton(options);
                 this.addFileUploadButton();
-                _converse.emit('renderToolbar', this);
+                /**
+                 * Triggered once the _converse.ChatBoxView's toolbar has been rendered
+                 * @event _converse#renderToolbar
+                 * @type { _converse.ChatBoxView }
+                 * @example _converse.api.listen.on('renderToolbar', view => { ... });
+                 */
+                _converse.api.trigger('renderToolbar', this);
                 return this;
             },
 
@@ -485,7 +518,14 @@ converse.plugins.add('converse-chatview', {
                 this.insertIntoDOM();
                 this.scrollDown();
                 this.content.addEventListener('scroll', this.markScrolled.bind(this));
-                _converse.emit('afterMessagesFetched', this);
+                /**
+                 * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
+                 * `sessionStorage` but **NOT** from the server.
+                 * @event _converse#afterMessagesFetched 
+                 * @type {_converse.ChatBoxView | _converse.ChatRoomView}
+                 * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
+                 */
+                _converse.api.trigger('afterMessagesFetched', this);
             },
 
             fetchMessages () {
@@ -546,18 +586,18 @@ converse.plugins.add('converse-chatview', {
                 );
             },
 
+            /**
+             * Inserts an indicator into the chat area, showing the
+             * day as given by the passed in date.
+             * The indicator is only inserted if necessary.
+             * @private
+             * @method _converse.ChatBoxView#insertDayIndicator
+             * @param { HTMLElement } next_msg_el - The message element before
+             *      which the day indicator element must be inserted.
+             *      This element must have a "data-isodate" attribute
+             *      which specifies its creation date.
+             */
             insertDayIndicator (next_msg_el) {
-                /* Inserts an indicator into the chat area, showing the
-                 * day as given by the passed in date.
-                 *
-                 * The indicator is only inserted if necessary.
-                 *
-                 * Parameters:
-                 *  (HTMLElement) next_msg_el - The message element before
-                 *      which the day indicator element must be inserted.
-                 *      This element must have a "data-isodate" attribute
-                 *      which specifies its creation date.
-                 */
                 const prev_msg_el = u.getPreviousElement(next_msg_el, ".message:not(.chat-state-notification)"),
                       prev_msg_date = _.isNull(prev_msg_el) ? null : prev_msg_el.getAttribute('data-isodate'),
                       next_msg_date = next_msg_el.getAttribute('data-isodate');
@@ -576,13 +616,14 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
+            /**
+             * Return the ISO8601 format date of the latest message.
+             * @private
+             * @method _converse.ChatBoxView#getLastMessageDate
+             * @param { object } cutoff - Moment Date cutoff date. The last
+             *      message received cutoff this date will be returned.
+             */
             getLastMessageDate (cutoff) {
-                /* Return the ISO8601 format date of the latest message.
-                 *
-                 * Parameters:
-                 *  (Object) cutoff: Moment Date cutoff date. The last
-                 *      message received cutoff this date will be returned.
-                 */
                 const first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-state-notification)'),
                       oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
                 if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
@@ -673,13 +714,14 @@ converse.plugins.add('converse-chatview', {
                 return !u.isVisible(this.el);
             },
 
+            /**
+             * Given a view representing a message, insert it into the
+             * content area of the chat box.
+             * @private
+             * @method _converse.ChatBoxView#insertMessage
+             * @param { Backbone.View } message - The message Backbone.View
+             */
             insertMessage (view) {
-                /* Given a view representing a message, insert it into the
-                 * content area of the chat box.
-                 *
-                 * Parameters:
-                 *  (Backbone.View) message: The message Backbone.View
-                 */
                 if (view.model.get('type') === 'error') {
                     const previous_msg_el = this.content.querySelector(`[data-msgid="${view.model.get('msgid')}"]`);
                     if (previous_msg_el) {
@@ -706,20 +748,22 @@ converse.plugins.add('converse-chatview', {
                 return this.trigger('messageInserted', view.el);
             },
 
+            /**
+             * Given a message element, determine wether it should be
+             * marked as a followup message to the previous element.
+             *
+             * Also determine whether the element following it is a
+             * followup message or not.
+             *
+             * Followup messages are subsequent ones written by the same
+             * author with no other conversation elements inbetween and
+             * posted within 10 minutes of one another.
+             *
+             * @private
+             * @method _converse.ChatBoxView#markFollowups
+             * @param { HTMLElement } el - The message element
+             */
             markFollowups (el) {
-                /* Given a message element, determine wether it should be
-                 * marked as a followup message to the previous element.
-                 *
-                 * Also determine whether the element following it is a
-                 * followup message or not.
-                 *
-                 * Followup messages are subsequent ones written by the same
-                 * author with no other conversation elements inbetween and
-                 * posted within 10 minutes of one another.
-                 *
-                 * Parameters:
-                 *  (HTMLElement) el - The message element.
-                 */
                 const from = el.getAttribute('data-from'),
                       previous_el = el.previousElementSibling,
                       date = moment(el.getAttribute('data-isodate')),
@@ -743,15 +787,14 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
+            /**
+             * Inserts a chat message into the content area of the chat box.
+             * Will also insert a new day indicator if the message is on a different day.
+             * @private
+             * @method _converse.ChatBoxView#showMessage
+             * @param { _converse.Message } message - The message object
+             */
             async showMessage (message) {
-                /* Inserts a chat message into the content area of the chat box.
-                 *
-                 * Will also insert a new day indicator if the message is on a
-                 * different day.
-                 *
-                 * Parameters:
-                 *  (Backbone.Model) message: The message object
-                 */
                 if (!u.isNewMessage(message) && u.isEmptyMessage(message)) {
                     // Handle archived or delayed messages without any message
                     // text to show.
@@ -782,17 +825,26 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
+            /**
+             * Handler that gets called when a new message object is created.
+             * @private
+             * @method _converse.ChatBoxView#onMessageAdded
+             * @param { object } message - The message Backbone object that was added.
+             */
             onMessageAdded (message) {
-                /* Handler that gets called when a new message object is created.
-                 *
-                 * Parameters:
-                 *    (Object) message - The message Backbone object that was added.
-                 */
                 this.showMessage(message);
                 if (message.get('correcting')) {
                     this.insertIntoTextArea(message.get('message'), true, true);
                 }
-                _converse.emit('messageAdded', {
+                /**
+                 * Triggered once a message has been added to a chatbox.
+                 * @event _converse#messageAdded
+                 * @type {object}
+                 * @property { _converse.Message } message - The message instance
+                 * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
+                 * @example _converse.api.listen.on('messageAdded', data => { ... });
+                 */
+                _converse.api.trigger('messageAdded', {
                     'message': message,
                     'chatbox': this.model
                 });
@@ -817,17 +869,18 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
+            /**
+             * Mutator for setting the chat state of this chat session.
+             * Handles clearing of any chat state notification timeouts and
+             * setting new ones if necessary.
+             * Timeouts are set when the  state being set is COMPOSING or PAUSED.
+             * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
+             * See XEP-0085 Chat State Notifications.
+             * @private
+             * @method _converse.ChatBoxView#setChatState
+             * @param { string } state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
+             */
             setChatState (state, options) {
-                /* Mutator for setting the chat state of this chat session.
-                 * Handles clearing of any chat state notification timeouts and
-                 * setting new ones if necessary.
-                 * Timeouts are set when the  state being set is COMPOSING or PAUSED.
-                 * After the timeout, COMPOSING will become PAUSED and PAUSED will become INACTIVE.
-                 * See XEP-0085 Chat State Notifications.
-                 *
-                 *  Parameters:
-                 *    (string) state - The chat state (consts ACTIVE, COMPOSING, PAUSED, INACTIVE, GONE)
-                 */
                 if (!_.isUndefined(this.chat_state_timeout)) {
                     window.clearTimeout(this.chat_state_timeout);
                     delete this.chat_state_timeout;
@@ -878,7 +931,13 @@ converse.plugins.add('converse-chatview', {
                     textarea.value = '';
                     u.removeClass('correcting', textarea);
                     textarea.style.height = 'auto'; // Fixes weirdness
-                    _converse.emit('messageSend', message);
+                    /**
+                     * Triggered just before an HTML5 message notification will be sent out.
+                     * @event _converse#messageSend
+                     * @type { _converse.Message }
+                     * @example _converse.api.listen.on('messageSend', data => { ... });
+                     */
+                    _converse.api.trigger('messageSend', message);
                 }
                 textarea.removeAttribute('disabled');
                 u.removeClass('disabled', textarea);
@@ -1081,7 +1140,15 @@ converse.plugins.add('converse-chatview', {
 
             toggleCall (ev) {
                 ev.stopPropagation();
-                _converse.emit('callButtonClicked', {
+                /**
+                 * When a call button (i.e. with class .toggle-call) on a chatbox has been clicked.
+                 * @event _converse#callButtonClicked
+                 * @type { object }
+                 * @property { Strophe.Connection } _converse.connection - The XMPP Connection object
+                 * @property { _converse.ChatBox | _converse.ChatRoom } _converse.connection - The XMPP Connection object
+                 * @example _converse.api.listen.on('callButtonClicked', (connection, model) => { ... });
+                 */
+                _converse.api.trigger('callButtonClicked', {
                     connection: _converse.connection,
                     model: this.model
                 });
@@ -1162,7 +1229,13 @@ converse.plugins.add('converse-chatview', {
                     _converse.log(e, Strophe.LogLevel.ERROR);
                 }
                 this.remove();
-                _converse.emit('chatBoxClosed', this);
+                /**
+                 * Triggered once a chatbox has been closed.
+                 * @event _converse#chatBoxClosed
+                 * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+                 * @example _converse.api.listen.on('chatBoxClosed', view => { ... });
+                 */
+                _converse.api.trigger('chatBoxClosed', this);
                 return this;
             },
 
@@ -1182,7 +1255,13 @@ converse.plugins.add('converse-chatview', {
                 const textarea_el = this.el.querySelector('.chat-textarea');
                 if (!_.isNull(textarea_el)) {
                     textarea_el.focus();
-                    _converse.emit('chatBoxFocused', this);
+                    /**
+                     * Triggered when the focus has been moved to a particular chat.
+                     * @event _converse#chatBoxFocused
+                     * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+                     * @example _converse.api.listen.on('chatBoxFocused', view => { ... });
+                     */
+                    _converse.api.trigger('chatBoxFocused', this);
                 }
                 return this;
             },
@@ -1265,7 +1344,14 @@ converse.plugins.add('converse-chatview', {
                 if (_converse.windowState !== 'hidden') {
                     this.model.clearUnreadMsgCounter();
                 }
-                _converse.emit('chatBoxScrolledDown', {'chatbox': this.model});
+                /**
+                 * Triggered once the chat's message area has been scrolled down to the bottom.
+                 * @event _converse#chatBoxScrolledDown
+                 * @type {object}
+                 * @property { _converse.ChatBox | _converse.ChatRoom } chatbox - The chat model
+                 * @example _converse.api.listen.on('chatBoxScrolledDown', obj => { ... });
+                 */
+                _converse.api.trigger('chatBoxScrolledDown', {'chatbox': this.model}); // TODO: clean up
             },
 
             onWindowStateChanged (state) {
@@ -1283,7 +1369,7 @@ converse.plugins.add('converse-chatview', {
             }
         });
 
-        _converse.on('chatBoxViewsInitialized', () => {
+        _converse.api.listen.on('chatBoxViewsInitialized', () => {
             const that = _converse.chatboxviews;
             _converse.chatboxes.on('add', item => {
                 if (!that.get(item.get('id')) && item.get('type') === _converse.PRIVATE_CHAT_TYPE) {
@@ -1292,7 +1378,7 @@ converse.plugins.add('converse-chatview', {
             });
         });
 
-        _converse.on('connected', () => {
+        _converse.api.listen.on('connected', () => {
             // Advertise that we support XEP-0382 Message Spoilers
             _converse.api.disco.own.features.add(Strophe.NS.SPOILER);
         });

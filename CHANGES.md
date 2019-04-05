@@ -1,30 +1,53 @@
 # Changelog
 
-## 4.1.3 (Unreleased)
+## 4.2.1 (Unreaded)
 
-- Updated translation: lt
-- Upgrade to Backbone 1.4.0 and Strophe 1.3.2
-- Fix "flashing" of roster filter when you have less than 5 roster contacts.
-- Fix handling of CAPTCHAs offered by ejabberd.
+* Bugfix. Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
+
+## 4.2.0 (2019-04-04)
+
+**Note:** This release introduces a hard requirement on [MAM:2](https://xmpp.org/extensions/xep-0313.html),
+specifically the requirement that the MAM archive ID matches the [XEP-0359 stanza-id](https://xmpp.org/extensions/xep-0359.html).
+Patches intended to make Converse work with MAM:1 will cause problems and
+unexpected behaviour due to the above requirement, which is not met with MAM:1.
+This will affect OpenFire users who use the [monitoring plugin](https://www.igniterealtime.org/projects/openfire/plugin-archive.jsp?plugin=monitoring)
+version 1.7.0 and below. You're advised to stay on Converse version 4.1.2 until an update to that plugin has been released.
+
+- Updated translation: af, cz, de, es, gl, he, lt, nl, nl_BE, ru
+- Upgrade to Backbone 1.4.0, Strophe 1.3.2 and Jasmine 2.99.2
+- Remove dependency on (our fork of) Awesomplete
+- Prevent user from adding themselves as contact
+- Fix "flashing" of roster filter when you have less than 5 roster contacts
+- Fix handling of CAPTCHAs offered by ejabberd
 - Don't send out receipts or markers for MAM messages
 - Allow setting of debug mode via URL with `/#converse?debug=true`
-- New config setting [locked_muc_domain](https://conversejs.org/docs/html/configuration.html#locked-muc-domain)
-- New config setting [show_client_info](https://conversejs.org/docs/html/configuration.html#show-client-info)
 - Render inline images served over HTTP if Converse itself was loaded on an unsecured (HTTP) page.
+- Make sure `nickname` passed in via `_converse.initialize` has first preference as MUC nickname
+- Make sure required registration fields have "required" attribute
+- New config setting [autocomplete_add_contact](https://conversejs.org/docs/html/configuration.html#autocomplete-add-contact)
+- New config setting [locked_muc_domain](https://conversejs.org/docs/html/configuration.html#locked-muc-domain)
+- New config setting [locked_muc_nickname](https://conversejs.org/docs/html/configuration.html#locked-muc-nickname)
+- New config setting [show_client_info](https://conversejs.org/docs/html/configuration.html#show-client-info)
 - Document new API method [sendMessage](https://conversejs.org/docs/html/api/-_converse.ChatBox.html#sendMessage)
+- Don't filter out own device when sending an OMEMO message
 - #1149: With `xhr_user_search_url`, contact requests are not being sent out
 - #1213: Switch roster filter input and icons
 - #1327: fix False mentions positives in URLs and Email addresses
 - #1352: Add [Jed](https://github.com/messageformat/Jed) as dependency of `@converse/headless`
 - #1373: Re-add support for the [muc_domain](https://conversejs.org/docs/html/configuration.html#muc-domain) setting
 - #1400: When a chat message is just an emoji, enlarge the emoji
+- #1407: Silent errors when trying to use whitespace as MUC nickname
 - #1437: List of groupchats in modal doesn't scroll
 - #1457: Wrong tooltip shown for "unbookmark" icon
+- #1467: Fix rendering of URLs enclosed with sharp brackets such as <https://example.org>
 - #1479: Allow file upload by drag & drop also in MUCs
 - #1487: New config option [muc_respect_autojoin](https://conversejs.org/docs/html/configuration.html#muc-respect-autojoin)
+- #1488: In error message, fall back to JID if name is not available.
 - #1501: Don't prompt for a reason if [auto_join_on_invite](https://conversejs.org/docs/html/configuration.html#auto-join-on-invite) is `true`
 - #1507: Make message id and origin-id identical in order to fix LMC with Conversations
-
+- #1508: Minimized bookmarked chatboxes should not be always maximized after page reload.
+- #1512: Allow manual entry of jid even with [xhr_user_search_url](https://conversejs.org/docs/html/configuration.html#xhr-user-search-url).
+         The JID input field is now also visible. To hide it simply hide `.add-xmpp-contact__jid` via CSS.
 
 ## 4.1.2 (2019-02-22)
 

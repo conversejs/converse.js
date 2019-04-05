@@ -260,7 +260,14 @@ converse.plugins.add('converse-notification', {
             if (!_converse.shouldNotifyOfMessage(message)) {
                 return false;
             }
-            _converse.api.emit('messageNotification', message);
+            /**
+             * Triggered when a notification (sound or HTML5 notification) for a new
+             * message has will be made.
+             * @event _converse#messageNotification
+             * @type { XMLElement }
+             * @example _converse.api.listen.on('messageNotification', stanza => { ... });
+             */
+            _converse.api.trigger('messageNotification', message);
             _converse.playSoundNotification();
             _converse.showMessageNotification(message);
         };
@@ -285,15 +292,15 @@ converse.plugins.add('converse-notification', {
             }
         };
 
-        _converse.on('pluginsInitialized', function () {
+        _converse.api.listen.on('pluginsInitialized', function () {
             // We only register event handlers after all plugins are
             // registered, because other plugins might override some of our
             // handlers.
-            _converse.on('contactRequest',  _converse.handleContactRequestNotification);
-            _converse.on('contactPresenceChanged',  _converse.handleChatStateNotification);
-            _converse.on('message',  _converse.handleMessageNotification);
-            _converse.on('feedback', _converse.handleFeedback);
-            _converse.on('connected', _converse.requestPermission);
+            _converse.api.listen.on('contactRequest',  _converse.handleContactRequestNotification);
+            _converse.api.listen.on('contactPresenceChanged',  _converse.handleChatStateNotification);
+            _converse.api.listen.on('message',  _converse.handleMessageNotification);
+            _converse.api.listen.on('feedback', _converse.handleFeedback);
+            _converse.api.listen.on('connected', _converse.requestPermission);
         });
     }
 });

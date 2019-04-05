@@ -10,7 +10,6 @@ import "converse-modal";
 import "backbone.overview/backbone.orderedlistview";
 import "backbone.overview/backbone.overview";
 import "backbone.vdomview";
-import Awesomplete from "awesomplete";
 import _FormData from "formdata-polyfill";
 import converse from "@converse/headless/converse-core";
 import muc_utils from "@converse/headless/utils/muc";
@@ -77,12 +76,13 @@ converse.plugins.add('converse-muc-views', {
                 this.el.querySelector('.controlbox-pane').insertAdjacentElement(
                     'beforeEnd', this.roomspanel.render().el);
 
-                if (!this.roomspanel.model.get('nick')) {
-                    this.roomspanel.model.save({
-                        nick: _converse.xmppstatus.vcard.get('nickname') || Strophe.getNodeFromJid(_converse.bare_jid)
-                    });
-                }
-                _converse.emit('roomsPanelRendered');
+                /**
+                 * Triggered once the section of the _converse.ControlBoxView
+                 * which shows gropuchats has been rendered.
+                 * @event _converse#roomsPanelRendered
+                 * @example _converse.api.listen.on('roomsPanelRendered', () => { ... });
+                 */
+                _converse.api.trigger('roomsPanelRendered');
             },
 
             renderControlBoxPane () {
@@ -109,7 +109,8 @@ converse.plugins.add('converse-muc-views', {
             'auto_list_rooms': false,
             'muc_disable_moderator_commands': false,
             'muc_domain': undefined,
-            'locked_muc_domain': undefined,
+            'locked_muc_nickname': false,
+            'locked_muc_domain': false,
             'muc_show_join_leave': true,
             'roomconfig_whitelist': [],
             'visible_toolbar_buttons': {
@@ -202,15 +203,12 @@ converse.plugins.add('converse-muc-views', {
         };
 
 
+        /* Insert groupchat info (based on returned #disco IQ stanza)
+         * @function insertRoomInfo
+         * @param { HTMLElement } el - The HTML DOM element that contains the info.
+         * @param { XMLElement } stanza - The IQ stanza containing the groupchat info.
+         */
         function insertRoomInfo (el, stanza) {
-            /* Insert groupchat info (based on returned #disco IQ stanza)
-             *
-             * Parameters:
-             *  (HTMLElement) el: The HTML DOM element that should
-             *      contain the info.
-             *  (XMLElement) stanza: The IQ stanza containing the groupchat
-             *      info.
-             */
             // All MUC features found here: https://xmpp.org/registrar/disco-features.html
             el.querySelector('span.spinner').remove();
             el.querySelector('a.room-info').classList.add('selected');
@@ -271,7 +269,7 @@ converse.plugins.add('converse-muc-views', {
                 'submit form': 'showRooms',
                 'click a.room-info': 'toggleRoomInfo',
                 'change input[name=nick]': 'setNick',
-                'change input[name=server]': 'setDomain',
+                'change input[name=server]': 'setDomainFromEvent',
                 'click .open-room': 'openRoom'
             },
 
@@ -385,12 +383,12 @@ converse.plugins.add('converse-muc-views', {
             showRooms (ev) {
                 ev.preventDefault();
                 const data = new FormData(ev.target);
-                this.model.save('muc_domain', Strophe.getDomainFromJid(data.get('server')));
+                this.model.setDomain(data.get('server'));
                 this.updateRoomsList();
             },
 
-            setDomain (ev) {
-                this.model.save('muc_domain', Strophe.getDomainFromJid(ev.target.value));
+            setDomainFromEvent (ev) {
+                this.model.setDomain(ev.target.value);
             },
 
             setNick (ev) {
@@ -417,11 +415,10 @@ converse.plugins.add('converse-muc-views', {
                     placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
                 }
                 return tpl_add_chatroom_modal(_.extend(this.model.toJSON(), {
-                    'heading_new_chatroom': __('Enter a new Groupchat'),
+                    '__': _converse.__,
+                    '_converse': _converse,
                     'label_room_address': _converse.muc_domain ? __('Groupchat name') :  __('Groupchat address'),
-                    'label_nickname': __('Optional nickname'),
-                    'chatroom_placeholder': placeholder,
-                    'label_join': __('Join'),
+                    'chatroom_placeholder': placeholder
                 }));
             },
 
@@ -434,10 +431,18 @@ converse.plugins.add('converse-muc-views', {
             parseRoomDataFromEvent (form) {
                 const data = new FormData(form);
                 const jid = data.get('chatroom');
-                this.model.save('muc_domain', Strophe.getDomainFromJid(jid));
+                let nick;
+                if (_converse.locked_muc_nickname) {
+                    nick = _converse.getDefaultMUCNickname();
+                    if (!nick) {
+                        throw new Error("Using locked_muc_nickname but no nickname found!");
+                    }
+                } else {
+                    nick = data.get('nickname').trim();
+                }
                 return {
                     'jid': jid,
-                    'nick': data.get('nickname')
+                    'nick': nick
                 }
             },
 
@@ -453,6 +458,7 @@ converse.plugins.add('converse-muc-views', {
                     jid = `${Strophe.escapeNode(data.jid)}@${_converse.muc_domain}`;
                 } else {
                     jid = data.jid
+                    this.model.setDomain(jid);
                 }
                 _converse.api.rooms.open(jid, _.extend(data, {jid}));
                 this.modal.hide();
@@ -485,6 +491,13 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
+        /**
+         * The View of an open/ongoing groupchat conversation
+         *
+         * @class
+         * @namespace _converse.ChatRoomView
+         * @memberOf _converse
+         */
         _converse.ChatRoomView = _converse.ChatBoxView.extend({
             /* Backbone.NativeView which renders a groupchat, based upon the view
              * for normal one-on-one chat boxes.
@@ -558,7 +571,13 @@ converse.plugins.add('converse-muc-views', {
                 } else {
                     this.fetchMessages();
                 }
-                _converse.emit('chatRoomOpened', this);
+                /**
+                 * Triggered once a groupchat has been opened
+                 * @event _converse#chatRoomOpened
+                 * @type { _converse.ChatRoomView }
+                 * @example _converse.api.listen.on('chatRoomOpened', view => { ... });
+                 */
+                _converse.api.trigger('chatRoomOpened', this);
             },
 
             render () {
@@ -595,7 +614,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             initMentionAutoComplete () {
-                this.auto_complete = new _converse.AutoComplete(this.el, {
+                this.mention_auto_complete = new _converse.AutoComplete(this.el, {
                     'auto_first': true,
                     'auto_evaluate': false,
                     'min_chars': 1,
@@ -605,18 +624,18 @@ converse.plugins.add('converse-muc-views', {
                     'ac_triggers': ["Tab", "@"],
                     'include_triggers': []
                 });
-                this.auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
+                this.mention_auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
             },
 
             keyPressed (ev) {
-                if (this.auto_complete.keyPressed(ev)) {
+                if (this.mention_auto_complete.keyPressed(ev)) {
                     return;
                 }
                 return _converse.ChatBoxView.prototype.keyPressed.apply(this, arguments);
             },
 
             keyUp (ev) {
-                this.auto_complete.evaluate(ev);
+                this.mention_auto_complete.evaluate(ev);
             },
 
             showRoomDetailsModal (ev) {
@@ -690,6 +709,7 @@ converse.plugins.add('converse-muc-views', {
                  */
                 return tpl_chatroom_head(
                     _.extend(this.model.toJSON(), {
+                        '_converse': _converse,
                         'Strophe': Strophe,
                         'info_close': __('Close and leave this groupchat'),
                         'info_configure': __('Configure this groupchat'),
@@ -1087,12 +1107,13 @@ converse.plugins.add('converse-muc-views', {
                 this.model.addHandler('message', 'ChatRoomView.showStatusMessages', this.showStatusMessages.bind(this));
             },
 
+            /**
+             * Handles all MUC presence stanzas.
+             * @private
+             * @method _converse.ChatRoomView#onPresence
+             * @param { XMLElement } pres - The stanza
+             */
             onPresence (pres) {
-                /* Handles all MUC presence stanzas.
-                 *
-                 * Parameters:
-                 *  (XMLElement) pres: The stanza
-                 */
                 // XXX: Current thinking is that excessive stanza
                 // processing inside a view is a "code smell".
                 // Instead stanza processing should happen inside the
@@ -1115,14 +1136,14 @@ converse.plugins.add('converse-muc-views', {
                 this.fetchMessages();
             },
 
+            /**
+             * Join the groupchat.
+             * @private
+             * @method _converse.ChatRoomView#join
+             * @param { String } nick - The user's nickname
+             * @param { String } password - Optional password, if required by the groupchat
+             */
             join (nick, password) {
-                /* Join the groupchat.
-                 *
-                 * Parameters:
-                 *  (String) nick: The user's nickname
-                 *  (String) password: Optional password, if required by
-                 *      the groupchat.
-                 */
                 if (!nick && !this.model.get('nick')) {
                     this.checkForReservedNick();
                     return this;
@@ -1131,17 +1152,16 @@ converse.plugins.add('converse-muc-views', {
                 return this;
             },
 
+            /**
+             * Renders a form given an IQ stanza containing the current
+             * groupchat configuration.
+             * Returns a promise which resolves once the user has
+             * either submitted the form, or canceled it.
+             * @private
+             * @method _converse.ChatRoomView#renderConfigurationForm
+             * @param { XMLElement } stanza: The IQ stanza containing the groupchat config.
+             */
             renderConfigurationForm (stanza) {
-                /* Renders a form given an IQ stanza containing the current
-                 * groupchat configuration.
-                 *
-                 * Returns a promise which resolves once the user has
-                 * either submitted the form, or canceled it.
-                 *
-                 * Parameters:
-                 *  (XMLElement) stanza: The IQ stanza containing the groupchat
-                 *      config.
-                 */
                 const container_el = this.el.querySelector('.chatroom-body');
                 _.each(container_el.querySelectorAll('.chatroom-form-container'), u.removeElement);
                 _.each(container_el.children, u.hideElement);
@@ -1259,7 +1279,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             onReservedNickNotFound (message) {
-                const nick = this.model.getDefaultNick();
+                const nick = _converse.getDefaultMUCNickname();
                 if (nick) {
                     this.join(nick);
                 } else {
@@ -1278,7 +1298,7 @@ converse.plugins.add('converse-muc-views', {
                  */
                 if (_converse.muc_nickname_from_jid) {
                     const nick = presence.getAttribute('from').split('/')[1];
-                    if (nick === this.model.getDefaultNick()) {
+                    if (nick === _converse.getDefaultMUCNickname()) {
                         this.join(nick + '-2');
                     } else {
                         const del= nick.lastIndexOf("-");
@@ -1397,13 +1417,14 @@ converse.plugins.add('converse-muc-views', {
                 u.showElement(container);
             },
 
+            /**
+             * @private
+             * @method _converse.ChatRoomView#getMessageFromStatus
+             * @param { XMLElement } stat: A <status> element
+             * @param { Boolean } is_self: Whether the element refers to the current user
+             * @param { XMLElement } stanza: The original stanza received
+             */
             getMessageFromStatus (stat, stanza, is_self) {
-                /* Parameters:
-                 *  (XMLElement) stat: A <status> element.
-                 *  (Boolean) is_self: Whether the element refers to the
-                 *                     current user.
-                 *  (XMLElement) stanza: The original stanza received.
-                 */
                 const code = stat.getAttribute('code');
                 if (code === '110' || (code === '100' && !is_self)) { return; }
                 if (code in _converse.muc.info_messages) {
@@ -1674,14 +1695,14 @@ converse.plugins.add('converse-muc-views', {
                 this.scrollDown();
             },
 
+            /**
+             * Check for status codes and communicate their purpose to the user.
+             * See: https://xmpp.org/registrar/mucstatus.html
+             * @private
+             * @method _converse.ChatRoomView#showStatusMessages
+             * @param { XMLElement } stanza - The message or presence stanza containing the status codes
+             */
             showStatusMessages (stanza) {
-                /* Check for status codes and communicate their purpose to the user.
-                 * See: https://xmpp.org/registrar/mucstatus.html
-                 *
-                 * Parameters:
-                 *  (XMLElement) stanza: The message or presence stanza
-                 *      containing the status codes.
-                 */
                 const elements = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"]`, stanza);
                 const is_self = stanza.querySelectorAll("status[code='110']").length;
                 const iteratee = _.partial(this.parseXUserElement.bind(this), _, stanza, is_self);
@@ -1900,17 +1921,15 @@ converse.plugins.add('converse-muc-views', {
                     })
                 );
                 if (_converse.allow_muc_invitations) {
-                    _converse.api.waitUntil('rosterContactsFetched').then(
-                        this.renderInviteWidget.bind(this)
-                    );
+                    _converse.api.waitUntil('rosterContactsFetched').then(() => this.renderInviteWidget());
                 }
                 return this.renderRoomFeatures();
             },
 
             renderInviteWidget () {
-                const form = this.el.querySelector('form.room-invite');
+                const widget = this.el.querySelector('.room-invite');
                 if (this.shouldInviteWidgetBeShown()) {
-                    if (_.isNull(form)) {
+                    if (_.isNull(widget)) {
                         const heading = this.el.querySelector('.occupants-heading');
                         heading.insertAdjacentHTML(
                             'afterend',
@@ -1921,8 +1940,8 @@ converse.plugins.add('converse-muc-views', {
                         );
                         this.initInviteWidget();
                     }
-                } else if (!_.isNull(form)) {
-                    form.remove();
+                } else if (!_.isNull(widget)) {
+                    widget.remove();
                 }
                 return this;
             },
@@ -1959,12 +1978,13 @@ converse.plugins.add('converse-muc-views', {
                 if (reason !== null) {
                     this.chatroomview.model.directInvite(suggestion.text.value, reason);
                 }
-                const form = suggestion.target.form,
-                      error = form.querySelector('.pure-form-message.error');
+                const form = this.el.querySelector('.room-invite form'),
+                      input = form.querySelector('.invited-contact'),
+                      error = form.querySelector('.error');
                 if (!_.isNull(error)) {
                     error.parentNode.removeChild(error);
                 }
-                suggestion.target.value = '';
+                input.value = '';
             },
 
             inviteFormSubmitted (evt) {
@@ -1995,28 +2015,31 @@ converse.plugins.add('converse-muc-views', {
             },
 
             initInviteWidget () {
-                const form = this.el.querySelector('form.room-invite');
+                const form = this.el.querySelector('.room-invite form');
                 if (_.isNull(form)) {
                     return;
                 }
                 form.addEventListener('submit', this.inviteFormSubmitted.bind(this), false);
-                const el = this.el.querySelector('input.invited-contact');
-                const list = _converse.roster.map(function (item) {
-                        const label = item.get('fullname') || item.get('jid');
-                        return {'label': label, 'value':item.get('jid')};
-                    });
-                const awesomplete = new Awesomplete(el, {
-                    'minChars': 1,
+                const list = _converse.roster.map(i => ({'label': i.get('fullname') || i.get('jid'), 'value': i.get('jid')}));
+                const el = this.el.querySelector('.suggestion-box').parentElement;
+
+                if (this.invite_auto_complete) {
+                    this.invite_auto_complete.destroy();
+                }
+                this.invite_auto_complete = new _converse.AutoComplete(el, {
+                    'min_chars': 1,
                     'list': list
                 });
-                el.addEventListener('awesomplete-selectcomplete',
-                    this.promptForInvite.bind(this));
+                this.invite_auto_complete.on('suggestion-box-selectcomplete', ev => this.promptForInvite(ev));
+                this.invite_auto_complete.ul.setAttribute(
+                    'style',
+                    `max-height: calc(${this.el.offsetHeight}px - 80px);`
+                );
             }
         });
 
 
         function setMUCDomain (domain, controlboxview) {
-            _converse.muc_domain = domain;
             controlboxview.roomspanel.model.save('muc_domain', Strophe.getDomainFromJid(domain));
         }
 
@@ -2056,7 +2079,7 @@ converse.plugins.add('converse-muc-views', {
         }
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.on('chatBoxViewsInitialized', () => {
+        _converse.api.listen.on('chatBoxViewsInitialized', () => {
 
             function openChatRoomFromURIClicked (ev) {
                 ev.preventDefault();
@@ -2100,7 +2123,7 @@ converse.plugins.add('converse-muc-views', {
                 }
             });
         }
-        _converse.on('reconnected', reconnectToChatRooms);
+        _converse.api.listen.on('reconnected', reconnectToChatRooms);
         /************************ END Event Handlers ************************/
 
 

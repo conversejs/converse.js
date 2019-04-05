@@ -209,7 +209,7 @@ converse.plugins.add('converse-mam', {
         };
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.on('serviceDiscovered', (feature) => {
+        _converse.api.listen.on('serviceDiscovered', (feature) => {
             const prefs = feature.get('preferences') || {};
             if (feature.get('var') === Strophe.NS.MAM &&
                     prefs['default'] !== _converse.message_archiving && // eslint-disable-line dot-notation
@@ -221,7 +221,7 @@ converse.plugins.add('converse-mam', {
             }
         });
 
-        _converse.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
+        _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
         /************************ END Event Handlers ************************/
 
 

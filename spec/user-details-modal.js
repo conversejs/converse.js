@@ -20,7 +20,7 @@
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            _converse.api.trigger('rosterContactsFetched');
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             test_utils.openChatBoxFor(_converse, contact_jid);
@@ -54,7 +54,7 @@
                 async function (done, _converse) {
 
             test_utils.createContacts(_converse, 'current');
-            _converse.emit('rosterContactsFetched');
+            _converse.api.trigger('rosterContactsFetched');
 
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid)

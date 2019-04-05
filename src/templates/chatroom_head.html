@@ -1,8 +1,10 @@
 <div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>
 <div class="chatbox-title">
-    <div class="chat-title" title="{{{o.jid}}}">
+    <div class="chat-title" {[ if (o._converse.locked_muc_domain !== 'hidden') { ]} title="{{{o.jid}}}" {[ } ]} >
         {[ if (o.name && o.name !== o.Strophe.getNodeFromJid(o.jid)) { ]}
             {{{ o.name }}}
+        {[ } else if (o._converse.locked_muc_domain === 'hidden') { ]}
+            {{{ o.Strophe.getNodeFromJid(o.jid) }}}
         {[ } else { ]}
             {{{ o.Strophe.getNodeFromJid(o.jid) }}}@{{{ o.Strophe.getDomainFromJid(o.jid) }}}
         {[ } ]}

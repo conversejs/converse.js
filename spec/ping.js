@@ -13,7 +13,7 @@
 
                 spyOn(_converse, 'registerPingHandler').and.callThrough();
                 spyOn(_converse, 'registerPongHandler').and.callThrough();
-                _converse.emit('connected');
+                _converse.api.trigger('connected');
                 expect(_converse.registerPingHandler).toHaveBeenCalled();
                 expect(_converse.registerPongHandler).toHaveBeenCalled();
                 done();
@@ -26,7 +26,7 @@
 
                 spyOn(_converse, 'registerPingHandler').and.callThrough();
                 spyOn(_converse, 'registerPongHandler').and.callThrough();
-                _converse.emit('reconnected');
+                _converse.api.trigger('reconnected');
                 expect(_converse.registerPingHandler).toHaveBeenCalled();
                 expect(_converse.registerPongHandler).toHaveBeenCalled();
                 done();

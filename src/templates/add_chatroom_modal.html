@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"
-                    id="add-chatroom-modal-label">{{{o.heading_new_chatroom}}}</h5>
+                    id="add-chatroom-modal-label">{{{o.__('Enter a new Groupchat')}}}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -14,11 +14,13 @@
                         <label for="chatroom">{{{o.label_room_address}}}:</label>
                         <input type="text" required="required" name="chatroom" class="form-control" placeholder="{{{o.chatroom_placeholder}}}"/>
                     </div>
-                    <div class="form-group">
-                        <label for="nickname">{{{o.label_nickname}}}:</label>
-                        <input type="text" name="nickname" value="{{{o.nick}}}" class="form-control"/>
+                    {[ if (!o._converse.locked_muc_nickname) { ]}
+                    <div class="form-group" >
+                        <label for="nickname">{{{o.__('Nickname')}}}:</label>
+                        <input type="text" pattern=".*\S+.*" title="{{{o.__('This field is required')}}}" required="required" name="nickname" value="{{{o.nick}}}" class="form-control"/>
                     </div>
-                    <input type="submit" class="btn btn-primary" name="join" value="{{{o.label_join}}}"/>
+                    {[ } ]}
+                    <input type="submit" class="btn btn-primary" name="join" value="{{{o.__('Join')}}}"/>
                 </form>
             </div>
         </div>

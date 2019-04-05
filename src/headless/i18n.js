@@ -44,10 +44,8 @@ import moment from "moment";
 function detectLocale (library_check) {
     /* Determine which locale is supported by the user's system as well
      * as by the relevant library (e.g. converse.js or moment.js).
-     *
-     * Parameters:
-     *      (Function) library_check - Returns a boolean indicating whether
-     *                                 the locale is supported.
+     * @param { Function } library_check - Returns a boolean indicating whether
+     *   the locale is supported.
      */
     var locale, i;
     if (window.navigator.userLanguage) {
@@ -87,13 +85,11 @@ function getLocale (preferred_locale, isSupportedByLibrary) {
     return detectLocale(isSupportedByLibrary) || 'en';
 }
 
+/* Check whether the locale or sub locale (e.g. en-US, en) is supported.
+ * @param { String } locale - The locale to check for
+ * @param { Function } available - Returns a boolean indicating whether the locale is supported
+ */
 function isLocaleAvailable (locale, available) {
-    /* Check whether the locale or sub locale (e.g. en-US, en) is supported.
-     *
-     * Parameters:
-     *      (String) locale - The locale to check for
-     *      (Function) available - returns a boolean indicating whether the locale is supported
-     */
     if (available(locale)) {
         return locale;
     } else {
@@ -106,6 +102,9 @@ function isLocaleAvailable (locale, available) {
 
 let jed_instance;
 
+/**
+ * @namespace i18n
+ */
 export default {
 
     setLocales (preferred_locale, _converse) {
@@ -120,23 +119,23 @@ export default {
         if (_.isNil(jed_instance)) {
             return Jed.sprintf.apply(Jed, arguments);
         }
-        var t = jed_instance.translate(str);
-        if (arguments.length>1) {
+        const t = jed_instance.translate(str);
+        if (arguments.length > 1) {
             return t.fetch.apply(t, [].slice.call(arguments, 1));
         } else {
             return t.fetch();
         }
     },
 
+    /**
+     * Fetch the translations for the given local at the given URL.
+     * @private
+     * @method i18n#fetchTranslations
+     * @param { String } locale -The given i18n locale
+     * @param { Array } supported_locales -  List of locales supported
+     * @param { String } locale_url - The URL from which the translations should be fetched
+     */
     fetchTranslations (locale, supported_locales, locale_url) {
-        /* Fetch the translations for the given local at the given URL.
-         *
-         * Parameters:
-         *  (String) locale:            The given i18n locale
-         *  (Array) supported_locales:  List of locales supported
-         *  (String) locale_url:        The URL from which the translations
-         *                              should be fetched.
-         */
         return new Promise((resolve, reject) => {
             if (!isConverseLocale(locale, supported_locales) || locale === 'en') {
                 return resolve();

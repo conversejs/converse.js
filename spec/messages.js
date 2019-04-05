@@ -1,11 +1,10 @@
 (function (root, factory) {
     define([
-        "jquery",
         "jasmine",
         "mock",
         "test-utils"
         ], factory);
-} (this, function ($, jasmine, mock, test_utils) {
+} (this, function (jasmine, mock, test_utils) {
     "use strict";
     const { Backbone, Promise, Strophe, $iq, $msg, $pres, b64_sha1, moment, sizzle, _ } = converse.env;
     const u = converse.env.utils;
@@ -655,7 +654,7 @@
             const contact_name = mock.cur_names[0];
             const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
             test_utils.openControlBox();
-            spyOn(_converse, 'emit').and.callThrough();
+            spyOn(_converse.api, "trigger").and.callThrough();
 
             await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
             await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -676,7 +675,7 @@
             await _converse.chatboxes.onMessage(msg);
 
             await test_utils.waitUntil(() => chatview.model.messages.length);
-            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
             const trimmed_chatboxes = _converse.minimized_chats;
             const trimmedview = trimmed_chatboxes.get(contact_jid);
             let count = trimmedview.el.querySelector('.message-count');
@@ -713,7 +712,7 @@
             const include_nick = false;
             await test_utils.waitForRoster(_converse, 'current', 2, include_nick);
             test_utils.openControlBox();
-            spyOn(_converse, 'emit');
+            spyOn(_converse.api, "trigger");
             const contact_name = mock.cur_names[1];
             const contact_jid = contact_name.replace(/ /g,'.').toLowerCase() + '@localhost';
 
@@ -737,7 +736,7 @@
             await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
             expect(chatbox.messages.length).toEqual(1);
             let msg_obj = chatbox.messages.models[0];
             expect(msg_obj.get('message')).toEqual(message);
@@ -770,7 +769,7 @@
             await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
             // Check that there is a <time> element, with the required
             // props.
             expect(chat_content.querySelectorAll('time.separator-text').length).toEqual(2); // There are now two time elements
@@ -807,17 +806,17 @@
 
             await test_utils.waitForRoster(_converse, 'current');
             test_utils.openControlBox();
-            spyOn(_converse, 'emit');
+            spyOn(_converse.api, "trigger");
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
             await test_utils.openChatBoxFor(_converse, contact_jid)
-            expect(_converse.emit).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
+            expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxFocused', jasmine.any(Object));
             const view = _converse.chatboxviews.get(contact_jid);
             const message = 'This message is sent from this chatbox';
             spyOn(view.model, 'sendMessage').and.callThrough();
             await test_utils.sendMessage(view, message);
             expect(view.model.sendMessage).toHaveBeenCalled();
             expect(view.model.messages.length, 2);
-            expect(_converse.emit.calls.mostRecent().args, ['messageSend', message]);
+            expect(_converse.api.trigger.calls.mostRecent().args, ['messageSend', message]);
             expect(sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop().textContent).toEqual(message);
             done();
         }));
@@ -836,9 +835,9 @@
             spyOn(view.model, 'sendMessage').and.callThrough();
             await test_utils.sendMessage(view, message);
             expect(view.model.sendMessage).toHaveBeenCalled();
-            const msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
-            expect(msg.text()).toEqual(message);
-            expect(msg.html()).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
+            const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+            expect(msg.textContent).toEqual(message);
+            expect(msg.innerHTML).toEqual('&lt;p&gt;This message contains &lt;em&gt;some&lt;/em&gt; &lt;b&gt;markup&lt;/b&gt;&lt;/p&gt;');
             done();
         }));
 
@@ -857,9 +856,9 @@
             test_utils.sendMessage(view, message);
             expect(view.model.sendMessage).toHaveBeenCalled();
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-            const msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
-            expect(msg.text()).toEqual(message);
-            expect(msg.html())
+            const msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+            expect(msg.textContent).toEqual(message);
+            expect(msg.innerHTML)
                 .toEqual('This message contains a hyperlink: <a target="_blank" rel="noopener" href="http://www.opkode.com">www.opkode.com</a>');
             done();
         }));
@@ -879,31 +878,48 @@
             let message = "http://www.opkode.com/'onmouseover='alert(1)'whatever";
             await test_utils.sendMessage(view, message);
 
-            let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
             expect(msg.textContent).toEqual(message);
-            expect($(msg).html())
+            expect(msg.innerHTML)
                 .toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%27onmouseover=%27alert%281%29%27whatever">http://www.opkode.com/\'onmouseover=\'alert(1)\'whatever</a>');
 
             message = 'http://www.opkode.com/"onmouseover="alert(1)"whatever';
             await test_utils.sendMessage(view, message);
 
-            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
             expect(msg.textContent).toEqual(message);
-            expect($(msg).html()).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>');
+            expect(msg.innerHTML).toEqual('<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>');
 
             message = "https://en.wikipedia.org/wiki/Ender's_Game";
             await test_utils.sendMessage(view, message);
 
-            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
             expect(msg.textContent).toEqual(message);
-            expect($(msg).html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">'+message+'</a>');
+            expect(msg.innerHTML).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">'+message+'</a>');
 
-            message = "https://en.wikipedia.org/wiki/Ender's_Game";
+            message = "<https://bugs.documentfoundation.org/show_bug.cgi?id=123737>";
             await test_utils.sendMessage(view, message);
 
-            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
             expect(msg.textContent).toEqual(message);
-            expect($(msg).html()).toEqual('<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Ender%27s_Game">'+message+'</a>');
+            expect(msg.innerHTML).toEqual(
+                `&lt;<a target="_blank" rel="noopener" href="https://bugs.documentfoundation.org/show_bug.cgi?id=123737">https://bugs.documentfoundation.org/show_bug.cgi?id=123737</a>&gt;`);
+
+            message = '<http://www.opkode.com/"onmouseover="alert(1)"whatever>';
+            await test_utils.sendMessage(view, message);
+
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+            expect(msg.textContent).toEqual(message);
+            expect(msg.innerHTML).toEqual(
+                '&lt;<a target="_blank" rel="noopener" href="http://www.opkode.com/%22onmouseover=%22alert%281%29%22whatever">http://www.opkode.com/"onmouseover="alert(1)"whatever</a>&gt;');
+
+            message = `https://www.google.com/maps/place/Kochstraat+6,+2041+CE+Zandvoort/@52.3775999,4.548971,3a,15y,170.85h,88.39t/data=!3m6!1e1!3m4!1sQ7SdHo_bPLPlLlU8GSGWaQ!2e0!7i13312!8i6656!4m5!3m4!1s0x47c5ec1e56f845ad:0x1de0bc4a5771fb08!8m2!3d52.3773668!4d4.5489388!5m1!1e2`
+            await test_utils.sendMessage(view, message);
+
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text', view.el).pop();
+            expect(msg.textContent).toEqual(message);
+            expect(msg.innerHTML).toEqual(
+                `<a target="_blank" rel="noopener" href="https://www.google.com/maps/place/Kochstraat+6,+2041+CE+Zandvoort/@52.3775999,4.548971,3a,15y,170.85h,88.39t/data=%213m6%211e1%213m4%211sQ7SdHo_bPLPlLlU8GSGWaQ%212e0%217i13312%218i6656%214m5%213m4%211s0x47c5ec1e56f845ad:0x1de0bc4a5771fb08%218m2%213d52.3773668%214d4.5489388%215m1%211e2">https://www.google.com/maps/place/Kochstraat+6,+2041+CE+Zandvoort/@52.3775999,4.548971,3a,15y,170.85h,88.39t/data=!3m6!1e1!3m4!1sQ7SdHo_bPLPlLlU8GSGWaQ!2e0!7i13312!8i6656!4m5!3m4!1s0x47c5ec1e56f845ad:0x1de0bc4a5771fb08!8m2!3d52.3773668!4d4.5489388!5m1!1e2</a>`);
             done();
         }));
 
@@ -985,8 +1001,8 @@
             test_utils.sendMessage(view, message);
             await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length, 1000)
             expect(view.model.sendMessage).toHaveBeenCalled();
-            let msg = $(view.el).find('.chat-content .chat-msg').last().find('.chat-msg__text');
-            expect(msg.html().trim()).toEqual(
+            let msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            expect(msg.innerHTML.trim()).toEqual(
                 '<!-- src/templates/image.html -->\n'+
                 '<a href="'+base_url+'/logo/conversejs-filled.svg" target="_blank" rel="noopener"><img class="chat-image img-thumbnail"'+
                 ' src="' + message + '"></a>');
@@ -994,8 +1010,8 @@
             test_utils.sendMessage(view, message);
             await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 2, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
-            msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
-            expect(msg.html().trim()).toEqual(
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            expect(msg.innerHTML.trim()).toEqual(
                 '<!-- src/templates/image.html -->\n'+
                 '<a href="'+base_url+'/logo/conversejs-filled.svg?param1=val1&amp;param2=val2" target="_blank" rel="noopener"><img'+
                 ' class="chat-image img-thumbnail" src="'+message.replace(/&/g, '&amp;')+'"></a>')
@@ -1005,9 +1021,9 @@
             test_utils.sendMessage(view, message);
             await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-content .chat-image').length === 4, 1000);
             expect(view.model.sendMessage).toHaveBeenCalled();
-            msg = $(view.el).find('.chat-content').find('.chat-msg').last().find('.chat-msg__text');
-            expect(msg[0].textContent.trim()).toEqual('hello world');
-            expect(msg[0].querySelectorAll('img').length).toEqual(2);
+            msg = sizzle('.chat-content .chat-msg:last .chat-msg__text').pop();
+            expect(msg.textContent.trim()).toEqual('hello world');
+            expect(msg.querySelectorAll('img').length).toEqual(2);
 
             // Non-https images aren't rendered
             base_url = document.URL.split(window.location.pathname)[0];
@@ -1367,7 +1383,7 @@
                 await test_utils.waitForRoster(_converse, 'current', 1, include_nick);
                 test_utils.openControlBox();
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length, 300);
-                spyOn(_converse, 'emit').and.callThrough();
+                spyOn(_converse.api, "trigger").and.callThrough();
                 const message = 'This is a received message';
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 // We don't already have an open chatbox for this user
@@ -1387,7 +1403,7 @@
                 const view = _converse.api.chatviews.get(sender_jid);
                 expect(view).toBeDefined();
 
-                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                 // Check that the message was received and check the message parameters
                 expect(chatbox.messages.length).toEqual(1);
                 const msg_obj = chatbox.messages.models[0];
@@ -1471,9 +1487,9 @@
                         null, ['rosterGroupsFetched'], {},
                         async function (done, _converse) {
 
-                    _converse.emit('rosterContactsFetched');
+                    _converse.api.trigger('rosterContactsFetched');
                     _converse.allow_non_roster_messaging = true;
-                    spyOn(_converse, 'emit').and.callThrough();
+                    spyOn(_converse.api, "trigger").and.callThrough();
 
                     const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     var vcard_fetched = false;
@@ -1499,7 +1515,7 @@
 
                     await _converse.chatboxes.onMessage(msg);
                     await test_utils.waitUntil(() => _converse.api.chats.get().length);
-                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                    expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
 
                     // Check that the chatbox and its view now exist
                     const chatbox = _converse.chatboxes.get(sender_jid);
@@ -1531,9 +1547,9 @@
                         async function (done, _converse) {
 
                     _converse.allow_non_roster_messaging = false;
-                    _converse.emit('rosterContactsFetched');
+                    _converse.api.trigger('rosterContactsFetched');
 
-                    spyOn(_converse, 'emit');
+                    spyOn(_converse.api, "trigger");
                     const message = 'This is a received message from someone not on the roster';
                     const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                     const msg = $msg({
@@ -1560,7 +1576,7 @@
                     await _converse.chatboxes.onMessage(msg);
                     view = _converse.chatboxviews.get(sender_jid);
                     await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                    expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                    expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                     // Check that the chatbox and its view now exist
                     chatbox = _converse.chatboxes.get(sender_jid);
                     expect(chatbox).toBeDefined();
@@ -1862,8 +1878,8 @@
                 const view = _converse.chatboxviews.get(sender_jid);
                 await test_utils.waitUntil(() => view.model.messages.length);
                 expect(_converse.chatboxes.getChatBox).toHaveBeenCalled();
-                var chat_content = $(view.el).find('.chat-content:last')[0];
-                var msg_txt = chat_content.querySelector('.chat-msg .chat-msg__text').textContent;
+                const chat_content = sizzle('.chat-content:last', view.el).pop();
+                const msg_txt = chat_content.querySelector('.chat-msg .chat-msg__text').textContent;
                 expect(msg_txt).toEqual(message);
                 done();
             }));
@@ -2080,7 +2096,7 @@
                 null, ['rosterGroupsFetched'], {'allow_non_roster_messaging': true},
                 async function (done, _converse) {
 
-            _converse.emit('rosterContactsFetched');
+            _converse.api.trigger('rosterContactsFetched');
             const contact_jid = 'someone@localhost';
             const msgid = u.getUniqueId();
             const stanza = u.toStanza(`
@@ -2151,9 +2167,9 @@
                         </forwarded>
                     </sent>
                 </message>`);
-            spyOn(_converse, 'emit').and.callThrough();
+            spyOn(_converse.api, "trigger").and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.emit.calls.count() === 1);
+            await test_utils.waitUntil(() => _converse.api.trigger.calls.count() === 1);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.model.messages.length).toBe(1);
             done();
@@ -2547,12 +2563,12 @@
                     <received xmlns="urn:xmpp:receipts" id="${msg_obj.get('msgid')}"/>
                     <origin-id xmlns="urn:xmpp:sid:0" id="CE08D448-5ED8-4B6A-BB5B-07ED9DFE4FF0"/>
                 </message>`);
-            spyOn(_converse, 'emit').and.callThrough();
+            spyOn(_converse.api, "trigger").and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.emit.calls.count() === 1);
+            await test_utils.waitUntil(() => _converse.api.trigger.calls.count() === 1);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
-            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
             done();
         }));
 
@@ -2580,12 +2596,12 @@
                          from="lounge@localhost/some1" type="groupchat" xmlns="jabber:client">
                     <received xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
                 </message>`);
-            spyOn(_converse, 'emit').and.callThrough();
+            spyOn(_converse.api, "trigger").and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.emit.calls.count() === 1);
+            await test_utils.waitUntil(() => _converse.api.trigger.calls.count() === 1);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
-            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
 
             stanza = u.toStanza(`
                 <message xml:lang="en" to="dummy@localhost/resource"
@@ -2593,10 +2609,10 @@
                     <displayed xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.emit.calls.count() === 2);
+            await test_utils.waitUntil(() => _converse.api.trigger.calls.count() === 2);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
-            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
 
             stanza = u.toStanza(`
                 <message xml:lang="en" to="dummy@localhost/resource"
@@ -2604,10 +2620,10 @@
                     <acknowledged xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.emit.calls.count() === 3);
+            await test_utils.waitUntil(() => _converse.api.trigger.calls.count() === 3);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
-            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
 
             stanza = u.toStanza(`
                 <message xml:lang="en" to="dummy@localhost/resource"
@@ -2616,10 +2632,10 @@
                     <markable xmlns="urn:xmpp:chat-markers:0"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.emit.calls.count() === 5);
+            await test_utils.waitUntil(() => _converse.api.trigger.calls.count() === 5);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
-            expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
             done();
         }));
 
@@ -2728,6 +2744,26 @@
                 expect(references.length).toBe(1);
                 expect(JSON.stringify(references))
                     .toBe('[{"begin":3,"end":13,"value":"Link Mauve","type":"mention","uri":"xmpp:Link-Mauve@localhost"}]');
+
+                [text, references] = view.model.parseTextForReferences('https://example.org/@gibson')
+                expect(text).toBe('https://example.org/@gibson');
+                expect(references.length).toBe(0);
+                expect(JSON.stringify(references))
+                    .toBe('[]');
+
+                [text, references] = view.model.parseTextForReferences('mail@gibson.com')
+                expect(text).toBe('mail@gibson.com');
+                expect(references.length).toBe(0);
+                expect(JSON.stringify(references))
+                    .toBe('[]');
+
+                [text, references] = view.model.parseTextForReferences(
+                    'https://linkmauve.fr@Link Mauve/ https://linkmauve.fr/@github/is_back gibson@gibson.com gibson@Link Mauve.fr')
+                expect(text).toBe(
+                    'https://linkmauve.fr@Link Mauve/ https://linkmauve.fr/@github/is_back gibson@gibson.com gibson@Link Mauve.fr');
+                expect(references.length).toBe(0);
+                expect(JSON.stringify(references))
+                    .toBe('[]');
                 done();
             }));
 

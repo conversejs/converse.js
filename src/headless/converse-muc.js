@@ -140,6 +140,21 @@ converse.plugins.add('converse-muc', {
         _converse.router.route('converse/room?jid=:jid', openRoom);
 
 
+        _converse.getDefaultMUCNickname = function () {
+            // XXX: if anything changes here, update the docs for the
+            // locked_muc_nickname setting.
+            if (!_converse.xmppstatus) {
+                throw new Error(
+                    "Can't call _converse.getDefaultMUCNickname before the statusInitialized has been fired.");
+            }
+            const nick = _converse.nickname || _converse.xmppstatus.vcard.get('nickname');
+            if (nick) {
+                return nick;
+            } else if (_converse.muc_nickname_from_jid) {
+                return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
+            }
+        }
+
         _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
             /* Opens a groupchat, making sure that certain attributes
              * are correct, for example that the "type" is set to
@@ -153,6 +168,13 @@ converse.plugins.add('converse-muc', {
             return chatbox;
         }
 
+        /**
+         * Represents an open/ongoing groupchat conversation.
+         *
+         * @class
+         * @namespace _converse.ChatRoom
+         * @memberOf _converse
+         */
         _converse.ChatRoom = _converse.ChatBox.extend({
 
             defaults () {
@@ -269,14 +291,14 @@ converse.plugins.add('converse-muc', {
                 return this.get('name') || this.get('jid');
             },
 
+            /**
+             * Join the groupchat.
+             * @private
+             * @method _converse.ChatRoom#join
+             * @param { String } nick - The user's nickname
+             * @param { String } password - Optional password, if required by the groupchat.
+             */
             join (nick, password) {
-                /* Join the groupchat.
-                 *
-                 * Parameters:
-                 *  (String) nick: The user's nickname
-                 *  (String) password: Optional password, if required by
-                 *      the groupchat.
-                 */
                 nick = nick ? nick : this.get('nick');
                 if (!nick) {
                     throw new TypeError('join: You need to provide a valid nickname');
@@ -300,13 +322,12 @@ converse.plugins.add('converse-muc', {
                 return this;
             },
 
+            /* Leave the groupchat.
+             * @private
+             * @method _converse.ChatRoom#leave
+             * @param { string } exit_msg - Optional message to indicate your reason for leaving
+             */
             leave (exit_msg) {
-                /* Leave the groupchat.
-                 *
-                 * Parameters:
-                 *  (String) exit_msg: Optional message to indicate your
-                 *      reason for leaving.
-                 */
                 this.features.destroy();
                 this.occupants.browserStorage._clear();
                 this.occupants.reset();
@@ -399,11 +420,14 @@ converse.plugins.add('converse-muc', {
                 const is_spoiler = this.get('composing_spoiler');
                 var references;
                 [text, references] = this.parseTextForReferences(text);
+                const origin_id = _converse.connection.getUniqueId();
 
                 return {
-                    'origin_id': _converse.connection.getUniqueId(),
+                    'msgid': origin_id,
+                    'origin_id': origin_id,
                     'from': `${this.get('jid')}/${this.get('nick')}`,
                     'fullname': this.get('nick'),
+                    'is_single_emoji': text ? u.isSingleEmoji(text) : false,
                     'is_spoiler': is_spoiler,
                     'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
                     'nick': this.get('nick'),
@@ -454,13 +478,14 @@ converse.plugins.add('converse-muc', {
                 );
             },
 
+            /**
+             * Send a direct invitation as per XEP-0249
+             * @private
+             * @method _converse.ChatRoom#directInvite
+             * @param { String } recipient - JID of the person being invited
+             * @param { String } reason - Optional reason for the invitation
+             */
             directInvite (recipient, reason) {
-                /* Send a direct invitation as per XEP-0249
-                 *
-                 * Parameters:
-                 *    (String) recipient - JID of the person being invited
-                 *    (String) reason - Optional reason for the invitation
-                 */
                 if (this.features.get('membersonly')) {
                     // When inviting to a members-only groupchat, we first add
                     // the person to the member list by giving them an
@@ -487,7 +512,17 @@ converse.plugins.add('converse-muc', {
                     'id': _converse.connection.getUniqueId()
                 }).c('x', attrs);
                 _converse.api.send(invitation);
-                _converse.api.emit('roomInviteSent', {
+                /**
+                 * After the user has sent out a direct invitation (as per XEP-0249),
+                 * to a roster contact, asking them to join a room.
+                 * @event _converse#chatBoxMaximized
+                 * @type { object }
+                 * @property { _converse.ChatRoom } room
+                 * @property { string } recipient - The JID of the person being invited
+                 * @property { string } reason - The original reason for the invitation
+                 * @example _converse.api.listen.on('chatBoxMaximized', view => { ... });
+                 */
+                _converse.api.trigger('roomInviteSent', {
                     'room': this,
                     'recipient': recipient,
                     'reason': reason
@@ -531,20 +566,17 @@ converse.plugins.add('converse-muc', {
                 this.features.save(attrs);
             },
 
+            /* Send an IQ stanza to the server, asking it for the
+             * member-list of this groupchat.
+             * See: https://xmpp.org/extensions/xep-0045.html#modifymember
+             * @private
+             * @method _converse.ChatRoom#requestMemberList
+             * @param { string } affiliation - The specific member list to
+             *      fetch. 'admin', 'owner' or 'member'.
+             * @returns:
+             *  A promise which resolves once the list has been retrieved.
+             */
             requestMemberList (affiliation) {
-                /* Send an IQ stanza to the server, asking it for the
-                 * member-list of this groupchat.
-                 *
-                 * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-                 *
-                 * Parameters:
-                 *  (String) affiliation: The specific member list to
-                 *      fetch. 'admin', 'owner' or 'member'.
-                 *
-                 * Returns:
-                 *  A promise which resolves once the list has been
-                 *  retrieved.
-                 */
                 affiliation = affiliation || 'member';
                 const iq = $iq({to: this.get('jid'), type: "get"})
                     .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
@@ -552,28 +584,26 @@ converse.plugins.add('converse-muc', {
                 return _converse.api.sendIQ(iq);
             },
 
+            /**
+             * Send IQ stanzas to the server to set an affiliation for
+             * the provided JIDs.
+             * See: https://xmpp.org/extensions/xep-0045.html#modifymember
+             *
+             * Prosody doesn't accept multiple JIDs' affiliations
+             * being set in one IQ stanza, so as a workaround we send
+             * a separate stanza for each JID.
+             * Related ticket: https://issues.prosody.im/345
+             *
+             * @private
+             * @method _converse.ChatRoom#setAffiliation
+             * @param { string } affiliation - The affiliation
+             * @param { object } members - A map of jids, affiliations and
+             *      optionally reasons. Only those entries with the
+             *      same affiliation as being currently set will be considered.
+             * @returns
+             *  A promise which resolves and fails depending on the XMPP server response.
+             */
             setAffiliation (affiliation, members) {
-                /* Send IQ stanzas to the server to set an affiliation for
-                 * the provided JIDs.
-                 *
-                 * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-                 *
-                 * XXX: Prosody doesn't accept multiple JIDs' affiliations
-                 * being set in one IQ stanza, so as a workaround we send
-                 * a separate stanza for each JID.
-                 * Related ticket: https://issues.prosody.im/345
-                 *
-                 * Parameters:
-                 *  (String) affiliation: The affiliation
-                 *  (Object) members: A map of jids, affiliations and
-                 *      optionally reasons. Only those entries with the
-                 *      same affiliation as being currently set will be
-                 *      considered.
-                 *
-                 * Returns:
-                 *  A promise which resolves and fails depending on the
-                 *  XMPP server response.
-                 */
                 members = _.filter(members, (member) =>
                     // We only want those members who have the right
                     // affiliation (or none, which implies the provided one).
@@ -584,18 +614,19 @@ converse.plugins.add('converse-muc', {
                 return Promise.all(promises);
             },
 
+            /**
+             * Submit the groupchat configuration form by sending an IQ
+             * stanza to the server.
+             * @private
+             * @method _converse.ChatRoom#saveConfiguration
+             * @param { HTMLElement } form - The configuration form DOM element.
+             *      If no form is provided, the default configuration
+             *      values will be used.
+             * @returns { promise }
+             * Returns a promise which resolves once the XMPP server
+             * has return a response IQ.
+             */
             saveConfiguration (form) {
-                /* Submit the groupchat configuration form by sending an IQ
-                 * stanza to the server.
-                 *
-                 * Returns a promise which resolves once the XMPP server
-                 * has return a response IQ.
-                 *
-                 * Parameters:
-                 *  (HTMLElement) form: The configuration form DOM element.
-                 *      If no form is provided, the default configuration
-                 *      values will be used.
-                 */
                 return new Promise((resolve, reject) => {
                     const inputs = form ? sizzle(':input:not([type=button]):not([type=submit])', form) : [],
                           configArray = _.map(inputs, u.webForm2xForm);
@@ -655,20 +686,21 @@ converse.plugins.add('converse-muc', {
                 );
             },
 
+            /**
+             * Send an IQ stanza with the groupchat configuration.
+             * @private
+             * @method _converse.ChatRoom#sendConfiguration
+             * @param { Array } config - The groupchat configuration
+             * @param { Function } callback - Callback upon succesful IQ response
+             *      The first parameter passed in is IQ containing the
+             *      groupchat configuration.
+             *      The second is the response IQ from the server.
+             * @param { Function } errback - Callback upon error IQ response
+             *      The first parameter passed in is IQ containing the
+             *      groupchat configuration.
+             *      The second is the response IQ from the server.
+             */
             sendConfiguration (config, callback, errback) {
-                /* Send an IQ stanza with the groupchat configuration.
-                 *
-                 * Parameters:
-                 *  (Array) config: The groupchat configuration
-                 *  (Function) callback: Callback upon succesful IQ response
-                 *      The first parameter passed in is IQ containing the
-                 *      groupchat configuration.
-                 *      The second is the response IQ from the server.
-                 *  (Function) errback: Callback upon error IQ response
-                 *      The first parameter passed in is IQ containing the
-                 *      groupchat configuration.
-                 *      The second is the response IQ from the server.
-                 */
                 const iq = $iq({to: this.get('jid'), type: "set"})
                     .c("query", {xmlns: Strophe.NS.MUC_OWNER})
                     .c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
@@ -678,13 +710,13 @@ converse.plugins.add('converse-muc', {
                 return _converse.api.sendIQ(iq).then(callback).catch(errback);
             },
 
+            /**
+             * Parse the presence stanza for the current user's affiliation.
+             * @private
+             * @method _converse.ChatRoom#saveAffiliationAndRole
+             * @param { XMLElement } pres - A <presence> stanza.
+             */
             saveAffiliationAndRole (pres) {
-                /* Parse the presence stanza for the current user's
-                 * affiliation.
-                 *
-                 * Parameters:
-                 *  (XMLElement) pres: A <presence> stanza.
-                 */
                 const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, pres).pop();
                 const is_self = pres.querySelector("status[code='110']");
                 if (is_self && !_.isNil(item)) {
@@ -699,15 +731,16 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            /**
+             * Send an IQ stanza specifying an affiliation change.
+             * @private
+             * @method _converse.ChatRoom#
+             * @param { String } affiliation: affiliation
+             *     (could also be stored on the member object).
+             * @param { Object } member: Map containing the member's jid and
+             *     optionally a reason and affiliation.
+             */
             sendAffiliationIQ (affiliation, member) {
-                /* Send an IQ stanza specifying an affiliation change.
-                 *
-                 * Paremeters:
-                 *  (String) affiliation: affiliation (could also be stored
-                 *      on the member object).
-                 *  (Object) member: Map containing the member's jid and
-                 *      optionally a reason and affiliation.
-                 */
                 const iq = $iq({to: this.get('jid'), type: "set"})
                     .c("query", {xmlns: Strophe.NS.MUC_ADMIN})
                     .c("item", {
@@ -721,17 +754,17 @@ converse.plugins.add('converse-muc', {
                 return _converse.api.sendIQ(iq);
             },
 
+            /**
+             * Send IQ stanzas to the server to modify the
+             * affiliations in this groupchat.
+             * See: https://xmpp.org/extensions/xep-0045.html#modifymember
+             * @private
+             * @method _converse.ChatRoom#setAffiliations
+             * @param { object } members - A map of jids, affiliations and optionally reasons
+             * @param { function } onSuccess - callback for a succesful response
+             * @param { function } onError - callback for an error response
+             */
             setAffiliations (members) {
-                /* Send IQ stanzas to the server to modify the
-                 * affiliations in this groupchat.
-                 *
-                 * See: https://xmpp.org/extensions/xep-0045.html#modifymember
-                 *
-                 * Parameters:
-                 *  (Object) members: A map of jids, affiliations and optionally reasons
-                 *  (Function) onSuccess: callback for a succesful response
-                 *  (Function) onError: callback for an error response
-                 */
                 const affiliations = _.uniq(_.map(members, 'affiliation'));
                 return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
             },
@@ -753,53 +786,39 @@ converse.plugins.add('converse-muc', {
                 return [].concat.apply([], result).filter(p => p);
             },
 
+            /**
+             * Fetch the lists of users with the given affiliations.
+             * Then compute the delta between those users and
+             * the passed in members, and if it exists, send the delta
+             * to the XMPP server to update the member list.
+             * @private
+             * @method _converse.ChatRoom#updateMemberLists
+             * @param { object } members - Map of member jids and affiliations.
+             * @param { string|array } affiliation - An array of affiliations or
+             *      a string if only one affiliation.
+             * @param { function } deltaFunc - The function to compute the delta
+             *      between old and new member lists.
+             * @returns { promise } 
+             *  A promise which is resolved once the list has been
+             *  updated or once it's been established there's no need
+             *  to update the list.
+             */
             updateMemberLists (members, affiliations, deltaFunc) {
-                /* Fetch the lists of users with the given affiliations.
-                 * Then compute the delta between those users and
-                 * the passed in members, and if it exists, send the delta
-                 * to the XMPP server to update the member list.
-                 *
-                 * Parameters:
-                 *  (Object) members: Map of member jids and affiliations.
-                 *  (String|Array) affiliation: An array of affiliations or
-                 *      a string if only one affiliation.
-                 *  (Function) deltaFunc: The function to compute the delta
-                 *      between old and new member lists.
-                 *
-                 * Returns:
-                 *  A promise which is resolved once the list has been
-                 *  updated or once it's been established there's no need
-                 *  to update the list.
-                 */
                 this.getJidsWithAffiliations(affiliations)
                     .then(old_members => this.setAffiliations(deltaFunc(members, old_members)))
                     .then(() => this.occupants.fetchMembers())
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             },
 
-            getDefaultNick () {
-                /* The default nickname (used when muc_nickname_from_jid is true)
-                 * is the node part of the user's JID.
-                 * We put this in a separate method so that it can be
-                 * overridden by plugins.
-                 */
-                const nick = _converse.xmppstatus.vcard.get('nickname');
-                if (nick) {
-                    return nick;
-                } else if (_converse.muc_nickname_from_jid) {
-                    return Strophe.unescapeNode(Strophe.getNodeFromJid(_converse.bare_jid));
-                }
-            },
-
+            /**
+             * Use service-discovery to ask the XMPP server whether
+             * this user has a reserved nickname for this groupchat.
+             * If so, we'll use that, otherwise we render the nickname form.
+             * @private
+             * @method _converse.ChatRoom#checkForReservedNick
+             * @returns { promise } A promise which resolves with the response IQ
+             */
             async checkForReservedNick () {
-                /* Use service-discovery to ask the XMPP server whether
-                 * this user has a reserved nickname for this groupchat.
-                 * If so, we'll use that, otherwise we render the nickname form.
-                 *
-                 * Parameters:
-                 *  (Function) callback: Callback upon succesful IQ response
-                 *  (Function) errback: Callback upon error IQ response
-                 */
                 const iq = await _converse.api.sendIQ(
                     $iq({
                         'to': this.get('jid'),
@@ -867,13 +886,14 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            /**
+             * Given a presence stanza, update the occupant model
+             * based on its contents.
+             * @private
+             * @method _converse.ChatRoom#updateOccupantsOnPresence
+             * @param { XMLElement } pres - The presence stanza
+             */
             updateOccupantsOnPresence (pres) {
-                /* Given a presence stanza, update the occupant model
-                 * based on its contents.
-                 *
-                 * Parameters:
-                 *  (XMLElement) pres: The presence stanza
-                 */
                 const data = this.parsePresence(pres);
                 if (data.type === 'error' || (!data.jid && !data.nick)) {
                     return true;
@@ -969,12 +989,13 @@ converse.plugins.add('converse-muc', {
                      acknowledged[xmlns="${Strophe.NS.MARKERS}"]`, stanza).length > 0;
             },
 
+            /**
+             * Handle a subject change and return `true` if so.
+             * @private
+             * @method _converse.ChatRoom#subjectChangeHandled
+             * @param { object } attrs - The message attributes
+             */
             subjectChangeHandled (attrs) {
-                /* Handle a subject change and return `true` if so.
-                 *
-                 * Parameters:
-                 *  (Object) attrs: The message attributes
-                 */
                 if (attrs.subject && !attrs.thread && !attrs.message) {
                     // https://xmpp.org/extensions/xep-0045.html#subject-mod
                     // -----------------------------------------------------
@@ -987,13 +1008,14 @@ converse.plugins.add('converse-muc', {
                 return false;
             },
 
+            /**
+             * Is this a chat state notification that can be ignored,
+             * because it's old or because it's from us.
+             * @private
+             * @method _converse.ChatRoom#ignorableCSN
+             * @param { Object } attrs - The message attributes
+             */
             ignorableCSN (attrs) {
-                /* Is this a chat state notification that can be ignored,
-                 * because it's old or because it's from us.
-                 *
-                 * Parameters:
-                 *  (Object) attrs: The message attributes
-                 */
                 const is_csn = u.isOnlyChatStateNotification(attrs),
                         own_message = Strophe.getResourceFromJid(attrs.from) == this.get('nick');
                 return is_csn && (attrs.is_delayed || own_message);
@@ -1018,12 +1040,13 @@ converse.plugins.add('converse-muc', {
                 return attrs;
             },
 
+            /**
+             * Handler for all MUC messages sent to this groupchat.
+             * @private
+             * @method _converse.ChatRoom#onMessage
+             * @param { XMLElement } stanza - The message stanza.
+             */
             async onMessage (stanza) {
-                /* Handler for all MUC messages sent to this groupchat.
-                 *
-                 * Parameters:
-                 *  (XMLElement) stanza: The message stanza.
-                 */
                 this.fetchFeaturesIfConfigurationChanged(stanza);
 
                 const original_stanza = stanza,
@@ -1039,7 +1062,7 @@ converse.plugins.add('converse-muc', {
                         this.handleMessageCorrection(stanza) ||
                         this.isReceipt(stanza) ||
                         this.isChatMarker(stanza)) {
-                    return _converse.emit('message', {'stanza': original_stanza});
+                    return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
                 const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
                 if (attrs.nick &&
@@ -1053,15 +1076,16 @@ converse.plugins.add('converse-muc', {
                         msg.save({'received': moment().format()});
                     }
                 }
-                _converse.emit('message', {'stanza': original_stanza, 'chatbox': this});
+                _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': this});
             },
 
+            /**
+             * Handles all MUC presence stanzas.
+             * @private
+             * @method _converse.ChatRoom#onPresence
+             * @param { XMLElement } pres - The stanza
+             */
             onPresence (pres) {
-                /* Handles all MUC presence stanzas.
-                 *
-                 * Parameters:
-                 *  (XMLElement) pres: The stanza
-                 */
                 if (pres.getAttribute('type') === 'error') {
                     this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                     return;
@@ -1076,22 +1100,22 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            /**
+             * Handles a received presence relating to the current user.
+             *
+             * For locked groupchats (which are by definition "new"), the
+             * groupchat will either be auto-configured or created instantly
+             * (with default config) or a configuration groupchat will be
+             * rendered.
+             *
+             * If the groupchat is not locked, then the groupchat will be
+             * auto-configured only if applicable and if the current
+             * user is the groupchat's owner.
+             * @private
+             * @method _converse.ChatRoom#onOwnPresence
+             * @param { XMLElement } pres - The stanza
+             */
             onOwnPresence (pres) {
-                /* Handles a received presence relating to the current
-                 * user.
-                 *
-                 * For locked groupchats (which are by definition "new"), the
-                 * groupchat will either be auto-configured or created instantly
-                 * (with default config) or a configuration groupchat will be
-                 * rendered.
-                 *
-                 * If the groupchat is not locked, then the groupchat will be
-                 * auto-configured only if applicable and if the current
-                 * user is the groupchat's owner.
-                 *
-                 * Parameters:
-                 *  (XMLElement) pres: The stanza
-                 */
                 this.saveAffiliationAndRole(pres);
 
                 const locked_room = pres.querySelector("status[code='201']");
@@ -1102,6 +1126,14 @@ converse.plugins.add('converse-muc', {
                         // Accept default configuration
                         this.saveConfiguration().then(() => this.refreshRoomFeatures());
                     } else {
+                        /**
+                         * Triggered when a new room has been created which first needs to be configured
+                         * and when `auto_configure` is set to `false`.
+                         * Used by `_converse.ChatRoomView` in order to know when to render the
+                         * configuration form for a new room.
+                         * @event _converse.ChatRoom#configurationNeeded
+                         * @example _converse.api.listen.on('configurationNeeded', () => { ... });
+                         */
                         this.trigger('configurationNeeded');
                         return; // We haven't yet entered the groupchat, so bail here.
                     }
@@ -1120,13 +1152,14 @@ converse.plugins.add('converse-muc', {
                 this.save('connection_status', converse.ROOMSTATUS.ENTERED);
             },
 
+            /**
+             * Returns a boolean to indicate whether the current user
+             * was mentioned in a message.
+             * @private
+             * @method _converse.ChatRoom#isUserMentioned
+             * @param { String } - The text message
+             */
             isUserMentioned (message) {
-                /* Returns a boolean to indicate whether the current user
-                 * was mentioned in a message.
-                 *
-                 * Parameters:
-                 *  (String): The text message
-                 */
                 const nick = this.get('nick');
                 if (message.get('references').length) {
                     const mentions = message.get('references').filter(ref => (ref.type === 'mention')).map(ref => ref.value);
@@ -1136,13 +1169,12 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            /* Given a newly received message, update the unread counter if necessary.
+             * @private
+             * @method _converse.ChatRoom#incrementUnreadMsgCounter
+             * @param { XMLElement } - The <messsage> stanza
+             */
             incrementUnreadMsgCounter (message) {
-                /* Given a newly received message, update the unread counter if
-                 * necessary.
-                 *
-                 * Parameters:
-                 *  (XMLElement): The <messsage> stanza
-                 */
                 if (!message) { return; }
                 const body = message.get('message');
                 if (_.isNil(body)) { return; }
@@ -1274,20 +1306,29 @@ converse.plugins.add('converse-muc', {
 
 
         _converse.RoomsPanelModel = Backbone.Model.extend({
-            defaults: {
-                'muc_domain': '',
+            defaults: function () {
+                return {
+                    'muc_domain': _converse.muc_domain,
+                    'nick': _converse.getDefaultMUCNickname()
+                }
             },
+
+            setDomain (jid) {
+                if (!_converse.locked_muc_domain) {
+                    this.save('muc_domain', Strophe.getDomainFromJid(jid));
+                }
+            }
         });
 
 
+        /**
+         * A direct MUC invitation to join a groupchat has been received
+         * See XEP-0249: Direct MUC invitations.
+         * @private
+         * @method _converse.ChatRoom#onDirectMUCInvitation
+         * @param { XMLElement } message - The message stanza containing the invitation.
+         */
         _converse.onDirectMUCInvitation = function (message) {
-            /* A direct MUC invitation to join a groupchat has been received
-             * See XEP-0249: Direct MUC invitations.
-             *
-             * Parameters:
-             *  (XMLElement) message: The message stanza containing the
-             *        invitation.
-             */
             const x_el = sizzle('x[xmlns="jabber:x:conference"]', message).pop(),
                 from = Strophe.getBareJidFromJid(message.getAttribute('from')),
                 room_jid = x_el.getAttribute('jid'),
@@ -1334,8 +1375,8 @@ converse.plugins.add('converse-muc', {
                         return true;
                     }, 'jabber:x:conference', 'message');
             };
-            _converse.on('connected', registerDirectInvitationHandler);
-            _converse.on('reconnected', registerDirectInvitationHandler);
+            _converse.api.listen.on('connected', registerDirectInvitationHandler);
+            _converse.api.listen.on('reconnected', registerDirectInvitationHandler);
         }
 
         const getChatRoom = function (jid, attrs, create) {
@@ -1373,7 +1414,14 @@ converse.plugins.add('converse-muc', {
                         Strophe.LogLevel.ERROR);
                 }
             });
-            _converse.emit('roomsAutoJoined');
+            /**
+             * Triggered once any rooms that have been configured to be automatically joined,
+             * specified via the _`auto_join_rooms` setting, have been entered.
+             * @event _converse#roomsAutoJoined
+             * @example _converse.api.listen.on('roomsAutoJoined', () => { ... });
+             * @example _converse.api.waitUntil('roomsAutoJoined').then(() => { ... });
+             */
+            _converse.api.trigger('roomsAutoJoined');
         }
 
         function disconnectChatRooms () {
@@ -1408,7 +1456,7 @@ converse.plugins.add('converse-muc', {
 
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.on('addClientFeatures', () => {
+        _converse.api.listen.on('addClientFeatures', () => {
             if (_converse.allow_muc) {
                 _converse.api.disco.own.features.add(Strophe.NS.MUC);
             }

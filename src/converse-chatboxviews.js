@@ -168,7 +168,12 @@ converse.plugins.add('converse-chatboxviews', {
             _converse.chatboxviews = new _converse.ChatBoxViews({
                 'model': _converse.chatboxes
             });
-            _converse.emit('chatBoxViewsInitialized');
+            /**
+             * Triggered once the _converse.ChatBoxViews view-colleciton has been initialized
+             * @event _converse#chatBoxViewsInitialized
+             * @example _converse.api.listen.on('chatBoxViewsInitialized', () => { ... });
+             */
+            _converse.api.trigger('chatBoxViewsInitialized');
         });
 
         _converse.api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());

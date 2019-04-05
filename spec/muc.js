@@ -28,11 +28,6 @@
                 expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
                 expect(u.isVisible(_converse.chatboxviews.get('news@localhost').el)).toBeTruthy();
 
-                // XXX: bit of a cheat here. We want `cleanup()` to be
-                // called on the room. Either it's this or faking
-                // `sendPresence`.
-                _converse.connection.connected = false;
-
                 _converse.api.roomviews.close('lounge@localhost');
                 expect(_converse.chatboxviews.get('lounge@localhost')).toBeUndefined();
                 expect(u.isVisible(_converse.chatboxviews.get('leisure@localhost').el)).toBeTruthy();
@@ -1723,7 +1718,7 @@
                 test_utils.createContacts(_converse, 'current'); // We need roster contacts, so that we have someone to invite
                 // Since we don't actually fetch roster contacts, we need to
                 // cheat here and emit the event.
-                _converse.emit('rosterContactsFetched');
+                _converse.api.trigger('rosterContactsFetched');
 
                 const features = [
                     'http://jabber.org/protocol/muc',
@@ -1736,7 +1731,7 @@
                     'muc_anonymous'
                 ]
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy', features);
-                spyOn(_converse, 'emit').and.callThrough();
+                spyOn(_converse.api, "trigger").and.callThrough();
                 spyOn(window, 'prompt').and.callFake(() => "Please join!");
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 const chat_area = view.el.querySelector('.chat-area');
@@ -1761,13 +1756,13 @@
                 spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
                     sent_stanza = stanza;
                 });
-                const hint = input.nextSibling.firstElementChild;
+                const results_el =  view.occupantsview.el.querySelector('.suggestion-box__results');
+                const hint = results_el.firstElementChild;
                 expect(input.value).toBe('Felix');
                 expect(hint.textContent).toBe('Felix Amsel');
-                expect(input.nextSibling.childNodes.length).toBe(1);
 
                 evt = new Event('mousedown', {'bubbles': true});
-                evt.button = 0; // For some reason awesomplete wants this
+                evt.button = 0;
                 hint.dispatchEvent(evt);
                 expect(window.prompt).toHaveBeenCalled();
                 expect(view.model.directInvite).toHaveBeenCalled();
@@ -1824,7 +1819,7 @@
 
                 const text = 'This is a received message';
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 if (!view.el.querySelectorAll('.chat-area').length) {
                     view.renderChatArea();
@@ -1846,7 +1841,7 @@
                 const chat_content = view.el.querySelector('.chat-content');
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
                 expect(chat_content.querySelector('.chat-msg__text').textContent).toBe(text);
-                expect(_converse.emit).toHaveBeenCalledWith('message', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
                 done();
             }));
 
@@ -1856,7 +1851,7 @@
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 if (!view.el.querySelectorAll('.chat-area').length) {
                     view.renderChatArea();
@@ -1871,7 +1866,7 @@
                 });
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-                expect(_converse.emit).toHaveBeenCalledWith('messageSend', text);
+                expect(_converse.api.trigger).toHaveBeenCalledWith('messageSend', text);
                 const chat_content = view.el.querySelector('.chat-content');
                 expect(chat_content.querySelectorAll('.chat-msg').length).toBe(1);
 
@@ -1893,7 +1888,7 @@
                 expect(sizzle('.chat-msg__text:last').pop().textContent).toBe(text);
                 expect(view.model.messages.length).toBe(1);
                 // We don't emit an event if it's our own message
-                expect(_converse.emit.calls.count(), 1);
+                expect(_converse.api.trigger.calls.count(), 1);
                 done();
             }));
 
@@ -2510,12 +2505,12 @@
 
                 spyOn(view, 'minimize').and.callThrough();
                 spyOn(view, 'maximize').and.callThrough();
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 view.el.querySelector('.toggle-chatbox-button').click();
 
                 expect(view.minimize).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMinimized', jasmine.any(Object));
                 expect(u.isVisible(view.el)).toBeFalsy();
                 expect(view.model.get('minimized')).toBeTruthy();
                 expect(view.minimize).toHaveBeenCalled();
@@ -2523,9 +2518,9 @@
                 const trimmedview = trimmed_chatboxes.get(view.model.get('id'));
                 trimmedview.el.querySelector("a.restore-chat").click();
                 expect(view.maximize).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxMaximized', jasmine.any(Object));
                 expect(view.model.get('minimized')).toBeFalsy();
-                expect(_converse.emit.calls.count(), 3);
+                expect(_converse.api.trigger.calls.count(), 3);
                 done();
 
             }));
@@ -2538,13 +2533,13 @@
                 await test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 spyOn(view, 'close').and.callThrough();
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 spyOn(view.model, 'leave');
                 view.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
                 view.el.querySelector('.close-chatbox-button').click();
                 expect(view.close).toHaveBeenCalled();
                 expect(view.model.leave).toHaveBeenCalled();
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 done();
             }));
         });
@@ -3427,12 +3422,12 @@
                     'from': view.model.get('jid'),
                     'to': _converse.connection.jid
                 });
-                spyOn(_converse, 'emit');
+                spyOn(_converse.api, "trigger");
                 expect(_converse.chatboxes.length).toBe(2);
                 _converse.connection._dataRecv(test_utils.createRequest(result_stanza));
                 await test_utils.waitUntil(() => (view.model.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED));
                 expect(_converse.chatboxes.length).toBe(1);
-                expect(_converse.emit).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxClosed', jasmine.any(Object));
                 done();
             }));
         });
@@ -3971,6 +3966,12 @@
                 let name_input = modal.el.querySelector('input[name="chatroom"]');
                 expect(name_input.placeholder).toBe('name@conference.example.org');
 
+                const label_nick = modal.el.querySelector('label[for="nickname"]');
+                expect(label_nick.textContent).toBe('Nickname:');
+                const nick_input = modal.el.querySelector('input[name="nickname"]');
+                expect(nick_input.value).toBe('');
+                nick_input.value = 'dummy';
+
                 expect(modal.el.querySelector('.modal-title').textContent).toBe('Enter a new Groupchat');
                 spyOn(_converse.ChatRoom.prototype, 'getRoomFeatures').and.callFake(() => Promise.resolve());
                 roomspanel.delegateEvents(); // We need to rebind all events otherwise our spy won't be called
@@ -3985,6 +3986,67 @@
                 expect(label_name.textContent).toBe('Groupchat address:');
                 name_input = modal.el.querySelector('input[name="chatroom"]');
                 expect(name_input.placeholder).toBe('name@muc.example.org');
+                done();
+            }));
+
+            it("doesn't show the nickname field if locked_muc_nickname is true",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'locked_muc_nickname': true, 'muc_nickname_from_jid': true},
+                    async function (done, _converse) {
+
+                test_utils.openControlBox();
+                await test_utils.waitForRoster(_converse, 'current', 0);
+                const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                roomspanel.el.querySelector('.show-add-muc-modal').click();
+                test_utils.closeControlBox(_converse);
+                const modal = roomspanel.add_room_modal;
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
+                const name_input = modal.el.querySelector('input[name="chatroom"]');
+                name_input.value = 'lounge@localhost';
+                expect(modal.el.querySelector('label[for="nickname"]')).toBe(null);
+                expect(modal.el.querySelector('input[name="nickname"]')).toBe(null);
+                modal.el.querySelector('form input[type="submit"]').click();
+                await test_utils.waitUntil(() => _converse.chatboxes.length > 1);
+                const chatroom = _converse.chatboxes.get('lounge@localhost');
+                expect(chatroom.get('nick')).toBe('dummy');
+                done();
+            }));
+
+            it("uses the JID node if muc_nickname_from_jid is set to true",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'muc_nickname_from_jid': true},
+                    async function (done, _converse) {
+
+                test_utils.openControlBox();
+                await test_utils.waitForRoster(_converse, 'current', 0);
+                const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                roomspanel.el.querySelector('.show-add-muc-modal').click();
+                test_utils.closeControlBox(_converse);
+                const modal = roomspanel.add_room_modal;
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
+                const label_nick = modal.el.querySelector('label[for="nickname"]');
+                expect(label_nick.textContent).toBe('Nickname:');
+                const nick_input = modal.el.querySelector('input[name="nickname"]');
+                expect(nick_input.value).toBe('dummy');
+                done();
+            }));
+
+            it("uses the nickname passed in to converse.initialize",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'nickname': 'st.nick'},
+                    async function (done, _converse) {
+
+                test_utils.openControlBox();
+                await test_utils.waitForRoster(_converse, 'current', 0);
+                const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
+                roomspanel.el.querySelector('.show-add-muc-modal').click();
+                test_utils.closeControlBox(_converse);
+                const modal = roomspanel.add_room_modal;
+                await test_utils.waitUntil(() => u.isVisible(modal.el), 1000)
+                const label_nick = modal.el.querySelector('label[for="nickname"]');
+                expect(label_nick.textContent).toBe('Nickname:');
+                const nick_input = modal.el.querySelector('input[name="nickname"]');
+                expect(nick_input.value).toBe('st.nick');
                 done();
             }));
 
@@ -4006,6 +4068,9 @@
                 let name_input = modal.el.querySelector('input[name="chatroom"]');
                 expect(name_input.placeholder).toBe('name@muc.example.org');
                 name_input.value = 'lounge';
+                let nick_input = modal.el.querySelector('input[name="nickname"]');
+                nick_input.value = 'max';
+
                 modal.el.querySelector('form input[type="submit"]').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.length);
                 await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
@@ -4016,6 +4081,8 @@
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
                 name_input = modal.el.querySelector('input[name="chatroom"]');
                 name_input.value = 'lounge@conference.example.org';
+                nick_input = modal.el.querySelector('input[name="nickname"]');
+                nick_input.value = 'max';
                 modal.el.querySelector('form input[type="submit"]').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.models.filter(c => c.get('type') === 'chatroom').length === 2);
                 await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 2);
@@ -4041,6 +4108,8 @@
                 let name_input = modal.el.querySelector('input[name="chatroom"]');
                 expect(name_input.placeholder).toBe('');
                 name_input.value = 'lounge';
+                let nick_input = modal.el.querySelector('input[name="nickname"]');
+                nick_input.value = 'max';
                 modal.el.querySelector('form input[type="submit"]').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.length);
                 await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 1);
@@ -4051,6 +4120,8 @@
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
                 name_input = modal.el.querySelector('input[name="chatroom"]');
                 name_input.value = 'lounge@conference';
+                nick_input = modal.el.querySelector('input[name="nickname"]');
+                nick_input.value = 'max';
                 modal.el.querySelector('form input[type="submit"]').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.models.filter(c => c.get('type') === 'chatroom').length === 2);
                 await test_utils.waitUntil(() => sizzle('.chatroom', _converse.el).filter(u.isVisible).length === 2);

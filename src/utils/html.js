@@ -138,7 +138,6 @@ u.renderFileURL = function (_converse, url) {
     })
 };
 
-
 u.renderImageURL = function (_converse, url) {
     if (!_converse.show_images_inline) {
         return u.addHyperlinks(url);
@@ -305,13 +304,14 @@ u.nextUntil = function (el, selector, include_self=false) {
     return matches;
 }
 
+/**
+ * Helper method that replace HTML-escaped symbols with equivalent characters
+ * (e.g. transform occurrences of '&amp;' to '&')
+ * @private
+ * @method u#unescapeHTML
+ * @param { String } string - a String containing the HTML-escaped symbols.
+ */
 u.unescapeHTML = function (string) {
-    /* Helper method that replace HTML-escaped symbols with equivalent characters
-     * (e.g. transform occurrences of '&amp;' to '&')
-     *
-     * Parameters:
-     *  (String) string: a String containing the HTML-escaped symbols.
-     */
     var div = document.createElement('div');
     div.innerHTML = string;
     return div.innerText;
@@ -382,13 +382,14 @@ u.slideToggleElement = function (el, duration) {
 };
 
 
+/**
+ * Shows/expands an element by sliding it out of itself
+ * @private
+ * @method u#slideOut
+ * @param { HTMLElement } el - The HTML string
+ * @param { Number } duration - The duration amount in milliseconds
+ */
 u.slideOut = function (el, duration=200) {
-    /* Shows/expands an element by sliding it out of itself
-     *
-     * Parameters:
-     *      (HTMLElement) el - The HTML string
-     *      (Number) duration - The duration amount in milliseconds
-     */
     return new Promise((resolve, reject) => {
         if (_.isNil(el)) {
             const err = "Undefined or null element passed into slideOut"
@@ -529,16 +530,15 @@ u.fadeIn = function (el, callback) {
 };
 
 
+/**
+ * Takes a field in XMPP XForm (XEP-004: Data Forms) format
+ * and turns it into an HTML field.
+ * Returns either text or a DOM element (which is not ideal, but fine for now).
+ * @private
+ * @method u#xForm2webForm
+ * @param { XMLElement } field - the field to convert
+ */
 u.xForm2webForm = function (field, stanza, domain) {
-    /* Takes a field in XMPP XForm (XEP-004: Data Forms) format
-     * and turns it into an HTML field.
-     *
-     * Returns either text or a DOM element (which is not ideal, but fine
-     * for now).
-     *
-     *  Parameters:
-     *      (XMLElement) field - the field to convert
-     */
     if (field.getAttribute('type') === 'list-single' ||
         field.getAttribute('type') === 'list-multi') {
 

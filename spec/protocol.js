@@ -117,7 +117,7 @@
                 expect(sent_stanza.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" type="set" xmlns="jabber:client">`+
                         `<query xmlns="jabber:iq:roster">`+
-                            `<item jid="contact@example.org" name="contact@example.org"/>`+
+                            `<item jid="contact@example.org"/>`+
                         `</query>`+
                     `</iq>`
                 );
@@ -517,7 +517,7 @@
                 null, ['rosterGroupsFetched'], {},
                 function (done, _converse) {
 
-                spyOn(_converse, "emit");
+                spyOn(_converse.api, "trigger");
                 test_utils.openControlBox(_converse);
                 test_utils.createContacts(_converse, 'current'); // Create some contacts so that we can test positioning
                 /* <presence
@@ -538,7 +538,7 @@
                     var $contacts = $header.parent().find('li:visible');
                     return $contacts.length;
                 }, 600).then(function () {
-                    expect(_converse.emit).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
+                    expect(_converse.api.trigger).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
                     var $header = $('a:contains("Contact requests")');
                     expect($header.length).toBe(1);
                     expect($header.is(":visible")).toBeTruthy();

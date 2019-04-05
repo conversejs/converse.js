@@ -221,7 +221,7 @@
                     await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.localhost'], 'items')
                     await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.localhost', [], [Strophe.NS.HTTPUPLOAD], []);
                     test_utils.createContacts(_converse, 'current', 3);
-                    _converse.emit('rosterContactsFetched');
+                    _converse.api.trigger('rosterContactsFetched');
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     await test_utils.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);
@@ -263,7 +263,7 @@
                         await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items');
                         await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
                         test_utils.createContacts(_converse, 'current');
-                        _converse.emit('rosterContactsFetched');
+                        _converse.api.trigger('rosterContactsFetched');
                         const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                         await test_utils.openChatBoxFor(_converse, contact_jid);
                         const view = _converse.chatboxviews.get(contact_jid);
@@ -555,7 +555,7 @@
                         expect(entities.get('localhost').items.get('upload.localhost').identities.where({'category': 'store'}).length).toBe(1);
                         const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
                         test_utils.createContacts(_converse, 'current');
-                        _converse.emit('rosterContactsFetched');
+                        _converse.api.trigger('rosterContactsFetched');
 
                         const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                         await test_utils.openChatBoxFor(_converse, contact_jid);
@@ -594,7 +594,7 @@
                     await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items');
                     await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
                     test_utils.createContacts(_converse, 'current');
-                    _converse.emit('rosterContactsFetched');
+                    _converse.api.trigger('rosterContactsFetched');
                     const contact_jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
                     await test_utils.openChatBoxFor(_converse, contact_jid);
                     const view = _converse.chatboxviews.get(contact_jid);

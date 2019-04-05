@@ -288,7 +288,7 @@
 
                 test_utils.openControlBox();
                 test_utils.createContacts(_converse, 'current', 2);
-                _converse.emit('rosterContactsFetched');
+                _converse.api.trigger('rosterContactsFetched');
 
                 // Test on chat that doesn't exist.
                 expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
@@ -325,7 +325,7 @@
 
                 test_utils.openControlBox();
                 test_utils.createContacts(_converse, 'current', 2);
-                _converse.emit('rosterContactsFetched');
+                _converse.api.trigger('rosterContactsFetched');
 
                 const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
                 const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';

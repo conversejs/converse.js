@@ -141,7 +141,7 @@ For example:
 
 .. code-block:: javascript
 
-    _converse.emit('foo-completed');
+    _converse.api.trigger('foo-completed');
 
 Additionally, if a promise has been registered under the same name
 (via ``_converse.api.promises.add``), then that promise will also be resolved
@@ -1152,7 +1152,7 @@ For example:
 
 .. code-block:: javascript
 
-    _converse.api.emit('foo-completed');
+    _converse.api.trigger('foo-completed');
 
 
 The **settings** grouping

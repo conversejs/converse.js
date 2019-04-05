@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.2.1 (Unreaded)
+
+* Bugfix. Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
+
 ## 4.2.0 (2019-04-04)
 
 **Note:** This release introduces a hard requirement on [MAM:2](https://xmpp.org/extensions/xep-0313.html),

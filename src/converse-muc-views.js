@@ -269,7 +269,7 @@ converse.plugins.add('converse-muc-views', {
                 'submit form': 'showRooms',
                 'click a.room-info': 'toggleRoomInfo',
                 'change input[name=nick]': 'setNick',
-                'change input[name=server]': 'setDomain',
+                'change input[name=server]': 'setDomainFromEvent',
                 'click .open-room': 'openRoom'
             },
 
@@ -383,12 +383,12 @@ converse.plugins.add('converse-muc-views', {
             showRooms (ev) {
                 ev.preventDefault();
                 const data = new FormData(ev.target);
-                this.model.save('muc_domain', Strophe.getDomainFromJid(data.get('server')));
+                this.model.setDomain(data.get('server'));
                 this.updateRoomsList();
             },
 
-            setDomain (ev) {
-                this.model.save('muc_domain', Strophe.getDomainFromJid(ev.target.value));
+            setDomainFromEvent (ev) {
+                this.model.setDomain(ev.target.value);
             },
 
             setNick (ev) {
@@ -431,7 +431,6 @@ converse.plugins.add('converse-muc-views', {
             parseRoomDataFromEvent (form) {
                 const data = new FormData(form);
                 const jid = data.get('chatroom');
-                this.model.save('muc_domain', Strophe.getDomainFromJid(jid));
                 let nick;
                 if (_converse.locked_muc_nickname) {
                     nick = _converse.getDefaultMUCNickname();
@@ -459,6 +458,7 @@ converse.plugins.add('converse-muc-views', {
                     jid = `${Strophe.escapeNode(data.jid)}@${_converse.muc_domain}`;
                 } else {
                     jid = data.jid
+                    this.model.setDomain(jid);
                 }
                 _converse.api.rooms.open(jid, _.extend(data, {jid}));
                 this.modal.hide();
@@ -2040,7 +2040,6 @@ converse.plugins.add('converse-muc-views', {
 
 
         function setMUCDomain (domain, controlboxview) {
-            _converse.muc_domain = domain;
             controlboxview.roomspanel.model.save('muc_domain', Strophe.getDomainFromJid(domain));
         }
 

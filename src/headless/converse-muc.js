@@ -1308,8 +1308,14 @@ converse.plugins.add('converse-muc', {
         _converse.RoomsPanelModel = Backbone.Model.extend({
             defaults: function () {
                 return {
-                    'muc_domain': '',
+                    'muc_domain': _converse.muc_domain,
                     'nick': _converse.getDefaultMUCNickname()
+                }
+            },
+
+            setDomain (jid) {
+                if (!_converse.locked_muc_domain) {
+                    this.save('muc_domain', Strophe.getDomainFromJid(jid));
                 }
             }
         });

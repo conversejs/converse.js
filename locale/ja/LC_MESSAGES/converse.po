@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.2.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-01-19 17:19+0000\n"
-"Last-Translator: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>\n"
+"PO-Revision-Date: 2019-04-06 17:04+0000\n"
+"Last-Translator: Mako N <mako@pasero.net>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/conversejs/"
 "translations/ja/>\n"
 "Language: ja\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 3.4-dev\n"
+"X-Generator: Weblate 3.6-dev\n"
 
 #: dist/converse-no-dependencies.js:30613
 #: dist/converse-no-dependencies.js:30667
@@ -462,9 +462,8 @@ msgid "name@conference.example.org"
 msgstr "name@conference.example.org"
 
 #: dist/converse-no-dependencies.js:36387
-#, fuzzy
 msgid "Groupchat name"
-msgstr "談話室のアドレス"
+msgstr "談話室名"
 
 #: dist/converse-no-dependencies.js:36387
 msgid "Groupchat address"
@@ -591,9 +590,8 @@ msgid "Change user role to participant"
 msgstr "ユーザーの役を参加者に変更"
 
 #: dist/converse-no-dependencies.js:37010
-#, fuzzy
 msgid "Remove this groupchat"
-msgstr "談話室から退出"
+msgstr "この談話室を削除"
 
 #: dist/converse-no-dependencies.js:37010
 msgid "Kick user from groupchat"
@@ -624,7 +622,6 @@ msgid "Grant ownership of this groupchat"
 msgstr "この談話室の主宰者にする"
 
 #: dist/converse-no-dependencies.js:37010
-#, fuzzy
 msgid "Register a nickname for this groupchat"
 msgstr "この談話室のニックネームを登録"
 
@@ -896,7 +893,7 @@ msgid ""
 "Are you sure you want to generate new OMEMO keys? This will remove your old "
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
-msgstr ""
+msgstr "本当に、新しい OMEMO 鍵を生成しますか ? 古い鍵は削除され、これまでに暗号化されたメッセージはこのデバイスでは復号できなくなります。"
 
 #: dist/converse-no-dependencies.js:38889
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -914,19 +911,18 @@ msgstr ""
 msgid ""
 "Sorry, we're unable to send an encrypted message because the remote server "
 "for %1$s could not be found"
-msgstr ""
+msgstr "%1$s のリモートサーバーを見つけることができなかったため、暗号化メッセージを送信できません"
 
 #: dist/converse-no-dependencies.js:39017
-#, fuzzy
 msgid "Unable to send an encrypted message due to an unexpected error."
-msgstr "エラーのため、メッセージを送信できませんでした。"
+msgstr "予期しないエラーのため、暗号化メッセージを送信できません。"
 
 #: dist/converse-no-dependencies.js:39104
 #, javascript-format
 msgid ""
 "Cannot use end-to-end encryption because %1$s uses a client that doesn't "
 "support OMEMO."
-msgstr ""
+msgstr "%1$s は OMEMO 非対応のクライアントを使用しているため、端末間暗号化を使用できません。"
 
 #: dist/converse-no-dependencies.js:39131
 msgid ""
@@ -1077,9 +1073,8 @@ msgid "Log out"
 msgstr "ログアウト"
 
 #: dist/converse-no-dependencies.js:40388
-#, fuzzy
 msgid "Show details about this chat client"
-msgstr "この談話室についての詳細を見る"
+msgstr "このクライアントについての詳細を見る"
 
 #: dist/converse-no-dependencies.js:40389
 msgid "Your profile"
@@ -1244,17 +1239,15 @@ msgstr "追加"
 
 #: dist/converse-no-dependencies.js:42000
 msgid "Sorry, could not find a contact with that name"
-msgstr ""
+msgstr "その名前の相手先は見つかりませんでした"
 
 #: dist/converse-no-dependencies.js:42024
-#, fuzzy
 msgid "You cannot add yourself as a contact"
-msgstr "クリックしてチャットの相手先として追加"
+msgstr "自分自身を相手先として追加することはできません"
 
 #: dist/converse-no-dependencies.js:42028
-#, fuzzy
 msgid "This contact has already been added"
-msgstr "この相手先は不在です"
+msgstr "この相手先は既に追加済みです"
 
 #: dist/converse-no-dependencies.js:42091
 msgid "Filter"
@@ -1322,9 +1315,8 @@ msgid "Add a contact"
 msgstr "相手先を追加"
 
 #: dist/converse-no-dependencies.js:42696
-#, fuzzy
 msgid "Re-sync your contacts"
-msgstr "相手先一覧"
+msgstr "相手先を再同期"
 
 #: dist/converse-no-dependencies.js:44498
 msgid "Sorry, could not determine upload URL."
@@ -1434,14 +1426,13 @@ msgstr "新しい談話室に入る"
 
 #: dist/converse-no-dependencies.js:75256
 msgid "This field is required"
-msgstr ""
+msgstr "この欄は必須です"
 
 #: dist/converse-no-dependencies.js:75262
 msgid "Join"
 msgstr "入室する"
 
 #: dist/converse-no-dependencies.js:75791
-#, fuzzy
 msgid "This groupchat no longer exists"
 msgstr "この談話室はもう存在していません"
 
@@ -1543,15 +1534,13 @@ msgstr "非匿名"
 
 #: dist/converse-no-dependencies.js:75922
 #: dist/converse-no-dependencies.js:76070
-#, fuzzy
 msgid "All other groupchat participants can see your XMPP address"
-msgstr "すべての入室者が相互の XMPP ユーザー名を見ることができます"
+msgstr "すべての入室者はあなたの XMPP アドレスを見ることができます"
 
 #: dist/converse-no-dependencies.js:75930
 #: dist/converse-no-dependencies.js:76078
-#, fuzzy
 msgid "Only moderators can see your XMPP address"
-msgstr "司会者のみが XMPP ユーザー名を見ることができます"
+msgstr "司会者のみが XMPP アドレスを見ることができます"
 
 #: dist/converse-no-dependencies.js:75938
 #: dist/converse-no-dependencies.js:76086
@@ -1589,13 +1578,12 @@ msgstr "この談話室はメンバーのみ入室できます"
 
 #: dist/converse-no-dependencies.js:76530
 msgid "Uploading file:"
-msgstr ""
+msgstr "アップロードファイル:"
 
 #: dist/converse-no-dependencies.js:76980
 #: dist/converse-no-dependencies.js:78424
-#, fuzzy
 msgid "XMPP Address:"
-msgstr "XMPP アドレス"
+msgstr "XMPP アドレス:"
 
 #: dist/converse-no-dependencies.js:76986
 msgid "Password:"
@@ -1652,7 +1640,7 @@ msgstr "このデバイスの OMEMO 指紋"
 
 #: dist/converse-no-dependencies.js:77405
 msgid "Generate new keys and fingerprint"
-msgstr ""
+msgstr "新しい鍵と指紋を生成"
 
 #: dist/converse-no-dependencies.js:77409
 msgid "Select all"
@@ -1730,28 +1718,24 @@ msgid "The User's Profile Image"
 msgstr "ユーザーのプロフィール画像"
 
 #: dist/converse-no-dependencies.js:78418
-#, fuzzy
 msgid "Full Name:"
-msgstr "名前(フルネーム)"
+msgstr "名前(フルネーム):"
 
 #: dist/converse-no-dependencies.js:78432
-#, fuzzy
 msgid "Nickname:"
-msgstr "ニックネーム"
+msgstr "ニックネーム:"
 
 #: dist/converse-no-dependencies.js:78440
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: dist/converse-no-dependencies.js:78450
-#, fuzzy
 msgid "Email:"
-msgstr "Eメール"
+msgstr "Eメール:"
 
 #: dist/converse-no-dependencies.js:78460
-#, fuzzy
 msgid "Role:"
-msgstr "役"
+msgstr "役:"
 
 #: dist/converse-no-dependencies.js:78468
 msgid "OMEMO Fingerprints"

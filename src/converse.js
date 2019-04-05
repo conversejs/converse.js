@@ -45,7 +45,6 @@ const WHITELISTED_PLUGINS = [
     'converse-modal',
     'converse-muc-views',
     'converse-notification',
-    'converse-oauth',
     'converse-omemo',
     'converse-profile',
     'converse-push',

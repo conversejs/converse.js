@@ -67,8 +67,14 @@ converse.plugins.add('converse-bookmarks', {
                             __('Bookmark this groupchat'),
                         'bookmarked': this.model.get('bookmarked')
                     }));
-                const close_button = this.el.querySelector('.close-chatbox-button');
-                close_button.insertAdjacentHTML('afterend', bookmark_button);
+
+                const buttons_row = this.el.querySelector('.chatbox-buttons')
+                const close_button = buttons_row.querySelector('.close-chatbox-button');
+                if (close_button) {
+                    close_button.insertAdjacentHTML('afterend', bookmark_button);
+                } else {
+                    buttons_row.insertAdjacentHTML('beforeEnd', bookmark_button);
+                }
             },
 
             async renderHeading () {

@@ -207,12 +207,14 @@ converse.plugins.add('converse-minimize', {
                 const html = this.__super__.generateHeadingHTML.apply(this, arguments);
                 const div = document.createElement('div');
                 div.innerHTML = html;
-                const button = div.querySelector('.close-chatbox-button');
-                button.insertAdjacentHTML('afterend',
-                    tpl_chatbox_minimize({
-                        'info_minimize': __('Minimize this chat box')
-                    })
-                );
+                const buttons_row = div.querySelector('.chatbox-buttons')
+                const button = buttons_row.querySelector('.close-chatbox-button');
+                const minimize_el = tpl_chatbox_minimize({'info_minimize': __('Minimize this chat box')})
+                if (button) {
+                    button.insertAdjacentHTML('afterend', minimize_el);
+                } else {
+                    buttons_row.insertAdjacentHTML('beforeEnd', minimize_el);
+                }
                 return div.innerHTML;
             }
         },

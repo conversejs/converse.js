@@ -10,6 +10,7 @@ import converse from "@converse/headless/converse-core";
 import tpl_alert_modal from "templates/alert_modal.html";
 
 const { Strophe, Backbone, _ } = converse.env;
+const u = converse.env.utils;
 
 
 converse.plugins.add('converse-modal', {
@@ -30,6 +31,11 @@ converse.plugins.add('converse-modal', {
                         this.trigger_el.classList.remove('selected');
                     }
                 }, false);
+
+                // XXX: Workaround for an apparent Bootstrap.Native bug, where
+                // the 'fade' class isn't removed after closing the modal,
+                // causing it to flash-close when you open it again.
+                this.el.addEventListener('shown.bs.modal', () => u.removeClass('fade', this.el), false);
             },
 
             insertIntoDOM () {

@@ -1,6 +1,6 @@
 (function (root, factory) {
-    define(["jquery", "jasmine", "mock", "test-utils"], factory);
-} (this, function ($, jasmine, mock, test_utils) {
+    define(["jasmine", "mock", "test-utils"], factory);
+} (this, function (jasmine, mock, test_utils) {
     const $iq = converse.env.$iq;
     const $msg = converse.env.$msg;
     const $pres = converse.env.$pres;
@@ -11,7 +11,7 @@
 
 
     const checkHeaderToggling = async function (group) {
-        var toggle = group.querySelector('a.group-toggle');
+        const toggle = group.querySelector('a.group-toggle');
         expect(u.isVisible(group)).toBeTruthy();
         expect(group.querySelectorAll('ul.collapsed').length).toBe(0);
         expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeFalsy();
@@ -22,7 +22,7 @@
         expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeTruthy();
         expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeFalsy();
         toggle.click();
-        await test_utils.waitUntil(() => group.querySelectorAll('li').length === $(group).find('li:visible').length);
+        await test_utils.waitUntil(() => group.querySelectorAll('li').length === _.filter(group.querySelectorAll('li'), u.isVisible).length);
         expect(u.hasClass('fa-caret-right', toggle.firstElementChild)).toBeFalsy();
         expect(u.hasClass('fa-caret-down', toggle.firstElementChild)).toBeTruthy();
     };
@@ -120,219 +120,180 @@
             it("will only appear when roster contacts flow over the visible area",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                var $filter = $(_converse.rosterview.el.querySelector('.roster-filter'));
+                var filter = _converse.rosterview.el.querySelector('.roster-filter');
                 var names = mock.cur_names;
                 test_utils.openControlBox();
                 _converse.rosterview.update(); // XXX: Will normally called as event handler
-                expect($filter.length).toBe(1);
-                test_utils.waitUntil(function () {
-                    return !$filter.is(':visible');
-                }).then(function () {
-                    for (var i=0; i<names.length; i++) {
-                        _converse.roster.create({
-                            ask: null,
-                            fullname: names[i],
-                            jid: names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
-                            requesting: 'false',
-                            subscription: 'both'
-                        });
-                        _converse.rosterview.update(); // XXX: Will normally called as event handler
-                    }
-
-                    $.fn.hasScrollBar = function() {
-                        if (!$.contains(document, this.get(0))) {
-                            return false;
-                        }
-                        if(this.parent().height() < this.get(0).scrollHeight) {
-                            return true;
-                        }
-                        return false;
-                    };
-
-                    return test_utils.waitUntil(function () {
-                        if ($(_converse.rosterview.roster_el).hasScrollBar()) {
-                            return $filter.is(':visible');
-                        } else {
-                            return !$filter.is(':visible');
-                        }
-                    }).then(function () {
-                        done();
+                expect(_.isNull(filter)).toBe(false);
+                await test_utils.waitUntil(() => !u.isVisible(filter));
+                for (var i=0; i<names.length; i++) {
+                    _converse.roster.create({
+                        ask: null,
+                        fullname: names[i],
+                        jid: names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                        requesting: 'false',
+                        subscription: 'both'
                     });
+                    _converse.rosterview.update(); // XXX: Will normally called as event handler
+                }
+
+                function hasScrollBar (el) {
+                    return el.isConnected && el.parentElement.offsetHeight < el.scrollHeight;
+                }
+
+                await test_utils.waitUntil(function () {
+                    if (hasScrollBar(_converse.rosterview.roster_el)) {
+                        return u.isVisible(filter);
+                    } else {
+                        return !u.isVisible(filter);
+                    }
                 });
+                done();
             }));
 
             it("can be used to filter the contacts shown",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    null, ['rosterGroupsFetched'], {'roster_groups': true},
+                    async function (done, _converse) {
 
-                _converse.roster_groups = true;
                 test_utils.openControlBox();
                 test_utils.createGroupedContacts(_converse);
-                var $filter = $(_converse.rosterview.el).find('.roster-filter');
-                var $roster = $(_converse.rosterview.roster_el);
+                let filter = _converse.rosterview.el.querySelector('.roster-filter');
+                const roster = _converse.rosterview.roster_el;
                 _converse.rosterview.filter_view.delegateEvents();
 
-                var promise = test_utils.waitUntil(() => $roster.find('li:visible').length === 15, 600)
-                .then(function (contacts) {
-                    expect($roster.find('ul.roster-group-contacts:visible').length).toBe(5);
-                    $filter[0].value = "candice";
-                    u.triggerEvent($filter[0], "keydown", "KeyboardEvent");
-                    return test_utils.waitUntil(() => $roster.find('li:visible').length === 1, 600);
-                }).then(function (contacts) {
-                    // Only one roster contact is now visible
-                    expect($roster.find('li:visible').length).toBe(1);
-                    expect($roster.find('li:visible').eq(0).text().trim()).toBe('Candice van der Knijff');
-                    // Only one foster group is still visible
-                    expect($roster.find('.roster-group:visible').length).toBe(1);
-                    expect(_.trim($roster.find('.roster-group:visible a.group-toggle').eq(0).text())).toBe('colleagues');
+                const contacts = await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 15), 600);
+                expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(5);
+                filter.value = "candice";
+                u.triggerEvent(filter, "keydown", "KeyboardEvent");
+                await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 1), 600);
+                // Only one roster contact is now visible
+                let visible_contacts = sizzle('li', roster).filter(u.isVisible);
+                expect(visible_contacts.length).toBe(1);
+                expect(visible_contacts.pop().textContent.trim()).toBe('Candice van der Knijff');
+                // Only one foster group is still visible
+                expect(sizzle('.roster-group', roster).filter(u.isVisible).length).toBe(1);
+                const visible_group = sizzle('.roster-group', roster).filter(u.isVisible).pop();
+                expect(visible_group.querySelector('a.group-toggle').textContent.trim()).toBe('colleagues');
 
-                    $filter = $(_converse.rosterview.el).find('.roster-filter');
-                    $filter.val("an");
-                    u.triggerEvent($filter[0], "keydown", "KeyboardEvent");
-                    
-                    return test_utils.waitUntil(function () {
-                        return $roster.find('li:visible').length === 5;
-                    }, 600)
-                }).then(function (contacts) {
-                    // Five roster contact is now visible
-                    expect($roster.find('li:visible').length).toBe(5);
-                    // Four groups are still visible
-                    var $groups = $roster.find('.roster-group:visible a.group-toggle');
-                    expect($groups.length).toBe(4);
-                    expect(_.trim($groups.eq(0).text())).toBe('colleagues');
-                    expect(_.trim($groups.eq(1).text())).toBe('Family');
-                    expect(_.trim($groups.eq(2).text())).toBe('friends & acquaintences');
-                    expect(_.trim($groups.eq(3).text())).toBe('ænemies');
+                filter = _converse.rosterview.el.querySelector('.roster-filter');
+                filter.value = "an";
+                u.triggerEvent(filter, "keydown", "KeyboardEvent");
+                await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 5), 600);
 
-                    $filter = $(_converse.rosterview.el).find('.roster-filter');
-                    $filter.val("xxx");
-                    u.triggerEvent($filter[0], "keydown", "KeyboardEvent");
+                visible_contacts = sizzle('li', roster).filter(u.isVisible);
+                expect(visible_contacts.length).toBe(5);
 
-                    return test_utils.waitUntil(function () {
-                        return $roster.find('li:visible').length === 0;
-                    }, 600)
-                }).then(function () {
-                    expect($roster.find('ul.roster-group-contacts:visible a.group-toggle').length).toBe(0);
-                    $filter = $(_converse.rosterview.el).find('.roster-filter');
-                    $filter.val("");  // Check that contacts are shown again, when the filter string is cleared.
-                    u.triggerEvent($filter[0], "keydown", "KeyboardEvent");
-                    return test_utils.waitUntil(function () {
-                        return $roster.find('li:visible').length === 15;
-                    }, 600)
-                }).then(function () {
-                    expect($roster.find('ul.roster-group-contacts:visible').length).toBe(5);
-                    _converse.roster_groups = false;
-                    done();
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                let visible_groups = sizzle('.roster-group', roster).filter(u.isVisible).map(el => el.querySelector('a.group-toggle'));
+                expect(visible_groups.length).toBe(4);
+                expect(visible_groups[0].textContent.trim()).toBe('colleagues');
+                expect(visible_groups[1].textContent.trim()).toBe('Family');
+                expect(visible_groups[2].textContent.trim()).toBe('friends & acquaintences');
+                expect(visible_groups[3].textContent.trim()).toBe('ænemies');
+
+                filter = _converse.rosterview.el.querySelector('.roster-filter');
+                filter.value = "xxx";
+                u.triggerEvent(filter, "keydown", "KeyboardEvent");
+                await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 0), 600);
+                visible_groups = sizzle('.roster-group', roster).filter(u.isVisible).map(el => el.querySelector('a.group-toggle'));
+                expect(visible_groups.length).toBe(0);
+
+                filter = _converse.rosterview.el.querySelector('.roster-filter');
+                filter.value = "";
+                u.triggerEvent(filter, "keydown", "KeyboardEvent");
+                await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 15), 600);
+                expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(5);
+                done();
             }));
 
             it("will also filter out contacts added afterwards",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.openControlBox();
                 test_utils.createGroupedContacts(_converse);
 
-                var $filter = $(_converse.rosterview.el).find('.roster-filter');
-                var $roster = $(_converse.rosterview.roster_el);
+                const filter = _converse.rosterview.el.querySelector('.roster-filter');
+                const roster = _converse.rosterview.roster_el;
                 _converse.rosterview.filter_view.delegateEvents();
 
-                test_utils.waitUntil(function () {
-                    return $roster.find('li:visible').length === 15;
-                }, 300).then(function (contacts) {
-                    $filter.val("an");
-                    u.triggerEvent($filter[0], "keydown", "KeyboardEvent");
+                await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 15), 600);
+                filter.value = "an";
+                u.triggerEvent(filter, "keydown", "KeyboardEvent");
+                await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 5), 600);
 
-                    return test_utils.waitUntil(function () {
-                        return $roster.find('li:visible').length === 5;
-                    }, 500)
-                }).then(function (contacts) {
-                    // Five roster contact is now visible
-                    expect($roster.find('li:visible').length).toBe(5);
-                    // Four groups are still visible
-                    var $groups = $roster.find('.roster-group:visible a.group-toggle');
-                    expect($groups.length).toBe(4);
-                    expect(_.trim($groups.eq(0).text())).toBe('colleagues');
-                    expect(_.trim($groups.eq(1).text())).toBe('Family');
-                    expect(_.trim($groups.eq(2).text())).toBe('friends & acquaintences');
-                    expect(_.trim($groups.eq(3).text())).toBe('ænemies');
+                // Five roster contact is now visible
+                const visible_contacts = sizzle('li', roster).filter(u.isVisible);
+                expect(visible_contacts.length).toBe(5);
+                let visible_groups = sizzle('.roster-group', roster).filter(u.isVisible).map(el => el.querySelector('a.group-toggle'));
+                expect(visible_groups.length).toBe(4);
+                expect(visible_groups[0].textContent.trim()).toBe('colleagues');
+                expect(visible_groups[1].textContent.trim()).toBe('Family');
+                expect(visible_groups[2].textContent.trim()).toBe('friends & acquaintences');
+                expect(visible_groups[3].textContent.trim()).toBe('ænemies');
 
-                    _converse.roster.create({
-                        jid: 'latecomer@localhost',
-                        subscription: 'both',
-                        ask: null,
-                        groups: ['newgroup'],
-                        fullname: 'Marty McLatecomer'
-                    });
-                    return test_utils.waitUntil(function () {
-                        return $roster.find('.roster-group[data-group="newgroup"] li').length;
-                    }, 300);
-                }).then(function (contacts) {
-                    // The "newgroup" group doesn't appear
-                    expect($roster.find('.roster-group:visible').length).toBe(4);
-                    expect($roster.find('.roster-group').length).toBe(6);
-                    done();
+                _converse.roster.create({
+                    jid: 'latecomer@localhost',
+                    subscription: 'both',
+                    ask: null,
+                    groups: ['newgroup'],
+                    fullname: 'Marty McLatecomer'
                 });
+                await test_utils.waitUntil(() => sizzle('.roster-group[data-group="newgroup"] li', roster).length, 300);
+                visible_groups = sizzle('.roster-group', roster).filter(u.isVisible).map(el => el.querySelector('a.group-toggle'));
+                // The "newgroup" group doesn't appear
+                expect(visible_groups.length).toBe(4);
+                expect(visible_groups[0].textContent.trim()).toBe('colleagues');
+                expect(visible_groups[1].textContent.trim()).toBe('Family');
+                expect(visible_groups[2].textContent.trim()).toBe('friends & acquaintences');
+                expect(visible_groups[3].textContent.trim()).toBe('ænemies');
+                expect(roster.querySelectorAll('.roster-group').length).toBe(6);
+                done();
             }));
 
             it("can be used to filter the groups shown",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    null, ['rosterGroupsFetched'], {'roster_groups': true},
+                    async function (done, _converse) {
 
-                _converse.roster_groups = true;
                 test_utils.openControlBox();
                 test_utils.createGroupedContacts(_converse);
                 _converse.rosterview.filter_view.delegateEvents();
-                var $roster = $(_converse.rosterview.roster_el);
+                var roster = _converse.rosterview.roster_el;
 
                 var button = _converse.rosterview.el.querySelector('span[data-type="groups"]');
                 button.click();
 
-                test_utils.waitUntil(function () {
-                    return $roster.find('li:visible').length === 15;
-                }, 600).then(function () {
-                    expect($roster.find('div.roster-group:visible a.group-toggle').length).toBe(5);
+                const contacts = await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 15), 600);
+                expect(sizzle('.roster-group', roster).filter(u.isVisible).length).toBe(5);
 
-                    var filter = _converse.rosterview.el.querySelector('.roster-filter');
-                    filter.value = "colleagues";
-                    u.triggerEvent(filter, "keydown", "KeyboardEvent");
+                var filter = _converse.rosterview.el.querySelector('.roster-filter');
+                filter.value = "colleagues";
+                u.triggerEvent(filter, "keydown", "KeyboardEvent");
 
-                    return test_utils.waitUntil(function () {
-                        return $roster.find('div.roster-group:not(.collapsed) a.group-toggle').length === 1;
-                    }, 600);
-                }).then(function () {
-                    expect(_.trim($roster.find('div.roster-group:not(.collapsed) a').eq(0).text())).toBe('colleagues');
-                    expect($roster.find('div.roster-group:not(.collapsed) li:visible').length).toBe(3);
+                await test_utils.waitUntil(() => (sizzle('div.roster-group:not(.collapsed)', roster).length === 1), 600);
+                expect(sizzle('div.roster-group:not(.collapsed)', roster).pop().firstElementChild.textContent.trim()).toBe('colleagues');
+                expect(sizzle('div.roster-group:not(.collapsed) li', roster).filter(u.isVisible).length).toBe(3);
+                // Check that all contacts under the group are shown
+                expect(sizzle('div.roster-group:not(.collapsed) li', roster).filter(l => !u.isVisible(l)).length).toBe(0);
 
-                    // Check that all contacts under the group are shown
-                    expect($roster.find('div.roster-group:not(.collapsed) li:hidden').length).toBe(0);
+                filter = _converse.rosterview.el.querySelector('.roster-filter');
+                filter.value = "xxx";
+                u.triggerEvent(filter, "keydown", "KeyboardEvent");
 
-                    var filter = _converse.rosterview.el.querySelector('.roster-filter');
-                    filter.value = "xxx";
-                    u.triggerEvent(filter, "keydown", "KeyboardEvent");
+                await test_utils.waitUntil(() => (roster.querySelectorAll('div.roster-group.collapsed').length === 5), 700);
+                expect(roster.querySelectorAll('div.roster-group:not(.collapsed) a').length).toBe(0);
 
-                    return test_utils.waitUntil(function () {
-                        return $roster.find('div.roster-group.collapsed a.group-toggle').length === 5;
-                    }, 700);
-                }).then(function () {
-                    expect($roster.find('div.roster-group:not(.collapsed) a').length).toBe(0);
-
-                    var filter = _converse.rosterview.el.querySelector('.roster-filter');
-                    filter.value = ""; // Check that groups are shown again, when the filter string is cleared.
-                    u.triggerEvent(filter, "keydown", "KeyboardEvent");
-                    return test_utils.waitUntil(function () {
-                        return $roster.find('div.roster-group.collapsed a.group-toggle').length === 0;
-                    }, 600);
-                }).then(function () {
-                    expect($roster.find('div.roster-group:not(collapsed)').length).toBe(5);
-                    expect($roster.find('div.roster-group:not(collapsed) li').length).toBe(15);
-                    done();
-                });
+                filter = _converse.rosterview.el.querySelector('.roster-filter');
+                filter.value = ""; // Check that groups are shown again, when the filter string is cleared.
+                u.triggerEvent(filter, "keydown", "KeyboardEvent");
+                await test_utils.waitUntil(() => (roster.querySelectorAll('div.roster-group.collapsed').length === 0), 700);
+                expect(sizzle('div.roster-group:not(collapsed)', roster).length).toBe(5);
+                expect(sizzle('div.roster-group:not(collapsed) li', roster).length).toBe(15);
+                done();
             }));
 
             it("has a button with which its contents can be cleared",
@@ -375,25 +336,25 @@
                 var button = _converse.rosterview.el.querySelector('span[data-type="state"]');
                 button.click();
 
-                var $roster = $(_converse.rosterview.roster_el);
-                test_utils.waitUntil(() => $roster.find('li:visible').length === 15, 500).then(function () {
+                var roster = _converse.rosterview.roster_el;
+                test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 15, 500).then(function () {
                     var filter = _converse.rosterview.el.querySelector('.state-type');
-                    expect($roster.find('ul.roster-group-contacts:visible').length).toBe(5);
+                    expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(5);
                     filter.value = "online";
                     u.triggerEvent(filter, 'change');
-                    return test_utils.waitUntil(() => $roster.find('li:visible').length === 1, 500);
+                    return test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 1, 500);
                 }).then(function () {
-                    expect($roster.find('li:visible').eq(0).text().trim()).toBe('Rinse Sommer');
-                    expect($roster.find('ul.roster-group-contacts:visible').length).toBe(1);
+                    expect(sizzle('li', roster).filter(u.isVisible).pop().textContent.trim()).toBe('Rinse Sommer');
+                    expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(1);
 
                     var filter = _converse.rosterview.el.querySelector('.state-type');
                     filter.value = "dnd";
                     u.triggerEvent(filter, 'change');
                     return test_utils.waitUntil(function () {
-                        return $roster.find('li:visible').eq(0).text().trim() === 'Annegreet Gomez';
+                        return sizzle('li', roster).filter(u.isVisible).pop().textContent.trim() === 'Annegreet Gomez';
                     }, 900)
                 }).then(function () {
-                    expect($roster.find('ul.roster-group-contacts:visible').length).toBe(1);
+                    expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(1);
                     done();
                 }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
             }));
@@ -486,11 +447,10 @@
 
             it("can share contacts with other roster groups", 
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    null, ['rosterGroupsFetched'], {'roster_groups': true},
+                    async function (done, _converse) {
 
-                _converse.roster_groups = true;
-                var groups = ['colleagues', 'friends'];
+                const groups = ['colleagues', 'friends'];
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 test_utils.openControlBox();
                 _converse.rosterview.render();
@@ -503,18 +463,15 @@
                         fullname: mock.cur_names[i]
                     });
                 }
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('li:visible').length === 30;
-                }, 600).then(function () {
-                    // Check that usernames appear alphabetically per group
-                    _.each(groups, function (name) {
-                        var $contacts = $(_converse.rosterview.el).find('.roster-group[data-group="'+name+'"] ul li');
-                        var names = $.map($contacts, function (o) { return $(o).text().trim(); });
-                        expect(names).toEqual(_.clone(names).sort());
-                        expect(names.length).toEqual(mock.cur_names.length);
-                    });
-                    done();
+                await test_utils.waitUntil(() => (sizzle('li', _converse.rosterview.el).filter(u.isVisible).length === 30), 600);
+                // Check that usernames appear alphabetically per group
+                _.each(groups, function (name) {
+                    const contacts = sizzle('.roster-group[data-group="'+name+'"] ul li', _converse.rosterview.el);
+                    const names = contacts.map(o => o.textContent.trim());
+                    expect(names).toEqual(_.clone(names).sort());
+                    expect(names.length).toEqual(mock.cur_names.length);
                 });
+                done();
             }));
 
             it("remembers whether it is closed or opened",
@@ -568,7 +525,7 @@
                     async function (done, _converse) {
 
                 _addContacts(_converse);
-                await test_utils.waitUntil(() => $(_converse.rosterview.el).find('.roster-group:visible li').length, 1000);
+                await test_utils.waitUntil(() => sizzle('.roster-group', _converse.rosterview.el).filter(u.isVisible).map(e => e.querySelector('li')).length, 1000);
                 await checkHeaderToggling.apply(
                     _converse,
                     [_converse.rosterview.get('Pending contacts').el]
@@ -612,62 +569,49 @@
 
             it("are shown in the roster when hide_offline_users", 
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    null, ['rosterGroupsFetched'], {'hide_offline_users': true},
+                    async function (done, _converse) {
 
-                _converse.hide_offline_users = true;
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 _addContacts(_converse);
-                test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('li:visible').length;
-                    }, 500)
-                .then(function () {
-                    expect(_converse.rosterview.update).toHaveBeenCalled();
-                    expect($(_converse.rosterview.el).is(':visible')).toBe(true);
-                    expect($(_converse.rosterview.el).find('li:visible').length).toBe(3);
-                    expect($(_converse.rosterview.el).find('ul.roster-group-contacts:visible').length).toBe(1);
-                    done();
-                });
+                await test_utils.waitUntil(() => sizzle('li', _converse.rosterview.el).filter(u.isVisible).length, 500)
+                expect(_converse.rosterview.update).toHaveBeenCalled();
+                expect(u.isVisible(_converse.rosterview.el)).toBe(true);
+                expect(sizzle('li', _converse.rosterview.el).filter(u.isVisible).length).toBe(3);
+                expect(sizzle('ul.roster-group-contacts', _converse.rosterview.el).filter(u.isVisible).length).toBe(1);
+                done();
             }));
 
             it("can be removed by the user", 
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _addContacts(_converse);
-                var name = mock.pend_names[0];
-                var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                var contact = _converse.roster.get(jid);
+                const name = mock.pend_names[0];
+                const jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                const contact = _converse.roster.get(jid);
                 var sent_IQ;
                 spyOn(window, 'confirm').and.returnValue(true);
                 spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
                 spyOn(contact, 'removeFromRoster').and.callThrough();
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')").length;
-                }, 700).then(function () {
-
-                    var sendIQ = _converse.connection.sendIQ;
-                    spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                        sent_IQ = iq;
-                        callback();
-                    });
-                    $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')")
-                        .parent().siblings('.remove-xmpp-contact')[0].click();
-                    return test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')").length === 0
-                    }, 1000)
-                }).then(function () {
-                    expect(window.confirm).toHaveBeenCalled();
-                    expect(contact.removeFromRoster).toHaveBeenCalled();
-                    expect(sent_IQ.toLocaleString()).toBe(
-                        `<iq type="set" xmlns="jabber:client">`+
-                            `<query xmlns="jabber:iq:roster">`+
-                                `<item jid="suleyman.van.beusichem@localhost" subscription="remove"/>`+
-                            `</query>`+
-                        `</iq>`);
-                    done();
+                await test_utils.waitUntil(() => sizzle(".pending-contact-name:contains('"+name+"')", _converse.rosterview.el).length, 700);
+                var sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    callback();
                 });
+                sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, _converse.rosterview.el).pop().click();
+                await test_utils.waitUntil(() => (sizzle(".pending-contact-name:contains('"+name+"')", _converse.rosterview.el).length === 0), 1000);
+                expect(window.confirm).toHaveBeenCalled();
+                expect(contact.removeFromRoster).toHaveBeenCalled();
+                expect(sent_IQ.toLocaleString()).toBe(
+                    `<iq type="set" xmlns="jabber:client">`+
+                        `<query xmlns="jabber:iq:roster">`+
+                            `<item jid="suleyman.van.beusichem@localhost" subscription="remove"/>`+
+                        `</query>`+
+                    `</iq>`);
+                done();
             }));
 
             it("do not have a header if there aren't any", 
@@ -692,8 +636,7 @@
                     return u.isVisible(el) && _.filter(el.querySelectorAll('li'), li => u.isVisible(li)).length;
                 }, 700)
                             
-                $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')")
-                    .parent().siblings('.remove-xmpp-contact')[0].click();
+                sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, _converse.rosterview.el).pop().click();
                 expect(window.confirm).toHaveBeenCalled();
                 expect(_converse.connection.sendIQ).toHaveBeenCalled();
 
@@ -704,21 +647,17 @@
             it("is shown when a new private message is received",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _addContacts(_converse);
-                return test_utils.waitUntil(() => _converse.roster.at(0).vcard.get('fullname'))
-                .then(function () {
-                    var name;
-                    spyOn(window, 'confirm').and.returnValue(true);
-                    for (var i=0; i<mock.pend_names.length; i++) {
-                        name = mock.pend_names[i];
-                        $(_converse.rosterview.el).find(".pending-contact-name:contains('"+name+"')")
-                            .parent().siblings('.remove-xmpp-contact')[0].click();
-                    }
-                    expect($(_converse.rosterview.el).find('#pending-xmpp-contacts').is(':visible')).toBeFalsy();
-                    done();
-                });
+                await test_utils.waitUntil(() => _converse.roster.at(0).vcard.get('fullname'))
+                spyOn(window, 'confirm').and.returnValue(true);
+                for (var i=0; i<mock.pend_names.length; i++) {
+                    const name = mock.pend_names[i];
+                    sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, _converse.rosterview.el).pop().click();
+                }
+                expect(u.isVisible(_converse.rosterview.get('Pending contacts').el)).toBe(false);
+                done();
             }));
 
             it("can be added to the roster and they will be sorted alphabetically",
@@ -739,7 +678,7 @@
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                 }
                 return test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.get('Pending contacts').el).find('li:visible').length;
+                    return sizzle('li', _converse.rosterview.get('Pending contacts').el).filter(u.isVisible).length;
                 }, 700).then(function () {
                     // Check that they are sorted alphabetically
                     t = _.reduce(_converse.rosterview.get('Pending contacts').el.querySelectorAll('.pending-xmpp-contact span'),
@@ -764,7 +703,7 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('li:visible').length;
+                        return sizzle('li', _converse.rosterview.el).filter(u.isVisible).length;
                 }, 500).then(function () {
                     checkHeaderToggling.apply(
                         _converse,
@@ -781,7 +720,7 @@
                 _converse.roster_groups = false;
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('li:visible').length;
+                        return sizzle('li', _converse.rosterview.el).filter(u.isVisible).length;
                     }, 500)
                 .then(function () {
                     _converse.rosterview.el.querySelector('.roster-group a.group-toggle').click();
@@ -795,7 +734,7 @@
                         subscription: 'both'
                     });
                     var view = _converse.rosterview.get('My contacts').get(jid);
-                    expect($(view.el).is(':visible')).toBe(false);
+                    expect(u.isVisible(view.el)).toBe(false);
                     done();
                 });
             }));
@@ -817,14 +756,13 @@
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                 }
                 test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('li').length;
+                    return sizzle('li', _converse.rosterview.el).length;
                 }, 600).then(function () {
                     // Check that they are sorted alphabetically
-                    var t = _.reduce($(_converse.rosterview.el.querySelector('.roster-group'))
-                             .find('.current-xmpp-contact.offline a.open-chat'),
-                        function (result, value) {
-                            return result + _.trim(value.textContent);
-                        }, '');
+                    const t = _.reduce(
+                        _converse.rosterview.el.querySelectorAll('.roster-group .current-xmpp-contact.offline a.open-chat'),
+                        (result, value) => (result + value.textContent.trim()), '');
+
                     expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
                     done();
                 });
@@ -849,16 +787,14 @@
                     sent_IQ = iq;
                     callback();
                 });
-                $(_converse.rosterview.el).find(".open-chat:contains('"+name+"')")
-                    .parent().find('.remove-xmpp-contact')[0].click();
-
+                sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, _converse.rosterview.el).pop().click();
                 expect(window.confirm).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq type="set" xmlns="jabber:client">`+
                         `<query xmlns="jabber:iq:roster"><item jid="max.frankfurter@localhost" subscription="remove"/></query>`+
                     `</iq>`);
                 expect(contact.removeFromRoster).toHaveBeenCalled();
-                await test_utils.waitUntil(() => $(_converse.rosterview.el).find(".open-chat:contains('"+name+"')").length === 0);
+                await test_utils.waitUntil(() => sizzle(".open-chat:contains('"+name+"')", _converse.rosterview.el).length === 0);
                 done();
             }));
 
@@ -876,15 +812,14 @@
                     ask: null,
                     fullname: name
                 });
-                await test_utils.waitUntil(() => $(_converse.rosterview.el).find('.roster-group:visible li').length, 1000);
+                await test_utils.waitUntil(() => sizzle('.roster-group', _converse.rosterview.el).filter(u.isVisible).map(e => e.querySelector('li')).length, 1000);
                 spyOn(window, 'confirm').and.returnValue(true);
                 spyOn(contact, 'removeFromRoster').and.callThrough();
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
                     if (typeof callback === "function") { return callback(); }
                 });
-                expect($(_converse.rosterview.el).find('.roster-group').css('display')).toEqual('block');
-                $(_converse.rosterview.el).find(".open-chat:contains('"+name+"')")
-                    .parent().find('.remove-xmpp-contact')[0].click();
+                expect(u.isVisible(_converse.rosterview.el.querySelector('.roster-group'))).toBe(true);
+                sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, _converse.rosterview.el).pop().click();
                 expect(window.confirm).toHaveBeenCalled();
                 expect(_converse.connection.sendIQ).toHaveBeenCalled();
                 expect(contact.removeFromRoster).toHaveBeenCalled();
@@ -898,17 +833,17 @@
                     function (done, _converse) {
 
                 _addContacts(_converse);
-                test_utils.waitUntil(() => $(_converse.rosterview.el).find('.roster-group li').length, 700)
+                test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length, 700)
                 .then(function () {
                     var jid, t;
                     spyOn(_converse.rosterview, 'update').and.callThrough();
-                    var $roster = $(_converse.rosterview.el);
+                    const roster = _converse.rosterview.el;
                     for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         _converse.roster.get(jid).presence.set('show', 'online');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
-                        t = _.reduce($roster.find('.roster-group').find('.current-xmpp-contact.online a.open-chat'), function (result, value) {
+                        t = _.reduce(roster.querySelectorAll('.roster-group .current-xmpp-contact.online a.open-chat'), function (result, value) {
                             return result + _.trim(value.textContent);
                         }, '');
                         expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
@@ -924,17 +859,17 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group li').length;
+                    return sizzle('.roster-group li', _converse.rosterview.el).length;
                 }, 700).then(function () {
                     var jid, t;
                     spyOn(_converse.rosterview, 'update').and.callThrough();
-                    var $roster = $(_converse.rosterview.el);
+                    const roster = _converse.rosterview.el;
                     for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         _converse.roster.get(jid).presence.set('show', 'dnd');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
-                        t = _.reduce($roster.find('.roster-group .current-xmpp-contact.dnd a.open-chat'),
+                        t = _.reduce(roster.querySelectorAll('.roster-group .current-xmpp-contact.dnd a.open-chat'),
                             function (result, value) {
                                 return result + _.trim(value.textContent);
                             }, '');
@@ -951,17 +886,17 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group li').length;
+                    return sizzle('.roster-group li', _converse.rosterview.el).length;
                 }, 700).then(function () {
                     var jid, t;
                     spyOn(_converse.rosterview, 'update').and.callThrough();
-                    var $roster = $(_converse.rosterview.el);
+                    const roster = _converse.rosterview.el;
                     for (var i=0; i<mock.cur_names.length; i++) {
                         jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
                         _converse.roster.get(jid).presence.set('show', 'away');
                         expect(_converse.rosterview.update).toHaveBeenCalled();
                         // Check that they are sorted alphabetically
-                        t = _.reduce($roster.find('.roster-group .current-xmpp-contact.away a.open-chat'),
+                        t = _.reduce(roster.querySelectorAll('.roster-group .current-xmpp-contact.away a.open-chat'),
                             function (result, value) {
                                 return result + _.trim(value.textContent);
                             }, '');
@@ -974,56 +909,49 @@
             it("can change their status to xa and be sorted alphabetically", 
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _addContacts(_converse);
-                test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('.roster-group li').length;
-                }, 700).then(function () {
-                    var jid, t;
-                    spyOn(_converse.rosterview, 'update').and.callThrough();
-                    var $roster = $(_converse.rosterview.el);
-                    for (var i=0; i<mock.cur_names.length; i++) {
-                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).presence.set('show', 'xa');
-                        expect(_converse.rosterview.update).toHaveBeenCalled();
-                        // Check that they are sorted alphabetically
-                        t = _.reduce($roster.find('.roster-group .current-xmpp-contact.xa a.open-chat'),
-                            function (result, value) {
-                                return result + _.trim(value.textContent);
-                            }, '');
-                        expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
-                    }
-                    done();
-                });
+                await test_utils.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
+                var jid, t;
+                spyOn(_converse.rosterview, 'update').and.callThrough();
+                const roster = _converse.rosterview.el;
+                for (var i=0; i<mock.cur_names.length; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    _converse.roster.get(jid).presence.set('show', 'xa');
+                    expect(_converse.rosterview.update).toHaveBeenCalled();
+                    // Check that they are sorted alphabetically
+                    t = _.reduce(roster.querySelectorAll('.roster-group .current-xmpp-contact.xa a.open-chat'),
+                        function (result, value) {
+                            return result + _.trim(value.textContent);
+                        }, '');
+                    expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
+                }
+                done();
             }));
 
             it("can change their status to unavailable and be sorted alphabetically", 
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _addContacts(_converse);
-                test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('.roster-group li').length;
-                    }, 500)
-                .then(function () {
-                    var jid, t;
-                    spyOn(_converse.rosterview, 'update').and.callThrough();
-                    var $roster = $(_converse.rosterview.el);
-                    for (var i=0; i<mock.cur_names.length; i++) {
-                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).presence.set('show', 'unavailable');
-                        expect(_converse.rosterview.update).toHaveBeenCalled();
-                        // Check that they are sorted alphabetically
-                        t = _.reduce($roster.find('.roster-group .current-xmpp-contact.unavailable a.open-chat'),
-                            function (result, value) {
-                                return result + _.trim(value.textContent);
-                            }, '');
-                        expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
-                    }
-                    done();
-                });
+                await test_utils.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 500)
+                var jid, t;
+                spyOn(_converse.rosterview, 'update').and.callThrough();
+                var roster = _converse.rosterview.el;
+                for (var i=0; i<mock.cur_names.length; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    _converse.roster.get(jid).presence.set('show', 'unavailable');
+                    expect(_converse.rosterview.update).toHaveBeenCalled();
+                    // Check that they are sorted alphabetically
+                    t = _.reduce(roster.querySelectorAll('.roster-group .current-xmpp-contact.unavailable a.open-chat'),
+                        function (result, value) {
+                            return result + _.trim(value.textContent);
+                        }, '');
+                    expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
+                }
+                done();
             }));
 
             it("are ordered according to status: online, busy, away, xa, unavailable, offline", 
@@ -1033,7 +961,7 @@
 
                 _addContacts(_converse);
                 test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group li').length;
+                    return sizzle('.roster-group li', _converse.rosterview.el).length;
                 }, 700).then(function () {
                     var i, jid;
                     for (i=0; i<3; i++) {
@@ -1057,68 +985,68 @@
                         _converse.roster.get(jid).presence.set('show', 'unavailable');
                     }
                     return test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('li.online').length
+                        return _converse.rosterview.el.querySelectorAll('li.online').length
                     })
                 }).then(function () {
                     return test_utils.waitUntil(function () {
-                        return $(_converse.rosterview.el).find('li:first').text().trim() === 'Candice van der Knijff'
+                        return _converse.rosterview.el.querySelector('li:first-child').textContent.trim() === 'Candice van der Knijff'
                     }, 900);
                 }).then(function () {
                     var i;
-                    var contacts = $(_converse.rosterview.el).find('.current-xmpp-contact');
+                    const contacts = _converse.rosterview.el.querySelectorAll('.current-xmpp-contact');
                     for (i=0; i<3; i++) {
-                        expect($(contacts[i]).hasClass('online')).toBeTruthy();
-                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
-                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
+                        expect(u.hasClass('online', contacts[i])).toBe(true);
+                        expect(u.hasClass('both', contacts[i])).toBe(true);
+                        expect(u.hasClass('dnd', contacts[i])).toBe(false);
+                        expect(u.hasClass('away', contacts[i])).toBe(false);
+                        expect(u.hasClass('xa', contacts[i])).toBe(false);
+                        expect(u.hasClass('unavailable', contacts[i])).toBe(false);
+                        expect(u.hasClass('offline', contacts[i])).toBe(false);
                     }
                     for (i=3; i<6; i++) {
-                        expect($(contacts[i]).hasClass('dnd')).toBeTruthy();
-                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
-                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
+                        expect(u.hasClass('dnd', contacts[i])).toBe(true);
+                        expect(u.hasClass('both', contacts[i])).toBe(true);
+                        expect(u.hasClass('online', contacts[i])).toBe(false);
+                        expect(u.hasClass('away', contacts[i])).toBe(false);
+                        expect(u.hasClass('xa', contacts[i])).toBe(false);
+                        expect(u.hasClass('unavailable', contacts[i])).toBe(false);
+                        expect(u.hasClass('offline', contacts[i])).toBe(false);
                     }
                     for (i=6; i<9; i++) {
-                        expect($(contacts[i]).hasClass('away')).toBeTruthy();
-                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
-                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
+                        expect(u.hasClass('away', contacts[i])).toBe(true);
+                        expect(u.hasClass('both', contacts[i])).toBe(true);
+                        expect(u.hasClass('online', contacts[i])).toBe(false);
+                        expect(u.hasClass('dnd', contacts[i])).toBe(false);
+                        expect(u.hasClass('xa', contacts[i])).toBe(false);
+                        expect(u.hasClass('unavailable', contacts[i])).toBe(false);
+                        expect(u.hasClass('offline', contacts[i])).toBe(false);
                     }
                     for (i=9; i<12; i++) {
-                        expect($(contacts[i]).hasClass('xa')).toBeTruthy();
-                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
-                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
+                        expect(u.hasClass('xa', contacts[i])).toBe(true);
+                        expect(u.hasClass('both', contacts[i])).toBe(true);
+                        expect(u.hasClass('online', contacts[i])).toBe(false);
+                        expect(u.hasClass('dnd', contacts[i])).toBe(false);
+                        expect(u.hasClass('away', contacts[i])).toBe(false);
+                        expect(u.hasClass('unavailable', contacts[i])).toBe(false);
+                        expect(u.hasClass('offline', contacts[i])).toBe(false);
                     }
                     for (i=12; i<15; i++) {
-                        expect($(contacts[i]).hasClass('unavailable')).toBeTruthy();
-                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
-                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('offline')).toBeFalsy();
+                        expect(u.hasClass('unavailable', contacts[i])).toBe(true);
+                        expect(u.hasClass('both', contacts[i])).toBe(true);
+                        expect(u.hasClass('online', contacts[i])).toBe(false);
+                        expect(u.hasClass('dnd', contacts[i])).toBe(false);
+                        expect(u.hasClass('away', contacts[i])).toBe(false);
+                        expect(u.hasClass('xa', contacts[i])).toBe(false);
+                        expect(u.hasClass('offline', contacts[i])).toBe(false);
                     }
                     for (i=15; i<mock.cur_names.length; i++) {
-                        expect($(contacts[i]).hasClass('offline')).toBeTruthy();
-                        expect($(contacts[i]).hasClass('both')).toBeTruthy();
-                        expect($(contacts[i]).hasClass('online')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('dnd')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('away')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('xa')).toBeFalsy();
-                        expect($(contacts[i]).hasClass('unavailable')).toBeFalsy();
+                        expect(u.hasClass('offline', contacts[i])).toBe(true);
+                        expect(u.hasClass('both', contacts[i])).toBe(true);
+                        expect(u.hasClass('online', contacts[i])).toBe(false);
+                        expect(u.hasClass('dnd', contacts[i])).toBe(false);
+                        expect(u.hasClass('away', contacts[i])).toBe(false);
+                        expect(u.hasClass('xa', contacts[i])).toBe(false);
+                        expect(u.hasClass('unavailable', contacts[i])).toBe(false);
                     }
                     done();
                 });
@@ -1135,8 +1063,8 @@
                 var i, children;
                 var names = [];
                 var addName = function (item) {
-                    if (!$(item).hasClass('request-actions')) {
-                        names.push($(item).text().replace(/^\s+|\s+$/g, ''));
+                    if (!u.hasClass('request-actions', item)) {
+                        names.push(item.textContent.replace(/^\s+|\s+$/g, ''));
                     }
                 };
                 spyOn(_converse.rosterview, 'update').and.callThrough();
@@ -1166,10 +1094,10 @@
             it("do not have a header if there aren't any", 
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.openControlBox();
-                var name = mock.req_names[0];
+                const name = mock.req_names[0];
                 spyOn(window, 'confirm').and.returnValue(true);
                 _converse.roster.create({
                     jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
@@ -1178,32 +1106,27 @@
                     requesting: true,
                     fullname: name
                 });
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group:visible li').length;
-                }, 900).then(function () {
-                    expect(u.isVisible(_converse.rosterview.get('Contact requests').el)).toEqual(true);
-                    expect($(_converse.rosterview.el).find('.roster-group:visible li').length).toBe(1);
-                    $(_converse.rosterview.el).find('.roster-group:visible li .decline-xmpp-request')[0].click();
-                    expect(window.confirm).toHaveBeenCalled();
-                    expect(u.isVisible(_converse.rosterview.get('Contact requests').el)).toEqual(false);
-                    done();
-                });
+                await test_utils.waitUntil(() => sizzle('.roster-group', _converse.rosterview.el).filter(u.isVisible).length, 900);
+                expect(u.isVisible(_converse.rosterview.get('Contact requests').el)).toEqual(true);
+                expect(sizzle('.roster-group', _converse.rosterview.el).filter(u.isVisible).map(e => e.querySelector('li')).length).toBe(1);
+                sizzle('.roster-group', _converse.rosterview.el).filter(u.isVisible).map(e => e.querySelector('li .decline-xmpp-request'))[0].click();
+                expect(window.confirm).toHaveBeenCalled();
+                expect(u.isVisible(_converse.rosterview.get('Contact requests').el)).toEqual(false);
+                done();
             }));
 
             it("can be collapsed under their own header", 
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group:visible li').length;
-                }, 700).then(function () {
-                    checkHeaderToggling.apply(
-                        _converse,
-                        [_converse.rosterview.get('Contact requests').el]
-                    ).then(done);
-                });
+                await test_utils.waitUntil(() => sizzle('.roster-group', _converse.rosterview.el).filter(u.isVisible).length, 700);
+                await checkHeaderToggling.apply(
+                    _converse,
+                    [_converse.rosterview.get('Contact requests').el]
+                );
+                done();
             }));
 
             it("can have their requests accepted by the user", 
@@ -1213,16 +1136,17 @@
 
                 test_utils.openControlBox();
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
+                const name = mock.req_names.sort()[0];
+                const jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                const contact = _converse.roster.get(jid);
+                spyOn(contact, 'authorize').and.callFake(() => contact);
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length)
                 // TODO: Testing can be more thorough here, the user is
                 // actually not accepted/authorized because of
                 // mock_connection.
-                const jid =  mock.req_names.sort()[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                const contact = _converse.roster.get(jid);
-                spyOn(contact, 'authorize').and.callFake(() => contact);
                 spyOn(_converse.roster, 'sendContactAddIQ').and.callFake(() => Promise.resolve());
-                $(_converse.rosterview.el).find(".req-contact-name:contains('"+name+"')")
-                    .parent().parent().find('.accept-xmpp-request')[0].click();
+                const req_contact = sizzle(".req-contact-name:contains('"+name+"')", _converse.rosterview.el).pop();
+                req_contact.parentElement.parentElement.querySelector('.accept-xmpp-request').click();
                 expect(_converse.roster.sendContactAddIQ).toHaveBeenCalled();
                 await test_utils.waitUntil(() => contact.authorize.calls.count());
                 expect(contact.authorize).toHaveBeenCalled();
@@ -1232,30 +1156,27 @@
             it("can have their requests denied by the user", 
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group li').length;
-                }, 700).then(function () {
-                    _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
-                    var name = mock.req_names.sort()[1];
-                    var jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                    var contact = _converse.roster.get(jid);
-                    spyOn(window, 'confirm').and.returnValue(true);
-                    spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
-                    $(_converse.rosterview.el).find(".req-contact-name:contains('"+name+"')")
-                        .parent().parent().find('.decline-xmpp-request')[0].click();
-                    expect(window.confirm).toHaveBeenCalled();
-                    expect(contact.unauthorize).toHaveBeenCalled();
-                    // There should now be one less contact
-                    expect(_converse.roster.length).toEqual(mock.req_names.length-1);
-                    done();
-                });
+                await test_utils.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
+                _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
+                const name = mock.req_names.sort()[1];
+                const jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                const contact = _converse.roster.get(jid);
+                spyOn(window, 'confirm').and.returnValue(true);
+                spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
+                const req_contact = sizzle(".req-contact-name:contains('"+name+"')", _converse.rosterview.el).pop();
+                req_contact.parentElement.parentElement.querySelector('.decline-xmpp-request').click();
+                expect(window.confirm).toHaveBeenCalled();
+                expect(contact.unauthorize).toHaveBeenCalled();
+                // There should now be one less contact
+                expect(_converse.roster.length).toEqual(mock.req_names.length-1);
+                done();
             }));
 
             it("are persisted even if other contacts' change their presence ", mock.initConverse(
-                null, ['rosterGroupsFetched'], {}, function (done, _converse) {
+                null, ['rosterGroupsFetched'], {}, async function (done, _converse) {
 
                 /* This is a regression test.
                  * https://github.com/jcbrand/_converse.js/issues/262
@@ -1264,38 +1185,35 @@
 
                 let stanza = $pres({from: 'data@enterprise/resource', type: 'subscribe'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                test_utils.waitUntil(function () {
-                    return $('a:contains("Contact requests")').length;
-                }, 700).then(function () {
-                    expect(_converse.roster.pluck('jid').length).toBe(1);
-                    expect(_.includes(_converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
-                    // Taken from the spec
-                    // https://xmpp.org/rfcs/rfc3921.html#rfc.section.7.3
-                    stanza = $iq({
-                        to: _converse.connection.jid,
-                        type: 'result',
-                        id: 'roster_1'
-                    }).c('query', {
-                        xmlns: 'jabber:iq:roster',
-                    }).c('item', {
-                        jid: 'romeo@example.net',
-                        name: 'Romeo',
-                        subscription:'both'
-                    }).c('group').t('Friends').up().up()
-                    .c('item', {
-                        jid: 'mercutio@example.org',
-                        name: 'Mercutio',
-                        subscription:'from'
-                    }).c('group').t('Friends').up().up()
-                    .c('item', {
-                        jid: 'benvolio@example.org',
-                        name: 'Benvolio',
-                        subscription:'both'
-                    }).c('group').t('Friends');
-                    _converse.roster.onReceivedFromServer(stanza.tree());
-                    expect(_.includes(_converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
-                    done();
-                });
+                await test_utils.waitUntil(() => sizzle('a:contains("Contact requests")', _converse.rosterview.el).length, 700);
+                expect(_converse.roster.pluck('jid').length).toBe(1);
+                expect(_.includes(_converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
+                // Taken from the spec
+                // https://xmpp.org/rfcs/rfc3921.html#rfc.section.7.3
+                stanza = $iq({
+                    to: _converse.connection.jid,
+                    type: 'result',
+                    id: 'roster_1'
+                }).c('query', {
+                    xmlns: 'jabber:iq:roster',
+                }).c('item', {
+                    jid: 'romeo@example.net',
+                    name: 'Romeo',
+                    subscription:'both'
+                }).c('group').t('Friends').up().up()
+                .c('item', {
+                    jid: 'mercutio@example.org',
+                    name: 'Mercutio',
+                    subscription:'from'
+                }).c('group').t('Friends').up().up()
+                .c('item', {
+                    jid: 'benvolio@example.org',
+                    name: 'Benvolio',
+                    subscription:'both'
+                }).c('group').t('Friends');
+                _converse.roster.onReceivedFromServer(stanza.tree());
+                expect(_.includes(_converse.roster.pluck('jid'), 'data@enterprise')).toBeTruthy();
+                done();
             }));
         });
 
@@ -1332,25 +1250,19 @@
             it("will show fullname and jid properties on tooltip", 
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'all').openControlBox();
-                test_utils.waitUntil(function () {
-                    return $(_converse.rosterview.el).find('.roster-group li').length;
-                }, 700).then(function () {
-                    var jid, name, i;
-                    for (i=0; i<mock.cur_names.length; i++) {
-                        name = mock.cur_names[i];
-                        jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                        var $dd = $(_converse.rosterview.el).find("li:contains('"+name+"')").children().first();
-                        var dd_text = $dd.text();
-                        var dd_title = $dd.attr('title');
-                        expect(_.trim(dd_text)).toBe(name);
-                        expect(dd_title).toContain(name);
-                        expect(dd_title).toContain(jid);
-                    }
-                    done();
-                });
+                await test_utils.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
+                for (let i=0; i<mock.cur_names.length; i++) {
+                    const name = mock.cur_names[i];
+                    const jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                    const child = sizzle("li:contains('"+name+"')", _converse.rosterview.el).pop().firstElementChild;
+                    expect(child.textContent.trim()).toBe(name);
+                    expect(child.getAttribute('title')).toContain(name);
+                    expect(child.getAttribute('title')).toContain(jid);
+                }
+                done();
             }));
         });
     });

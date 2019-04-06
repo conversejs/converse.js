@@ -1,14 +1,13 @@
 (function (root, factory) {
     define([
         "jasmine",
-        "jquery",
         "mock",
         "test-utils"], factory);
-} (this, function (jasmine, $, mock, test_utils) {
+} (this, function (jasmine, mock, test_utils) {
     "use strict";
-    var Strophe = converse.env.Strophe;
-    var $iq = converse.env.$iq;
-    var _ = converse.env._;
+    const Strophe = converse.env.Strophe;
+    const $iq = converse.env.$iq;
+    const _ = converse.env._;
 
     describe("Service Discovery", function () {
 
@@ -19,8 +18,8 @@
                     null, ['discoInitialized'], {},
                     function (done, _converse) {
 
-                var IQ_stanzas = _converse.connection.IQ_stanzas;
-                var IQ_ids =  _converse.connection.IQ_ids;
+                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                const IQ_ids =  _converse.connection.IQ_ids;
                 test_utils.waitUntil(function () {
                     return _.filter(IQ_stanzas, function (iq) {
                         return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');

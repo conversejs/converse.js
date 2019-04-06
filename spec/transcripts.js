@@ -1,6 +1,5 @@
 (function (root, factory) {
     define([
-        "jquery",
         "jasmine",
         "converse-core",
         "mock",
@@ -9,7 +8,7 @@
         "transcripts"
         ], factory
     );
-} (this, function ($, jasmine, converse, mock, test_utils, utils, transcripts) {
+} (this, function (jasmine, converse, mock, test_utils, utils, transcripts) {
     var Strophe = converse.env.Strophe;
     var _ = converse.env._;
     var IGNORED_TAGS = [

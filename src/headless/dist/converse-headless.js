@@ -46383,10 +46383,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
     _converse.RoomsPanelModel = Backbone.Model.extend({
       defaults: function defaults() {
         return {
-          'muc_domain': '',
+          'muc_domain': _converse.muc_domain,
           'nick': _converse.getDefaultMUCNickname()
         };
+      },
+
+      setDomain(jid) {
+        if (!_converse.locked_muc_domain) {
+          this.save('muc_domain', Strophe.getDomainFromJid(jid));
+        }
       }
+
     });
     /**
      * A direct MUC invitation to join a groupchat has been received

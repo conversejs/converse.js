@@ -1,10 +1,9 @@
 (function (root, factory) {
     define([
         "jasmine",
-        "jquery",
         "mock",
         "test-utils"], factory);
-} (this, function (jasmine, $, mock, test_utils) {
+} (this, function (jasmine, mock, test_utils) {
     "use strict";
     const Strophe = converse.env.Strophe;
     const $iq = converse.env.$iq;
@@ -212,16 +211,16 @@
                 expect(_converse.roster.updateContact).toHaveBeenCalled();
                 // Check that the user is now properly shown as a pending
                 // contact in the roster.
-                await test_utils.waitUntil(function () {
-                    var $header = $('a:contains("Pending contacts")');
-                    var $contacts = $header.parent().find('li:visible');
-                    return $contacts.length;
+                await test_utils.waitUntil(() => {
+                    const header = sizzle('a:contains("Pending contacts")', _converse.rosterview.el).pop();
+                    const contacts = _.filter(header.parentElement.querySelectorAll('li'), u.isVisible);
+                    return contacts.length;
                 }, 600);
 
-                var $header = $('a:contains("Pending contacts")');
-                var $contacts = $header.parent().find('li');
-                expect($contacts.length).toBe(1);
-                expect($contacts.is(':visible')).toBeTruthy();
+                let header = sizzle('a:contains("Pending contacts")', _converse.rosterview.el).pop();
+                let contacts = header.parentElement.querySelectorAll('li');
+                expect(contacts.length).toBe(1);
+                expect(u.isVisible(contacts[0])).toBe(true);
 
                 spyOn(contact, "ackSubscribe").and.callThrough();
                 /* Here we assume the "happy path" that the contact
@@ -285,10 +284,10 @@
                     const header = sizzle('a:contains("My contacts")', _converse.rosterview.el);
                     return sizzle('li', header[0].parentNode).filter(l => u.isVisible(l)).length;
                 }, 600);
-                const header = sizzle('a:contains("My contacts")', _converse.rosterview.el);
+                header = sizzle('a:contains("My contacts")', _converse.rosterview.el);
                 expect(header.length).toBe(1);
                 expect(u.isVisible(header[0])).toBeTruthy();
-                const contacts = header[0].parentNode.querySelectorAll('li');
+                contacts = header[0].parentNode.querySelectorAll('li');
                 expect(contacts.length).toBe(1);
                 // Check that it has the right classes and text
                 expect(u.hasClass('to', contacts[0])).toBeTruthy();
@@ -360,8 +359,8 @@
                 expect(_converse.roster.updateContact).toHaveBeenCalled();
 
                 // The class on the contact will now have switched.
-                expect($contacts.hasClass('to')).toBeFalsy();
-                expect($contacts.hasClass('both')).toBeTruthy();
+                expect(u.hasClass('to', contacts[0])).toBe(false);
+                expect(u.hasClass('both', contacts[0])).toBe(true);
                 done();
                 
             }));
@@ -471,11 +470,11 @@
                     sent_IQ = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                const $header = $('a:contains("My contacts")');
-                await test_utils.waitUntil(() => $header.parent().find('li').length);
+                const header = sizzle('a:contains("My contacts")', _converse.rosterview.el).pop();
+                await test_utils.waitUntil(() => header.parentElement.querySelectorAll('li').length);
                         
                 // remove the first user
-                $header.parent().find('li .remove-xmpp-contact').get(0).click();
+                header.parentElement.querySelector('li .remove-xmpp-contact').click();
                 expect(window.confirm).toHaveBeenCalled();
 
                 /* Section 8.6 Removing a Roster Item and Cancelling All
@@ -515,17 +514,18 @@
 
             it("Receiving a subscription request", mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
-                function (done, _converse) {
+                async function (done, _converse) {
 
                 spyOn(_converse.api, "trigger");
                 test_utils.openControlBox(_converse);
-                test_utils.createContacts(_converse, 'current'); // Create some contacts so that we can test positioning
+                // Create some contacts so that we can test positioning
+                test_utils.createContacts(_converse, 'current');
                 /* <presence
                  *     from='user@example.com'
                  *     to='contact@example.org'
                  *     type='subscribe'/>
                  */
-                var stanza = $pres({
+                const stanza = $pres({
                     'to': _converse.bare_jid,
                     'from': 'contact@example.org',
                     'type': 'subscribe'
@@ -533,19 +533,17 @@
                     'xmlns': Strophe.NS.NICK,
                 }).t('Clint Contact');
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
-                return test_utils.waitUntil(function () {
-                    var $header = $('a:contains("Contact requests")');
-                    var $contacts = $header.parent().find('li:visible');
-                    return $contacts.length;
-                }, 600).then(function () {
-                    expect(_converse.api.trigger).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
-                    var $header = $('a:contains("Contact requests")');
-                    expect($header.length).toBe(1);
-                    expect($header.is(":visible")).toBeTruthy();
-                    var $contacts = $header.parent().find('li');
-                    expect($contacts.length).toBe(1);
-                    done();
-                });
+                await test_utils.waitUntil(() => {
+                    const header = sizzle('a:contains("Contact requests")', _converse.rosterview.el).pop();
+                    const contacts = _.filter(header.parentElement.querySelectorAll('li'), u.isVisible);
+                    return contacts.length;
+                }, 300);
+                expect(_converse.api.trigger).toHaveBeenCalledWith('contactRequest', jasmine.any(Object));
+                const header = sizzle('a:contains("Contact requests")', _converse.rosterview.el).pop();
+                expect(u.isVisible(header)).toBe(true);
+                const contacts = header.parentElement.querySelectorAll('li');
+                expect(contacts.length).toBe(1);
+                done();
             }));
         });
     });

@@ -53173,6 +53173,7 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Strophe = _converse$env.Strophe,
       Backbone = _converse$env.Backbone,
       _ = _converse$env._;
+const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env.utils;
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-modal', {
   initialize() {
     const _converse = this._converse;
@@ -53187,7 +53188,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins
           if (!_.isNil(this.trigger_el)) {
             this.trigger_el.classList.remove('selected');
           }
-        }, false);
+        }, false); // XXX: Workaround for an apparent Bootstrap.Native bug, where
+        // the 'fade' class isn't removed after closing the modal,
+        // causing it to flash-close when you open it again.
+
+        this.el.addEventListener('shown.bs.modal', () => u.removeClass('fade', this.el), false);
       },
 
       insertIntoDOM() {

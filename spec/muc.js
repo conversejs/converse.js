@@ -1231,7 +1231,7 @@
                 /* Server responds with the configuration form.
                  * See: // https://xmpp.org/extensions/xep-0045.html#example-165
                  */
-                var config_stanza = $iq({from: 'coven@chat.shakespeare.lit',
+                const config_stanza = $iq({from: 'coven@chat.shakespeare.lit',
                     'id': IQ_id,
                     'to': 'dummy@localhost/desktop',
                     'type': 'result'})
@@ -1712,7 +1712,7 @@
 
             it("allows the user to invite their roster contacts to enter the groupchat",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
                     async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current'); // We need roster contacts, so that we have someone to invite

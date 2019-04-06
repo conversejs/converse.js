@@ -3,11 +3,10 @@
 (function (root, factory) {
     define([
         "jasmine",
-        "jquery",
         "mock",
         "test-utils"
         ], factory);
-} (this, function (jasmine, $, mock, test_utils) {
+} (this, function (jasmine, mock, test_utils) {
     "use strict";
     const $iq = converse.env.$iq,
          $msg = converse.env.$msg,
@@ -604,16 +603,18 @@
                     'name':  'The Play',
                     'nick': ''
                 });
-                await test_utils.waitUntil(() => $('#chatrooms .bookmarks.rooms-list .room-item:visible').length);
-                expect($('#chatrooms .bookmarks.rooms-list').hasClass('collapsed')).toBeFalsy();
-                expect($('#chatrooms .bookmarks.rooms-list .room-item:visible').length).toBe(1);
+                const el = _converse.chatboxviews.el
+                const selector = '#chatrooms .bookmarks.rooms-list .room-item';
+                await test_utils.waitUntil(() => sizzle(selector, el).filter(u.isVisible).length);
+                expect(u.hasClass('collapsed', sizzle('#chatrooms .bookmarks.rooms-list', el).pop())).toBeFalsy();
+                expect(sizzle(selector, el).filter(u.isVisible).length).toBe(1);
                 expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
-                $('#chatrooms .bookmarks-toggle')[0].click();
-                expect($('#chatrooms .bookmarks.rooms-list').hasClass('collapsed')).toBeTruthy();
+                sizzle('#chatrooms .bookmarks-toggle', el).pop().click();
+                expect(u.hasClass('collapsed', sizzle('#chatrooms .bookmarks.rooms-list', el).pop())).toBeTruthy();
                 expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.CLOSED);
-                $('#chatrooms .bookmarks-toggle')[0].click();
-                expect($('#chatrooms .bookmarks.rooms-list').hasClass('collapsed')).toBeFalsy();
-                expect($('#chatrooms .bookmarks.rooms-list .room-item:visible').length).toBe(1);
+                sizzle('#chatrooms .bookmarks-toggle', el).pop().click();
+                expect(u.hasClass('collapsed', sizzle('#chatrooms .bookmarks.rooms-list', el).pop())).toBeFalsy();
+                expect(sizzle(selector, el).filter(u.isVisible).length).toBe(1);
                 expect(_converse.bookmarksview.list_model.get('toggle-state')).toBe(_converse.OPENED);
                 done();
             }));

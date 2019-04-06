@@ -47993,8 +47993,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'info_toggle_bookmark': this.model.get('bookmarked') ? __('Unbookmark this groupchat') : __('Bookmark this groupchat'),
           'bookmarked': this.model.get('bookmarked')
         }));
-        const close_button = this.el.querySelector('.close-chatbox-button');
-        close_button.insertAdjacentHTML('afterend', bookmark_button);
+        const buttons_row = this.el.querySelector('.chatbox-buttons');
+        const close_button = buttons_row.querySelector('.close-chatbox-button');
+
+        if (close_button) {
+          close_button.insertAdjacentHTML('afterend', bookmark_button);
+        } else {
+          buttons_row.insertAdjacentHTML('beforeEnd', bookmark_button);
+        }
       },
 
       async renderHeading() {
@@ -52743,10 +52749,18 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 
         const div = document.createElement('div');
         div.innerHTML = html;
-        const button = div.querySelector('.close-chatbox-button');
-        button.insertAdjacentHTML('afterend', templates_chatbox_minimize_html__WEBPACK_IMPORTED_MODULE_2___default()({
+        const buttons_row = div.querySelector('.chatbox-buttons');
+        const button = buttons_row.querySelector('.close-chatbox-button');
+        const minimize_el = templates_chatbox_minimize_html__WEBPACK_IMPORTED_MODULE_2___default()({
           'info_minimize': __('Minimize this chat box')
-        }));
+        });
+
+        if (button) {
+          button.insertAdjacentHTML('afterend', minimize_el);
+        } else {
+          buttons_row.insertAdjacentHTML('beforeEnd', minimize_el);
+        }
+
         return div.innerHTML;
       }
 
@@ -53601,7 +53615,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         'submit form': 'showRooms',
         'click a.room-info': 'toggleRoomInfo',
         'change input[name=nick]': 'setNick',
-        'change input[name=server]': 'setDomain',
+        'change input[name=server]': 'setDomainFromEvent',
         'click .open-room': 'openRoom'
       },
 
@@ -53726,12 +53740,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       showRooms(ev) {
         ev.preventDefault();
         const data = new FormData(ev.target);
-        this.model.save('muc_domain', Strophe.getDomainFromJid(data.get('server')));
+        this.model.setDomain(data.get('server'));
         this.updateRoomsList();
       },
 
-      setDomain(ev) {
-        this.model.save('muc_domain', Strophe.getDomainFromJid(ev.target.value));
+      setDomainFromEvent(ev) {
+        this.model.setDomain(ev.target.value);
       },
 
       setNick(ev) {
@@ -53778,7 +53792,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       parseRoomDataFromEvent(form) {
         const data = new FormData(form);
         const jid = data.get('chatroom');
-        this.model.save('muc_domain', Strophe.getDomainFromJid(jid));
         let nick;
 
         if (_converse.locked_muc_nickname) {
@@ -53812,6 +53825,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           jid = `${Strophe.escapeNode(data.jid)}@${_converse.muc_domain}`;
         } else {
           jid = data.jid;
+          this.model.setDomain(jid);
         }
 
         _converse.api.rooms.open(jid, _.extend(data, {
@@ -55504,7 +55518,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     });
 
     function setMUCDomain(domain, controlboxview) {
-      _converse.muc_domain = domain;
       controlboxview.roomspanel.model.save('muc_domain', Strophe.getDomainFromJid(domain));
     }
 
@@ -60557,7 +60570,7 @@ __webpack_require__.r(__webpack_exports__);
 /* END: Removable components */
 
 
-const WHITELISTED_PLUGINS = ['converse-autocomplete', 'converse-bookmarks', 'converse-caps', 'converse-chatboxviews', 'converse-chatview', 'converse-controlbox', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam-views', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc-views', 'converse-notification', 'converse-oauth', 'converse-omemo', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton'];
+const WHITELISTED_PLUGINS = ['converse-autocomplete', 'converse-bookmarks', 'converse-caps', 'converse-chatboxviews', 'converse-chatview', 'converse-controlbox', 'converse-dragresize', 'converse-embedded', 'converse-fullscreen', 'converse-headline', 'converse-mam-views', 'converse-message-view', 'converse-minimize', 'converse-modal', 'converse-muc-views', 'converse-notification', 'converse-omemo', 'converse-profile', 'converse-push', 'converse-register', 'converse-roomslist', 'converse-rosterview', 'converse-singleton'];
 const initialize = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_22__["default"].initialize;
 
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_22__["default"].initialize = function (settings, callback) {
@@ -67921,10 +67934,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
     _converse.RoomsPanelModel = Backbone.Model.extend({
       defaults: function defaults() {
         return {
-          'muc_domain': '',
+          'muc_domain': _converse.muc_domain,
           'nick': _converse.getDefaultMUCNickname()
         };
+      },
+
+      setDomain(jid) {
+        if (!_converse.locked_muc_domain) {
+          this.save('muc_domain', Strophe.getDomainFromJid(jid));
+        }
       }
+
     });
     /**
      * A direct MUC invitation to join a groupchat has been received

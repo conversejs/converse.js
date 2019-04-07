@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.2.1 (Unreaded)
+## 4.2.1 (Unreleased)
 
 * Bugfix. Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
 

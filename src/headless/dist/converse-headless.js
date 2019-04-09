@@ -30205,6 +30205,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 //# sourceMappingURL=pluggable.js.map
 
+
 /***/ }),
 
 /***/ "./node_modules/process/browser.js":
@@ -40146,6 +40147,80 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./src/headless/converse-caps.js":
+/*!***************************************!*\
+  !*** ./src/headless/converse-caps.js ***!
+  \***************************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @converse/headless/converse-core */ "./src/headless/converse-core.js");
+// Converse.js
+// https://conversejs.org
+//
+// Copyright (c) 2013-2019, the Converse.js developers
+// Licensed under the Mozilla Public License (MPLv2)
+
+const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].env,
+      Strophe = _converse$env.Strophe,
+      $build = _converse$env.$build,
+      _ = _converse$env._,
+      b64_sha1 = _converse$env.b64_sha1;
+Strophe.addNamespace('CAPS', "http://jabber.org/protocol/caps");
+
+function propertySort(array, property) {
+  return array.sort((a, b) => {
+    return a[property] > b[property] ? -1 : 1;
+  });
+}
+
+function generateVerificationString(_converse) {
+  const identities = _converse.api.disco.own.identities.get(),
+        features = _converse.api.disco.own.features.get();
+
+  if (identities.length > 1) {
+    propertySort(identities, "category");
+    propertySort(identities, "type");
+    propertySort(identities, "lang");
+  }
+
+  let S = _.reduce(identities, (result, id) => `${result}${id.category}/${id.type}/${_.get(id, 'lang', '')}/${id.name}<`, "");
+
+  features.sort();
+  S = _.reduce(features, (result, feature) => `${result}${feature}<`, S);
+  return b64_sha1(S);
+}
+
+function createCapsNode(_converse) {
+  return $build("c", {
+    'xmlns': Strophe.NS.CAPS,
+    'hash': "sha-1",
+    'node': "https://conversejs.org",
+    'ver': generateVerificationString(_converse)
+  }).nodeTree;
+}
+
+_converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-caps', {
+  overrides: {
+    // Overrides mentioned here will be picked up by converse.js's
+    // plugin architecture they will replace existing methods on the
+    // relevant objects or classes.
+    XMPPStatus: {
+      constructPresence() {
+        const presence = this.__super__.constructPresence.apply(this, arguments);
+
+        presence.root().cnode(createCapsNode(this.__super__._converse));
+        return presence;
+      }
+
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./src/headless/converse-chatboxes.js":
 /*!********************************************!*\
   !*** ./src/headless/converse-chatboxes.js ***!
@@ -41644,7 +41719,7 @@ pluggable_js_dist_pluggable__WEBPACK_IMPORTED_MODULE_8___default.a.enable(_conve
 // These are just the @converse/headless plugins, for the full converse,
 // the other plugins are whitelisted in src/converse.js
 
-_converse.core_plugins = ['converse-chatboxes', 'converse-disco', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-pubsub', 'converse-roster', 'converse-vcard'];
+_converse.core_plugins = ['converse-caps', 'converse-chatboxes', 'converse-disco', 'converse-mam', 'converse-muc', 'converse-ping', 'converse-pubsub', 'converse-roster', 'converse-vcard'];
 _converse.keycodes = {
   TAB: 9,
   ENTER: 13,
@@ -48491,7 +48566,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _converse_ping__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./converse-ping */ "./src/headless/converse-ping.js");
 /* harmony import */ var _converse_roster__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./converse-roster */ "./src/headless/converse-roster.js");
 /* harmony import */ var _converse_vcard__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./converse-vcard */ "./src/headless/converse-vcard.js");
-/* harmony import */ var _converse_core__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./converse-core */ "./src/headless/converse-core.js");
+/* harmony import */ var _converse_caps__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./converse-caps */ "./src/headless/converse-caps.js");
+/* harmony import */ var _converse_core__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./converse-core */ "./src/headless/converse-core.js");
 /* START: Removable components
  * --------------------
  * Any of the following components may be removed if they're not needed.
@@ -48512,10 +48588,12 @@ __webpack_require__.r(__webpack_exports__);
 
  // XEP-0054 VCard-temp
 
+ // XEP-0115 Entity Capabilities
+
 /* END: Removable components */
 
 
-/* harmony default export */ __webpack_exports__["default"] = (_converse_core__WEBPACK_IMPORTED_MODULE_8__["default"]);
+/* harmony default export */ __webpack_exports__["default"] = (_converse_core__WEBPACK_IMPORTED_MODULE_9__["default"]);
 
 /***/ }),
 

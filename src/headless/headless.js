@@ -10,6 +10,7 @@ import "./converse-muc";         // XEP-0045 Multi-user chat
 import "./converse-ping";        // XEP-0199 XMPP Ping
 import "./converse-roster";      // Contacts Roster
 import "./converse-vcard";       // XEP-0054 VCard-temp
+import "./converse-caps";        // XEP-0115 Entity Capabilities
 /* END: Removable components */
 
 import converse from "./converse-core";

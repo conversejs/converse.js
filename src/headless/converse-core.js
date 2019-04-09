@@ -83,6 +83,7 @@ pluggable.enable(_converse, '_converse', 'pluggable');
 // These are just the @converse/headless plugins, for the full converse,
 // the other plugins are whitelisted in src/converse.js
 _converse.core_plugins = [
+    'converse-caps',
     'converse-chatboxes',
     'converse-disco',
     'converse-mam',

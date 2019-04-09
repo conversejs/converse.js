@@ -107,7 +107,7 @@ converse.plugins.add('converse-chatboxes', {
                 } else if (this.get('type') === 'groupchat') {
                     this.vcard = this.getVCardForChatroomOccupant();
                 } else {
-                    const jid = this.get('from');
+                    const jid = Strophe.getBareJidFromJid(this.get('from'));
                     this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
                 }
             },

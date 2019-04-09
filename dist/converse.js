@@ -61840,7 +61840,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         } else if (this.get('type') === 'groupchat') {
           this.vcard = this.getVCardForChatroomOccupant();
         } else {
-          const jid = this.get('from');
+          const jid = Strophe.getBareJidFromJid(this.get('from'));
           this.vcard = _converse.vcards.findWhere({
             'jid': jid
           }) || _converse.vcards.create({

@@ -118,6 +118,10 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             setVCard () {
+                if (!_converse.vcards) {
+                    // VCards aren't supported
+                    return;
+                }
                 if (this.get('type') === 'error') {
                     return;
                 } else if (this.get('type') === 'groupchat') {
@@ -135,11 +139,12 @@ converse.plugins.add('converse-chatboxes', {
             getDisplayName () {
                 if (this.get('type') === 'groupchat') {
                     return this.get('nick');
+                } else if (this.contact) {
+                    return this.contact.getDisplayName();
+                } else if (this.vcard) {
+                    return this.vcard.getDisplayName();
                 } else {
-                    if (this.contact) {
-                        return this.contact.getDisplayName();
-                    }
-                    return this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('from');
+                    return this.get('from');
                 }
             },
 
@@ -271,12 +276,15 @@ converse.plugins.add('converse-chatboxes', {
                     // but we're in embedded mode.
                     return;
                 }
-
-                this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
                 // XXX: this creates a dependency on converse-roster, which we
                 // probably shouldn't have here, so we should probably move
                 // ChatBox out of converse-chatboxes
                 this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
+
+                if (_converse.vcards) {
+                    this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
+                }
+
                 if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
                     this.setRosterContact(jid);
                 }
@@ -317,8 +325,11 @@ converse.plugins.add('converse-chatboxes', {
             getDisplayName () {
                 if (this.contact) {
                     return this.contact.getDisplayName();
+                } else if (this.vcard) {
+                    return this.vcard.getDisplayName();
+                } else {
+                    return this.get('jid');
                 }
-                return this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('jid');
             },
 
             getUpdatedMessageAttributes (message, stanza) {

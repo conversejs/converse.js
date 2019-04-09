@@ -211,6 +211,10 @@ converse.plugins.add('converse-roster', {
             },
 
             setVCard () {
+                if (!_converse.vcards) {
+                    // VCards aren't supported
+                    return;
+                }
                 const jid = this.get('jid');
                 this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
             },
@@ -258,11 +262,21 @@ converse.plugins.add('converse-roster', {
             },
 
             getDisplayName () {
-                return this.get('nickname') || this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('jid');
+                if (this.get('nickname')) {
+                    return this.get('nickname');
+                } else if (this.vcard) {
+                    return this.vcard.getDisplayName();
+                } else {
+                    return this.get('jid');
+                }
             },
 
             getFullname () {
-                return this.vcard.get('fullname');
+                if (this.vcard) {
+                    return this.vcard.get('fullname');
+                } else {
+                    return this.get('jid');
+                }
             },
 
             /**

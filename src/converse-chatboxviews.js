@@ -23,22 +23,24 @@ const AvatarMixin = {
         if (_.isNull(canvas_el)) {
             return;
         }
-        const image_type = this.model.vcard.get('image_type'),
-                image = this.model.vcard.get('image');
-
-        canvas_el.outerHTML = tpl_avatar({
+        const data = {
             'classes': canvas_el.getAttribute('class'),
             'width': canvas_el.width,
             'height': canvas_el.height,
-            'image': "data:" + image_type + ";base64," + image,
-        });
+        }
+        if (this.model.vcard) {
+            const image_type = this.model.vcard.get('image_type'),
+                  image = this.model.vcard.get('image');
+            data['image'] = "data:" + image_type + ";base64," + image;
+        }
+        canvas_el.outerHTML = tpl_avatar(data);
     },
 };
 
 
 converse.plugins.add('converse-chatboxviews', {
 
-    dependencies: ["converse-chatboxes"],
+    dependencies: ["converse-chatboxes", "converse-vcard"],
 
     overrides: {
         // Overrides mentioned here will be picked up by converse.js's

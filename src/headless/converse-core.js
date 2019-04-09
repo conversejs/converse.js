@@ -1059,11 +1059,6 @@ _converse.initialize = async function (settings, callback) {
         },
 
         initialize () {
-            this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')});
-            if (_.isNil(this.vcard)) {
-                this.vcard = _converse.vcards.create({'jid': this.get('jid')});
-            }
-
             this.on('change:status', (item) => {
                 const status = this.get('status');
                 this.sendPresence(status);

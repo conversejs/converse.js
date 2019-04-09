@@ -926,7 +926,6 @@ converse.plugins.add('converse-rosterview', {
             },
 
             onContactChange (contact) {
-                this.updateChatBox(contact)
                 this.update();
                 if (_.has(contact.changed, 'subscription')) {
                     if (contact.changed.subscription === 'from') {
@@ -942,18 +941,6 @@ converse.plugins.add('converse-rosterview', {
                     this.addContactToGroup(contact, HEADER_REQUESTING_CONTACTS);
                 }
                 this.updateFilter();
-            },
-
-            updateChatBox (contact) {
-                if (!this.model.chatbox) {
-                    return this;
-                }
-                const changes = {};
-                if (_.has(contact.changed, 'status')) {
-                    changes.status = contact.get('status');
-                }
-                this.model.chatbox.save(changes);
-                return this;
             },
 
             getGroup (name) {

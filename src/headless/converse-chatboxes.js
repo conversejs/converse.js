@@ -56,7 +56,20 @@ converse.plugins.add('converse-chatboxes', {
         _converse.router.route('converse/chat?jid=:jid', openChat);
 
 
-        _converse.Message = Backbone.Model.extend({
+        const ModelWithContact = Backbone.Model.extend({
+
+            async setRosterContact (jid) {
+                await _converse.api.waitUntil('rosterContactsFetched');
+                const contact = _converse.roster.get(jid);
+                if (contact) {
+                    this.contact = contact;
+                    this.trigger('rosterContactAdded');
+                }
+            }
+        });
+
+
+        _converse.Message = ModelWithContact.extend({
 
             defaults () {
                 return {
@@ -67,6 +80,9 @@ converse.plugins.add('converse-chatboxes', {
 
             initialize () {
                 this.setVCard();
+                if (this.get('type') === 'chat') {
+                    this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
+                }
                 if (this.get('file')) {
                     this.on('change:put', this.uploadFile, this);
                 }
@@ -120,7 +136,10 @@ converse.plugins.add('converse-chatboxes', {
                 if (this.get('type') === 'groupchat') {
                     return this.get('nick');
                 } else {
-                    return this.vcard.get('fullname') || this.get('from');
+                    if (this.contact) {
+                        return this.contact.getDisplayName();
+                    }
+                    return this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('from');
                 }
             },
 
@@ -226,7 +245,7 @@ converse.plugins.add('converse-chatboxes', {
          * @namespace _converse.ChatBox
          * @memberOf _converse
          */
-        _converse.ChatBox = Backbone.Model.extend({
+        _converse.ChatBox = ModelWithContact.extend({
             defaults () {
                 return {
                     'bookmarked': false,
@@ -258,6 +277,9 @@ converse.plugins.add('converse-chatboxes', {
                 // probably shouldn't have here, so we should probably move
                 // ChatBox out of converse-chatboxes
                 this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
+                if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+                    this.setRosterContact(jid);
+                }
 
                 this.messages = new _converse.Messages();
                 const storage = _converse.config.get('storage');
@@ -293,7 +315,10 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             getDisplayName () {
-                return this.vcard.get('fullname') || this.get('jid');
+                if (this.contact) {
+                    return this.contact.getDisplayName();
+                }
+                return this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('jid');
             },
 
             getUpdatedMessageAttributes (message, stanza) {

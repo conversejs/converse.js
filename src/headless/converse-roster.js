@@ -246,9 +246,6 @@ converse.plugins.add('converse-roster', {
                     'jid': bare_jid,
                     'user_id': Strophe.getNodeFromJid(jid)
                 }, attributes));
-
-                this.setChatBox();
-
                 /**
                  * When a contact's presence status has changed.
                  * The presence status is either `online`, `offline`, `dnd`, `away` or `xa`.
@@ -258,14 +255,6 @@ converse.plugins.add('converse-roster', {
                  */
                 this.presence.on('change:show', () => _converse.api.trigger('contactPresenceChanged', this));
                 this.presence.on('change:show', () => this.trigger('presenceChanged'));
-            },
-
-            setChatBox (chatbox=null) {
-                chatbox = chatbox || _converse.chatboxes.get(this.get('jid'));
-                if (chatbox) {
-                    this.chatbox = chatbox;
-                    this.chatbox.on('change:hidden', this.render, this);
-                }
             },
 
             getDisplayName () {

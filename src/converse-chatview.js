@@ -161,7 +161,13 @@ converse.plugins.add('converse-chatview', {
         _converse.ChatBoxHeading = _converse.ViewWithAvatar.extend({
             initialize () {
                 this.model.on('change:status', this.onStatusMessageChanged, this);
-                this.model.vcard.on('change', this.render, this);
+
+                this.debouncedRender = _.debounce(this.render, 50);
+                this.model.vcard.on('change', this.debouncedRender, this);
+                this.model.on('rosterContactAdded', () => {
+                    this.model.contact.on('change:nickname', this.debouncedRender, this);
+                    this.debouncedRender();
+                });
             },
 
             render () {
@@ -170,7 +176,8 @@ converse.plugins.add('converse-chatview', {
                         this.model.vcard.toJSON(),
                         this.model.toJSON(),
                         { '_converse': _converse,
-                          'info_close': __('Close this chat box')
+                          'info_close': __('Close this chat box'),
+                          'display_name': this.model.getDisplayName()
                         }
                     )
                 );
@@ -179,7 +186,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             onStatusMessageChanged (item) {
-                this.render();
+                this.debouncedRender();
                 /**
                  * When a contact's custom status message has changed.
                  * @event _converse#contactStatusMessageChanged

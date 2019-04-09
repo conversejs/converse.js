@@ -81,9 +81,14 @@ converse.plugins.add('converse-message-view', {
             },
 
             initialize () {
+                this.debouncedRender = _.debounce(this.render, 50);
                 if (this.model.vcard) {
-                    this.model.vcard.on('change', this.render, this);
+                    this.model.vcard.on('change', this.debouncedRender, this);
                 }
+                this.model.on('rosterContactAdded', () => {
+                    this.model.contact.on('change:nickname', this.debouncedRender, this);
+                    this.debouncedRender();
+                });
                 this.model.on('change', this.onChanged, this);
                 this.model.on('destroy', this.remove, this);
             },
@@ -119,7 +124,7 @@ converse.plugins.add('converse-message-view', {
                 }
                 if (_.filter(['correcting', 'message', 'type', 'upload', 'received'],
                              prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop)).length) {
-                    await this.render();
+                    await this.debouncedRender();
                 }
                 if (edited) {
                     this.onMessageEdited();

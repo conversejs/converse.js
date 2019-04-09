@@ -47,7 +47,7 @@ converse.plugins.add('converse-chatboxviews', {
 
         initStatus: function (reconnecting) {
             const { _converse } = this.__super__;
-            if (!reconnecting) {
+            if (!reconnecting && _converse.chatboxviews) {
                 _converse.chatboxviews.closeAllChatBoxes();
             }
             return this.__super__.initStatus.apply(this, arguments);

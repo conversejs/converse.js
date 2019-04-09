@@ -40215,7 +40215,20 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
     _converse.router.route('converse/chat?jid=:jid', openChat);
 
-    _converse.Message = Backbone.Model.extend({
+    const ModelWithContact = Backbone.Model.extend({
+      async setRosterContact(jid) {
+        await _converse.api.waitUntil('rosterContactsFetched');
+
+        const contact = _converse.roster.get(jid);
+
+        if (contact) {
+          this.contact = contact;
+          this.trigger('rosterContactAdded');
+        }
+      }
+
+    });
+    _converse.Message = ModelWithContact.extend({
       defaults() {
         return {
           'msgid': _converse.connection.getUniqueId(),
@@ -40225,6 +40238,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
       initialize() {
         this.setVCard();
+
+        if (this.get('type') === 'chat') {
+          this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
+        }
 
         if (this.get('file')) {
           this.on('change:put', this.uploadFile, this);
@@ -40301,7 +40318,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         if (this.get('type') === 'groupchat') {
           return this.get('nick');
         } else {
-          return this.vcard.get('fullname') || this.get('from');
+          if (this.contact) {
+            return this.contact.getDisplayName();
+          }
+
+          return this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('from');
         }
       },
 
@@ -40415,7 +40436,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
      * @memberOf _converse
      */
 
-    _converse.ChatBox = Backbone.Model.extend({
+    _converse.ChatBox = ModelWithContact.extend({
       defaults() {
         return {
           'bookmarked': false,
@@ -40456,6 +40477,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }) || _converse.presences.create({
           'jid': jid
         });
+
+        if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+          this.setRosterContact(jid);
+        }
+
         this.messages = new _converse.Messages();
 
         const storage = _converse.config.get('storage');
@@ -40489,7 +40515,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       },
 
       getDisplayName() {
-        return this.vcard.get('fullname') || this.get('jid');
+        if (this.contact) {
+          return this.contact.getDisplayName();
+        }
+
+        return this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('jid');
       },
 
       getUpdatedMessageAttributes(message, stanza) {
@@ -47277,7 +47307,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'jid': bare_jid,
           'user_id': Strophe.getNodeFromJid(jid)
         }, attributes));
-        this.setChatBox();
         /**
          * When a contact's presence status has changed.
          * The presence status is either `online`, `offline`, `dnd`, `away` or `xa`.
@@ -47288,16 +47317,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         this.presence.on('change:show', () => _converse.api.trigger('contactPresenceChanged', this));
         this.presence.on('change:show', () => this.trigger('presenceChanged'));
-      },
-
-      setChatBox() {
-        let chatbox = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-        chatbox = chatbox || _converse.chatboxes.get(this.get('jid'));
-
-        if (chatbox) {
-          this.chatbox = chatbox;
-          this.chatbox.on('change:hidden', this.render, this);
-        }
       },
 
       getDisplayName() {

@@ -48734,7 +48734,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
     initStatus: function initStatus(reconnecting) {
       const _converse = this.__super__._converse;
 
-      if (!reconnecting) {
+      if (!reconnecting && _converse.chatboxviews) {
         _converse.chatboxviews.closeAllChatBoxes();
       }
 
@@ -49097,20 +49097,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     _converse.ChatBoxHeading = _converse.ViewWithAvatar.extend({
       initialize() {
         this.model.on('change:status', this.onStatusMessageChanged, this);
-        this.model.vcard.on('change', this.render, this);
+        this.debouncedRender = _.debounce(this.render, 50);
+        this.model.vcard.on('change', this.debouncedRender, this);
+        this.model.on('rosterContactAdded', () => {
+          this.model.contact.on('change:nickname', this.debouncedRender, this);
+          this.debouncedRender();
+        });
       },
 
       render() {
         this.el.innerHTML = templates_chatbox_head_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.vcard.toJSON(), this.model.toJSON(), {
           '_converse': _converse,
-          'info_close': __('Close this chat box')
+          'info_close': __('Close this chat box'),
+          'display_name': this.model.getDisplayName()
         }));
         this.renderAvatar();
         return this;
       },
 
       onStatusMessageChanged(item) {
-        this.render();
+        this.debouncedRender();
         /**
          * When a contact's custom status message has changed.
          * @event _converse#contactStatusMessageChanged
@@ -52271,10 +52277,16 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       },
 
       initialize() {
+        this.debouncedRender = _.debounce(this.render, 50);
+
         if (this.model.vcard) {
-          this.model.vcard.on('change', this.render, this);
+          this.model.vcard.on('change', this.debouncedRender, this);
         }
 
+        this.model.on('rosterContactAdded', () => {
+          this.model.contact.on('change:nickname', this.debouncedRender, this);
+          this.debouncedRender();
+        });
         this.model.on('change', this.onChanged, this);
         this.model.on('destroy', this.remove, this);
       },
@@ -52316,7 +52328,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         }
 
         if (_.filter(['correcting', 'message', 'type', 'upload', 'received'], prop => Object.prototype.hasOwnProperty.call(this.model.changed, prop)).length) {
-          await this.render();
+          await this.debouncedRender();
         }
 
         if (edited) {
@@ -60201,7 +60213,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       },
 
       onContactChange(contact) {
-        this.updateChatBox(contact);
         this.update();
 
         if (_.has(contact.changed, 'subscription')) {
@@ -60221,21 +60232,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
         }
 
         this.updateFilter();
-      },
-
-      updateChatBox(contact) {
-        if (!this.model.chatbox) {
-          return this;
-        }
-
-        const changes = {};
-
-        if (_.has(contact.changed, 'status')) {
-          changes.status = contact.get('status');
-        }
-
-        this.model.chatbox.save(changes);
-        return this;
       },
 
       getGroup(name) {
@@ -61771,7 +61767,20 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
     _converse.router.route('converse/chat?jid=:jid', openChat);
 
-    _converse.Message = Backbone.Model.extend({
+    const ModelWithContact = Backbone.Model.extend({
+      async setRosterContact(jid) {
+        await _converse.api.waitUntil('rosterContactsFetched');
+
+        const contact = _converse.roster.get(jid);
+
+        if (contact) {
+          this.contact = contact;
+          this.trigger('rosterContactAdded');
+        }
+      }
+
+    });
+    _converse.Message = ModelWithContact.extend({
       defaults() {
         return {
           'msgid': _converse.connection.getUniqueId(),
@@ -61781,6 +61790,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
       initialize() {
         this.setVCard();
+
+        if (this.get('type') === 'chat') {
+          this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
+        }
 
         if (this.get('file')) {
           this.on('change:put', this.uploadFile, this);
@@ -61857,7 +61870,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         if (this.get('type') === 'groupchat') {
           return this.get('nick');
         } else {
-          return this.vcard.get('fullname') || this.get('from');
+          if (this.contact) {
+            return this.contact.getDisplayName();
+          }
+
+          return this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('from');
         }
       },
 
@@ -61971,7 +61988,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
      * @memberOf _converse
      */
 
-    _converse.ChatBox = Backbone.Model.extend({
+    _converse.ChatBox = ModelWithContact.extend({
       defaults() {
         return {
           'bookmarked': false,
@@ -62012,6 +62029,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }) || _converse.presences.create({
           'jid': jid
         });
+
+        if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+          this.setRosterContact(jid);
+        }
+
         this.messages = new _converse.Messages();
 
         const storage = _converse.config.get('storage');
@@ -62045,7 +62067,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       },
 
       getDisplayName() {
-        return this.vcard.get('fullname') || this.get('jid');
+        if (this.contact) {
+          return this.contact.getDisplayName();
+        }
+
+        return this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('jid');
       },
 
       getUpdatedMessageAttributes(message, stanza) {
@@ -68833,7 +68859,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'jid': bare_jid,
           'user_id': Strophe.getNodeFromJid(jid)
         }, attributes));
-        this.setChatBox();
         /**
          * When a contact's presence status has changed.
          * The presence status is either `online`, `offline`, `dnd`, `away` or `xa`.
@@ -68844,16 +68869,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
         this.presence.on('change:show', () => _converse.api.trigger('contactPresenceChanged', this));
         this.presence.on('change:show', () => this.trigger('presenceChanged'));
-      },
-
-      setChatBox() {
-        let chatbox = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-        chatbox = chatbox || _converse.chatboxes.get(this.get('jid'));
-
-        if (chatbox) {
-          this.chatbox = chatbox;
-          this.chatbox.on('change:hidden', this.render, this);
-        }
       },
 
       getDisplayName() {
@@ -93010,7 +93025,7 @@ __e(o.url) +
 '" target="_blank" rel="noopener" class="user">\n                ';
  } ;
 __p += '\n                        ' +
-__e( o.nickname || o.fullname || o.jid ) +
+__e( o.display_name ) +
 '\n                ';
  if (o.url) { ;
 __p += '\n                    </a>\n                ';

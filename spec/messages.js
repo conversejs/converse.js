@@ -99,7 +99,7 @@
             expect(textarea.value).toBe('');
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false);
+            await test_utils.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
 
             // Test that messages from other users don't have the pencil icon
             _converse.chatboxes.onMessage(
@@ -154,7 +154,7 @@
             expect(textarea.value).toBe('But soft, what light through yonder airlock breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')));
+            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
 
             spyOn(_converse.connection, 'send');
             textarea.value = 'But soft, what light through yonder window breaks?';
@@ -185,7 +185,7 @@
             expect(corrected_message.get('older_versions')[0]).toBe('But soft, what light through yonder airlock breaks?');
 
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false);
+            await test_utils.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
 
             // Test that pressing the down arrow cancels message correction
             expect(textarea.value).toBe('');
@@ -196,7 +196,7 @@
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')) === true);
+            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             view.keyPressed({
                 target: textarea,
@@ -205,7 +205,7 @@
             expect(textarea.value).toBe('');
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false);
+            await test_utils.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
 
             textarea.value = 'It is the east, and Juliet is the one.';
             view.keyPressed({
@@ -233,7 +233,7 @@
             expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
             expect(view.model.messages.at(1).get('correcting')).toBeFalsy();
             expect(view.model.messages.at(2).get('correcting')).toBe(true);
-            await test_utils.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg:last', view.el).pop()));
+            await test_utils.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg:last', view.el).pop()), 500);
 
             textarea.selectionEnd = 0; // Happens by pressing up,
                                     // but for some reason not in tests, so we set it manually.
@@ -245,7 +245,7 @@
             expect(view.model.messages.at(0).get('correcting')).toBeFalsy();
             expect(view.model.messages.at(1).get('correcting')).toBe(true);
             expect(view.model.messages.at(2).get('correcting')).toBeFalsy();
-            await test_utils.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg', view.el)[1]));
+            await test_utils.waitUntil(() => u.hasClass('correcting', sizzle('.chat-msg', view.el)[1]), 500);
 
             textarea.value = 'It is the east, and Juliet is the sun.';
             view.keyPressed({
@@ -2335,7 +2335,7 @@
                 }).c('body').t('But soft, what light through yonder chimney breaks?').up()
                     .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
             await test_utils.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
-                'But soft, what light through yonder chimney breaks?');
+                'But soft, what light through yonder chimney breaks?', 500);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
 
@@ -2348,7 +2348,7 @@
                     .c('replace', {'id': msg_id, 'xmlns': 'urn:xmpp:message-correct:0'}).tree());
 
             await test_utils.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
-                'But soft, what light through yonder window breaks?');
+                'But soft, what light through yonder window breaks?', 500);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__content .fa-edit').length).toBe(1);
             view.el.querySelector('.chat-msg__content .fa-edit').click();
@@ -2451,7 +2451,7 @@
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             expect(view.model.messages.at(0).get('correcting')).toBe(true);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
-            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')));
+            await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
             expect(textarea.value).toBe('But soft, what light through yonder window breaks?');
             view.keyPressed({
                 target: textarea,
@@ -2460,7 +2460,7 @@
             expect(textarea.value).toBe('');
             expect(view.model.messages.at(0).get('correcting')).toBe(false);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
-            await test_utils.waitUntil(() => !u.hasClass('correcting', view.el.querySelector('.chat-msg')));
+            await test_utils.waitUntil(() => !u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
             done();
         }));
 
@@ -2493,7 +2493,7 @@
                     <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
                 </message>`);
             await view.model.onMessage(stanza);
-            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-msg__receipt').length);
+            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-msg__receipt').length, 500);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(1);
             expect(view.model.messages.length).toBe(1);
 
@@ -2854,10 +2854,12 @@
                 expect(textarea.value).toBe('hello @z3r0 @gibson @mr.robot, how are you?');
                 expect(view.model.messages.at(0).get('correcting')).toBe(true);
                 expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-                await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')));
+                await test_utils.waitUntil(() => u.hasClass('correcting', view.el.querySelector('.chat-msg')), 500);
 
                 textarea.value = 'hello @z3r0 @gibson @sw0rdf1sh, how are you?';
                 view.keyPressed(enter_event);
+                await test_utils.waitUntil(() => view.el.querySelector('.chat-msg__text').textContent ===
+                    'hello z3r0 gibson sw0rdf1sh, how are you?', 500);
 
                 const correction = _converse.connection.send.calls.all()[1].args[0];
                 expect(correction.toLocaleString())
@@ -2866,9 +2868,9 @@
                             `xmlns="jabber:client">`+
                                 `<body>hello z3r0 gibson sw0rdf1sh, how are you?</body>`+
                                 `<active xmlns="http://jabber.org/protocol/chatstates"/>`+
-                                `<reference begin="18" end="27" type="mention" uri="xmpp:sw0rdf1sh@localhost" xmlns="urn:xmpp:reference:0"/>`+
-                                `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<reference begin="6" end="10" type="mention" uri="xmpp:z3r0@localhost" xmlns="urn:xmpp:reference:0"/>`+
+                                `<reference begin="11" end="17" type="mention" uri="xmpp:gibson@localhost" xmlns="urn:xmpp:reference:0"/>`+
+                                `<reference begin="18" end="27" type="mention" uri="xmpp:sw0rdf1sh@localhost" xmlns="urn:xmpp:reference:0"/>`+
                                 `<replace id="${msg.nodeTree.getAttribute("id")}" xmlns="urn:xmpp:message-correct:0"/>`+
                                 `<origin-id id="${msg.nodeTree.querySelector('origin-id').getAttribute("id")}" xmlns="urn:xmpp:sid:0"/>`+
                             `</message>`);

@@ -14,7 +14,7 @@
             {[ if (o.is_encrypted) { ]}<span class="fa fa-lock"></span>{[ } ]}
         </span>
         {[ if (!o.is_me_message) { ]}<div class="chat-msg__body">{[ } ]}
-            {[ if (o.received) { ]} <span class="fa fa-check chat-msg__receipt"></span> {[ } ]}
+            {[ if (o.received && !o.is_me_message) { ]} <span class="fa fa-check chat-msg__receipt"></span> {[ } ]}
             {[ if (o.edited) { ]} <i title="{{{o.__('This message has been edited')}}}" class="fa fa-edit chat-msg__edit-modal"></i> {[ } ]}
             {[ if (!o.is_me_message) { ]}<div class="chat-msg__message">{[ } ]}
                 {[ if (o.is_spoiler) { ]}

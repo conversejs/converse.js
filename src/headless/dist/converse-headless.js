@@ -41045,6 +41045,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return !_.isNil(sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop());
       },
 
+      getErrorMessage(stanza) {
+        const error = stanza.querySelector('error');
+        return _.propertyOf(error.querySelector('text'))('textContent') || __('Sorry, an error occurred:') + ' ' + error.innerHTML;
+      },
+
       getMessageBody(stanza) {
         /* Given a message stanza, return the text contained in its body.
          */
@@ -41263,11 +41268,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
         const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
         chatbox.messages.create(attrs);
-      },
-
-      getErrorMessage(stanza) {
-        const error = stanza.querySelector('error');
-        return _.propertyOf(error.querySelector('text'))('textContent') || __('Sorry, an error occurred:') + ' ' + error.innerHTML;
       },
 
       /**
@@ -45819,7 +45819,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
        */
       saveAffiliationAndRole(pres) {
         const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, pres).pop();
-        const is_self = pres.querySelector("status[code='110']");
+        const is_self = !_.isNull(pres.querySelector("status[code='110']"));
 
         if (is_self && !_.isNil(item)) {
           const affiliation = item.getAttribute('affiliation');

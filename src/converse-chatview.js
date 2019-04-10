@@ -402,7 +402,7 @@ converse.plugins.add('converse-chatview', {
                 } else {
                     placeholder = __('Message');
                 }
-                const form_container = this.el.querySelector('.message-form-container');
+                const form_container = this.el.querySelector('.bottom-panel');
                 form_container.innerHTML = tpl_chatbox_message_form(
                     _.extend(this.model.toJSON(), {
                         'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),

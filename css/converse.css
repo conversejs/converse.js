@@ -11680,6 +11680,14 @@ body.converse-fullscreen {
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container .button-primary,
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .button-primary {
           background-color: var(--chatroom-head-button-color); }
+  #conversejs.converse-embedded .chatroom .muc-bottom-panel,
+  #conversejs .chatroom .muc-bottom-panel {
+    border-top: var(--message-input-border-top);
+    height: 4em;
+    padding: 1em;
+    font-size: var(--font-size-small);
+    background-color: var(--chatroom-head-color);
+    color: white; }
   #conversejs.converse-embedded .chatroom .sendXMPPMessage .suggestion-box__results--above,
   #conversejs .chatroom .sendXMPPMessage .suggestion-box__results--above {
     bottom: 4.5em; }

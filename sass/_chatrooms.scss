@@ -306,6 +306,15 @@
             }
         }
 
+        .muc-bottom-panel {
+            border-top: var(--message-input-border-top);
+            height: 4em;
+            padding: 1em;
+            font-size: var(--font-size-small);
+            background-color: var(--chatroom-head-color);
+            color: white;
+        }
+
         .sendXMPPMessage {
 
             .suggestion-box__results--above {

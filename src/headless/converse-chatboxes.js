@@ -696,6 +696,12 @@ converse.plugins.add('converse-chatboxes', {
                 return !_.isNil(sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop());
             },
 
+            getErrorMessage (stanza) {
+                const error = stanza.querySelector('error');
+                return _.propertyOf(error.querySelector('text'))('textContent') ||
+                    __('Sorry, an error occurred:') + ' ' + error.innerHTML;
+            },
+
             getMessageBody (stanza) {
                 /* Given a message stanza, return the text contained in its body.
                  */
@@ -897,12 +903,6 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
                 chatbox.messages.create(attrs);
-            },
-
-            getErrorMessage (stanza) {
-                const error = stanza.querySelector('error');
-                return _.propertyOf(error.querySelector('text'))('textContent') ||
-                    __('Sorry, an error occurred:') + ' ' + error.innerHTML;
             },
 
             /**

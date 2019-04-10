@@ -16,6 +16,7 @@ import muc_utils from "@converse/headless/utils/muc";
 import tpl_add_chatroom_modal from "templates/add_chatroom_modal.html";
 import tpl_chatarea from "templates/chatarea.html";
 import tpl_chatroom from "templates/chatroom.html";
+import tpl_chatroom_bottom_panel from "templates/chatroom_bottom_panel.html";
 import tpl_chatroom_destroyed from "templates/chatroom_destroyed.html";
 import tpl_chatroom_details_modal from "templates/chatroom_details_modal.html";
 import tpl_chatroom_disconnect from "templates/chatroom_disconnect.html";
@@ -539,6 +540,7 @@ converse.plugins.add('converse-muc-views', {
                 this.model.on('change:connection_status', this.afterConnected, this);
                 this.model.on('change:jid', this.renderHeading, this);
                 this.model.on('change:name', this.renderHeading, this);
+                this.model.on('change:role', this.renderBottomPanel, this);
                 this.model.on('change:subject', this.renderHeading, this);
                 this.model.on('change:subject', this.setChatRoomSubject, this);
                 this.model.on('configurationNeeded', this.getAndRenderConfigurationForm, this);
@@ -585,8 +587,7 @@ converse.plugins.add('converse-muc-views', {
                 this.el.innerHTML = tpl_chatroom();
                 this.renderHeading();
                 this.renderChatArea();
-                this.renderMessageForm();
-                this.initMentionAutoComplete();
+                this.renderBottomPanel();
                 if (this.model.get('connection_status') !== converse.ROOMSTATUS.ENTERED) {
                     this.showSpinner();
                 }
@@ -596,6 +597,18 @@ converse.plugins.add('converse-muc-views', {
             renderHeading () {
                 /* Render the heading UI of the groupchat. */
                 this.el.querySelector('.chat-head-chatroom').innerHTML = this.generateHeadingHTML();
+            },
+
+            renderBottomPanel () {
+                const container = this.el.querySelector('.bottom-panel');
+                if (this.model.get('role') === 'visitor') {
+                    container.innerHTML = tpl_chatroom_bottom_panel({'__': __});
+                } else {
+                    if (!container.firstElementChild || !container.querySelector('.sendXMPPMessage')) {
+                        this.renderMessageForm();
+                        this.initMentionAutoComplete();
+                    }
+                }
             },
 
             renderChatArea () {

@@ -1630,7 +1630,7 @@
                     let fullname = _converse.xmppstatus.get('fullname');
                     fullname = _.isEmpty(fullname)? _converse.bare_jid: fullname;
                     await _converse.api.chats.open(sender_jid)
-                    var msg_text = 'This message will not be sent, due to an error';
+                    let msg_text = 'This message will not be sent, due to an error';
                     const view = _converse.api.chatviews.get(sender_jid);
                     let message = view.model.messages.create({
                         'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
@@ -1639,7 +1639,7 @@
                         'time': moment().format(),
                         'message': msg_text
                     });
-                    view.model.sendMessage(message);
+                    view.model.sendMessage(msg_text);
                     await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                     const chat_content = view.el.querySelector('.chat-content');
                     let msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
@@ -1656,7 +1656,7 @@
                         'time': moment().format(),
                         'message': msg_text
                     });
-                    view.model.sendMessage(message);
+                    view.model.sendMessage(msg_text);
                     await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                     msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
                     expect(msg_txt).toEqual(msg_text);
@@ -1724,7 +1724,7 @@
                         'time': moment().format(),
                         'message': msg_text
                     });
-                    view.model.sendMessage(message);
+                    view.model.sendMessage(msg_text);
                     await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                     msg_txt = sizzle('.chat-msg:last .chat-msg__text', chat_content).pop().textContent;
                     expect(msg_txt).toEqual(msg_text);

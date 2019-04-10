@@ -718,7 +718,7 @@ converse.plugins.add('converse-muc', {
              */
             saveAffiliationAndRole (pres) {
                 const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, pres).pop();
-                const is_self = pres.querySelector("status[code='110']");
+                const is_self = !_.isNull(pres.querySelector("status[code='110']"));
                 if (is_self && !_.isNil(item)) {
                     const affiliation = item.getAttribute('affiliation');
                     const role = item.getAttribute('role');

@@ -4645,12 +4645,6 @@
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'trollbox', 'localhost', 'troll');
-                let sent_IQ, IQ_id;
-                const sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
                 const view = _converse.chatboxviews.get('trollbox@localhost');
                 const textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = 'Hello world';

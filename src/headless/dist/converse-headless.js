@@ -30205,7 +30205,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 //# sourceMappingURL=pluggable.js.map
 
-
 /***/ }),
 
 /***/ "./node_modules/process/browser.js":
@@ -46037,11 +46036,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
           }
         }
 
-        const jid = Strophe.getBareJidFromJid(data.jid);
+        const jid = data.jid || '';
 
         const attributes = _.extend(data, {
-          'jid': jid ? jid : undefined,
-          'resource': data.jid ? Strophe.getResourceFromJid(data.jid) : undefined
+          'jid': Strophe.getBareJidFromJid(jid) || _.get(occupant, 'attributes.jid'),
+          'resource': Strophe.getResourceFromJid(jid) || _.get(occupant, 'attributes.resource')
         });
 
         if (occupant) {

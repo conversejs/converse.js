@@ -910,10 +910,10 @@ converse.plugins.add('converse-muc', {
                         return;
                     }
                 }
-                const jid = Strophe.getBareJidFromJid(data.jid);
+                const jid = data.jid || '';
                 const attributes = _.extend(data, {
-                    'jid': jid ? jid : undefined,
-                    'resource': data.jid ? Strophe.getResourceFromJid(data.jid) : undefined
+                    'jid': Strophe.getBareJidFromJid(jid) || _.get(occupant, 'attributes.jid'),
+                    'resource': Strophe.getResourceFromJid(jid) || _.get(occupant, 'attributes.resource')
                 });
                 if (occupant) {
                     occupant.save(attributes);

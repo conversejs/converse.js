@@ -4645,14 +4645,13 @@
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'trollbox', 'localhost', 'troll');
-                var sent_IQ, IQ_id;
-                var sendIQ = _converse.connection.sendIQ;
+                let sent_IQ, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
                     sent_IQ = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 const view = _converse.chatboxviews.get('trollbox@localhost');
-
                 const textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = 'Hello world';
                 view.onFormSubmitted(new Event('submit'));
@@ -4666,6 +4665,48 @@
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
                 expect(view.el.querySelector('.chat-error').textContent).toBe(
                     "Your message was not delivered because you're not allowed to send messages in this groupchat.");
+                done();
+            }));
+
+            it("will see an explanatory message instead of a textarea",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                await test_utils.openAndEnterChatRoom(_converse, 'trollbox', 'localhost', 'troll');
+                const view = _converse.chatboxviews.get('trollbox@localhost');
+                let stanza = u.toStanza(`
+                    <presence
+                        from='trollbox@localhost/troll'
+                        to='dummy@localhost/resource'>
+                    <x xmlns='http://jabber.org/protocol/muc#user'>
+                        <item affiliation='moderator'
+                            nick='troll'
+                            role='visitor'/>
+                        <status code='110'/>
+                    </x>
+                    </presence>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                let info_msgs = sizzle('.chat-info', view.el);
+                expect(info_msgs.length).toBe(4);
+                expect(info_msgs[2].textContent).toBe("troll is no longer a moderator");
+                expect(info_msgs[3].textContent).toBe("troll has been muted");
+
+                stanza = u.toStanza(`
+                    <presence
+                        from='trollbox@localhost/troll'
+                        to='dummy@localhost/resource'>
+                    <x xmlns='http://jabber.org/protocol/muc#user'>
+                        <item affiliation='moderator'
+                            nick='troll'
+                            role='participant'/>
+                        <status code='110'/>
+                    </x>
+                    </presence>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                info_msgs = sizzle('.chat-info', view.el);
+                expect(info_msgs.length).toBe(5);
+                expect(info_msgs[4].textContent).toBe("troll has been given a voice again");
                 done();
             }));
         });

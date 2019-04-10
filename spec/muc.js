@@ -4636,5 +4636,38 @@
                 }));
             });
         });
+
+        describe("A muted user", function () {
+
+            it("will receive a user-friendly error message when trying to send a message",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                await test_utils.openAndEnterChatRoom(_converse, 'trollbox', 'localhost', 'troll');
+                var sent_IQ, IQ_id;
+                var sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_IQ = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                const view = _converse.chatboxviews.get('trollbox@localhost');
+
+                const textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = 'Hello world';
+                view.onFormSubmitted(new Event('submit'));
+
+                const stanza = u.toStanza(`
+                    <message xmlns="jabber:client" type="error" to="troll@localhost/resource" from="trollbox@localhost">
+                        <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
+                    </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                expect(view.el.querySelector('.chat-error').textContent).toBe(
+                    "Your message was not delivered because you're not allowed to send messages in this groupchat.");
+                done();
+            }));
+        });
     });
 }));

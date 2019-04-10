@@ -1040,6 +1040,14 @@ converse.plugins.add('converse-muc', {
                 return attrs;
             },
 
+            getErrorMessage (stanza) {
+                if (sizzle(`forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
+                    return __("Your message was not delivered because you're not allowed to send messages in this groupchat.");
+                } else {
+                    return _converse.ChatBox.prototype.getErrorMessage.apply(this, arguments);
+                }
+            },
+
             /**
              * Handler for all MUC messages sent to this groupchat.
              * @private

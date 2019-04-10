@@ -361,7 +361,7 @@ converse.plugins.add('converse-chatboxes', {
                     const older_versions = message.get('older_versions') || [];
                     older_versions.push(message.get('message'));
                     message.save({
-                        'message': _converse.chatboxes.getMessageBody(stanza),
+                        'message': this.getMessageBody(stanza),
                         'references': this.getReferencesFromStanza(stanza),
                         'older_versions': older_versions,
                         'edited': moment().format()
@@ -696,6 +696,18 @@ converse.plugins.add('converse-chatboxes', {
                 return !_.isNil(sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop());
             },
 
+            getMessageBody (stanza) {
+                /* Given a message stanza, return the text contained in its body.
+                 */
+                const type = stanza.getAttribute('type');
+                if (type === 'error') {
+                    return this.getErrorMessage(stanza);
+                } else {
+                    return _.propertyOf(stanza.querySelector('body'))('textContent');
+                }
+            },
+
+
             /**
              * Parses a passed in message stanza and returns an object
              * of attributes.
@@ -709,7 +721,7 @@ converse.plugins.add('converse-chatboxes', {
             getMessageAttributesFromStanza (stanza, original_stanza) {
                 const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
                       delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
-                      text = _converse.chatboxes.getMessageBody(stanza) || undefined,
+                      text = this.getMessageBody(stanza) || undefined,
                       chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
                             stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
                             stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
@@ -887,17 +899,10 @@ converse.plugins.add('converse-chatboxes', {
                 chatbox.messages.create(attrs);
             },
 
-            getMessageBody (stanza) {
-                /* Given a message stanza, return the text contained in its body.
-                 */
-                const type = stanza.getAttribute('type');
-                if (type === 'error') {
-                    const error = stanza.querySelector('error');
-                    return _.propertyOf(error.querySelector('text'))('textContent') ||
-                        __('Sorry, an error occurred:') + ' ' + error.innerHTML;
-                } else {
-                    return _.propertyOf(stanza.querySelector('body'))('textContent');
-                }
+            getErrorMessage (stanza) {
+                const error = stanza.querySelector('error');
+                return _.propertyOf(error.querySelector('text'))('textContent') ||
+                    __('Sorry, an error occurred:') + ' ' + error.innerHTML;
             },
 
             /**

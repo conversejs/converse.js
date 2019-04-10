@@ -62126,7 +62126,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           const older_versions = message.get('older_versions') || [];
           older_versions.push(message.get('message'));
           message.save({
-            'message': _converse.chatboxes.getMessageBody(stanza),
+            'message': this.getMessageBody(stanza),
             'references': this.getReferencesFromStanza(stanza),
             'older_versions': older_versions,
             'edited': moment().format()
@@ -62529,6 +62529,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return !_.isNil(sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop());
       },
 
+      getMessageBody(stanza) {
+        /* Given a message stanza, return the text contained in its body.
+         */
+        const type = stanza.getAttribute('type');
+
+        if (type === 'error') {
+          return this.getErrorMessage(stanza);
+        } else {
+          return _.propertyOf(stanza.querySelector('body'))('textContent');
+        }
+      },
+
       /**
        * Parses a passed in message stanza and returns an object
        * of attributes.
@@ -62542,7 +62554,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       getMessageAttributesFromStanza(stanza, original_stanza) {
         const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
               delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
-              text = _converse.chatboxes.getMessageBody(stanza) || undefined,
+              text = this.getMessageBody(stanza) || undefined,
               chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
         const attrs = _.extend({
@@ -62737,17 +62749,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         chatbox.messages.create(attrs);
       },
 
-      getMessageBody(stanza) {
-        /* Given a message stanza, return the text contained in its body.
-         */
-        const type = stanza.getAttribute('type');
-
-        if (type === 'error') {
-          const error = stanza.querySelector('error');
-          return _.propertyOf(error.querySelector('text'))('textContent') || __('Sorry, an error occurred:') + ' ' + error.innerHTML;
-        } else {
-          return _.propertyOf(stanza.querySelector('body'))('textContent');
-        }
+      getErrorMessage(stanza) {
+        const error = stanza.querySelector('error');
+        return _.propertyOf(error.querySelector('text'))('textContent') || __('Sorry, an error occurred:') + ' ' + error.innerHTML;
       },
 
       /**
@@ -63172,6 +63176,7 @@ strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].addNamespace('ROSTERX', 'http
 strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].addNamespace('RSM', 'http://jabber.org/protocol/rsm');
 strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].addNamespace('SID', 'urn:xmpp:sid:0');
 strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
+strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].addNamespace('STANZAS', 'urn:ietf:params:xml:ns:xmpp-stanzas');
 strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].addNamespace('VCARD', 'vcard-temp');
 strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].addNamespace('XFORM', 'jabber:x:data'); // Use Mustache style syntax for variable interpolation
@@ -67661,6 +67666,14 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         }
 
         return attrs;
+      },
+
+      getErrorMessage(stanza) {
+        if (sizzle(`forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
+          return __("Your message was not delivered because you're not allowed to send messages in this groupchat.");
+        } else {
+          return _converse.ChatBox.prototype.getErrorMessage.apply(this, arguments);
+        }
       },
 
       /**

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-03-26 22:07+0100\n"
-"Last-Translator: Oleg Kazak <oleg@wroot.lt>\n"
+"PO-Revision-Date: 2019-04-11 06:03+0000\n"
+"Last-Translator: Michal Čihař <michal@cihar.com>\n"
 "Language-Team: Lithuanian <https://hosted.weblate.org/projects/conversejs/"
 "translations/lt/>\n"
 "Language: lt\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 3.0-dev\n"
+"X-Generator: Weblate 3.6-dev\n"
 
 #: dist/converse-no-dependencies.js:30613
 #: dist/converse-no-dependencies.js:30667
@@ -1110,7 +1110,7 @@ msgstr ""
 #: dist/converse-no-dependencies.js:40358
 #, javascript-format
 msgid "%1$s Translate %2$s it into your own language"
-msgstr "1$s Išverskite %2$s jį į jūsų kalbą"
+msgstr "%1$s Išverskite %2$s jį į jūsų kalbą"
 
 #: dist/converse-no-dependencies.js:40382
 #, javascript-format

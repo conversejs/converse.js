@@ -59419,7 +59419,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       className: 'roster-filter-form',
       events: {
         "keydown .roster-filter": "liveFilter",
-        "submit form.roster-filter-form": "submitFilter",
+        "submit": "submitFilter",
         "click .clear-input": "clearFilter",
         "click .filter-by span": "changeTypeFilter",
         "change .state-type": "changeChatStateFilter"

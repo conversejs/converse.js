@@ -53849,6 +53849,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.model.on('configurationNeeded', this.getAndRenderConfigurationForm, this);
         this.model.on('destroy', this.hide, this);
         this.model.on('show', this.show, this);
+        this.model.features.on('change:moderated', this.renderBottomPanel, this);
         this.model.occupants.on('add', this.onOccupantAdded, this);
         this.model.occupants.on('remove', this.onOccupantRemoved, this);
         this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
@@ -53912,7 +53913,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       renderBottomPanel() {
         const container = this.el.querySelector('.bottom-panel');
 
-        if (this.model.get('role') === 'visitor') {
+        if (this.model.features.get('moderated') && this.model.get('role') === 'visitor') {
           container.innerHTML = templates_chatroom_bottom_panel_html__WEBPACK_IMPORTED_MODULE_10___default()({
             '__': __
           });
@@ -62747,8 +62748,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         } else {
           // An error message without id likely means that we
           // sent a message without id (which shouldn't happen).
-          _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
-
           _converse.log(message, Strophe.LogLevel.ERROR);
         }
 

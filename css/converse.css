@@ -11683,8 +11683,9 @@ body.converse-fullscreen {
   #conversejs.converse-embedded .chatroom .muc-bottom-panel,
   #conversejs .chatroom .muc-bottom-panel {
     border-top: var(--message-input-border-top);
-    height: 4em;
-    padding: 1em;
+    height: 3em;
+    padding: 0.5em;
+    text-align: center;
     font-size: var(--font-size-small);
     background-color: var(--chatroom-head-color);
     color: white; }

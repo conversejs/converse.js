@@ -41261,8 +41261,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         } else {
           // An error message without id likely means that we
           // sent a message without id (which shouldn't happen).
-          _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
-
           _converse.log(message, Strophe.LogLevel.ERROR);
         }
 

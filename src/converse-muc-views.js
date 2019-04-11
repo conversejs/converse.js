@@ -547,6 +547,8 @@ converse.plugins.add('converse-muc-views', {
                 this.model.on('destroy', this.hide, this);
                 this.model.on('show', this.show, this);
 
+                this.model.features.on('change:moderated', this.renderBottomPanel, this);
+
                 this.model.occupants.on('add', this.onOccupantAdded, this);
                 this.model.occupants.on('remove', this.onOccupantRemoved, this);
                 this.model.occupants.on('change:show', this.showJoinOrLeaveNotification, this);
@@ -601,7 +603,7 @@ converse.plugins.add('converse-muc-views', {
 
             renderBottomPanel () {
                 const container = this.el.querySelector('.bottom-panel');
-                if (this.model.get('role') === 'visitor') {
+                if (this.model.features.get('moderated') && this.model.get('role') === 'visitor') {
                     container.innerHTML = tpl_chatroom_bottom_panel({'__': __});
                 } else {
                     if (!container.firstElementChild || !container.querySelector('.sendXMPPMessage')) {

@@ -898,7 +898,6 @@ converse.plugins.add('converse-chatboxes', {
                 } else {
                     // An error message without id likely means that we
                     // sent a message without id (which shouldn't happen).
-                    _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
                     _converse.log(message, Strophe.LogLevel.ERROR);
                 }
                 const attrs = await chatbox.getMessageAttributesFromStanza(message, message);

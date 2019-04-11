@@ -167,7 +167,7 @@
                 chatroomview = _converse.chatboxviews.get('room@conference.example.org');
 
                 // We pretend this is a new room, so no disco info is returned.
-                var features_stanza = $iq({
+                const features_stanza = $iq({
                         from: 'room@conference.example.org',
                         'id': IQ_id,
                         'to': 'dummy@localhost/desktop',
@@ -184,7 +184,7 @@
                  *  </x>
                  * </presence>
                  */
-                var presence = $pres({
+                const presence = $pres({
                         from:'room@conference.example.org/some1',
                         to:'dummy@localhost/pda'
                     })
@@ -4667,8 +4667,16 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                await test_utils.openAndEnterChatRoom(_converse, 'trollbox', 'localhost', 'troll');
+                const features = [
+                    'http://jabber.org/protocol/muc',
+                    'jabber:iq:register',
+                    Strophe.NS.SID,
+                    'muc_moderated',
+                ]
+                await test_utils.openAndEnterChatRoom(_converse, 'trollbox', 'localhost', 'troll', features);
                 const view = _converse.chatboxviews.get('trollbox@localhost');
+                expect(_.isNull(view.el.querySelector('.chat-textarea'))).toBe(false);
+
                 let stanza = u.toStanza(`
                     <presence
                         from='trollbox@localhost/troll'
@@ -4681,6 +4689,25 @@
                     </x>
                     </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(view.el.querySelector('.chat-textarea')).toBe(null);
+                let bottom_panel = view.el.querySelector('.muc-bottom-panel');
+                expect(bottom_panel.textContent.trim()).toBe("You're not allowed to send messages in this room");
+
+                // This only applies to moderated rooms, so let's check that
+                // the textarea becomes visible when the room's
+                // configuration changes to be non-moderated
+                view.model.features.set('moderated', false);
+                expect(view.el.querySelector('.muc-bottom-panel')).toBe(null);
+                let textarea = view.el.querySelector('.chat-textarea');
+                expect(_.isNull(textarea)).toBe(false);
+
+                view.model.features.set('moderated', true);
+                expect(view.el.querySelector('.chat-textarea')).toBe(null);
+                bottom_panel = view.el.querySelector('.muc-bottom-panel');
+                expect(bottom_panel.textContent.trim()).toBe("You're not allowed to send messages in this room");
+
+                // Check now that things get restored when the user is given a voice
                 let info_msgs = sizzle('.chat-info', view.el);
                 expect(info_msgs.length).toBe(4);
                 expect(info_msgs[2].textContent).toBe("troll is no longer a moderator");
@@ -4699,6 +4726,13 @@
                     </presence>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 info_msgs = sizzle('.chat-info', view.el);
+
+                bottom_panel = view.el.querySelector('.muc-bottom-panel');
+                expect(bottom_panel).toBe(null);
+
+                textarea = view.el.querySelector('.chat-textarea');
+                expect(_.isNull(textarea)).toBe(false);
+
                 expect(info_msgs.length).toBe(5);
                 expect(info_msgs[4].textContent).toBe("troll has been given a voice again");
                 done();

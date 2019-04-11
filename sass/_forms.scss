@@ -5,6 +5,9 @@
     }
 
     form {
+        .error-feedback {
+            margin-bottom: 0.5em;
+        }
         .form-check-label {
             margin-top: $form-check-input-margin-y;
         }

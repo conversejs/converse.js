@@ -93694,9 +93694,9 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 __p += '<!-- src/templates/chatroom_invite.html -->\n<div class="suggestion-box room-invite">\n    <form>\n        ';
  if (o.error_message) { ;
-__p += ' <span class="error">' +
+__p += ' <div class="error error-feedback">' +
 __e(o.error_message) +
-'</span> ';
+'</div> ';
  } ;
 __p += '\n        <div class="form-group">\n            <input class="form-control invited-contact suggestion-box__input"\n                   placeholder="' +
 __e(o.label_invitation) +

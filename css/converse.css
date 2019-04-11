@@ -10036,6 +10036,9 @@ body.converse-fullscreen {
   font-size: 80%;
   font-weight: normal; }
 
+#conversejs form .error-feedback {
+  margin-bottom: 0.5em; }
+
 #conversejs form .form-check-label {
   margin-top: 0.3rem; }
 

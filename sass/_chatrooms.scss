@@ -512,17 +512,3 @@
         }
     }
 }
-
-@include media-breakpoint-up(md) {
-    .chatroom {
-        .box-flyout {
-            .occupants {
-                .occupants-header {
-                    .hide-occupants {
-                        display: none;
-                    }
-                }
-            }
-        }
-    }
-}

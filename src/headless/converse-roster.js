@@ -887,6 +887,19 @@ converse.plugins.add('converse-roster', {
             }
         }
 
+        _converse.api.waitUntil('rosterContactsFetched').then(() => {
+            _converse.roster.on('add', (contact) => {
+                /* When a new contact is added, check if we already have a
+                 * chatbox open for it, and if so attach it to the chatbox.
+                 */
+                const chatbox = _converse.chatboxes.findWhere({'jid': contact.get('jid')});
+                if (chatbox) {
+                    addRelatedContactToChatbox(chatbox, contact);
+                }
+            });
+        });
+
+
         function updateUnreadCounter (chatbox) {
             const contact = _converse.roster.findWhere({'jid': chatbox.get('jid')});
             if (!_.isUndefined(contact)) {

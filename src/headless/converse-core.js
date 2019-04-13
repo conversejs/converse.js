@@ -41,6 +41,7 @@ Strophe.addNamespace('ROSTERX', 'http://jabber.org/protocol/rosterx');
 Strophe.addNamespace('RSM', 'http://jabber.org/protocol/rsm');
 Strophe.addNamespace('SID', 'urn:xmpp:sid:0');
 Strophe.addNamespace('SPOILER', 'urn:xmpp:spoiler:0');
+Strophe.addNamespace('STANZAS', 'urn:ietf:params:xml:ns:xmpp-stanzas');
 Strophe.addNamespace('VCARD', 'vcard-temp');
 Strophe.addNamespace('VCARDUPDATE', 'vcard-temp:x:update');
 Strophe.addNamespace('XFORM', 'jabber:x:data');
@@ -83,6 +84,7 @@ pluggable.enable(_converse, '_converse', 'pluggable');
 // These are just the @converse/headless plugins, for the full converse,
 // the other plugins are whitelisted in src/converse.js
 _converse.core_plugins = [
+    'converse-caps',
     'converse-chatboxes',
     'converse-disco',
     'converse-mam',
@@ -1058,11 +1060,6 @@ _converse.initialize = async function (settings, callback) {
         },
 
         initialize () {
-            this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')});
-            if (_.isNil(this.vcard)) {
-                this.vcard = _converse.vcards.create({'jid': this.get('jid')});
-            }
-
             this.on('change:status', (item) => {
                 const status = this.get('status');
                 this.sendPresence(status);

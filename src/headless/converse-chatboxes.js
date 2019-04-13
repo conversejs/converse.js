@@ -56,7 +56,20 @@ converse.plugins.add('converse-chatboxes', {
         _converse.router.route('converse/chat?jid=:jid', openChat);
 
 
-        _converse.Message = Backbone.Model.extend({
+        const ModelWithContact = Backbone.Model.extend({
+
+            async setRosterContact (jid) {
+                await _converse.api.waitUntil('rosterContactsFetched');
+                const contact = _converse.roster.get(jid);
+                if (contact) {
+                    this.contact = contact;
+                    this.trigger('rosterContactAdded');
+                }
+            }
+        });
+
+
+        _converse.Message = ModelWithContact.extend({
 
             defaults () {
                 return {
@@ -67,6 +80,9 @@ converse.plugins.add('converse-chatboxes', {
 
             initialize () {
                 this.setVCard();
+                if (this.get('type') === 'chat') {
+                    this.setRosterContact(Strophe.getBareJidFromJid(this.get('from')));
+                }
                 if (this.get('file')) {
                     this.on('change:put', this.uploadFile, this);
                 }
@@ -102,12 +118,16 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             setVCard () {
+                if (!_converse.vcards) {
+                    // VCards aren't supported
+                    return;
+                }
                 if (this.get('type') === 'error') {
                     return;
                 } else if (this.get('type') === 'groupchat') {
                     this.vcard = this.getVCardForChatroomOccupant();
                 } else {
-                    const jid = this.get('from');
+                    const jid = Strophe.getBareJidFromJid(this.get('from'));
                     this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
                 }
             },
@@ -119,8 +139,12 @@ converse.plugins.add('converse-chatboxes', {
             getDisplayName () {
                 if (this.get('type') === 'groupchat') {
                     return this.get('nick');
+                } else if (this.contact) {
+                    return this.contact.getDisplayName();
+                } else if (this.vcard) {
+                    return this.vcard.getDisplayName();
                 } else {
-                    return this.vcard.get('fullname') || this.get('from');
+                    return this.get('from');
                 }
             },
 
@@ -226,7 +250,7 @@ converse.plugins.add('converse-chatboxes', {
          * @namespace _converse.ChatBox
          * @memberOf _converse
          */
-        _converse.ChatBox = Backbone.Model.extend({
+        _converse.ChatBox = ModelWithContact.extend({
             defaults () {
                 return {
                     'bookmarked': false,
@@ -252,12 +276,18 @@ converse.plugins.add('converse-chatboxes', {
                     // but we're in embedded mode.
                     return;
                 }
-
-                this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
                 // XXX: this creates a dependency on converse-roster, which we
                 // probably shouldn't have here, so we should probably move
                 // ChatBox out of converse-chatboxes
                 this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
+
+                if (_converse.vcards) {
+                    this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
+                }
+
+                if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+                    this.setRosterContact(jid);
+                }
 
                 this.messages = new _converse.Messages();
                 const storage = _converse.config.get('storage');
@@ -293,7 +323,13 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             getDisplayName () {
-                return this.vcard.get('fullname') || this.get('jid');
+                if (this.contact) {
+                    return this.contact.getDisplayName();
+                } else if (this.vcard) {
+                    return this.vcard.getDisplayName();
+                } else {
+                    return this.get('jid');
+                }
             },
 
             getUpdatedMessageAttributes (message, stanza) {
@@ -325,7 +361,7 @@ converse.plugins.add('converse-chatboxes', {
                     const older_versions = message.get('older_versions') || [];
                     older_versions.push(message.get('message'));
                     message.save({
-                        'message': _converse.chatboxes.getMessageBody(stanza),
+                        'message': this.getMessageBody(stanza),
                         'references': this.getReferencesFromStanza(stanza),
                         'older_versions': older_versions,
                         'edited': moment().format()
@@ -660,6 +696,24 @@ converse.plugins.add('converse-chatboxes', {
                 return !_.isNil(sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).pop());
             },
 
+            getErrorMessage (stanza) {
+                const error = stanza.querySelector('error');
+                return _.propertyOf(error.querySelector('text'))('textContent') ||
+                    __('Sorry, an error occurred:') + ' ' + error.innerHTML;
+            },
+
+            getMessageBody (stanza) {
+                /* Given a message stanza, return the text contained in its body.
+                 */
+                const type = stanza.getAttribute('type');
+                if (type === 'error') {
+                    return this.getErrorMessage(stanza);
+                } else {
+                    return _.propertyOf(stanza.querySelector('body'))('textContent');
+                }
+            },
+
+
             /**
              * Parses a passed in message stanza and returns an object
              * of attributes.
@@ -673,7 +727,7 @@ converse.plugins.add('converse-chatboxes', {
             getMessageAttributesFromStanza (stanza, original_stanza) {
                 const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
                       delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
-                      text = _converse.chatboxes.getMessageBody(stanza) || undefined,
+                      text = this.getMessageBody(stanza) || undefined,
                       chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
                             stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
                             stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
@@ -844,24 +898,10 @@ converse.plugins.add('converse-chatboxes', {
                 } else {
                     // An error message without id likely means that we
                     // sent a message without id (which shouldn't happen).
-                    _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
                     _converse.log(message, Strophe.LogLevel.ERROR);
                 }
                 const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
                 chatbox.messages.create(attrs);
-            },
-
-            getMessageBody (stanza) {
-                /* Given a message stanza, return the text contained in its body.
-                 */
-                const type = stanza.getAttribute('type');
-                if (type === 'error') {
-                    const error = stanza.querySelector('error');
-                    return _.propertyOf(error.querySelector('text'))('textContent') ||
-                        __('Sorry, an error occurred:') + ' ' + error.innerHTML;
-                } else {
-                    return _.propertyOf(stanza.querySelector('body'))('textContent');
-                }
             },
 
             /**

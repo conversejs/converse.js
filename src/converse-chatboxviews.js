@@ -23,22 +23,24 @@ const AvatarMixin = {
         if (_.isNull(canvas_el)) {
             return;
         }
-        const image_type = this.model.vcard.get('image_type'),
-                image = this.model.vcard.get('image');
-
-        canvas_el.outerHTML = tpl_avatar({
+        const data = {
             'classes': canvas_el.getAttribute('class'),
             'width': canvas_el.width,
             'height': canvas_el.height,
-            'image': "data:" + image_type + ";base64," + image,
-        });
+        }
+        if (this.model.vcard) {
+            const image_type = this.model.vcard.get('image_type'),
+                  image = this.model.vcard.get('image');
+            data['image'] = "data:" + image_type + ";base64," + image;
+        }
+        canvas_el.outerHTML = tpl_avatar(data);
     },
 };
 
 
 converse.plugins.add('converse-chatboxviews', {
 
-    dependencies: ["converse-chatboxes"],
+    dependencies: ["converse-chatboxes", "converse-vcard"],
 
     overrides: {
         // Overrides mentioned here will be picked up by converse.js's
@@ -47,7 +49,7 @@ converse.plugins.add('converse-chatboxviews', {
 
         initStatus: function (reconnecting) {
             const { _converse } = this.__super__;
-            if (!reconnecting) {
+            if (!reconnecting && _converse.chatboxviews) {
                 _converse.chatboxviews.closeAllChatBoxes();
             }
             return this.__super__.initStatus.apply(this, arguments);
@@ -152,18 +154,6 @@ converse.plugins.add('converse-chatboxviews', {
 
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.waitUntil('rosterContactsFetched').then(() => {
-            _converse.roster.on('add', (contact) => {
-                /* When a new contact is added, check if we already have a
-                 * chatbox open for it, and if so attach it to the chatbox.
-                 */
-                const chatbox = _converse.chatboxes.findWhere({'jid': contact.get('jid')});
-                if (chatbox) {
-                    chatbox.addRelatedContact(contact);
-                }
-            });
-        });
-
         _converse.api.listen.on('chatBoxesInitialized', () => {
             _converse.chatboxviews = new _converse.ChatBoxViews({
                 'model': _converse.chatboxes

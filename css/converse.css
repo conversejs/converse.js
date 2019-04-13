@@ -10036,6 +10036,9 @@ body.converse-fullscreen {
   font-size: 80%;
   font-weight: normal; }
 
+#conversejs form .error-feedback {
+  margin-bottom: 0.5em; }
+
 #conversejs form .form-check-label {
   margin-top: 0.3rem; }
 
@@ -11680,6 +11683,15 @@ body.converse-fullscreen {
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container .button-primary,
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .button-primary {
           background-color: var(--chatroom-head-button-color); }
+  #conversejs.converse-embedded .chatroom .muc-bottom-panel,
+  #conversejs .chatroom .muc-bottom-panel {
+    border-top: var(--message-input-border-top);
+    height: 3em;
+    padding: 0.5em;
+    text-align: center;
+    font-size: var(--font-size-small);
+    background-color: var(--chatroom-head-color);
+    color: white; }
   #conversejs.converse-embedded .chatroom .sendXMPPMessage .suggestion-box__results--above,
   #conversejs .chatroom .sendXMPPMessage .suggestion-box__results--above {
     bottom: 4.5em; }
@@ -11808,10 +11820,6 @@ body.converse-fullscreen {
 #conversejs.converse-fullscreen .chatroom .room-invite span .invited-contact,
 #conversejs.converse-mobile .chatroom .room-invite span .invited-contact {
   margin: 0 0 0.5em -1px; }
-
-@media (min-width: 768px) {
-  .chatroom .box-flyout .occupants .occupants-header .hide-occupants {
-    display: none; } }
 
 #conversejs .chatbox.headlines .chat-head.chat-head-chatbox {
   background-color: var(--headline-head-color); }

@@ -211,6 +211,10 @@ converse.plugins.add('converse-roster', {
             },
 
             setVCard () {
+                if (!_converse.vcards) {
+                    // VCards aren't supported
+                    return;
+                }
                 const jid = this.get('jid');
                 this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
             },
@@ -246,9 +250,6 @@ converse.plugins.add('converse-roster', {
                     'jid': bare_jid,
                     'user_id': Strophe.getNodeFromJid(jid)
                 }, attributes));
-
-                this.setChatBox();
-
                 /**
                  * When a contact's presence status has changed.
                  * The presence status is either `online`, `offline`, `dnd`, `away` or `xa`.
@@ -260,20 +261,22 @@ converse.plugins.add('converse-roster', {
                 this.presence.on('change:show', () => this.trigger('presenceChanged'));
             },
 
-            setChatBox (chatbox=null) {
-                chatbox = chatbox || _converse.chatboxes.get(this.get('jid'));
-                if (chatbox) {
-                    this.chatbox = chatbox;
-                    this.chatbox.on('change:hidden', this.render, this);
+            getDisplayName () {
+                if (this.get('nickname')) {
+                    return this.get('nickname');
+                } else if (this.vcard) {
+                    return this.vcard.getDisplayName();
+                } else {
+                    return this.get('jid');
                 }
             },
 
-            getDisplayName () {
-                return this.get('nickname') || this.vcard.get('nickname') || this.vcard.get('fullname') || this.get('jid');
-            },
-
             getFullname () {
-                return this.vcard.get('fullname');
+                if (this.vcard) {
+                    return this.vcard.get('fullname');
+                } else {
+                    return this.get('jid');
+                }
             },
 
             /**
@@ -883,6 +886,19 @@ converse.plugins.add('converse-roster', {
                 chatbox.trigger('contactAdded', contact);
             }
         }
+
+        _converse.api.waitUntil('rosterContactsFetched').then(() => {
+            _converse.roster.on('add', (contact) => {
+                /* When a new contact is added, check if we already have a
+                 * chatbox open for it, and if so attach it to the chatbox.
+                 */
+                const chatbox = _converse.chatboxes.findWhere({'jid': contact.get('jid')});
+                if (chatbox) {
+                    addRelatedContactToChatbox(chatbox, contact);
+                }
+            });
+        });
+
 
         function updateUnreadCounter (chatbox) {
             const contact = _converse.roster.findWhere({'jid': chatbox.get('jid')});

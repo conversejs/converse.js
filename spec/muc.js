@@ -167,7 +167,7 @@
                 chatroomview = _converse.chatboxviews.get('room@conference.example.org');
 
                 // We pretend this is a new room, so no disco info is returned.
-                var features_stanza = $iq({
+                const features_stanza = $iq({
                         from: 'room@conference.example.org',
                         'id': IQ_id,
                         'to': 'dummy@localhost/desktop',
@@ -184,7 +184,7 @@
                  *  </x>
                  * </presence>
                  */
-                var presence = $pres({
+                const presence = $pres({
                         from:'room@conference.example.org/some1',
                         to:'dummy@localhost/pda'
                     })
@@ -1231,7 +1231,7 @@
                 /* Server responds with the configuration form.
                  * See: // https://xmpp.org/extensions/xep-0045.html#example-165
                  */
-                var config_stanza = $iq({from: 'coven@chat.shakespeare.lit',
+                const config_stanza = $iq({from: 'coven@chat.shakespeare.lit',
                     'id': IQ_id,
                     'to': 'dummy@localhost/desktop',
                     'type': 'result'})
@@ -1712,7 +1712,7 @@
 
             it("allows the user to invite their roster contacts to enter the groupchat",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
                     async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current'); // We need roster contacts, so that we have someone to invite
@@ -4635,6 +4635,108 @@
                     done();
                 }));
             });
+        });
+
+        describe("A muted user", function () {
+
+            it("will receive a user-friendly error message when trying to send a message",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                await test_utils.openAndEnterChatRoom(_converse, 'trollbox', 'localhost', 'troll');
+                const view = _converse.chatboxviews.get('trollbox@localhost');
+                const textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = 'Hello world';
+                view.onFormSubmitted(new Event('submit'));
+
+                const stanza = u.toStanza(`
+                    <message xmlns="jabber:client" type="error" to="troll@localhost/resource" from="trollbox@localhost">
+                        <error type="auth"><forbidden xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/></error>
+                    </message>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+                expect(view.el.querySelector('.chat-error').textContent).toBe(
+                    "Your message was not delivered because you're not allowed to send messages in this groupchat.");
+                done();
+            }));
+
+            it("will see an explanatory message instead of a textarea",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
+                    async function (done, _converse) {
+
+                const features = [
+                    'http://jabber.org/protocol/muc',
+                    'jabber:iq:register',
+                    Strophe.NS.SID,
+                    'muc_moderated',
+                ]
+                await test_utils.openAndEnterChatRoom(_converse, 'trollbox', 'localhost', 'troll', features);
+                const view = _converse.chatboxviews.get('trollbox@localhost');
+                expect(_.isNull(view.el.querySelector('.chat-textarea'))).toBe(false);
+
+                let stanza = u.toStanza(`
+                    <presence
+                        from='trollbox@localhost/troll'
+                        to='dummy@localhost/resource'>
+                    <x xmlns='http://jabber.org/protocol/muc#user'>
+                        <item affiliation='moderator'
+                            nick='troll'
+                            role='visitor'/>
+                        <status code='110'/>
+                    </x>
+                    </presence>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+
+                expect(view.el.querySelector('.chat-textarea')).toBe(null);
+                let bottom_panel = view.el.querySelector('.muc-bottom-panel');
+                expect(bottom_panel.textContent.trim()).toBe("You're not allowed to send messages in this room");
+
+                // This only applies to moderated rooms, so let's check that
+                // the textarea becomes visible when the room's
+                // configuration changes to be non-moderated
+                view.model.features.set('moderated', false);
+                expect(view.el.querySelector('.muc-bottom-panel')).toBe(null);
+                let textarea = view.el.querySelector('.chat-textarea');
+                expect(_.isNull(textarea)).toBe(false);
+
+                view.model.features.set('moderated', true);
+                expect(view.el.querySelector('.chat-textarea')).toBe(null);
+                bottom_panel = view.el.querySelector('.muc-bottom-panel');
+                expect(bottom_panel.textContent.trim()).toBe("You're not allowed to send messages in this room");
+
+                // Check now that things get restored when the user is given a voice
+                let info_msgs = sizzle('.chat-info', view.el);
+                expect(info_msgs.length).toBe(4);
+                expect(info_msgs[2].textContent).toBe("troll is no longer a moderator");
+                expect(info_msgs[3].textContent).toBe("troll has been muted");
+
+                stanza = u.toStanza(`
+                    <presence
+                        from='trollbox@localhost/troll'
+                        to='dummy@localhost/resource'>
+                    <x xmlns='http://jabber.org/protocol/muc#user'>
+                        <item affiliation='moderator'
+                            nick='troll'
+                            role='participant'/>
+                        <status code='110'/>
+                    </x>
+                    </presence>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                info_msgs = sizzle('.chat-info', view.el);
+
+                bottom_panel = view.el.querySelector('.muc-bottom-panel');
+                expect(bottom_panel).toBe(null);
+
+                textarea = view.el.querySelector('.chat-textarea');
+                expect(_.isNull(textarea)).toBe(false);
+
+                expect(info_msgs.length).toBe(5);
+                expect(info_msgs[4].textContent).toBe("troll has been given a voice again");
+                done();
+            }));
         });
     });
 }));

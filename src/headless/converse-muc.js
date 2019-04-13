@@ -718,7 +718,7 @@ converse.plugins.add('converse-muc', {
              */
             saveAffiliationAndRole (pres) {
                 const item = sizzle(`x[xmlns="${Strophe.NS.MUC_USER}"] item`, pres).pop();
-                const is_self = pres.querySelector("status[code='110']");
+                const is_self = !_.isNull(pres.querySelector("status[code='110']"));
                 if (is_self && !_.isNil(item)) {
                     const affiliation = item.getAttribute('affiliation');
                     const role = item.getAttribute('role');
@@ -910,10 +910,10 @@ converse.plugins.add('converse-muc', {
                         return;
                     }
                 }
-                const jid = Strophe.getBareJidFromJid(data.jid);
+                const jid = data.jid || '';
                 const attributes = _.extend(data, {
-                    'jid': jid ? jid : undefined,
-                    'resource': data.jid ? Strophe.getResourceFromJid(data.jid) : undefined
+                    'jid': Strophe.getBareJidFromJid(jid) || _.get(occupant, 'attributes.jid'),
+                    'resource': Strophe.getResourceFromJid(jid) || _.get(occupant, 'attributes.resource')
                 });
                 if (occupant) {
                     occupant.save(attributes);
@@ -1038,6 +1038,14 @@ converse.plugins.add('converse-muc', {
                     }
                 }
                 return attrs;
+            },
+
+            getErrorMessage (stanza) {
+                if (sizzle(`forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
+                    return __("Your message was not delivered because you're not allowed to send messages in this groupchat.");
+                } else {
+                    return _converse.ChatBox.prototype.getErrorMessage.apply(this, arguments);
+                }
             },
 
             /**

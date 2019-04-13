@@ -2,13 +2,13 @@
  * --------------------
  * Any of the following components may be removed if they're not needed.
  */
+import "@converse/headless/converse-caps";            // XEP-0115 Entity Capabilities
 import "@converse/headless/converse-mam";             // XEP-0313 Message Archive Management
 import "@converse/headless/converse-ping";            // XEP-0199 XMPP Ping
 import "@converse/headless/converse-pubsub";          // XEP-0060 PubSub
 import "@converse/headless/converse-vcard";           // XEP-0054 VCard-temp
 import "converse-autocomplete";
 import "converse-bookmarks";       // XEP-0048 Bookmarks
-import "converse-caps";            // XEP-0115 Entity Capabilities
 import "converse-chatview";        // Renders standalone chat boxes for single user chat
 import "converse-controlbox";      // The control box
 import "converse-dragresize";      // Allows chat boxes to be resized by dragging them
@@ -31,7 +31,6 @@ import converse from "@converse/headless/converse-core";
 const WHITELISTED_PLUGINS = [
     'converse-autocomplete',
     'converse-bookmarks',
-    'converse-caps',
     'converse-chatboxviews',
     'converse-chatview',
     'converse-controlbox',

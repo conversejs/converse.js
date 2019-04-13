@@ -1,8 +1,12 @@
 # Changelog
 
-## 4.2.1 (Unreaded)
+## 4.2.1 (Unreleased)
 
-* Bugfix. Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
+* Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
+* Bugfix: Modal auto-closes when you open it for a second time.
+* Take roster nickname into consideration when rendering messages and chat headings.
+* Hide the textarea when a user is muted in a groupchat.
+* #1532: Converse reloads on enter pressed in the filter box
 
 ## 4.2.0 (2019-04-04)
 

@@ -776,6 +776,10 @@ converse.plugins.add('converse-chatboxes', {
                 return attrs;
             },
 
+            mayBeShown () {
+                return true;
+            },
+
             isHidden () {
                 /* Returns a boolean to indicate whether a newly received
                  * message will be visible to the user or not.
@@ -840,14 +844,10 @@ converse.plugins.add('converse-chatboxes', {
                 }, null, 'message', 'error');
             },
 
-            chatBoxMayBeShown (chatbox) {
-                return true;
-            },
-
             onChatBoxesFetched (collection) {
                 /* Show chat boxes upon receiving them from sessionStorage */
                 collection.each(chatbox => {
-                    if (this.chatBoxMayBeShown(chatbox)) {
+                    if (chatbox.mayBeShown()) {
                         chatbox.trigger('show');
                     }
                 });
@@ -898,6 +898,7 @@ converse.plugins.add('converse-chatboxes', {
                 } else {
                     // An error message without id likely means that we
                     // sent a message without id (which shouldn't happen).
+                    _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
                     _converse.log(message, Strophe.LogLevel.ERROR);
                 }
                 const attrs = await chatbox.getMessageAttributesFromStanza(message, message);

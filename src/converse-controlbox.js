@@ -92,12 +92,7 @@ converse.plugins.add('converse-controlbox', {
                 } else {
                     return this.__super__.model.apply(this, arguments);
                 }
-            },
-
-            chatBoxMayBeShown (chatbox) {
-                return this.__super__.chatBoxMayBeShown.apply(this, arguments) &&
-                       chatbox.get('id') !== 'controlbox';
-            },
+            }
         },
 
         ChatBoxViews: {
@@ -141,6 +136,11 @@ converse.plugins.add('converse-controlbox', {
                     return;
                 }
                 return this.__super__.validate.apply(this, arguments);
+            },
+
+            mayBeShown () {
+                return this.__super__.mayBeShown.apply(this, arguments) &&
+                       this.get('id') !== 'controlbox';
             },
 
             initialize () {

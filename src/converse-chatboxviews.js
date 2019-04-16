@@ -145,10 +145,6 @@ converse.plugins.add('converse-chatboxviews', {
                  */
                 this.each(function (view) { view.close(); });
                 return this;
-            },
-
-            chatBoxMayBeShown (chatbox) {
-                return this.model.chatBoxMayBeShown(chatbox);
             }
         });
 

@@ -48767,10 +48767,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
           view.close();
         });
         return this;
-      },
-
-      chatBoxMayBeShown(chatbox) {
-        return this.model.chatBoxMayBeShown(chatbox);
       }
 
     });
@@ -50493,10 +50489,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         } else {
           return this.__super__.model.apply(this, arguments);
         }
-      },
-
-      chatBoxMayBeShown(chatbox) {
-        return this.__super__.chatBoxMayBeShown.apply(this, arguments) && chatbox.get('id') !== 'controlbox';
       }
 
     },
@@ -50545,6 +50537,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         return this.__super__.validate.apply(this, arguments);
+      },
+
+      mayBeShown() {
+        return this.__super__.mayBeShown.apply(this, arguments) && this.get('id') !== 'controlbox';
       },
 
       initialize() {
@@ -52522,6 +52518,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
           'minimized': true,
           'time_minimized': moment().format()
         });
+      },
+
+      mayBeShown() {
+        return this.__super__.mayBeShown.apply(this, arguments) && !this.get('minimized');
       }
 
     },
@@ -52695,12 +52695,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         }
 
         return div.innerHTML;
-      }
-
-    },
-    ChatBoxes: {
-      chatBoxMayBeShown(chatbox) {
-        return this.__super__.chatBoxMayBeShown.apply(this, arguments) && !chatbox.get('minimized');
       }
 
     },
@@ -60349,27 +60343,29 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
     // relevant objects or classes.
     //
     // new functions which don't exist yet can also be added.
-    ChatBoxes: {
-      chatBoxMayBeShown(chatbox) {
+    ChatBox: {
+      mayBeShown() {
         const _converse = this.__super__._converse;
 
-        if (chatbox.get('id') === 'controlbox') {
-          return true;
-        }
-
         if (_converse.isUniView()) {
+          if (this.get('id') === 'controlbox') {
+            return true;
+          }
+
           const any_chats_visible = _converse.chatboxes.filter(cb => cb.get('id') != 'controlbox').filter(cb => !cb.get('hidden')).length > 0;
 
           if (any_chats_visible) {
-            return !chatbox.get('hidden');
+            return !this.get('hidden');
           } else {
             return true;
           }
         } else {
-          return this.__super__.chatBoxMayBeShown.apply(this, arguments);
+          return this.__super__.mayBeShown.apply(this, arguments);
         }
-      },
+      }
 
+    },
+    ChatBoxes: {
       createChatBox(jid, attrs) {
         /* Make sure new chat boxes are hidden by default. */
         const _converse = this.__super__._converse;
@@ -62615,6 +62611,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return attrs;
       },
 
+      mayBeShown() {
+        return true;
+      },
+
       isHidden() {
         /* Returns a boolean to indicate whether a newly received
          * message will be visible to the user or not.
@@ -62687,14 +62687,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }, null, 'message', 'error');
       },
 
-      chatBoxMayBeShown(chatbox) {
-        return true;
-      },
-
       onChatBoxesFetched(collection) {
         /* Show chat boxes upon receiving them from sessionStorage */
         collection.each(chatbox => {
-          if (this.chatBoxMayBeShown(chatbox)) {
+          if (chatbox.mayBeShown()) {
             chatbox.trigger('show');
           }
         });
@@ -62753,6 +62749,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         } else {
           // An error message without id likely means that we
           // sent a message without id (which shouldn't happen).
+          _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
+
           _converse.log(message, Strophe.LogLevel.ERROR);
         }
 

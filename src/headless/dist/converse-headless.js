@@ -41123,6 +41123,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return attrs;
       },
 
+      mayBeShown() {
+        return true;
+      },
+
       isHidden() {
         /* Returns a boolean to indicate whether a newly received
          * message will be visible to the user or not.
@@ -41195,14 +41199,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }, null, 'message', 'error');
       },
 
-      chatBoxMayBeShown(chatbox) {
-        return true;
-      },
-
       onChatBoxesFetched(collection) {
         /* Show chat boxes upon receiving them from sessionStorage */
         collection.each(chatbox => {
-          if (this.chatBoxMayBeShown(chatbox)) {
+          if (chatbox.mayBeShown()) {
             chatbox.trigger('show');
           }
         });
@@ -41261,6 +41261,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         } else {
           // An error message without id likely means that we
           // sent a message without id (which shouldn't happen).
+          _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
+
           _converse.log(message, Strophe.LogLevel.ERROR);
         }
 

@@ -307,16 +307,6 @@ function addPromise (promise) {
     _converse.promises[promise] = u.getResolveablePromise();
 }
 
-_converse.emit = function (name) {
-   _converse.log(
-      "(DEPRECATION) "+
-      "_converse.emit has been has been deprecated. "+
-      "Please use `_converse.api.trigger` instead.",
-      Strophe.LogLevel.WARN
-   )
-   _converse.api.emit.apply(_converse, arguments);
-};
-
 _converse.isUniView = function () {
     /* We distinguish between UniView and MultiView instances.
      *
@@ -351,18 +341,10 @@ function initPlugins() {
         });
     }
 
-    _converse.pluggable.initializePlugins({
-        'updateSettings' () {
-            _converse.log(
-                "(DEPRECATION) "+
-                "The `updateSettings` method has been deprecated. "+
-                "Please use `_converse.api.settings.update` instead.",
-                Strophe.LogLevel.WARN
-            )
-            _converse.api.settings.update.apply(_converse, arguments);
-        },
-        '_converse': _converse
-    }, whitelist, _converse.blacklisted_plugins);
+    _converse.pluggable.initializePlugins(
+        {'_converse': _converse},
+        whitelist, _converse.blacklisted_plugins
+    );
     
     /**
      * Triggered once all plugins have been initialized. This is a useful event if you want to
@@ -1391,15 +1373,6 @@ _converse.api = {
         'disconnect' () {
             _converse.connection.disconnect();
         },
-    },
-
-    /**
-     * Lets you emit (i.e. trigger) events.
-     * @deprecated since version 4.2.0. Use _converse.api.trigger instead.
-     * @method _converse.api.emit
-     */
-    'emit' () {
-         _converse.api.trigger.apply(this, arguments);
     },
 
     /**

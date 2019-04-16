@@ -591,6 +591,8 @@ a chat state indication of ``active`` will be sent out.
 
 A value of ``0`` means that this feature is disabled.
 
+.. _`debug`:
+
 debug
 -----
 

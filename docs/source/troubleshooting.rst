@@ -9,21 +9,40 @@ Troubleshooting and debugging
 General tips on debugging Converse
 ==================================
 
-When debugging Converse, always make sure that you pass in ``debug: true`` to
-the ``converse.initialize`` call.
+Enabling debug output
+---------------------
 
-Converse will then log debug information to the browser's developer console.
-Open the developer console and study the data that is logged to it.
+Converse has a :ref:`debug` configuration setting which lets you to turn on
+debug logging in the browser's developer console.
 
-`Strope.js <http://strophe.im/>`_ the underlying XMPP library which Converse
-uses, swallows errors, so that messaging can continue in cases where
+When debugging, you always want to make sure that this setting is set to
+``true`` when calling ``converse.initialize``.
+
+You can also enable debug output via the URL, which is useful when you don't
+have access to the server where Converse is hosted.
+
+To do so, add ``#converse?debug=true`` to the URL in the browser's address bar.
+Make sure to first remove any already existing URL fragment (the URL fragment
+is the part that starts with a ``#``).
+
+With debug mode on, you can open the browser's developer console and study the
+data that is logged to it.
+
+In Chrome you can right click in the developer console and save its contents to
+a file for later study.
+
+What is logged in debug mode?
+-----------------------------
+
+`Strope.js <http://strophe.im/>`_, the underlying XMPP library which Converse
+uses, swallows errors so that messaging can continue in cases where
 non-critical errors occur.
 
 This is a useful feature and provides more stability, but it makes debugging
 trickier, because the app doesn't crash when something goes wrong somewhere.
 
-That's why checking the debug output in the browser console is so important. If
-something goes wrong somewhere, the error will be logged there and you'll be
+That's why checking the debug output in the browser console is important.
+If something goes wrong somewhere, the error will be logged there and you'll be
 able to see it.
 
 Additionally, Converse will in debug mode also log all XMPP stanzas

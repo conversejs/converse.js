@@ -42074,15 +42074,17 @@ function setUpXMLLogging() {
     _converse.log(msg, level);
   };
 
-  if (_converse.debug) {
-    _converse.connection.xmlInput = function (body) {
+  _converse.connection.xmlInput = function (body) {
+    if (_converse.debug) {
       _converse.log(body.outerHTML, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.DEBUG, 'color: darkgoldenrod');
-    };
+    }
+  };
 
-    _converse.connection.xmlOutput = function (body) {
+  _converse.connection.xmlOutput = function (body) {
+    if (_converse.debug) {
       _converse.log(body.outerHTML, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.DEBUG, 'color: darkcyan');
-    };
-  }
+    }
+  };
 }
 
 function finishInitialization() {

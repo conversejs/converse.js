@@ -150,7 +150,7 @@ _converse.CONNECTION_STATUS = {
     7: 'DISCONNECTING',
     8: 'ATTACHED',
     9: 'REDIRECT',
-   10: 'RECONNECTING',
+    10: 'RECONNECTING',
 };
 
 _converse.SUCCESS = 'success';
@@ -441,14 +441,16 @@ function setUpXMLLogging () {
     Strophe.log = function (level, msg) {
         _converse.log(msg, level);
     };
-    if (_converse.debug) {
-        _converse.connection.xmlInput = function (body) {
+    _converse.connection.xmlInput = function (body) {
+        if (_converse.debug) {
             _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkgoldenrod');
-        };
-        _converse.connection.xmlOutput = function (body) {
+        }
+    };
+    _converse.connection.xmlOutput = function (body) {
+        if (_converse.debug) {
             _converse.log(body.outerHTML, Strophe.LogLevel.DEBUG, 'color: darkcyan');
-        };
-    }
+        }
+    };
 }
 
 

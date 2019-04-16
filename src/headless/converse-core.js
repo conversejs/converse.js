@@ -691,7 +691,7 @@ _converse.initialize = async function (settings, callback) {
         _converse.connection.reconnecting = true;
         _converse.tearDown();
         _converse.logIn(null, true);
-    }, 3000, {'leading': true});
+    }, 2000, {'leading': true});
 
     this.disconnect = function () {
         _converse.log('DISCONNECTED');

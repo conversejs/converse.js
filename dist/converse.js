@@ -49781,6 +49781,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         if (!_converse.connection.authenticated) {
           this.showHelpMessages(['Sorry, the connection has been lost, and your message could not be sent'], 'error');
+
+          if (!_converse.connection.reconnecting) {
+            _converse.reconnect();
+          }
+
           return;
         }
 
@@ -63848,7 +63853,7 @@ _converse.initialize = async function (settings, callback) {
     _converse.tearDown();
 
     _converse.logIn(null, true);
-  }, 3000, {
+  }, 2000, {
     'leading': true
   });
 

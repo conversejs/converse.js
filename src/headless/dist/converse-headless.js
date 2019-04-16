@@ -42361,7 +42361,7 @@ _converse.initialize = async function (settings, callback) {
     _converse.tearDown();
 
     _converse.logIn(null, true);
-  }, 3000, {
+  }, 2000, {
     'leading': true
   });
 

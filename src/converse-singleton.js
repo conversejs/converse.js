@@ -45,23 +45,22 @@ converse.plugins.add('converse-singleton', {
         // new functions which don't exist yet can also be added.
 
         ChatBox: {
-            mayBeShown () {
+            maybeShow (force) {
+                // This method must return the chatbox
                 const { _converse } = this.__super__;
-                if (_converse.isUniView()) {
+                if (!force && _converse.isUniView()) {
                     if (this.get('id') === 'controlbox') {
-                        return true;
+                        return this.trigger('show');
                     }
                     const any_chats_visible = _converse.chatboxes
                         .filter(cb => cb.get('id') != 'controlbox')
                         .filter(cb => !cb.get('hidden')).length > 0;
 
-                    if (any_chats_visible) {
-                        return !this.get('hidden');
-                    } else {
-                        return true;
+                    if (!any_chats_visible || !this.get('hidden')) {
+                        return this.trigger('show');
                     }
                 } else {
-                    return this.__super__.mayBeShown.apply(this, arguments);
+                    return this.__super__.maybeShow.apply(this, arguments);
                 }
             }
         },

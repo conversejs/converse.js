@@ -259,9 +259,7 @@ converse.plugins.add('converse-bookmarks', {
             openBookmarkedRoom (bookmark) {
                 if ( _converse.muc_respect_autojoin && bookmark.get('autojoin')) {
                     const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
-                    if (!groupchat.get('hidden') && !groupchat.get('minimized')) {
-                        groupchat.trigger('show');
-                    }
+                    groupchat.maybeShow();
                 }
                 return bookmark;
             },
@@ -483,7 +481,7 @@ converse.plugins.add('converse-bookmarks', {
                 const data = {
                     'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
                 }
-                _converse.api.rooms.open(jid, data);
+                _converse.api.rooms.open(jid, data, true);
             },
 
             removeBookmark: _converse.removeBookmarkViaEvent,

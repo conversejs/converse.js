@@ -776,8 +776,9 @@ converse.plugins.add('converse-chatboxes', {
                 return attrs;
             },
 
-            mayBeShown () {
-                return true;
+            maybeShow () {
+                // Returns the chatbox
+                return this.trigger("show");
             },
 
             isHidden () {
@@ -846,11 +847,7 @@ converse.plugins.add('converse-chatboxes', {
 
             onChatBoxesFetched (collection) {
                 /* Show chat boxes upon receiving them from sessionStorage */
-                collection.each(chatbox => {
-                    if (chatbox.mayBeShown()) {
-                        chatbox.trigger('show');
-                    }
-                });
+                collection.each(chatbox => chatbox.maybeShow());
                 /**
                  * Triggered when a message stanza is been received and processed.
                  * @event _converse#message
@@ -1106,7 +1103,7 @@ converse.plugins.add('converse-chatboxes', {
                 /**
                  * @method _converse.api.chats.create
                  * @param {string|string[]} jid|jids An jid or array of jids
-                 * @param {object} attrs An object containing configuration attributes.
+                 * @param {object} [attrs] An object containing configuration attributes.
                  */
                 'create' (jids, attrs) {
                     if (_.isUndefined(jids)) {
@@ -1129,7 +1126,7 @@ converse.plugins.add('converse-chatboxes', {
                     }
                     return _.map(jids, (jid) => {
                         attrs.fullname = _.get(_converse.api.contacts.get(jid), 'attributes.fullname');
-                        return _converse.chatboxes.getChatBox(jid, attrs, true).trigger('show');
+                        return _converse.chatboxes.getChatBox(jid, attrs, true).maybeShow();
                     });
                 },
 
@@ -1138,7 +1135,15 @@ converse.plugins.add('converse-chatboxes', {
                  *
                  * @method _converse.api.chats.open
                  * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-                 * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
+                 * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
+                 * @param {Boolean} [force=false] - By default, a minimized
+                 *   chat won't be maximized (in `overlayed` view mode) and in
+                 *   `fullscreen` view mode a newly opened chat won't replace
+                 *   another chat already in the foreground.
+                 *   Set `force` to `true` if you want to force the chat to be
+                 *   maximized or shown.
+                 * @returns {Promise} Promise which resolves with the
+                 *   _converse.ChatBox representing the chat.
                  *
                  * @example
                  * // To open a single chat, provide the JID of the contact you're chatting with in that chat:
@@ -1146,7 +1151,7 @@ converse.plugins.add('converse-chatboxes', {
                  *     initialize: function() {
                  *         var _converse = this._converse;
                  *         // Note, buddy@example.org must be in your contacts roster!
-                 *         _converse.api.chats.open('buddy@example.com').then((chat) => {
+                 *         _converse.api.chats.open('buddy@example.com').then(chat => {
                  *             // Now you can do something with the chat model
                  *         });
                  *     }
@@ -1158,14 +1163,13 @@ converse.plugins.add('converse-chatboxes', {
                  *     initialize: function () {
                  *         var _converse = this._converse;
                  *         // Note, these users must first be in your contacts roster!
-                 *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then((chats) => {
+                 *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then(chats => {
                  *             // Now you can do something with the chat models
                  *         });
                  *     }
                  * });
-                 *
                  */
-                'open' (jids, attrs) {
+                'open' (jids, attrs, force) {
                     return new Promise((resolve, reject) => {
                         Promise.all([
                             _converse.api.waitUntil('rosterContactsFetched'),
@@ -1176,9 +1180,9 @@ converse.plugins.add('converse-chatboxes', {
                                 _converse.log(err_msg, Strophe.LogLevel.ERROR);
                                 reject(new Error(err_msg));
                             } else if (_.isString(jids)) {
-                                resolve(_converse.api.chats.create(jids, attrs).trigger('show'));
+                                resolve(_converse.api.chats.create(jids, attrs).maybeShow(force));
                             } else {
-                                resolve(_.map(jids, (jid) => _converse.api.chats.create(jid, attrs).trigger('show')));
+                                resolve(_.map(jids, jid => _converse.api.chats.create(jid, attrs).maybeShow(force)));
                             }
                         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
                     });
@@ -1188,7 +1192,7 @@ converse.plugins.add('converse-chatboxes', {
                  * Returns a chat model. The chat should already be open.
                  *
                  * @method _converse.api.chats.get
-                 * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+                 * @param {String|string[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
                  * @returns {_converse.ChatBox}
                  *
                  * @example

@@ -69,9 +69,12 @@ converse.plugins.add('converse-minimize', {
                 });
             },
 
-            mayBeShown () {
-                return this.__super__.mayBeShown.apply(this, arguments) &&
-                       !this.get('minimized');
+            maybeShow (force) {
+                if (!force && this.get('minimized')) {
+                    // Must return the chatbox
+                    return this;
+                }
+                return this.__super__.maybeShow.apply(this, arguments);
             }
         },
 

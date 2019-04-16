@@ -1288,7 +1288,7 @@ converse.plugins.add('converse-chatview', {
                 this.focus();
             },
 
-            _show (f) {
+            _show () {
                 /* Inner show method that gets debounced */
                 if (u.isVisible(this.el)) {
                     this.focus();

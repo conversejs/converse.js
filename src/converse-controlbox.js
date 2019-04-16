@@ -138,9 +138,12 @@ converse.plugins.add('converse-controlbox', {
                 return this.__super__.validate.apply(this, arguments);
             },
 
-            mayBeShown () {
-                return this.__super__.mayBeShown.apply(this, arguments) &&
-                       this.get('id') !== 'controlbox';
+            maybeShow (force) {
+                if (!force && this.get('id') === 'controlbox') {
+                   // Must return the chatbox
+                   return this;
+                }
+                return this.__super__.maybeShow.apply(this, arguments);
             },
 
             initialize () {
@@ -573,7 +576,7 @@ converse.plugins.add('converse-controlbox', {
                     controlbox = addControlBox();
                 }
                 if (_converse.connection.connected) {
-                    controlbox.save({closed: false});
+                    controlbox.save({'closed': false});
                 } else {
                     controlbox.trigger('show');
                 }

@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.2.1 (Unreleased)
+## 5.0.0 (Unreleased)
 
 * Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
 * Bugfix: Modal auto-closes when you open it for a second time.
@@ -8,6 +8,13 @@
 * Hide the textarea when a user is muted in a groupchat.
 * #1296: `embedded` view mode shows `chatbox-navback` arrow in header  
 * #1532: Converse reloads on enter pressed in the filter box
+
+### API changes
+
+* `_converse.chats.open` and `_converse.rooms.open` now take a `force`
+  parameter to force maximizing (in `overlayed` view mode) or bringing a
+  background chat into the foreground (in `fullscreen` view mode). Previously
+  this was the default behavior.
 
 ## 4.2.0 (2019-04-04)
 

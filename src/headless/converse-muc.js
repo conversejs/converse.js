@@ -155,7 +155,7 @@ converse.plugins.add('converse-muc', {
             }
         }
 
-        _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
+        function openChatRoom (jid, settings) {
             /* Opens a groupchat, making sure that certain attributes
              * are correct, for example that the "type" is set to
              * "chatroom".
@@ -164,7 +164,7 @@ converse.plugins.add('converse-muc', {
             settings.id = jid;
             settings.box_id = b64_sha1(jid)
             const chatbox = _converse.chatboxes.getChatBox(jid, settings, true);
-            chatbox.trigger('show', true);
+            chatbox.maybeShow(true);
             return chatbox;
         }
 
@@ -1362,7 +1362,7 @@ converse.plugins.add('converse-muc', {
                 }
             }
             if (result === true) {
-                const chatroom = _converse.openChatRoom(room_jid, {'password': x_el.getAttribute('password') });
+                const chatroom = openChatRoom(room_jid, {'password': x_el.getAttribute('password') });
 
                 if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
                     // XXX: Leaky abstraction from views here
@@ -1555,6 +1555,12 @@ converse.plugins.add('converse-muc', {
                  * @param {boolean} [attrs.bring_to_foreground] A boolean indicating whether the room should be
                  *     brought to the foreground and therefore replace the currently shown chat.
                  *     If there is no chat currently open, then this option is ineffective.
+                 * @param {Boolean} [force=false] - By default, a minimized
+                 *   room won't be maximized (in `overlayed` view mode) and in
+                 *   `fullscreen` view mode a newly opened room won't replace
+                 *   another chat already in the foreground.
+                 *   Set `force` to `true` if you want to force the room to be
+                 *   maximized or shown.
                  *
                  * @example
                  * this._converse.api.rooms.open('group@muc.example.com')
@@ -1585,16 +1591,16 @@ converse.plugins.add('converse-muc', {
                  *     true
                  * );
                  */
-                'open': async function (jids, attrs) {
+                'open': async function (jids, attrs, force=false) {
                     await _converse.api.waitUntil('chatBoxesFetched');
                     if (_.isUndefined(jids)) {
                         const err_msg = 'rooms.open: You need to provide at least one JID';
                         _converse.log(err_msg, Strophe.LogLevel.ERROR);
                         throw(new TypeError(err_msg));
                     } else if (_.isString(jids)) {
-                        return _converse.api.rooms.create(jids, attrs).trigger('show');
+                        return _converse.api.rooms.create(jids, attrs).maybeShow(force);
                     } else {
-                        return _.map(jids, (jid) => _converse.api.rooms.create(jid, attrs).trigger('show'));
+                        return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).maybeShow(force));
                     }
                 },
 

@@ -219,7 +219,7 @@ converse.plugins.add('converse-roomslist', {
                 const data = {
                     'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
                 }
-                await _converse.api.rooms.open(jid, data);
+                await _converse.api.rooms.open(jid, data, true);
                 _converse.api.chatviews.get(jid).focus();
             },
 

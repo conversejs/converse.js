@@ -116,7 +116,7 @@ For example:
 Always enclose blocks in curly brackets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When writing an a block such as an ``if`` or ``while`` statement, always use
+When writing a block such as an ``if`` or ``while`` statement, always use
 curly brackets around that block of code. Even when not strictly required by
 the compiler (for example if its only one line inside the ``if`` statement).
 

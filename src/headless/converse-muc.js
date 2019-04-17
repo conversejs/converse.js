@@ -19,7 +19,7 @@ const MUC_ROLE_WEIGHTS = {
     'none':         2,
 };
 
-const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, f, moment, _ } = converse.env;
+const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, sizzle, f, moment, _ } = converse.env;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -162,7 +162,6 @@ converse.plugins.add('converse-muc', {
              */
             settings.type = _converse.CHATROOMS_TYPE;
             settings.id = jid;
-            settings.box_id = b64_sha1(jid)
             const chatbox = _converse.chatboxes.getChatBox(jid, settings, true);
             chatbox.maybeShow(true);
             return chatbox;
@@ -178,32 +177,42 @@ converse.plugins.add('converse-muc', {
         _converse.ChatRoom = _converse.ChatBox.extend({
 
             defaults () {
-                return _.assign(
-                    _.clone(_converse.ChatBox.prototype.defaults), {
-                      // For group chats, we distinguish between generally unread
-                      // messages and those ones that specifically mention the
-                      // user.
-                      //
-                      // To keep things simple, we reuse `num_unread` from
-                      // _converse.ChatBox to indicate unread messages which
-                      // mention the user and `num_unread_general` to indicate
-                      // generally unread messages (which *includes* mentions!).
-                      'num_unread_general': 0,
+                return {
+                    // For group chats, we distinguish between generally unread
+                    // messages and those ones that specifically mention the
+                    // user.
+                    //
+                    // To keep things simple, we reuse `num_unread` from
+                    // _converse.ChatBox to indicate unread messages which
+                    // mention the user and `num_unread_general` to indicate
+                    // generally unread messages (which *includes* mentions!).
+                    'num_unread_general': 0,
 
-                      'affiliation': null,
-                      'connection_status': converse.ROOMSTATUS.DISCONNECTED,
-                      'name': '',
-                      'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
-                      'description': '',
-                      'roomconfig': {},
-                      'type': _converse.CHATROOMS_TYPE,
-                      'message_type': 'groupchat'
-                    }
-                );
+                    'affiliation': null,
+                    'bookmarked': false,
+                    'chat_state': undefined,
+                    'connection_status': converse.ROOMSTATUS.DISCONNECTED,
+                    'description': '',
+                    'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode),
+                    'message_type': 'groupchat',
+                    'name': '',
+                    'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
+                    'num_unread': 0,
+                    'roomconfig': {},
+                    'time_opened': this.get('time_opened') || moment().valueOf(),
+                    'type': _converse.CHATROOMS_TYPE
+                }
             },
 
             initialize() {
-                this.constructor.__super__.initialize.apply(this, arguments);
+                if (_converse.vcards) {
+                    this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')}) ||
+                        _converse.vcards.create({'jid': this.get('jid')});
+                }
+                this.set('box_id', `box-${btoa(this.get('jid'))}`);
+
+                this.initMessages();
+                this.on('change:chat_state', this.sendChatState, this);
                 this.on('change:connection_status', this.onConnectionStatusChanged, this);
 
                 const storage = _converse.config.get('storage');
@@ -1391,7 +1400,6 @@ converse.plugins.add('converse-muc', {
             jid = jid.toLowerCase();
             attrs.type = _converse.CHATROOMS_TYPE;
             attrs.id = jid;
-            attrs.box_id = b64_sha1(jid)
             return _converse.chatboxes.getChatBox(jid, attrs, create);
         };
 

@@ -188,18 +188,18 @@ converse.plugins.add('converse-controlbox', {
         const addControlBox = () => _converse.chatboxes.add({'id': 'controlbox'});
 
         _converse.ControlBox = _converse.ChatBox.extend({
-            defaults: {
-                'bookmarked': false,
-                'box_id': 'controlbox',
-                'chat_state': undefined,
-                'closed': !_converse.show_controlbox_by_default,
-                'num_unread': 0,
-                'type': _converse.CONTROLBOX_TYPE,
-                'url': ''
-            },
 
-            initialize () {
-                u.safeSave(this, {'time_opened': this.get('time_opened') || moment().valueOf()});
+            defaults () {
+                return {
+                    'bookmarked': false,
+                    'box_id': 'controlbox',
+                    'chat_state': undefined,
+                    'closed': !_converse.show_controlbox_by_default,
+                    'num_unread': 0,
+                    'time_opened': this.get('time_opened') || moment().valueOf(),
+                    'type': _converse.CONTROLBOX_TYPE,
+                    'url': ''
+                }
             }
         });
 

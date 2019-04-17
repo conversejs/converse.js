@@ -9,7 +9,7 @@ import "./utils/form";
 import converse from "./converse-core";
 import filesize from "filesize";
 
-const { $msg, Backbone, Promise, Strophe, b64_sha1, moment, sizzle, utils, _ } = converse.env;
+const { $msg, Backbone, Promise, Strophe, moment, sizzle, utils, _ } = converse.env;
 const u = converse.env.utils;
 
 Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
@@ -59,10 +59,10 @@ converse.plugins.add('converse-chatboxes', {
         const ModelWithContact = Backbone.Model.extend({
 
             async setRosterContact (jid) {
-                await _converse.api.waitUntil('rosterContactsFetched');
-                const contact = _converse.roster.get(jid);
+                const contact = await _converse.api.contacts.get(jid);
                 if (contact) {
                     this.contact = contact;
+                    this.set('nickname', contact.get('nickname'));
                     this.trigger('rosterContactAdded');
                 }
             }
@@ -259,6 +259,7 @@ converse.plugins.add('converse-chatboxes', {
                     'message_type': 'chat',
                     'nickname': undefined,
                     'num_unread': 0,
+                    'time_opened': this.get('time_opened') || moment().valueOf(),
                     'type': _converse.PRIVATE_CHAT_TYPE,
                     'url': ''
                 }
@@ -276,42 +277,30 @@ converse.plugins.add('converse-chatboxes', {
                     // but we're in embedded mode.
                     return;
                 }
-                // XXX: this creates a dependency on converse-roster, which we
-                // probably shouldn't have here, so we should probably move
-                // ChatBox out of converse-chatboxes
-                this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
+                this.set({'box_id': `box-${btoa(jid)}`});
 
                 if (_converse.vcards) {
                     this.vcard = _converse.vcards.findWhere({'jid': jid}) || _converse.vcards.create({'jid': jid});
                 }
-
                 if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+                    this.presence = _converse.presences.findWhere({'jid': jid}) || _converse.presences.create({'jid': jid});
                     this.setRosterContact(jid);
                 }
+                this.on('change:chat_state', this.sendChatState, this);
+                this.initMessages();
+            },
 
+            initMessages () {
                 this.messages = new _converse.Messages();
                 const storage = _converse.config.get('storage');
                 this.messages.browserStorage = new Backbone.BrowserStorage[storage](
-                    b64_sha1(`converse.messages${jid}${_converse.bare_jid}`));
+                    `converse.messages${this.get('jid')}${_converse.bare_jid}`);
                 this.messages.chatbox = this;
 
                 this.messages.on('change:upload', (message) => {
                     if (message.get('upload') === _converse.SUCCESS) {
                         _converse.api.send(this.createMessageStanza(message));
                     }
-                });
-
-                this.on('change:chat_state', this.sendChatState, this);
-
-                // Models get saved immediately after creation, so no need to
-                // call `save` here.
-                this.set({
-                    // The chat_state will be set to ACTIVE once the chat box is opened
-                    // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
-                    'box_id' : b64_sha1(this.get('jid')),
-                    'time_opened': this.get('time_opened') || moment().valueOf(),
-                    'user_id' : Strophe.getNodeFromJid(this.get('jid')),
-                    'nickname':_.get(_converse.api.contacts.get(this.get('jid')), 'attributes.nickname')
                 });
             },
 
@@ -956,8 +945,7 @@ converse.plugins.add('converse-chatboxes', {
                       from_resource = Strophe.getResourceFromJid(from_jid),
                       is_me = from_bare_jid === _converse.bare_jid;
 
-                let contact_jid,
-                    is_roster_contact = false;
+                let contact_jid; 
                 if (is_me) {
                     // I am the sender, so this must be a forwarded message...
                     if (_.isNull(to_jid)) {
@@ -969,15 +957,17 @@ converse.plugins.add('converse-chatboxes', {
                     contact_jid = Strophe.getBareJidFromJid(to_jid);
                 } else {
                     contact_jid = from_bare_jid;
-                    await _converse.api.waitUntil('rosterContactsFetched');
-                    is_roster_contact = !_.isUndefined(_converse.roster.get(contact_jid));
-                    if (!is_roster_contact && !_converse.allow_non_roster_messaging) {
-                        return;
-                    }
                 }
+
+                const contact = await _converse.api.contacts.get(contact_jid);
+                const is_roster_contact = !_.isUndefined(contact);
+                if (!is_me && !is_roster_contact && !_converse.allow_non_roster_messaging) {
+                    return;
+                }
+
                 // Get chat box, but only create when the message has something to show to the user
                 const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0,
-                      roster_nick = _.get(_converse.api.contacts.get(contact_jid), 'attributes.nickname'),
+                      roster_nick = _.get(contact, 'attributes.nickname'),
                       chatbox = this.getChatBox(contact_jid, {'nickname': roster_nick}, has_body);
 
                 if (chatbox) {
@@ -1105,17 +1095,11 @@ converse.plugins.add('converse-chatboxes', {
                  * @param {string|string[]} jid|jids An jid or array of jids
                  * @param {object} [attrs] An object containing configuration attributes.
                  */
-                'create' (jids, attrs) {
-                    if (_.isUndefined(jids)) {
-                        _converse.log(
-                            "chats.create: You need to provide at least one JID",
-                            Strophe.LogLevel.ERROR
-                        );
-                        return null;
-                    }
+                async create (jids, attrs) {
                     if (_.isString(jids)) {
                         if (attrs && !_.get(attrs, 'fullname')) {
-                            attrs.fullname = _.get(_converse.api.contacts.get(jids), 'attributes.fullname');
+                            const contact = await _converse.api.contacts.get(jids);
+                            attrs.fullname = _.get(contact, 'attributes.fullname');
                         }
                         const chatbox = _converse.chatboxes.getChatBox(jids, attrs, true);
                         if (_.isNil(chatbox)) {
@@ -1124,10 +1108,18 @@ converse.plugins.add('converse-chatboxes', {
                         }
                         return chatbox;
                     }
-                    return _.map(jids, (jid) => {
-                        attrs.fullname = _.get(_converse.api.contacts.get(jid), 'attributes.fullname');
-                        return _converse.chatboxes.getChatBox(jid, attrs, true).maybeShow();
-                    });
+                    if (_.isArray(jids)) {
+                        return Promise.all(jids.forEach(async jid => {
+                            const contact = await _converse.api.contacts.get(jids);
+                            attrs.fullname = _.get(contact, 'attributes.fullname');
+                            return _converse.chatboxes.getChatBox(jid, attrs, true).maybeShow();
+                        }));
+                    }
+                    _converse.log(
+                        "chats.create: You need to provide at least one JID",
+                        Strophe.LogLevel.ERROR
+                    );
+                    return null;
                 },
 
                 /**
@@ -1136,6 +1128,8 @@ converse.plugins.add('converse-chatboxes', {
                  * @method _converse.api.chats.open
                  * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
                  * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
+                 * @param {Boolean} [attrs.minimized] - Should the chat be
+                 *   created in minimized state.
                  * @param {Boolean} [force=false] - By default, a minimized
                  *   chat won't be maximized (in `overlayed` view mode) and in
                  *   `fullscreen` view mode a newly opened chat won't replace
@@ -1169,23 +1163,21 @@ converse.plugins.add('converse-chatboxes', {
                  *     }
                  * });
                  */
-                'open' (jids, attrs, force) {
-                    return new Promise((resolve, reject) => {
-                        Promise.all([
-                            _converse.api.waitUntil('rosterContactsFetched'),
-                            _converse.api.waitUntil('chatBoxesFetched')
-                        ]).then(() => {
-                            if (_.isUndefined(jids)) {
-                                const err_msg = "chats.open: You need to provide at least one JID";
-                                _converse.log(err_msg, Strophe.LogLevel.ERROR);
-                                reject(new Error(err_msg));
-                            } else if (_.isString(jids)) {
-                                resolve(_converse.api.chats.create(jids, attrs).maybeShow(force));
-                            } else {
-                                resolve(_.map(jids, jid => _converse.api.chats.create(jid, attrs).maybeShow(force)));
-                            }
-                        }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-                    });
+                async open (jids, attrs, force) {
+                    await Promise.all([
+                        _converse.api.waitUntil('rosterContactsFetched'),
+                        _converse.api.waitUntil('chatBoxesFetched')
+                    ]);
+
+                    if (_.isString(jids)) {
+                        const chat = await _converse.api.chats.create(jids, attrs);
+                        return chat.maybeShow(force);
+                    } else if (_.isArray(jids)) {
+                        return Promise.all(jids.map(j => _converse.api.chats.create(j, attrs).then(c => c.maybeShow(force))));
+                    }
+                    const err_msg = "chats.open: You need to provide at least one JID";
+                    _converse.log(err_msg, Strophe.LogLevel.ERROR);
+                    throw new Error(err_msg);
                 },
 
                 /**
@@ -1208,7 +1200,7 @@ converse.plugins.add('converse-chatboxes', {
                  * const models = _converse.api.chats.get();
                  *
                  */
-                'get' (jids) {
+                get (jids) {
                     if (_.isUndefined(jids)) {
                         const result = [];
                         _converse.chatboxes.each(function (chatbox) {

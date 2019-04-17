@@ -241,9 +241,8 @@
 
                 await test_utils.waitForRoster(_converse, 'current');
                 const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                const chat = _converse.api.chats.create(sender_jid, {
-                    minimized: true
-                });
+                const chat = await _converse.api.chats.create(sender_jid, {'minimized': true});
+                await test_utils.waitUntil(() => _converse.chatboxes.length > 1);
                 const chatBoxView = _converse.chatboxviews.get(sender_jid);
                 expect(u.isVisible(chatBoxView.el)).toBeFalsy();
 
@@ -1389,7 +1388,7 @@
 
                 msg = test_utils.createChatMessage(_converse, sender_jid, 'This message will be unread too');
                 await _converse.chatboxes.onMessage(msg);
-                await test_utils.waitUntil(() => chatbox.messages.length > 1);
+                await test_utils.waitUntil(() => chatbox.messages.length === 2);
                 indicator_el = sizzle(selector, _converse.rosterview.el).pop();
                 expect(indicator_el.textContent).toBe('2');
                 done();

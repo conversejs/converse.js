@@ -163,7 +163,9 @@ converse.plugins.add('converse-chatview', {
                 this.model.on('change:status', this.onStatusMessageChanged, this);
 
                 this.debouncedRender = _.debounce(this.render, 50);
-                this.model.vcard.on('change', this.debouncedRender, this);
+                if (this.model.vcard) {
+                    this.model.vcard.on('change', this.debouncedRender, this);
+                }
                 this.model.on('rosterContactAdded', () => {
                     this.model.contact.on('change:nickname', this.debouncedRender, this);
                     this.debouncedRender();
@@ -171,9 +173,11 @@ converse.plugins.add('converse-chatview', {
             },
 
             render () {
+                const vcard = _.get(this.model, 'vcard'),
+                      vcard_json = vcard ? vcard.toJSON() : {};
                 this.el.innerHTML = tpl_chatbox_head(
                     _.extend(
-                        this.model.vcard.toJSON(),
+                        vcard_json,
                         this.model.toJSON(),
                         { '_converse': _converse,
                           'info_close': __('Close this chat box'),
@@ -213,7 +217,7 @@ converse.plugins.add('converse-chatview', {
 
             initialize () {
                 _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
-                this.model.on('contactAdded', this.registerContactEventHandlers, this);
+                this.model.on('rosterContactAdded', this.registerContactEventHandlers, this);
                 this.model.on('change', this.render, this);
                 this.registerContactEventHandlers();
                 /**
@@ -226,9 +230,11 @@ converse.plugins.add('converse-chatview', {
             },
 
             toHTML () {
+                const vcard = _.get(this.model, 'vcard'),
+                      vcard_json = vcard ? vcard.toJSON() : {};
                 return tpl_user_details_modal(_.extend(
                     this.model.toJSON(),
-                    this.model.vcard.toJSON(), {
+                    vcard_json, {
                     '_': _,
                     '__': __,
                     'view': this,
@@ -1380,10 +1386,10 @@ converse.plugins.add('converse-chatview', {
         });
 
         _converse.api.listen.on('chatBoxViewsInitialized', () => {
-            const that = _converse.chatboxviews;
+            const views = _converse.chatboxviews;
             _converse.chatboxes.on('add', item => {
-                if (!that.get(item.get('id')) && item.get('type') === _converse.PRIVATE_CHAT_TYPE) {
-                    that.add(item.get('id'), new _converse.ChatBoxView({model: item}));
+                if (!views.get(item.get('id')) && item.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+                    views.add(item.get('id'), new _converse.ChatBoxView({model: item}));
                 }
             });
         });
@@ -1421,7 +1427,7 @@ converse.plugins.add('converse-chatview', {
                 'get' (jids) {
                     if (_.isUndefined(jids)) {
                         _converse.log(
-                            "chats.create: You need to provide at least one JID",
+                            "chatviews.get: You need to provide at least one JID",
                             Strophe.LogLevel.ERROR
                         );
                         return null;

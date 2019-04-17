@@ -108,10 +108,11 @@ converse.plugins.add('converse-muc-views', {
         // configuration settings.
         _converse.api.settings.update({
             'auto_list_rooms': false,
+            'cache_muc_messages': true,
+            'locked_muc_domain': false,
+            'locked_muc_nickname': false,
             'muc_disable_moderator_commands': false,
             'muc_domain': undefined,
-            'locked_muc_nickname': false,
-            'locked_muc_domain': false,
             'muc_show_join_leave': true,
             'roomconfig_whitelist': [],
             'visible_toolbar_buttons': {
@@ -2130,7 +2131,7 @@ converse.plugins.add('converse-muc-views', {
             /* Upon a reconnection event from converse, join again
              * all the open groupchats.
              */
-            _converse.chatboxviews.each(function (view) {
+            _converse.chatboxviews.each(view => {
                 if (view.model.get('type') === _converse.CHATROOMS_TYPE) {
                     view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                     view.model.registerHandlers();

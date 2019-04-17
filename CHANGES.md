@@ -17,6 +17,7 @@
   this was the default behavior.
 - `_converse.api.emit` has been removed in favor of [\_converse.api.trigger](https://conversejs.org/docs/html/api/-_converse.api.html#.trigger)
 - `_converse.updateSettings` has been removed in favor of [\_converse.api.settings.update](https://conversejs.org/docs/html/api/-_converse.api.settings.html#.update)
+- `_converse.api.roster.get` now returns a promise.
 
 ## 4.2.0 (2019-04-04)
 

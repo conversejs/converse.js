@@ -5,7 +5,6 @@
  * Copyright (c) 2013-2018, JC Brand <jc@opkode.com>
  * Licensed under the Mozilla Public License
  */
-@import "font-awesome";
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/mixins";
@@ -38,7 +37,17 @@
     @import "bootstrap/scss/utilities";
 }
 
-@import "bourbon";
+@import "bourbon/app/assets/stylesheets/settings/prefixer";
+@import "bourbon/app/assets/stylesheets/settings/deprecation-warnings";
+@import "bourbon/app/assets/stylesheets/bourbon-deprecate";
+@import "bourbon/app/assets/stylesheets/bourbon-deprecated-upcoming";
+@import "bourbon/app/assets/stylesheets/css3/transform";
+@import "bourbon/app/assets/stylesheets/css3/animation";
+@import "bourbon/app/assets/stylesheets/css3/keyframes";
+@import "bourbon/app/assets/stylesheets/css3/user-select";
+@import "bourbon/app/assets/stylesheets/addons/prefixer";
+
+@import "font-awesome";
 @import "variables";
 
 @import "core";

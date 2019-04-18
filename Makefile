@@ -144,8 +144,8 @@ dev: stamp-npm
 .PHONY: css
 css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/font-awesome.css
 
-css/converse.css:: dev sass
-	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/converse.scss css/converse.css
+css/converse.css:: dev webpack.config.js sass
+	$(NPX)  webpack --type=css
 
 css/website.css:: dev sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
@@ -156,10 +156,6 @@ css/font-awesome.css:: dev sass
 css/%.min.css:: css/%.css
 	make dev
 	$(CLEANCSS) $< > $@
-
-.PHONY: watchcss
-watchcss: dev
-	$(SASS) --watch --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) -o ./css/ ./sass/
 
 .PHONY: watchjs
 watchjs: dev src/headless/dist/converse-headless.js

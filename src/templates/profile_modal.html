@@ -1,4 +1,4 @@
-<div class="modal fade" id="user-profile-modal" tabindex="-1" role="dialog" aria-labelledby="user-profile-modal-label" aria-hidden="true">
+<div class="modal" id="user-profile-modal" tabindex="-1" role="dialog" aria-labelledby="user-profile-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -17,7 +17,7 @@
                 </ul>
                 {[ } ]}
                 <div class="tab-content">
-                    <div class="tab-pane fade show active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="tab-pane active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">
                         <form class="converse-form converse-form--modal profile-form" action="#">
                             <div class="row">
                                 <div class="col-auto">
@@ -66,7 +66,7 @@
                         </form>
                     </div>
                     {[ if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ]}
-                        <div class="tab-pane fade" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
+                        <div class="tab-pane" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">
                             <form class="converse-form fingerprint-removal">
                                 <ul class="list-group fingerprints">
                                     <li class="list-group-item active">{{{o.__("This device's OMEMO fingerprint")}}}</li>

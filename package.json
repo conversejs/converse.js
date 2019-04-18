@@ -61,7 +61,7 @@
     "jasmine-core": "2.99.1",
     "jed": "1.1.1",
     "jsdoc": "^3.5.5",
-    "lerna": "^3.13.2",
+    "lerna": "^3.13.3",
     "lodash-template-loader": "^2.0.0",
     "lodash-template-webpack-loader": "jcbrand/lodash-template-webpack-loader",
     "long": "^3.1.0",
@@ -80,8 +80,8 @@
     "uglify-es": "^3.0.24",
     "urijs": "^1.19.1",
     "wait-until-promise": "^1.0.0",
-    "webpack": "^4.0.1",
-    "webpack-cli": "^2.1.4",
+    "webpack": "^4.28.1",
+    "webpack-cli": "^3.1.2",
     "xss": "^0.3.3"
   }
 }

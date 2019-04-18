@@ -3083,7 +3083,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.24 | © dnp_theme | MIT-License
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.26 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (true) {
     // AMD support:
@@ -3123,8 +3123,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     stringScrollSpy = 'ScrollSpy',
     stringTab       = 'Tab',
     stringTooltip   = 'Tooltip',
+    stringToast     = 'Toast',
   
     // options DATA API
+    dataAutohide      = 'data-autohide',
     databackdrop      = 'data-backdrop',
     dataKeyboard      = 'data-keyboard',
     dataTarget        = 'data-target',
@@ -3133,19 +3135,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     dataPause         = 'data-pause',
     dataTitle         = 'data-title',
     dataOriginalTitle = 'data-original-title',
-    dataOriginalText  = 'data-original-text',
     dataDismissible   = 'data-dismissible',
     dataTrigger       = 'data-trigger',
     dataAnimation     = 'data-animation',
     dataContainer     = 'data-container',
     dataPlacement     = 'data-placement',
     dataDelay         = 'data-delay',
-    dataOffsetTop     = 'data-offset-top',
-    dataOffsetBottom  = 'data-offset-bottom',
   
     // option keys
     backdrop = 'backdrop', keyboard = 'keyboard', delay = 'delay',
-    content = 'content', target = 'target',
+    content = 'content', target = 'target', currentTarget = 'currentTarget',
     interval = 'interval', pause = 'pause', animation = 'animation',
     placement = 'placement', container = 'container',
   
@@ -3161,6 +3160,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // aria
     ariaExpanded = 'aria-expanded',
     ariaHidden   = 'aria-hidden',
+    ariaSelected = 'aria-selected',
   
     // event names
     clickEvent    = 'click',
@@ -3230,6 +3230,9 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     transitionEndEvent = Webkit+Transition in HTML[style] ? Webkit[toLowerCase]()+Transition+'End' : Transition[toLowerCase]()+'end',
     transitionDuration = Webkit+Duration in HTML[style] ? Webkit[toLowerCase]()+Transition+Duration : Transition[toLowerCase]()+Duration,
   
+    // touch since 2.0.26
+    touchEvents = { start: 'touchstart', end: 'touchend', move:'touchmove' },
+  
     // set new focus element since 2.0.3
     setFocus = function(element){
       element.focus ? element.focus() : element.setActive();
@@ -3283,15 +3286,15 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       });
     },
     getTransitionDurationFromElement = function(element) {
-      var duration = globalObject[getComputedStyle](element)[transitionDuration];
+      var duration = supportTransitions ? globalObject[getComputedStyle](element)[transitionDuration] : 0;
       duration = parseFloat(duration);
       duration = typeof duration === 'number' && !isNaN(duration) ? duration * 1000 : 0;
-      return duration + 50; // we take a short offset to make sure we fire on the next frame after animation
+      return duration; // we take a short offset to make sure we fire on the next frame after animation
     },
     emulateTransitionEnd = function(element,handler){ // emulateTransitionEnd since 2.0.4
       var called = 0, duration = getTransitionDurationFromElement(element);
-      supportTransitions && one(element, transitionEndEvent, function(e){ handler(e); called = 1; });
-      setTimeout(function() { !called && handler(); }, duration);
+      duration ? one(element, transitionEndEvent, function(e){ !called && handler(e), called = 1; })
+               : setTimeout(function() { !called && handler(), called = 1; }, 17);
     },
     bootstrapCustomEvent = function (eventName, componentName, related) {
       var OriginalCustomEvent = new CustomEvent( eventName + '.bs.' + componentName);
@@ -3387,7 +3390,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       arrowLeft && (arrow[style][left] = arrowLeft + 'px');
     };
   
-  BSN.version = '2.0.24';
+  BSN.version = '2.0.26';
   
   /* Native Javascript for Bootstrap 4 | Alert
   -------------------------------------------*/
@@ -3624,8 +3627,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     this.show = function() {
       if ( accordion ) {
         activeCollapse = queryElement('.'+component+'.'+showClass,accordion);
-        activeElement = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
-                      || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) );
+        activeElement = activeCollapse && (queryElement('['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
+                      || queryElement('[href="#'+activeCollapse.id+'"]',accordion) );
       }
   
       if ( !collapse[isAnimating] || activeCollapse && !activeCollapse[isAnimating] ) {
@@ -3797,20 +3800,18 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // the modal (both JavaScript / DATA API init) / triggering button element (DATA API)
     element = queryElement(element);
   
-    // determine modal, triggering element
-    var btnCheck = element[getAttribute](dataTarget)||element[getAttribute]('href'),
-      checkModal = queryElement( btnCheck ),
-      modal = hasClass(element,'modal') ? element : checkModal,
-      overlayDelay,
-  
       // strings
-      component = 'modal',
-      staticString = 'static',
-      paddingLeft = 'paddingLeft',
-      paddingRight = 'paddingRight',
-      modalBackdropString = 'modal-backdrop';
-  
-    if ( hasClass(element,'modal') ) { element = null; } // modal is now independent of it's triggering element
+      var component = 'modal',
+        staticString = 'static',
+        modalTrigger = 'modalTrigger',
+        paddingRight = 'paddingRight',
+        modalBackdropString = 'modal-backdrop',
+        // determine modal, triggering element
+        btnCheck = element[getAttribute](dataTarget)||element[getAttribute]('href'),
+        checkModal = queryElement( btnCheck ),
+        modal = hasClass(element,component) ? element : checkModal;  
+    
+      if ( hasClass(element, component) ) { element = null; } // modal is now independent of it's triggering element
   
     if ( !modal ) { return; } // invalidate
   
@@ -3824,7 +3825,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
     // bind, constants, event targets and other vars
     var self = this, relatedTarget = null,
-      bodyIsOverflowing, modalIsOverflowing, scrollbarWidth, overlay,
+      bodyIsOverflowing, scrollBarWidth, overlay, overlayDelay,
   
       // also find fixed-top / fixed-bottom items
       fixedItems = getElementsByClassName(HTML,fixedTop).concat(getElementsByClassName(HTML,fixedBottom)),
@@ -3838,17 +3839,19 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         var bodyStyle = globalObject[getComputedStyle](DOC[body]),
             bodyPad = parseInt((bodyStyle[paddingRight]), 10), itemPad;
         if (bodyIsOverflowing) {
-          DOC[body][style][paddingRight] = (bodyPad + scrollbarWidth) + 'px';
+          DOC[body][style][paddingRight] = (bodyPad + scrollBarWidth) + 'px';
+          modal[style][paddingRight] = scrollBarWidth+'px';
           if (fixedItems[length]){
             for (var i = 0; i < fixedItems[length]; i++) {
               itemPad = globalObject[getComputedStyle](fixedItems[i])[paddingRight];
-              fixedItems[i][style][paddingRight] = ( parseInt(itemPad) + scrollbarWidth) + 'px';
+              fixedItems[i][style][paddingRight] = ( parseInt(itemPad) + scrollBarWidth) + 'px';
             }
           }
         }
       },
       resetScrollbar = function () {
         DOC[body][style][paddingRight] = '';
+        modal[style][paddingRight] = '';
         if (fixedItems[length]){
           for (var i = 0; i < fixedItems[length]; i++) {
             fixedItems[i][style][paddingRight] = '';
@@ -3856,25 +3859,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         }
       },
       measureScrollbar = function () { // thx walsh
-        var scrollDiv = DOC[createElement]('div'), scrollBarWidth;
+        var scrollDiv = DOC[createElement]('div'), widthValue;
         scrollDiv.className = component+'-scrollbar-measure'; // this is here to stay
         DOC[body][appendChild](scrollDiv);
-        scrollBarWidth = scrollDiv[offsetWidth] - scrollDiv[clientWidth];
+        widthValue = scrollDiv[offsetWidth] - scrollDiv[clientWidth];
         DOC[body].removeChild(scrollDiv);
-        return scrollBarWidth;
+        return widthValue;
       },
       checkScrollbar = function () {
         bodyIsOverflowing = DOC[body][clientWidth] < getWindowWidth();
-        modalIsOverflowing = modal[scrollHeight] > HTML[clientHeight];
-        scrollbarWidth = measureScrollbar();
-      },
-      adjustDialog = function () {
-        modal[style][paddingLeft] = !bodyIsOverflowing && modalIsOverflowing ? scrollbarWidth + 'px' : '';
-        modal[style][paddingRight] = bodyIsOverflowing && !modalIsOverflowing ? scrollbarWidth + 'px' : '';
-      },
-      resetAdjustments = function () {
-        modal[style][paddingLeft] = '';
-        modal[style][paddingRight] = '';
+        scrollBarWidth = measureScrollbar();
       },
       createOverlay = function() {
         modalOverlay = 1;        
@@ -3919,6 +3913,9 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       },
       // triggers
       triggerShow = function() {
+        resizeHandlerToggle();
+        dismissHandlerToggle();
+        keydownHandlerToggle();
         setFocus(modal);
         bootstrapCustomEvent.call(modal, shownEvent, component, relatedTarget);
       },
@@ -3928,7 +3925,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         
         (function(){
           if (!getElementsByClassName(DOC,component+' '+showClass)[0]) {
-            resetAdjustments();
             resetScrollbar();
             removeClass(DOC[body],component+'-open');
             overlay && hasClass(overlay,'fade') ? (removeClass(overlay,showClass), emulateTransitionEnd(overlay,removeOverlay)) 
@@ -3945,7 +3941,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         var clickTarget = e[target];
         clickTarget = clickTarget[hasAttribute](dataTarget) || clickTarget[hasAttribute]('href') ? clickTarget : clickTarget[parentNode];
         if ( clickTarget === element && !hasClass(modal,showClass) ) {
-          modal.modalTrigger = element;
+          modal[modalTrigger] = element;
           relatedTarget = element;
           self.show();
           e[preventDefault]();
@@ -3975,7 +3971,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
       // we elegantly hide any opened modal
       var currentOpen = getElementsByClassName(DOC,component+' '+showClass)[0];
-      currentOpen && currentOpen !== modal && currentOpen.modalTrigger[stringModal].hide();
+      if (currentOpen && currentOpen !== modal) {
+        modalTrigger in currentOpen && currentOpen[modalTrigger][stringModal].hide();
+        stringModal in currentOpen && currentOpen[stringModal].hide();
+      }
   
       if ( this[backdrop] ) {
         !modalOverlay && createOverlay();
@@ -3992,15 +3991,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
         checkScrollbar();
         setScrollbar();
-        adjustDialog();
   
         addClass(DOC[body],component+'-open');
         addClass(modal,showClass);
         modal[setAttribute](ariaHidden, false);
-        
-        resizeHandlerToggle();
-        dismissHandlerToggle();
-        keydownHandlerToggle();
   
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerShow) : triggerShow();
       }, supportTransitions && overlay ? overlayDelay : 0);
@@ -4024,7 +4018,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       if (hasClass(modal,showClass)) {
         checkScrollbar();
         setScrollbar();
-        adjustDialog();
       }
     };
   
@@ -4035,7 +4028,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       on(element, clickEvent, clickHandler);
     }
     if ( !!self[content] ) { self.setContent( self[content] ); }
-    !!element && (element[stringModal] = self);
+    if (element) { element[stringModal] = self; modal[modalTrigger] = element; }
+    else { modal[stringModal] = self; }
   };
   
   // DATA API
@@ -4069,7 +4063,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         classString = 'class',
         div = 'div',
         fade = 'fade',
-        content = 'content',
         dataContent = 'data-content',
         dismissible = 'dismissible',
         closeBtn = '<button type="button" class="close">×</button>',
@@ -4121,8 +4114,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         timer = null; popover = null; 
       },
       createPopover = function() {
-        titleString = element[getAttribute](dataTitle); // check content again
-        contentString = element[getAttribute](dataContent);
+        titleString = options.title || element[getAttribute](dataTitle) || null,
+        contentString = options.content || element[getAttribute](dataContent) || null;
   
         popover = DOC[createElement](div);
   
@@ -4333,10 +4326,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       },
       // handler 
       clickHandler = function(e) {
-        var href = e[target][getAttribute]('href');
         e[preventDefault]();
-        next = e[target][getAttribute](dataToggle) === component || (href && href.charAt(0) === '#')
-             ? e[target] : e[target][parentNode]; // allow for child elements like icons to use the handler
+        next = e[currentTarget];
         !tabs[isAnimating] && !hasClass(next,active) && self.show();
       };
   
@@ -4349,7 +4340,9 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       
       tabs[isAnimating] = true;
       removeClass(activeTab,active);
+      activeTab[setAttribute](ariaSelected,'false');
       addClass(next,active);
+      next[setAttribute](ariaSelected,'true');    
   
       if ( dropdown ) {
         if ( !hasClass(element[parentNode],'dropdown-menu') ) {
@@ -4378,6 +4371,108 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   // TAB DATA API
   // ============
   supports[push]( [ stringTab, Tab, '['+dataToggle+'="tab"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Toast
+  ---------------------------------------------*/
+  
+  // TOAST DEFINITION
+  // ==================
+  var Toast = function( element,options ) {
+  
+    // initialization element
+    element = queryElement(element);
+  
+    // set options
+    options = options || {};
+  
+    // DATA API
+    var animationData = element[getAttribute](dataAnimation),
+        autohideData = element[getAttribute](dataAutohide),
+        delayData = element[getAttribute](dataDelay),
+        
+        // strings
+        component = 'toast',
+        autohide = 'autohide',
+        animation = 'animation',
+        showing = 'showing',
+        hide = 'hide',
+        fade = 'fade';
+  
+    // set instance options
+    this[animation] = options[animation] === false || animationData === 'false' ? 0 : 1; // true by default
+    this[autohide] = options[autohide] === false || autohideData === 'false' ? 0 : 1; // true by default
+    this[delay] = parseInt(options[delay] || delayData) || 500; // 500ms default
+  
+    // bind,toast and timer
+    var self = this, timer = 0,
+        // get the toast element
+        toast = getClosest(element,'.toast');
+  
+    // private methods
+    // animation complete
+    var showComplete = function() {
+        removeClass( toast, showing );
+        addClass( toast, showClass );
+        bootstrapCustomEvent.call(toast, shownEvent, component);
+        if (self[autohide]) { self.hide(); }
+      },
+      hideComplete = function() {
+        addClass( toast, hide );
+        bootstrapCustomEvent.call(toast, hiddenEvent, component);
+      },
+      close = function() {
+        removeClass( toast,showClass );
+        self[animation] ? emulateTransitionEnd(toast, hideComplete) : hideComplete();
+      },
+      disposeComplete = function(){
+        clearTimeout(timer); timer = null;
+        addClass( toast, hide );
+        off(element, clickEvent, self.hide);
+        element[stringToast] = null;
+        element = null;
+        toast = null;
+      };
+  
+    // public methods
+    this.show = function() {
+      if (toast) {
+        bootstrapCustomEvent.call(toast, showEvent, component);
+        self[animation] && addClass( toast,fade );
+        removeClass( toast,hide );
+        addClass( toast,showing );
+  
+        self[animation] ? emulateTransitionEnd(toast, showComplete) : showComplete();
+      }
+    };
+    this.hide = function(noTimer) {
+      if (toast && hasClass(toast,showClass)) {
+        bootstrapCustomEvent.call(toast, hideEvent, component);
+  
+        if (noTimer) {
+          close();
+        } else {
+          timer = setTimeout( close, self[delay]);
+        }
+      }
+    };
+    this.dispose = function() {
+      if ( toast && hasClass(toast,showClass) ) {
+        removeClass( toast,showClass );
+        self[animation] ? emulateTransitionEnd(toast, disposeComplete) : disposeComplete();
+      }
+    };
+  
+    // init
+    if ( !(stringToast in element) ) { // prevent adding event handlers twice
+      on(element, clickEvent, self.hide);
+    }
+    element[stringToast] = self;
+  };
+  
+  // TOAST DATA API
+  // =================
+  supports[push]( [ stringToast, Toast, '['+dataDismiss+'="toast"]' ] );
   
   
   /* Native Javascript for Bootstrap 4 | Tooltip
@@ -4519,7 +4614,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
   
   
-  /* Native Javascript for Bootstrap 4 | Initialize Data API
+  /* Native Javascript for Bootstrap | Initialize Data API
   --------------------------------------------------------*/
   var initializeDataAPI = function( constructor, collection ){
       for (var i=0, l=collection[length]; i<l; i++) {
@@ -4544,6 +4639,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     Modal: Modal,
     Popover: Popover,
     Tab: Tab,
+    Toast: Toast,
     Tooltip: Tooltip
   };
 }));

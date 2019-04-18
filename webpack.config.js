@@ -73,6 +73,7 @@ const config = {
             use: {
                 loader: 'bootstrap.native-loader',
                 options: {
+                    bs_version: 4,
                     ignore: ['carousel', 'scrollspy']
                 }
             }

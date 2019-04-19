@@ -167,7 +167,7 @@ watchjsheadless: dev
 
 .PHONY: watch
 watch: dev
-	make -j 3 watchcss  watchjsheadless watchjs
+	make -j 2 watchjsheadless watchjs
 
 .PHONY: logo
 logo: logo/conversejs-transparent16.png \

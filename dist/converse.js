@@ -58186,7 +58186,8 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Promise = _converse$env.Promise,
       utils = _converse$env.utils,
       _ = _converse$env._,
-      moment = _converse$env.moment;
+      moment = _converse$env.moment,
+      sizzle = _converse$env.sizzle;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].env.utils;
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins.add('converse-profile', {
   dependencies: ["converse-modal", "converse-vcard", "converse-chatboxviews"],
@@ -58237,7 +58238,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
           'label_jid': __('XMPP Address (JID)'),
           'label_nickname': __('Nickname'),
           'label_role': __('Role'),
-          'label_role_help': __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.'),
+          'label_role_help': __('Use commas to separate multiple roles. ' + 'Your roles are shown next to your name on your chat messages.'),
           'label_url': __('URL'),
           'utils': u,
           'view': this
@@ -58245,7 +58246,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       },
 
       afterRender() {
-        this.tabs = _.map(this.el.querySelectorAll('.nav-item'), tab => new bootstrap_native__WEBPACK_IMPORTED_MODULE_3___default.a.Tab(tab));
+        this.tabs = sizzle('.nav-item .nav-link', this.el).map(e => new bootstrap_native__WEBPACK_IMPORTED_MODULE_3___default.a.Tab(e));
       },
 
       openFileSelection(ev) {

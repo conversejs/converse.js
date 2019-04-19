@@ -18,7 +18,7 @@ import tpl_profile_view from "templates/profile_view.html";
 import tpl_status_option from "templates/status_option.html";
 
 
-const { Strophe, Backbone, Promise, utils, _, moment } = converse.env;
+const { Strophe, Backbone, Promise, utils, _, moment, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -72,7 +72,9 @@ converse.plugins.add('converse-profile', {
                     'label_jid': __('XMPP Address (JID)'),
                     'label_nickname': __('Nickname'),
                     'label_role': __('Role'),
-                    'label_role_help': __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.'),
+                    'label_role_help': __(
+                        'Use commas to separate multiple roles. '+
+                        'Your roles are shown next to your name on your chat messages.'),
                     'label_url': __('URL'),
                     'utils': u,
                     'view': this
@@ -80,7 +82,7 @@ converse.plugins.add('converse-profile', {
             },
 
             afterRender () {
-                this.tabs = _.map(this.el.querySelectorAll('.nav-item'), (tab) => new bootstrap.Tab(tab));
+                this.tabs = sizzle('.nav-item .nav-link', this.el).map(e => new bootstrap.Tab(e));
             },
 
             openFileSelection (ev) {

@@ -40572,7 +40572,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
         const storage = _converse.config.get('storage');
 
-        this.messages.browserStorage = new Backbone.BrowserStorage[storage](`converse.messages${this.get('jid')}${_converse.bare_jid}`);
+        this.messages.browserStorage = new Backbone.BrowserStorage[storage](`converse.messages-${this.get('jid')}-${_converse.bare_jid}`);
         this.messages.chatbox = this;
         this.messages.on('change:upload', message => {
           if (message.get('upload') === _converse.SUCCESS) {

@@ -294,7 +294,7 @@ converse.plugins.add('converse-chatboxes', {
                 this.messages = new _converse.Messages();
                 const storage = _converse.config.get('storage');
                 this.messages.browserStorage = new Backbone.BrowserStorage[storage](
-                    `converse.messages${this.get('jid')}${_converse.bare_jid}`);
+                    `converse.messages-${this.get('jid')}-${_converse.bare_jid}`);
                 this.messages.chatbox = this;
 
                 this.messages.on('change:upload', (message) => {

@@ -42752,6 +42752,19 @@ _converse.initialize = async function (settings, callback) {
     _converse.resource = strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getResourceFromJid(_converse.connection.jid);
     _converse.domain = strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getDomainFromJid(_converse.connection.jid);
 
+    _converse.session.save({
+      'jid': _converse.connection.jid,
+      'bare_jid': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getBareJidFromJid(_converse.connection.jid),
+      'resource': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getResourceFromJid(_converse.connection.jid),
+      'domain': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getDomainFromJid(_converse.connection.jid)
+    });
+    /**
+     * Triggered once we have the user's full JID and it's been save in the
+     * session.
+     * @event _converse#setUserJID
+     */
+
+
     _converse.api.trigger('setUserJID');
   };
 

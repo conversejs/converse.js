@@ -1009,6 +1009,17 @@ _converse.initialize = async function (settings, callback) {
         _converse.bare_jid = Strophe.getBareJidFromJid(_converse.connection.jid);
         _converse.resource = Strophe.getResourceFromJid(_converse.connection.jid);
         _converse.domain = Strophe.getDomainFromJid(_converse.connection.jid);
+        _converse.session.save({
+            'jid': _converse.connection.jid,
+            'bare_jid': Strophe.getBareJidFromJid(_converse.connection.jid),
+            'resource': Strophe.getResourceFromJid(_converse.connection.jid),
+            'domain': Strophe.getDomainFromJid(_converse.connection.jid)
+        });
+        /**
+         * Triggered once we have the user's full JID and it's been save in the
+         * session.
+         * @event _converse#setUserJID
+         */
         _converse.api.trigger('setUserJID');
     };
 

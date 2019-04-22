@@ -6,6 +6,7 @@
 - Bugfix: Modal auto-closes when you open it for a second time.
 - Take roster nickname into consideration when rendering messages and chat headings.
 - Hide the textarea when a user is muted in a groupchat.
+- Don't restore a BOSH session without knowing the JID
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1532: Converse reloads on enter pressed in the filter box
 

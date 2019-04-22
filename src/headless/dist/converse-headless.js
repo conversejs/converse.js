@@ -42062,6 +42062,47 @@ _converse.initConnection = function () {
   _converse.api.trigger('connectionInitialized');
 };
 
+async function initSession() {
+  const id = 'converse.bosh-session';
+  _converse.session = new Backbone.Model({
+    id
+  });
+  _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
+
+  try {
+    await new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((success, error) => _converse.session.fetch({
+      success,
+      error
+    }));
+
+    if (_converse.jid && _converse.session.get('jid') !== _converse.jid) {
+      _converse.session.clear({
+        'silent': true
+      });
+
+      _converse.session.save({
+        'jid': _converse.jid,
+        id
+      });
+    }
+  } catch (e) {
+    if (_converse.jid) {
+      _converse.session.save({
+        'jid': _converse.jid
+      });
+    }
+  }
+  /**
+   * Triggered once the session has been initialized. The session is a
+   * persistent object which stores session information in the browser storage.
+   * @event _converse#sessionInitialized
+   * @memberOf _converse
+   */
+
+
+  _converse.api.trigger('sessionInitialized');
+}
+
 function setUpXMLLogging() {
   strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].log = function (level, msg) {
     _converse.log(msg, level);
@@ -42080,11 +42121,13 @@ function setUpXMLLogging() {
   };
 }
 
-function finishInitialization() {
+async function finishInitialization() {
   initClientConfig();
   initPlugins();
 
   _converse.initConnection();
+
+  await initSession();
 
   _converse.logIn();
 
@@ -42528,25 +42571,6 @@ _converse.initialize = async function (settings, callback) {
     }
   };
 
-  this.initSession = function () {
-    const id = 'converse.bosh-session';
-    _converse.session = new Backbone.Model({
-      id
-    });
-    _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
-
-    _converse.session.fetch();
-    /**
-     * Triggered once the session has been initialized. The session is a
-     * persistent object which stores session information in the browser storage.
-     * @event _converse#sessionInitialized
-     * @memberOf _converse
-     */
-
-
-    _converse.api.trigger('sessionInitialized');
-  };
-
   this.clearSession = function () {
     if (!_converse.config.get('trusted') || isTestEnv()) {
       window.localStorage.clear();
@@ -42740,8 +42764,6 @@ _converse.initialize = async function (settings, callback) {
 
     _converse.setUserJID();
 
-    _converse.initSession();
-
     _converse.enableCarbons();
 
     _converse.initStatus(reconnecting);
@@ -42898,25 +42920,29 @@ _converse.initialize = async function (settings, callback) {
 
   this.restoreBOSHSession = function (jid_is_required) {
     /* Tries to restore a cached BOSH session. */
-    if (!this.jid) {
+    const jid = _converse.session.get('jid');
+
+    if (!jid) {
       const msg = "restoreBOSHSession: tried to restore a \"keepalive\" session " + "but we don't have the JID for the user!";
 
       if (jid_is_required) {
         throw new Error(msg);
       } else {
         _converse.log(msg);
+
+        return false;
       }
-    }
+    } else {
+      try {
+        this.connection.restore(jid, this.onConnectStatusChanged);
+        return true;
+      } catch (e) {
+        _converse.log("Could not restore session for jid: " + jid + " Error message: " + e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.WARN);
 
-    try {
-      this.connection.restore(this.jid, this.onConnectStatusChanged);
-      return true;
-    } catch (e) {
-      _converse.log("Could not restore session for jid: " + this.jid + " Error message: " + e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.WARN);
+        this.clearSession(); // We want to clear presences (see #555)
 
-      this.clearSession(); // We want to clear presences (see #555)
-
-      return false;
+        return false;
+      }
     }
   };
 
@@ -43055,7 +43081,7 @@ _converse.initialize = async function (settings, callback) {
   }
 
   if (isTestEnv()) {
-    finishInitialization();
+    await finishInitialization();
     return _converse;
   } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"])) {
     const url = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
@@ -43069,7 +43095,7 @@ _converse.initialize = async function (settings, callback) {
     }
   }
 
-  finishInitialization();
+  await finishInitialization();
   return init_promise;
 };
 /**
@@ -44021,7 +44047,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       _converse.api.trigger('discoInitialized');
     }
 
-    _converse.api.listen.on('sessionInitialized', initStreamFeatures);
+    _converse.api.listen.on('setUserJID', initStreamFeatures);
 
     _converse.api.listen.on('reconnected', initializeDisco);
 
@@ -48461,7 +48487,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
       _converse.vcards.fetch();
     };
 
-    _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
+    _converse.api.listen.on('setUserJID', _converse.initVCardCollection);
 
     _converse.api.listen.on('statusInitialized', () => {
       const vcards = _converse.vcards;

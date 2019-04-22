@@ -424,6 +424,31 @@ _converse.initConnection = function () {
 }
 
 
+async function initSession () {
+   const id = 'converse.bosh-session';
+   _converse.session = new Backbone.Model({id});
+   _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
+   try {
+      await new Promise((success, error) => _converse.session.fetch({success, error}));
+      if (_converse.jid && _converse.session.get('jid') !== _converse.jid) {
+         _converse.session.clear({'silent': true});
+         _converse.session.save({'jid': _converse.jid, id});
+      }
+   } catch (e) {
+      if (_converse.jid) {
+         _converse.session.save({'jid': _converse.jid});
+      }
+   }
+   /**
+    * Triggered once the session has been initialized. The session is a
+    * persistent object which stores session information in the browser storage.
+    * @event _converse#sessionInitialized
+    * @memberOf _converse
+    */
+   _converse.api.trigger('sessionInitialized');
+}
+
+
 function setUpXMLLogging () {
     Strophe.log = function (level, msg) {
         _converse.log(msg, level);
@@ -441,10 +466,11 @@ function setUpXMLLogging () {
 }
 
 
-function finishInitialization () {
+async function finishInitialization () {
     initClientConfig();
     initPlugins();
     _converse.initConnection();
+    await initSession();
     _converse.logIn();
     _converse.registerGlobalEventHandlers();
     if (!Backbone.history.started) {
@@ -830,21 +856,6 @@ _converse.initialize = async function (settings, callback) {
         }
     }
 
-
-    this.initSession = function () {
-        const id = 'converse.bosh-session';
-        _converse.session = new Backbone.Model({id});
-        _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
-        _converse.session.fetch();
-        /**
-         * Triggered once the session has been initialized. The session is a
-         * persistent object which stores session information in the browser storage.
-         * @event _converse#sessionInitialized
-         * @memberOf _converse
-         */
-        _converse.api.trigger('sessionInitialized');
-    };
-
     this.clearSession = function () {
         if (!_converse.config.get('trusted') || isTestEnv()) {
             window.localStorage.clear();
@@ -1007,7 +1018,6 @@ _converse.initialize = async function (settings, callback) {
          */
         _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
         _converse.setUserJID();
-        _converse.initSession();
         _converse.enableCarbons();
         _converse.initStatus(reconnecting)
     };
@@ -1155,24 +1165,28 @@ _converse.initialize = async function (settings, callback) {
 
     this.restoreBOSHSession = function (jid_is_required) {
         /* Tries to restore a cached BOSH session. */
-        if (!this.jid) {
+        const jid = _converse.session.get('jid');
+        if (!jid) {
             const msg = "restoreBOSHSession: tried to restore a \"keepalive\" session "+
                 "but we don't have the JID for the user!";
             if (jid_is_required) {
                 throw new Error(msg);
             } else {
                 _converse.log(msg);
+                return false;
             }
         }
-        try {
-            this.connection.restore(this.jid, this.onConnectStatusChanged);
-            return true;
-        } catch (e) {
-            _converse.log(
-                "Could not restore session for jid: "+
-                this.jid+" Error message: "+e.message, Strophe.LogLevel.WARN);
-            this.clearSession(); // We want to clear presences (see #555)
-            return false;
+        else {
+            try {
+                this.connection.restore(jid, this.onConnectStatusChanged);
+                return true;
+            } catch (e) {
+                _converse.log(
+                    "Could not restore session for jid: "+
+                    jid+" Error message: "+e.message, Strophe.LogLevel.WARN);
+                this.clearSession(); // We want to clear presences (see #555)
+                return false;
+            }
         }
     };
 
@@ -1313,7 +1327,7 @@ _converse.initialize = async function (settings, callback) {
     }
 
     if (isTestEnv()) {
-        finishInitialization();
+        await finishInitialization();
         return _converse;
     } else if (!_.isUndefined(i18n)) {
         const url = u.interpolate(_converse.locales_url, {'locale': _converse.locale});
@@ -1323,7 +1337,7 @@ _converse.initialize = async function (settings, callback) {
             _converse.log(e.message, Strophe.LogLevel.FATAL);
         }
     }
-    finishInitialization();
+    await finishInitialization();
     return init_promise;
 };
 

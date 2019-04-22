@@ -133,7 +133,8 @@ require(['console-reporter', 'mock', 'sinon', 'wait-until-promise', 'pluggable']
     window.sessionStorage.clear();
     // Load the specs
     require(specs, function (jasmine) {
-        var jasmineEnv = jasmine.getEnv();
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000;
+        const jasmineEnv = jasmine.getEnv();
         jasmineEnv.addReporter(new ConsoleReporter());
         window.onload();
     });

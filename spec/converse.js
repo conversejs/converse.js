@@ -25,7 +25,8 @@
             }));
 
             describe("with prebind", function () {
-                it("needs a jid when also using keepalive", mock.initConverse((done, _converse) => {
+
+                it("needs a jid when also using keepalive", mock.initConverse([], null, {'auto_login': false}, (done, _converse) => {
                     const authentication = _converse.authentication;
                     const jid = _converse.jid;
                     delete _converse.jid;

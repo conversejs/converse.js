@@ -32809,6 +32809,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 //# sourceMappingURL=pluggable.js.map
 
+
 /***/ }),
 
 /***/ "./node_modules/process/browser.js":
@@ -49211,6 +49212,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     _converse.api.listen.on('clearSession', () => {
       if (!_.isUndefined(_converse.bookmarks)) {
+        _converse.bookmarks.reset();
+
         _converse.bookmarks.browserStorage._clear();
 
         window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
@@ -64103,6 +64106,10 @@ function addPromise(promise) {
   _converse.promises[promise] = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].getResolveablePromise();
 }
 
+function isTestEnv() {
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(_converse.connection, 'service') === 'jasmine tests';
+}
+
 _converse.isUniView = function () {
   /* We distinguish between UniView and MultiView instances.
    *
@@ -64264,35 +64271,16 @@ function cleanup() {
   // out or disconnecting in the previous session.
   // This happens in tests. We therefore first clean up.
   Backbone.history.stop();
-
-  if (_converse.chatboxviews) {
-    _converse.chatboxviews.closeAllChatBoxes();
-  }
-
   unregisterGlobalEventHandlers();
-  window.localStorage.clear();
-  window.sessionStorage.clear();
-
-  if (_converse.bookmarks) {
-    _converse.bookmarks.reset();
-  }
-
   delete _converse.controlboxtoggle;
 
   if (_converse.chatboxviews) {
     delete _converse.chatboxviews;
   }
 
-  _converse.connection.reset();
-
-  _converse.tearDown();
-
   _converse.stopListening();
 
   _converse.off();
-
-  delete _converse.config;
-  initClientConfig();
 }
 
 _converse.initialize = async function (settings, callback) {
@@ -64514,7 +64502,7 @@ _converse.initialize = async function (settings, callback) {
     'leading': true
   });
 
-  this.disconnect = function () {
+  this.finishDisconnection = function () {
     _converse.log('DISCONNECTED');
 
     delete _converse.connection.reconnecting;
@@ -64551,10 +64539,10 @@ _converse.initialize = async function (settings, callback) {
 
         return _converse.reconnect();
       } else {
-        return _converse.disconnect();
+        return _converse.finishDisconnection();
       }
     } else if (_converse.disconnection_cause === _converse.LOGOUT || !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(reason) && reason === _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"], 'ErrorCondition.NO_AUTH_MECH') || reason === "host-unknown" || reason === "remote-connection-failed" || !_converse.auto_reconnect) {
-      return _converse.disconnect();
+      return _converse.finishDisconnection();
     }
     /**
      * Triggered when the connection has dropped, but Converse will attempt
@@ -64719,11 +64707,13 @@ _converse.initialize = async function (settings, callback) {
   };
 
   this.clearSession = function () {
-    if (!_converse.config.get('trusted')) {
+    if (!_converse.config.get('trusted') || isTestEnv()) {
       window.localStorage.clear();
       window.sessionStorage.clear();
-    } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(this.session) && this.session.browserStorage) {
-      this.session.browserStorage._clear();
+    } else {
+      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(_converse, 'session.browserStorage', {
+        '_clear': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop
+      })._clear();
     }
     /**
      * Triggered once the session information has been cleared,
@@ -65161,7 +65151,7 @@ _converse.initialize = async function (settings, callback) {
 
       if (!password) {
         if (this.auto_login) {
-          throw new Error("initConnection: If you use auto_login and " + "authentication='login' then you also need to provide a password.");
+          throw new Error("autoLogin: If you use auto_login and " + "authentication='login' then you also need to provide a password.");
         }
 
         _converse.setDisconnectionCause(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Status.AUTHFAIL, undefined, true);
@@ -65223,7 +65213,7 @@ _converse.initialize = async function (settings, callback) {
     this.connection = settings.connection;
   }
 
-  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(_converse.connection, 'service') === 'jasmine tests') {
+  if (isTestEnv()) {
     finishInitialization();
     return _converse;
   } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"])) {
@@ -65280,7 +65270,13 @@ _converse.api = {
      * @memberOf _converse.api.connection
      */
     'disconnect'() {
-      _converse.connection.disconnect();
+      if (_converse.connection) {
+        _converse.connection.disconnect();
+      } else {
+        _converse.tearDown();
+
+        _converse.clearSession();
+      }
     }
 
   },

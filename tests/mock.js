@@ -154,6 +154,12 @@
                 c.jid = 'dummy@localhost/resource';
                 c._changeConnectStatus(Strophe.Status.CONNECTED);
             };
+
+            c._proto._disconnect = function () {
+                c._onDisconnectTimeout();
+            }
+
+            c._proto._onDisconnectTimeout = _.noop;
             return c;
         };
     }();
@@ -241,9 +247,13 @@
         }
         return async done => {
             const _converse = await initConverse(settings, spies);
+            function _done () {
+                _converse.api.user.logout();
+                done();
+            }
             const promises = _.map(promise_names, _converse.api.waitUntil);
             await Promise.all(promises);
-            func(done, _converse);
+            func(_done, _converse);
         }
     };
     return mock;

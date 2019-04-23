@@ -493,8 +493,7 @@ function fetchLoginCredentials () {
              const data = JSON.parse(xhr.responseText);
              resolve({
                 'jid': data.jid,
-                'password': data.password,
-                'nickname': data.nickname
+                'password': data.password
              });
           } else {
              xhr.onerror({});
@@ -1252,9 +1251,6 @@ _converse.initialize = async function (settings, callback) {
                    _converse.log("Could not fetch login credentials", Strophe.LogLevel.ERROR);
                    _converse.log(e, Strophe.LogLevel.ERROR);
                 } finally {
-                   if (_.get(data, 'nickname')) {
-                      _converse.nickname = data.nickname;
-                   }
                    this.autoLogin(data);
                 }
             } else if (!this.jid) {

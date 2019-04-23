@@ -42155,8 +42155,7 @@ function fetchLoginCredentials() {
         const data = JSON.parse(xhr.responseText);
         resolve({
           'jid': data.jid,
-          'password': data.password,
-          'nickname': data.nickname
+          'password': data.password
         });
       } else {
         xhr.onerror({});
@@ -43010,10 +43009,6 @@ _converse.initialize = async function (settings, callback) {
 
           _converse.log(e, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
         } finally {
-          if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(data, 'nickname')) {
-            _converse.nickname = data.nickname;
-          }
-
           this.autoLogin(data);
         }
       } else if (!this.jid) {

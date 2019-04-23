@@ -42144,6 +42144,36 @@ async function finishInitialization() {
   }
 }
 
+function fetchLoginCredentials() {
+  new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', _converse.credentials_url, true);
+    xhr.setRequestHeader('Accept', "application/json, text/javascript");
+
+    xhr.onload = function () {
+      if (xhr.status >= 200 && xhr.status < 400) {
+        const data = JSON.parse(xhr.responseText);
+        resolve({
+          'jid': data.jid,
+          'password': data.password
+        });
+      } else {
+        xhr.onerror();
+      }
+    };
+
+    xhr.onerror = function () {
+      delete _converse.connection;
+
+      _converse.api.trigger('noResumeableSession', this);
+
+      reject(xhr.responseText);
+    };
+
+    xhr.send();
+  });
+}
+
 function unregisterGlobalEventHandlers() {
   document.removeEventListener("visibilitychange", _converse.saveWindowState);
 
@@ -42873,34 +42903,6 @@ _converse.initialize = async function (settings, callback) {
 
   });
 
-  this.fetchLoginCredentials = () => new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', _converse.credentials_url, true);
-    xhr.setRequestHeader('Accept', "application/json, text/javascript");
-
-    xhr.onload = function () {
-      if (xhr.status >= 200 && xhr.status < 400) {
-        const data = JSON.parse(xhr.responseText);
-        resolve({
-          'jid': data.jid,
-          'password': data.password
-        });
-      } else {
-        xhr.onerror();
-      }
-    };
-
-    xhr.onerror = function () {
-      delete _converse.connection;
-
-      _converse.api.trigger('noResumeableSession', this);
-
-      reject(xhr.responseText);
-    };
-
-    xhr.send();
-  });
-
   this.startNewBOSHSession = function () {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', _converse.prebind_url, true);
@@ -42998,7 +43000,7 @@ _converse.initialize = async function (settings, callback) {
       this.autoLogin(credentials);
     } else if (this.auto_login) {
       if (this.credentials_url) {
-        this.fetchLoginCredentials().then(this.autoLogin.bind(this), this.autoLogin.bind(this));
+        fetchLoginCredentials().then(this.autoLogin.bind(this), this.autoLogin.bind(this));
       } else if (!this.jid) {
         throw new Error("attemptNonPreboundSession: If you use auto_login, " + "you also need to give either a jid value (and if " + "applicable a password) or you need to pass in a URL " + "from where the username and password can be fetched " + "(via credentials_url).");
       } else {

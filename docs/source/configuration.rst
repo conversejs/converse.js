@@ -572,7 +572,13 @@ The server behind ``credentials_url`` should return a JSON encoded object::
     {
         "jid": "me@example.com/resource",
         "password": "Ilikecats!"
+        "nickname": "catlover"
     }
+
+The ``nickname`` value is optional. If it's returned, then it's treated
+as equivalent to passing :ref:`nickname` to ``converse.initialize`` and will
+override any ``nickname`` value that might have already been passed in to
+``converse.initialize``.
 
 
 csi_waiting_time
@@ -1061,6 +1067,8 @@ muc_show_join_leave
 
 Determines whether Converse will show info messages inside a chatroom
 whenever a user joins or leaves it.
+
+.. _`nickname`:
 
 nickname
 --------

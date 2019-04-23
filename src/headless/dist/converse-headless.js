@@ -42145,7 +42145,7 @@ async function finishInitialization() {
 }
 
 function fetchLoginCredentials() {
-  new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
+  return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', _converse.credentials_url, true);
     xhr.setRequestHeader('Accept', "application/json, text/javascript");
@@ -42155,10 +42155,11 @@ function fetchLoginCredentials() {
         const data = JSON.parse(xhr.responseText);
         resolve({
           'jid': data.jid,
-          'password': data.password
+          'password': data.password,
+          'nickname': data.nickname
         });
       } else {
-        xhr.onerror();
+        xhr.onerror({});
       }
     };
 
@@ -42167,7 +42168,7 @@ function fetchLoginCredentials() {
 
       _converse.api.trigger('noResumeableSession', this);
 
-      reject(xhr.responseText);
+      reject(new Error(xhr.responseText));
     };
 
     xhr.send();
@@ -42983,7 +42984,7 @@ _converse.initialize = async function (settings, callback) {
     }
   };
 
-  this.attemptNonPreboundSession = function (credentials, reconnecting) {
+  this.attemptNonPreboundSession = async function (credentials, reconnecting) {
     /* Handle session resumption or initialization when prebind is not being used.
      *
      * Two potential options exist and are handled in this method:
@@ -43000,7 +43001,21 @@ _converse.initialize = async function (settings, callback) {
       this.autoLogin(credentials);
     } else if (this.auto_login) {
       if (this.credentials_url) {
-        fetchLoginCredentials().then(this.autoLogin.bind(this), this.autoLogin.bind(this));
+        let data = {};
+
+        try {
+          data = await fetchLoginCredentials();
+        } catch (e) {
+          _converse.log("Could not fetch login credentials", strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
+
+          _converse.log(e, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
+        } finally {
+          if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(data, 'nickname')) {
+            _converse.nickname = data.nickname;
+          }
+
+          this.autoLogin(data);
+        }
       } else if (!this.jid) {
         throw new Error("attemptNonPreboundSession: If you use auto_login, " + "you also need to give either a jid value (and if " + "applicable a password) or you need to pass in a URL " + "from where the username and password can be fetched " + "(via credentials_url).");
       } else {

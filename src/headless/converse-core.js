@@ -484,25 +484,26 @@ async function finishInitialization () {
 }
 
 function fetchLoginCredentials () {
-   new Promise((resolve, reject) => {
+   return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('GET', _converse.credentials_url, true);
       xhr.setRequestHeader('Accept', "application/json, text/javascript");
       xhr.onload = function() {
-            if (xhr.status >= 200 && xhr.status < 400) {
-               const data = JSON.parse(xhr.responseText);
-               resolve({
-                  'jid': data.jid,
-                  'password': data.password
-               });
-            } else {
-               xhr.onerror();
-            }
+          if (xhr.status >= 200 && xhr.status < 400) {
+             const data = JSON.parse(xhr.responseText);
+             resolve({
+                'jid': data.jid,
+                'password': data.password,
+                'nickname': data.nickname
+             });
+          } else {
+             xhr.onerror({});
+          }
       };
       xhr.onerror = function () {
-            delete _converse.connection;
-            _converse.api.trigger('noResumeableSession', this);
-            reject(xhr.responseText);
+          delete _converse.connection;
+          _converse.api.trigger('noResumeableSession', this);
+          reject(new Error(xhr.responseText));
       };
       xhr.send();
    });
@@ -1227,7 +1228,7 @@ _converse.initialize = async function (settings, callback) {
         }
     };
 
-    this.attemptNonPreboundSession = function (credentials, reconnecting) {
+    this.attemptNonPreboundSession = async function (credentials, reconnecting) {
         /* Handle session resumption or initialization when prebind is not being used.
          *
          * Two potential options exist and are handled in this method:
@@ -1244,10 +1245,18 @@ _converse.initialize = async function (settings, callback) {
             this.autoLogin(credentials);
         } else if (this.auto_login) {
             if (this.credentials_url) {
-                fetchLoginCredentials().then(
-                    this.autoLogin.bind(this),
-                    this.autoLogin.bind(this)
-                );
+                let data = {};
+                try {
+                    data = await fetchLoginCredentials();
+                } catch (e) {
+                   _converse.log("Could not fetch login credentials", Strophe.LogLevel.ERROR);
+                   _converse.log(e, Strophe.LogLevel.ERROR);
+                } finally {
+                   if (_.get(data, 'nickname')) {
+                      _converse.nickname = data.nickname;
+                   }
+                   this.autoLogin(data);
+                }
             } else if (!this.jid) {
                 throw new Error(
                     "attemptNonPreboundSession: If you use auto_login, "+

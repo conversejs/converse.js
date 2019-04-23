@@ -188,9 +188,7 @@ function parameterize () {
     if (type === 'css') {
         console.log("Building only CSS");
         const fn = config.output.filename;
-        config.output.filename = `${fn.replace(/\.js$/, '')}.css`;
         config.entry = path.resolve(__dirname, 'sass/converse.scss');
-        config.output = {filename: '../css/converse.css'};
     }
 
     if (mode === 'production') {

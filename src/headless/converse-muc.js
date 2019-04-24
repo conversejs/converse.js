@@ -147,7 +147,7 @@ converse.plugins.add('converse-muc', {
                 throw new Error(
                     "Can't call _converse.getDefaultMUCNickname before the statusInitialized has been fired.");
             }
-            const nick = _converse.nickname || _converse.vcards ? _converse.xmppstatus.vcard.get('nickname') : undefined;
+            const nick = _converse.nickname || (_converse.vcards ? _converse.xmppstatus.vcard.get('nickname') : undefined);
             if (nick) {
                 return nick;
             } else if (_converse.muc_nickname_from_jid) {

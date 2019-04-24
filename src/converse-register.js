@@ -499,7 +499,7 @@ converse.plugins.add('converse-register', {
                     _.each(stanza.querySelectorAll('field'), (field) => {
                         buttons.insertAdjacentHTML(
                             'beforebegin',
-                            utils.xForm2webForm(field, stanza, this.domain)
+                            utils.xForm2webForm(field, stanza, {'domain': this.domain})
                         );
                     });
                 } else {

@@ -299,7 +299,6 @@
 
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 spyOn(view, 'join').and.callThrough();
-                spyOn(view, 'submitNickname').and.callThrough();
 
                 /* <iq to="myroom@conference.chat.example.org"
                  *     from="jordie.langen@chat.example.org/converse.js-11659299"
@@ -336,7 +335,6 @@
                 const input = await test_utils.waitUntil(() => view.el.querySelector('input[name="nick"]'));
                 input.value = 'nicky';
                 view.el.querySelector('input[type=submit]').click();
-                expect(view.submitNickname).toHaveBeenCalled();
                 expect(view.join).toHaveBeenCalled();
 
                 // The user has just entered the room (because join was called)
@@ -3455,7 +3453,7 @@
                 const view = _converse.chatboxviews.get(groupchat_jid);
                 spyOn(view, 'renderPasswordForm').and.callThrough();
 
-                var presence = $pres().attrs({
+                const presence = $pres().attrs({
                         'from': `${groupchat_jid}/dummy`,
                         'id': u.getUniqueId(),
                         'to': 'dummy@localhost/pda',
@@ -3469,7 +3467,7 @@
                 const chat_body = view.el.querySelector('.chatroom-body');
                 expect(view.renderPasswordForm).toHaveBeenCalled();
                 expect(chat_body.querySelectorAll('form.chatroom-form').length).toBe(1);
-                expect(chat_body.querySelector('legend').textContent)
+                expect(chat_body.querySelector('label').textContent)
                     .toBe('This groupchat requires a password');
 
                 // Let's submit the form

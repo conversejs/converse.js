@@ -48173,42 +48173,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       renderBookmarkForm() {
-        const _converse = this.__super__._converse,
-              __ = _converse.__,
-              body = this.el.querySelector('.chatroom-body');
+        this.hideChatRoomContents();
 
-        _.each(body.children, child => child.classList.add('hidden'));
+        if (!this.bookmark_form) {
+          const _converse = this.__super__._converse;
+          this.bookmark_form = new _converse.MUCBookmarkForm({
+            'model': this.model,
+            'chatroomview': this
+          });
+          const container_el = this.el.querySelector('.chatroom-body');
+          container_el.insertAdjacentElement('beforeend', this.bookmark_form.el);
+        }
 
-        _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
-
-        body.insertAdjacentHTML('beforeend', templates_chatroom_bookmark_form_html__WEBPACK_IMPORTED_MODULE_4___default()({
-          'default_nick': this.model.get('nick'),
-          'heading': __('Bookmark this groupchat'),
-          'label_autojoin': __('Would you like this groupchat to be automatically joined upon startup?'),
-          'label_cancel': __('Cancel'),
-          'label_name': __('The name for this bookmark:'),
-          'label_nick': __('What should your nickname for this groupchat be?'),
-          'label_submit': __('Save'),
-          'name': this.model.get('name')
-        }));
-        const form = body.querySelector('form.chatroom-form');
-        form.addEventListener('submit', ev => this.onBookmarkFormSubmitted(ev));
-        form.querySelector('.button-cancel').addEventListener('click', () => this.closeForm());
-      },
-
-      onBookmarkFormSubmitted(ev) {
-        ev.preventDefault();
-        const _converse = this.__super__._converse;
-
-        _converse.bookmarks.createBookmark({
-          'jid': this.model.get('jid'),
-          'autojoin': _.get(ev.target.querySelector('input[name="autojoin"]'), 'checked') || false,
-          'name': _.get(ev.target.querySelector('input[name=name]'), 'value'),
-          'nick': _.get(ev.target.querySelector('input[name=nick]'), 'value')
-        });
-
-        u.removeElement(this.el.querySelector('div.chatroom-form-container'));
-        this.renderAfterTransition();
+        u.showElement(this.bookmark_form.el);
       },
 
       toggleBookmark(ev) {
@@ -48461,6 +48438,50 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
             return deferred.reject(new Error("Could not fetch bookmarks"));
           }
         }
+      }
+
+    });
+    _converse.MUCBookmarkForm = Backbone.VDOMView.extend({
+      className: 'muc-bookmark-form',
+      events: {
+        'submit form': 'onBookmarkFormSubmitted',
+        'click .button-cancel': 'closeBookmarkForm'
+      },
+
+      initialize(attrs) {
+        this.chatroomview = attrs.chatroomview;
+        this.render();
+      },
+
+      toHTML() {
+        return templates_chatroom_bookmark_form_html__WEBPACK_IMPORTED_MODULE_4___default()({
+          'default_nick': this.model.get('nick'),
+          'heading': __('Bookmark this groupchat'),
+          'label_autojoin': __('Would you like this groupchat to be automatically joined upon startup?'),
+          'label_cancel': __('Cancel'),
+          'label_name': __('The name for this bookmark:'),
+          'label_nick': __('What should your nickname for this groupchat be?'),
+          'label_submit': __('Save'),
+          'name': this.model.get('name')
+        });
+      },
+
+      onBookmarkFormSubmitted(ev) {
+        ev.preventDefault();
+
+        _converse.bookmarks.createBookmark({
+          'jid': this.model.get('jid'),
+          'autojoin': _.get(ev.target.querySelector('input[name="autojoin"]'), 'checked') || false,
+          'name': _.get(ev.target.querySelector('input[name=name]'), 'value'),
+          'nick': _.get(ev.target.querySelector('input[name=nick]'), 'value')
+        });
+
+        this.closeBookmarkForm(ev);
+      },
+
+      closeBookmarkForm(ev) {
+        ev.preventDefault();
+        this.chatroomview.closeForm();
       }
 
     });
@@ -53955,6 +53976,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       initialize() {
         this.initDebounced();
+        this.validation_messages = new Backbone.Model();
         this.model.messages.on('add', this.onMessageAdded, this);
         this.model.messages.on('rendered', this.scrollDown, this);
         this.model.on('change:affiliation', this.renderHeading, this);
@@ -54651,6 +54673,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           return this;
         }
 
+        this.showSpinner();
         this.model.join(nick, password);
         return this;
       },
@@ -54665,54 +54688,27 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
        * @param { XMLElement } stanza: The IQ stanza containing the groupchat config.
        */
       renderConfigurationForm(stanza) {
-        const container_el = this.el.querySelector('.chatroom-body');
+        this.hideChatRoomContents();
+        this.model.save('config_stanza', stanza.outerHTML);
 
-        _.each(container_el.querySelectorAll('.chatroom-form-container'), u.removeElement);
-
-        _.each(container_el.children, u.hideElement);
-
-        container_el.insertAdjacentHTML('beforeend', templates_chatroom_form_html__WEBPACK_IMPORTED_MODULE_15___default()());
-
-        const form_el = container_el.querySelector('form.chatroom-form'),
-              fieldset_el = form_el.querySelector('fieldset'),
-              fields = stanza.querySelectorAll('field'),
-              title = _.get(stanza.querySelector('title'), 'textContent'),
-              instructions = _.get(stanza.querySelector('instructions'), 'textContent');
-
-        u.removeElement(fieldset_el.querySelector('span.spinner'));
-        fieldset_el.insertAdjacentHTML('beforeend', `<legend>${title}</legend>`);
-
-        if (instructions && instructions !== title) {
-          fieldset_el.insertAdjacentHTML('beforeend', `<p class="form-help">${instructions}</p>`);
+        if (!this.config_form) {
+          const _converse = this.__super__._converse;
+          this.config_form = new _converse.MUCConfigForm({
+            'model': this.model,
+            'chatroomview': this
+          });
+          const container_el = this.el.querySelector('.chatroom-body');
+          container_el.insertAdjacentElement('beforeend', this.config_form.el);
         }
 
-        _.each(fields, field => {
-          if (_converse.roomconfig_whitelist.length === 0 || _.includes(_converse.roomconfig_whitelist, field.getAttribute('var'))) {
-            fieldset_el.insertAdjacentHTML('beforeend', u.xForm2webForm(field, stanza));
-          }
-        }); // Render save/cancel buttons
-
-
-        const last_fieldset_el = document.createElement('fieldset');
-        last_fieldset_el.insertAdjacentHTML('beforeend', `<input type="submit" class="btn btn-primary" value="${__('Save')}"/>`);
-        last_fieldset_el.insertAdjacentHTML('beforeend', `<input type="button" class="btn btn-secondary" value="${__('Cancel')}"/>`);
-        form_el.insertAdjacentElement('beforeend', last_fieldset_el);
-        last_fieldset_el.querySelector('input[type=button]').addEventListener('click', ev => {
-          ev.preventDefault();
-          this.closeForm();
-        });
-        form_el.addEventListener('submit', ev => {
-          ev.preventDefault();
-          this.model.saveConfiguration(ev.target).then(() => this.model.refreshRoomFeatures());
-          this.closeForm();
-        }, false);
+        u.showElement(this.config_form.el);
       },
 
       closeForm() {
         /* Remove the configuration form without submitting and
          * return to the chat view.
          */
-        u.removeElement(this.el.querySelector('.chatroom-form-container'));
+        sizzle('.chatroom-form-container', this.el).forEach(e => u.addClass('hidden', e));
         this.renderAfterTransition();
       },
 
@@ -54733,25 +54729,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          */
         this.showSpinner();
         this.model.fetchRoomConfiguration().then(iq => this.renderConfigurationForm(iq)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-      },
-
-      submitNickname(ev) {
-        /* Get the nickname value from the form and then join the
-         * groupchat with it.
-         */
-        ev.preventDefault();
-        const nick_el = ev.target.nick;
-        const nick = nick_el.value;
-
-        if (!nick) {
-          nick_el.classList.add('error');
-          return;
-        } else {
-          nick_el.classList.remove('error');
-        }
-
-        this.el.querySelector('.chatroom-form-container').outerHTML = templates_spinner_html__WEBPACK_IMPORTED_MODULE_28___default()();
-        this.join(nick);
       },
 
       checkForReservedNick() {
@@ -54815,53 +54792,44 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
       },
 
-      renderNicknameForm(message) {
-        /* Render a form which allows the user to choose their
-         * nickname.
+      renderNicknameForm() {
+        let message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+        /* Render a form which allows the user to choose theirnickname.
          */
+        this.validation_messages.set('nickname', message);
         this.hideChatRoomContents();
 
-        _.each(this.el.querySelectorAll('span.centered.spinner'), u.removeElement);
-
-        if (!_.isString(message)) {
-          message = '';
+        if (!this.nickname_form) {
+          this.nickname_form = new _converse.MUCNicknameForm({
+            'model': this.model,
+            'chatroomview': this
+          });
+          const container_el = this.el.querySelector('.chatroom-body');
+          container_el.insertAdjacentElement('beforeend', this.nickname_form.el);
         }
 
-        const container_el = this.el.querySelector('.chatroom-body');
-        container_el.insertAdjacentHTML('beforeend', templates_chatroom_nickname_form_html__WEBPACK_IMPORTED_MODULE_18___default()({
-          heading: __('Please choose your nickname'),
-          label_nickname: __('Nickname'),
-          label_join: __('Enter groupchat'),
-          validation_message: message
-        }));
+        u.showElement(this.nickname_form.el);
         this.model.save('connection_status', _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].ROOMSTATUS.NICKNAME_REQUIRED);
-        const form_el = this.el.querySelector('.chatroom-form');
-        form_el.addEventListener('submit', this.submitNickname.bind(this), false);
-      },
-
-      submitPassword(ev) {
-        ev.preventDefault();
-        const password = this.el.querySelector('.chatroom-form input[type=password]').value;
-        this.showSpinner();
-        this.join(this.model.get('nick'), password);
       },
 
       renderPasswordForm() {
-        const container_el = this.el.querySelector('.chatroom-body');
+        let message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+        this.hideChatRoomContents();
 
-        _.each(container_el.children, u.hideElement);
+        if (!this.password_form) {
+          this.password_form = new _converse.MUCPasswordForm({
+            'model': this.model,
+            'chatroomview': this
+          });
+          const container_el = this.el.querySelector('.chatroom-body');
+          container_el.insertAdjacentElement('beforeend', this.password_form.el);
+        } else {
+          this.validation_messages.set('password', message);
+        }
 
-        _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
-
-        _.each(this.el.querySelectorAll('.chatroom-form-container'), u.removeElement);
-
-        container_el.insertAdjacentHTML('beforeend', templates_chatroom_password_form_html__WEBPACK_IMPORTED_MODULE_19___default()({
-          'heading': __('This groupchat requires a password'),
-          'label_password': __('Password: '),
-          'label_submit': __('Submit')
-        }));
+        u.showElement(this.password_form.el);
         this.model.save('connection_status', _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].ROOMSTATUS.PASSWORD_REQUIRED);
-        this.el.querySelector('.chatroom-form').addEventListener('submit', ev => this.submitPassword(ev), false);
       },
 
       showDestroyedMessage(error) {
@@ -55256,7 +55224,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         if (error.getAttribute('type') === 'auth') {
           if (!_.isNull(error.querySelector('not-authorized'))) {
-            this.renderPasswordForm();
+            this.renderPasswordForm(__("Password incorrect"));
           } else if (!_.isNull(error.querySelector('registration-required'))) {
             this.showDisconnectMessages(__('You are not on the member list of this groupchat.'));
           } else if (!_.isNull(error.querySelector('forbidden'))) {
@@ -55311,11 +55279,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       showSpinner() {
         u.removeElement(this.el.querySelector('.spinner'));
+        this.hideChatRoomContents();
         const container_el = this.el.querySelector('.chatroom-body');
-        const children = Array.prototype.slice.call(container_el.children, 0);
         container_el.insertAdjacentHTML('afterbegin', templates_spinner_html__WEBPACK_IMPORTED_MODULE_28___default()());
-
-        _.each(children, u.hideElement);
       },
 
       hideSpinner() {
@@ -55399,6 +55365,130 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         this.list_rooms_modal.show(ev);
+      }
+
+    });
+    _converse.MUCConfigForm = Backbone.VDOMView.extend({
+      className: 'muc-config-form',
+      events: {
+        'submit form': 'submitConfigForm',
+        'click .button-cancel': 'closeConfigForm'
+      },
+
+      initialize(attrs) {
+        this.chatroomview = attrs.chatroomview;
+        this.chatroomview.model.features.on('change:passwordprotected', this.render, this);
+        this.chatroomview.model.features.on('change:config_stanza', this.render, this);
+        this.render();
+      },
+
+      toHTML() {
+        const stanza = u.toStanza(this.model.get('config_stanza'));
+        const whitelist = _converse.roomconfig_whitelist;
+        let fields = sizzle('field', stanza);
+
+        if (whitelist.length) {
+          fields = fields.filter(f => _.includes(whitelist, f.getAttribute('var')));
+        }
+
+        const password_protected = this.model.features.get('passwordprotected');
+        const options = {
+          'new_password': !password_protected,
+          'fixed_username': this.model.get('jid')
+        };
+        return templates_chatroom_form_html__WEBPACK_IMPORTED_MODULE_15___default()({
+          '__': __,
+          'title': _.get(stanza.querySelector('title'), 'textContent'),
+          'instructions': _.get(stanza.querySelector('instructions'), 'textContent'),
+          'fields': fields.map(f => u.xForm2webForm(f, stanza, options))
+        });
+      },
+
+      submitConfigForm(ev) {
+        ev.preventDefault();
+        this.model.saveConfiguration(ev.target).then(() => this.model.refreshRoomFeatures());
+        this.chatroomview.closeForm();
+      },
+
+      closeConfigForm(ev) {
+        ev.preventDefault();
+        this.chatroomview.closeForm();
+      }
+
+    });
+    _converse.MUCPasswordForm = Backbone.VDOMView.extend({
+      className: 'muc-password-form',
+      events: {
+        'submit form': 'submitPassword'
+      },
+
+      initialize(attrs) {
+        this.chatroomview = attrs.chatroomview;
+        this.chatroomview.validation_messages.on('change:password', this.render, this);
+        this.render();
+      },
+
+      toHTML() {
+        const err_msg = this.chatroomview.validation_messages.get('password');
+        return templates_chatroom_password_form_html__WEBPACK_IMPORTED_MODULE_19___default()({
+          'jid': this.model.get('jid'),
+          'heading': __('This groupchat requires a password'),
+          'label_password': __('Password: '),
+          'label_submit': __('Submit'),
+          'error_class': err_msg ? 'error' : '',
+          'validation_message': err_msg
+        });
+      },
+
+      submitPassword(ev) {
+        ev.preventDefault();
+        const password = this.el.querySelector('input[type=password]').value;
+        this.chatroomview.join(this.model.get('nick'), password);
+        this.chatroomview.validation_messages.set('password', null);
+      }
+
+    });
+    _converse.MUCNicknameForm = Backbone.VDOMView.extend({
+      className: 'muc-nickname-form',
+      events: {
+        'submit form': 'submitNickname'
+      },
+
+      initialize(attrs) {
+        this.chatroomview = attrs.chatroomview;
+        this.chatroomview.validation_messages.on('change:nickname', this.render, this);
+        this.render();
+      },
+
+      toHTML() {
+        const err_msg = this.chatroomview.validation_messages.get('nickname');
+        return templates_chatroom_nickname_form_html__WEBPACK_IMPORTED_MODULE_18___default()({
+          'heading': __('Please choose your nickname'),
+          'label_nickname': __('Nickname'),
+          'label_join': __('Enter groupchat'),
+          'error_class': err_msg ? 'error' : '',
+          'validation_message': err_msg
+        });
+      },
+
+      submitNickname(ev) {
+        /* Get the nickname value from the form and then join the
+         * groupchat with it.
+         */
+        ev.preventDefault();
+        const nick_el = ev.target.nick;
+        const nick = nick_el.value;
+
+        if (nick) {
+          this.chatroomview.join(nick);
+          this.chatroomview.validation_messages.set({
+            'nickname': null
+          });
+        } else {
+          return this.chatroomview.validation_messages.set({
+            'nickname': __('You need to provide a nickname')
+          });
+        }
       }
 
     });
@@ -58637,7 +58727,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 
         if (this.form_type === 'xform') {
           _.each(stanza.querySelectorAll('field'), field => {
-            buttons.insertAdjacentHTML('beforebegin', _converse_headless_utils_form__WEBPACK_IMPORTED_MODULE_9__["default"].xForm2webForm(field, stanza, this.domain));
+            buttons.insertAdjacentHTML('beforebegin', _converse_headless_utils_form__WEBPACK_IMPORTED_MODULE_9__["default"].xForm2webForm(field, stanza, {
+              'domain': this.domain
+            }));
           });
         } else {
           this.renderLegacyRegistrationForm(form);
@@ -93363,7 +93455,7 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/chatroom_bookmark_form.html -->\n<div class="chatroom-form-container">\n    <form class="converse-form chatroom-form">\n        <legend>' +
+__p += '<!-- src/templates/chatroom_bookmark_form.html -->\n<div class="chatroom-form-container muc-bookmark-form">\n    <form class="converse-form chatroom-form">\n        <legend>' +
 __e(o.heading) +
 '</legend>\n        <fieldset class="form-group">\n            <label for="converse_muc_bookmark_name">' +
 __e(o.label_name) +
@@ -93769,8 +93861,27 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '';
-__p += '<!-- src/templates/chatroom_form.html -->\n<div class="chatroom-form-container">\n    <form class="converse-form chatroom-form">\n        <fieldset class="form-group">\n            <span class="spinner fa fa-spinner centered"/>\n        </fieldset>\n    </form>\n</div>\n';
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- src/templates/chatroom_form.html -->\n<div class="chatroom-form-container muc-config-form">\n    <form class="converse-form chatroom-form" autocomplete="off">\n        <fieldset class="form-group">\n            <legend>' +
+__e(o.title) +
+'</legend>\n            ';
+ if (o.title !== o.instructions) { ;
+__p += '\n                <p class="form-help">' +
+__e(o.instructions) +
+'</p>\n            ';
+ } ;
+__p += '\n            <!-- Fields are generated internally, with xForm2webForm -->\n            ';
+ o.fields.forEach(function (field) { ;
+__p += ' ' +
+((__t = ( field )) == null ? '' : __t) +
+' ';
+ }) ;
+__p += '\n        </fieldset>\n        <fieldset>\n            <input type="submit" class="btn btn-primary" value="' +
+__e(o.__('Save')) +
+'"/>\n            <input type="button" class="btn btn-secondary .button-cancel" value="' +
+__e(o.__('Cancel')) +
+'"/>\n        </fieldset>\n    </form>\n</div>\n';
 return __p
 };
 
@@ -93862,15 +93973,17 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/chatroom_nickname_form.html -->\n<div class="chatroom-form-container">\n    <form class="converse-form chatroom-form converse-centered-form">\n        <fieldset class="form-group">\n            <label>' +
+__p += '<!-- src/templates/chatroom_nickname_form.html -->\n<div class="chatroom-form-container muc-nickname-form">\n    <form class="converse-form chatroom-form converse-centered-form">\n        <fieldset class="form-group">\n            <label>' +
 __e(o.heading) +
 '</label>\n            <p class="validation-message">' +
 __e(o.validation_message) +
-'</p>\n            <input type="text" required="required" name="nick" class="form-control" placeholder="' +
+'</p>\n            <input type="text" required="required" name="nick"\n                   class="form-control ' +
+((__t = (o.error_class)) == null ? '' : __t) +
+'" placeholder="' +
 __e(o.label_nickname) +
-'"/>\n        </fieldset>\n        <input type="submit" class="btn btn-primary" name="join" value="' +
+'"/>\n        </fieldset>\n        <fieldset class="form-group">\n            <input type="submit" class="btn btn-primary" name="join" value="' +
 __e(o.label_join) +
-'"/>\n    </form>\n</div>\n';
+'"/>\n        </fieldset>\n    </form>\n</div>\n';
 return __p
 };
 
@@ -93886,13 +93999,19 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/chatroom_password_form.html -->\n<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset class="form-group">\n            <legend>' +
+__p += '<!-- src/templates/chatroom_password_form.html -->\n<div class="chatroom-form-container muc-password-form">\n    <form class="converse-form chatroom-form converse-centered-form">\n        <fieldset class="form-group">\n            <label>' +
 __e(o.heading) +
-'</legend>\n            <label>' +
+'</label>\n            <p class="validation-message">' +
+__e(o.validation_message) +
+'</p>\n            <input class="hidden-username" type="text" autocomplete="username" value="' +
+__e(o.jid) +
+'"></input>\n            <input type="password" name="password" required="required"\n                   class="form-control ' +
+((__t = (o.error_class)) == null ? '' : __t) +
+'" placeholder="' +
 __e(o.label_password) +
-'</label>\n            <input type="password" name="password"/>\n        </fieldset>\n        <input class="btn btn-primary" type="submit" value="' +
+'"/>\n        </fieldset>\n        <fieldset class="form-group">\n            <input class="btn btn-primary" type="submit" value="' +
 __e(o.label_submit) +
-'"/>\n    </form>\n</div>\n';
+'"/>\n        </fieldset>\n    </form>\n</div>\n';
 return __p
 };
 
@@ -94273,13 +94392,25 @@ __e(o.id) +
 __e(o.label) +
 '</label>\n    ';
  } ;
-__p += '\n    <input class="form-control" name="' +
+__p += '\n    ';
+ if (o.type === 'password' && o.fixed_username) { ;
+__p += '\n        <!-- This is a hack to prevent Chrome from auto-filling the username in\n            any of the other input fields in the MUC configuration form. -->\n        <input class="hidden-username" type="text" autocomplete="username" value="' +
+__e(o.fixed_username) +
+'"></input>\n    ';
+ } ;
+__p += '\n    <input \n        class="form-control" name="' +
 __e(o.name) +
 '" type="' +
 __e(o.type) +
 '" id="' +
 __e(o.id) +
 '"\n        ';
+ if (o.autocomplete) { ;
+__p += ' autocomplete="' +
+__e(o.autocomplete) +
+'" ';
+ } ;
+__p += '\n        ';
  if (o.placeholder) { ;
 __p += ' placeholder="' +
 __e(o.placeholder) +
@@ -96285,6 +96416,13 @@ __webpack_require__.r(__webpack_exports__);
 
 const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
 
+function getAutoCompleteProperty(name, options) {
+  return {
+    'muc#roomconfig_lang': 'language',
+    'muc#roomconfig_roomsecret': options.new_password ? 'new-password' : 'current-password'
+  }[name];
+}
+
 const logger = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.assign({
   'debug': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(console, 'log') ? console.log.bind(console) : _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.noop,
   'error': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(console, 'log') ? console.log.bind(console) : _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.noop,
@@ -96819,7 +96957,7 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].fadeIn = function 
  */
 
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].xForm2webForm = function (field, stanza, domain) {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].xForm2webForm = function (field, stanza, options) {
   if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
     const values = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.map(_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].queryChildren(field, 'value'), _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.partial(_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get, _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a, 'textContent'));
 
@@ -96868,7 +97006,7 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].xForm2webForm = fu
     });
   } else if (field.getAttribute('var') === 'username') {
     return _templates_form_username_html__WEBPACK_IMPORTED_MODULE_12___default()({
-      'domain': ' @' + domain,
+      'domain': ' @' + options.domain,
       'name': field.getAttribute('var'),
       'type': XFORM_TYPE_MAP[field.getAttribute('type')],
       'label': field.getAttribute('label') || '',
@@ -96887,10 +97025,13 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].xForm2webForm = fu
       'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
     });
   } else {
+    const name = field.getAttribute('var');
     return _templates_form_input_html__WEBPACK_IMPORTED_MODULE_8___default()({
       'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
       'label': field.getAttribute('label') || '',
-      'name': field.getAttribute('var'),
+      'name': name,
+      'fixed_username': options.fixed_username,
+      'autocomplete': getAutoCompleteProperty(name, options),
       'placeholder': null,
       'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required')),
       'type': XFORM_TYPE_MAP[field.getAttribute('type')],

@@ -10033,6 +10033,11 @@ body.converse-fullscreen {
   font-size: 80%;
   font-weight: normal; }
 
+#conversejs form .hidden-username {
+  opacity: 0 !important;
+  height: 0 !important;
+  padding: 0 !important; }
+
 #conversejs form .error-feedback {
   margin-bottom: 0.5em; }
 
@@ -10124,7 +10129,11 @@ body.converse-fullscreen {
   padding-bottom: 0; }
 
 #conversejs form.converse-centered-form {
+  min-height: 66%;
   text-align: center; }
+  #conversejs form.converse-centered-form input {
+    max-width: 30em;
+    margin: auto; }
 
 #conversejs .chatbox-navback {
   display: none; }
@@ -11676,6 +11685,12 @@ body.converse-fullscreen {
         #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form-container .button-primary,
         #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form-container .button-primary {
           background-color: var(--chatroom-head-button-color); }
+      #conversejs.converse-embedded .chatroom .box-flyout .chatroom-body .chatroom-form,
+      #conversejs .chatroom .box-flyout .chatroom-body .chatroom-form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 2em; }
   #conversejs.converse-embedded .chatroom .muc-bottom-panel,
   #conversejs .chatroom .muc-bottom-panel {
     border-top: var(--message-input-border-top);

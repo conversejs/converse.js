@@ -26,6 +26,13 @@ import u from "../headless/utils/core";
 
 const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
 
+function getAutoCompleteProperty (name, options) {
+    return {
+        'muc#roomconfig_lang': 'language',
+        'muc#roomconfig_roomsecret': options.new_password ? 'new-password' : 'current-password'
+    }[name];
+}
+
 const logger = _.assign({
     'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
     'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
@@ -538,7 +545,7 @@ u.fadeIn = function (el, callback) {
  * @method u#xForm2webForm
  * @param { XMLElement } field - the field to convert
  */
-u.xForm2webForm = function (field, stanza, domain) {
+u.xForm2webForm = function (field, stanza, options) {
     if (field.getAttribute('type') === 'list-single' ||
         field.getAttribute('type') === 'list-multi') {
 
@@ -591,7 +598,7 @@ u.xForm2webForm = function (field, stanza, domain) {
         });
     } else if (field.getAttribute('var') === 'username') {
         return tpl_form_username({
-            'domain': ' @'+domain,
+            'domain': ' @'+options.domain,
             'name': field.getAttribute('var'),
             'type': XFORM_TYPE_MAP[field.getAttribute('type')],
             'label': field.getAttribute('label') || '',
@@ -609,10 +616,13 @@ u.xForm2webForm = function (field, stanza, domain) {
             'required': !_.isNil(field.querySelector('required'))
         });
     } else {
+        const name = field.getAttribute('var');
         return tpl_form_input({
             'id': u.getUniqueId(),
             'label': field.getAttribute('label') || '',
-            'name': field.getAttribute('var'),
+            'name': name,
+            'fixed_username': options.fixed_username,
+            'autocomplete': getAutoCompleteProperty(name, options),
             'placeholder': null,
             'required': !_.isNil(field.querySelector('required')),
             'type': XFORM_TYPE_MAP[field.getAttribute('type')],

@@ -1218,10 +1218,15 @@ converse.plugins.add('converse-muc-views', {
                  *      case, auto-configure won't happen, regardless of
                  *      the settings.
                  */
-                this.showSpinner();
-                this.model.fetchRoomConfiguration()
-                    .then(iq => this.renderConfigurationForm(iq))
-                    .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+
+                if (!this.config_form || !u.isVisible(this.config_form.el)) {
+                    this.showSpinner();
+                    this.model.fetchRoomConfiguration()
+                        .then(iq => this.renderConfigurationForm(iq))
+                        .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+                } else {
+                    this.closeForm();
+                }
             },
 
             checkForReservedNick () {

@@ -54727,8 +54727,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          *      case, auto-configure won't happen, regardless of
          *      the settings.
          */
-        this.showSpinner();
-        this.model.fetchRoomConfiguration().then(iq => this.renderConfigurationForm(iq)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        if (!this.config_form || !u.isVisible(this.config_form.el)) {
+          this.showSpinner();
+          this.model.fetchRoomConfiguration().then(iq => this.renderConfigurationForm(iq)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
+        } else {
+          this.closeForm();
+        }
       },
 
       checkForReservedNick() {

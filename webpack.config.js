@@ -187,8 +187,8 @@ function parameterize () {
 
     if (type === 'css') {
         console.log("Building only CSS");
-        const fn = config.output.filename;
         config.entry = path.resolve(__dirname, 'sass/converse.scss');
+        config.output = {};
     }
 
     if (mode === 'production') {

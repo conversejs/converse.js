@@ -53542,7 +53542,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       'cache_muc_messages': true,
       'locked_muc_domain': false,
       'locked_muc_nickname': false,
-      'muc_disable_moderator_commands': false,
+      'muc_disable_slash_commands': false,
       'muc_domain': undefined,
       'muc_show_join_leave': true,
       'roomconfig_whitelist': [],
@@ -54457,14 +54457,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       parseMessageForCommands(text) {
-        if (_converse.muc_disable_moderator_commands && !_.isArray(_converse.muc_disable_moderator_commands)) {
+        if (_converse.muc_disable_slash_commands && !_.isArray(_converse.muc_disable_slash_commands)) {
           return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
         }
 
         const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
               args = match[2] && match[2].splitOnce(' ').filter(s => s) || [],
               command = match[1].toLowerCase(),
-              disabled_commands = _.isArray(_converse.muc_disable_moderator_commands) ? _converse.muc_disable_moderator_commands : [];
+              disabled_commands = _.isArray(_converse.muc_disable_slash_commands) ? _converse.muc_disable_slash_commands : [];
 
         if (_.includes(disabled_commands, command)) {
           return false;

@@ -11,6 +11,9 @@
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1532: Converse reloads on enter pressed in the filter box
 
+- **Breaking changes**:
+- Rename `muc_disable_moderator_commands` to [muc_disable_slash_commands](https://conversejs.org/docs/html/configuration.html#muc-disable-slash-commands).
+
 ### API changes
 
 - `_converse.chats.open` and `_converse.rooms.open` now take a `force`

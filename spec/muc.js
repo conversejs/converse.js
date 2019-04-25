@@ -2619,21 +2619,21 @@
 
             it("takes /help to show the available commands and commands can be disabled by config",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched'], {muc_disable_moderator_commands: ['mute', 'voice']},
+                    null, ['rosterGroupsFetched'], {muc_disable_slash_commands: ['mute', 'voice']},
                     async function (done, _converse) {
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 var textarea = view.el.querySelector('.chat-textarea');
-                textarea.value = '/help This is the groupchat subject';
-                view.keyPressed({
-                    target: textarea,
-                    preventDefault: _.noop,
-                    keyCode: 13
-                });
+                const enter = { 'target': textarea, 'preventDefault': _.noop, 'keyCode': 13 };
+                spyOn(window, 'confirm').and.callFake(() => true);
+                textarea.value = '/clear';
+                view.keyPressed(enter);
+                textarea.value = '/help';
+                view.keyPressed(enter);
 
                 const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_messages.length).toBe(18);
+                expect(info_messages.length).toBe(17);
                 expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                 expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
                 expect(info_messages.pop().textContent).toBe('/revoke: Revoke user\'s membership');

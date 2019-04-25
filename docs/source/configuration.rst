@@ -966,8 +966,8 @@ Message carbons is the XEP (Jabber protocol extension) specifically drafted to
 solve this problem, while `forward_messages`_ uses
 `stanza forwarding <http://www.xmpp.org/extensions/xep-0297.html>`_
 
-muc_disable_moderator_commands
-------------------------------
+muc_disable_slash_commands
+--------------------------
 
 * Default: ``false``
 
@@ -981,7 +981,7 @@ The following example will disable 'mute' and 'voice' command:
 
 .. code-block:: javascript
 
-    muc_disable_moderator_commands: ['mute', 'voice'],
+    muc_disable_slash_commands: ['mute', 'voice'],
 
 muc_domain
 ----------

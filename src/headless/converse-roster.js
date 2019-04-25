@@ -880,43 +880,24 @@ converse.plugins.add('converse-roster', {
 
 
         /********** Event Handlers *************/
-        function addRelatedContactToChatbox (chatbox, contact) {
-            if (!_.isUndefined(contact)) {
-                chatbox.contact = contact;
-                chatbox.trigger('contactAdded', contact);
-            }
-        }
-
-        _converse.api.waitUntil('rosterContactsFetched').then(() => {
-            _converse.roster.on('add', (contact) => {
-                /* When a new contact is added, check if we already have a
-                 * chatbox open for it, and if so attach it to the chatbox.
-                 */
-                const chatbox = _converse.chatboxes.findWhere({'jid': contact.get('jid')});
-                if (chatbox) {
-                    addRelatedContactToChatbox(chatbox, contact);
-                }
-            });
-        });
-
-
         function updateUnreadCounter (chatbox) {
             const contact = _converse.roster.findWhere({'jid': chatbox.get('jid')});
             if (!_.isUndefined(contact)) {
                 contact.save({'num_unread': chatbox.get('num_unread')});
             }
         }
-        _converse.api.listen.on('chatBoxesInitialized', () => {
-            _converse.chatboxes.on('change:num_unread', updateUnreadCounter)
 
-            _converse.chatboxes.on('add', async chatbox => {
-                await _converse.api.waitUntil('rosterContactsFetched');
-                addRelatedContactToChatbox(chatbox, _converse.roster.findWhere({'jid': chatbox.get('jid')}));
+        _converse.api.listen.on('chatBoxesInitialized', () => {
+            _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
+
+            _converse.chatboxes.on('add', chatbox => {
+                if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+                    chatbox.setRosterContact(chatbox.get('jid'));
+                }
             });
         });
 
         _converse.api.listen.on('beforeTearDown', _converse.unregisterPresenceHandler());
-
 
         _converse.api.waitUntil('rosterContactsFetched').then(() => {
             _converse.roster.on('add', (contact) => {
@@ -925,7 +906,7 @@ converse.plugins.add('converse-roster', {
                  */
                 const chatbox = _converse.chatboxes.findWhere({'jid': contact.get('jid')});
                 if (chatbox) {
-                    addRelatedContactToChatbox(chatbox, contact);
+                    chatbox.setRosterContact(contact.get('jid'));
                 }
             });
         });
@@ -999,20 +980,20 @@ converse.plugins.add('converse-roster', {
                  * @method _converse.api.contacts.get
                  * @params {(string[]|string)} jid|jids The JID or JIDs of
                  *      the contacts to be returned.
-                 * @returns {(RosterContact[]|RosterContact)} [Backbone.Model](http://backbonejs.org/#Model)
-                 *      (or an array of them) representing the contact.
+                 * @returns {promise} Promise which resolves with the
+                 *  _converse.RosterContact (or an array of them) representing the contact.
                  *
                  * @example
                  * // Fetch a single contact
                  * _converse.api.listen.on('rosterContactsFetched', function () {
-                 *     const contact = _converse.api.contacts.get('buddy@example.com')
+                 *     const contact = await _converse.api.contacts.get('buddy@example.com')
                  *     // ...
                  * });
                  *
                  * @example
                  * // To get multiple contacts, pass in an array of JIDs:
                  * _converse.api.listen.on('rosterContactsFetched', function () {
-                 *     const contacts = _converse.api.contacts.get(
+                 *     const contacts = await _converse.api.contacts.get(
                  *         ['buddy1@example.com', 'buddy2@example.com']
                  *     )
                  *     // ...
@@ -1021,14 +1002,13 @@ converse.plugins.add('converse-roster', {
                  * @example
                  * // To return all contacts, simply call ``get`` without any parameters:
                  * _converse.api.listen.on('rosterContactsFetched', function () {
-                 *     const contacts = _converse.api.contacts.get();
+                 *     const contacts = await _converse.api.contacts.get();
                  *     // ...
                  * });
                  */
-                'get' (jids) {
-                    const _getter = function (jid) {
-                        return _converse.roster.get(Strophe.getBareJidFromJid(jid)) || null;
-                    };
+                async get (jids) {
+                    await _converse.api.waitUntil('rosterContactsFetched');
+                    const _getter = jid => _converse.roster.get(Strophe.getBareJidFromJid(jid));
                     if (_.isUndefined(jids)) {
                         jids = _converse.roster.pluck('jid');
                     } else if (_.isString(jids)) {

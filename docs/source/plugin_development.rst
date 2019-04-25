@@ -114,7 +114,11 @@ you call ``converse.initialize``.
 If you're adding a "core" plugin, which means a plugin that will be
 included in the default, open-source version of converse.js, then you'll
 instead whitelist the plugin by adding its name to the `core_plugins` array in
-`./src/converse-core.js <https://github.com/jcbrand/converse.js/blob/master/src/converse-core.js>`_.
+`./src/headless/converse-core.js <https://github.com/jcbrand/converse.js/blob/master/src/headless/converse-core.js>`_.
+or the `WHITELISTED_PLUGINS` array in `./src/converse.js <https://github.com/jcbrand/converse.js/blob/master/src/converse.js>`_.
+
+Where you add it depends on whether your plugin is part of the headless build
+(which means it doesn't contain any view code) or not.
 
 Security and access to the inner workings
 -----------------------------------------

@@ -3,6 +3,7 @@
 const minimist = require('minimist');
 const path = require('path');
 const webpack = require('webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const config = {
     entry: path.resolve(__dirname, 'src/converse.js'),
@@ -15,6 +16,7 @@ const config = {
     },
     devtool: 'source-map',
     plugins: [
+        new MiniCssExtractPlugin({filename: '../css/converse.css'}),
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
     ],
     module: {
@@ -36,7 +38,7 @@ const config = {
             use: "exports-loader?filterXSS,filterCSS"
         },
         {
-            test: /\.(html|svg)$/,
+            test: /templates\/.*\.(html|svg)$/,
             exclude: /node_modules/,
             use: [{
                 loader: 'lodash-template-webpack-loader',
@@ -51,6 +53,36 @@ const config = {
                     // to render.
                     "variable": 'o',
                     "prependFilenameComment": __dirname
+                }
+            }]
+        },
+        {
+            test: /webfonts\/.*\.(woff(2)?|ttf|eot|truetype|svg)(\?v=\d+\.\d+\.\d+)?$/,
+            use: [
+            {
+                loader: 'file-loader',
+                options: {
+                    name: '[path][name].[ext]',
+                    outputPath: '../'
+                }
+            }
+            ]
+        }, {
+            test: /\.scss$/,
+            use: [
+                'style-loader',
+                MiniCssExtractPlugin.loader, {
+                    loader: 'css-loader',
+                    options: {
+                        sourceMap: true
+                    }
+                }, {
+                    loader: 'sass-loader',
+                    options: {
+                    includePaths: [
+                        path.resolve(__dirname, 'node_modules/')
+                    ],
+                    sourceMap: true
                 }
             }]
         }, {
@@ -73,6 +105,7 @@ const config = {
             use: {
                 loader: 'bootstrap.native-loader',
                 options: {
+                    bs_version: 4,
                     ignore: ['carousel', 'scrollspy']
                 }
             }
@@ -150,6 +183,12 @@ function parameterize () {
                 filename: 'converse-no-dependencies.js'
             },
         });
+    }
+
+    if (type === 'css') {
+        console.log("Building only CSS");
+        config.entry = path.resolve(__dirname, 'sass/converse.scss');
+        config.output = {};
     }
 
     if (mode === 'production') {

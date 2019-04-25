@@ -23,17 +23,17 @@ const AvatarMixin = {
         if (_.isNull(canvas_el)) {
             return;
         }
-        const data = {
-            'classes': canvas_el.getAttribute('class'),
-            'width': canvas_el.width,
-            'height': canvas_el.height,
-        }
         if (this.model.vcard) {
+            const data = {
+                'classes': canvas_el.getAttribute('class'),
+                'width': canvas_el.width,
+                'height': canvas_el.height,
+            }
             const image_type = this.model.vcard.get('image_type'),
                   image = this.model.vcard.get('image');
             data['image'] = "data:" + image_type + ";base64," + image;
+            canvas_el.outerHTML = tpl_avatar(data);
         }
-        canvas_el.outerHTML = tpl_avatar(data);
     },
 };
 
@@ -143,12 +143,8 @@ converse.plugins.add('converse-chatboxviews', {
                 /* This method gets overridden in src/converse-controlbox.js if
                  * the controlbox plugin is active.
                  */
-                this.each(function (view) { view.close(); });
+                this.each(v => v.close());
                 return this;
-            },
-
-            chatBoxMayBeShown (chatbox) {
-                return this.model.chatBoxMayBeShown(chatbox);
             }
         });
 

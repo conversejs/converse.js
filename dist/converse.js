@@ -3083,7 +3083,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.24 | © dnp_theme | MIT-License
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Native Javascript for Bootstrap 4 v2.0.26 | © dnp_theme | MIT-License
 (function (root, factory) {
   if (true) {
     // AMD support:
@@ -3123,8 +3123,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     stringScrollSpy = 'ScrollSpy',
     stringTab       = 'Tab',
     stringTooltip   = 'Tooltip',
+    stringToast     = 'Toast',
   
     // options DATA API
+    dataAutohide      = 'data-autohide',
     databackdrop      = 'data-backdrop',
     dataKeyboard      = 'data-keyboard',
     dataTarget        = 'data-target',
@@ -3133,19 +3135,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     dataPause         = 'data-pause',
     dataTitle         = 'data-title',
     dataOriginalTitle = 'data-original-title',
-    dataOriginalText  = 'data-original-text',
     dataDismissible   = 'data-dismissible',
     dataTrigger       = 'data-trigger',
     dataAnimation     = 'data-animation',
     dataContainer     = 'data-container',
     dataPlacement     = 'data-placement',
     dataDelay         = 'data-delay',
-    dataOffsetTop     = 'data-offset-top',
-    dataOffsetBottom  = 'data-offset-bottom',
   
     // option keys
     backdrop = 'backdrop', keyboard = 'keyboard', delay = 'delay',
-    content = 'content', target = 'target',
+    content = 'content', target = 'target', currentTarget = 'currentTarget',
     interval = 'interval', pause = 'pause', animation = 'animation',
     placement = 'placement', container = 'container',
   
@@ -3161,6 +3160,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // aria
     ariaExpanded = 'aria-expanded',
     ariaHidden   = 'aria-hidden',
+    ariaSelected = 'aria-selected',
   
     // event names
     clickEvent    = 'click',
@@ -3230,6 +3230,9 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     transitionEndEvent = Webkit+Transition in HTML[style] ? Webkit[toLowerCase]()+Transition+'End' : Transition[toLowerCase]()+'end',
     transitionDuration = Webkit+Duration in HTML[style] ? Webkit[toLowerCase]()+Transition+Duration : Transition[toLowerCase]()+Duration,
   
+    // touch since 2.0.26
+    touchEvents = { start: 'touchstart', end: 'touchend', move:'touchmove' },
+  
     // set new focus element since 2.0.3
     setFocus = function(element){
       element.focus ? element.focus() : element.setActive();
@@ -3283,15 +3286,15 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       });
     },
     getTransitionDurationFromElement = function(element) {
-      var duration = globalObject[getComputedStyle](element)[transitionDuration];
+      var duration = supportTransitions ? globalObject[getComputedStyle](element)[transitionDuration] : 0;
       duration = parseFloat(duration);
       duration = typeof duration === 'number' && !isNaN(duration) ? duration * 1000 : 0;
-      return duration + 50; // we take a short offset to make sure we fire on the next frame after animation
+      return duration; // we take a short offset to make sure we fire on the next frame after animation
     },
     emulateTransitionEnd = function(element,handler){ // emulateTransitionEnd since 2.0.4
       var called = 0, duration = getTransitionDurationFromElement(element);
-      supportTransitions && one(element, transitionEndEvent, function(e){ handler(e); called = 1; });
-      setTimeout(function() { !called && handler(); }, duration);
+      duration ? one(element, transitionEndEvent, function(e){ !called && handler(e), called = 1; })
+               : setTimeout(function() { !called && handler(), called = 1; }, 17);
     },
     bootstrapCustomEvent = function (eventName, componentName, related) {
       var OriginalCustomEvent = new CustomEvent( eventName + '.bs.' + componentName);
@@ -3387,7 +3390,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       arrowLeft && (arrow[style][left] = arrowLeft + 'px');
     };
   
-  BSN.version = '2.0.24';
+  BSN.version = '2.0.26';
   
   /* Native Javascript for Bootstrap 4 | Alert
   -------------------------------------------*/
@@ -3624,8 +3627,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     this.show = function() {
       if ( accordion ) {
         activeCollapse = queryElement('.'+component+'.'+showClass,accordion);
-        activeElement = activeCollapse && (queryElement('['+dataToggle+'="'+component+'"]['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
-                      || queryElement('['+dataToggle+'="'+component+'"][href="#'+activeCollapse.id+'"]',accordion) );
+        activeElement = activeCollapse && (queryElement('['+dataTarget+'="#'+activeCollapse.id+'"]',accordion)
+                      || queryElement('[href="#'+activeCollapse.id+'"]',accordion) );
       }
   
       if ( !collapse[isAnimating] || activeCollapse && !activeCollapse[isAnimating] ) {
@@ -3797,20 +3800,18 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     // the modal (both JavaScript / DATA API init) / triggering button element (DATA API)
     element = queryElement(element);
   
-    // determine modal, triggering element
-    var btnCheck = element[getAttribute](dataTarget)||element[getAttribute]('href'),
-      checkModal = queryElement( btnCheck ),
-      modal = hasClass(element,'modal') ? element : checkModal,
-      overlayDelay,
-  
       // strings
-      component = 'modal',
-      staticString = 'static',
-      paddingLeft = 'paddingLeft',
-      paddingRight = 'paddingRight',
-      modalBackdropString = 'modal-backdrop';
-  
-    if ( hasClass(element,'modal') ) { element = null; } // modal is now independent of it's triggering element
+      var component = 'modal',
+        staticString = 'static',
+        modalTrigger = 'modalTrigger',
+        paddingRight = 'paddingRight',
+        modalBackdropString = 'modal-backdrop',
+        // determine modal, triggering element
+        btnCheck = element[getAttribute](dataTarget)||element[getAttribute]('href'),
+        checkModal = queryElement( btnCheck ),
+        modal = hasClass(element,component) ? element : checkModal;  
+    
+      if ( hasClass(element, component) ) { element = null; } // modal is now independent of it's triggering element
   
     if ( !modal ) { return; } // invalidate
   
@@ -3824,7 +3825,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
     // bind, constants, event targets and other vars
     var self = this, relatedTarget = null,
-      bodyIsOverflowing, modalIsOverflowing, scrollbarWidth, overlay,
+      bodyIsOverflowing, scrollBarWidth, overlay, overlayDelay,
   
       // also find fixed-top / fixed-bottom items
       fixedItems = getElementsByClassName(HTML,fixedTop).concat(getElementsByClassName(HTML,fixedBottom)),
@@ -3838,17 +3839,19 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         var bodyStyle = globalObject[getComputedStyle](DOC[body]),
             bodyPad = parseInt((bodyStyle[paddingRight]), 10), itemPad;
         if (bodyIsOverflowing) {
-          DOC[body][style][paddingRight] = (bodyPad + scrollbarWidth) + 'px';
+          DOC[body][style][paddingRight] = (bodyPad + scrollBarWidth) + 'px';
+          modal[style][paddingRight] = scrollBarWidth+'px';
           if (fixedItems[length]){
             for (var i = 0; i < fixedItems[length]; i++) {
               itemPad = globalObject[getComputedStyle](fixedItems[i])[paddingRight];
-              fixedItems[i][style][paddingRight] = ( parseInt(itemPad) + scrollbarWidth) + 'px';
+              fixedItems[i][style][paddingRight] = ( parseInt(itemPad) + scrollBarWidth) + 'px';
             }
           }
         }
       },
       resetScrollbar = function () {
         DOC[body][style][paddingRight] = '';
+        modal[style][paddingRight] = '';
         if (fixedItems[length]){
           for (var i = 0; i < fixedItems[length]; i++) {
             fixedItems[i][style][paddingRight] = '';
@@ -3856,25 +3859,16 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         }
       },
       measureScrollbar = function () { // thx walsh
-        var scrollDiv = DOC[createElement]('div'), scrollBarWidth;
+        var scrollDiv = DOC[createElement]('div'), widthValue;
         scrollDiv.className = component+'-scrollbar-measure'; // this is here to stay
         DOC[body][appendChild](scrollDiv);
-        scrollBarWidth = scrollDiv[offsetWidth] - scrollDiv[clientWidth];
+        widthValue = scrollDiv[offsetWidth] - scrollDiv[clientWidth];
         DOC[body].removeChild(scrollDiv);
-        return scrollBarWidth;
+        return widthValue;
       },
       checkScrollbar = function () {
         bodyIsOverflowing = DOC[body][clientWidth] < getWindowWidth();
-        modalIsOverflowing = modal[scrollHeight] > HTML[clientHeight];
-        scrollbarWidth = measureScrollbar();
-      },
-      adjustDialog = function () {
-        modal[style][paddingLeft] = !bodyIsOverflowing && modalIsOverflowing ? scrollbarWidth + 'px' : '';
-        modal[style][paddingRight] = bodyIsOverflowing && !modalIsOverflowing ? scrollbarWidth + 'px' : '';
-      },
-      resetAdjustments = function () {
-        modal[style][paddingLeft] = '';
-        modal[style][paddingRight] = '';
+        scrollBarWidth = measureScrollbar();
       },
       createOverlay = function() {
         modalOverlay = 1;        
@@ -3919,6 +3913,9 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       },
       // triggers
       triggerShow = function() {
+        resizeHandlerToggle();
+        dismissHandlerToggle();
+        keydownHandlerToggle();
         setFocus(modal);
         bootstrapCustomEvent.call(modal, shownEvent, component, relatedTarget);
       },
@@ -3928,7 +3925,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         
         (function(){
           if (!getElementsByClassName(DOC,component+' '+showClass)[0]) {
-            resetAdjustments();
             resetScrollbar();
             removeClass(DOC[body],component+'-open');
             overlay && hasClass(overlay,'fade') ? (removeClass(overlay,showClass), emulateTransitionEnd(overlay,removeOverlay)) 
@@ -3945,7 +3941,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         var clickTarget = e[target];
         clickTarget = clickTarget[hasAttribute](dataTarget) || clickTarget[hasAttribute]('href') ? clickTarget : clickTarget[parentNode];
         if ( clickTarget === element && !hasClass(modal,showClass) ) {
-          modal.modalTrigger = element;
+          modal[modalTrigger] = element;
           relatedTarget = element;
           self.show();
           e[preventDefault]();
@@ -3975,7 +3971,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
       // we elegantly hide any opened modal
       var currentOpen = getElementsByClassName(DOC,component+' '+showClass)[0];
-      currentOpen && currentOpen !== modal && currentOpen.modalTrigger[stringModal].hide();
+      if (currentOpen && currentOpen !== modal) {
+        modalTrigger in currentOpen && currentOpen[modalTrigger][stringModal].hide();
+        stringModal in currentOpen && currentOpen[stringModal].hide();
+      }
   
       if ( this[backdrop] ) {
         !modalOverlay && createOverlay();
@@ -3992,15 +3991,10 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
         checkScrollbar();
         setScrollbar();
-        adjustDialog();
   
         addClass(DOC[body],component+'-open');
         addClass(modal,showClass);
         modal[setAttribute](ariaHidden, false);
-        
-        resizeHandlerToggle();
-        dismissHandlerToggle();
-        keydownHandlerToggle();
   
         hasClass(modal,'fade') ? emulateTransitionEnd(modal, triggerShow) : triggerShow();
       }, supportTransitions && overlay ? overlayDelay : 0);
@@ -4024,7 +4018,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       if (hasClass(modal,showClass)) {
         checkScrollbar();
         setScrollbar();
-        adjustDialog();
       }
     };
   
@@ -4035,7 +4028,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       on(element, clickEvent, clickHandler);
     }
     if ( !!self[content] ) { self.setContent( self[content] ); }
-    !!element && (element[stringModal] = self);
+    if (element) { element[stringModal] = self; modal[modalTrigger] = element; }
+    else { modal[stringModal] = self; }
   };
   
   // DATA API
@@ -4069,7 +4063,6 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         classString = 'class',
         div = 'div',
         fade = 'fade',
-        content = 'content',
         dataContent = 'data-content',
         dismissible = 'dismissible',
         closeBtn = '<button type="button" class="close">×</button>',
@@ -4121,8 +4114,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
         timer = null; popover = null; 
       },
       createPopover = function() {
-        titleString = element[getAttribute](dataTitle); // check content again
-        contentString = element[getAttribute](dataContent);
+        titleString = options.title || element[getAttribute](dataTitle) || null,
+        contentString = options.content || element[getAttribute](dataContent) || null;
   
         popover = DOC[createElement](div);
   
@@ -4333,10 +4326,8 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       },
       // handler 
       clickHandler = function(e) {
-        var href = e[target][getAttribute]('href');
         e[preventDefault]();
-        next = e[target][getAttribute](dataToggle) === component || (href && href.charAt(0) === '#')
-             ? e[target] : e[target][parentNode]; // allow for child elements like icons to use the handler
+        next = e[currentTarget];
         !tabs[isAnimating] && !hasClass(next,active) && self.show();
       };
   
@@ -4349,7 +4340,9 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
       
       tabs[isAnimating] = true;
       removeClass(activeTab,active);
+      activeTab[setAttribute](ariaSelected,'false');
       addClass(next,active);
+      next[setAttribute](ariaSelected,'true');    
   
       if ( dropdown ) {
         if ( !hasClass(element[parentNode],'dropdown-menu') ) {
@@ -4378,6 +4371,108 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   // TAB DATA API
   // ============
   supports[push]( [ stringTab, Tab, '['+dataToggle+'="tab"]' ] );
+  
+  
+  /* Native Javascript for Bootstrap 4 | Toast
+  ---------------------------------------------*/
+  
+  // TOAST DEFINITION
+  // ==================
+  var Toast = function( element,options ) {
+  
+    // initialization element
+    element = queryElement(element);
+  
+    // set options
+    options = options || {};
+  
+    // DATA API
+    var animationData = element[getAttribute](dataAnimation),
+        autohideData = element[getAttribute](dataAutohide),
+        delayData = element[getAttribute](dataDelay),
+        
+        // strings
+        component = 'toast',
+        autohide = 'autohide',
+        animation = 'animation',
+        showing = 'showing',
+        hide = 'hide',
+        fade = 'fade';
+  
+    // set instance options
+    this[animation] = options[animation] === false || animationData === 'false' ? 0 : 1; // true by default
+    this[autohide] = options[autohide] === false || autohideData === 'false' ? 0 : 1; // true by default
+    this[delay] = parseInt(options[delay] || delayData) || 500; // 500ms default
+  
+    // bind,toast and timer
+    var self = this, timer = 0,
+        // get the toast element
+        toast = getClosest(element,'.toast');
+  
+    // private methods
+    // animation complete
+    var showComplete = function() {
+        removeClass( toast, showing );
+        addClass( toast, showClass );
+        bootstrapCustomEvent.call(toast, shownEvent, component);
+        if (self[autohide]) { self.hide(); }
+      },
+      hideComplete = function() {
+        addClass( toast, hide );
+        bootstrapCustomEvent.call(toast, hiddenEvent, component);
+      },
+      close = function() {
+        removeClass( toast,showClass );
+        self[animation] ? emulateTransitionEnd(toast, hideComplete) : hideComplete();
+      },
+      disposeComplete = function(){
+        clearTimeout(timer); timer = null;
+        addClass( toast, hide );
+        off(element, clickEvent, self.hide);
+        element[stringToast] = null;
+        element = null;
+        toast = null;
+      };
+  
+    // public methods
+    this.show = function() {
+      if (toast) {
+        bootstrapCustomEvent.call(toast, showEvent, component);
+        self[animation] && addClass( toast,fade );
+        removeClass( toast,hide );
+        addClass( toast,showing );
+  
+        self[animation] ? emulateTransitionEnd(toast, showComplete) : showComplete();
+      }
+    };
+    this.hide = function(noTimer) {
+      if (toast && hasClass(toast,showClass)) {
+        bootstrapCustomEvent.call(toast, hideEvent, component);
+  
+        if (noTimer) {
+          close();
+        } else {
+          timer = setTimeout( close, self[delay]);
+        }
+      }
+    };
+    this.dispose = function() {
+      if ( toast && hasClass(toast,showClass) ) {
+        removeClass( toast,showClass );
+        self[animation] ? emulateTransitionEnd(toast, disposeComplete) : disposeComplete();
+      }
+    };
+  
+    // init
+    if ( !(stringToast in element) ) { // prevent adding event handlers twice
+      on(element, clickEvent, self.hide);
+    }
+    element[stringToast] = self;
+  };
+  
+  // TOAST DATA API
+  // =================
+  supports[push]( [ stringToast, Toast, '['+dataDismiss+'="toast"]' ] );
   
   
   /* Native Javascript for Bootstrap 4 | Tooltip
@@ -4519,7 +4614,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
   
   
   
-  /* Native Javascript for Bootstrap 4 | Initialize Data API
+  /* Native Javascript for Bootstrap | Initialize Data API
   --------------------------------------------------------*/
   var initializeDataAPI = function( constructor, collection ){
       for (var i=0, l=collection[length]; i<l; i++) {
@@ -4544,6 +4639,7 @@ backbone.nativeview = __webpack_require__(/*! backbone.nativeview */ "./node_mod
     Modal: Modal,
     Popover: Popover,
     Tab: Tab,
+    Toast: Toast,
     Tooltip: Tooltip
   };
 }));
@@ -7343,7 +7439,7 @@ return parser;
 
   // Handle node, amd, and global systems
   if (true) {
-    if (typeof module !== 'undefined' && module.exports) {
+    if ( true && module.exports) {
       exports = module.exports = Jed;
     }
     exports.Jed = Jed;
@@ -8276,7 +8372,7 @@ module.exports = isSymbol;
   var root = freeGlobal || freeSelf || Function('return this')();
 
   /** Detect free variable `exports`. */
-  var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
+  var freeExports =  true && exports && !exports.nodeType && exports;
 
   /** Detect free variable `module`. */
   var freeModule = freeExports && typeof module == 'object' && module && !module.nodeType && module;
@@ -32702,6 +32798,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 //# sourceMappingURL=pluggable.js.map
 
+
 /***/ }),
 
 /***/ "./node_modules/process/browser.js":
@@ -42464,7 +42561,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 (function (root, factory) {
   'use strict';
   // https://github.com/umdjs/umd/blob/master/returnExports.js
-  if (typeof module === 'object' && module.exports) {
+  if ( true && module.exports) {
     // Node
     module.exports = factory();
   } else if (true) {
@@ -42661,7 +42758,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 (function (root, factory) {
   'use strict';
   // https://github.com/umdjs/umd/blob/master/returnExports.js
-  if (typeof module === 'object' && module.exports) {
+  if ( true && module.exports) {
     // Node
     module.exports = factory();
   } else if (true) {
@@ -42916,7 +43013,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 (function (root, factory) {
   'use strict';
   // https://github.com/umdjs/umd/blob/master/returnExports.js
-  if (typeof module === 'object' && module.exports) {
+  if ( true && module.exports) {
     // Node
     module.exports = factory(__webpack_require__(/*! ./punycode */ "./node_modules/urijs/src/punycode.js"), __webpack_require__(/*! ./IPv6 */ "./node_modules/urijs/src/IPv6.js"), __webpack_require__(/*! ./SecondLevelDomains */ "./node_modules/urijs/src/SecondLevelDomains.js"));
   } else if (true) {
@@ -45254,9 +45351,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 ;(function(root) {
 
 	/** Detect free variables */
-	var freeExports = typeof exports == 'object' && exports &&
+	var freeExports =  true && exports &&
 		!exports.nodeType && exports;
-	var freeModule = typeof module == 'object' && module &&
+	var freeModule =  true && module &&
 		!module.nodeType && module;
 	var freeGlobal = typeof global == 'object' && global;
 	if (
@@ -45790,7 +45887,7 @@ g = (function() {
 
 try {
 	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1, eval)("this");
+	g = g || new Function("return this")();
 } catch (e) {
 	// This works if the window reference is available
 	if (typeof window === "object") g = window;
@@ -48076,42 +48173,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       renderBookmarkForm() {
-        const _converse = this.__super__._converse,
-              __ = _converse.__,
-              body = this.el.querySelector('.chatroom-body');
+        this.hideChatRoomContents();
 
-        _.each(body.children, child => child.classList.add('hidden'));
+        if (!this.bookmark_form) {
+          const _converse = this.__super__._converse;
+          this.bookmark_form = new _converse.MUCBookmarkForm({
+            'model': this.model,
+            'chatroomview': this
+          });
+          const container_el = this.el.querySelector('.chatroom-body');
+          container_el.insertAdjacentElement('beforeend', this.bookmark_form.el);
+        }
 
-        _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
-
-        body.insertAdjacentHTML('beforeend', templates_chatroom_bookmark_form_html__WEBPACK_IMPORTED_MODULE_4___default()({
-          'default_nick': this.model.get('nick'),
-          'heading': __('Bookmark this groupchat'),
-          'label_autojoin': __('Would you like this groupchat to be automatically joined upon startup?'),
-          'label_cancel': __('Cancel'),
-          'label_name': __('The name for this bookmark:'),
-          'label_nick': __('What should your nickname for this groupchat be?'),
-          'label_submit': __('Save'),
-          'name': this.model.get('name')
-        }));
-        const form = body.querySelector('form.chatroom-form');
-        form.addEventListener('submit', ev => this.onBookmarkFormSubmitted(ev));
-        form.querySelector('.button-cancel').addEventListener('click', () => this.closeForm());
-      },
-
-      onBookmarkFormSubmitted(ev) {
-        ev.preventDefault();
-        const _converse = this.__super__._converse;
-
-        _converse.bookmarks.createBookmark({
-          'jid': this.model.get('jid'),
-          'autojoin': _.get(ev.target.querySelector('input[name="autojoin"]'), 'checked') || false,
-          'name': _.get(ev.target.querySelector('input[name=name]'), 'value'),
-          'nick': _.get(ev.target.querySelector('input[name=nick]'), 'value')
-        });
-
-        u.removeElement(this.el.querySelector('div.chatroom-form-container'));
-        this.renderAfterTransition();
+        u.showElement(this.bookmark_form.el);
       },
 
       toggleBookmark(ev) {
@@ -48214,9 +48288,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         if (_converse.muc_respect_autojoin && bookmark.get('autojoin')) {
           const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
 
-          if (!groupchat.get('hidden') && !groupchat.get('minimized')) {
-            groupchat.trigger('show');
-          }
+          groupchat.maybeShow();
         }
 
         return bookmark;
@@ -48369,6 +48441,50 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       }
 
     });
+    _converse.MUCBookmarkForm = Backbone.VDOMView.extend({
+      className: 'muc-bookmark-form',
+      events: {
+        'submit form': 'onBookmarkFormSubmitted',
+        'click .button-cancel': 'closeBookmarkForm'
+      },
+
+      initialize(attrs) {
+        this.chatroomview = attrs.chatroomview;
+        this.render();
+      },
+
+      toHTML() {
+        return templates_chatroom_bookmark_form_html__WEBPACK_IMPORTED_MODULE_4___default()({
+          'default_nick': this.model.get('nick'),
+          'heading': __('Bookmark this groupchat'),
+          'label_autojoin': __('Would you like this groupchat to be automatically joined upon startup?'),
+          'label_cancel': __('Cancel'),
+          'label_name': __('The name for this bookmark:'),
+          'label_nick': __('What should your nickname for this groupchat be?'),
+          'label_submit': __('Save'),
+          'name': this.model.get('name')
+        });
+      },
+
+      onBookmarkFormSubmitted(ev) {
+        ev.preventDefault();
+
+        _converse.bookmarks.createBookmark({
+          'jid': this.model.get('jid'),
+          'autojoin': _.get(ev.target.querySelector('input[name="autojoin"]'), 'checked') || false,
+          'name': _.get(ev.target.querySelector('input[name=name]'), 'value'),
+          'nick': _.get(ev.target.querySelector('input[name=nick]'), 'value')
+        });
+
+        this.closeBookmarkForm(ev);
+      },
+
+      closeBookmarkForm(ev) {
+        ev.preventDefault();
+        this.chatroomview.closeForm();
+      }
+
+    });
     _converse.BookmarksList = Backbone.Model.extend({
       defaults: {
         "toggle-state": _converse.OPENED
@@ -48465,7 +48581,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
         };
 
-        _converse.api.rooms.open(jid, data);
+        _converse.api.rooms.open(jid, data, true);
       },
 
       removeBookmark: _converse.removeBookmarkViaEvent,
@@ -48567,6 +48683,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
     _converse.api.listen.on('clearSession', () => {
       if (!_.isUndefined(_converse.bookmarks)) {
+        _converse.bookmarks.reset();
+
         _converse.bookmarks.browserStorage._clear();
 
         window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
@@ -48640,19 +48758,17 @@ const AvatarMixin = {
       return;
     }
 
-    const data = {
-      'classes': canvas_el.getAttribute('class'),
-      'width': canvas_el.width,
-      'height': canvas_el.height
-    };
-
     if (this.model.vcard) {
+      const data = {
+        'classes': canvas_el.getAttribute('class'),
+        'width': canvas_el.width,
+        'height': canvas_el.height
+      };
       const image_type = this.model.vcard.get('image_type'),
             image = this.model.vcard.get('image');
       data['image'] = "data:" + image_type + ";base64," + image;
+      canvas_el.outerHTML = templates_avatar_svg__WEBPACK_IMPORTED_MODULE_4___default()(data);
     }
-
-    canvas_el.outerHTML = templates_avatar_svg__WEBPACK_IMPORTED_MODULE_4___default()(data);
   }
 
 };
@@ -48763,14 +48879,8 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins
         /* This method gets overridden in src/converse-controlbox.js if
          * the controlbox plugin is active.
          */
-        this.each(function (view) {
-          view.close();
-        });
+        this.each(v => v.close());
         return this;
-      },
-
-      chatBoxMayBeShown(chatbox) {
-        return this.model.chatBoxMayBeShown(chatbox);
       }
 
     });
@@ -49014,7 +49124,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       initialize() {
         this.model.on('change:status', this.onStatusMessageChanged, this);
         this.debouncedRender = _.debounce(this.render, 50);
-        this.model.vcard.on('change', this.debouncedRender, this);
+
+        if (this.model.vcard) {
+          this.model.vcard.on('change', this.debouncedRender, this);
+        }
+
         this.model.on('rosterContactAdded', () => {
           this.model.contact.on('change:nickname', this.debouncedRender, this);
           this.debouncedRender();
@@ -49022,7 +49136,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       render() {
-        this.el.innerHTML = templates_chatbox_head_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(this.model.vcard.toJSON(), this.model.toJSON(), {
+        const vcard = _.get(this.model, 'vcard'),
+              vcard_json = vcard ? vcard.toJSON() : {};
+
+        this.el.innerHTML = templates_chatbox_head_html__WEBPACK_IMPORTED_MODULE_8___default()(_.extend(vcard_json, this.model.toJSON(), {
           '_converse': _converse,
           'info_close': __('Close this chat box'),
           'display_name': this.model.getDisplayName()
@@ -49059,7 +49176,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       initialize() {
         _converse.BootstrapModal.prototype.initialize.apply(this, arguments);
 
-        this.model.on('contactAdded', this.registerContactEventHandlers, this);
+        this.model.on('rosterContactAdded', this.registerContactEventHandlers, this);
         this.model.on('change', this.render, this);
         this.registerContactEventHandlers();
         /**
@@ -49073,7 +49190,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       toHTML() {
-        return templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_20___default()(_.extend(this.model.toJSON(), this.model.vcard.toJSON(), {
+        const vcard = _.get(this.model, 'vcard'),
+              vcard_json = vcard ? vcard.toJSON() : {};
+
+        return templates_user_details_modal_html__WEBPACK_IMPORTED_MODULE_20___default()(_.extend(this.model.toJSON(), vcard_json, {
           '_': _,
           '__': __,
           'view': this,
@@ -49781,6 +49901,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         if (!_converse.connection.authenticated) {
           this.showHelpMessages(['Sorry, the connection has been lost, and your message could not be sent'], 'error');
+
+          if (!_converse.connection.reconnecting) {
+            _converse.reconnect();
+          }
+
           return;
         }
 
@@ -50195,7 +50320,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         this.focus();
       },
 
-      _show(f) {
+      _show() {
         /* Inner show method that gets debounced */
         if (_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].isVisible(this.el)) {
           this.focus();
@@ -50302,11 +50427,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     });
 
     _converse.api.listen.on('chatBoxViewsInitialized', () => {
-      const that = _converse.chatboxviews;
+      const views = _converse.chatboxviews;
 
       _converse.chatboxes.on('add', item => {
-        if (!that.get(item.get('id')) && item.get('type') === _converse.PRIVATE_CHAT_TYPE) {
-          that.add(item.get('id'), new _converse.ChatBoxView({
+        if (!views.get(item.get('id')) && item.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+          views.add(item.get('id'), new _converse.ChatBoxView({
             model: item
           }));
         }
@@ -50346,7 +50471,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          */
         'get'(jids) {
           if (_.isUndefined(jids)) {
-            _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+            _converse.log("chatviews.get: You need to provide at least one JID", Strophe.LogLevel.ERROR);
 
             return null;
           }
@@ -50488,10 +50613,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         } else {
           return this.__super__.model.apply(this, arguments);
         }
-      },
-
-      chatBoxMayBeShown(chatbox) {
-        return this.__super__.chatBoxMayBeShown.apply(this, arguments) && chatbox.get('id') !== 'controlbox';
       }
 
     },
@@ -50540,6 +50661,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         return this.__super__.validate.apply(this, arguments);
+      },
+
+      maybeShow(force) {
+        if (!force && this.get('id') === 'controlbox') {
+          // Must return the chatbox
+          return this;
+        }
+
+        return this.__super__.maybeShow.apply(this, arguments);
       },
 
       initialize() {
@@ -50591,20 +50721,17 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
     });
 
     _converse.ControlBox = _converse.ChatBox.extend({
-      defaults: {
-        'bookmarked': false,
-        'box_id': 'controlbox',
-        'chat_state': undefined,
-        'closed': !_converse.show_controlbox_by_default,
-        'num_unread': 0,
-        'type': _converse.CONTROLBOX_TYPE,
-        'url': ''
-      },
-
-      initialize() {
-        u.safeSave(this, {
-          'time_opened': this.get('time_opened') || moment().valueOf()
-        });
+      defaults() {
+        return {
+          'bookmarked': false,
+          'box_id': 'controlbox',
+          'chat_state': undefined,
+          'closed': !_converse.show_controlbox_by_default,
+          'num_unread': 0,
+          'time_opened': this.get('time_opened') || moment().valueOf(),
+          'type': _converse.CONTROLBOX_TYPE,
+          'url': ''
+        };
       }
 
     });
@@ -51010,7 +51137,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         if (_converse.connection.connected) {
           controlbox.save({
-            closed: false
+            'closed': false
           });
         } else {
           controlbox.trigger('show');
@@ -51716,6 +51843,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].env,
       _ = _converse$env._,
+      moment = _converse$env.moment,
       utils = _converse$env.utils;
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-headline', {
   /* Plugin dependencies are other plugins which might be
@@ -51756,13 +51884,24 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
     const _converse = this._converse,
           __ = _converse.__;
     _converse.HeadlinesBox = _converse.ChatBox.extend({
-      defaults: {
-        'type': _converse.HEADLINES_TYPE,
-        'bookmarked': false,
-        'chat_state': undefined,
-        'num_unread': 0,
-        'url': ''
+      defaults() {
+        return {
+          'bookmarked': false,
+          'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode),
+          'message_type': 'headline',
+          'num_unread': 0,
+          'time_opened': this.get('time_opened') || moment().valueOf(),
+          'type': _converse.HEADLINES_TYPE
+        };
+      },
+
+      initialize() {
+        this.initMessages();
+        this.set({
+          'box_id': `box-${btoa(this.get('jid'))}`
+        });
       }
+
     });
     _converse.HeadlinesBoxView = _converse.ChatBoxView.extend({
       className: 'chatbox headlines',
@@ -51811,7 +51950,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       if (utils.isHeadlineMessage(_converse, message)) {
         const from_jid = message.getAttribute('from');
 
-        if (_.includes(from_jid, '@') && !_converse.api.contacts.get(from_jid) && !_converse.allow_non_roster_messaging) {
+        if (_.includes(from_jid, '@') && !_converse.roster.get(from_jid) && !_converse.allow_non_roster_messaging) {
           return;
         }
 
@@ -51850,11 +51989,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
     _converse.api.listen.on('reconnected', registerHeadlineHandler);
 
     _converse.api.listen.on('chatBoxViewsInitialized', () => {
-      const that = _converse.chatboxviews;
+      const views = _converse.chatboxviews;
 
       _converse.chatboxes.on('add', item => {
-        if (!that.get(item.get('id')) && item.get('type') === _converse.HEADLINES_TYPE) {
-          that.add(item.get('id'), new _converse.HeadlinesBoxView({
+        if (!views.get(item.get('id')) && item.get('type') === _converse.HEADLINES_TYPE) {
+          views.add(item.get('id'), new _converse.HeadlinesBoxView({
             model: item
           }));
         }
@@ -52517,6 +52656,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
           'minimized': true,
           'time_minimized': moment().format()
         });
+      },
+
+      maybeShow(force) {
+        if (!force && this.get('minimized')) {
+          // Must return the chatbox
+          return this;
+        }
+
+        return this.__super__.maybeShow.apply(this, arguments);
       }
 
     },
@@ -52690,12 +52838,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         }
 
         return div.innerHTML;
-      }
-
-    },
-    ChatBoxes: {
-      chatBoxMayBeShown(chatbox) {
-        return this.__super__.chatBoxMayBeShown.apply(this, arguments) && !chatbox.get('minimized');
       }
 
     },
@@ -53116,11 +53258,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins
           if (!_.isNil(this.trigger_el)) {
             this.trigger_el.classList.remove('selected');
           }
-        }, false); // XXX: Workaround for an apparent Bootstrap.Native bug, where
-        // the 'fade' class isn't removed after closing the modal,
-        // causing it to flash-close when you open it again.
-
-        this.el.addEventListener('shown.bs.modal', () => u.removeClass('fade', this.el), false);
+        }, false);
       },
 
       insertIntoDOM() {
@@ -53330,6 +53468,10 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       $pres = _converse$env.$pres;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].env.utils;
 const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
+const OWNER_COMMANDS = ['owner'];
+const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
+const MODERATOR_COMMANDS = ['kick', 'mute', 'voice'];
+const VISITOR_COMMANDS = ['nick'];
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins.add('converse-muc-views', {
   /* Dependencies are other plugins which might be
    * overridden or relied upon, and therefore need to be loaded before
@@ -53397,10 +53539,11 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
     _converse.api.settings.update({
       'auto_list_rooms': false,
-      'muc_disable_moderator_commands': false,
-      'muc_domain': undefined,
-      'locked_muc_nickname': false,
+      'cache_muc_messages': true,
       'locked_muc_domain': false,
+      'locked_muc_nickname': false,
+      'muc_disable_slash_commands': false,
+      'muc_domain': undefined,
       'muc_show_join_leave': true,
       'roomconfig_whitelist': [],
       'visible_toolbar_buttons': {
@@ -54246,26 +54389,40 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         return _converse.api.sendIQ(iq).then(onSuccess).catch(onError);
       },
 
-      verifyRoles(roles) {
-        const me = this.model.occupants.findWhere({
-          'jid': _converse.bare_jid
-        });
+      verifyRoles(roles, occupant) {
+        let show_error = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
-        if (!_.includes(roles, me.get('role'))) {
-          this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'));
+        if (!occupant) {
+          occupant = this.model.occupants.findWhere({
+            'jid': _converse.bare_jid
+          });
+        }
+
+        if (!_.includes(roles, occupant.get('role'))) {
+          if (show_error) {
+            this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'));
+          }
+
           return false;
         }
 
         return true;
       },
 
-      verifyAffiliations(affiliations) {
-        const me = this.model.occupants.findWhere({
-          'jid': _converse.bare_jid
-        });
+      verifyAffiliations(affiliations, occupant) {
+        let show_error = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
-        if (!_.includes(affiliations, me.get('affiliation'))) {
-          this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'));
+        if (!occupant) {
+          occupant = this.model.occupants.findWhere({
+            'jid': _converse.bare_jid
+          });
+        }
+
+        if (!_.includes(affiliations, occupant.get('affiliation'))) {
+          if (show_error) {
+            this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'));
+          }
+
           return false;
         }
 
@@ -54300,14 +54457,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       parseMessageForCommands(text) {
-        if (_converse.muc_disable_moderator_commands && !_.isArray(_converse.muc_disable_moderator_commands)) {
+        if (_converse.muc_disable_slash_commands && !_.isArray(_converse.muc_disable_slash_commands)) {
           return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
         }
 
         const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
               args = match[2] && match[2].splitOnce(' ').filter(s => s) || [],
               command = match[1].toLowerCase(),
-              disabled_commands = _.isArray(_converse.muc_disable_moderator_commands) ? _converse.muc_disable_moderator_commands : [];
+              disabled_commands = _.isArray(_converse.muc_disable_slash_commands) ? _converse.muc_disable_slash_commands : [];
 
         if (_.includes(disabled_commands, command)) {
           return false;
@@ -54315,62 +54472,104 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         switch (command) {
           case 'admin':
-            if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.model.setAffiliation('admin', [{
+                'jid': args[0],
+                'reason': args[1]
+              }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
               break;
             }
-
-            this.model.setAffiliation('admin', [{
-              'jid': args[0],
-              'reason': args[1]
-            }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
-            break;
 
           case 'ban':
-            if (!this.verifyAffiliations(['owner', 'admin']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.model.setAffiliation('outcast', [{
+                'jid': args[0],
+                'reason': args[1]
+              }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
               break;
             }
-
-            this.model.setAffiliation('outcast', [{
-              'jid': args[0],
-              'reason': args[1]
-            }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
-            break;
 
           case 'deop':
-            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              // FIXME: /deop only applies to setting a moderators
+              // role to "participant" (which only admin/owner can
+              // do). Moderators can however set non-moderator's role
+              // to participant (e.g. visitor => participant).
+              // Currently we don't distinguish between these two
+              // cases.
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.modifyRole(this.model.get('jid'), args[0], 'participant', args[1], undefined, this.onCommandError.bind(this));
               break;
             }
-
-            this.modifyRole(this.model.get('jid'), args[0], 'participant', args[1], undefined, this.onCommandError.bind(this));
-            break;
 
           case 'destroy':
-            if (!this.verifyAffiliations(['owner'])) {
+            {
+              if (!this.verifyAffiliations(['owner'])) {
+                break;
+              }
+
+              this.destroy(this.model.get('jid'), args[0]).then(() => this.close()).catch(e => this.onCommandError(e));
               break;
             }
-
-            this.destroy(this.model.get('jid'), args[0]).then(() => this.close()).catch(e => this.onCommandError(e));
-            break;
 
           case 'help':
-            this.showHelpMessages(_.filter([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/destroy</strong>: ${__('Remove this groupchat')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this groupchat")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`], line => _.every(disabled_commands, element => !line.startsWith(element + '<', 9))));
-            break;
+            {
+              // FIXME: The availability of some of these commands
+              // depend on the MUCs configuration (e.g. whether it's
+              // moderated or not). We need to take that into
+              // consideration.
+              let allowed_commands = ['clear', 'help', 'me', 'nick', 'subject', 'topic', 'register'];
+              const occupant = this.model.occupants.findWhere({
+                'jid': _converse.bare_jid
+              });
+
+              if (this.verifyAffiliations('owner', occupant, false)) {
+                allowed_commands = allowed_commands.concat(OWNER_COMMANDS).concat(ADMIN_COMMANDS);
+              } else if (this.verifyAffiliations('admin', occupant, false)) {
+                allowed_commands = allowed_commands.concat(ADMIN_COMMANDS);
+              }
+
+              if (this.verifyRoles('moderator', occupant, false)) {
+                allowed_commands = allowed_commands.concat(MODERATOR_COMMANDS).concat(VISITOR_COMMANDS);
+              } else if (!this.verifyRoles(['visitor', 'participant', 'moderator'], occupant, false)) {
+                allowed_commands = allowed_commands.concat(VISITOR_COMMANDS);
+              }
+
+              this.showHelpMessages([`<strong>${__("You can run the following commands")}</strong>`]);
+              this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Clear the chat area')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/destroy</strong>: ${__('Remove this groupchat')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register your nickname")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`].filter(line => disabled_commands.every(c => !line.startsWith(c + '<', 9))).filter(line => allowed_commands.some(c => line.startsWith(c + '<', 9))));
+              break;
+            }
 
           case 'kick':
-            if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.modifyRole(this.model.get('jid'), args[0], 'none', args[1], undefined, this.onCommandError.bind(this));
               break;
             }
-
-            this.modifyRole(this.model.get('jid'), args[0], 'none', args[1], undefined, this.onCommandError.bind(this));
-            break;
 
           case 'mute':
-            if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.modifyRole(this.model.get('jid'), args[0], 'visitor', args[1], undefined, this.onCommandError.bind(this));
               break;
             }
-
-            this.modifyRole(this.model.get('jid'), args[0], 'visitor', args[1], undefined, this.onCommandError.bind(this));
-            break;
 
           case 'member':
             {
@@ -54397,17 +54596,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
             }
 
           case 'nick':
-            if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
+            {
+              if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
+                break;
+              }
+
+              _converse.api.send($pres({
+                from: _converse.connection.jid,
+                to: this.model.getRoomJIDAndNick(match[2]),
+                id: _converse.connection.getUniqueId()
+              }).tree());
+
               break;
             }
-
-            _converse.api.send($pres({
-              from: _converse.connection.jid,
-              to: this.model.getRoomJIDAndNick(match[2]),
-              id: _converse.connection.getUniqueId()
-            }).tree());
-
-            break;
 
           case 'owner':
             if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
@@ -54421,34 +54622,40 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
             break;
 
           case 'op':
-            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.modifyRole(this.model.get('jid'), args[0], 'moderator', args[1], undefined, this.onCommandError.bind(this));
               break;
             }
-
-            this.modifyRole(this.model.get('jid'), args[0], 'moderator', args[1], undefined, this.onCommandError.bind(this));
-            break;
 
           case 'register':
-            if (args.length > 1) {
-              this.showErrorMessage(__('Error: invalid number of arguments'));
-            } else {
-              this.model.registerNickname().then(err_msg => {
-                if (err_msg) this.showErrorMessage(err_msg);
-              });
-            }
+            {
+              if (args.length > 1) {
+                this.showErrorMessage(__('Error: invalid number of arguments'));
+              } else {
+                this.model.registerNickname().then(err_msg => {
+                  if (err_msg) this.showErrorMessage(err_msg);
+                });
+              }
 
-            break;
-
-          case 'revoke':
-            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
               break;
             }
 
-            this.model.setAffiliation('none', [{
-              'jid': args[0],
-              'reason': args[1]
-            }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
-            break;
+          case 'revoke':
+            {
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.model.setAffiliation('none', [{
+                'jid': args[0],
+                'reason': args[1]
+              }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
+              break;
+            }
 
           case 'topic':
           case 'subject':
@@ -54464,12 +54671,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
             break;
 
           case 'voice':
-            if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.modifyRole(this.model.get('jid'), args[0], 'participant', args[1], undefined, this.onCommandError.bind(this));
               break;
             }
-
-            this.modifyRole(this.model.get('jid'), args[0], 'participant', args[1], undefined, this.onCommandError.bind(this));
-            break;
 
           default:
             return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
@@ -54533,6 +54742,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           return this;
         }
 
+        this.showSpinner();
         this.model.join(nick, password);
         return this;
       },
@@ -54547,54 +54757,27 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
        * @param { XMLElement } stanza: The IQ stanza containing the groupchat config.
        */
       renderConfigurationForm(stanza) {
-        const container_el = this.el.querySelector('.chatroom-body');
+        this.hideChatRoomContents();
+        this.model.save('config_stanza', stanza.outerHTML);
 
-        _.each(container_el.querySelectorAll('.chatroom-form-container'), u.removeElement);
-
-        _.each(container_el.children, u.hideElement);
-
-        container_el.insertAdjacentHTML('beforeend', templates_chatroom_form_html__WEBPACK_IMPORTED_MODULE_15___default()());
-
-        const form_el = container_el.querySelector('form.chatroom-form'),
-              fieldset_el = form_el.querySelector('fieldset'),
-              fields = stanza.querySelectorAll('field'),
-              title = _.get(stanza.querySelector('title'), 'textContent'),
-              instructions = _.get(stanza.querySelector('instructions'), 'textContent');
-
-        u.removeElement(fieldset_el.querySelector('span.spinner'));
-        fieldset_el.insertAdjacentHTML('beforeend', `<legend>${title}</legend>`);
-
-        if (instructions && instructions !== title) {
-          fieldset_el.insertAdjacentHTML('beforeend', `<p class="form-help">${instructions}</p>`);
+        if (!this.config_form) {
+          const _converse = this.__super__._converse;
+          this.config_form = new _converse.MUCConfigForm({
+            'model': this.model,
+            'chatroomview': this
+          });
+          const container_el = this.el.querySelector('.chatroom-body');
+          container_el.insertAdjacentElement('beforeend', this.config_form.el);
         }
 
-        _.each(fields, field => {
-          if (_converse.roomconfig_whitelist.length === 0 || _.includes(_converse.roomconfig_whitelist, field.getAttribute('var'))) {
-            fieldset_el.insertAdjacentHTML('beforeend', u.xForm2webForm(field, stanza));
-          }
-        }); // Render save/cancel buttons
-
-
-        const last_fieldset_el = document.createElement('fieldset');
-        last_fieldset_el.insertAdjacentHTML('beforeend', `<input type="submit" class="btn btn-primary" value="${__('Save')}"/>`);
-        last_fieldset_el.insertAdjacentHTML('beforeend', `<input type="button" class="btn btn-secondary" value="${__('Cancel')}"/>`);
-        form_el.insertAdjacentElement('beforeend', last_fieldset_el);
-        last_fieldset_el.querySelector('input[type=button]').addEventListener('click', ev => {
-          ev.preventDefault();
-          this.closeForm();
-        });
-        form_el.addEventListener('submit', ev => {
-          ev.preventDefault();
-          this.model.saveConfiguration(ev.target).then(() => this.model.refreshRoomFeatures());
-          this.closeForm();
-        }, false);
+        u.showElement(this.config_form.el);
       },
 
       closeForm() {
         /* Remove the configuration form without submitting and
          * return to the chat view.
          */
-        u.removeElement(this.el.querySelector('.chatroom-form-container'));
+        sizzle('.chatroom-form-container', this.el).forEach(e => u.addClass('hidden', e));
         this.renderAfterTransition();
       },
 
@@ -54613,27 +54796,12 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          *      case, auto-configure won't happen, regardless of
          *      the settings.
          */
-        this.showSpinner();
-        this.model.fetchRoomConfiguration().then(iq => this.renderConfigurationForm(iq)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
-      },
-
-      submitNickname(ev) {
-        /* Get the nickname value from the form and then join the
-         * groupchat with it.
-         */
-        ev.preventDefault();
-        const nick_el = ev.target.nick;
-        const nick = nick_el.value;
-
-        if (!nick) {
-          nick_el.classList.add('error');
-          return;
+        if (!this.config_form || !u.isVisible(this.config_form.el)) {
+          this.showSpinner();
+          this.model.fetchRoomConfiguration().then(iq => this.renderConfigurationForm(iq)).catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
         } else {
-          nick_el.classList.remove('error');
+          this.closeForm();
         }
-
-        this.el.querySelector('.chatroom-form-container').outerHTML = templates_spinner_html__WEBPACK_IMPORTED_MODULE_28___default()();
-        this.join(nick);
       },
 
       checkForReservedNick() {
@@ -54697,53 +54865,47 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
       },
 
-      renderNicknameForm(message) {
-        /* Render a form which allows the user to choose their
-         * nickname.
+      renderNicknameForm() {
+        let message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+        /* Render a form which allows the user to choose theirnickname.
          */
         this.hideChatRoomContents();
 
-        _.each(this.el.querySelectorAll('span.centered.spinner'), u.removeElement);
-
-        if (!_.isString(message)) {
-          message = '';
+        if (!this.nickname_form) {
+          this.nickname_form = new _converse.MUCNicknameForm({
+            'model': new Backbone.Model(),
+            'chatroomview': this,
+            'validation_message': message
+          });
+          const container_el = this.el.querySelector('.chatroom-body');
+          container_el.insertAdjacentElement('beforeend', this.nickname_form.el);
+        } else {
+          this.nickname_form.model.set('validation_message', message);
         }
 
-        const container_el = this.el.querySelector('.chatroom-body');
-        container_el.insertAdjacentHTML('beforeend', templates_chatroom_nickname_form_html__WEBPACK_IMPORTED_MODULE_18___default()({
-          heading: __('Please choose your nickname'),
-          label_nickname: __('Nickname'),
-          label_join: __('Enter groupchat'),
-          validation_message: message
-        }));
+        u.showElement(this.nickname_form.el);
         this.model.save('connection_status', _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].ROOMSTATUS.NICKNAME_REQUIRED);
-        const form_el = this.el.querySelector('.chatroom-form');
-        form_el.addEventListener('submit', this.submitNickname.bind(this), false);
-      },
-
-      submitPassword(ev) {
-        ev.preventDefault();
-        const password = this.el.querySelector('.chatroom-form input[type=password]').value;
-        this.showSpinner();
-        this.join(this.model.get('nick'), password);
       },
 
       renderPasswordForm() {
-        const container_el = this.el.querySelector('.chatroom-body');
+        let message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+        this.hideChatRoomContents();
 
-        _.each(container_el.children, u.hideElement);
+        if (!this.password_form) {
+          this.password_form = new _converse.MUCPasswordForm({
+            'model': new Backbone.Model(),
+            'chatroomview': this,
+            'validation_message': message
+          });
+          const container_el = this.el.querySelector('.chatroom-body');
+          container_el.insertAdjacentElement('beforeend', this.password_form.el);
+        } else {
+          this.model.set('validation_message', message);
+        }
 
-        _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
-
-        _.each(this.el.querySelectorAll('.chatroom-form-container'), u.removeElement);
-
-        container_el.insertAdjacentHTML('beforeend', templates_chatroom_password_form_html__WEBPACK_IMPORTED_MODULE_19___default()({
-          'heading': __('This groupchat requires a password'),
-          'label_password': __('Password: '),
-          'label_submit': __('Submit')
-        }));
+        u.showElement(this.password_form.el);
         this.model.save('connection_status', _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].ROOMSTATUS.PASSWORD_REQUIRED);
-        this.el.querySelector('.chatroom-form').addEventListener('submit', ev => this.submitPassword(ev), false);
       },
 
       showDestroyedMessage(error) {
@@ -55138,7 +55300,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         if (error.getAttribute('type') === 'auth') {
           if (!_.isNull(error.querySelector('not-authorized'))) {
-            this.renderPasswordForm();
+            this.renderPasswordForm(__("Password incorrect"));
           } else if (!_.isNull(error.querySelector('registration-required'))) {
             this.showDisconnectMessages(__('You are not on the member list of this groupchat.'));
           } else if (!_.isNull(error.querySelector('forbidden'))) {
@@ -55193,11 +55355,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
       showSpinner() {
         u.removeElement(this.el.querySelector('.spinner'));
+        this.hideChatRoomContents();
         const container_el = this.el.querySelector('.chatroom-body');
-        const children = Array.prototype.slice.call(container_el.children, 0);
         container_el.insertAdjacentHTML('afterbegin', templates_spinner_html__WEBPACK_IMPORTED_MODULE_28___default()());
-
-        _.each(children, u.hideElement);
       },
 
       hideSpinner() {
@@ -55281,6 +55441,132 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         this.list_rooms_modal.show(ev);
+      }
+
+    });
+    _converse.MUCConfigForm = Backbone.VDOMView.extend({
+      className: 'muc-config-form',
+      events: {
+        'submit form': 'submitConfigForm',
+        'click .button-cancel': 'closeConfigForm'
+      },
+
+      initialize(attrs) {
+        this.chatroomview = attrs.chatroomview;
+        this.chatroomview.model.features.on('change:passwordprotected', this.render, this);
+        this.chatroomview.model.features.on('change:config_stanza', this.render, this);
+        this.render();
+      },
+
+      toHTML() {
+        const stanza = u.toStanza(this.model.get('config_stanza'));
+        const whitelist = _converse.roomconfig_whitelist;
+        let fields = sizzle('field', stanza);
+
+        if (whitelist.length) {
+          fields = fields.filter(f => _.includes(whitelist, f.getAttribute('var')));
+        }
+
+        const password_protected = this.model.features.get('passwordprotected');
+        const options = {
+          'new_password': !password_protected,
+          'fixed_username': this.model.get('jid')
+        };
+        return templates_chatroom_form_html__WEBPACK_IMPORTED_MODULE_15___default()({
+          '__': __,
+          'title': _.get(stanza.querySelector('title'), 'textContent'),
+          'instructions': _.get(stanza.querySelector('instructions'), 'textContent'),
+          'fields': fields.map(f => u.xForm2webForm(f, stanza, options))
+        });
+      },
+
+      submitConfigForm(ev) {
+        ev.preventDefault();
+        this.model.saveConfiguration(ev.target).then(() => this.model.refreshRoomFeatures());
+        this.chatroomview.closeForm();
+      },
+
+      closeConfigForm(ev) {
+        ev.preventDefault();
+        this.chatroomview.closeForm();
+      }
+
+    });
+    _converse.MUCPasswordForm = Backbone.VDOMView.extend({
+      className: 'muc-password-form',
+      events: {
+        'submit form': 'submitPassword'
+      },
+
+      initialize(attrs) {
+        this.chatroomview = attrs.chatroomview;
+        this.model.on('change:validation_message', this.render, this);
+        this.render();
+      },
+
+      toHTML() {
+        const err_msg = this.model.get('validation_message');
+        return templates_chatroom_password_form_html__WEBPACK_IMPORTED_MODULE_19___default()({
+          'jid': this.model.get('jid'),
+          'heading': __('This groupchat requires a password'),
+          'label_password': __('Password: '),
+          'label_submit': __('Submit'),
+          'error_class': err_msg ? 'error' : '',
+          'validation_message': err_msg
+        });
+      },
+
+      submitPassword(ev) {
+        ev.preventDefault();
+        const password = this.el.querySelector('input[type=password]').value;
+        this.chatroomview.join(this.chatroomview.model.get('nick'), password);
+        this.model.set('validation_message', null);
+      }
+
+    });
+    _converse.MUCNicknameForm = Backbone.VDOMView.extend({
+      className: 'muc-nickname-form',
+      events: {
+        'submit form': 'submitNickname'
+      },
+
+      initialize(attrs) {
+        this.chatroomview = attrs.chatroomview;
+        this.model.on('change:validation_message', this.render, this);
+        this.render();
+      },
+
+      toHTML() {
+        const err_msg = this.model.get('validation_message');
+        return templates_chatroom_nickname_form_html__WEBPACK_IMPORTED_MODULE_18___default()({
+          'heading': __('Please choose your nickname'),
+          'label_nickname': __('Nickname'),
+          'label_join': __('Enter groupchat'),
+          'error_class': err_msg ? 'error' : '',
+          'validation_message': err_msg,
+          'nickname': this.model.get('nickname')
+        });
+      },
+
+      submitNickname(ev) {
+        /* Get the nickname value from the form and then join the
+         * groupchat with it.
+         */
+        ev.preventDefault();
+        const nick_el = ev.target.nick;
+        const nick = nick_el.value;
+
+        if (nick) {
+          this.chatroomview.join(nick);
+          this.model.set({
+            'validation_message': null,
+            'nickname': nick
+          });
+        } else {
+          return this.model.set({
+            'validation_message': __('You need to provide a nickname')
+          });
+        }
       }
 
     });
@@ -55559,7 +55845,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       /* Upon a reconnection event from converse, join again
        * all the open groupchats.
        */
-      _converse.chatboxviews.each(function (view) {
+      _converse.chatboxviews.each(view => {
         if (view.model.get('type') === _converse.CHATROOMS_TYPE) {
           view.model.save('connection_status', _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].ROOMSTATUS.DISCONNECTED);
           view.model.registerHandlers();
@@ -57521,7 +57807,8 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       Promise = _converse$env.Promise,
       utils = _converse$env.utils,
       _ = _converse$env._,
-      moment = _converse$env.moment;
+      moment = _converse$env.moment,
+      sizzle = _converse$env.sizzle;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].env.utils;
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins.add('converse-profile', {
   dependencies: ["converse-modal", "converse-vcard", "converse-chatboxviews"],
@@ -57572,7 +57859,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
           'label_jid': __('XMPP Address (JID)'),
           'label_nickname': __('Nickname'),
           'label_role': __('Role'),
-          'label_role_help': __('Use commas to separate multiple roles. Your roles are shown next to your name on your chat messages.'),
+          'label_role_help': __('Use commas to separate multiple roles. ' + 'Your roles are shown next to your name on your chat messages.'),
           'label_url': __('URL'),
           'utils': u,
           'view': this
@@ -57580,7 +57867,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
       },
 
       afterRender() {
-        this.tabs = _.map(this.el.querySelectorAll('.nav-item'), tab => new bootstrap_native__WEBPACK_IMPORTED_MODULE_3___default.a.Tab(tab));
+        this.tabs = sizzle('.nav-item .nav-link', this.el).map(e => new bootstrap_native__WEBPACK_IMPORTED_MODULE_3___default.a.Tab(e));
       },
 
       openFileSelection(ev) {
@@ -58518,7 +58805,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 
         if (this.form_type === 'xform') {
           _.each(stanza.querySelectorAll('field'), field => {
-            buttons.insertAdjacentHTML('beforebegin', _converse_headless_utils_form__WEBPACK_IMPORTED_MODULE_9__["default"].xForm2webForm(field, stanza, this.domain));
+            buttons.insertAdjacentHTML('beforebegin', _converse_headless_utils_form__WEBPACK_IMPORTED_MODULE_9__["default"].xForm2webForm(field, stanza, {
+              'domain': this.domain
+            }));
           });
         } else {
           this.renderLegacyRegistrationForm(form);
@@ -59005,7 +59294,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         const data = {
           'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
         };
-        await _converse.api.rooms.open(jid, data);
+        await _converse.api.rooms.open(jid, data, true);
 
         _converse.api.chatviews.get(jid).focus();
       },
@@ -59716,7 +60005,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
 
         const attrs = this.model.attributes;
 
-        _converse.api.chats.open(attrs.jid, attrs);
+        _converse.api.chats.open(attrs.jid, attrs, true);
       },
 
       async removeContact(ev) {
@@ -60344,27 +60633,28 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
     // relevant objects or classes.
     //
     // new functions which don't exist yet can also be added.
-    ChatBoxes: {
-      chatBoxMayBeShown(chatbox) {
+    ChatBox: {
+      maybeShow(force) {
+        // This method must return the chatbox
         const _converse = this.__super__._converse;
 
-        if (chatbox.get('id') === 'controlbox') {
-          return true;
-        }
+        if (!force && _converse.isUniView()) {
+          if (this.get('id') === 'controlbox') {
+            return this.trigger('show');
+          }
 
-        if (_converse.isUniView()) {
           const any_chats_visible = _converse.chatboxes.filter(cb => cb.get('id') != 'controlbox').filter(cb => !cb.get('hidden')).length > 0;
 
-          if (any_chats_visible) {
-            return !chatbox.get('hidden');
-          } else {
-            return true;
+          if (!any_chats_visible || !this.get('hidden')) {
+            return this.trigger('show');
           }
         } else {
-          return this.__super__.chatBoxMayBeShown.apply(this, arguments);
+          return this.__super__.maybeShow.apply(this, arguments);
         }
-      },
+      }
 
+    },
+    ChatBoxes: {
       createChatBox(jid, attrs) {
         /* Make sure new chat boxes are hidden by default. */
         const _converse = this.__super__._converse;
@@ -61735,7 +62025,6 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment,
       sizzle = _converse$env.sizzle,
       utils = _converse$env.utils,
@@ -61778,12 +62067,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
     const ModelWithContact = Backbone.Model.extend({
       async setRosterContact(jid) {
-        await _converse.api.waitUntil('rosterContactsFetched');
-
-        const contact = _converse.roster.get(jid);
+        const contact = await _converse.api.contacts.get(jid);
 
         if (contact) {
           this.contact = contact;
+          this.set('nickname', contact.get('nickname'));
           this.trigger('rosterContactAdded');
         }
       }
@@ -62011,6 +62299,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'message_type': 'chat',
           'nickname': undefined,
           'num_unread': 0,
+          'time_opened': this.get('time_opened') || moment().valueOf(),
           'type': _converse.PRIVATE_CHAT_TYPE,
           'url': ''
         };
@@ -62028,15 +62317,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           // This happens when the controlbox is in browser storage,
           // but we're in embedded mode.
           return;
-        } // XXX: this creates a dependency on converse-roster, which we
-        // probably shouldn't have here, so we should probably move
-        // ChatBox out of converse-chatboxes
+        }
 
-
-        this.presence = _converse.presences.findWhere({
-          'jid': jid
-        }) || _converse.presences.create({
-          'jid': jid
+        this.set({
+          'box_id': `box-${btoa(jid)}`
         });
 
         if (_converse.vcards) {
@@ -62048,30 +62332,29 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
 
         if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+          this.presence = _converse.presences.findWhere({
+            'jid': jid
+          }) || _converse.presences.create({
+            'jid': jid
+          });
           this.setRosterContact(jid);
         }
 
+        this.on('change:chat_state', this.sendChatState, this);
+        this.initMessages();
+      },
+
+      initMessages() {
         this.messages = new _converse.Messages();
 
         const storage = _converse.config.get('storage');
 
-        this.messages.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.messages${jid}${_converse.bare_jid}`));
+        this.messages.browserStorage = new Backbone.BrowserStorage[storage](`converse.messages-${this.get('jid')}-${_converse.bare_jid}`);
         this.messages.chatbox = this;
         this.messages.on('change:upload', message => {
           if (message.get('upload') === _converse.SUCCESS) {
             _converse.api.send(this.createMessageStanza(message));
           }
-        });
-        this.on('change:chat_state', this.sendChatState, this); // Models get saved immediately after creation, so no need to
-        // call `save` here.
-
-        this.set({
-          // The chat_state will be set to ACTIVE once the chat box is opened
-          // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
-          'box_id': b64_sha1(this.get('jid')),
-          'time_opened': this.get('time_opened') || moment().valueOf(),
-          'user_id': Strophe.getNodeFromJid(this.get('jid')),
-          'nickname': _.get(_converse.api.contacts.get(this.get('jid')), 'attributes.nickname')
         });
       },
 
@@ -62610,6 +62893,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return attrs;
       },
 
+      maybeShow() {
+        // Returns the chatbox
+        return this.trigger("show");
+      },
+
       isHidden() {
         /* Returns a boolean to indicate whether a newly received
          * message will be visible to the user or not.
@@ -62682,17 +62970,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }, null, 'message', 'error');
       },
 
-      chatBoxMayBeShown(chatbox) {
-        return true;
-      },
-
       onChatBoxesFetched(collection) {
         /* Show chat boxes upon receiving them from sessionStorage */
-        collection.each(chatbox => {
-          if (this.chatBoxMayBeShown(chatbox)) {
-            chatbox.trigger('show');
-          }
-        });
+        collection.each(chatbox => chatbox.maybeShow());
         /**
          * Triggered when a message stanza is been received and processed.
          * @event _converse#message
@@ -62748,6 +63028,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         } else {
           // An error message without id likely means that we
           // sent a message without id (which shouldn't happen).
+          _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
+
           _converse.log(message, Strophe.LogLevel.ERROR);
         }
 
@@ -62805,8 +63087,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
               from_resource = Strophe.getResourceFromJid(from_jid),
               is_me = from_bare_jid === _converse.bare_jid;
-        let contact_jid,
-            is_roster_contact = false;
+        let contact_jid;
 
         if (is_me) {
           // I am the sender, so this must be a forwarded message...
@@ -62817,17 +63098,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           contact_jid = Strophe.getBareJidFromJid(to_jid);
         } else {
           contact_jid = from_bare_jid;
-          await _converse.api.waitUntil('rosterContactsFetched');
-          is_roster_contact = !_.isUndefined(_converse.roster.get(contact_jid));
+        }
 
-          if (!is_roster_contact && !_converse.allow_non_roster_messaging) {
-            return;
-          }
+        const contact = await _converse.api.contacts.get(contact_jid);
+        const is_roster_contact = !_.isUndefined(contact);
+
+        if (!is_me && !is_roster_contact && !_converse.allow_non_roster_messaging) {
+          return;
         } // Get chat box, but only create when the message has something to show to the user
 
 
         const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0,
-              roster_nick = _.get(_converse.api.contacts.get(contact_jid), 'attributes.nickname'),
+              roster_nick = _.get(contact, 'attributes.nickname'),
               chatbox = this.getChatBox(contact_jid, {
           'nickname': roster_nick
         }, has_body);
@@ -62976,18 +63258,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         /**
          * @method _converse.api.chats.create
          * @param {string|string[]} jid|jids An jid or array of jids
-         * @param {object} attrs An object containing configuration attributes.
+         * @param {object} [attrs] An object containing configuration attributes.
          */
-        'create'(jids, attrs) {
-          if (_.isUndefined(jids)) {
-            _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
-
-            return null;
-          }
-
+        async create(jids, attrs) {
           if (_.isString(jids)) {
             if (attrs && !_.get(attrs, 'fullname')) {
-              attrs.fullname = _.get(_converse.api.contacts.get(jids), 'attributes.fullname');
+              const contact = await _converse.api.contacts.get(jids);
+              attrs.fullname = _.get(contact, 'attributes.fullname');
             }
 
             const chatbox = _converse.chatboxes.getChatBox(jids, attrs, true);
@@ -63001,10 +63278,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             return chatbox;
           }
 
-          return _.map(jids, jid => {
-            attrs.fullname = _.get(_converse.api.contacts.get(jid), 'attributes.fullname');
-            return _converse.chatboxes.getChatBox(jid, attrs, true).trigger('show');
-          });
+          if (_.isArray(jids)) {
+            return Promise.all(jids.forEach(async jid => {
+              const contact = await _converse.api.contacts.get(jids);
+              attrs.fullname = _.get(contact, 'attributes.fullname');
+              return _converse.chatboxes.getChatBox(jid, attrs, true).maybeShow();
+            }));
+          }
+
+          _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+
+          return null;
         },
 
         /**
@@ -63012,7 +63296,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          *
          * @method _converse.api.chats.open
          * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-         * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
+         * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
+         * @param {Boolean} [attrs.minimized] - Should the chat be
+         *   created in minimized state.
+         * @param {Boolean} [force=false] - By default, a minimized
+         *   chat won't be maximized (in `overlayed` view mode) and in
+         *   `fullscreen` view mode a newly opened chat won't replace
+         *   another chat already in the foreground.
+         *   Set `force` to `true` if you want to force the chat to be
+         *   maximized or shown.
+         * @returns {Promise} Promise which resolves with the
+         *   _converse.ChatBox representing the chat.
          *
          * @example
          * // To open a single chat, provide the JID of the contact you're chatting with in that chat:
@@ -63020,7 +63314,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          *     initialize: function() {
          *         var _converse = this._converse;
          *         // Note, buddy@example.org must be in your contacts roster!
-         *         _converse.api.chats.open('buddy@example.com').then((chat) => {
+         *         _converse.api.chats.open('buddy@example.com').then(chat => {
          *             // Now you can do something with the chat model
          *         });
          *     }
@@ -63032,36 +63326,34 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          *     initialize: function () {
          *         var _converse = this._converse;
          *         // Note, these users must first be in your contacts roster!
-         *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then((chats) => {
+         *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then(chats => {
          *             // Now you can do something with the chat models
          *         });
          *     }
          * });
-         *
          */
-        'open'(jids, attrs) {
-          return new Promise((resolve, reject) => {
-            Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(() => {
-              if (_.isUndefined(jids)) {
-                const err_msg = "chats.open: You need to provide at least one JID";
+        async open(jids, attrs, force) {
+          await Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]);
 
-                _converse.log(err_msg, Strophe.LogLevel.ERROR);
+          if (_.isString(jids)) {
+            const chat = await _converse.api.chats.create(jids, attrs);
+            return chat.maybeShow(force);
+          } else if (_.isArray(jids)) {
+            return Promise.all(jids.map(j => _converse.api.chats.create(j, attrs).then(c => c.maybeShow(force))));
+          }
 
-                reject(new Error(err_msg));
-              } else if (_.isString(jids)) {
-                resolve(_converse.api.chats.create(jids, attrs).trigger('show'));
-              } else {
-                resolve(_.map(jids, jid => _converse.api.chats.create(jid, attrs).trigger('show')));
-              }
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-          });
+          const err_msg = "chats.open: You need to provide at least one JID";
+
+          _converse.log(err_msg, Strophe.LogLevel.ERROR);
+
+          throw new Error(err_msg);
         },
 
         /**
          * Returns a chat model. The chat should already be open.
          *
          * @method _converse.api.chats.get
-         * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+         * @param {String|string[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
          * @returns {_converse.ChatBox}
          *
          * @example
@@ -63077,7 +63369,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          * const models = _converse.api.chats.get();
          *
          */
-        'get'(jids) {
+        get(jids) {
           if (_.isUndefined(jids)) {
             const result = [];
 
@@ -63431,11 +63723,9 @@ function addPromise(promise) {
   _converse.promises[promise] = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].getResolveablePromise();
 }
 
-_converse.emit = function (name) {
-  _converse.log("(DEPRECATION) " + "_converse.emit has been has been deprecated. " + "Please use `_converse.api.trigger` instead.", strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.WARN);
-
-  _converse.api.emit.apply(_converse, arguments);
-};
+function isTestEnv() {
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(_converse.connection, 'service') === 'jasmine tests';
+}
 
 _converse.isUniView = function () {
   /* We distinguish between UniView and MultiView instances.
@@ -63467,12 +63757,6 @@ function initPlugins() {
   }
 
   _converse.pluggable.initializePlugins({
-    'updateSettings'() {
-      _converse.log("(DEPRECATION) " + "The `updateSettings` method has been deprecated. " + "Please use `_converse.api.settings.update` instead.", strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.WARN);
-
-      _converse.api.settings.update.apply(_converse, arguments);
-    },
-
     '_converse': _converse
   }, whitelist, _converse.blacklisted_plugins);
   /**
@@ -63554,27 +63838,72 @@ _converse.initConnection = function () {
   _converse.api.trigger('connectionInitialized');
 };
 
+async function initSession() {
+  const id = 'converse.bosh-session';
+  _converse.session = new Backbone.Model({
+    id
+  });
+  _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
+
+  try {
+    await new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((success, error) => _converse.session.fetch({
+      success,
+      error
+    }));
+
+    if (_converse.jid && _converse.session.get('jid') !== _converse.jid) {
+      _converse.session.clear({
+        'silent': true
+      });
+
+      _converse.session.save({
+        'jid': _converse.jid,
+        id
+      });
+    }
+  } catch (e) {
+    if (_converse.jid) {
+      _converse.session.save({
+        'jid': _converse.jid
+      });
+    }
+  }
+  /**
+   * Triggered once the session has been initialized. The session is a
+   * persistent object which stores session information in the browser storage.
+   * @event _converse#sessionInitialized
+   * @memberOf _converse
+   */
+
+
+  _converse.api.trigger('sessionInitialized');
+}
+
 function setUpXMLLogging() {
   strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].log = function (level, msg) {
     _converse.log(msg, level);
   };
 
-  if (_converse.debug) {
-    _converse.connection.xmlInput = function (body) {
+  _converse.connection.xmlInput = function (body) {
+    if (_converse.debug) {
       _converse.log(body.outerHTML, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.DEBUG, 'color: darkgoldenrod');
-    };
+    }
+  };
 
-    _converse.connection.xmlOutput = function (body) {
+  _converse.connection.xmlOutput = function (body) {
+    if (_converse.debug) {
       _converse.log(body.outerHTML, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.DEBUG, 'color: darkcyan');
-    };
-  }
+    }
+  };
 }
 
-function finishInitialization() {
+async function finishInitialization() {
   initClientConfig();
   initPlugins();
 
   _converse.initConnection();
+
+  await initSession();
 
   _converse.logIn();
 
@@ -63591,6 +63920,36 @@ function finishInitialization() {
   }
 }
 
+function fetchLoginCredentials() {
+  return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', _converse.credentials_url, true);
+    xhr.setRequestHeader('Accept', "application/json, text/javascript");
+
+    xhr.onload = function () {
+      if (xhr.status >= 200 && xhr.status < 400) {
+        const data = JSON.parse(xhr.responseText);
+        resolve({
+          'jid': data.jid,
+          'password': data.password
+        });
+      } else {
+        xhr.onerror({});
+      }
+    };
+
+    xhr.onerror = function () {
+      delete _converse.connection;
+
+      _converse.api.trigger('noResumeableSession', this);
+
+      reject(new Error(xhr.responseText));
+    };
+
+    xhr.send();
+  });
+}
+
 function unregisterGlobalEventHandlers() {
   document.removeEventListener("visibilitychange", _converse.saveWindowState);
 
@@ -63602,35 +63961,16 @@ function cleanup() {
   // out or disconnecting in the previous session.
   // This happens in tests. We therefore first clean up.
   Backbone.history.stop();
-
-  if (_converse.chatboxviews) {
-    _converse.chatboxviews.closeAllChatBoxes();
-  }
-
   unregisterGlobalEventHandlers();
-  window.localStorage.clear();
-  window.sessionStorage.clear();
-
-  if (_converse.bookmarks) {
-    _converse.bookmarks.reset();
-  }
-
   delete _converse.controlboxtoggle;
 
   if (_converse.chatboxviews) {
     delete _converse.chatboxviews;
   }
 
-  _converse.connection.reset();
-
-  _converse.tearDown();
-
   _converse.stopListening();
 
   _converse.off();
-
-  delete _converse.config;
-  initClientConfig();
 }
 
 _converse.initialize = async function (settings, callback) {
@@ -63848,11 +64188,11 @@ _converse.initialize = async function (settings, callback) {
     _converse.tearDown();
 
     _converse.logIn(null, true);
-  }, 3000, {
+  }, 2000, {
     'leading': true
   });
 
-  this.disconnect = function () {
+  this.finishDisconnection = function () {
     _converse.log('DISCONNECTED');
 
     delete _converse.connection.reconnecting;
@@ -63889,10 +64229,10 @@ _converse.initialize = async function (settings, callback) {
 
         return _converse.reconnect();
       } else {
-        return _converse.disconnect();
+        return _converse.finishDisconnection();
       }
     } else if (_converse.disconnection_cause === _converse.LOGOUT || !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(reason) && reason === _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"], 'ErrorCondition.NO_AUTH_MECH') || reason === "host-unknown" || reason === "remote-connection-failed" || !_converse.auto_reconnect) {
-      return _converse.disconnect();
+      return _converse.finishDisconnection();
     }
     /**
      * Triggered when the connection has dropped, but Converse will attempt
@@ -64037,31 +64377,14 @@ _converse.initialize = async function (settings, callback) {
     }
   };
 
-  this.initSession = function () {
-    const id = 'converse.bosh-session';
-    _converse.session = new Backbone.Model({
-      id
-    });
-    _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
-
-    _converse.session.fetch();
-    /**
-     * Triggered once the session has been initialized. The session is a
-     * persistent object which stores session information in the browser storage.
-     * @event _converse#sessionInitialized
-     * @memberOf _converse
-     */
-
-
-    _converse.api.trigger('sessionInitialized');
-  };
-
   this.clearSession = function () {
-    if (!_converse.config.get('trusted')) {
+    if (!_converse.config.get('trusted') || isTestEnv()) {
       window.localStorage.clear();
       window.sessionStorage.clear();
-    } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(this.session) && this.session.browserStorage) {
-      this.session.browserStorage._clear();
+    } else {
+      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(_converse, 'session.browserStorage', {
+        '_clear': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop
+      })._clear();
     }
     /**
      * Triggered once the session information has been cleared,
@@ -64235,6 +64558,19 @@ _converse.initialize = async function (settings, callback) {
     _converse.resource = strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getResourceFromJid(_converse.connection.jid);
     _converse.domain = strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getDomainFromJid(_converse.connection.jid);
 
+    _converse.session.save({
+      'jid': _converse.connection.jid,
+      'bare_jid': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getBareJidFromJid(_converse.connection.jid),
+      'resource': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getResourceFromJid(_converse.connection.jid),
+      'domain': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getDomainFromJid(_converse.connection.jid)
+    });
+    /**
+     * Triggered once we have the user's full JID and it's been save in the
+     * session.
+     * @event _converse#setUserJID
+     */
+
+
     _converse.api.trigger('setUserJID');
   };
 
@@ -64246,8 +64582,6 @@ _converse.initialize = async function (settings, callback) {
 
 
     _converse.setUserJID();
-
-    _converse.initSession();
 
     _converse.enableCarbons();
 
@@ -64345,34 +64679,6 @@ _converse.initialize = async function (settings, callback) {
 
   });
 
-  this.fetchLoginCredentials = () => new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', _converse.credentials_url, true);
-    xhr.setRequestHeader('Accept', "application/json, text/javascript");
-
-    xhr.onload = function () {
-      if (xhr.status >= 200 && xhr.status < 400) {
-        const data = JSON.parse(xhr.responseText);
-        resolve({
-          'jid': data.jid,
-          'password': data.password
-        });
-      } else {
-        xhr.onerror();
-      }
-    };
-
-    xhr.onerror = function () {
-      delete _converse.connection;
-
-      _converse.api.trigger('noResumeableSession', this);
-
-      reject(xhr.responseText);
-    };
-
-    xhr.send();
-  });
-
   this.startNewBOSHSession = function () {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', _converse.prebind_url, true);
@@ -64405,25 +64711,29 @@ _converse.initialize = async function (settings, callback) {
 
   this.restoreBOSHSession = function (jid_is_required) {
     /* Tries to restore a cached BOSH session. */
-    if (!this.jid) {
+    const jid = _converse.session.get('jid');
+
+    if (!jid) {
       const msg = "restoreBOSHSession: tried to restore a \"keepalive\" session " + "but we don't have the JID for the user!";
 
       if (jid_is_required) {
         throw new Error(msg);
       } else {
         _converse.log(msg);
+
+        return false;
       }
-    }
+    } else {
+      try {
+        this.connection.restore(jid, this.onConnectStatusChanged);
+        return true;
+      } catch (e) {
+        _converse.log("Could not restore session for jid: " + jid + " Error message: " + e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.WARN);
 
-    try {
-      this.connection.restore(this.jid, this.onConnectStatusChanged);
-      return true;
-    } catch (e) {
-      _converse.log("Could not restore session for jid: " + this.jid + " Error message: " + e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.WARN);
+        this.clearSession(); // We want to clear presences (see #555)
 
-      this.clearSession(); // We want to clear presences (see #555)
-
-      return false;
+        return false;
+      }
     }
   };
 
@@ -64449,7 +64759,7 @@ _converse.initialize = async function (settings, callback) {
     }
   };
 
-  this.attemptNonPreboundSession = function (credentials, reconnecting) {
+  this.attemptNonPreboundSession = async function (credentials, reconnecting) {
     /* Handle session resumption or initialization when prebind is not being used.
      *
      * Two potential options exist and are handled in this method:
@@ -64466,7 +64776,17 @@ _converse.initialize = async function (settings, callback) {
       this.autoLogin(credentials);
     } else if (this.auto_login) {
       if (this.credentials_url) {
-        this.fetchLoginCredentials().then(this.autoLogin.bind(this), this.autoLogin.bind(this));
+        let data = {};
+
+        try {
+          data = await fetchLoginCredentials();
+        } catch (e) {
+          _converse.log("Could not fetch login credentials", strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
+
+          _converse.log(e, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
+        } finally {
+          this.autoLogin(data);
+        }
       } else if (!this.jid) {
         throw new Error("attemptNonPreboundSession: If you use auto_login, " + "you also need to give either a jid value (and if " + "applicable a password) or you need to pass in a URL " + "from where the username and password can be fetched " + "(via credentials_url).");
       } else {
@@ -64499,7 +64819,7 @@ _converse.initialize = async function (settings, callback) {
 
       if (!password) {
         if (this.auto_login) {
-          throw new Error("initConnection: If you use auto_login and " + "authentication='login' then you also need to provide a password.");
+          throw new Error("autoLogin: If you use auto_login and " + "authentication='login' then you also need to provide a password.");
         }
 
         _converse.setDisconnectionCause(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Status.AUTHFAIL, undefined, true);
@@ -64561,8 +64881,8 @@ _converse.initialize = async function (settings, callback) {
     this.connection = settings.connection;
   }
 
-  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(_converse.connection, 'service') === 'jasmine tests') {
-    finishInitialization();
+  if (isTestEnv()) {
+    await finishInitialization();
     return _converse;
   } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"])) {
     const url = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
@@ -64576,7 +64896,7 @@ _converse.initialize = async function (settings, callback) {
     }
   }
 
-  finishInitialization();
+  await finishInitialization();
   return init_promise;
 };
 /**
@@ -64618,18 +64938,15 @@ _converse.api = {
      * @memberOf _converse.api.connection
      */
     'disconnect'() {
-      _converse.connection.disconnect();
+      if (_converse.connection) {
+        _converse.connection.disconnect();
+      } else {
+        _converse.tearDown();
+
+        _converse.clearSession();
+      }
     }
 
-  },
-
-  /**
-   * Lets you emit (i.e. trigger) events.
-   * @deprecated since version 4.2.0. Use _converse.api.trigger instead.
-   * @method _converse.api.emit
-   */
-  'emit'() {
-    _converse.api.trigger.apply(this, arguments);
   },
 
   /**
@@ -65531,7 +65848,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       _converse.api.trigger('discoInitialized');
     }
 
-    _converse.api.listen.on('sessionInitialized', initStreamFeatures);
+    _converse.api.listen.on('setUserJID', initStreamFeatures);
 
     _converse.api.listen.on('reconnected', initializeDisco);
 
@@ -66511,7 +66828,6 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].env
       $build = _converse$env.$build,
       $msg = _converse$env.$msg,
       $pres = _converse$env.$pres,
-      b64_sha1 = _converse$env.b64_sha1,
       sizzle = _converse$env.sizzle,
       f = _converse$env.f,
       moment = _converse$env.moment,
@@ -66636,7 +66952,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         throw new Error("Can't call _converse.getDefaultMUCNickname before the statusInitialized has been fired.");
       }
 
-      const nick = _converse.nickname || _converse.xmppstatus.vcard.get('nickname');
+      const nick = _converse.nickname || (_converse.vcards ? _converse.xmppstatus.vcard.get('nickname') : undefined);
 
       if (nick) {
         return nick;
@@ -66645,20 +66961,19 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
       }
     };
 
-    _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
+    function openChatRoom(jid, settings) {
       /* Opens a groupchat, making sure that certain attributes
        * are correct, for example that the "type" is set to
        * "chatroom".
        */
       settings.type = _converse.CHATROOMS_TYPE;
       settings.id = jid;
-      settings.box_id = b64_sha1(jid);
 
       const chatbox = _converse.chatboxes.getChatBox(jid, settings, true);
 
-      chatbox.trigger('show', true);
+      chatbox.maybeShow(true);
       return chatbox;
-    };
+    }
     /**
      * Represents an open/ongoing groupchat conversation.
      *
@@ -66670,7 +66985,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
     _converse.ChatRoom = _converse.ChatBox.extend({
       defaults() {
-        return _.assign(_.clone(_converse.ChatBox.prototype.defaults), {
+        return {
           // For group chats, we distinguish between generally unread
           // messages and those ones that specifically mention the
           // user.
@@ -66681,19 +66996,33 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
           // generally unread messages (which *includes* mentions!).
           'num_unread_general': 0,
           'affiliation': null,
+          'bookmarked': false,
+          'chat_state': undefined,
           'connection_status': _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.DISCONNECTED,
+          'description': '',
+          'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode),
+          'message_type': 'groupchat',
           'name': '',
           'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
-          'description': '',
+          'num_unread': 0,
           'roomconfig': {},
-          'type': _converse.CHATROOMS_TYPE,
-          'message_type': 'groupchat'
-        });
+          'time_opened': this.get('time_opened') || moment().valueOf(),
+          'type': _converse.CHATROOMS_TYPE
+        };
       },
 
       initialize() {
-        this.constructor.__super__.initialize.apply(this, arguments);
+        if (_converse.vcards) {
+          this.vcard = _converse.vcards.findWhere({
+            'jid': this.get('jid')
+          }) || _converse.vcards.create({
+            'jid': this.get('jid')
+          });
+        }
 
+        this.set('box_id', `box-${btoa(this.get('jid'))}`);
+        this.initMessages();
+        this.on('change:chat_state', this.sendChatState, this);
         this.on('change:connection_status', this.onConnectionStatusChanged, this);
 
         const storage = _converse.config.get('storage');
@@ -68028,7 +68357,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
       }
 
       if (result === true) {
-        const chatroom = _converse.openChatRoom(room_jid, {
+        const chatroom = openChatRoom(room_jid, {
           'password': x_el.getAttribute('password')
         });
 
@@ -68061,7 +68390,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
       jid = jid.toLowerCase();
       attrs.type = _converse.CHATROOMS_TYPE;
       attrs.id = jid;
-      attrs.box_id = b64_sha1(jid);
       return _converse.chatboxes.getChatBox(jid, attrs, create);
     };
 
@@ -68241,6 +68569,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
          * @param {boolean} [attrs.bring_to_foreground] A boolean indicating whether the room should be
          *     brought to the foreground and therefore replace the currently shown chat.
          *     If there is no chat currently open, then this option is ineffective.
+         * @param {Boolean} [force=false] - By default, a minimized
+         *   room won't be maximized (in `overlayed` view mode) and in
+         *   `fullscreen` view mode a newly opened room won't replace
+         *   another chat already in the foreground.
+         *   Set `force` to `true` if you want to force the room to be
+         *   maximized or shown.
          *
          * @example
          * this._converse.api.rooms.open('group@muc.example.com')
@@ -68272,6 +68606,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
          * );
          */
         'open': async function open(jids, attrs) {
+          let force = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
           await _converse.api.waitUntil('chatBoxesFetched');
 
           if (_.isUndefined(jids)) {
@@ -68281,9 +68616,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
             throw new TypeError(err_msg);
           } else if (_.isString(jids)) {
-            return _converse.api.rooms.create(jids, attrs).trigger('show');
+            return _converse.api.rooms.create(jids, attrs).maybeShow(force);
           } else {
-            return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).trigger('show'));
+            return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).maybeShow(force));
           }
         },
 
@@ -69605,28 +69940,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     /********** Event Handlers *************/
 
 
-    function addRelatedContactToChatbox(chatbox, contact) {
-      if (!_.isUndefined(contact)) {
-        chatbox.contact = contact;
-        chatbox.trigger('contactAdded', contact);
-      }
-    }
-
-    _converse.api.waitUntil('rosterContactsFetched').then(() => {
-      _converse.roster.on('add', contact => {
-        /* When a new contact is added, check if we already have a
-         * chatbox open for it, and if so attach it to the chatbox.
-         */
-        const chatbox = _converse.chatboxes.findWhere({
-          'jid': contact.get('jid')
-        });
-
-        if (chatbox) {
-          addRelatedContactToChatbox(chatbox, contact);
-        }
-      });
-    });
-
     function updateUnreadCounter(chatbox) {
       const contact = _converse.roster.findWhere({
         'jid': chatbox.get('jid')
@@ -69642,11 +69955,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.api.listen.on('chatBoxesInitialized', () => {
       _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
 
-      _converse.chatboxes.on('add', async chatbox => {
-        await _converse.api.waitUntil('rosterContactsFetched');
-        addRelatedContactToChatbox(chatbox, _converse.roster.findWhere({
-          'jid': chatbox.get('jid')
-        }));
+      _converse.chatboxes.on('add', chatbox => {
+        if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+          chatbox.setRosterContact(chatbox.get('jid'));
+        }
       });
     });
 
@@ -69662,7 +69974,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         });
 
         if (chatbox) {
-          addRelatedContactToChatbox(chatbox, contact);
+          chatbox.setRosterContact(contact.get('jid'));
         }
       });
     });
@@ -69749,20 +70061,20 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          * @method _converse.api.contacts.get
          * @params {(string[]|string)} jid|jids The JID or JIDs of
          *      the contacts to be returned.
-         * @returns {(RosterContact[]|RosterContact)} [Backbone.Model](http://backbonejs.org/#Model)
-         *      (or an array of them) representing the contact.
+         * @returns {promise} Promise which resolves with the
+         *  _converse.RosterContact (or an array of them) representing the contact.
          *
          * @example
          * // Fetch a single contact
          * _converse.api.listen.on('rosterContactsFetched', function () {
-         *     const contact = _converse.api.contacts.get('buddy@example.com')
+         *     const contact = await _converse.api.contacts.get('buddy@example.com')
          *     // ...
          * });
          *
          * @example
          * // To get multiple contacts, pass in an array of JIDs:
          * _converse.api.listen.on('rosterContactsFetched', function () {
-         *     const contacts = _converse.api.contacts.get(
+         *     const contacts = await _converse.api.contacts.get(
          *         ['buddy1@example.com', 'buddy2@example.com']
          *     )
          *     // ...
@@ -69771,14 +70083,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          * @example
          * // To return all contacts, simply call ``get`` without any parameters:
          * _converse.api.listen.on('rosterContactsFetched', function () {
-         *     const contacts = _converse.api.contacts.get();
+         *     const contacts = await _converse.api.contacts.get();
          *     // ...
          * });
          */
-        'get'(jids) {
-          const _getter = function _getter(jid) {
-            return _converse.roster.get(Strophe.getBareJidFromJid(jid)) || null;
-          };
+        async get(jids) {
+          await _converse.api.waitUntil('rosterContactsFetched');
+
+          const _getter = jid => _converse.roster.get(Strophe.getBareJidFromJid(jid));
 
           if (_.isUndefined(jids)) {
             jids = _converse.roster.pluck('jid');
@@ -69976,7 +70288,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
       _converse.vcards.fetch();
     };
 
-    _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
+    _converse.api.listen.on('setUserJID', _converse.initVCardCollection);
 
     _converse.api.listen.on('statusInitialized', () => {
       const vcards = _converse.vcards;
@@ -92728,7 +93040,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/add_chatroom_modal.html -->\n<div class="modal fade" id="add-chatroom-modal" tabindex="-1" role="dialog" aria-labelledby="add-chatroom-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title"\n                    id="add-chatroom-modal-label">' +
+__p += '<!-- src/templates/add_chatroom_modal.html -->\n<div class="modal" id="add-chatroom-modal" tabindex="-1" role="dialog" aria-labelledby="add-chatroom-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title"\n                    id="add-chatroom-modal-label">' +
 __e(o.__('Enter a new Groupchat')) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body">\n                <form class="converse-form add-chatroom">\n                    <div class="form-group">\n                        <label for="chatroom">' +
 __e(o.label_room_address) +
@@ -92763,7 +93075,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/add_contact_modal.html -->\n<!-- Add contact Modal -->\n<div class="modal fade" id="add-contact-modal" tabindex="-1" role="dialog" aria-labelledby="addContactModalLabel" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="addContactModalLabel">' +
+__p += '<!-- src/templates/add_contact_modal.html -->\n<!-- Add contact Modal -->\n<div class="modal" id="add-contact-modal" tabindex="-1" role="dialog" aria-labelledby="addContactModalLabel" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="addContactModalLabel">' +
 __e(o.heading_new_contact) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>\n            </div>\n            <form class="converse-form add-xmpp-contact">\n                <div class="modal-body">\n                    <div class="form-group add-xmpp-contact__jid">\n                        <label class="clearfix" for="jid">' +
 __e(o.label_xmpp_address) +
@@ -92985,7 +93297,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/chat_status_modal.html -->\n<!-- Change status Modal -->\n<div class="modal fade" id="modal-status-change" tabindex="-1" role="dialog" aria-labelledby="changeStatusModalLabel" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="changeStatusModalLabel">' +
+__p += '<!-- src/templates/chat_status_modal.html -->\n<!-- Change status Modal -->\n<div class="modal" id="modal-status-change" tabindex="-1" role="dialog" aria-labelledby="changeStatusModalLabel" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="changeStatusModalLabel">' +
 __e(o.modal_title) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
@@ -93082,7 +93394,11 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/chatbox_head.html -->\n<div class="chat-head chat-head-chatbox row no-gutters">\n    <div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>\n    <div class="chatbox-title">\n        <div class="row no-gutters">\n            <canvas class="avatar" height="36" width="36"></canvas>\n            <div class="col chat-title" title="' +
+__p += '<!-- src/templates/chatbox_head.html -->\n<div class="chat-head chat-head-chatbox row no-gutters">\n    <div class="chatbox-navback"><i class="fa fa-arrow-left"></i></div>\n    <div class="chatbox-title">\n        <div class="row no-gutters">\n            ';
+ if (o.type !== o._converse.HEADLINES_TYPE) { ;
+__p += '\n                <canvas class="avatar" height="36" width="36"></canvas>\n            ';
+ } ;
+__p += '\n            <div class="col chat-title" title="' +
 __e(o.jid) +
 '">\n                ';
  if (o.url) { ;
@@ -93217,7 +93533,7 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/chatroom_bookmark_form.html -->\n<div class="chatroom-form-container">\n    <form class="converse-form chatroom-form">\n        <legend>' +
+__p += '<!-- src/templates/chatroom_bookmark_form.html -->\n<div class="chatroom-form-container muc-bookmark-form">\n    <form class="converse-form chatroom-form">\n        <legend>' +
 __e(o.heading) +
 '</legend>\n        <fieldset class="form-group">\n            <label for="converse_muc_bookmark_name">' +
 __e(o.label_name) +
@@ -93320,7 +93636,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/chatroom_details_modal.html -->\n<div class="modal fade" id="room-details-modal" tabindex="-1" role="dialog" aria-labelledby="room-details-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="room-details-modal-label">' +
+__p += '<!-- src/templates/chatroom_details_modal.html -->\n<div class="modal" id="room-details-modal" tabindex="-1" role="dialog" aria-labelledby="room-details-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="room-details-modal-label">' +
 __e(o.display_name) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
@@ -93623,8 +93939,27 @@ return __p
 
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
-var __t, __p = '';
-__p += '<!-- src/templates/chatroom_form.html -->\n<div class="chatroom-form-container">\n    <form class="converse-form chatroom-form">\n        <fieldset class="form-group">\n            <span class="spinner fa fa-spinner centered"/>\n        </fieldset>\n    </form>\n</div>\n';
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+__p += '<!-- src/templates/chatroom_form.html -->\n<div class="chatroom-form-container muc-config-form">\n    <form class="converse-form chatroom-form" autocomplete="off">\n        <fieldset class="form-group">\n            <legend>' +
+__e(o.title) +
+'</legend>\n            ';
+ if (o.title !== o.instructions) { ;
+__p += '\n                <p class="form-help">' +
+__e(o.instructions) +
+'</p>\n            ';
+ } ;
+__p += '\n            <!-- Fields are generated internally, with xForm2webForm -->\n            ';
+ o.fields.forEach(function (field) { ;
+__p += ' ' +
+((__t = ( field )) == null ? '' : __t) +
+' ';
+ }) ;
+__p += '\n        </fieldset>\n        <fieldset>\n            <input type="submit" class="btn btn-primary" value="' +
+__e(o.__('Save')) +
+'"/>\n            <input type="button" class="btn btn-secondary .button-cancel" value="' +
+__e(o.__('Cancel')) +
+'"/>\n        </fieldset>\n    </form>\n</div>\n';
 return __p
 };
 
@@ -93716,15 +94051,19 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/chatroom_nickname_form.html -->\n<div class="chatroom-form-container">\n    <form class="converse-form chatroom-form converse-centered-form">\n        <fieldset class="form-group">\n            <label>' +
+__p += '<!-- src/templates/chatroom_nickname_form.html -->\n<div class="chatroom-form-container muc-nickname-form">\n    <form class="converse-form chatroom-form converse-centered-form">\n        <fieldset class="form-group">\n            <label>' +
 __e(o.heading) +
 '</label>\n            <p class="validation-message">' +
 __e(o.validation_message) +
-'</p>\n            <input type="text" required="required" name="nick" class="form-control" placeholder="' +
+'</p>\n            <input type="text" required="required" name="nick" value="' +
+__e(o.nickname) +
+'"\n                   class="form-control ' +
+((__t = (o.error_class)) == null ? '' : __t) +
+'" placeholder="' +
 __e(o.label_nickname) +
-'"/>\n        </fieldset>\n        <input type="submit" class="btn btn-primary" name="join" value="' +
+'"/>\n        </fieldset>\n        <fieldset class="form-group">\n            <input type="submit" class="btn btn-primary" name="join" value="' +
 __e(o.label_join) +
-'"/>\n    </form>\n</div>\n';
+'"/>\n        </fieldset>\n    </form>\n</div>\n';
 return __p
 };
 
@@ -93740,13 +94079,19 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/chatroom_password_form.html -->\n<div class="chatroom-form-container">\n    <form class="pure-form converse-form chatroom-form">\n        <fieldset class="form-group">\n            <legend>' +
+__p += '<!-- src/templates/chatroom_password_form.html -->\n<div class="chatroom-form-container muc-password-form">\n    <form class="converse-form chatroom-form converse-centered-form">\n        <fieldset class="form-group">\n            <label>' +
 __e(o.heading) +
-'</legend>\n            <label>' +
+'</label>\n            <p class="validation-message">' +
+__e(o.validation_message) +
+'</p>\n            <input class="hidden-username" type="text" autocomplete="username" value="' +
+__e(o.jid) +
+'"></input>\n            <input type="password" name="password" required="required"\n                   class="form-control ' +
+((__t = (o.error_class)) == null ? '' : __t) +
+'" placeholder="' +
 __e(o.label_password) +
-'</label>\n            <input type="password" name="password"/>\n        </fieldset>\n        <input class="btn btn-primary" type="submit" value="' +
+'"/>\n        </fieldset>\n        <fieldset class="form-group">\n            <input class="btn btn-primary" type="submit" value="' +
 __e(o.label_submit) +
-'"/>\n    </form>\n</div>\n';
+'"/>\n        </fieldset>\n    </form>\n</div>\n';
 return __p
 };
 
@@ -93796,7 +94141,7 @@ return __p
 var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./node_modules/lodash/escape.js")};
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape;
-__p += '<!-- src/templates/client_info_modal.html -->\n<!-- Change status Modal -->\n<div class="modal fade" id="modal-status-change" tabindex="-1" role="dialog" aria-labelledby="changeStatusModalLabel" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="changeStatusModalLabel">' +
+__p += '<!-- src/templates/client_info_modal.html -->\n<!-- Change status Modal -->\n<div class="modal" id="modal-status-change" tabindex="-1" role="dialog" aria-labelledby="changeStatusModalLabel" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="changeStatusModalLabel">' +
 __e(o.modal_title) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
@@ -94127,13 +94472,25 @@ __e(o.id) +
 __e(o.label) +
 '</label>\n    ';
  } ;
-__p += '\n    <input class="form-control" name="' +
+__p += '\n    ';
+ if (o.type === 'password' && o.fixed_username) { ;
+__p += '\n        <!-- This is a hack to prevent Chrome from auto-filling the username in\n            any of the other input fields in the MUC configuration form. -->\n        <input class="hidden-username" type="text" autocomplete="username" value="' +
+__e(o.fixed_username) +
+'"></input>\n    ';
+ } ;
+__p += '\n    <input \n        class="form-control" name="' +
 __e(o.name) +
 '" type="' +
 __e(o.type) +
 '" id="' +
 __e(o.id) +
 '"\n        ';
+ if (o.autocomplete) { ;
+__p += ' autocomplete="' +
+__e(o.autocomplete) +
+'" ';
+ } ;
+__p += '\n        ';
  if (o.placeholder) { ;
 __p += ' placeholder="' +
 __e(o.placeholder) +
@@ -94429,7 +94786,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/list_chatrooms_modal.html -->\n<div class="modal fade" id="list-chatrooms-modal" tabindex="-1" role="dialog" aria-labelledby="list-chatrooms-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title"\n                    id="list-chatrooms-modal-label">' +
+__p += '<!-- src/templates/list_chatrooms_modal.html -->\n<div class="modal" id="list-chatrooms-modal" tabindex="-1" role="dialog" aria-labelledby="list-chatrooms-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title"\n                    id="list-chatrooms-modal-label">' +
 __e(o.heading_list_chatrooms) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n                    <span aria-hidden="true">×</span>\n                </button>\n            </div>\n            <div class="modal-body d-flex flex-column">\n                ';
  if (o.show_form) { ;
@@ -94666,7 +95023,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/message_versions_modal.html -->\n<div class="modal fade" id="message-versions-modal" tabindex="-1" role="dialog" aria-labelledby="message-versions-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h4 class="modal-title" id="message-versions-modal-label">' +
+__p += '<!-- src/templates/message_versions_modal.html -->\n<div class="modal" id="message-versions-modal" tabindex="-1" role="dialog" aria-labelledby="message-versions-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h4 class="modal-title" id="message-versions-modal-label">' +
 __e(o.__('Message versions')) +
 '</h4>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
@@ -94843,7 +95200,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/profile_modal.html -->\n<div class="modal fade" id="user-profile-modal" tabindex="-1" role="dialog" aria-labelledby="user-profile-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="user-profile-modal-label">' +
+__p += '<!-- src/templates/profile_modal.html -->\n<div class="modal" id="user-profile-modal" tabindex="-1" role="dialog" aria-labelledby="user-profile-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="user-profile-modal-label">' +
 __e(o.heading_profile) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.label_close) +
@@ -94851,7 +95208,7 @@ __e(o.label_close) +
  if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ;
 __p += '\n                <ul class="nav nav-pills justify-content-center">\n                    <li role="presentation" class="nav-item">\n                        <a class="nav-link active" id="profile-tab" href="#profile-tabpanel" aria-controls="profile-tabpanel" role="tab" data-toggle="tab">Profile</a>\n                    </li>\n                    <li role="presentation" class="nav-item">\n                        <a class="nav-link" id="omemo-tab" href="#omemo-tabpanel" aria-controls="omemo-tabpanel" role="tab" data-toggle="tab">OMEMO</a>\n                    </li>\n                </ul>\n                ';
  } ;
-__p += '\n                <div class="tab-content">\n                    <div class="tab-pane fade show active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">\n                        <form class="converse-form converse-form--modal profile-form" action="#">\n                            <div class="row">\n                                <div class="col-auto">\n                                    <a class="change-avatar" href="#">\n                                        ';
+__p += '\n                <div class="tab-content">\n                    <div class="tab-pane active" id="profile-tabpanel" role="tabpanel" aria-labelledby="profile-tab">\n                        <form class="converse-form converse-form--modal profile-form" action="#">\n                            <div class="row">\n                                <div class="col-auto">\n                                    <a class="change-avatar" href="#">\n                                        ';
  if (o.image) { ;
 __p += '\n                                            <img alt="' +
 __e(o.alt_avatar) +
@@ -94895,7 +95252,7 @@ __e(o.label_role_help) +
 __e(o.__('Save and close')) +
 '</button>\n                            </div>\n                        </form>\n                    </div>\n                    ';
  if (o._converse.pluggable.plugins['converse-omemo'].enabled(o._converse)) { ;
-__p += '\n                        <div class="tab-pane fade" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">\n                            <form class="converse-form fingerprint-removal">\n                                <ul class="list-group fingerprints">\n                                    <li class="list-group-item active">' +
+__p += '\n                        <div class="tab-pane" id="omemo-tabpanel" role="tabpanel" aria-labelledby="omemo-tab">\n                            <form class="converse-form fingerprint-removal">\n                                <ul class="list-group fingerprints">\n                                    <li class="list-group-item active">' +
 __e(o.__("This device's OMEMO fingerprint")) +
 '</li>\n                                    <li class="list-group-item">\n                                    ';
  if (o.view.current_device && o.view.current_device.get('bundle') && o.view.current_device.get('bundle').fingerprint) { ;
@@ -95902,7 +96259,7 @@ var _ = {escape:__webpack_require__(/*! ./node_modules/lodash/escape.js */ "./no
 module.exports = function(o) {
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
-__p += '<!-- src/templates/user_details_modal.html -->\n<div class="modal fade" id="user-details-modal" tabindex="-1" role="dialog" aria-labelledby="user-details-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="user-details-modal-label">' +
+__p += '<!-- src/templates/user_details_modal.html -->\n<div class="modal" id="user-details-modal" tabindex="-1" role="dialog" aria-labelledby="user-details-modal-label" aria-hidden="true">\n    <div class="modal-dialog" role="document">\n        <div class="modal-content">\n            <div class="modal-header">\n                <h5 class="modal-title" id="user-details-modal-label">' +
 __e(o.display_name) +
 '</h5>\n                <button type="button" class="close" data-dismiss="modal" aria-label="' +
 __e(o.__('Close')) +
@@ -96138,6 +96495,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const URL_REGEX = /\b(https?:\/\/|www\.|https?:\/\/www\.)[^\s<>]{2,200}\b\/?/g;
+
+function getAutoCompleteProperty(name, options) {
+  return {
+    'muc#roomconfig_lang': 'language',
+    'muc#roomconfig_roomsecret': options.new_password ? 'new-password' : 'current-password'
+  }[name];
+}
 
 const logger = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.assign({
   'debug': _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get(console, 'log') ? console.log.bind(console) : _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.noop,
@@ -96673,7 +97037,7 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].fadeIn = function 
  */
 
 
-_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].xForm2webForm = function (field, stanza, domain) {
+_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].xForm2webForm = function (field, stanza, options) {
   if (field.getAttribute('type') === 'list-single' || field.getAttribute('type') === 'list-multi') {
     const values = _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.map(_headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].queryChildren(field, 'value'), _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.partial(_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.get, _headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a, 'textContent'));
 
@@ -96722,7 +97086,7 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].xForm2webForm = fu
     });
   } else if (field.getAttribute('var') === 'username') {
     return _templates_form_username_html__WEBPACK_IMPORTED_MODULE_12___default()({
-      'domain': ' @' + domain,
+      'domain': ' @' + options.domain,
       'name': field.getAttribute('var'),
       'type': XFORM_TYPE_MAP[field.getAttribute('type')],
       'label': field.getAttribute('label') || '',
@@ -96741,10 +97105,13 @@ _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].xForm2webForm = fu
       'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required'))
     });
   } else {
+    const name = field.getAttribute('var');
     return _templates_form_input_html__WEBPACK_IMPORTED_MODULE_8___default()({
       'id': _headless_utils_core__WEBPACK_IMPORTED_MODULE_16__["default"].getUniqueId(),
       'label': field.getAttribute('label') || '',
-      'name': field.getAttribute('var'),
+      'name': name,
+      'fixed_username': options.fixed_username,
+      'autocomplete': getAutoCompleteProperty(name, options),
       'placeholder': null,
       'required': !_headless_lodash_noconflict__WEBPACK_IMPORTED_MODULE_1___default.a.isNil(field.querySelector('required')),
       'type': XFORM_TYPE_MAP[field.getAttribute('type')],

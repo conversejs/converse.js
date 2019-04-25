@@ -303,6 +303,13 @@
                         background-color: var(--chatroom-head-button-color);
                     }
                 }
+
+                .chatroom-form {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    padding: 2em;
+                }
             }
         }
 

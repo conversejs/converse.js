@@ -544,7 +544,7 @@ converse.plugins.add('converse-rosterview', {
             openChat (ev) {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 const attrs = this.model.attributes;
-                _converse.api.chats.open(attrs.jid, attrs);
+                _converse.api.chats.open(attrs.jid, attrs, true);
             },
 
             async removeContact (ev) {

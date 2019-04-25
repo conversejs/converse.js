@@ -741,7 +741,7 @@
             let msg_obj = chatbox.messages.models[0];
             expect(msg_obj.get('message')).toEqual(message);
             expect(msg_obj.get('fullname')).toBeUndefined();
-            expect(msg_obj.get('nickname')).toBeUndefined();
+            expect(msg_obj.get('nickname')).toBe(null);
             expect(msg_obj.get('sender')).toEqual('them');
             expect(msg_obj.get('is_delayed')).toEqual(true);
             await test_utils.waitUntil(() => chatbox.vcard.get('fullname') === 'Candice van der Knijff')

@@ -68,6 +68,14 @@ converse.plugins.add('converse-minimize', {
                     'time_minimized': moment().format()
                 });
             },
+
+            maybeShow (force) {
+                if (!force && this.get('minimized')) {
+                    // Must return the chatbox
+                    return this;
+                }
+                return this.__super__.maybeShow.apply(this, arguments);
+            }
         },
 
         ChatBoxView: {
@@ -217,13 +225,6 @@ converse.plugins.add('converse-minimize', {
                 }
                 return div.innerHTML;
             }
-        },
-
-        ChatBoxes: {
-            chatBoxMayBeShown (chatbox) {
-                return this.__super__.chatBoxMayBeShown.apply(this, arguments) &&
-                       !chatbox.get('minimized');
-            },
         },
 
         ChatBoxViews: {

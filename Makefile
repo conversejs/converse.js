@@ -35,7 +35,7 @@ all: dev dist
 help:
 	@echo "Please use \`make <target>' where <target> is one of the following:"
 	@echo ""
-	@echo " all             A synonym for 'make dev'."
+	@echo " all             Set up dev environment and create all builds
 	@echo " build           Create minified builds of converse.js and all its dependencies."
 	@echo " clean           Remove all NPM packages."
 	@echo " check           Run all tests."
@@ -57,11 +57,11 @@ help:
 ## Miscellaneous
 
 .PHONY: serve
-serve: dev
+serve: stamp-npm
 	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1
 
 .PHONY: serve_bg
-serve_bg: dev
+serve_bg: stamp-npm
 	$(HTTPSERVE) -p $(HTTPSERVE_PORT) -c-1 -s &
 
 ########################################################################
@@ -142,35 +142,35 @@ dev: stamp-npm
 ## Builds
 
 .PHONY: css
-css: dev sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/font-awesome.css
+css: sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/font-awesome.css
 
-css/converse.css:: dev sass
-	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/converse.scss css/converse.css
+css/converse.css:: stamp-npm webpack.config.js sass
+	$(NPX)  webpack --type=css --mode=development
 
-css/website.css:: dev sass
+css/website.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
 
-css/font-awesome.css:: dev sass
+css/font-awesome.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@
 
 css/%.min.css:: css/%.css
-	make dev
+	make stamp-npm
 	$(CLEANCSS) $< > $@
 
 .PHONY: watchcss
-watchcss: dev
-	$(SASS) --watch --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) -o ./css/ ./sass/
+watchcss: stamp-npm 
+	$(NPX)  webpack --type=css --mode=development --watch
 
 .PHONY: watchjs
-watchjs: dev src/headless/dist/converse-headless.js
+watchjs: stamp-npm src/headless/dist/converse-headless.js
 	$(NPX)  webpack --mode=development  --watch
 
 .PHONY: watchjsheadless
-watchjsheadless: dev
+watchjsheadless: stamp-npm
 	$(NPX)  webpack --mode=development  --watch --type=headless
 
 .PHONY: watch
-watch: dev
+watch: stamp-npm
 	make -j 3 watchcss  watchjsheadless watchjs
 
 .PHONY: logo
@@ -222,7 +222,7 @@ dist/converse-no-dependencies-es2015.js: src webpack.config.js stamp-npm @conver
 dist:: build
 
 .PHONY: build
-build:: dev css $(BUILDS)
+build:: stamp-npm css $(BUILDS)
 
 ########################################################################
 ## Tests
@@ -252,7 +252,7 @@ check: eslint dist/converse.js
 docsdev: ./bin/activate .installed.cfg
 
 .PHONY: html
-html: dev docsdev apidoc
+html: stamp-npm docsdev apidoc
 	rm -rf $(BUILDDIR)/html
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	make apidoc

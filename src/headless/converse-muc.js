@@ -19,7 +19,7 @@ const MUC_ROLE_WEIGHTS = {
     'none':         2,
 };
 
-const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, b64_sha1, sizzle, f, moment, _ } = converse.env;
+const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, sizzle, f, moment, _ } = converse.env;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -147,7 +147,7 @@ converse.plugins.add('converse-muc', {
                 throw new Error(
                     "Can't call _converse.getDefaultMUCNickname before the statusInitialized has been fired.");
             }
-            const nick = _converse.nickname || _converse.xmppstatus.vcard.get('nickname');
+            const nick = _converse.nickname || (_converse.vcards ? _converse.xmppstatus.vcard.get('nickname') : undefined);
             if (nick) {
                 return nick;
             } else if (_converse.muc_nickname_from_jid) {
@@ -155,16 +155,15 @@ converse.plugins.add('converse-muc', {
             }
         }
 
-        _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
+        function openChatRoom (jid, settings) {
             /* Opens a groupchat, making sure that certain attributes
              * are correct, for example that the "type" is set to
              * "chatroom".
              */
             settings.type = _converse.CHATROOMS_TYPE;
             settings.id = jid;
-            settings.box_id = b64_sha1(jid)
             const chatbox = _converse.chatboxes.getChatBox(jid, settings, true);
-            chatbox.trigger('show', true);
+            chatbox.maybeShow(true);
             return chatbox;
         }
 
@@ -178,32 +177,42 @@ converse.plugins.add('converse-muc', {
         _converse.ChatRoom = _converse.ChatBox.extend({
 
             defaults () {
-                return _.assign(
-                    _.clone(_converse.ChatBox.prototype.defaults), {
-                      // For group chats, we distinguish between generally unread
-                      // messages and those ones that specifically mention the
-                      // user.
-                      //
-                      // To keep things simple, we reuse `num_unread` from
-                      // _converse.ChatBox to indicate unread messages which
-                      // mention the user and `num_unread_general` to indicate
-                      // generally unread messages (which *includes* mentions!).
-                      'num_unread_general': 0,
+                return {
+                    // For group chats, we distinguish between generally unread
+                    // messages and those ones that specifically mention the
+                    // user.
+                    //
+                    // To keep things simple, we reuse `num_unread` from
+                    // _converse.ChatBox to indicate unread messages which
+                    // mention the user and `num_unread_general` to indicate
+                    // generally unread messages (which *includes* mentions!).
+                    'num_unread_general': 0,
 
-                      'affiliation': null,
-                      'connection_status': converse.ROOMSTATUS.DISCONNECTED,
-                      'name': '',
-                      'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
-                      'description': '',
-                      'roomconfig': {},
-                      'type': _converse.CHATROOMS_TYPE,
-                      'message_type': 'groupchat'
-                    }
-                );
+                    'affiliation': null,
+                    'bookmarked': false,
+                    'chat_state': undefined,
+                    'connection_status': converse.ROOMSTATUS.DISCONNECTED,
+                    'description': '',
+                    'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode),
+                    'message_type': 'groupchat',
+                    'name': '',
+                    'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
+                    'num_unread': 0,
+                    'roomconfig': {},
+                    'time_opened': this.get('time_opened') || moment().valueOf(),
+                    'type': _converse.CHATROOMS_TYPE
+                }
             },
 
             initialize() {
-                this.constructor.__super__.initialize.apply(this, arguments);
+                if (_converse.vcards) {
+                    this.vcard = _converse.vcards.findWhere({'jid': this.get('jid')}) ||
+                        _converse.vcards.create({'jid': this.get('jid')});
+                }
+                this.set('box_id', `box-${btoa(this.get('jid'))}`);
+
+                this.initMessages();
+                this.on('change:chat_state', this.sendChatState, this);
                 this.on('change:connection_status', this.onConnectionStatusChanged, this);
 
                 const storage = _converse.config.get('storage');
@@ -1362,7 +1371,7 @@ converse.plugins.add('converse-muc', {
                 }
             }
             if (result === true) {
-                const chatroom = _converse.openChatRoom(room_jid, {'password': x_el.getAttribute('password') });
+                const chatroom = openChatRoom(room_jid, {'password': x_el.getAttribute('password') });
 
                 if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
                     // XXX: Leaky abstraction from views here
@@ -1391,7 +1400,6 @@ converse.plugins.add('converse-muc', {
             jid = jid.toLowerCase();
             attrs.type = _converse.CHATROOMS_TYPE;
             attrs.id = jid;
-            attrs.box_id = b64_sha1(jid)
             return _converse.chatboxes.getChatBox(jid, attrs, create);
         };
 
@@ -1555,6 +1563,12 @@ converse.plugins.add('converse-muc', {
                  * @param {boolean} [attrs.bring_to_foreground] A boolean indicating whether the room should be
                  *     brought to the foreground and therefore replace the currently shown chat.
                  *     If there is no chat currently open, then this option is ineffective.
+                 * @param {Boolean} [force=false] - By default, a minimized
+                 *   room won't be maximized (in `overlayed` view mode) and in
+                 *   `fullscreen` view mode a newly opened room won't replace
+                 *   another chat already in the foreground.
+                 *   Set `force` to `true` if you want to force the room to be
+                 *   maximized or shown.
                  *
                  * @example
                  * this._converse.api.rooms.open('group@muc.example.com')
@@ -1585,16 +1599,16 @@ converse.plugins.add('converse-muc', {
                  *     true
                  * );
                  */
-                'open': async function (jids, attrs) {
+                'open': async function (jids, attrs, force=false) {
                     await _converse.api.waitUntil('chatBoxesFetched');
                     if (_.isUndefined(jids)) {
                         const err_msg = 'rooms.open: You need to provide at least one JID';
                         _converse.log(err_msg, Strophe.LogLevel.ERROR);
                         throw(new TypeError(err_msg));
                     } else if (_.isString(jids)) {
-                        return _converse.api.rooms.create(jids, attrs).trigger('show');
+                        return _converse.api.rooms.create(jids, attrs).maybeShow(force);
                     } else {
-                        return _.map(jids, (jid) => _converse.api.rooms.create(jid, attrs).trigger('show'));
+                        return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).maybeShow(force));
                     }
                 },
 

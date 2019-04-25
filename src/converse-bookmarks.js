@@ -137,42 +137,17 @@ converse.plugins.add('converse-bookmarks', {
             },
 
             renderBookmarkForm () {
-                const { _converse } = this.__super__,
-                      { __ } = _converse,
-                      body = this.el.querySelector('.chatroom-body');
-
-                _.each(body.children, child => child.classList.add('hidden'));
-                _.each(body.querySelectorAll('.chatroom-form-container'), u.removeElement);
-
-                body.insertAdjacentHTML(
-                    'beforeend',
-                    tpl_chatroom_bookmark_form({
-                        'default_nick': this.model.get('nick'),
-                        'heading': __('Bookmark this groupchat'),
-                        'label_autojoin': __('Would you like this groupchat to be automatically joined upon startup?'),
-                        'label_cancel': __('Cancel'),
-                        'label_name': __('The name for this bookmark:'),
-                        'label_nick': __('What should your nickname for this groupchat be?'),
-                        'label_submit': __('Save'),
-                        'name': this.model.get('name')
-                    })
-                );
-                const form = body.querySelector('form.chatroom-form');
-                form.addEventListener('submit', ev =>  this.onBookmarkFormSubmitted(ev));
-                form.querySelector('.button-cancel').addEventListener('click', () => this.closeForm());
-            },
-
-            onBookmarkFormSubmitted (ev) {
-                ev.preventDefault();
-                const { _converse } = this.__super__;
-                _converse.bookmarks.createBookmark({
-                    'jid': this.model.get('jid'),
-                    'autojoin': _.get(ev.target.querySelector('input[name="autojoin"]'), 'checked') || false,
-                    'name':  _.get(ev.target.querySelector('input[name=name]'), 'value'),
-                    'nick':  _.get(ev.target.querySelector('input[name=nick]'), 'value')
-                });
-                u.removeElement(this.el.querySelector('div.chatroom-form-container'));
-                this.renderAfterTransition();
+                this.hideChatRoomContents();
+                if (!this.bookmark_form) {
+                    const { _converse } = this.__super__;
+                    this.bookmark_form = new _converse.MUCBookmarkForm({
+                        'model': this.model,
+                        'chatroomview': this
+                    });
+                    const container_el = this.el.querySelector('.chatroom-body');
+                    container_el.insertAdjacentElement('beforeend', this.bookmark_form.el);
+                }
+                u.showElement(this.bookmark_form.el);
             },
 
             toggleBookmark (ev) {
@@ -259,9 +234,7 @@ converse.plugins.add('converse-bookmarks', {
             openBookmarkedRoom (bookmark) {
                 if ( _converse.muc_respect_autojoin && bookmark.get('autojoin')) {
                     const groupchat = _converse.api.rooms.create(bookmark.get('jid'), bookmark.get('nick'));
-                    if (!groupchat.get('hidden') && !groupchat.get('minimized')) {
-                        groupchat.trigger('show');
-                    }
+                    groupchat.maybeShow();
                 }
                 return bookmark;
             },
@@ -397,6 +370,49 @@ converse.plugins.add('converse-bookmarks', {
             }
         });
 
+        _converse.MUCBookmarkForm = Backbone.VDOMView.extend({
+            className: 'muc-bookmark-form',
+
+            events: {
+                'submit form': 'onBookmarkFormSubmitted',
+                'click .button-cancel': 'closeBookmarkForm'
+            },
+
+            initialize (attrs) {
+                this.chatroomview = attrs.chatroomview;
+                this.render();
+            },
+
+            toHTML () {
+                return tpl_chatroom_bookmark_form({
+                    'default_nick': this.model.get('nick'),
+                    'heading': __('Bookmark this groupchat'),
+                    'label_autojoin': __('Would you like this groupchat to be automatically joined upon startup?'),
+                    'label_cancel': __('Cancel'),
+                    'label_name': __('The name for this bookmark:'),
+                    'label_nick': __('What should your nickname for this groupchat be?'),
+                    'label_submit': __('Save'),
+                    'name': this.model.get('name')
+                });
+            },
+
+            onBookmarkFormSubmitted (ev) {
+                ev.preventDefault();
+                _converse.bookmarks.createBookmark({
+                    'jid': this.model.get('jid'),
+                    'autojoin': _.get(ev.target.querySelector('input[name="autojoin"]'), 'checked') || false,
+                    'name':  _.get(ev.target.querySelector('input[name=name]'), 'value'),
+                    'nick':  _.get(ev.target.querySelector('input[name=nick]'), 'value')
+                });
+                this.closeBookmarkForm(ev);
+            },
+
+            closeBookmarkForm (ev) {
+                ev.preventDefault();
+                this.chatroomview.closeForm();
+            }
+        });
+
         _converse.BookmarksList = Backbone.Model.extend({
             defaults: {
                 "toggle-state":  _converse.OPENED
@@ -483,7 +499,7 @@ converse.plugins.add('converse-bookmarks', {
                 const data = {
                     'name': name || Strophe.unescapeNode(Strophe.getNodeFromJid(jid)) || jid
                 }
-                _converse.api.rooms.open(jid, data);
+                _converse.api.rooms.open(jid, data, true);
             },
 
             removeBookmark: _converse.removeBookmarkViaEvent,
@@ -566,6 +582,7 @@ converse.plugins.add('converse-bookmarks', {
 
         _converse.api.listen.on('clearSession', () => {
             if (!_.isUndefined(_converse.bookmarks)) {
+                _converse.bookmarks.reset();
                 _converse.bookmarks.browserStorage._clear();
                 window.sessionStorage.removeItem(_converse.bookmarks.fetched_flag);
             }

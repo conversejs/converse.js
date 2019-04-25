@@ -125,7 +125,7 @@ converse.plugins.add('converse-vcard', {
             _converse.vcards.browserStorage = new Backbone.BrowserStorage[_converse.config.get('storage')](id);
             _converse.vcards.fetch();
         }
-        _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
+        _converse.api.listen.on('setUserJID', _converse.initVCardCollection);
 
 
         _converse.api.listen.on('statusInitialized', () => {

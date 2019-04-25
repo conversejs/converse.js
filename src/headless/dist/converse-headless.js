@@ -4846,7 +4846,7 @@ return parser;
 
   // Handle node, amd, and global systems
   if (true) {
-    if (typeof module !== 'undefined' && module.exports) {
+    if ( true && module.exports) {
       exports = module.exports = Jed;
     }
     exports.Jed = Jed;
@@ -5779,7 +5779,7 @@ module.exports = isSymbol;
   var root = freeGlobal || freeSelf || Function('return this')();
 
   /** Detect free variable `exports`. */
-  var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
+  var freeExports =  true && exports && !exports.nodeType && exports;
 
   /** Detect free variable `module`. */
   var freeModule = freeExports && typeof module == 'object' && module && !module.nodeType && module;
@@ -30205,6 +30205,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 //# sourceMappingURL=pluggable.js.map
 
+
 /***/ }),
 
 /***/ "./node_modules/process/browser.js":
@@ -38988,7 +38989,7 @@ g = (function() {
 
 try {
 	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1, eval)("this");
+	g = g || new Function("return this")();
 } catch (e) {
 	// This works if the window reference is available
 	if (typeof window === "object") g = window;
@@ -40248,7 +40249,6 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env
       Backbone = _converse$env.Backbone,
       Promise = _converse$env.Promise,
       Strophe = _converse$env.Strophe,
-      b64_sha1 = _converse$env.b64_sha1,
       moment = _converse$env.moment,
       sizzle = _converse$env.sizzle,
       utils = _converse$env.utils,
@@ -40291,12 +40291,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
     const ModelWithContact = Backbone.Model.extend({
       async setRosterContact(jid) {
-        await _converse.api.waitUntil('rosterContactsFetched');
-
-        const contact = _converse.roster.get(jid);
+        const contact = await _converse.api.contacts.get(jid);
 
         if (contact) {
           this.contact = contact;
+          this.set('nickname', contact.get('nickname'));
           this.trigger('rosterContactAdded');
         }
       }
@@ -40524,6 +40523,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'message_type': 'chat',
           'nickname': undefined,
           'num_unread': 0,
+          'time_opened': this.get('time_opened') || moment().valueOf(),
           'type': _converse.PRIVATE_CHAT_TYPE,
           'url': ''
         };
@@ -40541,15 +40541,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           // This happens when the controlbox is in browser storage,
           // but we're in embedded mode.
           return;
-        } // XXX: this creates a dependency on converse-roster, which we
-        // probably shouldn't have here, so we should probably move
-        // ChatBox out of converse-chatboxes
+        }
 
-
-        this.presence = _converse.presences.findWhere({
-          'jid': jid
-        }) || _converse.presences.create({
-          'jid': jid
+        this.set({
+          'box_id': `box-${btoa(jid)}`
         });
 
         if (_converse.vcards) {
@@ -40561,30 +40556,29 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
 
         if (this.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+          this.presence = _converse.presences.findWhere({
+            'jid': jid
+          }) || _converse.presences.create({
+            'jid': jid
+          });
           this.setRosterContact(jid);
         }
 
+        this.on('change:chat_state', this.sendChatState, this);
+        this.initMessages();
+      },
+
+      initMessages() {
         this.messages = new _converse.Messages();
 
         const storage = _converse.config.get('storage');
 
-        this.messages.browserStorage = new Backbone.BrowserStorage[storage](b64_sha1(`converse.messages${jid}${_converse.bare_jid}`));
+        this.messages.browserStorage = new Backbone.BrowserStorage[storage](`converse.messages-${this.get('jid')}-${_converse.bare_jid}`);
         this.messages.chatbox = this;
         this.messages.on('change:upload', message => {
           if (message.get('upload') === _converse.SUCCESS) {
             _converse.api.send(this.createMessageStanza(message));
           }
-        });
-        this.on('change:chat_state', this.sendChatState, this); // Models get saved immediately after creation, so no need to
-        // call `save` here.
-
-        this.set({
-          // The chat_state will be set to ACTIVE once the chat box is opened
-          // and we listen for change:chat_state, so shouldn't set it to ACTIVE here.
-          'box_id': b64_sha1(this.get('jid')),
-          'time_opened': this.get('time_opened') || moment().valueOf(),
-          'user_id': Strophe.getNodeFromJid(this.get('jid')),
-          'nickname': _.get(_converse.api.contacts.get(this.get('jid')), 'attributes.nickname')
         });
       },
 
@@ -41123,6 +41117,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return attrs;
       },
 
+      maybeShow() {
+        // Returns the chatbox
+        return this.trigger("show");
+      },
+
       isHidden() {
         /* Returns a boolean to indicate whether a newly received
          * message will be visible to the user or not.
@@ -41195,17 +41194,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }, null, 'message', 'error');
       },
 
-      chatBoxMayBeShown(chatbox) {
-        return true;
-      },
-
       onChatBoxesFetched(collection) {
         /* Show chat boxes upon receiving them from sessionStorage */
-        collection.each(chatbox => {
-          if (this.chatBoxMayBeShown(chatbox)) {
-            chatbox.trigger('show');
-          }
-        });
+        collection.each(chatbox => chatbox.maybeShow());
         /**
          * Triggered when a message stanza is been received and processed.
          * @event _converse#message
@@ -41261,6 +41252,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         } else {
           // An error message without id likely means that we
           // sent a message without id (which shouldn't happen).
+          _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
+
           _converse.log(message, Strophe.LogLevel.ERROR);
         }
 
@@ -41318,8 +41311,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
               from_resource = Strophe.getResourceFromJid(from_jid),
               is_me = from_bare_jid === _converse.bare_jid;
-        let contact_jid,
-            is_roster_contact = false;
+        let contact_jid;
 
         if (is_me) {
           // I am the sender, so this must be a forwarded message...
@@ -41330,17 +41322,18 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           contact_jid = Strophe.getBareJidFromJid(to_jid);
         } else {
           contact_jid = from_bare_jid;
-          await _converse.api.waitUntil('rosterContactsFetched');
-          is_roster_contact = !_.isUndefined(_converse.roster.get(contact_jid));
+        }
 
-          if (!is_roster_contact && !_converse.allow_non_roster_messaging) {
-            return;
-          }
+        const contact = await _converse.api.contacts.get(contact_jid);
+        const is_roster_contact = !_.isUndefined(contact);
+
+        if (!is_me && !is_roster_contact && !_converse.allow_non_roster_messaging) {
+          return;
         } // Get chat box, but only create when the message has something to show to the user
 
 
         const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0,
-              roster_nick = _.get(_converse.api.contacts.get(contact_jid), 'attributes.nickname'),
+              roster_nick = _.get(contact, 'attributes.nickname'),
               chatbox = this.getChatBox(contact_jid, {
           'nickname': roster_nick
         }, has_body);
@@ -41489,18 +41482,13 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         /**
          * @method _converse.api.chats.create
          * @param {string|string[]} jid|jids An jid or array of jids
-         * @param {object} attrs An object containing configuration attributes.
+         * @param {object} [attrs] An object containing configuration attributes.
          */
-        'create'(jids, attrs) {
-          if (_.isUndefined(jids)) {
-            _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
-
-            return null;
-          }
-
+        async create(jids, attrs) {
           if (_.isString(jids)) {
             if (attrs && !_.get(attrs, 'fullname')) {
-              attrs.fullname = _.get(_converse.api.contacts.get(jids), 'attributes.fullname');
+              const contact = await _converse.api.contacts.get(jids);
+              attrs.fullname = _.get(contact, 'attributes.fullname');
             }
 
             const chatbox = _converse.chatboxes.getChatBox(jids, attrs, true);
@@ -41514,10 +41502,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             return chatbox;
           }
 
-          return _.map(jids, jid => {
-            attrs.fullname = _.get(_converse.api.contacts.get(jid), 'attributes.fullname');
-            return _converse.chatboxes.getChatBox(jid, attrs, true).trigger('show');
-          });
+          if (_.isArray(jids)) {
+            return Promise.all(jids.forEach(async jid => {
+              const contact = await _converse.api.contacts.get(jids);
+              attrs.fullname = _.get(contact, 'attributes.fullname');
+              return _converse.chatboxes.getChatBox(jid, attrs, true).maybeShow();
+            }));
+          }
+
+          _converse.log("chats.create: You need to provide at least one JID", Strophe.LogLevel.ERROR);
+
+          return null;
         },
 
         /**
@@ -41525,7 +41520,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          *
          * @method _converse.api.chats.open
          * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
-         * @returns {Promise} Promise which resolves with the Backbone.Model representing the chat.
+         * @param {Object} [attrs] - Attributes to be set on the _converse.ChatBox model.
+         * @param {Boolean} [attrs.minimized] - Should the chat be
+         *   created in minimized state.
+         * @param {Boolean} [force=false] - By default, a minimized
+         *   chat won't be maximized (in `overlayed` view mode) and in
+         *   `fullscreen` view mode a newly opened chat won't replace
+         *   another chat already in the foreground.
+         *   Set `force` to `true` if you want to force the chat to be
+         *   maximized or shown.
+         * @returns {Promise} Promise which resolves with the
+         *   _converse.ChatBox representing the chat.
          *
          * @example
          * // To open a single chat, provide the JID of the contact you're chatting with in that chat:
@@ -41533,7 +41538,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          *     initialize: function() {
          *         var _converse = this._converse;
          *         // Note, buddy@example.org must be in your contacts roster!
-         *         _converse.api.chats.open('buddy@example.com').then((chat) => {
+         *         _converse.api.chats.open('buddy@example.com').then(chat => {
          *             // Now you can do something with the chat model
          *         });
          *     }
@@ -41545,36 +41550,34 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          *     initialize: function () {
          *         var _converse = this._converse;
          *         // Note, these users must first be in your contacts roster!
-         *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then((chats) => {
+         *         _converse.api.chats.open(['buddy1@example.com', 'buddy2@example.com']).then(chats => {
          *             // Now you can do something with the chat models
          *         });
          *     }
          * });
-         *
          */
-        'open'(jids, attrs) {
-          return new Promise((resolve, reject) => {
-            Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]).then(() => {
-              if (_.isUndefined(jids)) {
-                const err_msg = "chats.open: You need to provide at least one JID";
+        async open(jids, attrs, force) {
+          await Promise.all([_converse.api.waitUntil('rosterContactsFetched'), _converse.api.waitUntil('chatBoxesFetched')]);
 
-                _converse.log(err_msg, Strophe.LogLevel.ERROR);
+          if (_.isString(jids)) {
+            const chat = await _converse.api.chats.create(jids, attrs);
+            return chat.maybeShow(force);
+          } else if (_.isArray(jids)) {
+            return Promise.all(jids.map(j => _converse.api.chats.create(j, attrs).then(c => c.maybeShow(force))));
+          }
 
-                reject(new Error(err_msg));
-              } else if (_.isString(jids)) {
-                resolve(_converse.api.chats.create(jids, attrs).trigger('show'));
-              } else {
-                resolve(_.map(jids, jid => _converse.api.chats.create(jid, attrs).trigger('show')));
-              }
-            }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
-          });
+          const err_msg = "chats.open: You need to provide at least one JID";
+
+          _converse.log(err_msg, Strophe.LogLevel.ERROR);
+
+          throw new Error(err_msg);
         },
 
         /**
          * Returns a chat model. The chat should already be open.
          *
          * @method _converse.api.chats.get
-         * @param {String|string[]} name - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
+         * @param {String|string[]} jids - e.g. 'buddy@example.com' or ['buddy1@example.com', 'buddy2@example.com']
          * @returns {_converse.ChatBox}
          *
          * @example
@@ -41590,7 +41593,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
          * const models = _converse.api.chats.get();
          *
          */
-        'get'(jids) {
+        get(jids) {
           if (_.isUndefined(jids)) {
             const result = [];
 
@@ -41944,11 +41947,9 @@ function addPromise(promise) {
   _converse.promises[promise] = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].getResolveablePromise();
 }
 
-_converse.emit = function (name) {
-  _converse.log("(DEPRECATION) " + "_converse.emit has been has been deprecated. " + "Please use `_converse.api.trigger` instead.", strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.WARN);
-
-  _converse.api.emit.apply(_converse, arguments);
-};
+function isTestEnv() {
+  return _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(_converse.connection, 'service') === 'jasmine tests';
+}
 
 _converse.isUniView = function () {
   /* We distinguish between UniView and MultiView instances.
@@ -41980,12 +41981,6 @@ function initPlugins() {
   }
 
   _converse.pluggable.initializePlugins({
-    'updateSettings'() {
-      _converse.log("(DEPRECATION) " + "The `updateSettings` method has been deprecated. " + "Please use `_converse.api.settings.update` instead.", strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.WARN);
-
-      _converse.api.settings.update.apply(_converse, arguments);
-    },
-
     '_converse': _converse
   }, whitelist, _converse.blacklisted_plugins);
   /**
@@ -42067,27 +42062,72 @@ _converse.initConnection = function () {
   _converse.api.trigger('connectionInitialized');
 };
 
+async function initSession() {
+  const id = 'converse.bosh-session';
+  _converse.session = new Backbone.Model({
+    id
+  });
+  _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
+
+  try {
+    await new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((success, error) => _converse.session.fetch({
+      success,
+      error
+    }));
+
+    if (_converse.jid && _converse.session.get('jid') !== _converse.jid) {
+      _converse.session.clear({
+        'silent': true
+      });
+
+      _converse.session.save({
+        'jid': _converse.jid,
+        id
+      });
+    }
+  } catch (e) {
+    if (_converse.jid) {
+      _converse.session.save({
+        'jid': _converse.jid
+      });
+    }
+  }
+  /**
+   * Triggered once the session has been initialized. The session is a
+   * persistent object which stores session information in the browser storage.
+   * @event _converse#sessionInitialized
+   * @memberOf _converse
+   */
+
+
+  _converse.api.trigger('sessionInitialized');
+}
+
 function setUpXMLLogging() {
   strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].log = function (level, msg) {
     _converse.log(msg, level);
   };
 
-  if (_converse.debug) {
-    _converse.connection.xmlInput = function (body) {
+  _converse.connection.xmlInput = function (body) {
+    if (_converse.debug) {
       _converse.log(body.outerHTML, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.DEBUG, 'color: darkgoldenrod');
-    };
+    }
+  };
 
-    _converse.connection.xmlOutput = function (body) {
+  _converse.connection.xmlOutput = function (body) {
+    if (_converse.debug) {
       _converse.log(body.outerHTML, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.DEBUG, 'color: darkcyan');
-    };
-  }
+    }
+  };
 }
 
-function finishInitialization() {
+async function finishInitialization() {
   initClientConfig();
   initPlugins();
 
   _converse.initConnection();
+
+  await initSession();
 
   _converse.logIn();
 
@@ -42104,6 +42144,36 @@ function finishInitialization() {
   }
 }
 
+function fetchLoginCredentials() {
+  return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', _converse.credentials_url, true);
+    xhr.setRequestHeader('Accept', "application/json, text/javascript");
+
+    xhr.onload = function () {
+      if (xhr.status >= 200 && xhr.status < 400) {
+        const data = JSON.parse(xhr.responseText);
+        resolve({
+          'jid': data.jid,
+          'password': data.password
+        });
+      } else {
+        xhr.onerror({});
+      }
+    };
+
+    xhr.onerror = function () {
+      delete _converse.connection;
+
+      _converse.api.trigger('noResumeableSession', this);
+
+      reject(new Error(xhr.responseText));
+    };
+
+    xhr.send();
+  });
+}
+
 function unregisterGlobalEventHandlers() {
   document.removeEventListener("visibilitychange", _converse.saveWindowState);
 
@@ -42115,35 +42185,16 @@ function cleanup() {
   // out or disconnecting in the previous session.
   // This happens in tests. We therefore first clean up.
   Backbone.history.stop();
-
-  if (_converse.chatboxviews) {
-    _converse.chatboxviews.closeAllChatBoxes();
-  }
-
   unregisterGlobalEventHandlers();
-  window.localStorage.clear();
-  window.sessionStorage.clear();
-
-  if (_converse.bookmarks) {
-    _converse.bookmarks.reset();
-  }
-
   delete _converse.controlboxtoggle;
 
   if (_converse.chatboxviews) {
     delete _converse.chatboxviews;
   }
 
-  _converse.connection.reset();
-
-  _converse.tearDown();
-
   _converse.stopListening();
 
   _converse.off();
-
-  delete _converse.config;
-  initClientConfig();
 }
 
 _converse.initialize = async function (settings, callback) {
@@ -42361,11 +42412,11 @@ _converse.initialize = async function (settings, callback) {
     _converse.tearDown();
 
     _converse.logIn(null, true);
-  }, 3000, {
+  }, 2000, {
     'leading': true
   });
 
-  this.disconnect = function () {
+  this.finishDisconnection = function () {
     _converse.log('DISCONNECTED');
 
     delete _converse.connection.reconnecting;
@@ -42402,10 +42453,10 @@ _converse.initialize = async function (settings, callback) {
 
         return _converse.reconnect();
       } else {
-        return _converse.disconnect();
+        return _converse.finishDisconnection();
       }
     } else if (_converse.disconnection_cause === _converse.LOGOUT || !_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(reason) && reason === _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"], 'ErrorCondition.NO_AUTH_MECH') || reason === "host-unknown" || reason === "remote-connection-failed" || !_converse.auto_reconnect) {
-      return _converse.disconnect();
+      return _converse.finishDisconnection();
     }
     /**
      * Triggered when the connection has dropped, but Converse will attempt
@@ -42550,31 +42601,14 @@ _converse.initialize = async function (settings, callback) {
     }
   };
 
-  this.initSession = function () {
-    const id = 'converse.bosh-session';
-    _converse.session = new Backbone.Model({
-      id
-    });
-    _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
-
-    _converse.session.fetch();
-    /**
-     * Triggered once the session has been initialized. The session is a
-     * persistent object which stores session information in the browser storage.
-     * @event _converse#sessionInitialized
-     * @memberOf _converse
-     */
-
-
-    _converse.api.trigger('sessionInitialized');
-  };
-
   this.clearSession = function () {
-    if (!_converse.config.get('trusted')) {
+    if (!_converse.config.get('trusted') || isTestEnv()) {
       window.localStorage.clear();
       window.sessionStorage.clear();
-    } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(this.session) && this.session.browserStorage) {
-      this.session.browserStorage._clear();
+    } else {
+      _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(_converse, 'session.browserStorage', {
+        '_clear': _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.noop
+      })._clear();
     }
     /**
      * Triggered once the session information has been cleared,
@@ -42748,6 +42782,19 @@ _converse.initialize = async function (settings, callback) {
     _converse.resource = strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getResourceFromJid(_converse.connection.jid);
     _converse.domain = strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getDomainFromJid(_converse.connection.jid);
 
+    _converse.session.save({
+      'jid': _converse.connection.jid,
+      'bare_jid': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getBareJidFromJid(_converse.connection.jid),
+      'resource': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getResourceFromJid(_converse.connection.jid),
+      'domain': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].getDomainFromJid(_converse.connection.jid)
+    });
+    /**
+     * Triggered once we have the user's full JID and it's been save in the
+     * session.
+     * @event _converse#setUserJID
+     */
+
+
     _converse.api.trigger('setUserJID');
   };
 
@@ -42759,8 +42806,6 @@ _converse.initialize = async function (settings, callback) {
 
 
     _converse.setUserJID();
-
-    _converse.initSession();
 
     _converse.enableCarbons();
 
@@ -42858,34 +42903,6 @@ _converse.initialize = async function (settings, callback) {
 
   });
 
-  this.fetchLoginCredentials = () => new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', _converse.credentials_url, true);
-    xhr.setRequestHeader('Accept', "application/json, text/javascript");
-
-    xhr.onload = function () {
-      if (xhr.status >= 200 && xhr.status < 400) {
-        const data = JSON.parse(xhr.responseText);
-        resolve({
-          'jid': data.jid,
-          'password': data.password
-        });
-      } else {
-        xhr.onerror();
-      }
-    };
-
-    xhr.onerror = function () {
-      delete _converse.connection;
-
-      _converse.api.trigger('noResumeableSession', this);
-
-      reject(xhr.responseText);
-    };
-
-    xhr.send();
-  });
-
   this.startNewBOSHSession = function () {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', _converse.prebind_url, true);
@@ -42918,25 +42935,29 @@ _converse.initialize = async function (settings, callback) {
 
   this.restoreBOSHSession = function (jid_is_required) {
     /* Tries to restore a cached BOSH session. */
-    if (!this.jid) {
+    const jid = _converse.session.get('jid');
+
+    if (!jid) {
       const msg = "restoreBOSHSession: tried to restore a \"keepalive\" session " + "but we don't have the JID for the user!";
 
       if (jid_is_required) {
         throw new Error(msg);
       } else {
         _converse.log(msg);
+
+        return false;
       }
-    }
+    } else {
+      try {
+        this.connection.restore(jid, this.onConnectStatusChanged);
+        return true;
+      } catch (e) {
+        _converse.log("Could not restore session for jid: " + jid + " Error message: " + e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.WARN);
 
-    try {
-      this.connection.restore(this.jid, this.onConnectStatusChanged);
-      return true;
-    } catch (e) {
-      _converse.log("Could not restore session for jid: " + this.jid + " Error message: " + e.message, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.WARN);
+        this.clearSession(); // We want to clear presences (see #555)
 
-      this.clearSession(); // We want to clear presences (see #555)
-
-      return false;
+        return false;
+      }
     }
   };
 
@@ -42962,7 +42983,7 @@ _converse.initialize = async function (settings, callback) {
     }
   };
 
-  this.attemptNonPreboundSession = function (credentials, reconnecting) {
+  this.attemptNonPreboundSession = async function (credentials, reconnecting) {
     /* Handle session resumption or initialization when prebind is not being used.
      *
      * Two potential options exist and are handled in this method:
@@ -42979,7 +43000,17 @@ _converse.initialize = async function (settings, callback) {
       this.autoLogin(credentials);
     } else if (this.auto_login) {
       if (this.credentials_url) {
-        this.fetchLoginCredentials().then(this.autoLogin.bind(this), this.autoLogin.bind(this));
+        let data = {};
+
+        try {
+          data = await fetchLoginCredentials();
+        } catch (e) {
+          _converse.log("Could not fetch login credentials", strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
+
+          _converse.log(e, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
+        } finally {
+          this.autoLogin(data);
+        }
       } else if (!this.jid) {
         throw new Error("attemptNonPreboundSession: If you use auto_login, " + "you also need to give either a jid value (and if " + "applicable a password) or you need to pass in a URL " + "from where the username and password can be fetched " + "(via credentials_url).");
       } else {
@@ -43012,7 +43043,7 @@ _converse.initialize = async function (settings, callback) {
 
       if (!password) {
         if (this.auto_login) {
-          throw new Error("initConnection: If you use auto_login and " + "authentication='login' then you also need to provide a password.");
+          throw new Error("autoLogin: If you use auto_login and " + "authentication='login' then you also need to provide a password.");
         }
 
         _converse.setDisconnectionCause(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Status.AUTHFAIL, undefined, true);
@@ -43074,8 +43105,8 @@ _converse.initialize = async function (settings, callback) {
     this.connection = settings.connection;
   }
 
-  if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.get(_converse.connection, 'service') === 'jasmine tests') {
-    finishInitialization();
+  if (isTestEnv()) {
+    await finishInitialization();
     return _converse;
   } else if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isUndefined(_i18n__WEBPACK_IMPORTED_MODULE_6__["default"])) {
     const url = _converse_headless_utils_core__WEBPACK_IMPORTED_MODULE_11__["default"].interpolate(_converse.locales_url, {
@@ -43089,7 +43120,7 @@ _converse.initialize = async function (settings, callback) {
     }
   }
 
-  finishInitialization();
+  await finishInitialization();
   return init_promise;
 };
 /**
@@ -43131,18 +43162,15 @@ _converse.api = {
      * @memberOf _converse.api.connection
      */
     'disconnect'() {
-      _converse.connection.disconnect();
+      if (_converse.connection) {
+        _converse.connection.disconnect();
+      } else {
+        _converse.tearDown();
+
+        _converse.clearSession();
+      }
     }
 
-  },
-
-  /**
-   * Lets you emit (i.e. trigger) events.
-   * @deprecated since version 4.2.0. Use _converse.api.trigger instead.
-   * @method _converse.api.emit
-   */
-  'emit'() {
-    _converse.api.trigger.apply(this, arguments);
   },
 
   /**
@@ -44044,7 +44072,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       _converse.api.trigger('discoInitialized');
     }
 
-    _converse.api.listen.on('sessionInitialized', initStreamFeatures);
+    _converse.api.listen.on('setUserJID', initStreamFeatures);
 
     _converse.api.listen.on('reconnected', initializeDisco);
 
@@ -45024,7 +45052,6 @@ const _converse$env = _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].env
       $build = _converse$env.$build,
       $msg = _converse$env.$msg,
       $pres = _converse$env.$pres,
-      b64_sha1 = _converse$env.b64_sha1,
       sizzle = _converse$env.sizzle,
       f = _converse$env.f,
       moment = _converse$env.moment,
@@ -45149,7 +45176,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         throw new Error("Can't call _converse.getDefaultMUCNickname before the statusInitialized has been fired.");
       }
 
-      const nick = _converse.nickname || _converse.xmppstatus.vcard.get('nickname');
+      const nick = _converse.nickname || (_converse.vcards ? _converse.xmppstatus.vcard.get('nickname') : undefined);
 
       if (nick) {
         return nick;
@@ -45158,20 +45185,19 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
       }
     };
 
-    _converse.openChatRoom = function (jid, settings, bring_to_foreground) {
+    function openChatRoom(jid, settings) {
       /* Opens a groupchat, making sure that certain attributes
        * are correct, for example that the "type" is set to
        * "chatroom".
        */
       settings.type = _converse.CHATROOMS_TYPE;
       settings.id = jid;
-      settings.box_id = b64_sha1(jid);
 
       const chatbox = _converse.chatboxes.getChatBox(jid, settings, true);
 
-      chatbox.trigger('show', true);
+      chatbox.maybeShow(true);
       return chatbox;
-    };
+    }
     /**
      * Represents an open/ongoing groupchat conversation.
      *
@@ -45183,7 +45209,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
     _converse.ChatRoom = _converse.ChatBox.extend({
       defaults() {
-        return _.assign(_.clone(_converse.ChatBox.prototype.defaults), {
+        return {
           // For group chats, we distinguish between generally unread
           // messages and those ones that specifically mention the
           // user.
@@ -45194,19 +45220,33 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
           // generally unread messages (which *includes* mentions!).
           'num_unread_general': 0,
           'affiliation': null,
+          'bookmarked': false,
+          'chat_state': undefined,
           'connection_status': _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.DISCONNECTED,
+          'description': '',
+          'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode),
+          'message_type': 'groupchat',
           'name': '',
           'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
-          'description': '',
+          'num_unread': 0,
           'roomconfig': {},
-          'type': _converse.CHATROOMS_TYPE,
-          'message_type': 'groupchat'
-        });
+          'time_opened': this.get('time_opened') || moment().valueOf(),
+          'type': _converse.CHATROOMS_TYPE
+        };
       },
 
       initialize() {
-        this.constructor.__super__.initialize.apply(this, arguments);
+        if (_converse.vcards) {
+          this.vcard = _converse.vcards.findWhere({
+            'jid': this.get('jid')
+          }) || _converse.vcards.create({
+            'jid': this.get('jid')
+          });
+        }
 
+        this.set('box_id', `box-${btoa(this.get('jid'))}`);
+        this.initMessages();
+        this.on('change:chat_state', this.sendChatState, this);
         this.on('change:connection_status', this.onConnectionStatusChanged, this);
 
         const storage = _converse.config.get('storage');
@@ -46541,7 +46581,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
       }
 
       if (result === true) {
-        const chatroom = _converse.openChatRoom(room_jid, {
+        const chatroom = openChatRoom(room_jid, {
           'password': x_el.getAttribute('password')
         });
 
@@ -46574,7 +46614,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
       jid = jid.toLowerCase();
       attrs.type = _converse.CHATROOMS_TYPE;
       attrs.id = jid;
-      attrs.box_id = b64_sha1(jid);
       return _converse.chatboxes.getChatBox(jid, attrs, create);
     };
 
@@ -46754,6 +46793,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
          * @param {boolean} [attrs.bring_to_foreground] A boolean indicating whether the room should be
          *     brought to the foreground and therefore replace the currently shown chat.
          *     If there is no chat currently open, then this option is ineffective.
+         * @param {Boolean} [force=false] - By default, a minimized
+         *   room won't be maximized (in `overlayed` view mode) and in
+         *   `fullscreen` view mode a newly opened room won't replace
+         *   another chat already in the foreground.
+         *   Set `force` to `true` if you want to force the room to be
+         *   maximized or shown.
          *
          * @example
          * this._converse.api.rooms.open('group@muc.example.com')
@@ -46785,6 +46830,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
          * );
          */
         'open': async function open(jids, attrs) {
+          let force = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
           await _converse.api.waitUntil('chatBoxesFetched');
 
           if (_.isUndefined(jids)) {
@@ -46794,9 +46840,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
             throw new TypeError(err_msg);
           } else if (_.isString(jids)) {
-            return _converse.api.rooms.create(jids, attrs).trigger('show');
+            return _converse.api.rooms.create(jids, attrs).maybeShow(force);
           } else {
-            return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).trigger('show'));
+            return _.map(jids, jid => _converse.api.rooms.create(jid, attrs).maybeShow(force));
           }
         },
 
@@ -48118,28 +48164,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     /********** Event Handlers *************/
 
 
-    function addRelatedContactToChatbox(chatbox, contact) {
-      if (!_.isUndefined(contact)) {
-        chatbox.contact = contact;
-        chatbox.trigger('contactAdded', contact);
-      }
-    }
-
-    _converse.api.waitUntil('rosterContactsFetched').then(() => {
-      _converse.roster.on('add', contact => {
-        /* When a new contact is added, check if we already have a
-         * chatbox open for it, and if so attach it to the chatbox.
-         */
-        const chatbox = _converse.chatboxes.findWhere({
-          'jid': contact.get('jid')
-        });
-
-        if (chatbox) {
-          addRelatedContactToChatbox(chatbox, contact);
-        }
-      });
-    });
-
     function updateUnreadCounter(chatbox) {
       const contact = _converse.roster.findWhere({
         'jid': chatbox.get('jid')
@@ -48155,11 +48179,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     _converse.api.listen.on('chatBoxesInitialized', () => {
       _converse.chatboxes.on('change:num_unread', updateUnreadCounter);
 
-      _converse.chatboxes.on('add', async chatbox => {
-        await _converse.api.waitUntil('rosterContactsFetched');
-        addRelatedContactToChatbox(chatbox, _converse.roster.findWhere({
-          'jid': chatbox.get('jid')
-        }));
+      _converse.chatboxes.on('add', chatbox => {
+        if (chatbox.get('type') === _converse.PRIVATE_CHAT_TYPE) {
+          chatbox.setRosterContact(chatbox.get('jid'));
+        }
       });
     });
 
@@ -48175,7 +48198,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         });
 
         if (chatbox) {
-          addRelatedContactToChatbox(chatbox, contact);
+          chatbox.setRosterContact(contact.get('jid'));
         }
       });
     });
@@ -48262,20 +48285,20 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          * @method _converse.api.contacts.get
          * @params {(string[]|string)} jid|jids The JID or JIDs of
          *      the contacts to be returned.
-         * @returns {(RosterContact[]|RosterContact)} [Backbone.Model](http://backbonejs.org/#Model)
-         *      (or an array of them) representing the contact.
+         * @returns {promise} Promise which resolves with the
+         *  _converse.RosterContact (or an array of them) representing the contact.
          *
          * @example
          * // Fetch a single contact
          * _converse.api.listen.on('rosterContactsFetched', function () {
-         *     const contact = _converse.api.contacts.get('buddy@example.com')
+         *     const contact = await _converse.api.contacts.get('buddy@example.com')
          *     // ...
          * });
          *
          * @example
          * // To get multiple contacts, pass in an array of JIDs:
          * _converse.api.listen.on('rosterContactsFetched', function () {
-         *     const contacts = _converse.api.contacts.get(
+         *     const contacts = await _converse.api.contacts.get(
          *         ['buddy1@example.com', 'buddy2@example.com']
          *     )
          *     // ...
@@ -48284,14 +48307,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
          * @example
          * // To return all contacts, simply call ``get`` without any parameters:
          * _converse.api.listen.on('rosterContactsFetched', function () {
-         *     const contacts = _converse.api.contacts.get();
+         *     const contacts = await _converse.api.contacts.get();
          *     // ...
          * });
          */
-        'get'(jids) {
-          const _getter = function _getter(jid) {
-            return _converse.roster.get(Strophe.getBareJidFromJid(jid)) || null;
-          };
+        async get(jids) {
+          await _converse.api.waitUntil('rosterContactsFetched');
+
+          const _getter = jid => _converse.roster.get(Strophe.getBareJidFromJid(jid));
 
           if (_.isUndefined(jids)) {
             jids = _converse.roster.pluck('jid');
@@ -48489,7 +48512,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
       _converse.vcards.fetch();
     };
 
-    _converse.api.listen.on('sessionInitialized', _converse.initVCardCollection);
+    _converse.api.listen.on('setUserJID', _converse.initVCardCollection);
 
     _converse.api.listen.on('statusInitialized', () => {
       const vcards = _converse.vcards;

@@ -311,7 +311,7 @@ converse.plugins.add('converse-disco', {
             _converse.api.trigger('discoInitialized');
         }
 
-        _converse.api.listen.on('sessionInitialized', initStreamFeatures);
+        _converse.api.listen.on('setUserJID', initStreamFeatures);
         _converse.api.listen.on('reconnected', initializeDisco);
         _converse.api.listen.on('connected', initializeDisco);
 

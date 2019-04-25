@@ -1,12 +1,28 @@
 # Changelog
 
-## 4.2.1 (Unreleased)
+## 5.0.0 (Unreleased)
 
-* Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
-* Bugfix: Modal auto-closes when you open it for a second time.
-* Take roster nickname into consideration when rendering messages and chat headings.
-* Hide the textarea when a user is muted in a groupchat.
-* #1532: Converse reloads on enter pressed in the filter box
+- Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
+- Bugfix: Modal auto-closes when you open it for a second time.
+- Take roster nickname into consideration when rendering messages and chat headings.
+- Hide the textarea when a user is muted in a groupchat.
+- Don't restore a BOSH session without knowing the JID
+- In the `/help` menu, only show allowed commands
+- #1296: `embedded` view mode shows `chatbox-navback` arrow in header
+- #1532: Converse reloads on enter pressed in the filter box
+
+- **Breaking changes**:
+- Rename `muc_disable_moderator_commands` to [muc_disable_slash_commands](https://conversejs.org/docs/html/configuration.html#muc-disable-slash-commands).
+
+### API changes
+
+- `_converse.chats.open` and `_converse.rooms.open` now take a `force`
+  parameter to force maximizing (in `overlayed` view mode) or bringing a
+  background chat into the foreground (in `fullscreen` view mode). Previously
+  this was the default behavior.
+- `_converse.api.emit` has been removed in favor of [\_converse.api.trigger](https://conversejs.org/docs/html/api/-_converse.api.html#.trigger)
+- `_converse.updateSettings` has been removed in favor of [\_converse.api.settings.update](https://conversejs.org/docs/html/api/-_converse.api.settings.html#.update)
+- `_converse.api.roster.get` now returns a promise.
 
 ## 4.2.0 (2019-04-04)
 
@@ -96,7 +112,7 @@ version 1.7.0 and below. You're advised to stay on Converse version 4.1.2 until 
 - #1334 Force avatar refetch when receiving `vcard-temp:x:update`
 - #1337 `send_chat_state_notifications` doesn't work in MUCs
 - #1353 Message Delivery Receipts not working because of the message "type" attribute
-- #1356 Make triangle icon usable 
+- #1356 Make triangle icon usable
 - #1374 Can't load embedded chat when changing `view_mode` between page reloads
 - #1376 Fixed some alignment issues in the sidebar
 - #1378 Message Delivery Receipts were being sent for carbons and own messages

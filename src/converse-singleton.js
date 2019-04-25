@@ -43,28 +43,29 @@ converse.plugins.add('converse-singleton', {
         // relevant objects or classes.
         //
         // new functions which don't exist yet can also be added.
-        ChatBoxes: {
 
-            chatBoxMayBeShown (chatbox) {
+        ChatBox: {
+            maybeShow (force) {
+                // This method must return the chatbox
                 const { _converse } = this.__super__;
-                if (chatbox.get('id') === 'controlbox') {
-                    return true;
-                }
-                if (_converse.isUniView()) {
+                if (!force && _converse.isUniView()) {
+                    if (this.get('id') === 'controlbox') {
+                        return this.trigger('show');
+                    }
                     const any_chats_visible = _converse.chatboxes
                         .filter(cb => cb.get('id') != 'controlbox')
                         .filter(cb => !cb.get('hidden')).length > 0;
 
-                    if (any_chats_visible) {
-                        return !chatbox.get('hidden');
-                    } else {
-                        return true;
+                    if (!any_chats_visible || !this.get('hidden')) {
+                        return this.trigger('show');
                     }
                 } else {
-                    return this.__super__.chatBoxMayBeShown.apply(this, arguments);
+                    return this.__super__.maybeShow.apply(this, arguments);
                 }
-            },
+            }
+        },
 
+        ChatBoxes: {
             createChatBox (jid, attrs) {
                 /* Make sure new chat boxes are hidden by default. */
                 const { _converse } = this.__super__;

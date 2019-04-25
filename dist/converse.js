@@ -53468,6 +53468,10 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
       $pres = _converse$env.$pres;
 const u = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].env.utils;
 const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
+const OWNER_COMMANDS = ['owner'];
+const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
+const MODERATOR_COMMANDS = ['kick', 'mute', 'voice'];
+const VISITOR_COMMANDS = ['nick'];
 _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins.add('converse-muc-views', {
   /* Dependencies are other plugins which might be
    * overridden or relied upon, and therefore need to be loaded before
@@ -54385,26 +54389,40 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         return _converse.api.sendIQ(iq).then(onSuccess).catch(onError);
       },
 
-      verifyRoles(roles) {
-        const me = this.model.occupants.findWhere({
-          'jid': _converse.bare_jid
-        });
+      verifyRoles(roles, occupant) {
+        let show_error = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
-        if (!_.includes(roles, me.get('role'))) {
-          this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'));
+        if (!occupant) {
+          occupant = this.model.occupants.findWhere({
+            'jid': _converse.bare_jid
+          });
+        }
+
+        if (!_.includes(roles, occupant.get('role'))) {
+          if (show_error) {
+            this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'));
+          }
+
           return false;
         }
 
         return true;
       },
 
-      verifyAffiliations(affiliations) {
-        const me = this.model.occupants.findWhere({
-          'jid': _converse.bare_jid
-        });
+      verifyAffiliations(affiliations, occupant) {
+        let show_error = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
-        if (!_.includes(affiliations, me.get('affiliation'))) {
-          this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'));
+        if (!occupant) {
+          occupant = this.model.occupants.findWhere({
+            'jid': _converse.bare_jid
+          });
+        }
+
+        if (!_.includes(affiliations, occupant.get('affiliation'))) {
+          if (show_error) {
+            this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'));
+          }
+
           return false;
         }
 
@@ -54454,62 +54472,104 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         switch (command) {
           case 'admin':
-            if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.model.setAffiliation('admin', [{
+                'jid': args[0],
+                'reason': args[1]
+              }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
               break;
             }
-
-            this.model.setAffiliation('admin', [{
-              'jid': args[0],
-              'reason': args[1]
-            }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
-            break;
 
           case 'ban':
-            if (!this.verifyAffiliations(['owner', 'admin']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.model.setAffiliation('outcast', [{
+                'jid': args[0],
+                'reason': args[1]
+              }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
               break;
             }
-
-            this.model.setAffiliation('outcast', [{
-              'jid': args[0],
-              'reason': args[1]
-            }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
-            break;
 
           case 'deop':
-            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              // FIXME: /deop only applies to setting a moderators
+              // role to "participant" (which only admin/owner can
+              // do). Moderators can however set non-moderator's role
+              // to participant (e.g. visitor => participant).
+              // Currently we don't distinguish between these two
+              // cases.
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.modifyRole(this.model.get('jid'), args[0], 'participant', args[1], undefined, this.onCommandError.bind(this));
               break;
             }
-
-            this.modifyRole(this.model.get('jid'), args[0], 'participant', args[1], undefined, this.onCommandError.bind(this));
-            break;
 
           case 'destroy':
-            if (!this.verifyAffiliations(['owner'])) {
+            {
+              if (!this.verifyAffiliations(['owner'])) {
+                break;
+              }
+
+              this.destroy(this.model.get('jid'), args[0]).then(() => this.close()).catch(e => this.onCommandError(e));
               break;
             }
-
-            this.destroy(this.model.get('jid'), args[0]).then(() => this.close()).catch(e => this.onCommandError(e));
-            break;
 
           case 'help':
-            this.showHelpMessages(_.filter([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Remove messages')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/destroy</strong>: ${__('Remove this groupchat')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register a nickname for this groupchat")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`], line => _.every(disabled_commands, element => !line.startsWith(element + '<', 9))));
-            break;
+            {
+              // FIXME: The availability of some of these commands
+              // depend on the MUCs configuration (e.g. whether it's
+              // moderated or not). We need to take that into
+              // consideration.
+              let allowed_commands = ['clear', 'help', 'me', 'nick', 'subject', 'topic', 'register'];
+              const occupant = this.model.occupants.findWhere({
+                'jid': _converse.bare_jid
+              });
+
+              if (this.verifyAffiliations('owner', occupant, false)) {
+                allowed_commands = allowed_commands.concat(OWNER_COMMANDS).concat(ADMIN_COMMANDS);
+              } else if (this.verifyAffiliations('admin', occupant, false)) {
+                allowed_commands = allowed_commands.concat(ADMIN_COMMANDS);
+              }
+
+              if (this.verifyRoles('moderator', occupant, false)) {
+                allowed_commands = allowed_commands.concat(MODERATOR_COMMANDS).concat(VISITOR_COMMANDS);
+              } else if (!this.verifyRoles(['visitor', 'participant', 'moderator'], occupant, false)) {
+                allowed_commands = allowed_commands.concat(VISITOR_COMMANDS);
+              }
+
+              this.showHelpMessages([`<strong>${__("You can run the following commands")}</strong>`]);
+              this.showHelpMessages([`<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`, `<strong>/ban</strong>: ${__('Ban user from groupchat')}`, `<strong>/clear</strong>: ${__('Clear the chat area')}`, `<strong>/deop</strong>: ${__('Change user role to participant')}`, `<strong>/destroy</strong>: ${__('Remove this groupchat')}`, `<strong>/help</strong>: ${__('Show this menu')}`, `<strong>/kick</strong>: ${__('Kick user from groupchat')}`, `<strong>/me</strong>: ${__('Write in 3rd person')}`, `<strong>/member</strong>: ${__('Grant membership to a user')}`, `<strong>/mute</strong>: ${__("Remove user's ability to post messages")}`, `<strong>/nick</strong>: ${__('Change your nickname')}`, `<strong>/op</strong>: ${__('Grant moderator role to user')}`, `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`, `<strong>/register</strong>: ${__("Register your nickname")}`, `<strong>/revoke</strong>: ${__("Revoke user's membership")}`, `<strong>/subject</strong>: ${__('Set groupchat subject')}`, `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`, `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`].filter(line => disabled_commands.every(c => !line.startsWith(c + '<', 9))).filter(line => allowed_commands.some(c => line.startsWith(c + '<', 9))));
+              break;
+            }
 
           case 'kick':
-            if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.modifyRole(this.model.get('jid'), args[0], 'none', args[1], undefined, this.onCommandError.bind(this));
               break;
             }
-
-            this.modifyRole(this.model.get('jid'), args[0], 'none', args[1], undefined, this.onCommandError.bind(this));
-            break;
 
           case 'mute':
-            if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.modifyRole(this.model.get('jid'), args[0], 'visitor', args[1], undefined, this.onCommandError.bind(this));
               break;
             }
-
-            this.modifyRole(this.model.get('jid'), args[0], 'visitor', args[1], undefined, this.onCommandError.bind(this));
-            break;
 
           case 'member':
             {
@@ -54536,17 +54596,19 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
             }
 
           case 'nick':
-            if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
+            {
+              if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
+                break;
+              }
+
+              _converse.api.send($pres({
+                from: _converse.connection.jid,
+                to: this.model.getRoomJIDAndNick(match[2]),
+                id: _converse.connection.getUniqueId()
+              }).tree());
+
               break;
             }
-
-            _converse.api.send($pres({
-              from: _converse.connection.jid,
-              to: this.model.getRoomJIDAndNick(match[2]),
-              id: _converse.connection.getUniqueId()
-            }).tree());
-
-            break;
 
           case 'owner':
             if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
@@ -54560,34 +54622,40 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
             break;
 
           case 'op':
-            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.modifyRole(this.model.get('jid'), args[0], 'moderator', args[1], undefined, this.onCommandError.bind(this));
               break;
             }
-
-            this.modifyRole(this.model.get('jid'), args[0], 'moderator', args[1], undefined, this.onCommandError.bind(this));
-            break;
 
           case 'register':
-            if (args.length > 1) {
-              this.showErrorMessage(__('Error: invalid number of arguments'));
-            } else {
-              this.model.registerNickname().then(err_msg => {
-                if (err_msg) this.showErrorMessage(err_msg);
-              });
-            }
+            {
+              if (args.length > 1) {
+                this.showErrorMessage(__('Error: invalid number of arguments'));
+              } else {
+                this.model.registerNickname().then(err_msg => {
+                  if (err_msg) this.showErrorMessage(err_msg);
+                });
+              }
 
-            break;
-
-          case 'revoke':
-            if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
               break;
             }
 
-            this.model.setAffiliation('none', [{
-              'jid': args[0],
-              'reason': args[1]
-            }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
-            break;
+          case 'revoke':
+            {
+              if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.model.setAffiliation('none', [{
+                'jid': args[0],
+                'reason': args[1]
+              }]).then(() => this.model.occupants.fetchMembers(), err => this.onCommandError(err));
+              break;
+            }
 
           case 'topic':
           case 'subject':
@@ -54603,12 +54671,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
             break;
 
           case 'voice':
-            if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+            {
+              if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
+                break;
+              }
+
+              this.modifyRole(this.model.get('jid'), args[0], 'participant', args[1], undefined, this.onCommandError.bind(this));
               break;
             }
-
-            this.modifyRole(this.model.get('jid'), args[0], 'participant', args[1], undefined, this.onCommandError.bind(this));
-            break;
 
           default:
             return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);

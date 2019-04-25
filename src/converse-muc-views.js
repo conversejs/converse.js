@@ -41,6 +41,10 @@ import xss from "xss";
 const { Backbone, Promise, Strophe, moment, f, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
 const u = converse.env.utils;
 const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
+const OWNER_COMMANDS = ['owner'];
+const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revoke'];
+const MODERATOR_COMMANDS = ['kick', 'mute', 'voice'];
+const VISITOR_COMMANDS = ['nick'];
 
 converse.plugins.add('converse-muc-views', {
     /* Dependencies are other plugins which might be
@@ -882,19 +886,27 @@ converse.plugins.add('converse-muc-views', {
                 return _converse.api.sendIQ(iq).then(onSuccess).catch(onError);
             },
 
-            verifyRoles (roles) {
-                const me = this.model.occupants.findWhere({'jid': _converse.bare_jid});
-                if (!_.includes(roles, me.get('role'))) {
-                    this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'))
+            verifyRoles (roles, occupant, show_error=true) {
+                if (!occupant) {
+                    occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
+                }
+                if (!_.includes(roles, occupant.get('role'))) {
+                    if (show_error) {
+                        this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'))
+                    }
                     return false;
                 }
                 return true;
             },
 
-            verifyAffiliations (affiliations) {
-                const me = this.model.occupants.findWhere({'jid': _converse.bare_jid});
-                if (!_.includes(affiliations, me.get('affiliation'))) {
-                    this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'))
+            verifyAffiliations (affiliations, occupant, show_error=true) {
+                if (!occupant) {
+                    occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
+                }
+                if (!_.includes(affiliations, occupant.get('affiliation'))) {
+                    if (show_error) {
+                        this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'))
+                    }
                     return false;
                 }
                 return true;
@@ -938,7 +950,7 @@ converse.plugins.add('converse-muc-views', {
                     return false;
                 }
                 switch (command) {
-                    case 'admin':
+                    case 'admin': {
                         if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
@@ -950,8 +962,9 @@ converse.plugins.add('converse-muc-views', {
                             (err) => this.onCommandError(err)
                         );
                         break;
-                    case 'ban':
-                        if (!this.verifyAffiliations(['owner', 'admin']) || !this.validateRoleChangeCommand(command, args)) {
+                    }
+                    case 'ban': {
+                        if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
                         this.model.setAffiliation('outcast', [{
@@ -962,15 +975,23 @@ converse.plugins.add('converse-muc-views', {
                             (err) => this.onCommandError(err)
                         );
                         break;
-                    case 'deop':
+                    }
+                    case 'deop': {
+                        // FIXME: /deop only applies to setting a moderators
+                        // role to "participant" (which only admin/owner can
+                        // do). Moderators can however set non-moderator's role
+                        // to participant (e.g. visitor => participant).
+                        // Currently we don't distinguish between these two
+                        // cases.
                         if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
                         this.modifyRole(
-                                this.model.get('jid'), args[0], 'participant', args[1],
-                                undefined, this.onCommandError.bind(this));
+                            this.model.get('jid'), args[0], 'participant', args[1],
+                            undefined, this.onCommandError.bind(this));
                         break;
-                    case 'destroy':
+                    }
+                    case 'destroy': {
                         if (!this.verifyAffiliations(['owner'])) {
                             break;
                         }
@@ -978,11 +999,29 @@ converse.plugins.add('converse-muc-views', {
                             .then(() => this.close())
                             .catch(e => this.onCommandError(e));
                         break;
-                    case 'help':
-                        this.showHelpMessages(_.filter([
+                    }
+                    case 'help': {
+                        // FIXME: The availability of some of these commands
+                        // depend on the MUCs configuration (e.g. whether it's
+                        // moderated or not). We need to take that into
+                        // consideration.
+                        let allowed_commands = ['clear', 'help', 'me', 'nick', 'subject', 'topic', 'register'];
+                        const occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
+                        if (this.verifyAffiliations('owner', occupant, false)) {
+                            allowed_commands = allowed_commands.concat(OWNER_COMMANDS).concat(ADMIN_COMMANDS);
+                        } else if (this.verifyAffiliations('admin', occupant, false)) {
+                            allowed_commands = allowed_commands.concat(ADMIN_COMMANDS);
+                        }
+                        if (this.verifyRoles('moderator', occupant, false)) {
+                            allowed_commands = allowed_commands.concat(MODERATOR_COMMANDS).concat(VISITOR_COMMANDS);
+                        } else if (!this.verifyRoles(['visitor', 'participant', 'moderator'], occupant, false)) {
+                            allowed_commands = allowed_commands.concat(VISITOR_COMMANDS);
+                        }
+                        this.showHelpMessages([`<strong>${__("You can run the following commands")}</strong>`]);
+                        this.showHelpMessages([
                             `<strong>/admin</strong>: ${__("Change user's affiliation to admin")}`,
                             `<strong>/ban</strong>: ${__('Ban user from groupchat')}`,
-                            `<strong>/clear</strong>: ${__('Remove messages')}`,
+                            `<strong>/clear</strong>: ${__('Clear the chat area')}`,
                             `<strong>/deop</strong>: ${__('Change user role to participant')}`,
                             `<strong>/destroy</strong>: ${__('Remove this groupchat')}`,
                             `<strong>/help</strong>: ${__('Show this menu')}`,
@@ -993,15 +1032,16 @@ converse.plugins.add('converse-muc-views', {
                             `<strong>/nick</strong>: ${__('Change your nickname')}`,
                             `<strong>/op</strong>: ${__('Grant moderator role to user')}`,
                             `<strong>/owner</strong>: ${__('Grant ownership of this groupchat')}`,
-                            `<strong>/register</strong>: ${__("Register a nickname for this groupchat")}`,
+                            `<strong>/register</strong>: ${__("Register your nickname")}`,
                             `<strong>/revoke</strong>: ${__("Revoke user's membership")}`,
                             `<strong>/subject</strong>: ${__('Set groupchat subject')}`,
                             `<strong>/topic</strong>: ${__('Set groupchat subject (alias for /subject)')}`,
                             `<strong>/voice</strong>: ${__('Allow muted user to post messages')}`
-                        ], line => (_.every(disabled_commands, element => (!line.startsWith(element+'<', 9))))
-                        ));
+                            ].filter(line => disabled_commands.every(c => (!line.startsWith(c+'<', 9))))
+                             .filter(line => allowed_commands.some(c => line.startsWith(c+'<', 9)))
+                        );
                         break;
-                    case 'kick':
+                    } case 'kick': {
                         if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
@@ -1009,7 +1049,8 @@ converse.plugins.add('converse-muc-views', {
                                 this.model.get('jid'), args[0], 'none', args[1],
                                 undefined, this.onCommandError.bind(this));
                         break;
-                    case 'mute':
+                    }
+                    case 'mute': {
                         if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
@@ -1017,6 +1058,7 @@ converse.plugins.add('converse-muc-views', {
                                 this.model.get('jid'), args[0], 'visitor', args[1],
                                 undefined, this.onCommandError.bind(this));
                         break;
+                    }
                     case 'member': {
                         if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
@@ -1034,7 +1076,8 @@ converse.plugins.add('converse-muc-views', {
                             .then(() => this.model.occupants.fetchMembers())
                             .catch(err => this.onCommandError(err));
                         break;
-                    } case 'nick':
+                    }
+                    case 'nick': {
                         if (!this.verifyRoles(['visitor', 'participant', 'moderator'])) {
                             break;
                         }
@@ -1044,6 +1087,7 @@ converse.plugins.add('converse-muc-views', {
                             id: _converse.connection.getUniqueId()
                         }).tree());
                         break;
+                    }
                     case 'owner':
                         if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
@@ -1056,7 +1100,7 @@ converse.plugins.add('converse-muc-views', {
                             (err) => this.onCommandError(err)
                         );
                         break;
-                    case 'op':
+                    case 'op': {
                         if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
@@ -1064,7 +1108,8 @@ converse.plugins.add('converse-muc-views', {
                                 this.model.get('jid'), args[0], 'moderator', args[1],
                                 undefined, this.onCommandError.bind(this));
                         break;
-                    case 'register':
+                    }
+                    case 'register': {
                         if (args.length > 1) {
                             this.showErrorMessage(__('Error: invalid number of arguments'))
                         } else {
@@ -1073,7 +1118,8 @@ converse.plugins.add('converse-muc-views', {
                             });
                         }
                         break;
-                    case 'revoke':
+                    }
+                    case 'revoke': {
                         if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
@@ -1085,6 +1131,7 @@ converse.plugins.add('converse-muc-views', {
                             (err) => this.onCommandError(err)
                         );
                         break;
+                    }
                     case 'topic':
                     case 'subject':
                         // TODO: should be done via API call to _converse.api.rooms
@@ -1096,7 +1143,7 @@ converse.plugins.add('converse-muc-views', {
                             }).c("subject", {xmlns: "jabber:client"}).t(match[2] || "").tree()
                         );
                         break;
-                    case 'voice':
+                    case 'voice': {
                         if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
@@ -1104,6 +1151,7 @@ converse.plugins.add('converse-muc-views', {
                                 this.model.get('jid'), args[0], 'participant', args[1],
                                 undefined, this.onCommandError.bind(this));
                         break;
+                    }
                     default:
                         return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
                 }

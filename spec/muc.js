@@ -1781,9 +1781,7 @@
                     async function (done, _converse) {
 
                 test_utils.createContacts(_converse, 'current'); // We need roster contacts, who can invite us
-                spyOn(window, 'confirm').and.callFake(function () {
-                    return true;
-                });
+                spyOn(window, 'confirm').and.callFake(() => true);
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 view.close(); // Hack, otherwise we have to mock stanzas.
@@ -2550,23 +2548,24 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
+                spyOn(window, 'confirm').and.callFake(() => true);
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                var textarea = view.el.querySelector('.chat-textarea');
-                textarea.value = '/help This is the groupchat subject';
-                view.keyPressed({
-                    target: textarea,
-                    preventDefault: _.noop,
-                    keyCode: 13
-                });
+                const textarea = view.el.querySelector('.chat-textarea');
+                textarea.value = '/clear';
 
-                const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
+                const enter = { 'target': textarea, 'preventDefault': _.noop, 'keyCode': 13 };
+                view.keyPressed(enter);
+                textarea.value = '/help';
+                view.keyPressed(enter);
+
+                let info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_messages.length).toBe(19);
                 expect(info_messages.pop().textContent).toBe('/voice: Allow muted user to post messages');
                 expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                 expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
                 expect(info_messages.pop().textContent).toBe('/revoke: Revoke user\'s membership');
-                expect(info_messages.pop().textContent).toBe('/register: Register a nickname for this groupchat');
+                expect(info_messages.pop().textContent).toBe('/register: Register your nickname');
                 expect(info_messages.pop().textContent).toBe('/owner: Grant ownership of this groupchat');
                 expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
                 expect(info_messages.pop().textContent).toBe('/nick: Change your nickname');
@@ -2577,9 +2576,44 @@
                 expect(info_messages.pop().textContent).toBe('/help: Show this menu');
                 expect(info_messages.pop().textContent).toBe('/destroy: Remove this groupchat');
                 expect(info_messages.pop().textContent).toBe('/deop: Change user role to participant');
-                expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
+                expect(info_messages.pop().textContent).toBe('/clear: Clear the chat area');
                 expect(info_messages.pop().textContent).toBe('/ban: Ban user from groupchat');
                 expect(info_messages.pop().textContent).toBe('/admin: Change user\'s affiliation to admin');
+                expect(info_messages.pop().textContent).toBe('You can run the following commands');
+
+                const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
+                occupant.set('affiliation', 'admin');
+                textarea.value = '/clear';
+                view.keyPressed(enter);
+                textarea.value = '/help';
+                view.keyPressed(enter);
+                info_messages = sizzle('.chat-info', view.el).slice(1);
+                expect(info_messages.length).toBe(17);
+                let commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
+                expect(commands).toEqual([
+                    "/admin", "/ban", "/clear", "/deop", "/destroy",
+                    "/help", "/kick", "/me", "/member", "/mute", "/nick",
+                    "/op", "/register", "/revoke", "/subject", "/topic", "/voice"
+                ]);
+                occupant.set('affiliation', 'member');
+                textarea.value = '/clear';
+                view.keyPressed(enter);
+                textarea.value = '/help';
+                view.keyPressed(enter);
+                info_messages = sizzle('.chat-info', view.el).slice(1);
+                expect(info_messages.length).toBe(10);
+                commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
+                expect(commands).toEqual(["/clear", "/help", "/kick", "/me", "/mute", "/nick", "/register", "/subject", "/topic", "/voice"]);
+
+                occupant.set('role', 'participant');
+                textarea.value = '/clear';
+                view.keyPressed(enter);
+                textarea.value = '/help';
+                view.keyPressed(enter);
+                info_messages = sizzle('.chat-info', view.el).slice(1);
+                expect(info_messages.length).toBe(7);
+                commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
+                expect(commands).toEqual(["/clear", "/help", "/me", "/nick", "/register", "/subject", "/topic"]);
                 done();
             }));
 
@@ -2599,11 +2633,11 @@
                 });
 
                 const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
-                expect(info_messages.length).toBe(17);
+                expect(info_messages.length).toBe(18);
                 expect(info_messages.pop().textContent).toBe('/topic: Set groupchat subject (alias for /subject)');
                 expect(info_messages.pop().textContent).toBe('/subject: Set groupchat subject');
                 expect(info_messages.pop().textContent).toBe('/revoke: Revoke user\'s membership');
-                expect(info_messages.pop().textContent).toBe('/register: Register a nickname for this groupchat');
+                expect(info_messages.pop().textContent).toBe('/register: Register your nickname');
                 expect(info_messages.pop().textContent).toBe('/owner: Grant ownership of this groupchat');
                 expect(info_messages.pop().textContent).toBe('/op: Grant moderator role to user');
                 expect(info_messages.pop().textContent).toBe('/nick: Change your nickname');
@@ -2613,9 +2647,10 @@
                 expect(info_messages.pop().textContent).toBe('/help: Show this menu');
                 expect(info_messages.pop().textContent).toBe('/destroy: Remove this groupchat');
                 expect(info_messages.pop().textContent).toBe('/deop: Change user role to participant');
-                expect(info_messages.pop().textContent).toBe('/clear: Remove messages');
+                expect(info_messages.pop().textContent).toBe('/clear: Clear the chat area');
                 expect(info_messages.pop().textContent).toBe('/ban: Ban user from groupchat');
                 expect(info_messages.pop().textContent).toBe('/admin: Change user\'s affiliation to admin');
+                expect(info_messages.pop().textContent).toBe('You can run the following commands');
                 done();
             }));
 

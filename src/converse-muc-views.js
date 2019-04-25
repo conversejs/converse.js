@@ -534,8 +534,6 @@ converse.plugins.add('converse-muc-views', {
             initialize () {
                 this.initDebounced();
 
-                this.validation_messages = new Backbone.Model();
-
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.messages.on('rendered', this.scrollDown, this);
 
@@ -1293,15 +1291,17 @@ converse.plugins.add('converse-muc-views', {
             renderNicknameForm (message='') {
                 /* Render a form which allows the user to choose theirnickname.
                  */
-                this.validation_messages.set('nickname', message);
                 this.hideChatRoomContents();
                 if (!this.nickname_form) {
                     this.nickname_form = new _converse.MUCNicknameForm({
-                        'model': this.model,
-                        'chatroomview': this
+                        'model': new Backbone.Model(),
+                        'chatroomview': this,
+                        'validation_message': message
                     });
                     const container_el = this.el.querySelector('.chatroom-body');
                     container_el.insertAdjacentElement('beforeend', this.nickname_form.el);
+                } else {
+                    this.nickname_form.model.set('validation_message', message);
                 }
                 u.showElement(this.nickname_form.el);
                 this.model.save('connection_status', converse.ROOMSTATUS.NICKNAME_REQUIRED);
@@ -1311,13 +1311,14 @@ converse.plugins.add('converse-muc-views', {
                 this.hideChatRoomContents();
                 if (!this.password_form) {
                     this.password_form = new _converse.MUCPasswordForm({
-                        'model': this.model,
-                        'chatroomview': this
+                        'model': new Backbone.Model(),
+                        'chatroomview': this,
+                        'validation_message': message
                     });
                     const container_el = this.el.querySelector('.chatroom-body');
                     container_el.insertAdjacentElement('beforeend', this.password_form.el);
                 } else {
-                    this.validation_messages.set('password', message);
+                    this.model.set('validation_message', message);
                 }
                 u.showElement(this.password_form.el);
                 this.model.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
@@ -1861,12 +1862,12 @@ converse.plugins.add('converse-muc-views', {
 
             initialize (attrs) {
                 this.chatroomview = attrs.chatroomview;
-                this.chatroomview.validation_messages.on('change:password', this.render, this);
+                this.model.on('change:validation_message', this.render, this);
                 this.render();
             },
 
             toHTML () {
-                const err_msg = this.chatroomview.validation_messages.get('password');
+                const err_msg = this.model.get('validation_message');
                 return tpl_chatroom_password_form({
                     'jid': this.model.get('jid'),
                     'heading': __('This groupchat requires a password'),
@@ -1880,8 +1881,8 @@ converse.plugins.add('converse-muc-views', {
             submitPassword (ev) {
                 ev.preventDefault();
                 const password = this.el.querySelector('input[type=password]').value;
-                this.chatroomview.join(this.model.get('nick'), password);
-                this.chatroomview.validation_messages.set('password', null);
+                this.chatroomview.join(this.chatroomview.model.get('nick'), password);
+                this.model.set('validation_message', null);
             }
         });
 
@@ -1894,18 +1895,19 @@ converse.plugins.add('converse-muc-views', {
 
             initialize (attrs) {
                 this.chatroomview = attrs.chatroomview;
-                this.chatroomview.validation_messages.on('change:nickname', this.render, this);
+                this.model.on('change:validation_message', this.render, this);
                 this.render();
             },
 
             toHTML () {
-                const err_msg = this.chatroomview.validation_messages.get('nickname');
+                const err_msg = this.model.get('validation_message');
                 return tpl_chatroom_nickname_form({
                     'heading': __('Please choose your nickname'),
                     'label_nickname': __('Nickname'),
                     'label_join': __('Enter groupchat'),
                     'error_class': err_msg ? 'error' : '',
-                    'validation_message': err_msg
+                    'validation_message': err_msg,
+                    'nickname': this.model.get('nickname')
                 });
             },
 
@@ -1918,10 +1920,13 @@ converse.plugins.add('converse-muc-views', {
                 const nick = nick_el.value;
                 if (nick) {
                     this.chatroomview.join(nick);
-                    this.chatroomview.validation_messages.set({'nickname': null});
+                    this.model.set({
+                        'validation_message': null,
+                        'nickname': nick
+                    });
                 } else {
-                    return this.chatroomview.validation_messages.set({
-                        'nickname': __('You need to provide a nickname')
+                    return this.model.set({
+                        'validation_message': __('You need to provide a nickname')
                     });
                 }
             }

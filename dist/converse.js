@@ -64844,7 +64844,7 @@ _converse.initialize = async function (settings, callback) {
 
         _converse.setDisconnectionCause(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Status.AUTHFAIL, undefined, true);
 
-        _converse.disconnect();
+        _converse.api.connection.disconnect();
 
         return;
       }

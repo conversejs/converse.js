@@ -1294,7 +1294,7 @@ _converse.initialize = async function (settings, callback) {
                         "authentication='login' then you also need to provide a password.");
                 }
                 _converse.setDisconnectionCause(Strophe.Status.AUTHFAIL, undefined, true);
-                _converse.disconnect();
+                _converse.api.connection.disconnect();
                 return;
             }
             const resource = Strophe.getResourceFromJid(this.jid);

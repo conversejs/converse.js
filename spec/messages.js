@@ -2249,7 +2249,6 @@
                     <stanza-id xmlns="urn:xmpp:sid:0"
                                id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
                                by="room@muc.example.com"/>
-                    <origin-id xmlns="urn:xmpp:sid:0" id="de305d54-75b4-431b-adb2-eb6b9e546013"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => _converse.api.chats.get().length);
@@ -2267,7 +2266,6 @@
                     <stanza-id xmlns="urn:xmpp:sid:0"
                                id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
                                by="room@muc.example.com"/>
-                    <origin-id xmlns="urn:xmpp:sid:0" id="de305d54-75b4-431b-adb2-eb6b9e546013"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 2);

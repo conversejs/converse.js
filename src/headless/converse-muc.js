@@ -323,6 +323,7 @@ converse.plugins.add('converse-muc', {
                     'to': this.getRoomJIDAndNick(nick)
                 }).c("x", {'xmlns': Strophe.NS.MUC})
                   .c("history", {'maxstanzas': this.features.get('mam_enabled') ? 0 : _converse.muc_history_max_stanzas}).up();
+
                 if (password) {
                     stanza.cnode(Strophe.xmlElement("password", [], password));
                 }
@@ -1082,6 +1083,7 @@ converse.plugins.add('converse-muc', {
                     return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
                 const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+
                 if (attrs.nick &&
                         !this.subjectChangeHandled(attrs) &&
                         !this.ignorableCSN(attrs) &&

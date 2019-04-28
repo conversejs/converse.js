@@ -8,6 +8,7 @@
 - Hide the textarea when a user is muted in a groupchat.
 - Don't restore a BOSH session without knowing the JID
 - In the `/help` menu, only show allowed commands
+- Message deduplication bugfixes and improvements
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1532: Converse reloads on enter pressed in the filter box
 

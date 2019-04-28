@@ -40647,8 +40647,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         return false;
       },
 
-      getDuplicateMessage(stanza) {
-        return this.findDuplicateFromOriginID(stanza) || this.findDuplicateFromStanzaID(stanza);
+      async getDuplicateMessage(stanza) {
+        return this.findDuplicateFromOriginID(stanza) || (await this.findDuplicateFromStanzaID(stanza)) || this.findDuplicateFromMessage(stanza);
       },
 
       findDuplicateFromOriginID(stanza) {
@@ -40660,7 +40660,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
         return this.messages.findWhere({
           'origin_id': origin_id.getAttribute('id'),
-          'sender': 'me'
+          'from': stanza.getAttribute('from')
         });
       },
 
@@ -40681,6 +40681,26 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         const query = {};
         query[`stanza_id ${by_jid}`] = stanza_id.getAttribute('id');
         return this.messages.findWhere(query);
+      },
+
+      findDuplicateFromMessage(stanza) {
+        const text = this.getMessageBody(stanza) || undefined;
+
+        if (!text) {
+          return false;
+        }
+
+        const id = stanza.getAttribute('id');
+
+        if (!id) {
+          return false;
+        }
+
+        return this.messages.findWhere({
+          'message': text,
+          'from': stanza.getAttribute('from'),
+          'msgid': id
+        });
       },
 
       sendMarker(to_jid, id, type) {
@@ -43048,7 +43068,7 @@ _converse.initialize = async function (settings, callback) {
 
         _converse.setDisconnectionCause(strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].Status.AUTHFAIL, undefined, true);
 
-        _converse.disconnect();
+        _converse.api.connection.disconnect();
 
         return;
       }

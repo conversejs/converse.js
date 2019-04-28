@@ -360,8 +360,10 @@ converse.plugins.add('converse-chatboxes', {
                 return false;
             },
 
-            getDuplicateMessage (stanza) {
-                return this.findDuplicateFromOriginID(stanza) || this.findDuplicateFromStanzaID(stanza);
+            async getDuplicateMessage (stanza) {
+                return this.findDuplicateFromOriginID(stanza) ||
+                    await this.findDuplicateFromStanzaID(stanza) ||
+                    this.findDuplicateFromMessage(stanza);
             },
 
             findDuplicateFromOriginID  (stanza) {
@@ -371,11 +373,11 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 return this.messages.findWhere({
                     'origin_id': origin_id.getAttribute('id'),
-                    'sender': 'me'
+                    'from': stanza.getAttribute('from')
                 });
             },
 
-            async findDuplicateFromStanzaID(stanza) {
+            async findDuplicateFromStanzaID (stanza) {
                 const stanza_id = sizzle(`stanza-id[xmlns="${Strophe.NS.SID}"]`, stanza).pop();
                 if (!stanza_id) {
                     return false;
@@ -390,6 +392,17 @@ converse.plugins.add('converse-chatboxes', {
                 return this.messages.findWhere(query);
             },
 
+            findDuplicateFromMessage (stanza) {
+                const text = this.getMessageBody(stanza) || undefined;
+                if (!text) { return false; }
+                const id = stanza.getAttribute('id');
+                if (!id) { return false; }
+                return this.messages.findWhere({
+                    'message': text,
+                    'from': stanza.getAttribute('from'),
+                    'msgid': id
+                });
+            },
             
             sendMarker(to_jid, id, type) {
                 const stanza = $msg({

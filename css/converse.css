@@ -11905,6 +11905,8 @@ body.converse-fullscreen {
 
 #conversejs .message.chat-msg--action {
   font-style: italic; }
+  #conversejs .message.chat-msg--action .chat-msg__author {
+    padding-right: 0.2em; }
 
 #conversejs .message.chat-msg {
   display: inline-flex;

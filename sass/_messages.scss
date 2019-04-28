@@ -65,6 +65,10 @@
         }
         &.chat-msg--action {
             font-style: italic;
+
+            .chat-msg__author {
+                padding-right: 0.2em;
+            }
         }
 
         &.chat-msg {

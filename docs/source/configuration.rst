@@ -563,9 +563,12 @@ It allows you to specify a URL which Converse will call when it needs to get
 the username and password (or authentication token) which Converse will use
 to automatically log the user in.
 
-If ``auto_reconnect`` is also set to true, then Converse will automatically
+If ``auto_reconnect`` is also set to ``true``, then Converse will automatically
 fetch new credentials from the ``credentials_url`` whenever the connection or
 session drops, and then attempt to reconnect and establish a new session.
+
+If the request to the ``credentials_url`` URL fails for whatever reason,
+Converse will continuously retry to fetch the credentials every 2 seconds.
 
 The server behind ``credentials_url`` should return a JSON encoded object::
 

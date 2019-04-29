@@ -63914,12 +63914,13 @@ async function finishInitialization() {
 }
 
 function fetchLoginCredentials() {
-  return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
+  let wait = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+  return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.debounce((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', _converse.credentials_url, true);
     xhr.setRequestHeader('Accept', "application/json, text/javascript");
 
-    xhr.onload = function () {
+    xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 400) {
         const data = JSON.parse(xhr.responseText);
         resolve({
@@ -63927,20 +63928,34 @@ function fetchLoginCredentials() {
           'password': data.password
         });
       } else {
-        xhr.onerror({});
+        reject(new Error(`${xhr.status}: ${xhr.responseText}`));
       }
     };
 
-    xhr.onerror = function () {
-      delete _converse.connection;
-
-      _converse.api.trigger('noResumeableSession', this);
-
-      reject(new Error(xhr.responseText));
-    };
-
+    xhr.onerror = reject;
     xhr.send();
-  });
+  }, wait));
+}
+
+async function getLoginCredentials() {
+  let credentials;
+  let wait = 0;
+
+  while (!credentials) {
+    try {
+      credentials = await fetchLoginCredentials(wait); // eslint-disable-line no-await-in-loop
+    } catch (e) {
+      _converse.log("Could not fetch login credentials", strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
+
+      _converse.log(e, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
+    } // If unsuccessful, we wait 2 seconds between subsequent attempts to
+    // fetch the credentials.
+
+
+    wait = 2000;
+  }
+
+  return credentials;
 }
 
 function unregisterGlobalEventHandlers() {
@@ -64769,17 +64784,8 @@ _converse.initialize = async function (settings, callback) {
       this.autoLogin(credentials);
     } else if (this.auto_login) {
       if (this.credentials_url) {
-        let data = {};
-
-        try {
-          data = await fetchLoginCredentials();
-        } catch (e) {
-          _converse.log("Could not fetch login credentials", strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
-
-          _converse.log(e, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
-        } finally {
-          this.autoLogin(data);
-        }
+        const data = await getLoginCredentials();
+        this.autoLogin(data);
       } else if (!this.jid) {
         throw new Error("attemptNonPreboundSession: If you use auto_login, " + "you also need to give either a jid value (and if " + "applicable a password) or you need to pass in a URL " + "from where the username and password can be fetched " + "(via credentials_url).");
       } else {

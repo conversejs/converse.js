@@ -9,6 +9,7 @@
 - Don't restore a BOSH session without knowing the JID
 - In the `/help` menu, only show allowed commands
 - Message deduplication bugfixes and improvements
+- Continuously retry (in 2s intervals) to fetch login credentials (via [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials-url)) in case of failure
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1532: Converse reloads on enter pressed in the filter box
 

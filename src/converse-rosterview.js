@@ -92,7 +92,7 @@ converse.plugins.add('converse-rosterview', {
              */
             a = a.get('name');
             b = b.get('name');
-            const special_groups = _.keys(HEADER_WEIGHTS);
+            const special_groups = Object.keys(HEADER_WEIGHTS);
             const a_is_special = _.includes(special_groups, a);
             const b_is_special = _.includes(special_groups, b);
             if (!a_is_special && !b_is_special ) {
@@ -416,7 +416,7 @@ converse.plugins.add('converse-rosterview', {
                     'current-xmpp-contact',
                     'pending-xmpp-contact',
                     'requesting-xmpp-contact'
-                    ].concat(_.keys(STATUSES));
+                    ].concat(Object.keys(STATUSES));
 
                 _.each(classes_to_remove,
                     function (cls) {

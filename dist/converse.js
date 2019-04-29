@@ -55031,7 +55031,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         const codes = _.invokeMap(statuses, Element.prototype.getAttribute, 'code');
 
-        const disconnection_codes = _.intersection(codes, _.keys(_converse.muc.disconnect_messages));
+        const disconnection_codes = _.intersection(codes, Object.keys(_converse.muc.disconnect_messages));
 
         const disconnected = is_self && disconnection_codes.length > 0;
 
@@ -57132,7 +57132,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
       },
 
       removeAllSessions(identifier) {
-        const keys = _.filter(_.keys(this.attributes), key => {
+        const keys = _.filter(Object.keys(this.attributes), key => {
           if (key.startsWith('session' + identifier)) {
             return key;
           }
@@ -57169,7 +57169,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
 
       async generateMissingPreKeys() {
         const current_keys = this.getPreKeys(),
-              missing_keys = _.difference(_.invokeMap(_.range(0, _converse.NUM_PREKEYS), Number.prototype.toString), _.keys(current_keys));
+              missing_keys = _.difference(_.invokeMap(_.range(0, _converse.NUM_PREKEYS), Number.prototype.toString), Object.keys(current_keys));
 
         if (missing_keys.length < 1) {
           _converse.log("No missing prekeys to generate for our own device", Strophe.LogLevel.WARN);
@@ -58309,12 +58309,7 @@ const _converse$env = _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_
 
 Strophe.addNamespace('REGISTER', 'jabber:iq:register'); // Add Strophe Statuses
 
-let i = 0;
-
-_.each(_.keys(Strophe.Status), function (key) {
-  i = Math.max(i, Strophe.Status[key]);
-});
-
+const i = Object.keys(Strophe.Status).reduce((max, k) => Math.max(max, Strophe.Status[k]), 0);
 Strophe.Status.REGIFAIL = i + 1;
 Strophe.Status.REGISTERED = i + 2;
 Strophe.Status.CONFLICT = i + 3;
@@ -58602,7 +58597,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
         Object.assign(this, defaults);
 
         if (settings) {
-          Object.assign(this, _.pick(settings, _.keys(defaults)));
+          Object.assign(this, _.pick(settings, Object.keys(defaults)));
         }
       },
 
@@ -58749,7 +58744,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       },
 
       renderLegacyRegistrationForm(form) {
-        _.each(_.keys(this.fields), key => {
+        _.each(Object.keys(this.fields), key => {
           if (key === "username") {
             form.insertAdjacentHTML('beforeend', templates_form_username_html__WEBPACK_IMPORTED_MODULE_3___default()({
               'domain': ` @${this.domain}`,
@@ -59508,8 +59503,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
        */
       a = a.get('name');
       b = b.get('name');
-
-      const special_groups = _.keys(HEADER_WEIGHTS);
+      const special_groups = Object.keys(HEADER_WEIGHTS);
 
       const a_is_special = _.includes(special_groups, a);
 
@@ -59866,7 +59860,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_4__["default"].plugins
               show = this.model.presence.get('show'),
               requesting = this.model.get('requesting'),
               subscription = this.model.get('subscription');
-        const classes_to_remove = ['current-xmpp-contact', 'pending-xmpp-contact', 'requesting-xmpp-contact'].concat(_.keys(STATUSES));
+        const classes_to_remove = ['current-xmpp-contact', 'pending-xmpp-contact', 'requesting-xmpp-contact'].concat(Object.keys(STATUSES));
 
         _.each(classes_to_remove, function (cls) {
           if (_.includes(that.el.className, cls)) {
@@ -64006,7 +64000,7 @@ _converse.initialize = async function (settings, callback) {
   _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(this, this.default_settings); // Allow only whitelisted configuration attributes to be overwritten
 
 
-  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(this, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.pick(settings, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(this.default_settings)));
+  _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(this, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.pick(settings, Object.keys(this.default_settings)));
 
   if (this.authentication === _converse.ANONYMOUS) {
     if (this.auto_login && !this.jid) {
@@ -64417,7 +64411,7 @@ _converse.initialize = async function (settings, callback) {
     } // Recreate all the promises
 
 
-    _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.promises), addPromise);
+    _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.each(Object.keys(_converse.promises), addPromise);
     /**
      * Triggered once the user has logged out.
      * @event _converse#logout
@@ -65057,7 +65051,7 @@ _converse.api = {
           'status': value
         };
 
-        if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.STATUS_WEIGHTS), value)) {
+        if (!_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(Object.keys(_converse.STATUS_WEIGHTS), value)) {
           throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
         }
 
@@ -65139,7 +65133,7 @@ _converse.api = {
      * @example _converse.api.settings.get("play_sounds");
      */
     'get'(key) {
-      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.default_settings), key)) {
+      if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.includes(Object.keys(_converse.default_settings), key)) {
         return _converse[key];
       }
     },
@@ -65166,11 +65160,11 @@ _converse.api = {
       const o = {};
 
       if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isObject(key)) {
-        _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(_converse, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.pick(key, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.default_settings)));
+        _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(_converse, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.pick(key, Object.keys(_converse.default_settings)));
       } else if (_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.isString("string")) {
         o[key] = val;
 
-        _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(_converse, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.pick(o, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.keys(_converse.default_settings)));
+        _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.assignIn(_converse, _lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.pick(o, Object.keys(_converse.default_settings)));
       }
     }
 
@@ -66410,7 +66404,7 @@ function queryForArchivedMessages(_converse, options, callback, errback) {
 
     if (options instanceof Strophe.RSM) {
       stanza.cnode(options.toXML());
-    } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
+    } else if (_.intersection(RSM_ATTRIBUTES, Object.keys(options)).length) {
       stanza.cnode(new Strophe.RSM(options).toXML());
     }
   }

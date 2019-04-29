@@ -64,7 +64,7 @@ function queryForArchivedMessages (_converse, options, callback, errback) {
         stanza.up();
         if (options instanceof Strophe.RSM) {
             stanza.cnode(options.toXML());
-        } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
+        } else if (_.intersection(RSM_ATTRIBUTES, Object.keys(options)).length) {
             stanza.cnode(new Strophe.RSM(options).toXML());
         }
     }

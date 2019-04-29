@@ -1482,7 +1482,7 @@ converse.plugins.add('converse-muc-views', {
                 }
                 // 2. Get disconnection messages based on the <status> elements
                 const codes = _.invokeMap(statuses, Element.prototype.getAttribute, 'code');
-                const disconnection_codes = _.intersection(codes, _.keys(_converse.muc.disconnect_messages));
+                const disconnection_codes = _.intersection(codes, Object.keys(_converse.muc.disconnect_messages));
                 const disconnected = is_self && disconnection_codes.length > 0;
                 if (disconnected) {
                     notification.disconnected = true;

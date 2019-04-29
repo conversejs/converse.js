@@ -790,7 +790,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             removeAllSessions (identifier) {
-                const keys = _.filter(_.keys(this.attributes), (key) => {
+                const keys = _.filter(Object.keys(this.attributes), (key) => {
                     if (key.startsWith('session'+identifier)) {
                         return key;
                     }
@@ -821,7 +821,7 @@ converse.plugins.add('converse-omemo', {
 
             async generateMissingPreKeys () {
                 const current_keys = this.getPreKeys(),
-                      missing_keys = _.difference(_.invokeMap(_.range(0, _converse.NUM_PREKEYS), Number.prototype.toString), _.keys(current_keys));
+                      missing_keys = _.difference(_.invokeMap(_.range(0, _converse.NUM_PREKEYS), Number.prototype.toString), Object.keys(current_keys));
 
                 if (missing_keys.length < 1) {
                     _converse.log("No missing prekeys to generate for our own device", Strophe.LogLevel.WARN);

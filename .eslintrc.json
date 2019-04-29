@@ -23,7 +23,7 @@
             "ignoreMethods": [
                 "assign", "every", "keys", "find", "endsWith", "startsWith", "filter",
                 "reduce", "isArray", "create", "map", "replace", "some", "toLower",
-                "split", "trim", "forEach", "toUpperCase", "includes"
+                "split", "trim", "forEach", "toUpperCase", "includes", "values"
             ]
         }],
         "lodash/prefer-invoke-map": "off",

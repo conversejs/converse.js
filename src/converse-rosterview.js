@@ -402,7 +402,6 @@ converse.plugins.add('converse-rosterview', {
             },
 
             render () {
-                const that = this;
                 if (!this.mayBeShown()) {
                     u.hideElement(this.el);
                     return this;
@@ -417,13 +416,8 @@ converse.plugins.add('converse-rosterview', {
                     'pending-xmpp-contact',
                     'requesting-xmpp-contact'
                     ].concat(Object.keys(STATUSES));
+                classes_to_remove.forEach(c => u.removeClass(c, this.el));
 
-                _.each(classes_to_remove,
-                    function (cls) {
-                        if (_.includes(that.el.className, cls)) {
-                            that.el.classList.remove(cls);
-                        }
-                    });
                 this.el.classList.add(show);
                 this.el.setAttribute('data-status', show);
                 this.highlight();
@@ -634,11 +628,11 @@ converse.plugins.add('converse-rosterview', {
 
             show () {
                 u.showElement(this.el);
-                _.each(this.getAll(), (contact_view) => {
-                    if (contact_view.mayBeShown() && this.model.get('state') === _converse.OPENED) {
-                        u.showElement(contact_view.el);
-                    }
-                });
+                if (this.model.get('state') === _converse.OPENED) {
+                    Object.values(this.getAll())
+                        .filter(v => v.mayBeShown())
+                        .forEach(v => u.showElement(v.el));
+                }
                 return this;
             },
 

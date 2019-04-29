@@ -58,7 +58,7 @@ converse.plugins.add('converse-profile', {
             },
 
             toHTML () {
-                return tpl_profile_modal(_.extend(
+                return tpl_profile_modal(Object.assign(
                     this.model.toJSON(),
                     this.model.vcard.toJSON(), {
                     '_': _,
@@ -128,14 +128,14 @@ converse.plugins.add('converse-profile', {
                     'url': form_data.get('url'),
                 };
                 if (!image_file.size) {
-                    _.extend(data, {
+                    Object.assign(data, {
                         'image': this.model.vcard.get('image'),
                         'image_type': this.model.vcard.get('image_type')
                     });
                     this.setVCard(data);
                 } else {
                     reader.onloadend = () => {
-                        _.extend(data, {
+                        Object.assign(data, {
                             'image': btoa(reader.result),
                             'image_type': image_file.type
                         });
@@ -155,7 +155,7 @@ converse.plugins.add('converse-profile', {
 
             toHTML () {
                 return tpl_chat_status_modal(
-                    _.extend(
+                    Object.assign(
                         this.model.toJSON(),
                         this.model.vcard.toJSON(), {
                         'label_away': __('Away'),
@@ -202,7 +202,7 @@ converse.plugins.add('converse-profile', {
 
             toHTML () {
                 return tpl_client_info_modal(
-                    _.extend(
+                    Object.assign(
                         this.model.toJSON(),
                         this.model.vcard.toJSON(), {
                             '__': __,
@@ -239,7 +239,7 @@ converse.plugins.add('converse-profile', {
 
             toHTML () {
                 const chat_status = this.model.get('status') || 'offline';
-                return tpl_profile_view(_.extend(
+                return tpl_profile_view(Object.assign(
                     this.model.toJSON(),
                     this.model.vcard.toJSON(), {
                     '__': __,

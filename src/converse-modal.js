@@ -75,7 +75,7 @@ converse.plugins.add('converse-modal', {
         // We extend the default converse.js API to add methods specific to MUC chat rooms.
         let alert 
 
-        _.extend(_converse.api, {
+        Object.assign(_converse.api, {
             'alert': {
                 'show' (type, title, messages) {
                     if (_.isString(messages)) {

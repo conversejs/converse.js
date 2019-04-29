@@ -82,7 +82,7 @@ converse.plugins.add("converse-oauth", {
 
             initialize () {
                 _.each(_converse.user_settings.oauth_providers, (provider) => {
-                    const item = new Backbone.Model(_.extend(provider, {
+                    const item = new Backbone.Model(Object.assign(provider, {
                         'login_text': __('Log in with %1$s', provider.name)
                     }));
                     this.add(item, {'silent': true});
@@ -99,7 +99,7 @@ converse.plugins.add("converse-oauth", {
 
             toHTML () {
                 return tpl_oauth_providers(
-                    _.extend({
+                    Object.assign({
                         '_': _,
                         '__': _converse.__,
                         'providers': this.model.toJSON()

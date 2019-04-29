@@ -96,7 +96,7 @@ converse.plugins.add('converse-headline', {
             render () {
                 this.el.setAttribute('id', this.model.get('box_id'))
                 this.el.innerHTML = tpl_chatbox(
-                    _.extend(this.model.toJSON(), {
+                    Object.assign(this.model.toJSON(), {
                             info_close: '',
                             label_personal_message: '',
                             show_send_button: false,

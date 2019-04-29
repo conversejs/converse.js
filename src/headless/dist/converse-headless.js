@@ -30205,7 +30205,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 //# sourceMappingURL=pluggable.js.map
 
-
 /***/ }),
 
 /***/ "./node_modules/process/browser.js":
@@ -40994,7 +40993,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
               'type': 'error'
             });
           } else {
-            const message = this.messages.create(_.extend(this.getOutgoingMessageAttributes(), {
+            const message = this.messages.create(Object.assign(this.getOutgoingMessageAttributes(), {
               'file': true,
               'progress': 0,
               'slot_request_url': slot_request_url
@@ -41092,7 +41091,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
               text = this.getMessageBody(stanza) || undefined,
               chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING || stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED || stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE || stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE || stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
-        const attrs = _.extend({
+        const attrs = Object.assign({
           'chat_state': chat_state,
           'is_archived': this.isArchived(original_stanza),
           'is_delayed': !_.isNil(delay),
@@ -41413,11 +41412,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         let chatbox = this.get(Strophe.getBareJidFromJid(jid));
 
         if (!chatbox && create) {
-          _.extend(attrs, {
+          Object.assign(attrs, {
             'jid': jid,
             'id': jid
           });
-
           chatbox = this.create(attrs, {
             'error'(model, response) {
               _converse.log(response.responseText);
@@ -41491,7 +41489,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
     /************************ BEGIN API ************************/
 
 
-    _.extend(_converse.api, {
+    Object.assign(_converse.api, {
       /**
        * The "chats" namespace (used for one-on-one chats)
        *
@@ -41636,7 +41634,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       }
     });
     /************************ END API ************************/
-
   }
 
 });
@@ -41746,9 +41743,7 @@ const _converse = {
   'promises': {}
 };
 _converse.VERSION_NAME = "v4.2.0";
-
-_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.extend(_converse, Backbone.Events); // Make converse pluggable
-
+Object.assign(_converse, Backbone.Events); // Make converse pluggable
 
 pluggable_js_dist_pluggable__WEBPACK_IMPORTED_MODULE_8___default.a.enable(_converse, '_converse', 'pluggable'); // Core plugins are whitelisted automatically
 // These are just the @converse/headless plugins, for the full converse,
@@ -44168,7 +44163,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
       return true;
     }
 
-    _.extend(_converse.api, {
+    Object.assign(_converse.api, {
       /**
        * The XEP-0030 service discovery API
        *
@@ -44679,8 +44674,7 @@ function queryForArchivedMessages(_converse, options, callback, errback) {
         rsm = new Strophe.RSM({
           xml: set
         });
-
-        _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
+        Object.assign(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
       }
 
       callback(messages, rsm);
@@ -44739,7 +44733,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
         const attrs = this.__super__.getUpdatedMessageAttributes.apply(this, arguments);
 
         if (message && !message.get('is_archived')) {
-          return _.extend(attrs, {
+          return Object.assign(attrs, {
             'is_archived': this.isArchived(stanza)
           }, this.getStanzaIDs(stanza));
         }
@@ -44837,7 +44831,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
     /************************ BEGIN API ************************/
 
 
-    _.extend(_converse.api, {
+    Object.assign(_converse.api, {
       /**
        * The [XEP-0313](https://xmpp.org/extensions/xep-0313.html) Message Archive Management API
        *
@@ -45017,7 +45011,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
       }
     });
     /************************ END API ************************/
-
   }
 
 });
@@ -45681,11 +45674,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
           }), 'attributes.value')
         });
         const features = await _converse.api.disco.getFeatures(this.get('jid'));
-
-        const attrs = _.extend(_.zipObject(_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOM_FEATURES, _.map(_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOM_FEATURES, _.stubFalse)), {
+        const attrs = Object.assign(_.zipObject(_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOM_FEATURES, _.map(_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOM_FEATURES, _.stubFalse)), {
           'fetched': moment().format()
         });
-
         features.each(feature => {
           const fieldname = feature.get('var');
 
@@ -46095,8 +46086,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         }
 
         const jid = data.jid || '';
-
-        const attributes = _.extend(data, {
+        const attributes = Object.assign(data, {
           'jid': Strophe.getBareJidFromJid(jid) || _.get(occupant, 'attributes.jid'),
           'resource': Strophe.getResourceFromJid(jid) || _.get(occupant, 'attributes.resource')
         });
@@ -46438,7 +46428,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
       },
 
       initialize(attributes) {
-        this.set(_.extend({
+        this.set(Object.assign({
           'id': _converse.connection.getUniqueId()
         }, attributes));
         this.on('change:image_hash', this.onAvatarChanged, this);
@@ -46743,7 +46733,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
     // We extend the default converse.js API to add methods specific to MUC groupchats.
 
 
-    _.extend(_converse.api, {
+    Object.assign(_converse.api, {
       /**
        * The "rooms" namespace groups methods relevant to chatrooms
        * (aka groupchats).
@@ -46924,7 +46914,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
       }
     });
     /************************ END API ************************/
-
   }
 
 });
@@ -47104,7 +47093,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-pub
     /************************ BEGIN API ************************/
     // We extend the default converse.js API to add methods specific to MUC groupchats.
 
-    _.extend(_converse.api, {
+    Object.assign(_converse.api, {
       /**
        * The "pubsub" namespace groups methods relevant to PubSub
        *
@@ -47179,7 +47168,6 @@ _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-pub
       }
     });
     /************************ END API ************************/
-
   }
 
 });
@@ -48293,7 +48281,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
     // API methods only available to plugins
 
 
-    _.extend(_converse.api, {
+    Object.assign(_converse.api, {
       /**
        * @namespace _converse.api.contacts
        * @memberOf _converse.api
@@ -48521,7 +48509,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
 
       return onVCardData(jid, iq);
     }
-    /* Event handlers */
+    /************************ BEGIN Event Handlers ************************/
 
 
     _converse.initVCardCollection = function () {
@@ -48549,8 +48537,10 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
     _converse.api.listen.on('addClientFeatures', () => {
       _converse.api.disco.own.features.add(Strophe.NS.VCARD);
     });
+    /************************ BEGIN API ************************/
 
-    _.extend(_converse.api, {
+
+    Object.assign(_converse.api, {
       /**
        * The XEP-0054 VCard API
        *

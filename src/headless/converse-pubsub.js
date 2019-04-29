@@ -26,7 +26,7 @@ converse.plugins.add('converse-pubsub', {
 
         /************************ BEGIN API ************************/
         // We extend the default converse.js API to add methods specific to MUC groupchats.
-        _.extend(_converse.api, {
+        Object.assign(_converse.api, {
             /**
              * The "pubsub" namespace groups methods relevant to PubSub
              *

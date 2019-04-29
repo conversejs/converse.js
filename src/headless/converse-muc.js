@@ -559,7 +559,7 @@ converse.plugins.add('converse-muc', {
                 });
 
                 const features = await _converse.api.disco.getFeatures(this.get('jid'));
-                const attrs = _.extend(
+                const attrs = Object.assign(
                     _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)),
                     {'fetched': moment().format()}
                 );
@@ -921,7 +921,7 @@ converse.plugins.add('converse-muc', {
                     }
                 }
                 const jid = data.jid || '';
-                const attributes = _.extend(data, {
+                const attributes = Object.assign(data, {
                     'jid': Strophe.getBareJidFromJid(jid) || _.get(occupant, 'attributes.jid'),
                     'resource': Strophe.getResourceFromJid(jid) || _.get(occupant, 'attributes.resource')
                 });
@@ -1224,10 +1224,10 @@ converse.plugins.add('converse-muc', {
             },
 
             initialize (attributes) {
-                this.set(_.extend({
-                    'id': _converse.connection.getUniqueId(),
-                }, attributes));
-
+                this.set(Object.assign(
+                    {'id': _converse.connection.getUniqueId()},
+                    attributes)
+                );
                 this.on('change:image_hash', this.onAvatarChanged, this);
             },
 
@@ -1501,7 +1501,7 @@ converse.plugins.add('converse-muc', {
 
         /************************ BEGIN API ************************/
         // We extend the default converse.js API to add methods specific to MUC groupchats.
-        _.extend(_converse.api, {
+        Object.assign(_converse.api, {
             /**
              * The "rooms" namespace groups methods relevant to chatrooms
              * (aka groupchats).

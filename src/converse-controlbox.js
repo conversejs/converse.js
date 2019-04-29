@@ -244,7 +244,7 @@ converse.plugins.add('converse-controlbox', {
                         this.model.set('closed', !_converse.show_controlbox_by_default);
                     }
                 }
-                this.el.innerHTML = tpl_controlbox(_.extend(this.model.toJSON()));
+                this.el.innerHTML = tpl_controlbox(Object.assign(this.model.toJSON()));
 
                 if (!this.model.get('closed')) {
                     this.show();
@@ -416,7 +416,7 @@ converse.plugins.add('converse-controlbox', {
                     feedback_class = CONNECTION_STATUS_CSS_CLASS[pretty_status];
                 }
                 return tpl_login_panel(
-                    _.extend(this.model.toJSON(), {
+                    Object.assign(this.model.toJSON(), {
                         '__': __,
                         '_converse': _converse,
                         'ANONYMOUS': _converse.ANONYMOUS,
@@ -658,7 +658,7 @@ converse.plugins.add('converse-controlbox', {
 
 
         /************************ BEGIN API ************************/
-        _.extend(_converse.api, {
+        Object.assign(_converse.api, {
             /**
              * The "controlbox" namespace groups methods pertaining to the
              * controlbox view

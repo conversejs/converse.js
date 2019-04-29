@@ -75,7 +75,7 @@ const _converse = {
 
 _converse.VERSION_NAME = "v4.2.0";
 
-_.extend(_converse, Backbone.Events);
+Object.assign(_converse, Backbone.Events);
 
 // Make converse pluggable
 pluggable.enable(_converse, '_converse', 'pluggable');

@@ -21,9 +21,9 @@
     "rules": {
         "lodash/prefer-lodash-method": [2, {
             "ignoreMethods": [
-                "every", "keys", "find", "endsWith", "startsWith", "filter", "reduce", "isArray",
-                "create", "map", "replace", "some", "toLower", "split", "trim", "forEach",
-                "toUpperCase", "includes"
+                "assign", "every", "keys", "find", "endsWith", "startsWith", "filter",
+                "reduce", "isArray", "create", "map", "replace", "some", "toLower",
+                "split", "trim", "forEach", "toUpperCase", "includes"
             ]
         }],
         "lodash/prefer-invoke-map": "off",

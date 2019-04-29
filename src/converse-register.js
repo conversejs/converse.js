@@ -151,7 +151,7 @@ converse.plugins.add('converse-register', {
         _converse.RegisterLinkView = Backbone.VDOMView.extend({
             toHTML () {
                 return tpl_register_link(
-                    _.extend(this.model.toJSON(), {
+                    Object.assign(this.model.toJSON(), {
                         '__': _converse.__,
                         '_converse': _converse,
                         'connection_status': _converse.connfeedback.get('connection_status'),
@@ -294,9 +294,9 @@ converse.plugins.add('converse-register', {
                     domain: null,
                     form_type: null
                 };
-                _.extend(this, defaults);
+                Object.assign(this, defaults);
                 if (settings) {
-                    _.extend(this, _.pick(settings, _.keys(defaults)));
+                    Object.assign(this, _.pick(settings, _.keys(defaults)));
                 }
             },
 

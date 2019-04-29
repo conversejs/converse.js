@@ -639,7 +639,7 @@ converse.plugins.add('converse-chatboxes', {
                         });
                     } else {
                         const message = this.messages.create(
-                            _.extend(
+                            Object.assign(
                                 this.getOutgoingMessageAttributes(), {
                                 'file': true,
                                 'progress': 0,
@@ -736,7 +736,7 @@ converse.plugins.add('converse-chatboxes', {
                             stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
                             stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
-                const attrs = _.extend({
+                const attrs = Object.assign({
                     'chat_state': chat_state,
                     'is_archived': this.isArchived(original_stanza),
                     'is_delayed': !_.isNil(delay),
@@ -1030,7 +1030,7 @@ converse.plugins.add('converse-chatboxes', {
 
                 let  chatbox = this.get(Strophe.getBareJidFromJid(jid));
                 if (!chatbox && create) {
-                    _.extend(attrs, {'jid': jid, 'id': jid});
+                    Object.assign(attrs, {'jid': jid, 'id': jid});
                     chatbox = this.create(attrs, {
                         'error' (model, response) {
                             _converse.log(response.responseText);
@@ -1095,7 +1095,7 @@ converse.plugins.add('converse-chatboxes', {
 
 
         /************************ BEGIN API ************************/
-        _.extend(_converse.api, {
+        Object.assign(_converse.api, {
             /**
              * The "chats" namespace (used for one-on-one chats)
              *

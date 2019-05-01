@@ -52058,15 +52058,26 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           this.fetchArchivedMessages();
         } else {
           const stanza_id = most_recent_msg.get(`stanza_id ${this.model.get('jid')}`);
+          const that = this;
+
+          const success = function success(messages) {
+            /* If we received exactly the maximum number of messages, there's a good
+            chance more messages are available. Let's run this method again to check. */
+            if (_.size(messages) == _converse.archived_messages_page_size) {
+              /* must use setTimeout here; otherwise the MAM messages we added just now are
+              not available yet in the next iteration of fetchNewestMessages() */
+              setTimeout(that.fetchNewestMessages.bind(that), 1);
+            }
+          };
 
           if (stanza_id) {
             this.fetchArchivedMessages({
               'after': stanza_id
-            });
+            }).then(success);
           } else {
             this.fetchArchivedMessages({
               'start': most_recent_msg.get('time')
-            });
+            }).then(success);
           }
         }
       },
@@ -52123,25 +52134,32 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
 
         this.addSpinner();
+        return new Promise((resolve, reject) => {
+          _converse.api.archive.query(Object.assign({
+            'groupchat': is_groupchat,
+            'before': '',
+            // Page backwards from the most recent message
+            'max': _converse.archived_messages_page_size,
+            'with': this.model.get('jid')
+          }, options), messages => {
+            // Success
+            this.clearSpinner();
 
-        _converse.api.archive.query(Object.assign({
-          'groupchat': is_groupchat,
-          'before': '',
-          // Page backwards from the most recent message
-          'max': _converse.archived_messages_page_size,
-          'with': this.model.get('jid')
-        }, options), messages => {
-          // Success
-          this.clearSpinner();
+            _.each(messages, message_handler);
 
-          _.each(messages, message_handler);
-        }, e => {
-          // Error
-          this.clearSpinner();
+            resolve(messages);
+          }, e => {
+            // Error
+            this.clearSpinner();
 
-          _converse.log("Error or timeout while trying to fetch " + "archived messages", Strophe.LogLevel.ERROR);
+            _converse.log("Error or timeout while trying to fetch " + "archived messages", Strophe.LogLevel.ERROR);
 
-          _converse.log(e, Strophe.LogLevel.ERROR);
+            console.error(e);
+
+            _converse.log(e, Strophe.LogLevel.ERROR);
+
+            reject(e);
+          });
         });
       },
 
@@ -62855,7 +62873,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'references': this.getReferencesFromStanza(stanza),
           'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
           'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
-          'time': delay ? delay.getAttribute('stamp') : moment().format(),
+          'time': delay ? moment(delay.getAttribute('stamp')).format() : moment().format(),
           'type': stanza.getAttribute('type')
         }, this.getStanzaIDs(original_stanza));
 

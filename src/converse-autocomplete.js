@@ -370,7 +370,7 @@ converse.plugins.add("converse-autocomplete", {
         }
 
         // Make it an event emitter
-        _.extend(AutoComplete.prototype, Backbone.Events);
+        Object.assign(AutoComplete.prototype, Backbone.Events);
 
 
         const helpers = {

@@ -289,7 +289,7 @@ converse.plugins.add('converse-muc-views', {
 
             toHTML () {
                 const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
-                return tpl_list_chatrooms_modal(_.extend(this.model.toJSON(), {
+                return tpl_list_chatrooms_modal(Object.assign(this.model.toJSON(), {
                     'heading_list_chatrooms': __('Query for Groupchats'),
                     'label_server_address': __('Server address'),
                     'label_query': __('Show groupchats'),
@@ -420,7 +420,7 @@ converse.plugins.add('converse-muc-views', {
                     const muc_domain = this.model.get('muc_domain') || _converse.muc_domain;
                     placeholder = muc_domain ? `name@${muc_domain}` : __('name@conference.example.org');
                 }
-                return tpl_add_chatroom_modal(_.extend(this.model.toJSON(), {
+                return tpl_add_chatroom_modal(Object.assign(this.model.toJSON(), {
                     '__': _converse.__,
                     '_converse': _converse,
                     'label_room_address': _converse.muc_domain ? __('Groupchat name') :  __('Groupchat address'),
@@ -466,7 +466,7 @@ converse.plugins.add('converse-muc-views', {
                     jid = data.jid
                     this.model.setDomain(jid);
                 }
-                _converse.api.rooms.open(jid, _.extend(data, {jid}));
+                _converse.api.rooms.open(jid, Object.assign(data, {jid}));
                 this.modal.hide();
                 ev.target.reset();
             }
@@ -483,7 +483,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             toHTML () {
-                return tpl_chatroom_details_modal(_.extend(
+                return tpl_chatroom_details_modal(Object.assign(
                     this.model.toJSON(), {
                         '_': _,
                         '__': __,
@@ -728,7 +728,7 @@ converse.plugins.add('converse-muc-views', {
                 /* Returns the heading HTML to be rendered.
                  */
                 return tpl_chatroom_head(
-                    _.extend(this.model.toJSON(), {
+                    Object.assign(this.model.toJSON(), {
                         '_converse': _converse,
                         'Strophe': Strophe,
                         'info_close': __('Close and leave this groupchat'),
@@ -774,7 +774,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             getToolbarOptions () {
-                return _.extend(
+                return Object.assign(
                     _converse.ChatBoxView.prototype.getToolbarOptions.apply(this, arguments),
                     {
                       'label_hide_occupants': __('Hide the list of participants'),
@@ -1482,7 +1482,7 @@ converse.plugins.add('converse-muc-views', {
                 }
                 // 2. Get disconnection messages based on the <status> elements
                 const codes = _.invokeMap(statuses, Element.prototype.getAttribute, 'code');
-                const disconnection_codes = _.intersection(codes, _.keys(_converse.muc.disconnect_messages));
+                const disconnection_codes = _.intersection(codes, Object.keys(_converse.muc.disconnect_messages));
                 const disconnected = is_self && disconnection_codes.length > 0;
                 if (disconnected) {
                     notification.disconnected = true;
@@ -1989,7 +1989,7 @@ converse.plugins.add('converse-muc-views', {
             toHTML () {
                 const show = this.model.get('show');
                 return tpl_occupant(
-                    _.extend(
+                    Object.assign(
                         { '_': _,
                           'jid': '',
                           'show': show,
@@ -2040,7 +2040,7 @@ converse.plugins.add('converse-muc-views', {
 
             render () {
                 this.el.innerHTML = tpl_chatroom_sidebar(
-                    _.extend(this.chatroomview.model.toJSON(), {
+                    Object.assign(this.chatroomview.model.toJSON(), {
                         'allow_muc_invitations': _converse.allow_muc_invitations,
                         'label_occupants': __('Participants')
                     })
@@ -2078,7 +2078,7 @@ converse.plugins.add('converse-muc-views', {
 
                 if (_.reduce(_.values(picks), iteratee)) {
                     const el = this.el.querySelector('.chatroom-features');
-                    el.innerHTML = tpl_chatroom_features(_.extend(features.toJSON(), {__}));
+                    el.innerHTML = tpl_chatroom_features(Object.assign(features.toJSON(), {__}));
                     this.setOccupantsHeight();
                 }
                 return this;
@@ -2253,7 +2253,7 @@ converse.plugins.add('converse-muc-views', {
 
 
         /************************ BEGIN API ************************/
-        _.extend(_converse.api, {
+        Object.assign(_converse.api, {
             /**
              * The "roomviews" namespace groups methods relevant to chatroom
              * (aka groupchats) views.

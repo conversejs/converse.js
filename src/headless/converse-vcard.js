@@ -118,7 +118,7 @@ converse.plugins.add('converse-vcard', {
             return onVCardData(jid, iq);
         }
 
-        /* Event handlers */
+        /************************ BEGIN Event Handlers ************************/
         _converse.initVCardCollection = function () {
             _converse.vcards = new _converse.VCards();
             const id = `${_converse.bare_jid}-converse.vcards`;
@@ -139,7 +139,8 @@ converse.plugins.add('converse-vcard', {
             _converse.api.disco.own.features.add(Strophe.NS.VCARD);
         });
 
-        _.extend(_converse.api, {
+        /************************ BEGIN API ************************/
+        Object.assign(_converse.api, {
             /**
              * The XEP-0054 VCard API
              *

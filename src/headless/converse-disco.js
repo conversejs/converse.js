@@ -362,7 +362,7 @@ converse.plugins.add('converse-disco', {
         }
 
 
-        _.extend(_converse.api, {
+        Object.assign(_converse.api, {
             /**
              * The XEP-0030 service discovery API
              *

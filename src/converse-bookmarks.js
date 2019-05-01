@@ -190,7 +190,7 @@ converse.plugins.add('converse-bookmarks', {
         _converse.api.promises.add('bookmarksInitialized');
 
         // Pure functions on the _converse object
-        _.extend(_converse, {
+        Object.assign(_converse, {
             removeBookmarkViaEvent (ev) {
                 /* Remove a bookmark as determined by the passed in
                  * event.

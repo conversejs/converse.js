@@ -242,7 +242,7 @@ converse.plugins.add('converse-omemo', {
                 if (encrypted.payload) {
                     const key = key_and_tag.slice(0, 16),
                           tag = key_and_tag.slice(16);
-                    const result = await this.decryptMessage(_.extend(encrypted, {'key': key, 'tag': tag}));
+                    const result = await this.decryptMessage(Object.assign(encrypted, {'key': key, 'tag': tag}));
                     device.save('active', true);
                     return result;
                 }
@@ -263,9 +263,9 @@ converse.plugins.add('converse-omemo', {
                         }).then(() => _converse.omemo_store.publishBundle())
                           .then(() => {
                             if (plaintext) {
-                                return _.extend(attrs, {'plaintext': plaintext});
+                                return Object.assign(attrs, {'plaintext': plaintext});
                             } else {
-                                return _.extend(attrs, {'is_only_key': true});
+                                return Object.assign(attrs, {'is_only_key': true});
                             }
                         }).catch(e => {
                             this.reportDecryptionError(e);
@@ -274,7 +274,7 @@ converse.plugins.add('converse-omemo', {
                 } else {
                     return session_cipher.decryptWhisperMessage(u.base64ToArrayBuffer(attrs.encrypted.key), 'binary')
                         .then(key_and_tag => this.handleDecryptedWhisperMessage(attrs, key_and_tag))
-                        .then(plaintext => _.extend(attrs, {'plaintext': plaintext}))
+                        .then(plaintext => Object.assign(attrs, {'plaintext': plaintext}))
                         .catch(e => {
                             this.reportDecryptionError(e);
                             return attrs;
@@ -407,7 +407,7 @@ converse.plugins.add('converse-omemo', {
                 const { _converse } = this.__super__,
                       { __ } = _converse,
                       icon = this.el.querySelector('.toggle-omemo'),
-                      html = tpl_toolbar_omemo(_.extend(this.model.toJSON(), {'__': __}));
+                      html = tpl_toolbar_omemo(Object.assign(this.model.toJSON(), {'__': __}));
 
                 if (icon) {
                     icon.outerHTML = html;
@@ -727,7 +727,7 @@ converse.plugins.add('converse-omemo', {
                     'pubKey': u.arrayBufferToBase64(key_pair.pubKey),
                     'privKey': u.arrayBufferToBase64(key_pair.privKey)
                 }
-                this.save('prekeys', _.extend(this.getPreKeys(), prekey));
+                this.save('prekeys', Object.assign(this.getPreKeys(), prekey));
                 return Promise.resolve();
             },
 
@@ -790,7 +790,7 @@ converse.plugins.add('converse-omemo', {
             },
 
             removeAllSessions (identifier) {
-                const keys = _.filter(_.keys(this.attributes), (key) => {
+                const keys = _.filter(Object.keys(this.attributes), (key) => {
                     if (key.startsWith('session'+identifier)) {
                         return key;
                     }
@@ -821,7 +821,7 @@ converse.plugins.add('converse-omemo', {
 
             async generateMissingPreKeys () {
                 const current_keys = this.getPreKeys(),
-                      missing_keys = _.difference(_.invokeMap(_.range(0, _converse.NUM_PREKEYS), Number.prototype.toString), _.keys(current_keys));
+                      missing_keys = _.difference(_.invokeMap(_.range(0, _converse.NUM_PREKEYS), Number.prototype.toString), Object.keys(current_keys));
 
                 if (missing_keys.length < 1) {
                     _converse.log("No missing prekeys to generate for our own device", Strophe.LogLevel.WARN);
@@ -834,7 +834,7 @@ converse.plugins.add('converse-omemo', {
                         device = devicelist.devices.get(this.get('device_id'));
 
                 const bundle = await device.getBundle();
-                device.save('bundle', _.extend(bundle, {'prekeys': marshalled_keys}));
+                device.save('bundle', Object.assign(bundle, {'prekeys': marshalled_keys}));
             },
 
             async generateBundle () {
@@ -1242,7 +1242,7 @@ converse.plugins.add('converse-omemo', {
         });
 
         /************************ BEGIN API ************************/
-        _.extend(_converse.api, {
+        Object.assign(_converse.api, {
             /**
              * The "omemo" namespace groups methods relevant to OMEMO
              * encryption.

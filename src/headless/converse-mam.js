@@ -64,7 +64,7 @@ function queryForArchivedMessages (_converse, options, callback, errback) {
         stanza.up();
         if (options instanceof Strophe.RSM) {
             stanza.cnode(options.toXML());
-        } else if (_.intersection(RSM_ATTRIBUTES, _.keys(options)).length) {
+        } else if (_.intersection(RSM_ATTRIBUTES, Object.keys(options)).length) {
             stanza.cnode(new Strophe.RSM(options).toXML());
         }
     }
@@ -89,7 +89,7 @@ function queryForArchivedMessages (_converse, options, callback, errback) {
                 let rsm;
                 if (!_.isUndefined(set)) {
                     rsm = new Strophe.RSM({xml: set});
-                    _.extend(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
+                    Object.assign(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
                 }
                 callback(messages, rsm);
             }
@@ -142,7 +142,7 @@ converse.plugins.add('converse-mam', {
             getUpdatedMessageAttributes (message, stanza) {
                 const attrs = this.__super__.getUpdatedMessageAttributes.apply(this, arguments);
                 if (message && !message.get('is_archived')) {
-                    return _.extend(attrs, {
+                    return Object.assign(attrs, {
                         'is_archived': this.isArchived(stanza)
                     }, this.getStanzaIDs(stanza))
                 }
@@ -226,7 +226,7 @@ converse.plugins.add('converse-mam', {
 
 
         /************************ BEGIN API ************************/
-        _.extend(_converse.api, {
+        Object.assign(_converse.api, {
             /**
              * The [XEP-0313](https://xmpp.org/extensions/xep-0313.html) Message Archive Management API
              *

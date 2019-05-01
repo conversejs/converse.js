@@ -28,10 +28,7 @@ const { Strophe, Backbone, sizzle, $iq, _ } = converse.env;
 Strophe.addNamespace('REGISTER', 'jabber:iq:register');
 
 // Add Strophe Statuses
-let i = 0;
-_.each(_.keys(Strophe.Status), function (key) {
-    i = Math.max(i, Strophe.Status[key]);
-});
+const i = Object.keys(Strophe.Status).reduce((max, k) => Math.max(max, Strophe.Status[k]), 0);
 Strophe.Status.REGIFAIL        = i + 1;
 Strophe.Status.REGISTERED      = i + 2;
 Strophe.Status.CONFLICT        = i + 3;
@@ -151,7 +148,7 @@ converse.plugins.add('converse-register', {
         _converse.RegisterLinkView = Backbone.VDOMView.extend({
             toHTML () {
                 return tpl_register_link(
-                    _.extend(this.model.toJSON(), {
+                    Object.assign(this.model.toJSON(), {
                         '__': _converse.__,
                         '_converse': _converse,
                         'connection_status': _converse.connfeedback.get('connection_status'),
@@ -294,9 +291,9 @@ converse.plugins.add('converse-register', {
                     domain: null,
                     form_type: null
                 };
-                _.extend(this, defaults);
+                Object.assign(this, defaults);
                 if (settings) {
-                    _.extend(this, _.pick(settings, _.keys(defaults)));
+                    Object.assign(this, _.pick(settings, Object.keys(defaults)));
                 }
             },
 
@@ -441,7 +438,7 @@ converse.plugins.add('converse-register', {
             },
 
             renderLegacyRegistrationForm (form) {
-                _.each(_.keys(this.fields), (key) => {
+                _.each(Object.keys(this.fields), (key) => {
                     if (key === "username") {
                         form.insertAdjacentHTML(
                             'beforeend',

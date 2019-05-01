@@ -968,7 +968,7 @@ converse.plugins.add('converse-roster', {
         /************************ API ************************/
         // API methods only available to plugins
 
-        _.extend(_converse.api, {
+        Object.assign(_converse.api, {
             /**
              * @namespace _converse.api.contacts
              * @memberOf _converse.api

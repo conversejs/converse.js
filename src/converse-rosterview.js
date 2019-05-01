@@ -92,7 +92,7 @@ converse.plugins.add('converse-rosterview', {
              */
             a = a.get('name');
             b = b.get('name');
-            const special_groups = _.keys(HEADER_WEIGHTS);
+            const special_groups = Object.keys(HEADER_WEIGHTS);
             const a_is_special = _.includes(special_groups, a);
             const b_is_special = _.includes(special_groups, b);
             if (!a_is_special && !b_is_special ) {
@@ -119,7 +119,7 @@ converse.plugins.add('converse-rosterview', {
 
             toHTML () {
                 const label_nickname = _converse.xhr_user_search_url ? __('Contact name') : __('Optional nickname');
-                return tpl_add_contact_modal(_.extend(this.model.toJSON(), {
+                return tpl_add_contact_modal(Object.assign(this.model.toJSON(), {
                     '_converse': _converse,
                     'heading_new_contact': __('Add a Contact'),
                     'label_xmpp_address': __('XMPP Address'),
@@ -276,7 +276,7 @@ converse.plugins.add('converse-rosterview', {
 
             toHTML () {
                 return tpl_roster_filter(
-                    _.extend(this.model.toJSON(), {
+                    Object.assign(this.model.toJSON(), {
                         visible: this.shouldBeVisible(),
                         placeholder: __('Filter'),
                         title_contact_filter: __('Filter by contact name'),
@@ -402,7 +402,6 @@ converse.plugins.add('converse-rosterview', {
             },
 
             render () {
-                const that = this;
                 if (!this.mayBeShown()) {
                     u.hideElement(this.el);
                     return this;
@@ -416,14 +415,9 @@ converse.plugins.add('converse-rosterview', {
                     'current-xmpp-contact',
                     'pending-xmpp-contact',
                     'requesting-xmpp-contact'
-                    ].concat(_.keys(STATUSES));
+                    ].concat(Object.keys(STATUSES));
+                classes_to_remove.forEach(c => u.removeClass(c, this.el));
 
-                _.each(classes_to_remove,
-                    function (cls) {
-                        if (_.includes(that.el.className, cls)) {
-                            that.el.classList.remove(cls);
-                        }
-                    });
                 this.el.classList.add(show);
                 this.el.setAttribute('data-status', show);
                 this.highlight();
@@ -454,7 +448,7 @@ converse.plugins.add('converse-rosterview', {
                     const display_name = this.model.getDisplayName();
                     this.el.classList.add('pending-xmpp-contact');
                     this.el.innerHTML = tpl_pending_contact(
-                        _.extend(this.model.toJSON(), {
+                        Object.assign(this.model.toJSON(), {
                             'display_name': display_name,
                             'desc_remove': __('Click to remove %1$s as a contact', display_name),
                             'allow_chat_pending_contacts': _converse.allow_chat_pending_contacts
@@ -464,7 +458,7 @@ converse.plugins.add('converse-rosterview', {
                     const display_name = this.model.getDisplayName();
                     this.el.classList.add('requesting-xmpp-contact');
                     this.el.innerHTML = tpl_requesting_contact(
-                        _.extend(this.model.toJSON(), {
+                        Object.assign(this.model.toJSON(), {
                             'display_name': display_name,
                             'desc_accept': __("Click to accept the contact request from %1$s", display_name),
                             'desc_decline': __("Click to decline the contact request from %1$s", display_name),
@@ -507,7 +501,7 @@ converse.plugins.add('converse-rosterview', {
                 }
                 const display_name = item.getDisplayName();
                 this.el.innerHTML = tpl_roster_item(
-                    _.extend(item.toJSON(), {
+                    Object.assign(item.toJSON(), {
                         'display_name': display_name,
                         'desc_status': STATUSES[show],
                         'status_icon': status_icon,
@@ -634,11 +628,11 @@ converse.plugins.add('converse-rosterview', {
 
             show () {
                 u.showElement(this.el);
-                _.each(this.getAll(), (contact_view) => {
-                    if (contact_view.mayBeShown() && this.model.get('state') === _converse.OPENED) {
-                        u.showElement(contact_view.el);
-                    }
-                });
+                if (this.model.get('state') === _converse.OPENED) {
+                    Object.values(this.getAll())
+                        .filter(v => v.mayBeShown())
+                        .forEach(v => u.showElement(v.el));
+                }
                 return this;
             },
 

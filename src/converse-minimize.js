@@ -348,7 +348,7 @@ converse.plugins.add('converse-minimize', {
             },
 
             render () {
-                const data = _.extend(
+                const data = Object.assign(
                     this.model.toJSON(),
                     { 'tooltip': __('Click to restore this chat') }
                 );
@@ -510,7 +510,7 @@ converse.plugins.add('converse-minimize', {
 
             render () {
                 this.el.innerHTML = tpl_toggle_chats(
-                    _.extend(this.model.toJSON(), {
+                    Object.assign(this.model.toJSON(), {
                         'Minimized': __('Minimized')
                     })
                 );

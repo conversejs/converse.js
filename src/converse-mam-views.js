@@ -101,7 +101,7 @@ converse.plugins.add('converse-mam-views', {
                 }
                 this.addSpinner();
                 _converse.api.archive.query(
-                    _.extend({
+                    Object.assign({
                         'groupchat': is_groupchat,
                         'before': '', // Page backwards from the most recent message
                         'max': _converse.archived_messages_page_size,

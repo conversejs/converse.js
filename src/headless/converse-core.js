@@ -75,7 +75,7 @@ const _converse = {
 
 _converse.VERSION_NAME = "v4.2.0";
 
-_.extend(_converse, Backbone.Events);
+Object.assign(_converse, Backbone.Events);
 
 // Make converse pluggable
 pluggable.enable(_converse, '_converse', 'pluggable');
@@ -551,7 +551,7 @@ _converse.initialize = async function (settings, callback) {
 
     _.assignIn(this, this.default_settings);
     // Allow only whitelisted configuration attributes to be overwritten
-    _.assignIn(this, _.pick(settings, _.keys(this.default_settings)));
+    _.assignIn(this, _.pick(settings, Object.keys(this.default_settings)));
 
     if (this.authentication === _converse.ANONYMOUS) {
         if (this.auto_login && !this.jid) {
@@ -906,7 +906,7 @@ _converse.initialize = async function (settings, callback) {
             _converse.tearDown();
         }
         // Recreate all the promises
-        _.each(_.keys(_converse.promises), addPromise);
+        _.each(Object.keys(_converse.promises), addPromise);
         /**
          * Triggered once the user has logged out.
          * @event _converse#logout
@@ -1494,7 +1494,7 @@ _converse.api = {
              */
             'set' (value, message) {
                 const data = {'status': value};
-                if (!_.includes(_.keys(_converse.STATUS_WEIGHTS), value)) {
+                if (!_.includes(Object.keys(_converse.STATUS_WEIGHTS), value)) {
                     throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
                 }
                 if (_.isString(message)) {
@@ -1568,7 +1568,7 @@ _converse.api = {
          * @example _converse.api.settings.get("play_sounds");
          */
         'get' (key) {
-            if (_.includes(_.keys(_converse.default_settings), key)) {
+            if (_.includes(Object.keys(_converse.default_settings), key)) {
                 return _converse[key];
             }
         },
@@ -1593,10 +1593,10 @@ _converse.api = {
         'set' (key, val) {
             const o = {};
             if (_.isObject(key)) {
-                _.assignIn(_converse, _.pick(key, _.keys(_converse.default_settings)));
+                _.assignIn(_converse, _.pick(key, Object.keys(_converse.default_settings)));
             } else if (_.isString("string")) {
                 o[key] = val;
-                _.assignIn(_converse, _.pick(o, _.keys(_converse.default_settings)));
+                _.assignIn(_converse, _.pick(o, Object.keys(_converse.default_settings)));
             }
         }
     },

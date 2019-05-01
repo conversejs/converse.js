@@ -102,7 +102,7 @@ converse.plugins.add('converse-chatview', {
 
             toHTML () {
                 return tpl_emojis(
-                    _.extend(
+                    Object.assign(
                         this.model.toJSON(), {
                             '_': _,
                             'transform': u.getEmojiRenderer(_converse),
@@ -176,7 +176,7 @@ converse.plugins.add('converse-chatview', {
                 const vcard = _.get(this.model, 'vcard'),
                       vcard_json = vcard ? vcard.toJSON() : {};
                 this.el.innerHTML = tpl_chatbox_head(
-                    _.extend(
+                    Object.assign(
                         vcard_json,
                         this.model.toJSON(),
                         { '_converse': _converse,
@@ -232,7 +232,7 @@ converse.plugins.add('converse-chatview', {
             toHTML () {
                 const vcard = _.get(this.model, 'vcard'),
                       vcard_json = vcard ? vcard.toJSON() : {};
-                return tpl_user_details_modal(_.extend(
+                return tpl_user_details_modal(Object.assign(
                     this.model.toJSON(),
                     vcard_json, {
                     '_': _,
@@ -369,7 +369,7 @@ converse.plugins.add('converse-chatview', {
                 // XXX: Is this still needed?
                 this.el.setAttribute('id', this.model.get('box_id'));
                 this.el.innerHTML = tpl_chatbox(
-                    _.extend(this.model.toJSON(), {
+                    Object.assign(this.model.toJSON(), {
                             'unread_msgs': __('You have unread messages')
                         }
                     ));
@@ -410,7 +410,7 @@ converse.plugins.add('converse-chatview', {
                 }
                 const form_container = this.el.querySelector('.bottom-panel');
                 form_container.innerHTML = tpl_chatbox_message_form(
-                    _.extend(this.model.toJSON(), {
+                    Object.assign(this.model.toJSON(), {
                         'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
                         'label_message': placeholder,
                         'label_send': __('Send'),
@@ -516,7 +516,7 @@ converse.plugins.add('converse-chatview', {
                 } else {
                     label_toggle_spoiler = __('Click to write your message as a spoiler');
                 }
-                return _.extend(options || {}, {
+                return Object.assign(options || {}, {
                     'label_clear': __('Clear all messages'),
                     'tooltip_insert_smiley': __('Insert emojis'),
                     'tooltip_start_call': __('Start a call'),
@@ -1400,7 +1400,7 @@ converse.plugins.add('converse-chatview', {
         });
 
         /************************ BEGIN API ************************/
-        _.extend(_converse.api, {
+        Object.assign(_converse.api, {
             /**
              * The "chatview" namespace groups methods pertaining to views
              * for one-on-one chats.

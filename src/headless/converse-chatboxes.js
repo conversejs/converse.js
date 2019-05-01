@@ -747,7 +747,7 @@ converse.plugins.add('converse-chatboxes', {
                     'references': this.getReferencesFromStanza(stanza),
                     'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
                     'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
-                    'time': delay ? delay.getAttribute('stamp') : moment().format(),
+                    'time': delay ? moment(delay.getAttribute('stamp')).format() : moment().format(),
                     'type': stanza.getAttribute('type')
                 }, this.getStanzaIDs(original_stanza));
 

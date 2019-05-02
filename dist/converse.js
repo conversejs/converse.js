@@ -49899,9 +49899,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         if (!_converse.connection.authenticated) {
           this.showHelpMessages(['Sorry, the connection has been lost, and your message could not be sent'], 'error');
 
-          if (!_converse.connection.reconnecting) {
-            _converse.reconnect();
-          }
+          _converse.reconnect();
 
           return;
         }

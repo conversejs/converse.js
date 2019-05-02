@@ -928,9 +928,7 @@ converse.plugins.add('converse-chatview', {
                         ['Sorry, the connection has been lost, and your message could not be sent'],
                         'error'
                     );
-                    if (!_converse.connection.reconnecting) {
-                        _converse.reconnect();
-                    }
+                    _converse.reconnect();
                     return;
                 }
                 let spoiler_hint, hint_el = {};

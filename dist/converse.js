@@ -54869,9 +54869,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         if (!this.nickname_form) {
           this.nickname_form = new _converse.MUCNicknameForm({
-            'model': new Backbone.Model(),
-            'chatroomview': this,
-            'validation_message': message
+            'model': new Backbone.Model({
+              'validation_message': message
+            }),
+            'chatroomview': this
           });
           const container_el = this.el.querySelector('.chatroom-body');
           container_el.insertAdjacentElement('beforeend', this.nickname_form.el);

@@ -659,8 +659,11 @@ converse.plugins.add('converse-muc', {
                         let count = fields.length;
 
                         _.each(fields, (field) => {
-                            const fieldname = field.getAttribute('var').replace('muc#roomconfig_', ''),
-                                type = field.getAttribute('type');
+                            let fieldname;
+                            const type = field.getAttribute('type');
+                            if (type !== 'fixed') {
+                                fieldname = field.getAttribute('var').replace('muc#roomconfig_', '');
+                            }
                             let value;
                             if (fieldname in config) {
                                 switch (type) {

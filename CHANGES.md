@@ -1,4 +1,6 @@
 # Changelog
+### Room Open 
+  when a room is opened with default configuration if it contains fileds with type='fixed' the configuration used to break  
 ### Rooms Api document change
   number of parameters in the documentation was made 2 from 3 as api which is used to open a room with default configuration has only 2 parameters
 ## 5.0.0 (Unreleased)

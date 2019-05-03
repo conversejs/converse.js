@@ -13,6 +13,7 @@
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1532: Converse reloads on enter pressed in the filter box
 - #1550: Legitimate carbons being blocked due to erroneous forgery check
+- #1554: Room auto-configuration broke if the config form contained fields with type `fixed`
 
 - **Breaking changes**:
 - Rename `muc_disable_moderator_commands` to [muc_disable_slash_commands](https://conversejs.org/docs/html/configuration.html#muc-disable-slash-commands).

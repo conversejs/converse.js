@@ -45771,6 +45771,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
        */
       addFieldValue(field) {
         const type = field.getAttribute('type');
+
+        if (type === 'fixed') {
+          return field;
+        }
+
         const fieldname = field.getAttribute('var').replace('muc#roomconfig_', '');
         const config = this.get('roomconfig');
 

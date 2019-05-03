@@ -17,6 +17,7 @@
 
 - **Breaking changes**:
 - Rename `muc_disable_moderator_commands` to [muc_disable_slash_commands](https://conversejs.org/docs/html/configuration.html#muc-disable-slash-commands).
+- `_converse.api.archive.query` now returns a Promise instead of accepting a callback functions.
 
 ### API changes
 

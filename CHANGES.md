@@ -15,6 +15,7 @@
 - Continuously retry (in 2s intervals) to fetch login credentials (via [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials-url)) in case of failure
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1532: Converse reloads on enter pressed in the filter box
+- #1550: Legitimate carbons being blocked due to erroneous forgery check
 
 - **Breaking changes**:
 - Rename `muc_disable_moderator_commands` to [muc_disable_slash_commands](https://conversejs.org/docs/html/configuration.html#muc-disable-slash-commands).

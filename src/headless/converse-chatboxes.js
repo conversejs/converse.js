@@ -403,7 +403,7 @@ converse.plugins.add('converse-chatboxes', {
                     'msgid': id
                 });
             },
-            
+
             sendMarker(to_jid, id, type) {
                 const stanza = $msg({
                     'from': _converse.connection.jid,
@@ -931,47 +931,33 @@ converse.plugins.add('converse-chatboxes', {
                     return true;
                 }
 
-                let from_jid = stanza.getAttribute('from'),
-                    is_carbon = false,
-                    is_mam = false;
-
-                const forwarded = stanza.querySelector('forwarded'),
-                      original_stanza = stanza;
+                let is_carbon = false;
+                const forwarded = stanza.querySelector('forwarded');
+                const original_stanza = stanza;
 
                 if (!_.isNull(forwarded)) {
-                    const forwarded_message = forwarded.querySelector('message'),
-                          forwarded_from = forwarded_message.getAttribute('from'),
-                          xmlns = Strophe.NS.CARBONS;
-                    is_carbon = sizzle(`received[xmlns="${xmlns}"]`, stanza).length > 0;
+                    const xmlns = Strophe.NS.CARBONS;
+                    is_carbon = sizzle(`received[xmlns="${xmlns}"]`, original_stanza).length > 0;
                     if (is_carbon && original_stanza.getAttribute('from') !== _converse.bare_jid) {
                         // Prevent message forging via carbons
                         // https://xmpp.org/extensions/xep-0280.html#security
                         return true;
                     }
-                    is_mam = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0;
-                    stanza = forwarded_message;
-                    from_jid = stanza.getAttribute('from');
+                    stanza = forwarded.querySelector('message');
                     to_jid = stanza.getAttribute('to');
                 }
 
-                const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
-                      from_resource = Strophe.getResourceFromJid(from_jid),
-                      is_me = from_bare_jid === _converse.bare_jid;
+                const from_jid = stanza.getAttribute('from');
+                const from_bare_jid = Strophe.getBareJidFromJid(from_jid);
+                const is_me = from_bare_jid === _converse.bare_jid;
 
-                let contact_jid; 
-                if (is_me) {
-                    // I am the sender, so this must be a forwarded message...
-                    if (_.isNull(to_jid)) {
-                        return _converse.log(
-                            `Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`,
-                            Strophe.LogLevel.ERROR
-                        );
-                    }
-                    contact_jid = Strophe.getBareJidFromJid(to_jid);
-                } else {
-                    contact_jid = from_bare_jid;
+                if (is_me &&_.isNull(to_jid)) {
+                    return _converse.log(
+                        `Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`,
+                        Strophe.LogLevel.ERROR
+                    );
                 }
-
+                const contact_jid = is_me ? Strophe.getBareJidFromJid(to_jid) : from_bare_jid;
                 const contact = await _converse.api.contacts.get(contact_jid);
                 const is_roster_contact = !_.isUndefined(contact);
                 if (!is_me && !is_roster_contact && !_converse.allow_non_roster_messaging) {
@@ -979,11 +965,12 @@ converse.plugins.add('converse-chatboxes', {
                 }
 
                 // Get chat box, but only create when the message has something to show to the user
-                const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0,
-                      roster_nick = _.get(contact, 'attributes.nickname'),
-                      chatbox = this.getChatBox(contact_jid, {'nickname': roster_nick}, has_body);
+                const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
+                const roster_nick = _.get(contact, 'attributes.nickname');
+                const chatbox = this.getChatBox(contact_jid, {'nickname': roster_nick}, has_body);
 
                 if (chatbox) {
+                    const is_mam = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).length > 0;
                     const message = await chatbox.getDuplicateMessage(stanza);
                     if (message) {
                         chatbox.updateMessage(message, original_stanza);

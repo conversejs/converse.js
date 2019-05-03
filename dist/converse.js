@@ -67514,50 +67514,59 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         });
       },
 
+      /**
+       * Given a <field> element, return a copy with a <value> child if
+       * we can find a value for it in this rooms config.
+       * @private
+       * @method _converse.ChatRoom#autoConfigureChatRoom
+       * @returns { Element }
+       */
+      addFieldValue(field) {
+        const type = field.getAttribute('type');
+        const fieldname = field.getAttribute('var').replace('muc#roomconfig_', '');
+        const config = this.get('roomconfig');
+
+        if (fieldname in config) {
+          let value;
+
+          switch (type) {
+            case 'boolean':
+              value = config[fieldname] ? 1 : 0;
+              break;
+
+            case 'list-multi':
+              // TODO: we don't yet handle "list-multi" types
+              value = field.innerHTML;
+              break;
+
+            default:
+              value = config[fieldname];
+          }
+
+          field.innerHTML = $build('value').t(value);
+        }
+
+        return field;
+      },
+
+      /**
+       * Automatically configure the groupchat based on this model's
+       * 'roomconfig' data.
+       * @private
+       * @method _converse.ChatRoom#autoConfigureChatRoom
+       * @returns { promise }
+       * Returns a promise which resolves once a response IQ has
+       * been received.
+       */
       autoConfigureChatRoom() {
-        /* Automatically configure groupchat based on this model's
-         * 'roomconfig' data.
-         *
-         * Returns a promise which resolves once a response IQ has
-         * been received.
-         */
-        return new Promise((resolve, reject) => {
-          this.fetchRoomConfiguration().then(stanza => {
-            const configArray = [],
-                  fields = stanza.querySelectorAll('field'),
-                  config = this.get('roomconfig');
-            let count = fields.length;
+        return new Promise(async (resolve, reject) => {
+          const stanza = await this.fetchRoomConfiguration();
+          const fields = sizzle('field', stanza);
+          const configArray = fields.map(f => this.addFieldValue(f));
 
-            _.each(fields, field => {
-              const fieldname = field.getAttribute('var').replace('muc#roomconfig_', ''),
-                    type = field.getAttribute('type');
-              let value;
-
-              if (fieldname in config) {
-                switch (type) {
-                  case 'boolean':
-                    value = config[fieldname] ? 1 : 0;
-                    break;
-
-                  case 'list-multi':
-                    // TODO: we don't yet handle "list-multi" types
-                    value = field.innerHTML;
-                    break;
-
-                  default:
-                    value = config[fieldname];
-                }
-
-                field.innerHTML = $build('value').t(value);
-              }
-
-              configArray.push(field);
-
-              if (! --count) {
-                this.sendConfiguration(configArray, resolve, reject);
-              }
-            });
-          });
+          if (configArray.length) {
+            this.sendConfiguration(configArray, resolve, reject);
+          }
         });
       },
 

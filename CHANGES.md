@@ -1,5 +1,6 @@
 # Changelog
-
+### Rooms Api document change
+  number of parameters in the documentation was made 2 from 3 as api which is used to open a room with default configuration has only 2 parameters
 ## 5.0.0 (Unreleased)
 
 - Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.

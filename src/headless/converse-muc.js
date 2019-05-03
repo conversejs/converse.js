@@ -1597,8 +1597,7 @@ converse.plugins.add('converse-muc', {
                  *           'roomdesc': 'Comfy room for hanging out',
                  *           'whois': 'anyone'
                  *       }
-                 *     },
-                 *     true
+                 *     }
                  * );
                  */
                 'open': async function (jids, attrs, force=false) {

@@ -1,5 +1,6 @@
 # Changelog
-
+### Room Open with default config
+when a room is opened with default configuration if it contains fileds with type='fixed' the configuration used to break
 ## 5.0.0 (Unreleased)
 
 - Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.

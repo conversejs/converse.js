@@ -943,7 +943,7 @@ converse.plugins.add('converse-chatboxes', {
                           forwarded_from = forwarded_message.getAttribute('from'),
                           xmlns = Strophe.NS.CARBONS;
                     is_carbon = sizzle(`received[xmlns="${xmlns}"]`, stanza).length > 0;
-                    if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
+                    if (is_carbon && original_stanza.getAttribute('from') !== _converse.bare_jid) {
                         // Prevent message forging via carbons
                         // https://xmpp.org/extensions/xep-0280.html#security
                         return true;

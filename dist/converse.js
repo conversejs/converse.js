@@ -63067,7 +63067,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
                 xmlns = Strophe.NS.CARBONS;
           is_carbon = sizzle(`received[xmlns="${xmlns}"]`, stanza).length > 0;
 
-          if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
+          if (is_carbon && original_stanza.getAttribute('from') !== _converse.bare_jid) {
             // Prevent message forging via carbons
             // https://xmpp.org/extensions/xep-0280.html#security
             return true;
@@ -68593,8 +68593,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
          *           'roomdesc': 'Comfy room for hanging out',
          *           'whois': 'anyone'
          *       }
-         *     },
-         *     true
+         *     }
          * );
          */
         'open': async function open(jids, attrs) {

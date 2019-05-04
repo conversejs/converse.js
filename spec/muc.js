@@ -156,6 +156,7 @@
                     'nick': 'some1',
                     'auto_configure': true,
                     'roomconfig': {
+                        'getmemberlist': ['moderator', 'participant'],
                         'changesubject': false,
                         'membersonly': true,
                         'persistentroom': true,
@@ -224,6 +225,13 @@
                         <field type="list-single" var="muc#roomconfig_whois" label="Who May Discover Real JIDs?"><option label="Moderators Only">
                            <value>moderators</value></option><option label="Anyone"><value>anyone</value></option>
                         </field>
+                        <field label="Roles and Affiliations that May Retrieve Member List"
+                               type="list-multi"
+                               var="muc#roomconfig_getmemberlist">
+                            <value>moderator</value>
+                            <value>participant</value>
+                            <value>visitor</value>
+                        </field>
                         <field type="text-private" var="muc#roomconfig_roomsecret" label="Password"><value/></field>
                         <field type="boolean" var="muc#roomconfig_moderatedroom" label="Make Room Moderated?"/>
                         <field type="boolean" var="muc#roomconfig_membersonly" label="Make Room Members-Only?"/>
@@ -243,6 +251,7 @@
                 expect(sizzle('field[var="muc#roomconfig_roomname"] value', sent_stanza).pop().textContent).toBe('Room');
                 expect(sizzle('field[var="muc#roomconfig_roomdesc"] value', sent_stanza).pop().textContent).toBe('Welcome to this groupchat');
                 expect(sizzle('field[var="muc#roomconfig_persistentroom"] value', sent_stanza).pop().textContent).toBe('1');
+                expect(sizzle('field[var="muc#roomconfig_getmemberlist"] value', sent_stanza).map(e => e.textContent).join(' ')).toBe('moderator participant');
                 expect(sizzle('field[var="muc#roomconfig_publicroom"] value ', sent_stanza).pop().textContent).toBe('1');
                 expect(sizzle('field[var="muc#roomconfig_changesubject"] value', sent_stanza).pop().textContent).toBe('0');
                 expect(sizzle('field[var="muc#roomconfig_whois"] value ', sent_stanza).pop().textContent).toBe('anyone');

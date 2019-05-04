@@ -1,7 +1,7 @@
 # Changelog
 
 ## 5.0.0 (Unreleased)
-
+- Groupchat default configuration now supports `list-multi` fields
 - Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
 - Bugfix: Modal auto-closes when you open it for a second time.
 - Take roster nickname into consideration when rendering messages and chat headings.

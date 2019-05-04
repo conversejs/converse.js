@@ -1,5 +1,6 @@
 # Changelog
-
+### Room Default Configuration
+  support list-multi
 ## 5.0.0 (Unreleased)
 
 - Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.

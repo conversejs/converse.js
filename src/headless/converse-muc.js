@@ -659,19 +659,22 @@ converse.plugins.add('converse-muc', {
                 const fieldname = field.getAttribute('var').replace('muc#roomconfig_', '');
                 const config = this.get('roomconfig');
                 if (fieldname in config) {
-                    let value;
+                    let values;
                     switch (type) {
                         case 'boolean':
-                            value = config[fieldname] ? 1 : 0;
+                            values = [config[fieldname] ? 1 : 0];
                             break;
                         case 'list-multi':
                             // TODO: we don't yet handle "list-multi" types
-                            value = field.innerHTML;
+                            //value = field.innerHTML;
+                            values = config[fieldname];
                             break;
                         default:
-                            value = config[fieldname];
+                            values= [config[fieldname]];
                     }
-                    field.innerHTML = $build('value').t(value);
+                    field.innerHTML = values.reduce((accumulator, currentValue) => (
+                        `${accumulator}${$build('value').t(currentValue)}`
+                    ),'')
                 }
                 return field;
             },

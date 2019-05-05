@@ -508,7 +508,7 @@
             const msgtext = 'This is a carbon message';
             const sender_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
             const msg = $msg({
-                    'from': sender_jid,
+                    'from': _converse.bare_jid,
                     'id': (new Date()).getTime(),
                     'to': _converse.connection.jid,
                     'type': 'chat',
@@ -526,7 +526,7 @@
             await test_utils.waitUntil(() => (_converse.api.chats.get().length > 1))
             const chatbox = _converse.chatboxes.get(sender_jid);
             const view = _converse.chatboxviews.get(sender_jid);
-                
+
             expect(chatbox).toBeDefined();
             expect(view).toBeDefined();
             // Check that the message was received and check the message parameters
@@ -1197,7 +1197,7 @@
                         'from': _converse.bare_jid+"/some-other-resource",
                         'type': 'chat'})
                     .c('body').t("A carbon message 4 minutes later")
-                    .tree()); 
+                    .tree());
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             expect(chat_content.querySelectorAll('.message').length).toBe(8);

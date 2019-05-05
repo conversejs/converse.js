@@ -21,88 +21,6 @@ const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'cou
 const MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
 
-function queryForArchivedMessages (_converse, options, callback, errback) {
-    /* Internal function, called by the "archive.query" API method.
-     */
-    let date;
-    if (_.isFunction(options)) {
-        callback = options;
-        errback = callback;
-        options = null;
-    }
-    const queryid = _converse.connection.getUniqueId();
-    const attrs = {'type':'set'};
-    if (options && options.groupchat) {
-        if (!options['with']) { // eslint-disable-line dot-notation
-            throw new Error(
-                'You need to specify a "with" value containing '+
-                'the chat room JID, when querying groupchat messages.');
-        }
-        attrs.to = options['with']; // eslint-disable-line dot-notation
-    }
-
-    const stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
-    if (options) {
-        stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
-                .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
-                .c('value').t(Strophe.NS.MAM).up().up();
-
-        if (options['with'] && !options.groupchat) {  // eslint-disable-line dot-notation
-            stanza.c('field', {'var':'with'}).c('value')
-                .t(options['with']).up().up(); // eslint-disable-line dot-notation
-        }
-        _.each(['start', 'end'], function (t) {
-            if (options[t]) {
-                date = moment(options[t]);
-                if (date.isValid()) {
-                    stanza.c('field', {'var':t}).c('value').t(date.format()).up().up();
-                } else {
-                    throw new TypeError(`archive.query: invalid date provided for: ${t}`);
-                }
-            }
-        });
-        stanza.up();
-        if (options instanceof Strophe.RSM) {
-            stanza.cnode(options.toXML());
-        } else if (_.intersection(RSM_ATTRIBUTES, Object.keys(options)).length) {
-            stanza.cnode(new Strophe.RSM(options).toXML());
-        }
-    }
-
-    const messages = [];
-    const message_handler = _converse.connection.addHandler((message) => {
-        if (options.groupchat && message.getAttribute('from') !== options['with']) { // eslint-disable-line dot-notation
-            return true;
-        }
-        const result = message.querySelector('result');
-        if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
-            messages.push(message);
-        }
-        return true;
-    }, Strophe.NS.MAM);
-
-    _converse.api.sendIQ(stanza, _converse.message_archiving_timeout)
-        .then(iq => {
-            _converse.connection.deleteHandler(message_handler);
-            if (_.isFunction(callback)) {
-                const set = iq.querySelector('set');
-                let rsm;
-                if (!_.isUndefined(set)) {
-                    rsm = new Strophe.RSM({xml: set});
-                    Object.assign(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
-                }
-                callback(messages, rsm);
-            }
-        }).catch(e => {
-            _converse.connection.deleteHandler(message_handler);
-            if (_.isFunction(errback)) {
-                errback.apply(this, arguments);
-            }
-            return;
-        });
-}
-
-
 converse.plugins.add('converse-mam', {
 
     dependencies: ['converse-muc'],
@@ -260,15 +178,11 @@ converse.plugins.add('converse-mam', {
                   * * `before`
                   * * `index`
                   * * `count`
-                  * @param {Function} callback A function to call whenever
-                  *      we receive query-relevant stanza.
-                  *      When the callback is called, a Strophe.RSM object is
-                  *      returned on which "next" or "previous" can be called
-                  *      before passing it in again to this method, to
-                  *      get the next or previous page in the result set.
-                  * @param {Function} errback A function to call when an
-                  *      error stanza is received, for example when it
-                  *      doesn't support message archiving.
+                  * @throws {Error} An error is thrown if the XMPP server responds with an error.
+                  * @returns {Promise<Object>} A promise which resolves to an object which
+                  * will have keys `messages` and `rsm` which contains a Strophe.RSM object
+                  * on which "next" or "previous" can be called before passing it in again
+                  * to this method, to get the next or previous page in the result set.
                   *
                   * @example
                   * // Requesting all archived messages
@@ -276,41 +190,17 @@ converse.plugins.add('converse-mam', {
                   * //
                   * // The simplest query that can be made is to simply not pass in any parameters.
                   * // Such a query will return all archived messages for the current user.
-                  * //
-                  * // Generally, you'll however always want to pass in a callback method, to receive
-                  * // the returned messages.
                   *
-                  * this._converse.api.archive.query(
-                  *     (messages) => {
-                  *         // Do something with the messages, like showing them in your webpage.
-                  *     },
-                  *     (iq) => {
-                  *         // The query was not successful, perhaps inform the user?
-                  *         // The IQ stanza returned by the XMPP server is passed in, so that you
-                  *         // may inspect it and determine what the problem was.
-                  *     }
-                  * )
-                  * @example
-                  * // Waiting until server support has been determined
-                  * // ================================================
-                  * //
-                  * // The query method will only work if Converse has been able to determine that
-                  * // the server supports MAM queries, otherwise the following error will be raised:
-                  * //
-                  * // "This server does not support XEP-0313, Message Archive Management"
-                  * //
-                  * // The very first time Converse loads in a browser tab, if you call the query
-                  * // API too quickly, the above error might appear because service discovery has not
-                  * // yet been completed.
-                  * //
-                  * // To work solve this problem, you can first listen for the `serviceDiscovered` event,
-                  * // through which you can be informed once support for MAM has been determined.
-                  *
-                  *  _converse.api.listen.on('serviceDiscovered', function (feature) {
-                  *      if (feature.get('var') === converse.env.Strophe.NS.MAM) {
-                  *          _converse.api.archive.query()
-                  *      }
-                  *  });
+                  * let result;
+                  * try {
+                  *     result = await _converse.api.archive.query();
+                  * } catch (e) {
+                  *     // The query was not successful, perhaps inform the user?
+                  *     // The IQ stanza returned by the XMPP server is passed in, so that you
+                  *     // may inspect it and determine what the problem was.
+                  * }
+                  * // Do something with the messages, like showing them in your webpage.
+                  * result.messages.forEach(m => this.showMessage(m));
                   *
                   * @example
                   * // Requesting all archived messages for a particular contact or room
@@ -321,10 +211,20 @@ converse.plugins.add('converse-mam', {
                   * // room under the  `with` key.
                   *
                   * // For a particular user
-                  * this._converse.api.archive.query({'with': 'john@doe.net'}, callback, errback);)
+                  * let result;
+                  * try {
+                  *    result = await _converse.api.archive.query({'with': 'john@doe.net'});
+                  * } catch (e) {
+                  *     // The query was not successful
+                  * }
                   *
                   * // For a particular room
-                  * this._converse.api.archive.query({'with': 'discuss@conference.doglovers.net'}, callback, errback);)
+                  * let result;
+                  * try {
+                  *    result = await _converse.api.archive.query({'with': 'discuss@conference.doglovers.net'});
+                  * } catch (e) {
+                  *     // The query was not successful
+                  * }
                   *
                   * @example
                   * // Requesting all archived messages before or after a certain date
@@ -339,7 +239,12 @@ converse.plugins.add('converse-mam', {
                   *      'start': '2010-06-07T00:00:00Z',
                   *      'end': '2010-07-07T13:23:54Z'
                   *  };
-                  *  this._converse.api.archive.query(options, callback, errback);
+                  * let result;
+                  * try {
+                  *    result = await _converse.api.archive.query(options);
+                  * } catch (e) {
+                  *     // The query was not successful
+                  * }
                   *
                   * @example
                   * // Limiting the amount of messages returned
@@ -349,7 +254,12 @@ converse.plugins.add('converse-mam', {
                   * // By default, the messages are returned from oldest to newest.
                   *
                   * // Return maximum 10 archived messages
-                  * this._converse.api.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+                  * let result;
+                  * try {
+                  *     result = await _converse.api.archive.query({'with': 'john@doe.net', 'max':10});
+                  * } catch (e) {
+                  *     // The query was not successful
+                  * }
                   *
                   * @example
                   * // Paging forwards through a set of archived messages
@@ -359,8 +269,8 @@ converse.plugins.add('converse-mam', {
                   * // repeatedly make a further query to fetch the next batch of messages.
                   * //
                   * // To simplify this usecase for you, the callback method receives not only an array
-                  * // with the returned archived messages, but also a special RSM (*Result Set
-                  * // Management*) object which contains the query parameters you passed in, as well
+                  * // with the returned archived messages, but also a special Strophe.RSM (*Result Set Management*)
+                  * // object which contains the query parameters you passed in, as well
                   * // as two utility methods `next`, and `previous`.
                   * //
                   * // When you call one of these utility methods on the returned RSM object, and then
@@ -368,14 +278,24 @@ converse.plugins.add('converse-mam', {
                   * // archived messages. Please note, when calling these methods, pass in an integer
                   * // to limit your results.
                   *
-                  * const callback = function (messages, rsm) {
-                  *     // Do something with the messages, like showing them in your webpage.
-                  *     // ...
-                  *     // You can now use the returned "rsm" object, to fetch the next batch of messages:
-                  *     _converse.api.archive.query(rsm.next(10), callback, errback))
-                  *
+                  * let result;
+                  * try {
+                  *     result = await _converse.api.archive.query({'with': 'john@doe.net', 'max':10});
+                  * } catch (e) {
+                  *     // The query was not successful
                   * }
-                  * _converse.api.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+                  * // Do something with the messages, like showing them in your webpage.
+                  * result.messages.forEach(m => this.showMessage(m));
+                  *
+                  * while (result.rsm) {
+                  *     try {
+                  *         result = await _converse.api.archive.query(rsm.next(10));
+                  *     } catch (e) {
+                  *         // The query was not successful
+                  *     }
+                  *     // Do something with the messages, like showing them in your webpage.
+                  *     result.messages.forEach(m => this.showMessage(m));
+                  * }
                   *
                   * @example
                   * // Paging backwards through a set of archived messages
@@ -386,21 +306,107 @@ converse.plugins.add('converse-mam', {
                   * // `before` parameter. If you simply want to page backwards from the most recent
                   * // message, pass in the `before` parameter with an empty string value `''`.
                   *
-                  * _converse.api.archive.query({'before': '', 'max':5}, function (message, rsm) {
-                  *     // Do something with the messages, like showing them in your webpage.
-                  *     // ...
-                  *     // You can now use the returned "rsm" object, to fetch the previous batch of messages:
-                  *     rsm.previous(5); // Call previous method, to update the object's parameters,
-                  *                      // passing in a limit value of 5.
-                  *     // Now we query again, to get the previous batch.
-                  *     _converse.api.archive.query(rsm, callback, errback);
+                  * let result;
+                  * try {
+                  *     result = await _converse.api.archive.query({'before': '', 'max':5});
+                  * } catch (e) {
+                  *     // The query was not successful
                   * }
+                  * // Do something with the messages, like showing them in your webpage.
+                  * result.messages.forEach(m => this.showMessage(m));
+                  *
+                  * // Now we query again, to get the previous batch.
+                  * try {
+                  *      result = await _converse.api.archive.query(rsm.previous(5););
+                  * } catch (e) {
+                  *     // The query was not successful
+                  * }
+                  * // Do something with the messages, like showing them in your webpage.
+                  * result.messages.forEach(m => this.showMessage(m));
+                  *
                   */
-                'query': function (options, callback, errback) {
+                'query': async function (options) {
                     if (!_converse.api.connection.connected()) {
                         throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
                     }
-                    return queryForArchivedMessages(_converse, options, callback, errback);
+                    const attrs = {'type':'set'};
+                    if (options && options.groupchat) {
+                        if (!options['with']) { // eslint-disable-line dot-notation
+                            throw new Error(
+                                'You need to specify a "with" value containing '+
+                                'the chat room JID, when querying groupchat messages.');
+                        }
+                        attrs.to = options['with']; // eslint-disable-line dot-notation
+                    }
+
+                    const jid = attrs.to || _converse.bare_jid;
+                    const supported = await _converse.api.disco.supports(Strophe.NS.MAM, jid);
+                    if (!supported.length) {
+                        _converse.log(`Did not fetch MAM archive for ${jid} because it doesn't support ${Strophe.NS.MAM}`);
+                        return {
+                            'messages': []
+                        };
+                    }
+
+                    const queryid = _converse.connection.getUniqueId();
+                    const stanza = $iq(attrs).c('query', {'xmlns':Strophe.NS.MAM, 'queryid':queryid});
+                    if (options) {
+                        stanza.c('x', {'xmlns':Strophe.NS.XFORM, 'type': 'submit'})
+                                .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
+                                .c('value').t(Strophe.NS.MAM).up().up();
+
+                        if (options['with'] && !options.groupchat) {  // eslint-disable-line dot-notation
+                            stanza.c('field', {'var':'with'}).c('value')
+                                .t(options['with']).up().up(); // eslint-disable-line dot-notation
+                        }
+                        ['start', 'end'].forEach(t => {
+                            if (options[t]) {
+                                const date = moment(options[t]);
+                                if (date.isValid()) {
+                                    stanza.c('field', {'var':t}).c('value').t(date.format()).up().up();
+                                } else {
+                                    throw new TypeError(`archive.query: invalid date provided for: ${t}`);
+                                }
+                            }
+                        });
+                        stanza.up();
+                        if (options instanceof Strophe.RSM) {
+                            stanza.cnode(options.toXML());
+                        } else if (_.intersection(RSM_ATTRIBUTES, Object.keys(options)).length) {
+                            stanza.cnode(new Strophe.RSM(options).toXML());
+                        }
+                    }
+
+                    const messages = [];
+                    const message_handler = _converse.connection.addHandler(message => {
+                        if (options.groupchat && message.getAttribute('from') !== options['with']) { // eslint-disable-line dot-notation
+                            return true;
+                        }
+                        const result = message.querySelector('result');
+                        if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
+                            messages.push(message);
+                        }
+                        return true;
+                    }, Strophe.NS.MAM);
+
+                    let iq;
+                    try {
+                        iq = await _converse.api.sendIQ(stanza, _converse.message_archiving_timeout)
+                    } catch (e) {
+                        _converse.connection.deleteHandler(message_handler);
+                        throw(e);
+                    }
+                    _converse.connection.deleteHandler(message_handler);
+                    const set = iq.querySelector('set');
+                    let rsm;
+                    if (!_.isNull(set)) {
+                        rsm = new Strophe.RSM({'xml': set});
+                        Object.assign(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
+                    }
+                    return {
+                        messages,
+                        rsm
+                    }
                 }
             }
         });

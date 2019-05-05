@@ -1342,9 +1342,8 @@ converse.plugins.add('converse-muc-views', {
                 this.hideChatRoomContents();
                 if (!this.nickname_form) {
                     this.nickname_form = new _converse.MUCNicknameForm({
-                        'model': new Backbone.Model(),
+                        'model': new Backbone.Model({'validation_message': message}),
                         'chatroomview': this,
-                        'validation_message': message
                     });
                     const container_el = this.el.querySelector('.chatroom-body');
                     container_el.insertAdjacentElement('beforeend', this.nickname_form.el);

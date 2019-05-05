@@ -49899,9 +49899,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         if (!_converse.connection.authenticated) {
           this.showHelpMessages(['Sorry, the connection has been lost, and your message could not be sent'], 'error');
 
-          if (!_converse.connection.reconnecting) {
-            _converse.reconnect();
-          }
+          _converse.reconnect();
 
           return;
         }
@@ -52123,26 +52121,27 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
         }
 
         this.addSpinner();
+        let result;
 
-        _converse.api.archive.query(Object.assign({
-          'groupchat': is_groupchat,
-          'before': '',
-          // Page backwards from the most recent message
-          'max': _converse.archived_messages_page_size,
-          'with': this.model.get('jid')
-        }, options), messages => {
-          // Success
-          this.clearSpinner();
-
-          _.each(messages, message_handler);
-        }, e => {
-          // Error
-          this.clearSpinner();
-
+        try {
+          result = await _converse.api.archive.query(Object.assign({
+            'groupchat': is_groupchat,
+            'before': '',
+            // Page backwards from the most recent message
+            'max': _converse.archived_messages_page_size,
+            'with': this.model.get('jid')
+          }, options));
+        } catch (e) {
           _converse.log("Error or timeout while trying to fetch " + "archived messages", Strophe.LogLevel.ERROR);
 
           _converse.log(e, Strophe.LogLevel.ERROR);
-        });
+        } finally {
+          this.clearSpinner();
+        }
+
+        if (result.messages) {
+          result.messages.forEach(message_handler);
+        }
       },
 
       onScroll(ev) {
@@ -54869,9 +54868,10 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         if (!this.nickname_form) {
           this.nickname_form = new _converse.MUCNicknameForm({
-            'model': new Backbone.Model(),
-            'chatroomview': this,
-            'validation_message': message
+            'model': new Backbone.Model({
+              'validation_message': message
+            }),
+            'chatroomview': this
           });
           const container_el = this.el.querySelector('.chatroom-body');
           container_el.insertAdjacentElement('beforeend', this.nickname_form.el);
@@ -63056,46 +63056,33 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           return true;
         }
 
-        let from_jid = stanza.getAttribute('from'),
-            is_carbon = false,
-            is_mam = false;
-        const forwarded = stanza.querySelector('forwarded'),
-              original_stanza = stanza;
+        let is_carbon = false;
+        const forwarded = stanza.querySelector('forwarded');
+        const original_stanza = stanza;
 
         if (!_.isNull(forwarded)) {
-          const forwarded_message = forwarded.querySelector('message'),
-                forwarded_from = forwarded_message.getAttribute('from'),
-                xmlns = Strophe.NS.CARBONS;
-          is_carbon = sizzle(`received[xmlns="${xmlns}"]`, stanza).length > 0;
+          const xmlns = Strophe.NS.CARBONS;
+          is_carbon = sizzle(`received[xmlns="${xmlns}"]`, original_stanza).length > 0;
 
-          if (is_carbon && Strophe.getBareJidFromJid(forwarded_from) !== from_jid) {
+          if (is_carbon && original_stanza.getAttribute('from') !== _converse.bare_jid) {
             // Prevent message forging via carbons
             // https://xmpp.org/extensions/xep-0280.html#security
             return true;
           }
 
-          is_mam = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, stanza).length > 0;
-          stanza = forwarded_message;
-          from_jid = stanza.getAttribute('from');
+          stanza = forwarded.querySelector('message');
           to_jid = stanza.getAttribute('to');
         }
 
-        const from_bare_jid = Strophe.getBareJidFromJid(from_jid),
-              from_resource = Strophe.getResourceFromJid(from_jid),
-              is_me = from_bare_jid === _converse.bare_jid;
-        let contact_jid;
+        const from_jid = stanza.getAttribute('from');
+        const from_bare_jid = Strophe.getBareJidFromJid(from_jid);
+        const is_me = from_bare_jid === _converse.bare_jid;
 
-        if (is_me) {
-          // I am the sender, so this must be a forwarded message...
-          if (_.isNull(to_jid)) {
-            return _converse.log(`Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`, Strophe.LogLevel.ERROR);
-          }
-
-          contact_jid = Strophe.getBareJidFromJid(to_jid);
-        } else {
-          contact_jid = from_bare_jid;
+        if (is_me && _.isNull(to_jid)) {
+          return _converse.log(`Don't know how to handle message stanza without 'to' attribute. ${stanza.outerHTML}`, Strophe.LogLevel.ERROR);
         }
 
+        const contact_jid = is_me ? Strophe.getBareJidFromJid(to_jid) : from_bare_jid;
         const contact = await _converse.api.contacts.get(contact_jid);
         const is_roster_contact = !_.isUndefined(contact);
 
@@ -63104,13 +63091,16 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         } // Get chat box, but only create when the message has something to show to the user
 
 
-        const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0,
-              roster_nick = _.get(contact, 'attributes.nickname'),
-              chatbox = this.getChatBox(contact_jid, {
+        const has_body = sizzle(`body, encrypted[xmlns="${Strophe.NS.OMEMO}"]`, stanza).length > 0;
+
+        const roster_nick = _.get(contact, 'attributes.nickname');
+
+        const chatbox = this.getChatBox(contact_jid, {
           'nickname': roster_nick
         }, has_body);
 
         if (chatbox) {
+          const is_mam = sizzle(`message > result[xmlns="${Strophe.NS.MAM}"]`, original_stanza).length > 0;
           const message = await chatbox.getDuplicateMessage(stanza);
 
           if (message) {
@@ -63913,12 +63903,13 @@ async function finishInitialization() {
 }
 
 function fetchLoginCredentials() {
-  return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a((resolve, reject) => {
+  let wait = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+  return new es6_promise_dist_es6_promise_auto__WEBPACK_IMPORTED_MODULE_3___default.a(_lodash_noconflict__WEBPACK_IMPORTED_MODULE_4___default.a.debounce((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', _converse.credentials_url, true);
     xhr.setRequestHeader('Accept', "application/json, text/javascript");
 
-    xhr.onload = function () {
+    xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 400) {
         const data = JSON.parse(xhr.responseText);
         resolve({
@@ -63926,20 +63917,34 @@ function fetchLoginCredentials() {
           'password': data.password
         });
       } else {
-        xhr.onerror({});
+        reject(new Error(`${xhr.status}: ${xhr.responseText}`));
       }
     };
 
-    xhr.onerror = function () {
-      delete _converse.connection;
-
-      _converse.api.trigger('noResumeableSession', this);
-
-      reject(new Error(xhr.responseText));
-    };
-
+    xhr.onerror = reject;
     xhr.send();
-  });
+  }, wait));
+}
+
+async function getLoginCredentials() {
+  let credentials;
+  let wait = 0;
+
+  while (!credentials) {
+    try {
+      credentials = await fetchLoginCredentials(wait); // eslint-disable-line no-await-in-loop
+    } catch (e) {
+      _converse.log("Could not fetch login credentials", strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
+
+      _converse.log(e, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
+    } // If unsuccessful, we wait 2 seconds between subsequent attempts to
+    // fetch the credentials.
+
+
+    wait = 2000;
+  }
+
+  return credentials;
 }
 
 function unregisterGlobalEventHandlers() {
@@ -64768,17 +64773,8 @@ _converse.initialize = async function (settings, callback) {
       this.autoLogin(credentials);
     } else if (this.auto_login) {
       if (this.credentials_url) {
-        let data = {};
-
-        try {
-          data = await fetchLoginCredentials();
-        } catch (e) {
-          _converse.log("Could not fetch login credentials", strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
-
-          _converse.log(e, strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.ERROR);
-        } finally {
-          this.autoLogin(data);
-        }
+        const data = await getLoginCredentials();
+        this.autoLogin(data);
       } else if (!this.jid) {
         throw new Error("attemptNonPreboundSession: If you use auto_login, " + "you also need to give either a jid value (and if " + "applicable a password) or you need to pass in a URL " + "from where the username and password can be fetched " + "(via credentials_url).");
       } else {
@@ -66328,121 +66324,6 @@ const u = _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].env.utils;
 const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count']; // XEP-0313 Message Archive Management
 
 const MAM_ATTRIBUTES = ['with', 'start', 'end'];
-
-function queryForArchivedMessages(_converse, options, callback, errback) {
-  /* Internal function, called by the "archive.query" API method.
-   */
-  let date;
-
-  if (_.isFunction(options)) {
-    callback = options;
-    errback = callback;
-    options = null;
-  }
-
-  const queryid = _converse.connection.getUniqueId();
-
-  const attrs = {
-    'type': 'set'
-  };
-
-  if (options && options.groupchat) {
-    if (!options['with']) {
-      // eslint-disable-line dot-notation
-      throw new Error('You need to specify a "with" value containing ' + 'the chat room JID, when querying groupchat messages.');
-    }
-
-    attrs.to = options['with']; // eslint-disable-line dot-notation
-  }
-
-  const stanza = $iq(attrs).c('query', {
-    'xmlns': Strophe.NS.MAM,
-    'queryid': queryid
-  });
-
-  if (options) {
-    stanza.c('x', {
-      'xmlns': Strophe.NS.XFORM,
-      'type': 'submit'
-    }).c('field', {
-      'var': 'FORM_TYPE',
-      'type': 'hidden'
-    }).c('value').t(Strophe.NS.MAM).up().up();
-
-    if (options['with'] && !options.groupchat) {
-      // eslint-disable-line dot-notation
-      stanza.c('field', {
-        'var': 'with'
-      }).c('value').t(options['with']).up().up(); // eslint-disable-line dot-notation
-    }
-
-    _.each(['start', 'end'], function (t) {
-      if (options[t]) {
-        date = moment(options[t]);
-
-        if (date.isValid()) {
-          stanza.c('field', {
-            'var': t
-          }).c('value').t(date.format()).up().up();
-        } else {
-          throw new TypeError(`archive.query: invalid date provided for: ${t}`);
-        }
-      }
-    });
-
-    stanza.up();
-
-    if (options instanceof Strophe.RSM) {
-      stanza.cnode(options.toXML());
-    } else if (_.intersection(RSM_ATTRIBUTES, Object.keys(options)).length) {
-      stanza.cnode(new Strophe.RSM(options).toXML());
-    }
-  }
-
-  const messages = [];
-
-  const message_handler = _converse.connection.addHandler(message => {
-    if (options.groupchat && message.getAttribute('from') !== options['with']) {
-      // eslint-disable-line dot-notation
-      return true;
-    }
-
-    const result = message.querySelector('result');
-
-    if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
-      messages.push(message);
-    }
-
-    return true;
-  }, Strophe.NS.MAM);
-
-  _converse.api.sendIQ(stanza, _converse.message_archiving_timeout).then(iq => {
-    _converse.connection.deleteHandler(message_handler);
-
-    if (_.isFunction(callback)) {
-      const set = iq.querySelector('set');
-      let rsm;
-
-      if (!_.isUndefined(set)) {
-        rsm = new Strophe.RSM({
-          xml: set
-        });
-        Object.assign(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
-      }
-
-      callback(messages, rsm);
-    }
-  }).catch(e => {
-    _converse.connection.deleteHandler(message_handler);
-
-    if (_.isFunction(errback)) {
-      errback.apply(this, arguments);
-    }
-
-    return;
-  });
-}
-
 _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam', {
   dependencies: ['converse-muc'],
   overrides: {
@@ -66618,15 +66499,11 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
          * * `before`
          * * `index`
          * * `count`
-         * @param {Function} callback A function to call whenever
-         *      we receive query-relevant stanza.
-         *      When the callback is called, a Strophe.RSM object is
-         *      returned on which "next" or "previous" can be called
-         *      before passing it in again to this method, to
-         *      get the next or previous page in the result set.
-         * @param {Function} errback A function to call when an
-         *      error stanza is received, for example when it
-         *      doesn't support message archiving.
+         * @throws {Error} An error is thrown if the XMPP server responds with an error.
+         * @returns {Promise<Object>} A promise which resolves to an object which
+         * will have keys `messages` and `rsm` which contains a Strophe.RSM object
+         * on which "next" or "previous" can be called before passing it in again
+         * to this method, to get the next or previous page in the result set.
          *
          * @example
          * // Requesting all archived messages
@@ -66634,41 +66511,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
          * //
          * // The simplest query that can be made is to simply not pass in any parameters.
          * // Such a query will return all archived messages for the current user.
-         * //
-         * // Generally, you'll however always want to pass in a callback method, to receive
-         * // the returned messages.
          *
-         * this._converse.api.archive.query(
-         *     (messages) => {
-         *         // Do something with the messages, like showing them in your webpage.
-         *     },
-         *     (iq) => {
-         *         // The query was not successful, perhaps inform the user?
-         *         // The IQ stanza returned by the XMPP server is passed in, so that you
-         *         // may inspect it and determine what the problem was.
-         *     }
-         * )
-         * @example
-         * // Waiting until server support has been determined
-         * // ================================================
-         * //
-         * // The query method will only work if Converse has been able to determine that
-         * // the server supports MAM queries, otherwise the following error will be raised:
-         * //
-         * // "This server does not support XEP-0313, Message Archive Management"
-         * //
-         * // The very first time Converse loads in a browser tab, if you call the query
-         * // API too quickly, the above error might appear because service discovery has not
-         * // yet been completed.
-         * //
-         * // To work solve this problem, you can first listen for the `serviceDiscovered` event,
-         * // through which you can be informed once support for MAM has been determined.
-         *
-         *  _converse.api.listen.on('serviceDiscovered', function (feature) {
-         *      if (feature.get('var') === converse.env.Strophe.NS.MAM) {
-         *          _converse.api.archive.query()
-         *      }
-         *  });
+         * let result;
+         * try {
+         *     result = await _converse.api.archive.query();
+         * } catch (e) {
+         *     // The query was not successful, perhaps inform the user?
+         *     // The IQ stanza returned by the XMPP server is passed in, so that you
+         *     // may inspect it and determine what the problem was.
+         * }
+         * // Do something with the messages, like showing them in your webpage.
+         * result.messages.forEach(m => this.showMessage(m));
          *
          * @example
          * // Requesting all archived messages for a particular contact or room
@@ -66679,10 +66532,20 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
          * // room under the  `with` key.
          *
          * // For a particular user
-         * this._converse.api.archive.query({'with': 'john@doe.net'}, callback, errback);)
+         * let result;
+         * try {
+         *    result = await _converse.api.archive.query({'with': 'john@doe.net'});
+         * } catch (e) {
+         *     // The query was not successful
+         * }
          *
          * // For a particular room
-         * this._converse.api.archive.query({'with': 'discuss@conference.doglovers.net'}, callback, errback);)
+         * let result;
+         * try {
+         *    result = await _converse.api.archive.query({'with': 'discuss@conference.doglovers.net'});
+         * } catch (e) {
+         *     // The query was not successful
+         * }
          *
          * @example
          * // Requesting all archived messages before or after a certain date
@@ -66697,7 +66560,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
          *      'start': '2010-06-07T00:00:00Z',
          *      'end': '2010-07-07T13:23:54Z'
          *  };
-         *  this._converse.api.archive.query(options, callback, errback);
+         * let result;
+         * try {
+         *    result = await _converse.api.archive.query(options);
+         * } catch (e) {
+         *     // The query was not successful
+         * }
          *
          * @example
          * // Limiting the amount of messages returned
@@ -66707,7 +66575,12 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
          * // By default, the messages are returned from oldest to newest.
          *
          * // Return maximum 10 archived messages
-         * this._converse.api.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+         * let result;
+         * try {
+         *     result = await _converse.api.archive.query({'with': 'john@doe.net', 'max':10});
+         * } catch (e) {
+         *     // The query was not successful
+         * }
          *
          * @example
          * // Paging forwards through a set of archived messages
@@ -66717,8 +66590,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
          * // repeatedly make a further query to fetch the next batch of messages.
          * //
          * // To simplify this usecase for you, the callback method receives not only an array
-         * // with the returned archived messages, but also a special RSM (*Result Set
-         * // Management*) object which contains the query parameters you passed in, as well
+         * // with the returned archived messages, but also a special Strophe.RSM (*Result Set Management*)
+         * // object which contains the query parameters you passed in, as well
          * // as two utility methods `next`, and `previous`.
          * //
          * // When you call one of these utility methods on the returned RSM object, and then
@@ -66726,14 +66599,24 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
          * // archived messages. Please note, when calling these methods, pass in an integer
          * // to limit your results.
          *
-         * const callback = function (messages, rsm) {
-         *     // Do something with the messages, like showing them in your webpage.
-         *     // ...
-         *     // You can now use the returned "rsm" object, to fetch the next batch of messages:
-         *     _converse.api.archive.query(rsm.next(10), callback, errback))
-         *
+         * let result;
+         * try {
+         *     result = await _converse.api.archive.query({'with': 'john@doe.net', 'max':10});
+         * } catch (e) {
+         *     // The query was not successful
          * }
-         * _converse.api.archive.query({'with': 'john@doe.net', 'max':10}, callback, errback);
+         * // Do something with the messages, like showing them in your webpage.
+         * result.messages.forEach(m => this.showMessage(m));
+         *
+         * while (result.rsm) {
+         *     try {
+         *         result = await _converse.api.archive.query(rsm.next(10));
+         *     } catch (e) {
+         *         // The query was not successful
+         *     }
+         *     // Do something with the messages, like showing them in your webpage.
+         *     result.messages.forEach(m => this.showMessage(m));
+         * }
          *
          * @example
          * // Paging backwards through a set of archived messages
@@ -66744,22 +66627,142 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
          * // `before` parameter. If you simply want to page backwards from the most recent
          * // message, pass in the `before` parameter with an empty string value `''`.
          *
-         * _converse.api.archive.query({'before': '', 'max':5}, function (message, rsm) {
-         *     // Do something with the messages, like showing them in your webpage.
-         *     // ...
-         *     // You can now use the returned "rsm" object, to fetch the previous batch of messages:
-         *     rsm.previous(5); // Call previous method, to update the object's parameters,
-         *                      // passing in a limit value of 5.
-         *     // Now we query again, to get the previous batch.
-         *     _converse.api.archive.query(rsm, callback, errback);
+         * let result;
+         * try {
+         *     result = await _converse.api.archive.query({'before': '', 'max':5});
+         * } catch (e) {
+         *     // The query was not successful
          * }
+         * // Do something with the messages, like showing them in your webpage.
+         * result.messages.forEach(m => this.showMessage(m));
+         *
+         * // Now we query again, to get the previous batch.
+         * try {
+         *      result = await _converse.api.archive.query(rsm.previous(5););
+         * } catch (e) {
+         *     // The query was not successful
+         * }
+         * // Do something with the messages, like showing them in your webpage.
+         * result.messages.forEach(m => this.showMessage(m));
+         *
          */
-        'query': function query(options, callback, errback) {
+        'query': async function query(options) {
           if (!_converse.api.connection.connected()) {
             throw new Error('Can\'t call `api.archive.query` before having established an XMPP session');
           }
 
-          return queryForArchivedMessages(_converse, options, callback, errback);
+          const attrs = {
+            'type': 'set'
+          };
+
+          if (options && options.groupchat) {
+            if (!options['with']) {
+              // eslint-disable-line dot-notation
+              throw new Error('You need to specify a "with" value containing ' + 'the chat room JID, when querying groupchat messages.');
+            }
+
+            attrs.to = options['with']; // eslint-disable-line dot-notation
+          }
+
+          const jid = attrs.to || _converse.bare_jid;
+          const supported = await _converse.api.disco.supports(Strophe.NS.MAM, jid);
+
+          if (!supported.length) {
+            _converse.log(`Did not fetch MAM archive for ${jid} because it doesn't support ${Strophe.NS.MAM}`);
+
+            return {
+              'messages': []
+            };
+          }
+
+          const queryid = _converse.connection.getUniqueId();
+
+          const stanza = $iq(attrs).c('query', {
+            'xmlns': Strophe.NS.MAM,
+            'queryid': queryid
+          });
+
+          if (options) {
+            stanza.c('x', {
+              'xmlns': Strophe.NS.XFORM,
+              'type': 'submit'
+            }).c('field', {
+              'var': 'FORM_TYPE',
+              'type': 'hidden'
+            }).c('value').t(Strophe.NS.MAM).up().up();
+
+            if (options['with'] && !options.groupchat) {
+              // eslint-disable-line dot-notation
+              stanza.c('field', {
+                'var': 'with'
+              }).c('value').t(options['with']).up().up(); // eslint-disable-line dot-notation
+            }
+
+            ['start', 'end'].forEach(t => {
+              if (options[t]) {
+                const date = moment(options[t]);
+
+                if (date.isValid()) {
+                  stanza.c('field', {
+                    'var': t
+                  }).c('value').t(date.format()).up().up();
+                } else {
+                  throw new TypeError(`archive.query: invalid date provided for: ${t}`);
+                }
+              }
+            });
+            stanza.up();
+
+            if (options instanceof Strophe.RSM) {
+              stanza.cnode(options.toXML());
+            } else if (_.intersection(RSM_ATTRIBUTES, Object.keys(options)).length) {
+              stanza.cnode(new Strophe.RSM(options).toXML());
+            }
+          }
+
+          const messages = [];
+
+          const message_handler = _converse.connection.addHandler(message => {
+            if (options.groupchat && message.getAttribute('from') !== options['with']) {
+              // eslint-disable-line dot-notation
+              return true;
+            }
+
+            const result = message.querySelector('result');
+
+            if (!_.isNull(result) && result.getAttribute('queryid') === queryid) {
+              messages.push(message);
+            }
+
+            return true;
+          }, Strophe.NS.MAM);
+
+          let iq;
+
+          try {
+            iq = await _converse.api.sendIQ(stanza, _converse.message_archiving_timeout);
+          } catch (e) {
+            _converse.connection.deleteHandler(message_handler);
+
+            throw e;
+          }
+
+          _converse.connection.deleteHandler(message_handler);
+
+          const set = iq.querySelector('set');
+          let rsm;
+
+          if (!_.isNull(set)) {
+            rsm = new Strophe.RSM({
+              'xml': set
+            });
+            Object.assign(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
+          }
+
+          return {
+            messages,
+            rsm
+          };
         }
       }
     });
@@ -67519,50 +67522,64 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         });
       },
 
+      /**
+       * Given a <field> element, return a copy with a <value> child if
+       * we can find a value for it in this rooms config.
+       * @private
+       * @method _converse.ChatRoom#autoConfigureChatRoom
+       * @returns { Element }
+       */
+      addFieldValue(field) {
+        const type = field.getAttribute('type');
+
+        if (type === 'fixed') {
+          return field;
+        }
+
+        const fieldname = field.getAttribute('var').replace('muc#roomconfig_', '');
+        const config = this.get('roomconfig');
+
+        if (fieldname in config) {
+          let value;
+
+          switch (type) {
+            case 'boolean':
+              value = config[fieldname] ? 1 : 0;
+              break;
+
+            case 'list-multi':
+              // TODO: we don't yet handle "list-multi" types
+              value = field.innerHTML;
+              break;
+
+            default:
+              value = config[fieldname];
+          }
+
+          field.innerHTML = $build('value').t(value);
+        }
+
+        return field;
+      },
+
+      /**
+       * Automatically configure the groupchat based on this model's
+       * 'roomconfig' data.
+       * @private
+       * @method _converse.ChatRoom#autoConfigureChatRoom
+       * @returns { promise }
+       * Returns a promise which resolves once a response IQ has
+       * been received.
+       */
       autoConfigureChatRoom() {
-        /* Automatically configure groupchat based on this model's
-         * 'roomconfig' data.
-         *
-         * Returns a promise which resolves once a response IQ has
-         * been received.
-         */
-        return new Promise((resolve, reject) => {
-          this.fetchRoomConfiguration().then(stanza => {
-            const configArray = [],
-                  fields = stanza.querySelectorAll('field'),
-                  config = this.get('roomconfig');
-            let count = fields.length;
+        return new Promise(async (resolve, reject) => {
+          const stanza = await this.fetchRoomConfiguration();
+          const fields = sizzle('field', stanza);
+          const configArray = fields.map(f => this.addFieldValue(f));
 
-            _.each(fields, field => {
-              const fieldname = field.getAttribute('var').replace('muc#roomconfig_', ''),
-                    type = field.getAttribute('type');
-              let value;
-
-              if (fieldname in config) {
-                switch (type) {
-                  case 'boolean':
-                    value = config[fieldname] ? 1 : 0;
-                    break;
-
-                  case 'list-multi':
-                    // TODO: we don't yet handle "list-multi" types
-                    value = field.innerHTML;
-                    break;
-
-                  default:
-                    value = config[fieldname];
-                }
-
-                field.innerHTML = $build('value').t(value);
-              }
-
-              configArray.push(field);
-
-              if (! --count) {
-                this.sendConfiguration(configArray, resolve, reject);
-              }
-            });
-          });
+          if (configArray.length) {
+            this.sendConfiguration(configArray, resolve, reject);
+          }
         });
       },
 
@@ -68588,8 +68605,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
          *           'roomdesc': 'Comfy room for hanging out',
          *           'whois': 'anyone'
          *       }
-         *     },
-         *     true
+         *     }
          * );
          */
         'open': async function open(jids, attrs) {

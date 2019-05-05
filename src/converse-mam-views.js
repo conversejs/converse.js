@@ -82,10 +82,10 @@ converse.plugins.add('converse-mam-views', {
 
             async fetchArchivedMessages (options) {
                 const { _converse } = this.__super__;
-                if (this.disable_mam) { return; }
-
+                if (this.disable_mam) {
+                    return;
+                }
                 const is_groupchat = this.model.get('type') === CHATROOMS_TYPE;
-
                 let mam_jid, message_handler;
                 if (is_groupchat) {
                     mam_jid = this.model.get('jid');
@@ -94,32 +94,31 @@ converse.plugins.add('converse-mam-views', {
                     mam_jid = _converse.bare_jid;
                     message_handler = _converse.chatboxes.onMessage.bind(_converse.chatboxes)
                 }
-
                 const supported = await _converse.api.disco.supports(Strophe.NS.MAM, mam_jid);
                 if (!supported.length) {
                     return;
                 }
                 this.addSpinner();
-                _converse.api.archive.query(
-                    Object.assign({
-                        'groupchat': is_groupchat,
-                        'before': '', // Page backwards from the most recent message
-                        'max': _converse.archived_messages_page_size,
-                        'with': this.model.get('jid'),
-                    }, options),
-
-                    messages => { // Success
-                        this.clearSpinner();
-                        _.each(messages, message_handler);
-                    },
-                    e => { // Error
-                        this.clearSpinner();
-                        _converse.log(
-                            "Error or timeout while trying to fetch "+
-                            "archived messages", Strophe.LogLevel.ERROR);
-                        _converse.log(e, Strophe.LogLevel.ERROR);
-                    }
-                );
+                let result;
+                try {
+                    result = await _converse.api.archive.query(
+                        Object.assign({
+                            'groupchat': is_groupchat,
+                            'before': '', // Page backwards from the most recent message
+                            'max': _converse.archived_messages_page_size,
+                            'with': this.model.get('jid'),
+                        }, options));
+                } catch (e) {
+                    _converse.log(
+                        "Error or timeout while trying to fetch "+
+                        "archived messages", Strophe.LogLevel.ERROR);
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                } finally {
+                    this.clearSpinner();
+                }
+                if (result.messages) {
+                    result.messages.forEach(message_handler);
+                }
             },
 
             onScroll (ev) {

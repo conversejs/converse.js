@@ -196,7 +196,7 @@ converse.plugins.add('converse-controlbox', {
                     'chat_state': undefined,
                     'closed': !_converse.show_controlbox_by_default,
                     'num_unread': 0,
-                    'time_opened': this.get('time_opened') || moment().valueOf(),
+                    'time_opened': this.get('time_opened') || (new Date()).getTime(),
                     'type': _converse.CONTROLBOX_TYPE,
                     'url': ''
                 }

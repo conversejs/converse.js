@@ -58,14 +58,14 @@ converse.plugins.add('converse-minimize', {
             maximize () {
                 u.safeSave(this, {
                     'minimized': false,
-                    'time_opened': moment().valueOf()
+                    'time_opened': (new Date()).getTime()
                 });
             },
 
             minimize () {
                 u.safeSave(this, {
                     'minimized': true,
-                    'time_minimized': moment().format()
+                    'time_minimized': (new Date()).toISOString()
                 });
             },
 

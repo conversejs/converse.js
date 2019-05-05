@@ -363,7 +363,7 @@ converse.plugins.add('converse-mam', {
                             if (options[t]) {
                                 const date = moment(options[t]);
                                 if (date.isValid()) {
-                                    stanza.c('field', {'var':t}).c('value').t(date.format()).up().up();
+                                    stanza.c('field', {'var':t}).c('value').t(date.toISOString()).up().up();
                                 } else {
                                     throw new TypeError(`archive.query: invalid date provided for: ${t}`);
                                 }

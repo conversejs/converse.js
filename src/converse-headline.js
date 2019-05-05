@@ -58,7 +58,7 @@ converse.plugins.add('converse-headline', {
                     'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode),
                     'message_type': 'headline',
                     'num_unread': 0,
-                    'time_opened': this.get('time_opened') || moment().valueOf(),
+                    'time_opened': this.get('time_opened') || (new Date()).getTime(),
                     'type': _converse.HEADLINES_TYPE
                 }
             },

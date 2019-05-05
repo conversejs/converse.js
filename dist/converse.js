@@ -49534,7 +49534,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       },
 
       showChatEvent(message) {
-        const isodate = moment().format();
+        const isodate = new Date().toISOString();
         this.content.insertAdjacentHTML('beforeend', templates_info_html__WEBPACK_IMPORTED_MODULE_13___default()({
           'extra_classes': 'chat-event',
           'message': message,
@@ -49548,7 +49548,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       showErrorMessage(message) {
         this.content.insertAdjacentHTML('beforeend', templates_error_message_html__WEBPACK_IMPORTED_MODULE_11___default()({
           'message': message,
-          'isodate': moment().format()
+          'isodate': new Date().toISOString()
         }));
         this.scrollDown();
       },
@@ -49593,7 +49593,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         if (_.isNull(prev_msg_date) || moment(next_msg_date).isAfter(prev_msg_date, 'day')) {
           const day_date = moment(next_msg_date).startOf('day');
           next_msg_el.insertAdjacentHTML('beforeBegin', templates_new_day_html__WEBPACK_IMPORTED_MODULE_14___default()({
-            'isodate': day_date.format(),
+            'isodate': day_date.toISOString(),
             'datestring': day_date.format("dddd MMM Do YYYY")
           }));
         }
@@ -49603,22 +49603,27 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
        * Return the ISO8601 format date of the latest message.
        * @private
        * @method _converse.ChatBoxView#getLastMessageDate
-       * @param { object } cutoff - Moment Date cutoff date. The last
+       * @param { Date } cutoff - Moment Date cutoff date. The last
        *      message received cutoff this date will be returned.
+       * @returns { Date }
        */
       getLastMessageDate(cutoff) {
-        const first_msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getFirstChildElement(this.content, '.message:not(.chat-state-notification)'),
-              oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
+        const first_msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getFirstChildElement(this.content, '.message:not(.chat-state-notification)');
+        const oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
 
         if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
           return null;
         }
 
-        const last_msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getLastChildElement(this.content, '.message:not(.chat-state-notification)'),
-              most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
+        const last_msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].getLastChildElement(this.content, '.message:not(.chat-state-notification)');
+        const most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
 
-        if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
-          return most_recent_date;
+        if (_.isNull(most_recent_date)) {
+          return null;
+        }
+
+        if (moment(most_recent_date).isBefore(cutoff)) {
+          return moment(most_recent_date).toDate();
         }
         /* XXX: We avoid .chat-state-notification messages, since they are
          * temporary and get removed once a new element is
@@ -49630,18 +49635,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         const msg_dates = _.invokeMap(sizzle('.message:not(.chat-state-notification)', this.content), Element.prototype.getAttribute, 'data-isodate');
 
-        if (_.isObject(cutoff)) {
-          cutoff = cutoff.format();
-        }
-
-        msg_dates.push(cutoff);
+        const cutoff_iso = cutoff.toISOString();
+        msg_dates.push(cutoff_iso);
         msg_dates.sort();
-        const idx = msg_dates.lastIndexOf(cutoff);
+        const idx = msg_dates.lastIndexOf(cutoff_iso);
 
         if (idx === 0) {
           return null;
         } else {
-          return msg_dates[idx - 1];
+          return moment(msg_dates[idx - 1]).toDate();
         }
       },
 
@@ -49671,7 +49673,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
       showHelpMessages(msgs, type, spinner) {
         _.each(msgs, msg => {
           this.content.insertAdjacentHTML('beforeend', templates_help_message_html__WEBPACK_IMPORTED_MODULE_12___default()({
-            'isodate': moment().format(),
+            'isodate': new Date().toISOString(),
             'type': type,
             'message': xss__WEBPACK_IMPORTED_MODULE_22___default.a.filterXSS(msg, {
               'whiteList': {
@@ -49688,14 +49690,6 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         }
 
         return this.scrollDown();
-      },
-
-      clearChatStateNotification(message, isodate) {
-        if (isodate) {
-          _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"][data-isodate="${isodate}"]`, this.content), _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeElement);
-        } else {
-          _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content), _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeElement);
-        }
       },
 
       shouldShowOnTextMessage() {
@@ -49719,13 +49713,13 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           }
         }
 
-        const current_msg_date = moment(view.model.get('time')) || moment,
+        const current_msg_date = moment(view.model.get('time')).toDate() || new Date(),
               previous_msg_date = this.getLastMessageDate(current_msg_date);
 
         if (_.isNull(previous_msg_date)) {
           this.content.insertAdjacentElement('afterbegin', view.el);
         } else {
-          const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date}"]:last`, this.content).pop();
+          const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date.toISOString()}"]:last`, this.content).pop();
 
           if (view.model.get('type') === 'error' && _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].hasClass('chat-error', previous_msg_el) && previous_msg_el.textContent === view.model.get('message')) {
             // We don't show a duplicate error message
@@ -49792,8 +49786,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         const view = new _converse.MessageView({
           'model': message
         });
-        await view.render();
-        this.clearChatStateNotification(message);
+        await view.render(); // Clear chat state notifications
+
+        sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content).forEach(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_21__["default"].removeElement);
         this.insertMessage(view);
         this.insertDayIndicator(view.el);
         this.setScrollPosition(view.el);
@@ -50230,7 +50225,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           if (text) {
             this.content.insertAdjacentHTML('beforeend', templates_status_message_html__WEBPACK_IMPORTED_MODULE_17___default()({
               'message': text,
-              'isodate': moment().format()
+              'isodate': new Date().toISOString()
             }));
             this.scrollDown();
           }
@@ -50722,7 +50717,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           'chat_state': undefined,
           'closed': !_converse.show_controlbox_by_default,
           'num_unread': 0,
-          'time_opened': this.get('time_opened') || moment().valueOf(),
+          'time_opened': this.get('time_opened') || new Date().getTime(),
           'type': _converse.CONTROLBOX_TYPE,
           'url': ''
         };
@@ -51884,7 +51879,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
           'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode),
           'message_type': 'headline',
           'num_unread': 0,
-          'time_opened': this.get('time_opened') || moment().valueOf(),
+          'time_opened': this.get('time_opened') || new Date().getTime(),
           'type': _converse.HEADLINES_TYPE
         };
       },
@@ -52406,15 +52401,15 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
 
       async renderChatMessage() {
         const is_me_message = this.isMeCommand(),
-              moment_time = moment(this.model.get('time')),
+              time = moment(this.model.get('time')),
               role = this.model.vcard ? this.model.vcard.get('role') : null,
               roles = role ? role.split(',') : [];
         const msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].stringToElement(templates_message_html__WEBPACK_IMPORTED_MODULE_7___default()(Object.assign(this.model.toJSON(), {
           '__': __,
           'is_me_message': is_me_message,
           'roles': roles,
-          'pretty_time': moment_time.format(_converse.time_format),
-          'time': moment_time.format(),
+          'pretty_time': time.format(_converse.time_format),
+          'time': time.toISOString(),
           'extra_classes': this.getExtraMessageClasses(),
           'label_show': __('Show more'),
           'username': this.model.getDisplayName()
@@ -52452,10 +52447,9 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       },
 
       renderErrorMessage() {
-        const moment_time = moment(this.model.get('time')),
-              msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].stringToElement(templates_info_html__WEBPACK_IMPORTED_MODULE_6___default()(Object.assign(this.model.toJSON(), {
+        const msg = _converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].stringToElement(templates_info_html__WEBPACK_IMPORTED_MODULE_6___default()(Object.assign(this.model.toJSON(), {
           'extra_classes': 'chat-error',
-          'isodate': moment_time.format()
+          'isodate': moment(this.model.get('time')).toISOString()
         })));
         return this.replaceElement(msg);
       },
@@ -52483,7 +52477,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
           return;
         }
 
-        const isodate = moment().format();
+        const isodate = new Date().toISOString();
         this.replaceElement(_converse_headless_utils_emoji__WEBPACK_IMPORTED_MODULE_9__["default"].stringToElement(templates_csn_html__WEBPACK_IMPORTED_MODULE_4___default()({
           'message': text,
           'from': from,
@@ -52642,14 +52636,14 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins
       maximize() {
         u.safeSave(this, {
           'minimized': false,
-          'time_opened': moment().valueOf()
+          'time_opened': new Date().getTime()
         });
       },
 
       minimize() {
         u.safeSave(this, {
           'minimized': true,
-          'time_minimized': moment().format()
+          'time_minimized': new Date().toISOString()
         });
       },
 
@@ -55087,7 +55081,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
         _.each(notification.messages, message => {
           this.content.insertAdjacentHTML('beforeend', templates_info_html__WEBPACK_IMPORTED_MODULE_21___default()({
-            'isodate': moment().format(),
+            'isodate': new Date().toISOString(),
             'extra_classes': 'chat-event',
             'message': message
           }));
@@ -55173,7 +55167,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           const data = {
             'data_name': 'leavejoin',
             'data_value': nick,
-            'isodate': moment().format(),
+            'isodate': new Date().toISOString(),
             'extra_classes': 'chat-event',
             'message': message
           };
@@ -55194,7 +55188,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           const data = {
             'data_name': 'join',
             'data_value': nick,
-            'isodate': moment().format(),
+            'isodate': new Date().toISOString(),
             'extra_classes': 'chat-event',
             'message': message
           };
@@ -55233,7 +55227,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
           const data = {
             'data_name': 'joinleave',
             'data_value': nick,
-            'isodate': moment().format(),
+            'isodate': new Date().toISOString(),
             'extra_classes': 'chat-event',
             'message': message
           };
@@ -55253,7 +55247,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
 
           const data = {
             'message': message,
-            'isodate': moment().format(),
+            'isodate': new Date().toISOString(),
             'extra_classes': 'chat-event',
             'data_name': 'leave',
             'data_value': nick
@@ -55376,7 +55370,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
         // Example: Topic set by JC Brand to: Hello World!
         const subject = this.model.get('subject'),
               message = subject.text ? __('Topic set by %1$s', subject.author) : __('Topic cleared by %1$s', subject.author),
-              date = moment().format();
+              date = new Date().toISOString();
         this.content.insertAdjacentHTML('beforeend', templates_info_html__WEBPACK_IMPORTED_MODULE_21___default()({
           'isodate': date,
           'extra_classes': 'chat-event',
@@ -62057,7 +62051,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       defaults() {
         return {
           'msgid': _converse.connection.getUniqueId(),
-          'time': moment().format()
+          'time': new Date().toISOString()
         };
       },
 
@@ -62275,7 +62269,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'message_type': 'chat',
           'nickname': undefined,
           'num_unread': 0,
-          'time_opened': this.get('time_opened') || moment().valueOf(),
+          'time_opened': this.get('time_opened') || new Date().getTime(),
           'type': _converse.PRIVATE_CHAT_TYPE,
           'url': ''
         };
@@ -62391,7 +62385,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
             'message': this.getMessageBody(stanza),
             'references': this.getReferencesFromStanza(stanza),
             'older_versions': older_versions,
-            'edited': moment().format()
+            'edited': new Date().toISOString()
           });
           return true;
         }
@@ -62504,7 +62498,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
             if (message && !message.get(field_name)) {
               message.save({
-                field_name: moment().format()
+                field_name: new Date().toISOString()
               });
             }
 
@@ -62549,7 +62543,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
 
             if (message && !message.get('received')) {
               message.save({
-                'received': moment().format()
+                'received': new Date().toISOString()
               });
             }
 
@@ -62633,8 +62627,9 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       },
 
       getOutgoingMessageAttributes(text, spoiler_hint) {
-        const is_spoiler = this.get('composing_spoiler'),
-              origin_id = _converse.connection.getUniqueId();
+        const is_spoiler = this.get('composing_spoiler');
+
+        const origin_id = _converse.connection.getUniqueId();
 
         return {
           'jid': this.get('jid'),
@@ -62645,7 +62640,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'from': _converse.bare_jid,
           'is_single_emoji': text ? u.isSingleEmoji(text) : false,
           'sender': 'me',
-          'time': moment().format(),
+          'time': new Date().toISOString(),
           'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
           'is_spoiler': is_spoiler,
           'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
@@ -62676,7 +62671,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           older_versions.push(message.get('message'));
           message.save({
             'correcting': false,
-            'edited': moment().format(),
+            'edited': new Date().toISOString(),
             'message': attrs.message,
             'older_versions': older_versions,
             'references': attrs.references
@@ -62855,7 +62850,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
           'references': this.getReferencesFromStanza(stanza),
           'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
           'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
-          'time': delay ? moment(delay.getAttribute('stamp')).format() : moment().format(),
+          'time': delay ? moment(delay.getAttribute('stamp')).toISOString() : new Date().toISOString(),
           'type': stanza.getAttribute('type')
         }, this.getStanzaIDs(original_stanza));
 
@@ -63657,15 +63652,15 @@ _converse.log = function (message, level) {
     logger.error(`${prefix} ERROR: ${message}`, style);
   } else if (level === strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.WARN) {
     if (_converse.debug) {
-      logger.warn(`${prefix} ${moment__WEBPACK_IMPORTED_MODULE_7___default()().format()} WARNING: ${message}`, style);
+      logger.warn(`${prefix} ${new Date().toISOString()} WARNING: ${message}`, style);
     }
   } else if (level === strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.FATAL) {
     logger.error(`${prefix} FATAL: ${message}`, style);
   } else if (_converse.debug) {
     if (level === strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].LogLevel.DEBUG) {
-      logger.debug(`${prefix} ${moment__WEBPACK_IMPORTED_MODULE_7___default()().format()} DEBUG: ${message}`, style);
+      logger.debug(`${prefix} ${new Date().toISOString()} DEBUG: ${message}`, style);
     } else {
-      logger.info(`${prefix} ${moment__WEBPACK_IMPORTED_MODULE_7___default()().format()} INFO: ${message}`, style);
+      logger.info(`${prefix} ${new Date().toISOString()} INFO: ${message}`, style);
     }
   }
 };
@@ -65342,7 +65337,7 @@ _converse.api = {
         'xmlns': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].NS.FORWARD
       }).c('delay', {
         'xmns': strophe_js__WEBPACK_IMPORTED_MODULE_0__["Strophe"].NS.DELAY,
-        'stamp': moment__WEBPACK_IMPORTED_MODULE_7___default()().format()
+        'stamp': new Date().toISOString()
       }).up().cnode(stanza.tree()));
     }
 
@@ -66705,7 +66700,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
                 if (date.isValid()) {
                   stanza.c('field', {
                     'var': t
-                  }).c('value').t(date.format()).up().up();
+                  }).c('value').t(date.toISOString()).up().up();
                 } else {
                   throw new TypeError(`archive.query: invalid date provided for: ${t}`);
                 }
@@ -66999,7 +66994,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
           'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
           'num_unread': 0,
           'roomconfig': {},
-          'time_opened': this.get('time_opened') || moment().valueOf(),
+          'time_opened': this.get('time_opened') || new Date().getTime(),
           'type': _converse.CHATROOMS_TYPE
         };
       },
@@ -67431,7 +67426,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
         });
         const features = await _converse.api.disco.getFeatures(this.get('jid'));
         const attrs = Object.assign(_.zipObject(_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOM_FEATURES, _.map(_converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOM_FEATURES, _.stubFalse)), {
-          'fetched': moment().format()
+          'fetched': new Date().toISOString()
         });
         features.each(feature => {
           const fieldname = feature.get('var');
@@ -67995,7 +67990,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
           }
 
           if (!message.get('received')) {
-            attrs.received = moment().format();
+            attrs.received = new Date().toISOString();
           }
         }
 
@@ -68045,7 +68040,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
           if (forwarded && msg && msg.get('sender') === 'me') {
             msg.save({
-              'received': moment().format()
+              'received': new Date().toISOString()
             });
           }
         }
@@ -69141,7 +69136,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins
           'name': name,
           'priority': _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
           'show': _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-          'timestamp': _.isNil(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format()
+          'timestamp': _.isNil(delay) ? new Date().toISOString() : moment(delay.getAttribute('stamp')).toISOString()
         };
 
         if (resource) {
@@ -70220,7 +70215,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
           'url': _.get(vcard.querySelector('URL'), 'textContent'),
           'role': _.get(vcard.querySelector('ROLE'), 'textContent'),
           'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent'),
-          'vcard_updated': moment().format(),
+          'vcard_updated': new Date().toISOString(),
           'vcard_error': undefined
         };
       }
@@ -70272,7 +70267,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-vca
         return {
           'stanza': iq,
           'jid': jid,
-          'vcard_error': moment().format()
+          'vcard_error': new Date().toISOString()
         };
       }
 

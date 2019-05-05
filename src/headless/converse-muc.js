@@ -199,7 +199,7 @@ converse.plugins.add('converse-muc', {
                     'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
                     'num_unread': 0,
                     'roomconfig': {},
-                    'time_opened': this.get('time_opened') || moment().valueOf(),
+                    'time_opened': this.get('time_opened') || (new Date()).getTime(),
                     'type': _converse.CHATROOMS_TYPE
                 }
             },
@@ -561,7 +561,7 @@ converse.plugins.add('converse-muc', {
                 const features = await _converse.api.disco.getFeatures(this.get('jid'));
                 const attrs = Object.assign(
                     _.zipObject(converse.ROOM_FEATURES, _.map(converse.ROOM_FEATURES, _.stubFalse)),
-                    {'fetched': moment().format()}
+                    {'fetched': (new Date()).toISOString()}
                 );
                 features.each(feature => {
                     const fieldname = feature.get('var');
@@ -1055,7 +1055,7 @@ converse.plugins.add('converse-muc', {
                         attrs[key] = stanza_id.getAttribute('id');
                     }
                     if (!message.get('received')) {
-                        attrs.received = moment().format();
+                        attrs.received = (new Date()).toISOString();
                     }
                 }
                 return attrs;
@@ -1103,7 +1103,7 @@ converse.plugins.add('converse-muc', {
                     const msg = this.messages.create(attrs);
                     this.incrementUnreadMsgCounter(msg);
                     if (forwarded && msg && msg.get('sender')  === 'me') {
-                        msg.save({'received': moment().format()});
+                        msg.save({'received': (new Date()).toISOString()});
                     }
                 }
                 _converse.api.trigger('message', {'stanza': original_stanza, 'chatbox': this});

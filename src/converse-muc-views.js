@@ -1528,7 +1528,7 @@ converse.plugins.add('converse-muc-views', {
                     this.content.insertAdjacentHTML(
                         'beforeend',
                         tpl_info({
-                            'isodate': moment().format(),
+                            'isodate': (new Date()).toISOString(),
                             'extra_classes': 'chat-event',
                             'message': message
                         }));
@@ -1608,7 +1608,7 @@ converse.plugins.add('converse-muc-views', {
                     const data = {
                         'data_name': 'leavejoin',
                         'data_value': nick,
-                        'isodate': moment().format(),
+                        'isodate': (new Date()).toISOString(),
                         'extra_classes': 'chat-event',
                         'message': message
                     };
@@ -1627,7 +1627,7 @@ converse.plugins.add('converse-muc-views', {
                     const data = {
                         'data_name': 'join',
                         'data_value': nick,
-                        'isodate': moment().format(),
+                        'isodate': (new Date()).toISOString(),
                         'extra_classes': 'chat-event',
                         'message': message
                     };
@@ -1663,7 +1663,7 @@ converse.plugins.add('converse-muc-views', {
                     const data = {
                         'data_name': 'joinleave',
                         'data_value': nick,
-                        'isodate': moment().format(),
+                        'isodate': (new Date()).toISOString(),
                         'extra_classes': 'chat-event',
                         'message': message
                     };
@@ -1681,7 +1681,7 @@ converse.plugins.add('converse-muc-views', {
                     }
                     const data = {
                         'message': message,
-                        'isodate': moment().format(),
+                        'isodate': (new Date()).toISOString(),
                         'extra_classes': 'chat-event',
                         'data_name': 'leave',
                         'data_value': nick
@@ -1794,7 +1794,7 @@ converse.plugins.add('converse-muc-views', {
                 const subject = this.model.get('subject'),
                       message = subject.text ? __('Topic set by %1$s', subject.author) :
                                                __('Topic cleared by %1$s', subject.author),
-                      date = moment().format();
+                      date = (new Date()).toISOString();
                 this.content.insertAdjacentHTML(
                     'beforeend',
                     tpl_info({

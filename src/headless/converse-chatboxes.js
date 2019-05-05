@@ -74,7 +74,7 @@ converse.plugins.add('converse-chatboxes', {
             defaults () {
                 return {
                     'msgid': _converse.connection.getUniqueId(),
-                    'time': moment().format()
+                    'time': (new Date()).toISOString()
                 };
             },
 
@@ -259,7 +259,7 @@ converse.plugins.add('converse-chatboxes', {
                     'message_type': 'chat',
                     'nickname': undefined,
                     'num_unread': 0,
-                    'time_opened': this.get('time_opened') || moment().valueOf(),
+                    'time_opened': this.get('time_opened') || (new Date()).getTime(),
                     'type': _converse.PRIVATE_CHAT_TYPE,
                     'url': ''
                 }
@@ -353,7 +353,7 @@ converse.plugins.add('converse-chatboxes', {
                         'message': this.getMessageBody(stanza),
                         'references': this.getReferencesFromStanza(stanza),
                         'older_versions': older_versions,
-                        'edited': moment().format()
+                        'edited': (new Date()).toISOString()
                     });
                     return true;
                 }
@@ -442,7 +442,7 @@ converse.plugins.add('converse-chatboxes', {
                             field_name = `marker_${marker.nodeName}`;
 
                         if (message && !message.get(field_name)) {
-                            message.save({field_name: moment().format()});
+                            message.save({field_name: (new Date()).toISOString()});
                         }
                         return true;
                     }
@@ -472,7 +472,7 @@ converse.plugins.add('converse-chatboxes', {
                         const msgid = receipt && receipt.getAttribute('id'),
                             message = msgid && this.messages.findWhere({msgid});
                         if (message && !message.get('received')) {
-                            message.save({'received': moment().format()});
+                            message.save({'received': (new Date()).toISOString()});
                         }
                         return true;
                     }
@@ -534,9 +534,8 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             getOutgoingMessageAttributes (text, spoiler_hint) {
-                const is_spoiler = this.get('composing_spoiler'),
-                      origin_id = _converse.connection.getUniqueId();
-
+                const is_spoiler = this.get('composing_spoiler');
+                const origin_id = _converse.connection.getUniqueId();
                 return {
                     'jid': this.get('jid'),
                     'nickname': this.get('nickname'),
@@ -546,7 +545,7 @@ converse.plugins.add('converse-chatboxes', {
                     'from': _converse.bare_jid,
                     'is_single_emoji': text ? u.isSingleEmoji(text) : false,
                     'sender': 'me',
-                    'time': moment().format(),
+                    'time': (new Date()).toISOString(),
                     'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
                     'is_spoiler': is_spoiler,
                     'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
@@ -576,7 +575,7 @@ converse.plugins.add('converse-chatboxes', {
                     older_versions.push(message.get('message'));
                     message.save({
                         'correcting': false,
-                        'edited': moment().format(),
+                        'edited': (new Date()).toISOString(),
                         'message': attrs.message,
                         'older_versions': older_versions,
                         'references': attrs.references
@@ -747,7 +746,7 @@ converse.plugins.add('converse-chatboxes', {
                     'references': this.getReferencesFromStanza(stanza),
                     'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
                     'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
-                    'time': delay ? moment(delay.getAttribute('stamp')).format() : moment().format(),
+                    'time': delay ? moment(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString(),
                     'type': stanza.getAttribute('type')
                 }, this.getStanzaIDs(original_stanza));
 

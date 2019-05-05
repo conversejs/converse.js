@@ -259,15 +259,15 @@ _converse.log = function (message, level, style='') {
         logger.error(`${prefix} ERROR: ${message}`, style);
     } else if (level === Strophe.LogLevel.WARN) {
         if (_converse.debug) {
-            logger.warn(`${prefix} ${moment().format()} WARNING: ${message}`, style);
+            logger.warn(`${prefix} ${(new Date()).toISOString()} WARNING: ${message}`, style);
         }
     } else if (level === Strophe.LogLevel.FATAL) {
         logger.error(`${prefix} FATAL: ${message}`, style);
     } else if (_converse.debug) {
         if (level === Strophe.LogLevel.DEBUG) {
-            logger.debug(`${prefix} ${moment().format()} DEBUG: ${message}`, style);
+            logger.debug(`${prefix} ${(new Date()).toISOString()} DEBUG: ${message}`, style);
         } else {
-            logger.info(`${prefix} ${moment().format()} INFO: ${message}`, style);
+            logger.info(`${prefix} ${(new Date()).toISOString()} INFO: ${message}`, style);
         }
     }
 };
@@ -1793,7 +1793,7 @@ _converse.api = {
                }).c('forwarded', {'xmlns': Strophe.NS.FORWARD})
                      .c('delay', {
                            'xmns': Strophe.NS.DELAY,
-                           'stamp': moment().format()
+                           'stamp': (new Date()).toISOString()
                      }).up()
                   .cnode(stanza.tree())
             );

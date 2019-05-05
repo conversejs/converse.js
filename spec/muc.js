@@ -969,7 +969,7 @@
                 let indicator = chat_content.querySelector('.date-separator');
                 expect(indicator).not.toBe(null);
                 expect(indicator.getAttribute('class')).toEqual('message date-separator');
-                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').toISOString());
                 expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                 expect(chat_content.querySelectorAll('div.chat-info').length).toBe(1);
                 expect(chat_content.querySelector('div.chat-info').textContent).toBe("dummy has entered the groupchat");
@@ -999,11 +999,11 @@
                     });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                indicator = chat_content.querySelector('.date-separator[data-isodate="'+moment().startOf('day').format()+'"]');
+                indicator = chat_content.querySelector('.date-separator[data-isodate="'+moment().startOf('day').toISOString()+'"]');
                 expect(indicator).not.toBe(null);
 
                 expect(indicator.getAttribute('class')).toEqual('message date-separator');
-                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').toISOString());
                 expect(indicator.querySelector('time').getAttribute('class')).toEqual('separator-text');
                 expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                 expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
@@ -1028,11 +1028,11 @@
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                indicator = chat_content.querySelector('.date-separator[data-isodate="'+moment().startOf('day').format()+'"]');
+                indicator = chat_content.querySelector('.date-separator[data-isodate="'+moment().startOf('day').toISOString()+'"]');
 
                 expect(indicator).not.toBe(null);
                 expect(indicator.getAttribute('class')).toEqual('message date-separator');
-                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').toISOString());
 
                 expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                 expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
@@ -1048,7 +1048,7 @@
                         type="groupchat"
                         from="coven@chat.shakespeare.lit/some1">
                             <body>hello world</body>
-                            <delay xmlns="urn:xmpp:delay" stamp="${moment().format()}" from="some1@localhost"/>
+                            <delay xmlns="urn:xmpp:delay" stamp="${(new Date()).toISOString()}" from="some1@localhost"/>
                      </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -1069,7 +1069,7 @@
 
                 indicator = sizzle('.date-separator:eq(3)', chat_content).pop();
                 expect(indicator.getAttribute('class')).toEqual('message date-separator');
-                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').toISOString());
                 expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                 expect(chat_content.querySelectorAll('div.chat-info').length).toBe(4);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
@@ -1083,7 +1083,7 @@
                        type="groupchat"
                        from="coven@chat.shakespeare.lit/some1">"+
                            <body>hello world</body>"+
-                           <delay xmlns="urn:xmpp:delay" stamp="${moment().format()}" from="some1@localhost"/>"+
+                           <delay xmlns="urn:xmpp:delay" stamp="${(new Date()).toISOString()}" from="some1@localhost"/>"+
                     </message>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -1109,7 +1109,7 @@
 
                 indicator = sizzle('.date-separator:eq(5)', chat_content).pop();
                 expect(indicator.getAttribute('class')).toEqual('message date-separator');
-                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').toISOString());
                 expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
                 expect(chat_content.querySelectorAll('div.chat-info').length).toBe(5);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
@@ -4428,9 +4428,7 @@
                     expect(notifications[0].textContent).toEqual('newguy is typing');
 
                     const timeout_functions = [];
-                    spyOn(window, 'setTimeout').and.callFake(function (func, delay) {
-                        timeout_functions.push(func);
-                    });
+                    spyOn(window, 'setTimeout').and.callFake(f => timeout_functions.push(f));
 
                     // Check that it doesn't appear twice
                     msg = $msg({
@@ -4450,7 +4448,6 @@
                     notifications = view.el.querySelectorAll('.chat-state-notification');
                     expect(notifications.length).toBe(1);
                     expect(notifications[0].textContent).toEqual('newguy is typing');
-
                     expect(timeout_functions.length).toBe(1);
 
                     // <composing> state for a different occupant
@@ -4470,8 +4467,8 @@
                     await test_utils.waitUntil(() => (view.el.querySelectorAll('.chat-state-notification').length === 2));
                     notifications = view.el.querySelectorAll('.chat-state-notification');
                     expect(notifications.length).toBe(2);
-                    expect(notifications[0].textContent).toEqual('newguy is typing');
-                    expect(notifications[1].textContent).toEqual('nomorenicks is typing');
+                    expect(notifications[0].textContent).toEqual('nomorenicks is typing');
+                    expect(notifications[1].textContent).toEqual('newguy is typing');
 
                     // Check that new messages appear under the chat state notifications
                     msg = $msg({

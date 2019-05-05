@@ -73,7 +73,7 @@ converse.plugins.add('converse-vcard', {
                     'url': _.get(vcard.querySelector('URL'), 'textContent'),
                     'role': _.get(vcard.querySelector('ROLE'), 'textContent'),
                     'email': _.get(vcard.querySelector('EMAIL USERID'), 'textContent'),
-                    'vcard_updated': moment().format(),
+                    'vcard_updated': (new Date()).toISOString(),
                     'vcard_error': undefined
                 };
             }
@@ -112,7 +112,7 @@ converse.plugins.add('converse-vcard', {
                 return {
                     'stanza': iq,
                     'jid': jid,
-                    'vcard_error': moment().format()
+                    'vcard_error': (new Date()).toISOString()
                 }
             }
             return onVCardData(jid, iq);

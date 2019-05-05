@@ -338,10 +338,10 @@
                                 `<value>urn:xmpp:mam:2</value>`+
                             `</field>`+
                             `<field var="start">`+
-                                `<value>${moment(start).format()}</value>`+
+                                `<value>${moment(start).toISOString()}</value>`+
                             `</field>`+
                             `<field var="end">`+
-                                `<value>${moment(end).format()}</value>`+
+                                `<value>${moment(end).toISOString()}</value>`+
                             `</field>`+
                             `</x>`+
                         `</query>`+
@@ -391,7 +391,7 @@
                                 `<value>urn:xmpp:mam:2</value>`+
                             `</field>`+
                             `<field var="start">`+
-                                `<value>${moment(start).format()}</value>`+
+                                `<value>${moment(start).toISOString()}</value>`+
                             `</field>`+
                             `</x>`+
                         `</query>`+
@@ -424,7 +424,7 @@
                                     `<value>urn:xmpp:mam:2</value>`+
                                 `</field>`+
                                 `<field var="start">`+
-                                    `<value>${moment(start).format()}</value>`+
+                                    `<value>${moment(start).toISOString()}</value>`+
                                 `</field>`+
                             `</x>`+
                             `<set xmlns="http://jabber.org/protocol/rsm">`+
@@ -464,7 +464,7 @@
                                     `<value>urn:xmpp:mam:2</value>`+
                                 `</field>`+
                                 `<field var="start">`+
-                                    `<value>${moment(start).format()}</value>`+
+                                    `<value>${moment(start).toISOString()}</value>`+
                                 `</field>`+
                             `</x>`+
                             `<set xmlns="http://jabber.org/protocol/rsm">`+
@@ -541,7 +541,7 @@
                                     `<value>romeo@montague.lit</value>`+
                                 `</field>`+
                                 `<field var="start">`+
-                                    `<value>${moment(rsm.start).format()}</value>`+
+                                    `<value>${moment(rsm.start).toISOString()}</value>`+
                                 `</field>`+
                             `</x>`+
                             `<set xmlns="http://jabber.org/protocol/rsm">`+

@@ -408,7 +408,7 @@
             expect(chat_content.querySelectorAll('.date-separator').length).toEqual(4);
 
             let day = sizzle('.date-separator:first', chat_content).pop();
-            expect(day.getAttribute('data-isodate')).toEqual(moment('2017-12-31T00:00:00').format());
+            expect(day.getAttribute('data-isodate')).toEqual(moment('2017-12-31T00:00:00').toISOString());
 
             let time = sizzle('time:first', chat_content).pop();
             expect(time.textContent).toEqual('Sunday Dec 31st 2017')
@@ -424,7 +424,7 @@
             expect(time.textContent).toEqual("Monday Jan 1st 2018");
 
             day = sizzle('.date-separator:eq(1)', chat_content).pop();
-            expect(day.getAttribute('data-isodate')).toEqual(moment('2018-01-01T00:00:00').format());
+            expect(day.getAttribute('data-isodate')).toEqual(moment('2018-01-01T00:00:00').toISOString());
             expect(day.nextElementSibling.querySelector('.chat-msg__text').textContent).toBe('Inbetween message');
 
             el = sizzle('.chat-msg:eq(1)', chat_content).pop();
@@ -439,7 +439,7 @@
             expect(time.textContent).toEqual("Tuesday Jan 2nd 2018");
 
             day = sizzle('.date-separator:nth(2)', chat_content).pop();
-            expect(day.getAttribute('data-isodate')).toEqual(moment('2018-01-02T00:00:00').format());
+            expect(day.getAttribute('data-isodate')).toEqual(moment('2018-01-02T00:00:00').toISOString());
             expect(day.nextElementSibling.querySelector('.chat-msg__text').textContent).toBe('An earlier message on the next day');
 
             el = sizzle('.chat-msg:eq(3)', chat_content).pop();
@@ -452,7 +452,7 @@
             expect(u.hasClass('chat-msg--followup', el)).toBe(false);
 
             day = sizzle('.date-separator:last', chat_content).pop();
-            expect(day.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+            expect(day.getAttribute('data-isodate')).toEqual(moment().startOf('day').toISOString());
             expect(day.nextElementSibling.querySelector('.chat-msg__text').textContent).toBe('latest message');
             expect(u.hasClass('chat-msg--followup', el)).toBe(false);
             done();
@@ -731,7 +731,7 @@
                 type: 'chat',
                 id: one_day_ago.unix()
             }).c('body').t(message).up()
-            .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: one_day_ago.format() })
+            .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: one_day_ago.toISOString() })
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
             await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -753,7 +753,7 @@
             expect(chat_content.querySelectorAll('.date-separator').length).toEqual(1);
             let day = chat_content.querySelector('.date-separator');
             expect(day.getAttribute('class')).toEqual('message date-separator');
-            expect(day.getAttribute('data-isodate')).toEqual(moment(one_day_ago.startOf('day')).format());
+            expect(day.getAttribute('data-isodate')).toEqual(moment(one_day_ago.startOf('day')).toISOString());
 
             let time = chat_content.querySelector('time.separator-text');
             expect(time.textContent).toEqual(moment(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
@@ -778,7 +778,7 @@
             day = sizzle('.date-separator:last', chat_content);
             expect(day.length).toEqual(1);
             expect(day[0].getAttribute('class')).toEqual('message date-separator');
-            expect(day[0].getAttribute('data-isodate')).toEqual(moment(message_date).startOf('day').format());
+            expect(day[0].getAttribute('data-isodate')).toEqual(moment(message_date).startOf('day').toISOString());
 
             time = sizzle('time.separator-text:last', chat_content).pop();
             expect(time.textContent).toEqual(moment(message_date).startOf('day').format("dddd MMM Do YYYY"));
@@ -1159,7 +1159,7 @@
             _converse.chatboxes.onMessage($msg({'id': 'aeb218', 'to': _converse.bare_jid})
                 .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
                     .c('delay', {'xmlns': 'urn:xmpp:delay',
-                                    'stamp': moment(base_time).add(5, 'minutes').format()
+                                    'stamp': moment(base_time).add(5, 'minutes').toISOString()
                                 }).up()
                     .c('message', {
                         'xmlns': 'jabber:client',
@@ -1190,7 +1190,7 @@
 
             _converse.chatboxes.onMessage($msg({'id': 'aeb213', 'to': _converse.bare_jid})
                 .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':moment(base_time).add(4, 'minutes').format()}).up()
+                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':moment(base_time).add(4, 'minutes').toISOString()}).up()
                     .c('message', {
                         'xmlns': 'jabber:client',
                         'to': sender_jid,
@@ -1497,7 +1497,7 @@
                         vcard_fetched = true;
                         return Promise.resolve({
                             'fullname': mock.cur_names[0],
-                            'vcard_updated': moment().format(),
+                            'vcard_updated': (new Date()).toISOString(),
                             'jid': sender_jid
                         });
                     });
@@ -1636,7 +1636,7 @@
                         'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
                         'fullname': fullname,
                         'sender': 'me',
-                        'time': moment().format(),
+                        'time': (new Date()).toISOString(),
                         'message': msg_text
                     });
                     view.model.sendMessage(msg_text);
@@ -1653,7 +1653,7 @@
                         'msgid': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
                         'fullname': fullname,
                         'sender': 'me',
-                        'time': moment().format(),
+                        'time': (new Date()).toISOString(),
                         'message': msg_text
                     });
                     view.model.sendMessage(msg_text);
@@ -1721,7 +1721,7 @@
                         'msgid': 'another-id',
                         'fullname': fullname,
                         'sender': 'me',
-                        'time': moment().format(),
+                        'time': (new Date()).toISOString(),
                         'message': msg_text
                     });
                     view.model.sendMessage(msg_text);

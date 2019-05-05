@@ -175,7 +175,7 @@ converse.plugins.add('converse-roster', {
                           'name': name,
                           'priority': _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
                           'show': _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-                          'timestamp': _.isNil(delay) ? moment().format() : moment(delay.getAttribute('stamp')).format()
+                          'timestamp': _.isNil(delay) ? (new Date()).toISOString() : moment(delay.getAttribute('stamp')).toISOString()
                        };
                 if (resource) {
                     resource.save(settings);

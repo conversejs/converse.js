@@ -149,7 +149,7 @@ converse.plugins.add('converse-message-view', {
 
             async renderChatMessage () {
                 const is_me_message = this.isMeCommand(),
-                      moment_time = moment(this.model.get('time')),
+                      time = moment(this.model.get('time')),
                       role = this.model.vcard ? this.model.vcard.get('role') : null,
                       roles = role ? role.split(',') : [];
 
@@ -159,8 +159,8 @@ converse.plugins.add('converse-message-view', {
                         '__': __,
                         'is_me_message': is_me_message,
                         'roles': roles,
-                        'pretty_time': moment_time.format(_converse.time_format),
-                        'time': moment_time.format(),
+                        'pretty_time': time.format(_converse.time_format),
+                        'time': time.toISOString(),
                         'extra_classes': this.getExtraMessageClasses(),
                         'label_show': __('Show more'),
                         'username': this.model.getDisplayName()
@@ -201,12 +201,12 @@ converse.plugins.add('converse-message-view', {
             },
 
             renderErrorMessage () {
-                const moment_time = moment(this.model.get('time')),
-                      msg = u.stringToElement(
-                        tpl_info(Object.assign(this.model.toJSON(), {
-                            'extra_classes': 'chat-error',
-                            'isodate': moment_time.format()
-                        })));
+                const msg = u.stringToElement(
+                    tpl_info(Object.assign(this.model.toJSON(), {
+                        'extra_classes': 'chat-error',
+                        'isodate': moment(this.model.get('time')).toISOString()
+                    }))
+                );
                 return this.replaceElement(msg);
             },
 
@@ -232,7 +232,7 @@ converse.plugins.add('converse-message-view', {
                 } else {
                     return;
                 }
-                const isodate = moment().format();
+                const isodate = (new Date()).toISOString();
                 this.replaceElement(
                       u.stringToElement(
                         tpl_csn({

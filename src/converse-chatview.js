@@ -560,7 +560,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             showChatEvent (message) {
-                const isodate = moment().format();
+                const isodate = (new Date()).toISOString();
                 this.content.insertAdjacentHTML(
                     'beforeend',
                     tpl_info({
@@ -576,7 +576,7 @@ converse.plugins.add('converse-chatview', {
             showErrorMessage (message) {
                 this.content.insertAdjacentHTML(
                     'beforeend',
-                    tpl_error_message({'message': message, 'isodate': moment().format() })
+                    tpl_error_message({'message': message, 'isodate': (new Date()).toISOString() })
                 );
                 this.scrollDown();
             },
@@ -622,7 +622,7 @@ converse.plugins.add('converse-chatview', {
                     const day_date = moment(next_msg_date).startOf('day');
                     next_msg_el.insertAdjacentHTML('beforeBegin',
                         tpl_new_day({
-                            'isodate': day_date.format(),
+                            'isodate': day_date.toISOString(),
                             'datestring': day_date.format("dddd MMM Do YYYY")
                         })
                     );
@@ -633,19 +633,23 @@ converse.plugins.add('converse-chatview', {
              * Return the ISO8601 format date of the latest message.
              * @private
              * @method _converse.ChatBoxView#getLastMessageDate
-             * @param { object } cutoff - Moment Date cutoff date. The last
+             * @param { Date } cutoff - Moment Date cutoff date. The last
              *      message received cutoff this date will be returned.
+             * @returns { Date }
              */
             getLastMessageDate (cutoff) {
-                const first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-state-notification)'),
-                      oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
+                const first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-state-notification)');
+                const oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
                 if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
                     return null;
                 }
-                const last_msg = u.getLastChildElement(this.content, '.message:not(.chat-state-notification)'),
-                      most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
-                if (_.isNull(most_recent_date) || moment(most_recent_date).isBefore(cutoff)) {
-                    return most_recent_date;
+                const last_msg = u.getLastChildElement(this.content, '.message:not(.chat-state-notification)');
+                const most_recent_date = last_msg ? last_msg.getAttribute('data-isodate') : null;
+                if (_.isNull(most_recent_date)) {
+                    return null;
+                }
+                if (moment(most_recent_date).isBefore(cutoff)) {
+                    return moment(most_recent_date).toDate();
                 }
                 /* XXX: We avoid .chat-state-notification messages, since they are
                  * temporary and get removed once a new element is
@@ -656,17 +660,15 @@ converse.plugins.add('converse-chatview', {
                 const msg_dates = _.invokeMap(
                     sizzle('.message:not(.chat-state-notification)', this.content),
                     Element.prototype.getAttribute, 'data-isodate'
-                )
-                if (_.isObject(cutoff)) {
-                    cutoff = cutoff.format();
-                }
-                msg_dates.push(cutoff);
+                );
+                const cutoff_iso = cutoff.toISOString();
+                msg_dates.push(cutoff_iso);
                 msg_dates.sort();
-                const idx = msg_dates.lastIndexOf(cutoff);
+                const idx = msg_dates.lastIndexOf(cutoff_iso);
                 if (idx === 0) {
                     return null;
                 } else {
-                    return msg_dates[idx-1];
+                    return moment(msg_dates[idx-1]).toDate();
                 }
             },
 
@@ -698,7 +700,7 @@ converse.plugins.add('converse-chatview', {
                     this.content.insertAdjacentHTML(
                         'beforeend',
                         tpl_help_message({
-                            'isodate': moment().format(),
+                            'isodate': (new Date()).toISOString(),
                             'type': type,
                             'message': xss.filterXSS(msg, {'whiteList': {'strong': []}})
                         })
@@ -710,17 +712,6 @@ converse.plugins.add('converse-chatview', {
                     this.clearSpinner();
                 }
                 return this.scrollDown();
-            },
-
-            clearChatStateNotification (message, isodate) {
-                if (isodate) {
-                    _.each(
-                        sizzle(`.chat-state-notification[data-csn="${message.get('from')}"][data-isodate="${isodate}"]`, this.content),
-                        u.removeElement
-                    );
-                } else {
-                    _.each(sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content), u.removeElement);
-                }
             },
 
             shouldShowOnTextMessage () {
@@ -742,13 +733,13 @@ converse.plugins.add('converse-chatview', {
                         return this.trigger('messageInserted', view.el);
                     }
                 }
-                const current_msg_date = moment(view.model.get('time')) || moment,
+                const current_msg_date = moment(view.model.get('time')).toDate() || new Date(),
                       previous_msg_date = this.getLastMessageDate(current_msg_date);
 
                 if (_.isNull(previous_msg_date)) {
                     this.content.insertAdjacentElement('afterbegin', view.el);
                 } else {
-                    const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date}"]:last`, this.content).pop();
+                    const previous_msg_el = sizzle(`[data-isodate="${previous_msg_date.toISOString()}"]:last`, this.content).pop();
                     if (view.model.get('type') === 'error' &&
                             u.hasClass('chat-error', previous_msg_el) &&
                             previous_msg_el.textContent === view.model.get('message')) {
@@ -815,7 +806,10 @@ converse.plugins.add('converse-chatview', {
                 }
                 const view = new _converse.MessageView({'model': message});
                 await view.render();
-                this.clearChatStateNotification(message);
+
+                // Clear chat state notifications
+                sizzle(`.chat-state-notification[data-csn="${message.get('from')}"]`, this.content).forEach(u.removeElement);
+
                 this.insertMessage(view);
                 this.insertDayIndicator(view.el);
                 this.setScrollPosition(view.el);
@@ -1219,7 +1213,7 @@ converse.plugins.add('converse-chatview', {
                             'beforeend',
                             tpl_status_message({
                                 'message': text,
-                                'isodate': moment().format(),
+                                'isodate': (new Date()).toISOString(),
                             }));
                         this.scrollDown();
                     }

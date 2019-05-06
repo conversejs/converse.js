@@ -5465,6 +5465,7 @@ ul.features {
   font-size: 1.4em;
   padding: 0 0 4em 0; }
   .sponsors ul {
+    columns: 2;
     padding: 0; }
 
 .sponsors h2 {

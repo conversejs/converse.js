@@ -33,6 +33,7 @@ inverse-analytics.js
 eggs
 .Python
 build
+share
 parts
 *.pyc
 *.egg-info

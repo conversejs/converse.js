@@ -48,6 +48,7 @@
     "bytebuffer": "^3.5.5",
     "clean-css-cli": "^4.0.10",
     "css-loader": "^1.0.1",
+    "dayjs": "^1.8.13",
     "es6-promise": "^4.1.0",
     "eslint": "4.19.1",
     "eslint-plugin-lodash": "^2.3.3",
@@ -87,8 +88,5 @@
     "webpack": "^4.28.1",
     "webpack-cli": "^3.1.2",
     "xss": "^0.3.3"
-  },
-  "dependencies": {
-    "dayjs": "^1.8.13"
   }
 }

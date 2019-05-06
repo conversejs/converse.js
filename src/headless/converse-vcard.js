@@ -8,7 +8,7 @@
 import converse from "./converse-core";
 import tpl_vcard from "./templates/vcard.html";
 
-const { Backbone, Promise, Strophe, _, $iq, $build, moment, sizzle } = converse.env;
+const { Backbone, Promise, Strophe, _, $iq, $build, dayjs, sizzle } = converse.env;
 const u = converse.env.utils;
 
 
@@ -196,7 +196,7 @@ converse.plugins.add('converse-vcard', {
                         return getVCard(_converse, model);
                     } else if (force ||
                             !model.get('vcard_updated') ||
-                            !moment(model.get('vcard_error')).isSame(new Date(), "day")) {
+                            !dayjs(model.get('vcard_error')).isSame(new Date(), "day")) {
 
                         const jid = model.get('jid');
                         if (!jid) {

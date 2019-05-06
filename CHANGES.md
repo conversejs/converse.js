@@ -10,6 +10,7 @@
 - In the `/help` menu, only show allowed commands
 - Message deduplication bugfixes and improvements
 - Continuously retry (in 2s intervals) to fetch login credentials (via [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials-url)) in case of failure
+- Replace `moment` with [DayJS](https://github.com/iamkun/dayjs).
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1532: Converse reloads on enter pressed in the filter box
 - #1550: Legitimate carbons being blocked due to erroneous forgery check

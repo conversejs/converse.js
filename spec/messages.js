@@ -6,7 +6,7 @@
         ], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const { Backbone, Promise, Strophe, $iq, $msg, $pres, b64_sha1, moment, sizzle, _ } = converse.env;
+    const { Backbone, Promise, Strophe, $iq, $msg, $pres, b64_sha1, dayjs, sizzle, _ } = converse.env;
     const u = converse.env.utils;
 
 
@@ -408,7 +408,7 @@
             expect(chat_content.querySelectorAll('.date-separator').length).toEqual(4);
 
             let day = sizzle('.date-separator:first', chat_content).pop();
-            expect(day.getAttribute('data-isodate')).toEqual(moment('2017-12-31T00:00:00').toISOString());
+            expect(day.getAttribute('data-isodate')).toEqual(dayjs('2017-12-31T00:00:00').toISOString());
 
             let time = sizzle('time:first', chat_content).pop();
             expect(time.textContent).toEqual('Sunday Dec 31st 2017')
@@ -424,7 +424,7 @@
             expect(time.textContent).toEqual("Monday Jan 1st 2018");
 
             day = sizzle('.date-separator:eq(1)', chat_content).pop();
-            expect(day.getAttribute('data-isodate')).toEqual(moment('2018-01-01T00:00:00').toISOString());
+            expect(day.getAttribute('data-isodate')).toEqual(dayjs('2018-01-01T00:00:00').toISOString());
             expect(day.nextElementSibling.querySelector('.chat-msg__text').textContent).toBe('Inbetween message');
 
             el = sizzle('.chat-msg:eq(1)', chat_content).pop();
@@ -439,7 +439,7 @@
             expect(time.textContent).toEqual("Tuesday Jan 2nd 2018");
 
             day = sizzle('.date-separator:nth(2)', chat_content).pop();
-            expect(day.getAttribute('data-isodate')).toEqual(moment('2018-01-02T00:00:00').toISOString());
+            expect(day.getAttribute('data-isodate')).toEqual(dayjs('2018-01-02T00:00:00').toISOString());
             expect(day.nextElementSibling.querySelector('.chat-msg__text').textContent).toBe('An earlier message on the next day');
 
             el = sizzle('.chat-msg:eq(3)', chat_content).pop();
@@ -452,7 +452,7 @@
             expect(u.hasClass('chat-msg--followup', el)).toBe(false);
 
             day = sizzle('.date-separator:last', chat_content).pop();
-            expect(day.getAttribute('data-isodate')).toEqual(moment().startOf('day').toISOString());
+            expect(day.getAttribute('data-isodate')).toEqual(dayjs().startOf('day').toISOString());
             expect(day.nextElementSibling.querySelector('.chat-msg__text').textContent).toBe('latest message');
             expect(u.hasClass('chat-msg--followup', el)).toBe(false);
             done();
@@ -719,8 +719,7 @@
             await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
             await test_utils.openChatBoxFor(_converse, contact_jid);
             test_utils.clearChatBoxMessages(_converse, contact_jid);
-            const one_day_ago = moment();
-            one_day_ago.subtract('days', 1);
+            const one_day_ago = dayjs().subtract(1, 'day');
             const chatbox = _converse.chatboxes.get(contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
 
@@ -729,7 +728,7 @@
                 from: contact_jid,
                 to: _converse.connection.jid,
                 type: 'chat',
-                id: one_day_ago.unix()
+                id: one_day_ago.toDate().getTime()
             }).c('body').t(message).up()
             .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: one_day_ago.toISOString() })
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
@@ -753,10 +752,10 @@
             expect(chat_content.querySelectorAll('.date-separator').length).toEqual(1);
             let day = chat_content.querySelector('.date-separator');
             expect(day.getAttribute('class')).toEqual('message date-separator');
-            expect(day.getAttribute('data-isodate')).toEqual(moment(one_day_ago.startOf('day')).toISOString());
+            expect(day.getAttribute('data-isodate')).toEqual(dayjs(one_day_ago.startOf('day')).toISOString());
 
             let time = chat_content.querySelector('time.separator-text');
-            expect(time.textContent).toEqual(moment(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
+            expect(time.textContent).toEqual(dayjs(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
 
             message = 'This is a current message';
             msg = $msg({
@@ -770,18 +769,17 @@
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
-            // Check that there is a <time> element, with the required
-            // props.
+            // Check that there is a <time> element, with the required props.
             expect(chat_content.querySelectorAll('time.separator-text').length).toEqual(2); // There are now two time elements
 
             const message_date = new Date();
             day = sizzle('.date-separator:last', chat_content);
             expect(day.length).toEqual(1);
             expect(day[0].getAttribute('class')).toEqual('message date-separator');
-            expect(day[0].getAttribute('data-isodate')).toEqual(moment(message_date).startOf('day').toISOString());
+            expect(day[0].getAttribute('data-isodate')).toEqual(dayjs(message_date).startOf('day').toISOString());
 
             time = sizzle('time.separator-text:last', chat_content).pop();
-            expect(time.textContent).toEqual(moment(message_date).startOf('day').format("dddd MMM Do YYYY"));
+            expect(time.textContent).toEqual(dayjs(message_date).startOf('day').format("dddd MMM Do YYYY"));
 
             // Normal checks for the 2nd message
             expect(chatbox.messages.length).toEqual(2);
@@ -1055,7 +1053,7 @@
             expect(msg_author.textContent.trim()).toBe('Max Mustermann');
 
             const msg_time = view.el.querySelector('.chat-content .chat-msg:last-child .chat-msg__time');
-            const time = moment(msg_object.get('time')).format(_converse.time_format);
+            const time = dayjs(msg_object.get('time')).format(_converse.time_format);
             expect(msg_time.textContent).toBe(time);
             done();
         }));
@@ -1159,7 +1157,7 @@
             _converse.chatboxes.onMessage($msg({'id': 'aeb218', 'to': _converse.bare_jid})
                 .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
                     .c('delay', {'xmlns': 'urn:xmpp:delay',
-                                    'stamp': moment(base_time).add(5, 'minutes').toISOString()
+                                    'stamp': dayjs(base_time).add(5, 'minutes').toISOString()
                                 }).up()
                     .c('message', {
                         'xmlns': 'jabber:client',
@@ -1190,7 +1188,7 @@
 
             _converse.chatboxes.onMessage($msg({'id': 'aeb213', 'to': _converse.bare_jid})
                 .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':moment(base_time).add(4, 'minutes').toISOString()}).up()
+                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':dayjs(base_time).add(4, 'minutes').toISOString()}).up()
                     .c('message', {
                         'xmlns': 'jabber:client',
                         'to': sender_jid,

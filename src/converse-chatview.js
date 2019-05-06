@@ -28,7 +28,7 @@ import tpl_user_details_modal from "templates/user_details_modal.html";
 import u from "@converse/headless/utils/emoji";
 import xss from "xss";
 
-const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, moment } = converse.env;
+const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, dayjs } = converse.env;
 
 
 converse.plugins.add('converse-chatview', {
@@ -618,8 +618,8 @@ converse.plugins.add('converse-chatview', {
                 if (_.isNull(prev_msg_date) && _.isNull(next_msg_date)) {
                     return;
                 }
-                if (_.isNull(prev_msg_date) || moment(next_msg_date).isAfter(prev_msg_date, 'day')) {
-                    const day_date = moment(next_msg_date).startOf('day');
+                if (_.isNull(prev_msg_date) || dayjs(next_msg_date).isAfter(prev_msg_date, 'day')) {
+                    const day_date = dayjs(next_msg_date).startOf('day');
                     next_msg_el.insertAdjacentHTML('beforeBegin',
                         tpl_new_day({
                             'isodate': day_date.toISOString(),
@@ -640,7 +640,7 @@ converse.plugins.add('converse-chatview', {
             getLastMessageDate (cutoff) {
                 const first_msg = u.getFirstChildElement(this.content, '.message:not(.chat-state-notification)');
                 const oldest_date = first_msg ? first_msg.getAttribute('data-isodate') : null;
-                if (!_.isNull(oldest_date) && moment(oldest_date).isAfter(cutoff)) {
+                if (!_.isNull(oldest_date) && dayjs(oldest_date).isAfter(cutoff)) {
                     return null;
                 }
                 const last_msg = u.getLastChildElement(this.content, '.message:not(.chat-state-notification)');
@@ -648,8 +648,8 @@ converse.plugins.add('converse-chatview', {
                 if (_.isNull(most_recent_date)) {
                     return null;
                 }
-                if (moment(most_recent_date).isBefore(cutoff)) {
-                    return moment(most_recent_date).toDate();
+                if (dayjs(most_recent_date).isBefore(cutoff)) {
+                    return dayjs(most_recent_date).toDate();
                 }
                 /* XXX: We avoid .chat-state-notification messages, since they are
                  * temporary and get removed once a new element is
@@ -668,7 +668,7 @@ converse.plugins.add('converse-chatview', {
                 if (idx === 0) {
                     return null;
                 } else {
-                    return moment(msg_dates[idx-1]).toDate();
+                    return dayjs(msg_dates[idx-1]).toDate();
                 }
             },
 
@@ -733,7 +733,7 @@ converse.plugins.add('converse-chatview', {
                         return this.trigger('messageInserted', view.el);
                     }
                 }
-                const current_msg_date = moment(view.model.get('time')).toDate() || new Date(),
+                const current_msg_date = dayjs(view.model.get('time')).toDate() || new Date(),
                       previous_msg_date = this.getLastMessageDate(current_msg_date);
 
                 if (_.isNull(previous_msg_date)) {
@@ -770,12 +770,12 @@ converse.plugins.add('converse-chatview', {
             markFollowups (el) {
                 const from = el.getAttribute('data-from'),
                       previous_el = el.previousElementSibling,
-                      date = moment(el.getAttribute('data-isodate')),
+                      date = dayjs(el.getAttribute('data-isodate')),
                       next_el = el.nextElementSibling;
 
                 if (!u.hasClass('chat-msg--action', el) && !u.hasClass('chat-msg--action', previous_el) &&
                         previous_el.getAttribute('data-from') === from &&
-                        date.isBefore(moment(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) &&
+                        date.isBefore(dayjs(previous_el.getAttribute('data-isodate')).add(10, 'minutes')) &&
                         el.getAttribute('data-encrypted') === previous_el.getAttribute('data-encrypted')) {
                     u.addClass('chat-msg--followup', el);
                 }
@@ -783,7 +783,7 @@ converse.plugins.add('converse-chatview', {
 
                 if (!u.hasClass('chat-msg--action', 'el') &&
                         next_el.getAttribute('data-from') === from &&
-                        moment(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) &&
+                        dayjs(next_el.getAttribute('data-isodate')).isBefore(date.add(10, 'minutes')) &&
                         el.getAttribute('data-encrypted') === next_el.getAttribute('data-encrypted')) {
                     u.addClass('chat-msg--followup', next_el);
                 } else {

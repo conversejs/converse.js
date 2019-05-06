@@ -7,7 +7,7 @@
           $msg = converse.env.$msg,
           Strophe = converse.env.Strophe,
           Promise = converse.env.Promise,
-          moment = converse.env.moment,
+          dayjs = converse.env.dayjs,
           sizzle = converse.env.sizzle,
           Backbone = converse.env.Backbone,
           u = converse.env.utils;
@@ -969,8 +969,8 @@
                 let indicator = chat_content.querySelector('.date-separator');
                 expect(indicator).not.toBe(null);
                 expect(indicator.getAttribute('class')).toEqual('message date-separator');
-                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').toISOString());
-                expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                expect(indicator.getAttribute('data-isodate')).toEqual(dayjs().startOf('day').toISOString());
+                expect(indicator.querySelector('time').textContent).toEqual(dayjs().startOf('day').format("dddd MMM Do YYYY"));
                 expect(chat_content.querySelectorAll('div.chat-info').length).toBe(1);
                 expect(chat_content.querySelector('div.chat-info').textContent).toBe("dummy has entered the groupchat");
 
@@ -999,13 +999,13 @@
                     });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                indicator = chat_content.querySelector('.date-separator[data-isodate="'+moment().startOf('day').toISOString()+'"]');
+                indicator = chat_content.querySelector('.date-separator[data-isodate="'+dayjs().startOf('day').toISOString()+'"]');
                 expect(indicator).not.toBe(null);
 
                 expect(indicator.getAttribute('class')).toEqual('message date-separator');
-                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').toISOString());
+                expect(indicator.getAttribute('data-isodate')).toEqual(dayjs().startOf('day').toISOString());
                 expect(indicator.querySelector('time').getAttribute('class')).toEqual('separator-text');
-                expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                expect(indicator.querySelector('time').textContent).toEqual(dayjs().startOf('day').format("dddd MMM Do YYYY"));
                 expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
                 expect(chat_content.querySelector('div.chat-info:last-child').textContent).toBe(
                     "some1 has entered the groupchat"
@@ -1028,13 +1028,13 @@
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                indicator = chat_content.querySelector('.date-separator[data-isodate="'+moment().startOf('day').toISOString()+'"]');
+                indicator = chat_content.querySelector('.date-separator[data-isodate="'+dayjs().startOf('day').toISOString()+'"]');
 
                 expect(indicator).not.toBe(null);
                 expect(indicator.getAttribute('class')).toEqual('message date-separator');
-                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').toISOString());
+                expect(indicator.getAttribute('data-isodate')).toEqual(dayjs().startOf('day').toISOString());
 
-                expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                expect(indicator.querySelector('time').textContent).toEqual(dayjs().startOf('day').format("dddd MMM Do YYYY"));
                 expect(chat_content.querySelectorAll('div.chat-info').length).toBe(3);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                     'some1 has left the groupchat. '+
@@ -1069,8 +1069,8 @@
 
                 indicator = sizzle('.date-separator:eq(3)', chat_content).pop();
                 expect(indicator.getAttribute('class')).toEqual('message date-separator');
-                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').toISOString());
-                expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                expect(indicator.getAttribute('data-isodate')).toEqual(dayjs().startOf('day').toISOString());
+                expect(indicator.querySelector('time').textContent).toEqual(dayjs().startOf('day').format("dddd MMM Do YYYY"));
                 expect(chat_content.querySelectorAll('div.chat-info').length).toBe(4);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent)
                     .toBe("newguy has entered the groupchat");
@@ -1109,8 +1109,8 @@
 
                 indicator = sizzle('.date-separator:eq(5)', chat_content).pop();
                 expect(indicator.getAttribute('class')).toEqual('message date-separator');
-                expect(indicator.getAttribute('data-isodate')).toEqual(moment().startOf('day').toISOString());
-                expect(indicator.querySelector('time').textContent).toEqual(moment().startOf('day').format("dddd MMM Do YYYY"));
+                expect(indicator.getAttribute('data-isodate')).toEqual(dayjs().startOf('day').toISOString());
+                expect(indicator.querySelector('time').textContent).toEqual(dayjs().startOf('day').format("dddd MMM Do YYYY"));
                 expect(chat_content.querySelectorAll('div.chat-info').length).toBe(5);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                     'newguy has left the groupchat. '+

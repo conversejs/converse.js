@@ -19,7 +19,7 @@ import tpl_controlbox_toggle from "templates/controlbox_toggle.html";
 import tpl_login_panel from "templates/login_panel.html";
 
 const CHATBOX_TYPE = 'chatbox';
-const { Strophe, Backbone, Promise, _, moment } = converse.env;
+const { Strophe, Backbone, Promise, _, dayjs } = converse.env;
 const u = converse.env.utils;
 
 const CONNECTION_STATUS_CSS_CLASS = {
@@ -148,7 +148,7 @@ converse.plugins.add('converse-controlbox', {
 
             initialize () {
                 if (this.get('id') === 'controlbox') {
-                    this.set({'time_opened': moment(0).valueOf()});
+                    this.set({'time_opened': dayjs(0).valueOf()});
                 } else {
                     this.__super__.initialize.apply(this, arguments);
                 }

@@ -6,7 +6,7 @@
 
 import converse from "@converse/headless/converse-core";
 
-const { Backbone, Promise, Strophe, $iq, $pres, moment, sizzle, _ } = converse.env;
+const { Backbone, Promise, Strophe, $iq, $pres, dayjs, sizzle, _ } = converse.env;
 const u = converse.env.utils;
 
 
@@ -175,7 +175,7 @@ converse.plugins.add('converse-roster', {
                           'name': name,
                           'priority': _.isNaN(parseInt(priority, 10)) ? 0 : parseInt(priority, 10),
                           'show': _.propertyOf(presence.querySelector('show'))('textContent') || 'online',
-                          'timestamp': _.isNil(delay) ? (new Date()).toISOString() : moment(delay.getAttribute('stamp')).toISOString()
+                          'timestamp': _.isNil(delay) ? (new Date()).toISOString() : dayjs(delay.getAttribute('stamp')).toISOString()
                        };
                 if (resource) {
                     resource.save(settings);

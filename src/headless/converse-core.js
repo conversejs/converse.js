@@ -9,15 +9,18 @@ import Backbone from "backbone";
 import BrowserStorage from "backbone.browserStorage";
 import Promise from "es6-promise/dist/es6-promise.auto";
 import _ from "./lodash.noconflict";
+import advancedFormat from 'dayjs/plugin/advancedFormat'
+import dayjs from "dayjs";
 import f from "./lodash.fp";
 import i18n from "./i18n";
-import moment from "moment";
 import pluggable from "pluggable.js/dist/pluggable";
 import polyfill from "./polyfill";
 import sizzle from "sizzle";
 import u from "@converse/headless/utils/core";
 
 Backbone = Backbone.noConflict();
+
+dayjs.extend(advancedFormat)
 
 // Strophe globals
 const b64_sha1 = SHA1.b64_sha1;
@@ -1906,7 +1909,7 @@ const converse = {
      * @property {object} converse.env._           - The instance of [lodash](http://lodash.com) used by Converse.
      * @property {function} converse.env.f         - And instance of Lodash with its methods wrapped to produce immutable auto-curried iteratee-first data-last methods.
      * @property {function} converse.env.b64_sha1  - Utility method from Strophe for creating base64 encoded sha1 hashes.
-     * @property {object} converse.env.moment      - [Moment](https://momentjs.com) date manipulation library.
+     * @property {object} converse.env.dayjs       - [DayJS](https://github.com/iamkun/dayjs) date manipulation library.
      * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
      * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
      */
@@ -1921,7 +1924,7 @@ const converse = {
         '_': _,
         'f': f,
         'b64_sha1':  b64_sha1,
-        'moment': moment,
+        'dayjs': dayjs,
         'sizzle': sizzle,
         'utils': u
     }

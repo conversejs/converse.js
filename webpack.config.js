@@ -15,10 +15,7 @@ const config = {
         filename: 'converse.js'
     },
     devtool: 'source-map',
-    plugins: [
-        new MiniCssExtractPlugin({filename: '../css/converse.css'}),
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
-    ],
+    plugins: [new MiniCssExtractPlugin({filename: '../css/converse.css'})],
     module: {
         rules: [
         {
@@ -172,7 +169,6 @@ function parameterize () {
                 "lodash": "lodash",
                 "lodash.converter": "lodash.converter",
                 "lodash.noconflict": "lodash.noconflict",
-                "moment": "moment",
                 "strophe": "strophe",
                 "strophe.ping": "strophe.ping",
                 "strophe.rsm": "strophe.rsm",

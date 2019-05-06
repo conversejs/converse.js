@@ -8,7 +8,7 @@ import "converse-chatview";
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox from "templates/chatbox.html";
 
-const { _, moment, utils } = converse.env;
+const { _, dayjs, utils } = converse.env;
 
 
 converse.plugins.add('converse-headline', {

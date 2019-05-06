@@ -38,7 +38,7 @@ import tpl_spinner from "templates/spinner.html";
 import xss from "xss";
 
 
-const { Backbone, Promise, Strophe, moment, f, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
+const { Backbone, Promise, Strophe, dayjs, f, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
 const u = converse.env.utils;
 const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
 const OWNER_COMMANDS = ['owner'];
@@ -1574,7 +1574,7 @@ converse.plugins.add('converse-muc-views', {
                     if (!_.includes(_.get(el, 'classList', []), 'chat-info')) {
                         return;
                     }
-                    if (!moment(el.getAttribute('data-isodate')).isSame(new Date(), "day")) {
+                    if (!dayjs(el.getAttribute('data-isodate')).isSame(new Date(), "day")) {
                         el = el.previousElementSibling;
                         continue;
                     }

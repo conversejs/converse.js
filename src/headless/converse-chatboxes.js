@@ -9,7 +9,7 @@ import "./utils/form";
 import converse from "./converse-core";
 import filesize from "filesize";
 
-const { $msg, Backbone, Promise, Strophe, moment, sizzle, utils, _ } = converse.env;
+const { $msg, Backbone, Promise, Strophe, dayjs, sizzle, utils, _ } = converse.env;
 const u = converse.env.utils;
 
 Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
@@ -746,7 +746,7 @@ converse.plugins.add('converse-chatboxes', {
                     'references': this.getReferencesFromStanza(stanza),
                     'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
                     'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
-                    'time': delay ? moment(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString(),
+                    'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString(),
                     'type': stanza.getAttribute('type')
                 }, this.getStanzaIDs(original_stanza));
 

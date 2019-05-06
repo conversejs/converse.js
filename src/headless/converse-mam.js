@@ -13,7 +13,7 @@ import sizzle from "sizzle";
 
 
 const CHATROOMS_TYPE = 'chatroom';
-const { Promise, Strophe, $iq, _, moment } = converse.env;
+const { Promise, Strophe, $iq, _, dayjs } = converse.env;
 const u = converse.env.utils;
 
 const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
@@ -361,7 +361,7 @@ converse.plugins.add('converse-mam', {
                         }
                         ['start', 'end'].forEach(t => {
                             if (options[t]) {
-                                const date = moment(options[t]);
+                                const date = dayjs(options[t]);
                                 if (date.isValid()) {
                                     stanza.c('field', {'var':t}).c('value').t(date.toISOString()).up().up();
                                 } else {

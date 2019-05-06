@@ -69,7 +69,6 @@
     "long": "^3.1.0",
     "mini-css-extract-plugin": "^0.5.0",
     "minimist": "^1.2.0",
-    "moment": "~> 2.19.3 ",
     "node-sass": "^4.9.4",
     "npm": "^6.4.1",
     "pluggable.js": "2.0.0",
@@ -88,5 +87,8 @@
     "webpack": "^4.28.1",
     "webpack-cli": "^3.1.2",
     "xss": "^0.3.3"
+  },
+  "dependencies": {
+    "dayjs": "^1.8.13"
   }
 }

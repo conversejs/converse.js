@@ -16,7 +16,7 @@ import tpl_message_versions_modal from "templates/message_versions_modal.html";
 import u from "@converse/headless/utils/emoji";
 import xss from "xss";
 
-const { Backbone, _, moment } = converse.env;
+const { Backbone, _, dayjs } = converse.env;
 
 
 converse.plugins.add('converse-message-view', {
@@ -149,7 +149,7 @@ converse.plugins.add('converse-message-view', {
 
             async renderChatMessage () {
                 const is_me_message = this.isMeCommand(),
-                      time = moment(this.model.get('time')),
+                      time = dayjs(this.model.get('time')),
                       role = this.model.vcard ? this.model.vcard.get('role') : null,
                       roles = role ? role.split(',') : [];
 
@@ -204,7 +204,7 @@ converse.plugins.add('converse-message-view', {
                 const msg = u.stringToElement(
                     tpl_info(Object.assign(this.model.toJSON(), {
                         'extra_classes': 'chat-error',
-                        'isodate': moment(this.model.get('time')).toISOString()
+                        'isodate': dayjs(this.model.get('time')).toISOString()
                     }))
                 );
                 return this.replaceElement(msg);

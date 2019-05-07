@@ -34,8 +34,7 @@ converse.plugins.add('converse-push', {
             if (!push_app_server.jid) {
                 return;
             }
-            const result = await _converse.api.disco.supports(Strophe.NS.PUSH, domain || _converse.bare_jid)
-            if (!result.length) {
+            if (!(await _converse.api.disco.supports(Strophe.NS.PUSH, domain || _converse.bare_jid))) {
                 return _converse.log(
                     `Not disabling push app server "${push_app_server.jid}", no disco support from your server.`,
                     Strophe.LogLevel.WARN
@@ -74,7 +73,7 @@ converse.plugins.add('converse-push', {
                 _converse.api.disco.supports(Strophe.NS.PUSH, push_app_server.jid),
                 _converse.api.disco.supports(Strophe.NS.PUSH, domain)
             ]);
-            if (!result[0].length && !result[1].length) {
+            if (!result[0] && !result[1]) {
                 return _converse.log(
                     `Not enabling push app server "${push_app_server.jid}", no disco support from your server.`,
                     Strophe.LogLevel.WARN

@@ -383,8 +383,7 @@ converse.plugins.add('converse-chatboxes', {
                     return false;
                 }
                 const by_jid = stanza_id.getAttribute('by');
-                const result = await _converse.api.disco.supports(Strophe.NS.SID, by_jid);
-                if (!result.length) {
+                if (!(await _converse.api.disco.supports(Strophe.NS.SID, by_jid))) {
                     return false;
                 }
                 const query = {};
@@ -607,9 +606,8 @@ converse.plugins.add('converse-chatboxes', {
 
 
             async sendFiles (files) {
-                const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain),
-                      item = result.pop();
-
+                const result = await _converse.api.disco.features.get(Strophe.NS.HTTPUPLOAD, _converse.domain);
+                const item = result.pop();
                 if (!item) {
                     this.messages.create({
                         'message': __("Sorry, looks like file upload is not supported by your server."),
@@ -617,7 +615,6 @@ converse.plugins.add('converse-chatboxes', {
                     });
                     return;
                 }
-
                 const data = item.dataforms.where({'FORM_TYPE': {'value': Strophe.NS.HTTPUPLOAD, 'type': "hidden"}}).pop(),
                       max_file_size = window.parseInt(_.get(data, 'attributes.max-file-size.value')),
                       slot_request_url = _.get(item, 'id');

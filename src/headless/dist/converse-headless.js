@@ -33599,9 +33599,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
         }
 
         const by_jid = stanza_id.getAttribute('by');
-        const result = await _converse.api.disco.supports(Strophe.NS.SID, by_jid);
 
-        if (!result.length) {
+        if (!(await _converse.api.disco.supports(Strophe.NS.SID, by_jid))) {
           return false;
         }
 
@@ -33887,8 +33886,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-cha
       },
 
       async sendFiles(files) {
-        const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain),
-              item = result.pop();
+        const result = await _converse.api.disco.features.get(Strophe.NS.HTTPUPLOAD, _converse.domain);
+        const item = result.pop();
 
         if (!item) {
           this.messages.create({
@@ -37311,6 +37310,45 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
         },
 
         /**
+         * @namespace _converse.api.disco.features
+         * @memberOf _converse.api.disco
+         */
+        'features': {
+          /**
+           * Return a given feature of a disco entity
+           *
+           * @method _converse.api.disco.features.get
+           * @param {string} feature The feature that might be
+           *     supported. In the XML stanza, this is the `var`
+           *     attribute of the `<feature>` element. For
+           *     example: `http://jabber.org/protocol/muc`
+           * @param {string} jid The JID of the entity
+           *     (and its associated items) which should be queried
+           * @returns {promise} A promise which resolves with a list containing
+           *     _converse.Entity instances representing the entity
+           *     itself or those items associated with the entity if
+           *     they support the given feature.
+           * @example
+           * _converse.api.disco.features.get(Strophe.NS.MAM, _converse.bare_jid);
+           */
+          async 'get'(feature, jid) {
+            if (_.isNil(jid)) {
+              throw new TypeError('You need to provide an entity JID');
+            }
+
+            await _converse.api.waitUntil('discoInitialized');
+            let entity = await _converse.api.disco.entities.get(jid, true);
+            entity = await entity.waitUntilFeaturesDiscovered;
+
+            const promises = _.concat(entity.items.map(item => item.hasFeature(feature)), entity.hasFeature(feature));
+
+            const result = await Promise.all(promises);
+            return f.filter(f.isObject, result);
+          }
+
+        },
+
+        /**
          * Used to determine whether an entity supports a given feature.
          *
          * @method _converse.api.disco.supports
@@ -37320,40 +37358,17 @@ _converse_core__WEBPACK_IMPORTED_MODULE_0__["default"].plugins.add('converse-dis
          *     example: `http://jabber.org/protocol/muc`
          * @param {string} jid The JID of the entity
          *     (and its associated items) which should be queried
-         * @returns {promise} A promise which resolves with a list containing
-         *     _converse.Entity instances representing the entity
-         *     itself or those items associated with the entity if
-         *     they support the given feature.
-         *
+         * @returns {promise} A promise which resolves with `true` or `false`.
          * @example
-         * _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid)
-         * .then(value => {
-         *     // `value` is a map with two keys, `supported` and `feature`.
-         *     if (value.supported) {
-         *         // The feature is supported
-         *     } else {
-         *         // The feature is not supported
-         *     }
-         * }).catch(() => {
-         *     _converse.log(
-         *         "Error or timeout while checking for feature support",
-         *         Strophe.LogLevel.ERROR
-         *     );
-         * });
+         * if (await _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid)) {
+         *     // The feature is supported
+         * } else {
+         *     // The feature is not supported
+         * }
          */
         async 'supports'(feature, jid) {
-          if (_.isNil(jid)) {
-            throw new TypeError('api.disco.supports: You need to provide an entity JID');
-          }
-
-          await _converse.api.waitUntil('discoInitialized');
-          let entity = await _converse.api.disco.entities.get(jid, true);
-          entity = await entity.waitUntilFeaturesDiscovered;
-
-          const promises = _.concat(entity.items.map(item => item.hasFeature(feature)), entity.hasFeature(feature));
-
-          const result = await Promise.all(promises);
-          return f.filter(f.isObject, result);
+          const features = await _converse.api.disco.features.get(feature, jid);
+          return features.length > 0;
         },
 
         /**
@@ -37524,7 +37539,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
         const by_jid = stanza.getAttribute('from') || this.get('jid');
         const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
 
-        if (!supported.length) {
+        if (!supported) {
           return null;
         }
 
@@ -37847,7 +37862,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_2__["default"].plugins.add('converse-mam
           const jid = attrs.to || _converse.bare_jid;
           const supported = await _converse.api.disco.supports(Strophe.NS.MAM, jid);
 
-          if (!supported.length) {
+          if (!supported) {
             _converse.log(`Did not fetch MAM archive for ${jid} because it doesn't support ${Strophe.NS.MAM}`);
 
             return {
@@ -38214,9 +38229,7 @@ _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].plugins.add('converse-muc
 
       async onConnectionStatusChanged() {
         if (this.get('connection_status') === _converse_core__WEBPACK_IMPORTED_MODULE_3__["default"].ROOMSTATUS.ENTERED && _converse.auto_register_muc_nickname && !this.get('reserved_nick')) {
-          const result = await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'));
-
-          if (result.length) {
+          if (await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
             this.registerNickname();
           }
         }
@@ -40078,9 +40091,8 @@ _converse_core__WEBPACK_IMPORTED_MODULE_1__["default"].plugins.add('converse-pub
 
           if (options) {
             jid = jid || _converse.bare_jid;
-            const result = await _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', jid);
 
-            if (result.length) {
+            if (await _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', jid)) {
               stanza.c('publish-options').c('x', {
                 'xmlns': Strophe.NS.XFORM,
                 'type': 'submit'

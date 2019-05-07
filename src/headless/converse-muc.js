@@ -236,8 +236,7 @@ converse.plugins.add('converse-muc', {
                         _converse.auto_register_muc_nickname &&
                         !this.get('reserved_nick')) {
 
-                    const result = await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'));
-                    if (result.length) {
+                    if (await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
                         this.registerNickname()
                     }
                 }

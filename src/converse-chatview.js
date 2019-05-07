@@ -461,8 +461,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             async addFileUploadButton (options) {
-                const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
-                if (result.length) {
+                if (await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain)) {
                     this.el.querySelector('.chat-toolbar').insertAdjacentHTML(
                         'beforeend',
                         tpl_toolbar_fileupload({'tooltip_upload_file': __('Choose a file to send')}));
@@ -483,10 +482,11 @@ converse.plugins.add('converse-chatview', {
                 }
                 const results = await Promise.all(
                     this.model.presence.resources.map(
-                        res => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${res.get('name')}`)
+                        r => _converse.api.disco.supports(Strophe.NS.SPOILER, `${contact_jid}/${r.get('name')}`)
                     )
                 );
-                if (_.filter(results, 'length').length) {
+                const all_resources_support_spolers = results.reduce((acc, val) => (acc && val), true);
+                if (all_resources_support_spolers) {
                     const html = tpl_spoiler_button(this.model.toJSON());
                     if (_converse.visible_toolbar_buttons.emoji) {
                         this.el.querySelector('.toggle-smiley').insertAdjacentHTML('afterEnd', html);

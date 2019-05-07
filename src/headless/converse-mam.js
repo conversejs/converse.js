@@ -41,7 +41,7 @@ converse.plugins.add('converse-mam', {
                 }
                 const by_jid = stanza.getAttribute('from') || this.get('jid');
                 const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
-                if (!supported.length) {
+                if (!supported) {
                     return null;
                 }
                 const query = {};
@@ -341,11 +341,9 @@ converse.plugins.add('converse-mam', {
 
                     const jid = attrs.to || _converse.bare_jid;
                     const supported = await _converse.api.disco.supports(Strophe.NS.MAM, jid);
-                    if (!supported.length) {
+                    if (!supported) {
                         _converse.log(`Did not fetch MAM archive for ${jid} because it doesn't support ${Strophe.NS.MAM}`);
-                        return {
-                            'messages': []
-                        };
+                        return {'messages': []};
                     }
 
                     const queryid = _converse.connection.getUniqueId();

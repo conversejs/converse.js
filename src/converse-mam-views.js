@@ -39,9 +39,11 @@ converse.plugins.add('converse-mam-views', {
                 /* Fetches messages that might have been archived *after*
                  * the last archived message in our local cache.
                  */
-                if (this.disable_mam) { return; }
-                const { _converse } = this.__super__,
-                      most_recent_msg = u.getMostRecentMessage(this.model);
+                if (this.disable_mam) {
+                    return;
+                }
+                const { _converse } = this.__super__;
+                const most_recent_msg = u.getMostRecentMessage(this.model);
 
                 if (_.isNil(most_recent_msg)) {
                     this.fetchArchivedMessages();
@@ -94,8 +96,7 @@ converse.plugins.add('converse-mam-views', {
                     mam_jid = _converse.bare_jid;
                     message_handler = _converse.chatboxes.onMessage.bind(_converse.chatboxes)
                 }
-                const supported = await _converse.api.disco.supports(Strophe.NS.MAM, mam_jid);
-                if (!supported.length) {
+                if (!(await _converse.api.disco.supports(Strophe.NS.MAM, mam_jid))) {
                     return;
                 }
                 this.addSpinner();

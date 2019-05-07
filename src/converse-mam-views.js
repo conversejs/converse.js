@@ -57,47 +57,21 @@ converse.plugins.add('converse-mam-views', {
                 }
             },
 
-            fetchArchivedMessagesIfNecessary () {
-                /* Check if archived messages should be fetched, and if so, do so. */
-                if (this.disable_mam || this.model.get('mam_initialized')) {
-                    return;
-                }
-                const { _converse } = this.__super__;
-                _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid).then(
-                    (result) => { // Success
-                        if (result.length) {
-                            this.fetchArchivedMessages();
-                        }
-                        this.model.save({'mam_initialized': true});
-                    },
-                    () => { // Error
-                        _converse.log(
-                            "Error or timeout while checking for MAM support",
-                            Strophe.LogLevel.ERROR
-                        );
-                    }
-                ).catch((msg) => {
-                    this.clearSpinner();
-                    _converse.log(msg, Strophe.LogLevel.FATAL);
-                });
-            },
-
             async fetchArchivedMessages (options) {
-                const { _converse } = this.__super__;
                 if (this.disable_mam) {
                     return;
                 }
+                const { _converse } = this.__super__;
                 const is_groupchat = this.model.get('type') === CHATROOMS_TYPE;
-                let mam_jid, message_handler;
-                if (is_groupchat) {
-                    mam_jid = this.model.get('jid');
-                    message_handler = this.model.onMessage.bind(this.model);
-                } else {
-                    mam_jid = _converse.bare_jid;
-                    message_handler = _converse.chatboxes.onMessage.bind(_converse.chatboxes)
-                }
+                const mam_jid = is_groupchat ? this.model.get('jid') : _converse.bare_jid;
                 if (!(await _converse.api.disco.supports(Strophe.NS.MAM, mam_jid))) {
                     return;
+                }
+                let message_handler;
+                if (is_groupchat) {
+                    message_handler = this.model.onMessage.bind(this.model);
+                } else {
+                    message_handler = _converse.chatboxes.onMessage.bind(_converse.chatboxes)
                 }
                 this.addSpinner();
                 let result;

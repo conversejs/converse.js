@@ -719,4 +719,72 @@
             }));
         });
     });
+
+    describe("Chatboxes", function () {
+        describe("A Chatbox", function () {
+
+            it("will fetch archived messages once it's opened",
+                mock.initConverse(
+                    null, ['discoInitialized'], {},
+                    async function (done, _converse) {
+
+                await test_utils.waitForRoster(_converse, 'current', 1);
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                await test_utils.openChatBoxFor(_converse, contact_jid);
+                await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
+
+                let sent_stanza, IQ_id;
+                const sendIQ = _converse.connection.sendIQ;
+                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
+                    sent_stanza = iq;
+                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
+                });
+                const view = _converse.chatboxviews.get(contact_jid);
+                await test_utils.waitUntil(() => sent_stanza);
+                const stanza_el = sent_stanza.root().nodeTree;
+                const queryid = stanza_el.querySelector('query').getAttribute('queryid');
+                expect(sent_stanza.toString()).toBe(
+                    `<iq id="${stanza_el.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                        `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
+                            `<x type="submit" xmlns="jabber:x:data">`+
+                                `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
+                                `<field var="with"><value>max.frankfurter@localhost</value></field>`+
+                            `</x>`+
+                            `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
+                        `</query>`+
+                    `</iq>`
+                );
+                const msg1 = $msg({'id':'aeb213', 'to': contact_jid})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'28482-98726-73623'})
+                                .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns':'jabber:client',
+                                        'to': contact_jid,
+                                        'from': _converse.bare_jid,
+                                        'type':'chat' })
+                                    .c('body').t("Call me but love, and I'll be new baptized;");
+                _converse.connection._dataRecv(test_utils.createRequest(msg1));
+                const msg2 = $msg({'id':'aeb213', 'to': contact_jid})
+                            .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'28482-98726-73624'})
+                                .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
+                                    .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
+                                    .c('message', {
+                                        'xmlns':'jabber:client',
+                                        'to': contact_jid,
+                                        'from': _converse.bare_jid,
+                                        'type':'chat' })
+                                    .c('body').t("Henceforth I never will be Romeo.");
+                _converse.connection._dataRecv(test_utils.createRequest(msg2));
+                const stanza = $iq({'type': 'result', 'id': IQ_id})
+                    .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
+                        .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
+                            .c('first', {'index': '0'}).t('23452-4534-1').up()
+                            .c('last').t('09af3-cc343-b409f').up()
+                            .c('count').t('16');
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
+                done();
+            }));
+        });
+    });
 }));

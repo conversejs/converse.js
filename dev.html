@@ -10,31 +10,202 @@
     <meta name="keywords" content="xmpp chat webchat converse.js" />
     <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
     <link type="text/css" rel="stylesheet" media="screen" href="css/converse.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="custom.css" />
     <script src="3rdparty/libsignal-protocol.js"></script>
     <script src="dist/converse.js"></script>
+    <script src="https://meet.jit.si/libs/lib-jitsi-meet.min.js"></script>
+   
 </head>
 
 <body class="reset">
 <div id="conversejs-bg"></div>
 <script>
+var whitelistedPlugins = [];
+var domain = 'link-im.com';
+var port = location.protocol === 'https:' ?'7443':'7070';
+var avatars = {};
+var nickColors = {};
+function createAvatar(nickname, width, height, font)
+{
+    console.log('create canvas');
+    if(!nickname){
+        nickname= 'no-name' 
+    }
+    nickname = nickname.toLowerCase();
+
+    if (avatars[nickname])
+    {
+        return avatars[nickname];
+    }
+
+    if (!width) width = 32;
+    if (!height) height = 32;
+    if (!font) font = "16px Arial";
+
+    var canvas = document.createElement('canvas');
+    canvas.style.display = 'none';
+    canvas.width = width;
+    canvas.height = height;
+    document.body.appendChild(canvas);
+    var context = canvas.getContext('2d');
+    context.fillStyle = getRandomColor(nickname);
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.font = font;
+    context.fillStyle = "#fff";
+
+    var first, last;
+    var name = nickname.split(" ");
+    var l = name.length - 1;
+
+    if (name && name[0] && name.first != '')
+    {
+        first = name[0][0];
+        last = name[l] && name[l] != '' && l > 0 ? name[l][0] : null;
+
+        if (last) {
+            var initials = first + last;
+            context.fillText(initials.toUpperCase(), 3, 23);
+        } else {
+            var initials = first;
+            context.fillText(initials.toUpperCase(), 10, 23);
+        }
+        var data = canvas.toDataURL();
+        document.body.removeChild(canvas);
+    }
+
+    avatars[nickname] = canvas.toDataURL();
+    return avatars[nickname];
+}
+function getRandomColor(nickname)
+{
+    if (nickColors[nickname])
+    {
+        return nickColors[nickname];
+    }
+    else {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        nickColors[nickname] = color;
+        return color;
+    }
+}
+function setAvatar(nickname, avatar)
+{
+    if (nickname && !avatars[nickname])
+    {
+        nickname = nickname.toLowerCase();
+        avatars[nickname] = avatar;
+
+        chrome.storage.local.set({avatars: avatars}, function() {
+          //console.debug('chrome.storage is set for ' + nickname, avatars);
+        });
+    }
+}
     converse.initialize({
-        auto_away: 300,
-        i18n: 'en',
-        // auto_join_rooms: [
-        //     'discuss@conference.conversejs.org',
-        //     'prosody@conference.prosody.im',
-        //     'jdev@conference.jabber.org'
-        // ],
-        // websocket_url: 'ws://chat.example.org:5280/xmpp-websocket',
-        view_mode: 'fullscreen',
-        notify_all_room_messages: [
-            'discuss@conference.conversejs.org'
-        ],
-        muc_respect_autojoin: false,
-        // bosh_service_url: 'http://chat.example.org:5280/http-bind/',
-        bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
-        message_archiving: 'always',
-        debug: true
+        allow_bookmarks: true,
+          allow_chat_pending_contacts: true,
+          //allow_non_roster_messaging: getSetting("allowNonRosterMessaging", true),
+          allow_public_bookmarks: true,
+          allow_logout: true,
+          allow_muc_invitations: true,
+          registration_domain: domain,
+          // xhr_user_search_url: 'http://link-im.com:9090/plugins/restapi/v1/users?',
+          //archived_messages_page_size: getSetting("archivedMessagesPageSize", 51),
+          //authentication: "login",//anonUser ? "anonymous" : "login",
+          //auto_join_rooms: autoJoinRooms,
+          //auto_join_private_chats: autoJoinPrivateChats,
+          //auto_away: autoAway,
+          //auto_xa: autoXa,
+          //auto_list_rooms: getSetting("autoListRooms", true),
+          //auto_login: username != null || anonUser,
+          //auto_reconnect: getSetting("autoReconnect", true),
+          //auto_subscribe: getSetting("autoSubscribe", false),
+          //auto_join_on_invite: getSetting("autoJoinOnInvite", false),
+          bosh_service_url:location.protocol +"//"+domain+":"+port+"/http-bind/",
+          debug: true,//getSetting("converseDebug", false),
+          default_domain: domain,
+          //default_state: getSetting("converseOpenState", "online"),
+          domain_placeholder: domain,
+          //fullname: displayname,
+          hide_open_bookmarks: true,
+          //hide_offline_users: getSetting("hideOfflineUsers", false),
+          // i18n: getSetting("language", "en"),
+          //jid : anonUser ? domain : username + "@" + domain,
+          locked_domain: domain,
+          message_archiving: "always",
+          //message_carbons: getSetting("messageCarbons", true),
+          muc_domain: "conference." + domain,
+          //muc_history_max_stanzas: getSetting("archivedMessagesPageSize", 51),
+        //   muc_nickname_from_jid: false,
+          //muc_show_join_leave: getSetting("showGroupChatStatusMessages", true),
+          //nickname: displayname,
+          notify_all_room_messages: true,
+          notification_icon: '../image.png',
+        //   webmeet_invitation: 'Please join meeting at',//getSetting("ofmeetInvitation", 'Please join meeting at'),
+        //   webinar_invitation: 'Please join webinar at',//getSetting("webinarInvite", 'Please join webinar at'),
+          //password: anonUser ? null : password,
+          play_sounds: true,
+          priority: 1,
+          //roster_groups: getSetting("rosterGroups", false),
+          show_controlbox_by_default: true,
+          show_message_load_animation: true,
+          show_desktop_notifications: true,
+          show_chatstate_notifications: true,
+          //show_only_online_users: getSetting("converseShowOnlyOnlineUsers", false),
+          //show_send_button: getSetting("showSendButton", false),
+          sounds_path: 'chatapp/sounds/',
+          view_mode: 'fullscreen',
+          visible_toolbar_buttons: {'emoji': true, 'call': false, 'clear': true, spoiler:true },
+          //websocket_url: connUrl,
+        //   theme: 'concord',
+           whitelisted_plugins: whitelistedPlugins,
+          locales_url: "chatapp/locale/{{{locale}}}/LC_MESSAGES/converse.json",
+          keepalive: true,
+          strict_plugin_dependencies: true,
+          chromeExtensionId: "oboefbfgickfankicegkfenfjiajbbjc",
+          auto_list_rooms: true,
+          locked_muc_domain: true,
+          locked_muc_nickname: true,
+          muc_nickname_from_jid:true,
+          auto_register_muc_nickname:true,
+        // muc_instant_rooms: false,
+          images:{
+            login_bottom_image:'https://i.imgur.com/omxuqo5.png'
+          },
+          password_regex:{
+            strongRegex:'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})',
+            mediumRegex:'^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})'
+          },
+          username_regex:'^[a-zA-Z0-9]+$',
+          fullname_regex: '^[a-zA-Z\s]+$',
+          roomDefaultConfiguration:{
+                'roomname':'',
+                'roomdesc': 'Comfy room for hanging out',
+                'changesubject': false,
+                'maxusers':'40',
+                'presencebroadcast':['moderator','participant'],
+                'publicroom': false,
+                'persistentroom': true,
+                'moderatedroom':false,
+                'membersonly': true,
+                'allowinvites':false,
+                'passwordprotectedroom':false,
+                'roomsecret':'scret',
+                'whois': 'moderators',
+                'allowpm':'moderators',
+                'enablelogging':true,
+                'reservednick':false,
+                'canchangenick':true,
+                'registration':false,
+                'roomadmins':[],
+                'roomowners':[],
+            },
+            'room_auto_configure': true,
+          
     });
 </script>
 </body>

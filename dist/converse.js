@@ -48439,7 +48439,7 @@ _converse_headless_converse_core__WEBPACK_IMPORTED_MODULE_5__["default"].plugins
          */
         ev.preventDefault();
         const nick_el = ev.target.nick;
-        const nick = nick_el.value;
+        const nick = nick_el.value.trim();
 
         if (nick) {
           this.chatroomview.join(nick);

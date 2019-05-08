@@ -1964,7 +1964,7 @@ converse.plugins.add('converse-muc-views', {
                  */
                 ev.preventDefault();
                 const nick_el = ev.target.nick;
-                const nick = nick_el.value;
+                const nick = nick_el.value.trim();
                 if (nick) {
                     this.chatroomview.join(nick);
                     this.model.set({

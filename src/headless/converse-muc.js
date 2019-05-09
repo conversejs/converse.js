@@ -1116,7 +1116,15 @@ converse.plugins.add('converse-muc', {
              */
             onPresence (pres) {
                 if (pres.getAttribute('type') === 'error') {
-                    this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                    // TODO: currently showErrorMessageFromPresence handles
+                    // 'error" presences in converse-muc-views.
+                    // Instead, they should be handled here and the presence
+                    // handler removed from there.
+                    if (sizzle(`error not-authorized[xmlns="${Strophe.NS.STANZAS}"]`, pres).length) {
+                        this.save('connection_status', converse.ROOMSTATUS.PASSWORD_REQUIRED);
+                    } else {
+                        this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                    }
                     return;
                 }
                 const is_self = pres.querySelector("status[code='110']");

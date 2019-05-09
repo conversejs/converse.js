@@ -99,19 +99,6 @@
                         color: white;
                     }
                 }
-                .fa-circle {
-                    color: var(--list-circle-color);
-                }
-                .fa-minus-circle {
-                    color: var(--list-minus-circle-color);
-                }
-                .fa-dot-circle {
-                    color: var(--list-dot-circle-color);
-                }
-                .far .fa-circle,
-                .fa-times-circle {
-                    color: var(--subdued-color-lighten-25-percent);
-                }
             }
 
             &:hover {

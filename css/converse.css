@@ -9298,7 +9298,6 @@ readers do not read off random characters that represent icons */
 
 #conversejs, #conversejs-bg, .converse-fullscreen {
   --subdued-color: #A8ABA1;
-  --subdued-color-lighten-25-percent: #e6e7e4;
   --green: #3AA569;
   --redder-orange: #E77051;
   --orange: #E7A151;
@@ -9435,8 +9434,6 @@ readers do not read off random characters that represent icons */
   --list-item-link-hover-color: var(--dark-link-color);
   --list-item-open-color: var(--controlbox-head-color);
   --list-item-open-hover-color: var(--controlbox-head-color);
-  --list-circle-color: #89d6ab;
-  --list-minus-circle-color: #f0a794;
   --list-dot-circle-color: #f6dec1; }
 
 #conversejs.theme-concord {
@@ -11383,15 +11380,6 @@ body.converse-fullscreen {
         color: var(--list-item-action-color); }
         #conversejs .items-list .list-item.open .list-item-action:hover {
           color: white; }
-      #conversejs .items-list .list-item.open .fa-circle {
-        color: var(--list-circle-color); }
-      #conversejs .items-list .list-item.open .fa-minus-circle {
-        color: var(--list-minus-circle-color); }
-      #conversejs .items-list .list-item.open .fa-dot-circle {
-        color: var(--list-dot-circle-color); }
-      #conversejs .items-list .list-item.open .far .fa-circle,
-      #conversejs .items-list .list-item.open .fa-times-circle {
-        color: var(--subdued-color-lighten-25-percent); }
     #conversejs .items-list .list-item:hover {
       background-color: var(--controlbox-head-color-lighten-45-percent); }
       #conversejs .items-list .list-item:hover .fa, #conversejs .items-list .list-item:hover .far, #conversejs .items-list .list-item:hover .fas {

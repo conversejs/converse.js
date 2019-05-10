@@ -104,8 +104,8 @@ release:
 	$(INSTALL) -D dist/converse.min.js 'converse-assets-$(VERSION)/converse.min.js'
 	$(INSTALL) -D dist/converse.min.js.map 'converse-assets-$(VERSION)/converse.min.js.map'
 	$(INSTALL) -D dist/converse-headless.js 'converse-assets-$(VERSION)/converse-headless.js'
-	$(INSTALL) -D src/headless/dist/converse-headless.min.js 'converse-assets-$(VERSION)/converse-headless.min.js'
-	$(INSTALL) -D src/headless/dist/converse-headless.min.js.map 'converse-assets-$(VERSION)/converse-headless.min.js.map'
+	$(INSTALL) -D dist/converse-headless.min.js 'converse-assets-$(VERSION)/converse-headless.min.js'
+	$(INSTALL) -D dist/converse-headless.min.js.map 'converse-assets-$(VERSION)/converse-headless.min.js.map'
 	$(INSTALL) -D dist/converse.css 'converse-assets-$(VERSION)/dist/converse.css'
 	$(INSTALL) -D dist/converse.min.css 'converse-assets-$(VERSION)/dist/converse.min.css'
 	cp -r dist/webfonts 'converse-assets-$(VERSION)/dist/'
@@ -128,12 +128,7 @@ stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 
 .PHONY: clean
 clean:
-	rm -rf node_modules stamp-npm
-	rm -f dist/*.min.js*
-	rm -f dist/*.min.css
-	rm -f dist/*.map
-	rm -f dist/*.zip
-	rm -f *.zip
+	npm run clean
 
 .PHONY: dev
 dev: stamp-npm
@@ -144,20 +139,20 @@ dev: stamp-npm
 .PHONY: css
 css: sass/*.scss dist/converse.css dist/converse.min.css dist/website.css dist/website.min.css dist/font-awesome.css
 
-dist/converse.css:: stamp-npm webpack.config.js sass
-	$(NPX)  webpack --type=css --mode=development
-
 dist/website.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
+
+dist/website.min.css:: stamp-npm dist/website.css
+	$(CLEANCSS) $< > $@
 
 dist/font-awesome.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@
 
-dist/converse.min.css:: stamp-npm dist/converse.css
-	$(CLEANCSS) $< > $@
+dist/converse.css:: stamp-npm webpack.config.js sass
+	npm run converse.css
 
-dist/website.min.css:: stamp-npm dist/website.css
-	$(CLEANCSS) $< > $@
+dist/converse.min.css:: stamp-npm dist/converse.css
+	npm run converse.min.css
 
 .PHONY: watchcss
 watchcss: stamp-npm
@@ -204,13 +199,13 @@ BUILDS = dist/converse.js \
 	dist/converse-no-dependencies-es2015.js
 
 dist/converse.js: src webpack.config.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=development
+	npm run converse.js
 dist/converse.min.js: src webpack.config.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=production
+	npm run converse.min.js
 src/headless/dist/converse-headless.js: src webpack.config.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=development --type=headless
+	npm run converse-headless.js
 src/headless/dist/converse-headless.min.js: src webpack.config.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=production --type=headless
+	npm run converse-headless.min.js
 dist/converse-no-dependencies.js: src webpack.config.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=development --type=nodeps
 dist/converse-no-dependencies.min.js: src webpack.config.js stamp-npm @converse/headless

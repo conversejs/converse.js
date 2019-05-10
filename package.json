@@ -2,11 +2,24 @@
   "name": "converse.js",
   "version": "4.2.0",
   "description": "Browser based XMPP chat client",
-  "main": "dist/converse.js",
-  "directories": {
-    "doc": "docs",
-    "locale": "locale",
-    "src": "src"
+  "main": "dist/converse.min.js",
+  "files": [
+    "dist/",
+    "locale/",
+    "src/",
+    "CHANGES.md",
+    "README.md"
+  ],
+  "scripts": {
+    "converse.css": "webpack --type=css --mode=development",
+    "converse.min.css": "npm run converse.css && cleancss --skip-rebase dist/converse.css > dist/converse.min.css",
+    "converse.js": "webpack --mode=development",
+    "converse.min.js": "npm run converse.js && webpack --mode=production",
+	"converse-headless.js": "webpack --mode=development --type=headless",
+	"converse-headless.min.js": "npm run converse-headless.css && webpack --mode=production --type=headless",
+    "clean": "rm -rf node_modules stamp-npm dist *.zip",
+    "build": "npm run converse.min.css && npm run converse-headless.min.js && npm run converse.min.js",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",

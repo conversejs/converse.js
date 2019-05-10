@@ -152,7 +152,7 @@ function parameterize () {
         extend(config, {
             entry: "@converse/headless/headless.js",
             output: {
-                path: path.resolve(__dirname, 'src/headless/dist'),
+                path: path.resolve(__dirname, 'dist'),
                 filename: 'converse-headless.js'
             },
         });

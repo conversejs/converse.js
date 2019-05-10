@@ -20,7 +20,7 @@
     "converse-headless.min.js": "npm run converse-headless.js && webpack --mode=production --type=headless",
     "clean": "rm -rf node_modules stamp-npm dist *.zip",
     "build": "npm run converse.min.css && npm run converse-headless.min.js && npm run converse.min.js",
-    "prepare": "npm run build"
+    "prepare": "lerna bootstrap --hoist --ignore-scripts && npm run build"
   },
   "repository": {
     "type": "git",

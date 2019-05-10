@@ -106,9 +106,9 @@ release:
 	$(INSTALL) -D dist/converse-headless.js 'converse-assets-$(VERSION)/converse-headless.js'
 	$(INSTALL) -D src/headless/dist/converse-headless.min.js 'converse-assets-$(VERSION)/converse-headless.min.js'
 	$(INSTALL) -D src/headless/dist/converse-headless.min.js.map 'converse-assets-$(VERSION)/converse-headless.min.js.map'
-	$(INSTALL) -D css/converse.css 'converse-assets-$(VERSION)/css/converse.css'
-	$(INSTALL) -D css/converse.min.css 'converse-assets-$(VERSION)/css/converse.min.css'
-	cp -r css/webfonts 'converse-assets-$(VERSION)/css/'
+	$(INSTALL) -D dist/converse.css 'converse-assets-$(VERSION)/dist/converse.css'
+	$(INSTALL) -D dist/converse.min.css 'converse-assets-$(VERSION)/dist/converse.min.css'
+	cp -r dist/webfonts 'converse-assets-$(VERSION)/dist/'
 	cp -r sounds 'converse-assets-$(VERSION)/'
 	find locale -type f -name '*.json' \
 		-exec $(INSTALL) -D '{}' 'converse-assets-$(VERSION)/{}' \;
@@ -130,9 +130,9 @@ stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
 clean:
 	rm -rf node_modules stamp-npm
 	rm -f dist/*.min.js*
-	rm -f css/*.min.css
-	rm -f css/*.map
-	rm -f css/*.zip
+	rm -f dist/*.min.css
+	rm -f dist/*.map
+	rm -f dist/*.zip
 	rm -f *.zip
 
 .PHONY: dev
@@ -142,23 +142,25 @@ dev: stamp-npm
 ## Builds
 
 .PHONY: css
-css: sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/font-awesome.css
+css: sass/*.scss dist/converse.css dist/converse.min.css dist/website.css dist/website.min.css dist/font-awesome.css
 
-css/converse.css:: stamp-npm webpack.config.js sass
+dist/converse.css:: stamp-npm webpack.config.js sass
 	$(NPX)  webpack --type=css --mode=development
 
-css/website.css:: stamp-npm sass
+dist/website.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
 
-css/font-awesome.css:: stamp-npm sass
+dist/font-awesome.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@
 
-css/%.min.css:: css/%.css
-	make stamp-npm
+dist/converse.min.css:: stamp-npm dist/converse.css
+	$(CLEANCSS) $< > $@
+
+dist/website.min.css:: stamp-npm dist/website.css
 	$(CLEANCSS) $< > $@
 
 .PHONY: watchcss
-watchcss: stamp-npm 
+watchcss: stamp-npm
 	$(NPX)  webpack --type=css --mode=development --watch
 
 .PHONY: watchjs
@@ -236,7 +238,7 @@ eslint: stamp-npm
 	$(ESLINT) spec/
 
 .PHONY: check
-check: eslint dist/converse.js 
+check: eslint dist/converse.js
 	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --disable-gpu --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
 
 ########################################################################

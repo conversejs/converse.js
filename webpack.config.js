@@ -15,7 +15,7 @@ const config = {
         filename: 'converse.js'
     },
     devtool: 'source-map',
-    plugins: [new MiniCssExtractPlugin({filename: '../css/converse.css'})],
+    plugins: [new MiniCssExtractPlugin({filename: './converse.css'})],
     module: {
         rules: [
         {
@@ -60,7 +60,7 @@ const config = {
                 loader: 'file-loader',
                 options: {
                     name: '[path][name].[ext]',
-                    outputPath: '../'
+                    outputPath: './'
                 }
             }
             ]

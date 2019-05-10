@@ -4,11 +4,12 @@
   "description": "Browser based XMPP chat client",
   "main": "dist/converse.min.js",
   "files": [
-    "dist/",
-    "locale/",
-    "src/",
     "CHANGES.md",
-    "README.md"
+    "README.md",
+    "dist/",
+    "locale/**/*.json",
+    "sounds/",
+    "src/"
   ],
   "scripts": {
     "converse.css": "webpack --type=css --mode=development && rm -r tmp",

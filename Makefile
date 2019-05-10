@@ -99,22 +99,7 @@ release:
 	make po
 	make po2json
 	make build
-	mkdir -p 'converse-assets-$(VERSION)'
-	$(INSTALL) -D dist/converse.js 'converse-assets-$(VERSION)/converse.js'
-	$(INSTALL) -D dist/converse.min.js 'converse-assets-$(VERSION)/converse.min.js'
-	$(INSTALL) -D dist/converse.min.js.map 'converse-assets-$(VERSION)/converse.min.js.map'
-	$(INSTALL) -D dist/converse-headless.js 'converse-assets-$(VERSION)/converse-headless.js'
-	$(INSTALL) -D dist/converse-headless.min.js 'converse-assets-$(VERSION)/converse-headless.min.js'
-	$(INSTALL) -D dist/converse-headless.min.js.map 'converse-assets-$(VERSION)/converse-headless.min.js.map'
-	$(INSTALL) -D dist/converse.css 'converse-assets-$(VERSION)/dist/converse.css'
-	$(INSTALL) -D dist/converse.min.css 'converse-assets-$(VERSION)/dist/converse.min.css'
-	cp -r dist/webfonts 'converse-assets-$(VERSION)/dist/'
-	cp -r sounds 'converse-assets-$(VERSION)/'
-	find locale -type f -name '*.json' \
-		-exec $(INSTALL) -D '{}' 'converse-assets-$(VERSION)/{}' \;
-	zip -r 'converse-assets-$(VERSION).zip' 'converse-assets-$(VERSION)'
-	rm -rf 'converse-assets-$(VERSION)'
-
+	npm run pack
 
 ########################################################################
 ## Install dependencies

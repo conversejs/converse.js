@@ -15,7 +15,7 @@ const config = {
         filename: 'converse.js'
     },
     devtool: 'source-map',
-    plugins: [new MiniCssExtractPlugin({filename: './converse.css'})],
+    plugins: [new MiniCssExtractPlugin({filename: '../dist/converse.css'})],
     module: {
         rules: [
         {
@@ -60,7 +60,7 @@ const config = {
                 loader: 'file-loader',
                 options: {
                     name: '[path][name].[ext]',
-                    outputPath: './'
+                    outputPath: '../dist/'
                 }
             }
             ]
@@ -184,7 +184,10 @@ function parameterize () {
     if (type === 'css') {
         console.log("Building only CSS");
         config.entry = path.resolve(__dirname, 'sass/converse.scss');
-        config.output = {};
+        config.output = {
+            path: path.resolve(__dirname, 'tmp'),
+            filename: 'css-builder.js'
+        }
     }
 
     if (mode === 'production') {

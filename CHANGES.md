@@ -13,6 +13,7 @@
 - Replace `moment` with [DayJS](https://github.com/iamkun/dayjs).
 - New API method [\_converse.api.disco.features.get](https://conversejs.org/docs/html/api/-_converse.api.disco.features.html#.get)
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
+- #1465: When highlighting a roster contact, they're incorrectly shown as online
 - #1532: Converse reloads on enter pressed in the filter box
 - #1550: Legitimate carbons being blocked due to erroneous forgery check
 - #1554: Room auto-configuration broke if the config form contained fields with type `fixed`

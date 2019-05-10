@@ -16,8 +16,8 @@
     "converse.min.css": "npm run converse.css && cleancss --skip-rebase dist/converse.css > dist/converse.min.css",
     "converse.js": "webpack --mode=development",
     "converse.min.js": "npm run converse.js && webpack --mode=production",
-	"converse-headless.js": "webpack --mode=development --type=headless",
-	"converse-headless.min.js": "npm run converse-headless.js && webpack --mode=production --type=headless",
+    "converse-headless.js": "webpack --mode=development --type=headless",
+    "converse-headless.min.js": "npm run converse-headless.js && webpack --mode=production --type=headless",
     "clean": "rm -rf node_modules stamp-npm dist *.zip",
     "build": "npm run converse.min.css && npm run converse-headless.min.js && npm run converse.min.js",
     "prepare": "npm run build"

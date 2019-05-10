@@ -8,6 +8,7 @@
     "README.md",
     "dist/",
     "locale/**/*.json",
+    "sass/",
     "sounds/",
     "src/"
   ],

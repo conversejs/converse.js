@@ -68,7 +68,6 @@ Example:
 .. code-block:: javascript
 
     converse.initialize({
-            allow_otr: true,
             auto_list_rooms: false,
             auto_subscribe: false,
             bosh_service_url: 'https://bind.example.com',

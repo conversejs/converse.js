@@ -35,7 +35,7 @@ all: dev dist
 help:
 	@echo "Please use \`make <target>' where <target> is one of the following:"
 	@echo ""
-	@echo " all             Set up dev environment and create all builds
+	@echo " all             Set up dev environment and create all builds"
 	@echo " build           Create minified builds of converse.js and all its dependencies."
 	@echo " clean           Remove all NPM packages."
 	@echo " check           Run all tests."

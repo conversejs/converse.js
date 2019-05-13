@@ -14,7 +14,7 @@ import tpl_info from "templates/info.html";
 import tpl_message from "templates/message.html";
 import tpl_message_versions_modal from "templates/message_versions_modal.html";
 import u from "@converse/headless/utils/emoji";
-import xss from "xss";
+import xss from "xss/dist/xss";
 
 const { Backbone, _, dayjs } = converse.env;
 

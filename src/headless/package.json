@@ -28,7 +28,7 @@
     "filesize": "^3.6.1",
     "jed": "1.1.1",
     "lodash": "^4.17.11",
-    "pluggable.js": "2.0.0",
+    "pluggable.js": "2.0.1",
     "strophe.js": "strophe/strophejs#f5173c0c606b8bc6204bb00b57b35bbc502d4b31",
     "strophejs-plugin-ping": "0.0.3",
     "strophejs-plugin-rsm": "0.0.2",

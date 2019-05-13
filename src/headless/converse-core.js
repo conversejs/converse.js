@@ -13,7 +13,7 @@ import advancedFormat from 'dayjs/plugin/advancedFormat'
 import dayjs from "dayjs";
 import f from "./lodash.fp";
 import i18n from "./i18n";
-import pluggable from "pluggable.js/dist/pluggable";
+import pluggable from "pluggable.js/src/pluggable";
 import polyfill from "./polyfill";
 import sizzle from "sizzle";
 import u from "@converse/headless/utils/core";

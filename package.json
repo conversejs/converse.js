@@ -5,6 +5,7 @@
   "main": "dist/converse.min.js",
   "files": [
     "CHANGES.md",
+    "LICENSE.txt",
     "README.md",
     "dist/",
     "locale/**/*.json",
@@ -86,7 +87,6 @@
     "minimist": "^1.2.0",
     "node-sass": "^4.11.0",
     "npm": "^6.4.1",
-    "pluggable.js": "2.0.0",
     "po2json": "^0.4.4",
     "requirejs": "2.3.5",
     "run-headless-chromium": "^0.1.1",

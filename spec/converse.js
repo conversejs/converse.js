@@ -9,7 +9,7 @@
           u = converse.env.utils;
 
     describe("Converse", function() {
-        
+
         describe("Authentication", function () {
 
             it("needs either a bosh_service_url a websocket_url or both", mock.initConverse((done, _converse) => {
@@ -352,7 +352,7 @@
 
         describe("The \"settings\" API", function() {
             it("has methods 'get' and 'set' to set configuration settings", mock.initConverse(
-                    null, null, {'play_sounds': true}, 
+                    null, null, {'play_sounds': true},
                     (done, _converse) => {
 
                 expect(_.keys(_converse.api.settings)).toEqual(["update", "get", "set"]);

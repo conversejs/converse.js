@@ -128,8 +128,7 @@ const config = {
             "snabbdom-props":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-props"),
             "snabbdom-style":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-style"),
             "tovnode":                  path.resolve(__dirname, "node_modules/snabbdom/dist/tovnode"),
-            "underscore":               path.resolve(__dirname, "src/underscore-shim"),
-            "xss":                      path.resolve(__dirname, "node_modules/xss/dist/xss")
+            "underscore":               path.resolve(__dirname, "src/underscore-shim")
         }
     }
 }
@@ -163,6 +162,9 @@ function parameterize () {
         extend(config, {
             entry: path.resolve(__dirname, 'src/converse.js'),
             externals: [{
+                "backbone": "backbone",
+                "backbone.nativeview": "backbone.nativeview",
+                "backbone.vdomview": "backbone.vdomview",
                 "backbone.browserStorage": "backbone.browserStorage",
                 "backbone.overview": "backbone.overview",
                 "es6-promise": "es6-promise",

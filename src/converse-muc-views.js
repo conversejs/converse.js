@@ -35,7 +35,7 @@ import tpl_room_item from "templates/room_item.html";
 import tpl_room_panel from "templates/room_panel.html";
 import tpl_rooms_results from "templates/rooms_results.html";
 import tpl_spinner from "templates/spinner.html";
-import xss from "xss";
+import xss from "xss/dist/xss";
 
 
 const { Backbone, Promise, Strophe, dayjs, f, sizzle, _, $build, $iq, $msg, $pres } = converse.env;

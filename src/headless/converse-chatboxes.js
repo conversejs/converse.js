@@ -626,7 +626,7 @@ converse.plugins.add('converse-chatboxes', {
                     });
                     return;
                 }
-                _.each(files, (file) => {
+                files.forEach(file => {
                     if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
                         return this.messages.create({
                             'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
@@ -762,7 +762,7 @@ converse.plugins.add('converse-chatboxes', {
                         attrs.fullname = this.get('fullname') || this.get('fullname')
                     }
                 }
-                _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza), (xform) => {
+                sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza).forEach(xform => {
                     attrs['oob_url'] = xform.querySelector('url').textContent;
                     attrs['oob_desc'] = xform.querySelector('url').textContent;
                 });
@@ -1029,7 +1029,7 @@ converse.plugins.add('converse-chatboxes', {
             /* Automatically join private chats, based on the
              * "auto_join_private_chats" configuration setting.
              */
-            _.each(_converse.auto_join_private_chats, function (jid) {
+            _converse.auto_join_private_chats.forEach(jid => {
                 if (_converse.chatboxes.where({'jid': jid}).length) {
                     return;
                 }
@@ -1210,7 +1210,7 @@ converse.plugins.add('converse-chatboxes', {
                     } else if (_.isString(jids)) {
                         return _converse.chatboxes.getChatBox(jids);
                     }
-                    return _.map(jids, _.partial(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _, {}, true));
+                    return jids.map(_.partial(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _, {}, true));
                 }
             }
         });

@@ -431,7 +431,7 @@ converse.plugins.add('converse-muc', {
                 [text, references] = this.parseTextForReferences(text);
                 const origin_id = _converse.connection.getUniqueId();
 
-                return {
+                return this.addOccupantData({
                     'msgid': origin_id,
                     'origin_id': origin_id,
                     'from': `${this.get('jid')}/${this.get('nick')}`,
@@ -444,7 +444,7 @@ converse.plugins.add('converse-muc', {
                     'sender': 'me',
                     'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
                     'type': 'groupchat'
-                };
+                });
             },
 
             getRoomJIDAndNick (nick) {
@@ -1068,6 +1068,17 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
+            addOccupantData (attrs) {
+                if (attrs.nick) {
+                    const occupant = this.occupants.findOccupant({'nick': attrs.nick});
+                    if (occupant) {
+                        attrs['affiliation'] = occupant.get('affiliation');
+                        attrs['role'] = occupant.get('role');
+                    }
+                }
+                return attrs;
+            },
+
             /**
              * Handler for all MUC messages sent to this groupchat.
              * @private
@@ -1092,14 +1103,14 @@ converse.plugins.add('converse-muc', {
                         this.isChatMarker(stanza)) {
                     return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
-                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
 
+                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
                 if (attrs.nick &&
                         !this.subjectChangeHandled(attrs) &&
                         !this.ignorableCSN(attrs) &&
                         (attrs['chat_state'] || !u.isEmptyMessage(attrs))) {
 
-                    const msg = this.messages.create(attrs);
+                    const msg = this.messages.create(this.addOccupantData(attrs));
                     this.incrementUnreadMsgCounter(msg);
                     if (forwarded && msg && msg.get('sender')  === 'me') {
                         msg.save({'received': (new Date()).toISOString()});

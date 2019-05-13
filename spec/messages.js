@@ -2273,6 +2273,76 @@
             done();
         }));
 
+        it("keeps track of the sender's role and affiliation",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+            const view = _converse.api.chatviews.get('lounge@localhost');
+            let msg = $msg({
+                from: 'lounge@localhost/dummy',
+                id: (new Date()).getTime(),
+                to: 'dummy@localhost',
+                type: 'groupchat'
+            }).c('body').t('I wrote this message!').tree();
+            await view.model.onMessage(msg);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            expect(view.model.messages.last().get('affiliation')).toBe('owner');
+            expect(view.model.messages.last().get('role')).toBe('moderator');
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author chat-msg__me moderator');
+
+            let presence = $pres({
+                    to:'dummy@localhost/resource',
+                    from:'lounge@localhost/dummy',
+                    id: u.getUniqueId()
+            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({
+                    affiliation: 'member',
+                    jid: 'dummy@localhost/resource',
+                    role: 'participant'
+                }).up()
+                .c('status').attrs({code:'110'}).up()
+                .c('status').attrs({code:'210'}).nodeTree;
+            _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+            msg = $msg({
+                from: 'lounge@localhost/dummy',
+                id: (new Date()).getTime(),
+                to: 'dummy@localhost',
+                type: 'groupchat'
+            }).c('body').t('Another message!').tree();
+            await view.model.onMessage(msg);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            expect(view.model.messages.last().get('affiliation')).toBe('member');
+            expect(view.model.messages.last().get('role')).toBe('participant');
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
+            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author chat-msg__me participant');
+
+            presence = $pres({
+                    to:'dummy@localhost/resource',
+                    from:'lounge@localhost/dummy',
+                    id: u.getUniqueId()
+            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({
+                    affiliation: 'owner',
+                    jid: 'dummy@localhost/resource',
+                    role: 'moderator'
+                }).up()
+                .c('status').attrs({code:'110'}).up()
+                .c('status').attrs({code:'210'}).nodeTree;
+            _converse.connection._dataRecv(test_utils.createRequest(presence));
+            view.model.sendMessage('hello world');
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            expect(view.model.messages.last().get('affiliation')).toBe('owner');
+            expect(view.model.messages.last().get('role')).toBe('moderator');
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
+            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author chat-msg__me moderator');
+            done();
+        }));
+
+
         it("keeps track whether you are the sender or not",
             mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
@@ -2287,6 +2357,7 @@
                     type: 'groupchat'
                 }).c('body').t('I wrote this message!').tree();
             await view.model.onMessage(msg);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             expect(view.model.messages.last().get('sender')).toBe('me');
             done();
         }));

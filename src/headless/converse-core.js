@@ -1792,11 +1792,11 @@ _converse.api = {
             _converse.connection.send(
                $msg({
                   'to': _converse.bare_jid,
-                  'type': this.get('message_type'),
+                  'type': stanza.getAttribute('type'),
                }).c('forwarded', {'xmlns': Strophe.NS.FORWARD})
                      .c('delay', {
-                           'xmns': Strophe.NS.DELAY,
-                           'stamp': (new Date()).toISOString()
+                        'xmns': Strophe.NS.DELAY,
+                        'stamp': (new Date()).toISOString()
                      }).up()
                   .cnode(stanza.tree())
             );

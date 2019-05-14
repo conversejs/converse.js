@@ -9,7 +9,7 @@
 import converse from "./converse-core";
 import sizzle from "sizzle";
 
-const { Backbone, Promise, Strophe, $iq, utils, _, f } = converse.env;
+const { Backbone, Promise, Strophe, $iq, utils, _ } = converse.env;
 
 converse.plugins.add('converse-disco', {
 
@@ -584,8 +584,8 @@ converse.plugins.add('converse-disco', {
                             entity.hasFeature(feature)
                         );
                         const result = await Promise.all(promises);
-                        return f.filter(f.isObject, result);
-                    },
+                        return _.filter(result, _.isObject);
+                    }
                 },
 
                 /**

@@ -203,7 +203,7 @@ u.getEmojisByCategory = function (_converse) {
      * lists of emojis in that category as values.
      */
     if (_.isUndefined(_converse.emojis_by_category)) {
-        const emojis = _.values(_.mapValues(emoji_list, function (value, key, o) {
+        const emojis = Object.values(_.mapValues(emoji_list, function (value, key, o) {
             value._shortname = key;
             return value
         }));

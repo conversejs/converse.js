@@ -1,6 +1,8 @@
 # Changelog
 
 ## 5.0.0 (Unreleased)
+
+- Groupchat default configuration now supports `list-multi` fields
 - Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
 - Bugfix: Modal auto-closes when you open it for a second time.
 - Take roster nickname into consideration when rendering messages and chat headings.
@@ -11,6 +13,8 @@
 - Continuously retry (in 2s intervals) to fetch login credentials (via [credentials_url](https://conversejs.org/docs/html/configuration.html#credentials-url)) in case of failure
 - Replace `moment` with [DayJS](https://github.com/iamkun/dayjs).
 - New API method [\_converse.api.disco.features.get](https://conversejs.org/docs/html/api/-_converse.api.disco.features.html#.get)
+- New config setting [muc_show_disconnection_status](https://conversejs.org/docs/html/configuration.html#muc-show-disconnection-status)
+- New event: `chatBoxBlurred`.
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1465: When highlighting a roster contact, they're incorrectly shown as online
 - #1532: Converse reloads on enter pressed in the filter box

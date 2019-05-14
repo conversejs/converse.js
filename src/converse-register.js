@@ -438,7 +438,7 @@ converse.plugins.add('converse-register', {
             },
 
             renderLegacyRegistrationForm (form) {
-                _.each(Object.keys(this.fields), (key) => {
+                Object.keys(this.fields).forEach(key => {
                     if (key === "username") {
                         form.insertAdjacentHTML(
                             'beforeend',
@@ -466,12 +466,10 @@ converse.plugins.add('converse-register', {
                     }
                 });
                 // Show urls
-                _.each(this.urls, (url) => {
-                    form.insertAdjacentHTML(
-                        'afterend',
-                        '<a target="blank" rel="noopener" href="'+url+'">'+url+'</a>'
-                    );
-                });
+                this.urls.forEach(u => form.insertAdjacentHTML(
+                    'afterend',
+                    '<a target="blank" rel="noopener" href="'+u+'">'+u+'</a>'
+                ));
             },
 
             /**
@@ -493,7 +491,7 @@ converse.plugins.add('converse-register', {
 
                 const buttons = form.querySelector('fieldset.buttons');
                 if (this.form_type === 'xform') {
-                    _.each(stanza.querySelectorAll('field'), (field) => {
+                    stanza.querySelectorAll('field').forEach(field => {
                         buttons.insertAdjacentHTML(
                             'beforebegin',
                             utils.xForm2webForm(field, stanza, {'domain': this.domain})
@@ -540,9 +538,7 @@ converse.plugins.add('converse-register', {
              */
             reportErrors (stanza) {
                 const errors = stanza.querySelectorAll('error');
-                _.each(errors, (error) => {
-                    this.showValidationError(error.textContent);
-                });
+                errors.forEach(e => this.showValidationError(e.textContent));
                 if (!errors.length) {
                     const message = __('The provider rejected your registration attempt. '+
                         'Please check the values you entered for correctness.');
@@ -596,13 +592,9 @@ converse.plugins.add('converse-register', {
 
                 if (this.form_type === 'xform') {
                     iq.c("x", {xmlns: Strophe.NS.XFORM, type: 'submit'});
-                    _.each(inputs, (input) => {
-                        iq.cnode(utils.webForm2xForm(input)).up();
-                    });
+                    inputs.forEach(input => iq.cnode(utils.webForm2xForm(input)).up());
                 } else {
-                    _.each(inputs, (input) => {
-                        iq.c(input.getAttribute('name'), {}, input.value);
-                    });
+                    inputs.forEach(input => iq.c(input.getAttribute('name'), {}, input.value));
                 }
                 _converse.connection._addSysHandler(this._onRegisterIQ.bind(this), null, "iq", null, null);
                 _converse.connection.send(iq);
@@ -625,7 +617,7 @@ converse.plugins.add('converse-register', {
             },
 
             _setFieldsFromLegacy (query) {
-                _.each(query.children, (field) => {
+                [].forEach.call(query.children, field => {
                     if (field.tagName.toLowerCase() === 'instructions') {
                         this.instructions = Strophe.getText(field);
                         return;
@@ -643,7 +635,7 @@ converse.plugins.add('converse-register', {
             _setFieldsFromXForm (xform) {
                 this.title = _.get(xform.querySelector('title'), 'textContent');
                 this.instructions = _.get(xform.querySelector('instructions'), 'textContent');
-                _.each(xform.querySelectorAll('field'), (field) => {
+                xform.querySelectorAll('field').forEach(field => {
                     const _var = field.getAttribute('var');
                     if (_var) {
                         this.fields[_var.toLowerCase()] = _.get(field.querySelector('value'), 'textContent', '');

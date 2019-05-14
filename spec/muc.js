@@ -156,6 +156,7 @@
                     'nick': 'some1',
                     'auto_configure': true,
                     'roomconfig': {
+                        'getmemberlist': ['moderator', 'participant'],
                         'changesubject': false,
                         'membersonly': true,
                         'persistentroom': true,
@@ -224,6 +225,13 @@
                         <field type="list-single" var="muc#roomconfig_whois" label="Who May Discover Real JIDs?"><option label="Moderators Only">
                            <value>moderators</value></option><option label="Anyone"><value>anyone</value></option>
                         </field>
+                        <field label="Roles and Affiliations that May Retrieve Member List"
+                               type="list-multi"
+                               var="muc#roomconfig_getmemberlist">
+                            <value>moderator</value>
+                            <value>participant</value>
+                            <value>visitor</value>
+                        </field>
                         <field type="text-private" var="muc#roomconfig_roomsecret" label="Password"><value/></field>
                         <field type="boolean" var="muc#roomconfig_moderatedroom" label="Make Room Moderated?"/>
                         <field type="boolean" var="muc#roomconfig_membersonly" label="Make Room Members-Only?"/>
@@ -243,6 +251,7 @@
                 expect(sizzle('field[var="muc#roomconfig_roomname"] value', sent_stanza).pop().textContent).toBe('Room');
                 expect(sizzle('field[var="muc#roomconfig_roomdesc"] value', sent_stanza).pop().textContent).toBe('Welcome to this groupchat');
                 expect(sizzle('field[var="muc#roomconfig_persistentroom"] value', sent_stanza).pop().textContent).toBe('1');
+                expect(sizzle('field[var="muc#roomconfig_getmemberlist"] value', sent_stanza).map(e => e.textContent).join(' ')).toBe('moderator participant');
                 expect(sizzle('field[var="muc#roomconfig_publicroom"] value ', sent_stanza).pop().textContent).toBe('1');
                 expect(sizzle('field[var="muc#roomconfig_changesubject"] value', sent_stanza).pop().textContent).toBe('0');
                 expect(sizzle('field[var="muc#roomconfig_whois"] value ', sent_stanza).pop().textContent).toBe('anyone');
@@ -893,6 +902,44 @@
                 expect(sizzle('div.chat-info', chat_content).length).toBe(2);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
                     `fabio has left and re-entered the groupchat`);
+                done();
+            }));
+
+            it("doesn't show the disconnection status when muc_show_disconnection_status is false",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'muc_show_disconnection_status': false},
+                    async function (done, _converse) {
+
+                await test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1');
+                const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                const chat_content = view.el.querySelector('.chat-content');
+                let presence = $pres({
+                        to: 'dummy@localhost/resource',
+                        from: 'coven@chat.shakespeare.lit/newguy'
+                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': 'newguy@localhost/_converse.js-290929789',
+                        'role': 'participant'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(chat_content.querySelectorAll('div.chat-info').length).toBe(0);
+
+                presence = $pres({
+                    to: 'dummy@localhost/resource',
+                        type: 'unavailable',
+                        from: 'coven@chat.shakespeare.lit/newguy'
+                    })
+                    .c('status', 'Disconnected: Replaced by new connection').up()
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': 'newguy@localhost/_converse.js-290929789',
+                            'role': 'none'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(chat_content.querySelectorAll('div.chat-info').length).toBe(1);
+                expect(sizzle('div.chat-info', chat_content).pop().textContent).toBe('newguy has left the groupchat');
                 done();
             }));
 

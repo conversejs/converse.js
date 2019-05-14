@@ -5,7 +5,6 @@
     const $iq = converse.env.$iq;
     const Strophe = converse.env.Strophe;
     const _ = converse.env._;
-    const f = converse.env.f;
 
     describe("XEP-0357 Push Notifications", function () {
 
@@ -30,7 +29,7 @@
                     _converse.bare_jid,
                     [{'category': 'account', 'type':'registered'}],
                     ['urn:xmpp:push:0'], [], 'info');
-            const node = await test_utils.waitUntil(() => 
+            const node = await test_utils.waitUntil(() =>
                 _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq[type="set"] enable[xmlns="urn:xmpp:push:0"]')).pop()
             );
             const stanza = node.nodeTree;
@@ -84,7 +83,7 @@
                 'type': 'result',
                 'id': stanza.nodeTree.getAttribute('id')
             })));
-            await test_utils.waitUntil(() => f.includes('chat.shakespeare.lit', _converse.session.get('push_enabled')));
+            await test_utils.waitUntil(() => _.includes(_converse.session.get('push_enabled'), 'chat.shakespeare.lit'));
             done();
         }));
 

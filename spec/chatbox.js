@@ -123,7 +123,6 @@
                 // Check that new chat boxes are created to the left of the
                 // controlbox (but to the right of all existing chat boxes)
                 expect(document.querySelectorAll("#conversejs .chatbox").length).toBe(2);
-                expect(document.querySelectorAll("#conversejs .chatbox")[1].id).toBe(chatboxview.model.get('box_id'));
                 online_contacts[1].click();
                 await test_utils.waitUntil(() => _converse.chatboxes.length == 3);
                 el = online_contacts[1];
@@ -133,8 +132,6 @@
                 // Check that new chat boxes are created to the left of the
                 // controlbox (but to the right of all existing chat boxes)
                 expect(document.querySelectorAll("#conversejs .chatbox").length).toBe(3);
-                expect(document.querySelectorAll("#conversejs .chatbox")[2].id).toBe(chatboxview.model.get('box_id'));
-                expect(document.querySelectorAll("#conversejs .chatbox")[1].id).toBe(new_chatboxview.model.get('box_id'));
                 done();
             }));
 

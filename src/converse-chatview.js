@@ -415,6 +415,15 @@ converse.plugins.add('converse-chatview', {
                     }));
                 const textarea_el = this.el.querySelector('.chat-textarea');
                 textarea_el.addEventListener('focus', () => this.emitFocused());
+                textarea_el.addEventListener('blur', () => {
+                    /**
+                     * Triggered when the focus has been removed from a particular chat.
+                     * @event _converse#chatBoxBlurred
+                     * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+                     * @example _converse.api.listen.on('chatBoxBlurred', view => { ... });
+                     */
+                    _converse.api.trigger('chatBoxBlurred', this);
+                });
                 this.renderToolbar();
             },
 

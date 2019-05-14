@@ -12,6 +12,7 @@ import "converse-rosterview";
 import _FormData from "formdata-polyfill";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
+import fp from "@converse/headless/lodash.fp";
 import tpl_brand_heading from "templates/converse_brand_heading.html";
 import tpl_controlbox from "templates/controlbox.html";
 import tpl_controlbox_toggle from "templates/controlbox_toggle.html";
@@ -609,17 +610,13 @@ converse.plugins.add('converse-controlbox', {
                     }
                 }
             });
-
-        });
-        _converse.api.listen.on('chatBoxViewPortCalculate', () => {
             const vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
+
         });
-        _converse.api.listen.on('chatBoxViewPortCaclulateWhenResize', () => {
-            window.addEventListener('resize', () => {
-                const vh = window.innerHeight * 0.01;
-                document.documentElement.style.setProperty('--vh', `${vh}px`);
-            });
+        window.addEventListener('resize', () => {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
         });
         _converse.api.listen.on('clearSession', () => {
             if (_converse.config.get('trusted')) {

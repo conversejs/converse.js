@@ -1,0 +1,362 @@
+0 silly argv { _: [ 'bootstrap' ],
+0 silly argv   hoist: true,
+0 silly argv   lernaVersion: '3.13.4',
+0 silly argv   '$0': 'node_modules/.bin/lerna' }
+1 notice cli v3.13.4
+2 verbose rootPath /Users/supun/projects/contribute/converse.js
+3 verbose hoist using globs ["**"]
+4 silly batched [ PackageGraphNode {
+4 silly batched     name: '@converse/headless',
+4 silly batched     externalDependencies:
+4 silly batched      Map {
+4 silly batched        'backbone' => [Object],
+4 silly batched        'backbone.browserStorage' => [Object],
+4 silly batched        'es6-promise' => [Object],
+4 silly batched        'filesize' => [Object],
+4 silly batched        'jed' => [Object],
+4 silly batched        'lodash' => [Object],
+4 silly batched        'pluggable.js' => [Object],
+4 silly batched        'strophe.js' => [Object],
+4 silly batched        'strophejs-plugin-ping' => [Object],
+4 silly batched        'strophejs-plugin-rsm' => [Object],
+4 silly batched        'twemoji' => [Object],
+4 silly batched        'urijs' => [Object] },
+4 silly batched     localDependencies: Map {},
+4 silly batched     localDependents: Map { 'converse.js' => [Object] } } ]
+5 silly batched [ PackageGraphNode {
+5 silly batched     name: 'converse.js',
+5 silly batched     externalDependencies:
+5 silly batched      Map {
+5 silly batched        '@babel/cli' => [Object],
+5 silly batched        '@babel/core' => [Object],
+5 silly batched        '@babel/preset-env' => [Object],
+5 silly batched        '@fortawesome/fontawesome-free' => [Object],
+5 silly batched        'babel-loader' => [Object],
+5 silly batched        'backbone.nativeview' => [Object],
+5 silly batched        'backbone.overview' => [Object],
+5 silly batched        'backbone.vdomview' => [Object],
+5 silly batched        'bootstrap' => [Object],
+5 silly batched        'bootstrap.native' => [Object],
+5 silly batched        'bootstrap.native-loader' => [Object],
+5 silly batched        'bourbon' => [Object],
+5 silly batched        'bytebuffer' => [Object],
+5 silly batched        'clean-css-cli' => [Object],
+5 silly batched        'css-loader' => [Object],
+5 silly batched        'dayjs' => [Object],
+5 silly batched        'es6-promise' => [Object],
+5 silly batched        'eslint' => [Object],
+5 silly batched        'eslint-plugin-lodash' => [Object],
+5 silly batched        'exports-loader' => [Object],
+5 silly batched        'fast-text-encoding' => [Object],
+5 silly batched        'file-loader' => [Object],
+5 silly batched        'filesize' => [Object],
+5 silly batched        'formdata-polyfill' => [Object],
+5 silly batched        'hellojs' => [Object],
+5 silly batched        'http-server' => [Object],
+5 silly batched        'imports-loader' => [Object],
+5 silly batched        'install' => [Object],
+5 silly batched        'jasmine-core' => [Object],
+5 silly batched        'jed' => [Object],
+5 silly batched        'jsdoc' => [Object],
+5 silly batched        'lerna' => [Object],
+5 silly batched        'lodash-template-webpack-loader' => [Object],
+5 silly batched        'long' => [Object],
+5 silly batched        'mini-css-extract-plugin' => [Object],
+5 silly batched        'minimist' => [Object],
+5 silly batched        'node-sass' => [Object],
+5 silly batched        'npm' => [Object],
+5 silly batched        'po2json' => [Object],
+5 silly batched        'requirejs' => [Object],
+5 silly batched        'run-headless-chromium' => [Object],
+5 silly batched        'sass-loader' => [Object],
+5 silly batched        'sinon' => [Object],
+5 silly batched        'sizzle' => [Object],
+5 silly batched        'snabbdom' => [Object],
+5 silly batched        'strophejs-plugin-register' => [Object],
+5 silly batched        'style-loader' => [Object],
+5 silly batched        'uglify-es' => [Object],
+5 silly batched        'urijs' => [Object],
+5 silly batched        'wait-until-promise' => [Object],
+5 silly batched        'webpack' => [Object],
+5 silly batched        'webpack-cli' => [Object],
+5 silly batched        'xss' => [Object],
+5 silly batched        'backbone' => [Object],
+5 silly batched        'backbone.browserStorage' => [Object],
+5 silly batched        'lodash' => [Object],
+5 silly batched        'pluggable.js' => [Object],
+5 silly batched        'strophe.js' => [Object],
+5 silly batched        'strophejs-plugin-ping' => [Object],
+5 silly batched        'strophejs-plugin-rsm' => [Object],
+5 silly batched        'twemoji' => [Object] },
+5 silly batched     localDependencies: Map {},
+5 silly batched     localDependents: Map {} } ]
+6 silly npmConfig { registry: undefined,
+6 silly npmConfig   npmClient: 'npm',
+6 silly npmConfig   npmClientArgs: [],
+6 silly npmConfig   mutex: undefined }
+7 info Bootstrapping 2 packages
+8 verbose lifecycle preinstall
+9 silly lifecycle No script for "preinstall" in "@converse/headless", continuing
+10 silly lifecycle No script for "preinstall" in "converse.js", continuing
+11 silly hasDependencyInstalled converse.js @babel/cli
+12 silly hasDependencyInstalled converse.js @babel/core
+13 silly hasDependencyInstalled converse.js @babel/preset-env
+14 silly hasDependencyInstalled converse.js @converse/headless
+15 silly hasDependencyInstalled converse.js @fortawesome/fontawesome-free
+16 silly hasDependencyInstalled converse.js babel-loader
+17 silly hasDependencyInstalled converse.js backbone.nativeview
+18 silly hasDependencyInstalled converse.js backbone.overview
+19 silly hasDependencyInstalled converse.js backbone.vdomview
+20 silly hasDependencyInstalled converse.js bootstrap
+21 silly hasDependencyInstalled converse.js bootstrap.native
+22 silly hasDependencyInstalled converse.js bootstrap.native-loader
+23 silly hasDependencyInstalled converse.js bourbon
+24 silly hasDependencyInstalled converse.js bytebuffer
+25 silly hasDependencyInstalled converse.js clean-css-cli
+26 silly hasDependencyInstalled converse.js css-loader
+27 silly hasDependencyInstalled converse.js dayjs
+28 silly hasDependencyInstalled converse.js es6-promise
+29 silly hasDependencyInstalled converse.js eslint
+30 silly hasDependencyInstalled converse.js eslint-plugin-lodash
+31 silly hasDependencyInstalled converse.js exports-loader
+32 silly hasDependencyInstalled converse.js fast-text-encoding
+33 silly hasDependencyInstalled converse.js file-loader
+34 silly hasDependencyInstalled converse.js filesize
+35 silly hasDependencyInstalled converse.js formdata-polyfill
+36 silly hasDependencyInstalled converse.js hellojs
+37 silly hasDependencyInstalled converse.js http-server
+38 silly hasDependencyInstalled converse.js imports-loader
+39 silly hasDependencyInstalled converse.js install
+40 silly hasDependencyInstalled converse.js jasmine-core
+41 silly hasDependencyInstalled converse.js jed
+42 silly hasDependencyInstalled converse.js jsdoc
+43 silly hasDependencyInstalled converse.js lerna
+44 silly hasDependencyInstalled converse.js lodash-template-webpack-loader
+45 silly hasDependencyInstalled converse.js long
+46 silly hasDependencyInstalled converse.js mini-css-extract-plugin
+47 silly hasDependencyInstalled converse.js minimist
+48 silly hasDependencyInstalled converse.js node-sass
+49 silly hasDependencyInstalled converse.js npm
+50 silly hasDependencyInstalled converse.js po2json
+51 silly hasDependencyInstalled converse.js requirejs
+52 silly hasDependencyInstalled converse.js run-headless-chromium
+53 silly hasDependencyInstalled converse.js sass-loader
+54 silly hasDependencyInstalled converse.js sinon
+55 silly hasDependencyInstalled converse.js sizzle
+56 silly hasDependencyInstalled converse.js snabbdom
+57 silly hasDependencyInstalled converse.js strophejs-plugin-register
+58 silly hasDependencyInstalled converse.js style-loader
+59 silly hasDependencyInstalled converse.js uglify-es
+60 silly hasDependencyInstalled converse.js urijs
+61 silly hasDependencyInstalled converse.js wait-until-promise
+62 silly hasDependencyInstalled converse.js webpack
+63 silly hasDependencyInstalled converse.js webpack-cli
+64 silly hasDependencyInstalled converse.js xss
+65 silly hasDependencyInstalled converse.js backbone
+66 silly hasDependencyInstalled converse.js backbone.browserStorage
+67 silly hasDependencyInstalled converse.js lodash
+68 silly hasDependencyInstalled converse.js pluggable.js
+69 silly hasDependencyInstalled converse.js strophe.js
+70 silly hasDependencyInstalled converse.js strophejs-plugin-ping
+71 silly hasDependencyInstalled converse.js strophejs-plugin-rsm
+72 silly hasDependencyInstalled converse.js twemoji
+73 silly root dependencies {}
+74 silly leaf dependencies {}
+75 info Installing external dependencies
+76 verbose actions 2 actions, concurrency 4
+77 info hoist Installing hoisted dependencies into root
+78 silly npmInstallDependencies converse.js [ '@babel/cli@^7.2.2',
+78 silly npmInstallDependencies   '@babel/core@^7.2.2',
+78 silly npmInstallDependencies   '@babel/preset-env@^7.2.3',
+78 silly npmInstallDependencies   '@converse/headless@^4.0.2',
+78 silly npmInstallDependencies   '@fortawesome/fontawesome-free@5.3.1',
+78 silly npmInstallDependencies   'babel-loader@^8.0.4',
+78 silly npmInstallDependencies   'backbone.nativeview@conversejs/Backbone.NativeView#5997c8197ca594e6b8469447f28310c78bd1d95e',
+78 silly npmInstallDependencies   'backbone.overview@^1.0.2',
+78 silly npmInstallDependencies   'backbone.vdomview@^1.0.1',
+78 silly npmInstallDependencies   'bootstrap@^4.0.0',
+78 silly npmInstallDependencies   'bootstrap.native@^2.0.26',
+78 silly npmInstallDependencies   'bootstrap.native-loader@conversejs/bootstrap.native-loader#d8fcbc059562136ffd50b305fdc6eb2bde90f006',
+78 silly npmInstallDependencies   'bourbon@^4.3.2',
+78 silly npmInstallDependencies   'bytebuffer@^3.5.5',
+78 silly npmInstallDependencies   'clean-css-cli@^4.0.10',
+78 silly npmInstallDependencies   'css-loader@^1.0.1',
+78 silly npmInstallDependencies   'dayjs@^1.8.13',
+78 silly npmInstallDependencies   'es6-promise@^4.1.0',
+78 silly npmInstallDependencies   'eslint@^5.10.0',
+78 silly npmInstallDependencies   'eslint-plugin-lodash@^2.7.0',
+78 silly npmInstallDependencies   'exports-loader@^0.7.0',
+78 silly npmInstallDependencies   'fast-text-encoding@^1.0.0',
+78 silly npmInstallDependencies   'file-loader@^3.0.1',
+78 silly npmInstallDependencies   'filesize@^3.6.1',
+78 silly npmInstallDependencies   'formdata-polyfill@^3.0.12',
+78 silly npmInstallDependencies   'hellojs@^1.16.1',
+78 silly npmInstallDependencies   'http-server@^0.10.0',
+78 silly npmInstallDependencies   'imports-loader@^0.8.0',
+78 silly npmInstallDependencies   'install@^0.9.5',
+78 silly npmInstallDependencies   'jasmine-core@2.99.1',
+78 silly npmInstallDependencies   'jed@1.1.1',
+78 silly npmInstallDependencies   'jsdoc@^3.5.5',
+78 silly npmInstallDependencies   'lerna@^3.13.4',
+78 silly npmInstallDependencies   'lodash-template-webpack-loader@jcbrand/lodash-template-webpack-loader',
+78 silly npmInstallDependencies   'long@^3.1.0',
+78 silly npmInstallDependencies   'mini-css-extract-plugin@^0.5.0',
+78 silly npmInstallDependencies   'minimist@^1.2.0',
+78 silly npmInstallDependencies   'node-sass@^4.11.0',
+78 silly npmInstallDependencies   'npm@^6.4.1',
+78 silly npmInstallDependencies   'po2json@^0.4.4',
+78 silly npmInstallDependencies   'requirejs@2.3.5',
+78 silly npmInstallDependencies   'run-headless-chromium@^0.1.1',
+78 silly npmInstallDependencies   'sass-loader@^7.1.0',
+78 silly npmInstallDependencies   'sinon@^2.1.0',
+78 silly npmInstallDependencies   'sizzle@^2.3.3',
+78 silly npmInstallDependencies   'snabbdom@0.7.2',
+78 silly npmInstallDependencies   'strophejs-plugin-register@0.0.1',
+78 silly npmInstallDependencies   'style-loader@^0.23.1',
+78 silly npmInstallDependencies   'uglify-es@^3.0.24',
+78 silly npmInstallDependencies   'urijs@^1.19.1',
+78 silly npmInstallDependencies   'wait-until-promise@^1.0.0',
+78 silly npmInstallDependencies   'webpack@^4.28.1',
+78 silly npmInstallDependencies   'webpack-cli@^3.1.2',
+78 silly npmInstallDependencies   'xss@^0.3.3',
+78 silly npmInstallDependencies   'backbone@1.4',
+78 silly npmInstallDependencies   'backbone.browserStorage@0.0.5',
+78 silly npmInstallDependencies   'lodash@^4.17.11',
+78 silly npmInstallDependencies   'pluggable.js@2.0.1',
+78 silly npmInstallDependencies   'strophe.js@strophe/strophejs#f5173c0c606b8bc6204bb00b57b35bbc502d4b31',
+78 silly npmInstallDependencies   'strophejs-plugin-ping@0.0.3',
+78 silly npmInstallDependencies   'strophejs-plugin-rsm@0.0.2',
+78 silly npmInstallDependencies   'twemoji@^11.0.1' ]
+79 silly npmInstallDependencies backup /Users/supun/projects/contribute/converse.js/package.json
+80 info hoist Pruning hoisted dependencies
+81 silly prune [ '/Users/supun/projects/contribute/converse.js/src/headless/node_modules/es6-promise',
+81 silly prune   '/Users/supun/projects/contribute/converse.js/src/headless/node_modules/filesize',
+81 silly prune   '/Users/supun/projects/contribute/converse.js/src/headless/node_modules/jed',
+81 silly prune   '/Users/supun/projects/contribute/converse.js/src/headless/node_modules/urijs',
+81 silly prune   '/Users/supun/projects/contribute/converse.js/src/headless/node_modules/backbone',
+81 silly prune   '/Users/supun/projects/contribute/converse.js/src/headless/node_modules/backbone.browserStorage',
+81 silly prune   '/Users/supun/projects/contribute/converse.js/src/headless/node_modules/lodash',
+81 silly prune   '/Users/supun/projects/contribute/converse.js/src/headless/node_modules/pluggable.js',
+81 silly prune   '/Users/supun/projects/contribute/converse.js/src/headless/node_modules/strophe.js',
+81 silly prune   '/Users/supun/projects/contribute/converse.js/src/headless/node_modules/strophejs-plugin-ping',
+81 silly prune   '/Users/supun/projects/contribute/converse.js/src/headless/node_modules/strophejs-plugin-rsm',
+81 silly prune   '/Users/supun/projects/contribute/converse.js/src/headless/node_modules/twemoji' ]
+82 silly rimrafDir /Users/supun/projects/contribute/converse.js/src/headless/node_modules/es6-promise
+83 silly rimrafDir /Users/supun/projects/contribute/converse.js/src/headless/node_modules/filesize
+84 silly rimrafDir /Users/supun/projects/contribute/converse.js/src/headless/node_modules/jed
+85 silly rimrafDir /Users/supun/projects/contribute/converse.js/src/headless/node_modules/urijs
+86 silly npmInstallDependencies writing tempJson { name: 'converse.js',
+86 silly npmInstallDependencies   version: '4.2.0',
+86 silly npmInstallDependencies   description: 'Browser based XMPP chat client',
+86 silly npmInstallDependencies   main: 'dist/converse.min.js',
+86 silly npmInstallDependencies   files:
+86 silly npmInstallDependencies    [ 'CHANGES.md',
+86 silly npmInstallDependencies      'LICENSE.txt',
+86 silly npmInstallDependencies      'README.md',
+86 silly npmInstallDependencies      'dist/',
+86 silly npmInstallDependencies      'locale/**/*.json',
+86 silly npmInstallDependencies      'sass/',
+86 silly npmInstallDependencies      'sounds/',
+86 silly npmInstallDependencies      'src/' ],
+86 silly npmInstallDependencies   repository:
+86 silly npmInstallDependencies    { type: 'git',
+86 silly npmInstallDependencies      url: 'git://github.com/conversejs/converse.js.git' },
+86 silly npmInstallDependencies   keywords: [ 'XMPP', 'Jabber', 'chat', 'messaging', 'chatrooms', 'webchat' ],
+86 silly npmInstallDependencies   author: { name: 'JC Brand', email: 'jc@opkode.com' },
+86 silly npmInstallDependencies   license: 'MPL-2.0',
+86 silly npmInstallDependencies   bugs: { url: 'https://github.com/conversejs/converse.js/issues' },
+86 silly npmInstallDependencies   engines: { browser: '*' },
+86 silly npmInstallDependencies   devDependencies:
+86 silly npmInstallDependencies    { '@babel/cli': '^7.2.2',
+86 silly npmInstallDependencies      '@babel/core': '^7.2.2',
+86 silly npmInstallDependencies      '@babel/preset-env': '^7.2.3',
+86 silly npmInstallDependencies      '@converse/headless': '^4.0.2',
+86 silly npmInstallDependencies      '@fortawesome/fontawesome-free': '5.3.1',
+86 silly npmInstallDependencies      'babel-loader': '^8.0.4',
+86 silly npmInstallDependencies      'backbone.nativeview': 'conversejs/Backbone.NativeView#5997c8197ca594e6b8469447f28310c78bd1d95e',
+86 silly npmInstallDependencies      'backbone.overview': '^1.0.2',
+86 silly npmInstallDependencies      'backbone.vdomview': '^1.0.1',
+86 silly npmInstallDependencies      bootstrap: '^4.0.0',
+86 silly npmInstallDependencies      'bootstrap.native': '^2.0.26',
+86 silly npmInstallDependencies      'bootstrap.native-loader': 'conversejs/bootstrap.native-loader#d8fcbc059562136ffd50b305fdc6eb2bde90f006',
+86 silly npmInstallDependencies      bourbon: '^4.3.2',
+86 silly npmInstallDependencies      bytebuffer: '^3.5.5',
+86 silly npmInstallDependencies      'clean-css-cli': '^4.0.10',
+86 silly npmInstallDependencies      'css-loader': '^1.0.1',
+86 silly npmInstallDependencies      dayjs: '^1.8.13',
+86 silly npmInstallDependencies      'es6-promise': '^4.1.0',
+86 silly npmInstallDependencies      eslint: '^5.10.0',
+86 silly npmInstallDependencies      'eslint-plugin-lodash': '^2.7.0',
+86 silly npmInstallDependencies      'exports-loader': '^0.7.0',
+86 silly npmInstallDependencies      'fast-text-encoding': '^1.0.0',
+86 silly npmInstallDependencies      'file-loader': '^3.0.1',
+86 silly npmInstallDependencies      filesize: '^3.6.1',
+86 silly npmInstallDependencies      'formdata-polyfill': '^3.0.12',
+86 silly npmInstallDependencies      hellojs: '^1.16.1',
+86 silly npmInstallDependencies      'http-server': '^0.10.0',
+86 silly npmInstallDependencies      'imports-loader': '^0.8.0',
+86 silly npmInstallDependencies      install: '^0.9.5',
+86 silly npmInstallDependencies      'jasmine-core': '2.99.1',
+86 silly npmInstallDependencies      jed: '1.1.1',
+86 silly npmInstallDependencies      jsdoc: '^3.5.5',
+86 silly npmInstallDependencies      lerna: '^3.13.4',
+86 silly npmInstallDependencies      'lodash-template-webpack-loader': 'jcbrand/lodash-template-webpack-loader',
+86 silly npmInstallDependencies      long: '^3.1.0',
+86 silly npmInstallDependencies      'mini-css-extract-plugin': '^0.5.0',
+86 silly npmInstallDependencies      minimist: '^1.2.0',
+86 silly npmInstallDependencies      'node-sass': '^4.11.0',
+86 silly npmInstallDependencies      npm: '^6.4.1',
+86 silly npmInstallDependencies      po2json: '^0.4.4',
+86 silly npmInstallDependencies      requirejs: '2.3.5',
+86 silly npmInstallDependencies      'run-headless-chromium': '^0.1.1',
+86 silly npmInstallDependencies      'sass-loader': '^7.1.0',
+86 silly npmInstallDependencies      sinon: '^2.1.0',
+86 silly npmInstallDependencies      sizzle: '^2.3.3',
+86 silly npmInstallDependencies      snabbdom: '0.7.2',
+86 silly npmInstallDependencies      'strophejs-plugin-register': '0.0.1',
+86 silly npmInstallDependencies      'style-loader': '^0.23.1',
+86 silly npmInstallDependencies      'uglify-es': '^3.0.24',
+86 silly npmInstallDependencies      urijs: '^1.19.1',
+86 silly npmInstallDependencies      'wait-until-promise': '^1.0.0',
+86 silly npmInstallDependencies      webpack: '^4.28.1',
+86 silly npmInstallDependencies      'webpack-cli': '^3.1.2',
+86 silly npmInstallDependencies      xss: '^0.3.3' },
+86 silly npmInstallDependencies   dependencies:
+86 silly npmInstallDependencies    { backbone: '1.4',
+86 silly npmInstallDependencies      'backbone.browserStorage': '0.0.5',
+86 silly npmInstallDependencies      lodash: '^4.17.11',
+86 silly npmInstallDependencies      'pluggable.js': '2.0.1',
+86 silly npmInstallDependencies      'strophe.js': 'strophe/strophejs#f5173c0c606b8bc6204bb00b57b35bbc502d4b31',
+86 silly npmInstallDependencies      'strophejs-plugin-ping': '0.0.3',
+86 silly npmInstallDependencies      'strophejs-plugin-rsm': '0.0.2',
+86 silly npmInstallDependencies      twemoji: '^11.0.1' } }
+87 verbose prune /Users/supun/projects/contribute/converse.js/src/headless/node_modules/es6-promise
+88 silly rimrafDir /Users/supun/projects/contribute/converse.js/src/headless/node_modules/backbone
+89 verbose prune /Users/supun/projects/contribute/converse.js/src/headless/node_modules/filesize
+90 silly rimrafDir /Users/supun/projects/contribute/converse.js/src/headless/node_modules/backbone.browserStorage
+91 verbose prune /Users/supun/projects/contribute/converse.js/src/headless/node_modules/jed
+92 silly rimrafDir /Users/supun/projects/contribute/converse.js/src/headless/node_modules/lodash
+93 verbose prune /Users/supun/projects/contribute/converse.js/src/headless/node_modules/urijs
+94 silly rimrafDir /Users/supun/projects/contribute/converse.js/src/headless/node_modules/pluggable.js
+95 verbose prune /Users/supun/projects/contribute/converse.js/src/headless/node_modules/backbone
+96 silly rimrafDir /Users/supun/projects/contribute/converse.js/src/headless/node_modules/strophe.js
+97 verbose prune /Users/supun/projects/contribute/converse.js/src/headless/node_modules/backbone.browserStorage
+98 silly rimrafDir /Users/supun/projects/contribute/converse.js/src/headless/node_modules/strophejs-plugin-ping
+99 verbose prune /Users/supun/projects/contribute/converse.js/src/headless/node_modules/lodash
+100 silly rimrafDir /Users/supun/projects/contribute/converse.js/src/headless/node_modules/strophejs-plugin-rsm
+101 verbose prune /Users/supun/projects/contribute/converse.js/src/headless/node_modules/pluggable.js
+102 silly rimrafDir /Users/supun/projects/contribute/converse.js/src/headless/node_modules/twemoji
+103 verbose prune /Users/supun/projects/contribute/converse.js/src/headless/node_modules/strophe.js
+104 verbose prune /Users/supun/projects/contribute/converse.js/src/headless/node_modules/strophejs-plugin-ping
+105 verbose prune /Users/supun/projects/contribute/converse.js/src/headless/node_modules/strophejs-plugin-rsm
+106 verbose prune /Users/supun/projects/contribute/converse.js/src/headless/node_modules/twemoji
+107 info hoist Finished pruning hoisted dependencies
+108 silly getExecOpts /Users/supun/projects/contribute/converse.js undefined
+109 silly npmInstall [ 'npm', [ 'install' ] ]
+110 silly npmInstallDependencies cleanup /Users/supun/projects/contribute/converse.js/package.json
+111 error Error: ENOENT: no such file or directory, rename '/Users/supun/projects/contribute/converse.js/package.json.lerna_backup' -> '/Users/supun/projects/contribute/converse.js/package.json'
+111 error     at Object.fs.renameSync (fs.js:766:18)
+111 error     at cleanup (/Users/supun/projects/contribute/converse.js/node_modules/@lerna/npm-install/npm-install.js:70:10)
+111 error     at done (/Users/supun/projects/contribute/converse.js/node_modules/@lerna/npm-install/npm-install.js:78:7)
+111 error     at writePkg.then.then (/Users/supun/projects/contribute/converse.js/node_modules/@lerna/npm-install/npm-install.js:94:19)
+111 error     at <anonymous>

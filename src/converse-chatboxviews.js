@@ -163,6 +163,14 @@ converse.plugins.add('converse-chatboxviews', {
         });
 
         _converse.api.listen.on('clearSession', () => _converse.chatboxviews.closeAllChatBoxes());
+
+
+        function calculateViewportHeightUnit () {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        _converse.api.listen.on('chatBoxViewsInitialized', () => calculateViewportHeightUnit());
+        window.addEventListener('resize', () => calculateViewportHeightUnit());
         /************************ END Event Handlers ************************/
     }
 });

@@ -950,12 +950,16 @@ converse.plugins.add('converse-muc-views', {
                 }
                 const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                       args = match[2] && match[2].splitOnce(' ').filter(s => s) || [],
-                      command = match[1].toLowerCase(),
-                      disabled_commands = Array.isArray(_converse.muc_disable_slash_commands) ?
-                        _converse.muc_disable_slash_commands : [];
-                if (_.includes(disabled_commands, command)) {
-                    return false;
+                      command = match[1].toLowerCase();
+
+                let disabled_commands = [];
+                if (Array.isArray(_converse.muc_disable_slash_commands)) {
+                    disabled_commands = _converse.muc_disable_slash_commands;
+                    if (disabled_commands.includes(command)) {
+                        return false;
+                    }
                 }
+
                 switch (command) {
                     case 'admin': {
                         if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
@@ -1339,7 +1343,7 @@ converse.plugins.add('converse-muc-views', {
             hideChatRoomContents () {
                 const container_el = this.el.querySelector('.chatroom-body');
                 if (!_.isNull(container_el)) {
-                    _.each(container_el.children, (child) => { child.classList.add('hidden'); });
+                    [].forEach.call(container_el.children, child => child.classList.add('hidden'));
                 }
             },
 

@@ -1026,6 +1026,16 @@ all MUCs with set autojoin flag in their respective bookmarks will be joined on
 startup of Converse. When set to ``false`` no MUCs are automatically joined based on
 their bookmarks.
 
+muc_show_disconnection_status
+-----------------------------
+
+* Default; ``true``
+
+Determines whether Converse shows the optionally included status message when a
+user leaves the MUC.
+
+See https://xmpp.org/extensions/xep-0045.html#changepres
+
 muc_show_join_leave
 -------------------
 

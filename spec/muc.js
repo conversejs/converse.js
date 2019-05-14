@@ -896,6 +896,44 @@
                 done();
             }));
 
+            it("doesn't show the disconnection status when muc_show_disconnection_status is false",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'muc_show_disconnection_status': false},
+                    async function (done, _converse) {
+
+                await test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1');
+                const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                const chat_content = view.el.querySelector('.chat-content');
+                let presence = $pres({
+                        to: 'dummy@localhost/resource',
+                        from: 'coven@chat.shakespeare.lit/newguy'
+                    }).c('x', {xmlns: Strophe.NS.MUC_USER})
+                    .c('item', {
+                        'affiliation': 'none',
+                        'jid': 'newguy@localhost/_converse.js-290929789',
+                        'role': 'participant'
+                    });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(chat_content.querySelectorAll('div.chat-info').length).toBe(0);
+
+                presence = $pres({
+                    to: 'dummy@localhost/resource',
+                        type: 'unavailable',
+                        from: 'coven@chat.shakespeare.lit/newguy'
+                    })
+                    .c('status', 'Disconnected: Replaced by new connection').up()
+                    .c('x', {xmlns: Strophe.NS.MUC_USER})
+                        .c('item', {
+                            'affiliation': 'none',
+                            'jid': 'newguy@localhost/_converse.js-290929789',
+                            'role': 'none'
+                        });
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(chat_content.querySelectorAll('div.chat-info').length).toBe(1);
+                expect(sizzle('div.chat-info', chat_content).pop().textContent).toBe('newguy has left the groupchat');
+                done();
+            }));
+
             it("role-change messages that follow a MUC leave are left out",
                 mock.initConverse(
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},

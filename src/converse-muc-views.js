@@ -117,6 +117,7 @@ converse.plugins.add('converse-muc-views', {
             'locked_muc_nickname': false,
             'muc_disable_slash_commands': false,
             'muc_domain': undefined,
+            'muc_show_disconnection_status': true,
             'muc_show_join_leave': true,
             'roomconfig_whitelist': [],
             'visible_toolbar_buttons': {
@@ -1651,7 +1652,7 @@ converse.plugins.add('converse-muc-views', {
                     return;
                 }
                 const nick = occupant.get('nick'),
-                      stat = occupant.get('status'),
+                      stat = _converse.muc_show_disconnection_status ? occupant.get('status') : null,
                       prev_info_el = this.getPreviousJoinOrLeaveNotification(this.content.lastElementChild, nick),
                       dataset = _.get(prev_info_el, 'dataset', {});
 

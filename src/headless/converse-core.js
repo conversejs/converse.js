@@ -724,18 +724,40 @@ _converse.initialize = async function (settings, callback) {
         _converse.api.send(pres);
     };
 
-    this.reconnect = _.debounce(function () {
-        _converse.log('RECONNECTING');
-        _converse.log('The connection has dropped, attempting to reconnect.');
+
+    /**
+     * Called once the XMPP connection has dropped and we want to attempt
+     * reconnection.
+     * @method reconnect
+     * @private
+     * @memberOf _converse
+     */
+    this.reconnect = _.debounce(() => {
+        _converse.log('RECONNECTING: the connection has dropped, attempting to reconnect.');
         _converse.setConnectionStatus(
             Strophe.Status.RECONNECTING,
             __('The connection has dropped, attempting to reconnect.')
         );
+        /**
+         * Triggered when the connection has dropped, but Converse will attempt
+         * to reconnect again.
+         *
+         * @event _converse#will-reconnect
+         */
+        _converse.api.trigger('will-reconnect');
+
         _converse.connection.reconnecting = true;
         _converse.tearDown();
         _converse.logIn(null, true);
     }, 2000, {'leading': true});
 
+
+    /**
+     * Properly tear down the session so that it's possible to manually connect again.
+     * @method finishDisconnection
+     * @private
+     * @memberOf _converse
+     */
     this.finishDisconnection = function () {
         _converse.log('DISCONNECTED');
         delete _converse.connection.reconnecting;
@@ -751,19 +773,22 @@ _converse.initialize = async function (settings, callback) {
         _converse.api.trigger('disconnected');
     };
 
-    this.onDisconnected = function () {
-        /* Gets called once strophe's status reaches Strophe.Status.DISCONNECTED.
-         * Will either start a teardown process for converse.js or attempt
-         * to reconnect.
-         */
-        const reason = _converse.disconnection_reason;
 
+    /**
+     * Gets called once strophe's status reaches Strophe.Status.DISCONNECTED.
+     * Will either start a teardown process for converse.js or attempt
+     * to reconnect.
+     * @method onDisconnected
+     * @private
+     * @memberOf _converse
+     */
+    this.onDisconnected = function () {
+        const reason = _converse.disconnection_reason;
         if (_converse.disconnection_cause === Strophe.Status.AUTHFAIL) {
             if (_converse.credentials_url && _converse.auto_reconnect) {
                 /* In this case, we reconnect, because we might be receiving
                  * expirable tokens from the credentials_url.
                  */
-                _converse.api.trigger('will-reconnect');
                 return _converse.reconnect();
             } else {
                 return _converse.finishDisconnection();
@@ -775,15 +800,9 @@ _converse.initialize = async function (settings, callback) {
                 !_converse.auto_reconnect) {
             return _converse.finishDisconnection();
         }
-        /**
-         * Triggered when the connection has dropped, but Converse will attempt
-         * to reconnect again.
-         *
-         * @event _converse#will-reconnect
-         */
-        _converse.api.trigger('will-reconnect');
         _converse.reconnect();
     };
+
 
     this.setDisconnectionCause = function (cause, reason, override) {
         /* Used to keep track of why we got disconnected, so that we can

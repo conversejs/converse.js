@@ -2036,20 +2036,16 @@ converse.plugins.add('converse-muc-views', {
 
             ItemView: _converse.ChatRoomOccupantView,
 
-            initialize () {
+            async initialize () {
                 Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
 
                 this.chatroomview = this.model.chatroomview;
                 this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
                 this.chatroomview.model.features.on('change:open', this.renderInviteWidget, this);
                 this.chatroomview.model.features.on('change', this.renderRoomFeatures, this);
-
                 this.render();
-                this.model.fetch({
-                    'add': true,
-                    'silent': true,
-                    'success': this.sortAndPositionAllItems.bind(this)
-                });
+                await this.model.fetched;
+                this.sortAndPositionAllItems();
             },
 
             render () {

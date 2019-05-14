@@ -228,6 +228,15 @@ converse.plugins.add('converse-muc', {
                     `converse.occupants-${_converse.bare_jid}${this.get('jid')}`
                 );
                 this.occupants.chatroom  = this;
+                this.occupants.fetched = new Promise(resolve => {
+                    this.fetch({
+                        'add': true,
+                        'silent': true,
+                        'success': resolve,
+                        'failure': resolve
+                    });
+                });
+
                 this.registerHandlers();
             },
 

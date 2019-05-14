@@ -721,7 +721,12 @@ converse.plugins.add('converse-muc-views', {
                     this.showChatEvent(__("%1$s has been muted", occupant.get('nick')))
                 }
                 if (occupant.get('role') === 'moderator') {
-                    this.showChatEvent(__("%1$s is now a moderator", occupant.get('nick')))
+                    if (!['owner', 'admin'].includes(occupant.get('affiliation'))) {
+                        // We only show this message if the user isn't already
+                        // an admin or owner, otherwise this isn't new
+                        // information.
+                        this.showChatEvent(__("%1$s is now a moderator", occupant.get('nick')))
+                    }
                 }
             },
 

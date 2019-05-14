@@ -261,7 +261,7 @@
                 // You can retrieve multiple contacts by passing in an array
                 const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
                 let list = await _converse.api.contacts.get([jid, jid2]);
-                expect(_.isArray(list)).toBeTruthy();
+                expect(Array.isArray(list)).toBeTruthy();
                 expect(list[0].get('fullname')).toBe(mock.cur_names[0]);
                 expect(list[1].get('fullname')).toBe(mock.cur_names[1]);
                 // Check that all JIDs are returned if you call without any parameters
@@ -313,7 +313,7 @@
                 test_utils.openChatBoxFor(_converse, jid2);
                 await test_utils.waitUntil(() => _converse.chatboxes.length == 2);
                 const list = _converse.api.chats.get([jid, jid2]);
-                expect(_.isArray(list)).toBeTruthy();
+                expect(Array.isArray(list)).toBeTruthy();
                 expect(list[0].get('box_id')).toBe(`box-${btoa(jid)}`);
                 expect(list[1].get('box_id')).toBe(`box-${btoa(jid2)}`);
                 done();
@@ -343,7 +343,7 @@
                 expect(u.isVisible(chatboxview.el)).toBeTruthy();
                 // Test for multiple JIDs
                 const list = await _converse.api.chats.open([jid, jid2]);
-                expect(_.isArray(list)).toBeTruthy();
+                expect(Array.isArray(list)).toBeTruthy();
                 expect(list[0].get('box_id')).toBe(`box-${btoa(jid)}`);
                 expect(list[1].get('box_id')).toBe(`box-${btoa(jid2)}`);
                 done();

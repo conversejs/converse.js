@@ -28,7 +28,7 @@ import tpl_user_details_modal from "templates/user_details_modal.html";
 import u from "@converse/headless/utils/emoji";
 import xss from "xss/dist/xss";
 
-const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, dayjs } = converse.env;
+const { $msg, Backbone, Promise, Strophe, _, b64_sha1, sizzle, dayjs } = converse.env;
 
 
 converse.plugins.add('converse-chatview', {
@@ -593,10 +593,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             clearSpinner () {
-                _.each(
-                    this.content.querySelectorAll('span.spinner'),
-                    (el) => el.parentNode.removeChild(el)
-                );
+                this.content.querySelectorAll('.spinner').forEach(u.removeElement);
             },
 
             /**
@@ -696,7 +693,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             showHelpMessages (msgs, type, spinner) {
-                _.each(msgs, (msg) => {
+                msgs.forEach(msg => {
                     this.content.insertAdjacentHTML(
                         'beforeend',
                         tpl_help_message({
@@ -996,7 +993,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             getOwnMessages () {
-                return f(this.model.messages.filter({'sender': 'me'}));
+                return this.model.messages.filter({'sender': 'me'});
             },
 
             onEscapePressed (ev) {
@@ -1065,7 +1062,7 @@ converse.plugins.add('converse-chatview', {
                         }
                     }
                 }
-                message = message || this.getOwnMessages().findLast((msg) => msg.get('message'));
+                message = message || _.findLast(this.getOwnMessages(), msg => msg.get('message'));
                 if (message) {
                     this.insertIntoTextArea(message.get('message'), true, true);
                     message.save('correcting', true);

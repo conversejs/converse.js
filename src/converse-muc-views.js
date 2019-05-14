@@ -38,7 +38,7 @@ import tpl_spinner from "templates/spinner.html";
 import xss from "xss/dist/xss";
 
 
-const { Backbone, Promise, Strophe, dayjs, f, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
+const { Backbone, Promise, Strophe, dayjs, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
 const u = converse.env.utils;
 const AFFILIATION_CHANGE_COMANDS = ['admin', 'ban', 'owner', 'member', 'revoke'];
 const OWNER_COMMANDS = ['owner'];
@@ -341,9 +341,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             removeSpinner () {
-                _.each(this.el.querySelectorAll('span.spinner'),
-                    (el) => el.parentNode.removeChild(el)
-                );
+                sizzle('.spinner', this.el).forEach(u.removeElement);
             },
 
             informNoRoomsFound () {
@@ -359,12 +357,14 @@ converse.plugins.add('converse-muc-views', {
                  * all its public groupchats.
                  */
                 const available_chatrooms = this.el.querySelector('.available-chatrooms');
-                this.rooms = iq.querySelectorAll('query item');
-                if (this.rooms.length) {
+                const rooms = sizzle('query item', iq);
+                if (rooms.length) {
                     available_chatrooms.innerHTML = tpl_rooms_results({'feedback_text': __('Groupchats found:')});
                     const fragment = document.createDocumentFragment();
-                    const children = _.reject(_.map(this.rooms, this.roomStanzaItemToHTMLElement), _.isNil)
-                    _.each(children, (child) => fragment.appendChild(child));
+                    rooms.map(this.roomStanzaItemToHTMLElement)
+                         .filter(r => r)
+                         .forEach(child => fragment.appendChild(child));
+
                     available_chatrooms.appendChild(fragment);
                     this.removeSpinner();
                 } else {
@@ -890,26 +890,28 @@ converse.plugins.add('converse-muc-views', {
                 if (!occupant) {
                     occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
                 }
-                if (!_.includes(roles, occupant.get('role'))) {
-                    if (show_error) {
-                        this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'))
-                    }
-                    return false;
+                const role = occupant.get('role');
+                if (Array.isArray(roles) && roles.includes(role) || roles === role) {
+                    return true;
                 }
-                return true;
+                if (show_error) {
+                    this.showErrorMessage(__('Forbidden: you do not have the necessary role in order to do that.'))
+                }
+                return false;
             },
 
             verifyAffiliations (affiliations, occupant, show_error=true) {
                 if (!occupant) {
                     occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
                 }
-                if (!_.includes(affiliations, occupant.get('affiliation'))) {
-                    if (show_error) {
-                        this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'))
-                    }
-                    return false;
+                const a = occupant.get('affiliation');
+                if (Array.isArray(affiliations) && affiliations.includes(a) || affiliations === a) {
+                    return true;
                 }
-                return true;
+                if (show_error) {
+                    this.showErrorMessage(__('Forbidden: you do not have the necessary affiliation in order to do that.'))
+                }
+                return false;
             },
 
             validateRoleChangeCommand (command, args) {
@@ -922,9 +924,9 @@ converse.plugins.add('converse-muc-views', {
                     );
                     return false;
                 }
-                if (!(_.includes(AFFILIATION_CHANGE_COMANDS, command) && u.isValidJID(args[0])) &&
+                if (!(AFFILIATION_CHANGE_COMANDS.includes(command) && u.isValidJID(args[0])) &&
                         !this.model.occupants.findWhere({'nick': args[0]}) &&
-                            !this.model.occupants.findWhere({'jid': args[0]})) {
+                        !this.model.occupants.findWhere({'jid': args[0]})) {
                     this.showErrorMessage(__('Error: couldn\'t find a groupchat participant "%1$s"', args[0]));
                     return false;
                 }
@@ -937,14 +939,13 @@ converse.plugins.add('converse-muc-views', {
             },
 
             parseMessageForCommands (text) {
-                if (_converse.muc_disable_slash_commands &&
-                        !_.isArray(_converse.muc_disable_slash_commands)) {
+                if (_converse.muc_disable_slash_commands && !Array.isArray(_converse.muc_disable_slash_commands)) {
                     return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
                 }
                 const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
                       args = match[2] && match[2].splitOnce(' ').filter(s => s) || [],
                       command = match[1].toLowerCase(),
-                      disabled_commands = _.isArray(_converse.muc_disable_slash_commands) ?
+                      disabled_commands = Array.isArray(_converse.muc_disable_slash_commands) ?
                         _converse.muc_disable_slash_commands : [];
                 if (_.includes(disabled_commands, command)) {
                     return false;
@@ -992,7 +993,7 @@ converse.plugins.add('converse-muc-views', {
                         break;
                     }
                     case 'destroy': {
-                        if (!this.verifyAffiliations(['owner'])) {
+                        if (!this.verifyAffiliations('owner')) {
                             break;
                         }
                         this.destroy(this.model.get('jid'), args[0])
@@ -1374,7 +1375,8 @@ converse.plugins.add('converse-muc-views', {
             showDestroyedMessage (error) {
                 u.hideElement(this.el.querySelector('.chat-area'));
                 u.hideElement(this.el.querySelector('.occupants'));
-                _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
+                sizzle('.spinner', this.el).forEach(u.removeElement);
+
                 const container = this.el.querySelector('.disconnect-container');
                 const moved_jid = _.get(
                         sizzle('gone[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', error).pop(),
@@ -1410,7 +1412,7 @@ converse.plugins.add('converse-muc-views', {
                 }
                 u.hideElement(this.el.querySelector('.chat-area'));
                 u.hideElement(this.el.querySelector('.occupants'));
-                _.each(this.el.querySelectorAll('.spinner'), u.removeElement);
+                sizzle('.spinner', this.el).forEach(u.removeElement);
                 const container = this.el.querySelector('.disconnect-container');
                 container.innerHTML = tpl_chatroom_disconnect({
                     '_': _,
@@ -1524,7 +1526,7 @@ converse.plugins.add('converse-muc-views', {
                     this.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                     return;
                 }
-                _.each(notification.messages, (message) => {
+                notification.messages.forEach(message => {
                     this.content.insertAdjacentHTML(
                         'beforeend',
                         tpl_info({
@@ -1709,7 +1711,7 @@ converse.plugins.add('converse-muc-views', {
                 const is_self = stanza.querySelectorAll("status[code='110']").length;
                 const iteratee = _.partial(this.parseXUserElement.bind(this), _, stanza, is_self);
                 const notifications = _.reject(_.map(elements, iteratee), _.isEmpty);
-                _.each(notifications, this.showNotificationsforUser.bind(this));
+                notifications.forEach(n => this.showNotificationsforUser(n));
             },
 
             showErrorMessageFromPresence (presence) {
@@ -1768,7 +1770,7 @@ converse.plugins.add('converse-muc-views', {
             },
 
             showSpinner () {
-                u.removeElement(this.el.querySelector('.spinner'));
+                sizzle('.spinner', this.el).forEach(u.removeElement);
                 this.hideChatRoomContents();
                 const container_el = this.el.querySelector('.chatroom-body');
                 container_el.insertAdjacentHTML('afterbegin', tpl_spinner());
@@ -2075,7 +2077,7 @@ converse.plugins.add('converse-muc-views', {
                       picks = _.pick(features.attributes, converse.ROOM_FEATURES),
                       iteratee = (a, v) => a || v;
 
-                if (_.reduce(_.values(picks), iteratee)) {
+                if (_.reduce(Object.values(picks), iteratee)) {
                     const el = this.el.querySelector('.chatroom-features');
                     el.innerHTML = tpl_chatroom_features(Object.assign(features.toJSON(), {__}));
                     this.setOccupantsHeight();
@@ -2283,7 +2285,7 @@ converse.plugins.add('converse-muc-views', {
                  *
                  */
                 get (jids) {
-                    if (_.isArray(jids)) {
+                    if (Array.isArray(jids)) {
                         const views = _converse.api.chatviews.get(jids);
                         return views.filter(v => v.model.get('type') === _converse.CHATROOMS_TYPE)
                     } else {
@@ -2306,21 +2308,19 @@ converse.plugins.add('converse-muc-views', {
                  * @param {(String[]|String)} jids The JID or array of JIDs of the chatroom(s)
                  */
                 'close' (jids) {
+                    let views;
                     if (_.isUndefined(jids)) {
-                        _converse.chatboxviews.each(function (view) {
-                            if (view.is_chatroom && view.model) {
-                                view.close();
-                            }
-                        });
+                        views = _converse.chatboxviews;
                     } else if (_.isString(jids)) {
-                        const view = _converse.chatboxviews.get(jids);
-                        if (view) { view.close(); }
-                    } else {
-                        _.each(jids, function (jid) {
-                            const view = _converse.chatboxviews.get(jid);
-                            if (view) { view.close(); }
-                        });
+                        views = [_converse.chatboxviews.get(jids)].filter(v => v);
+                    } else if (Array.isArray(jids)) {
+                        views = jids.map(jid => _converse.chatboxviews.get(jid));
                     }
+                    views.forEach(view => {
+                        if (view.is_chatroom && view.model) {
+                            view.close();
+                        }
+                    });
                 }
             }
         });

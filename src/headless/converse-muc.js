@@ -19,7 +19,7 @@ const MUC_ROLE_WEIGHTS = {
     'none':         2,
 };
 
-const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, sizzle, f, dayjs, _ } = converse.env;
+const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, sizzle, dayjs, _ } = converse.env;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('MUC_ADMIN', Strophe.NS.MUC + "#admin");
@@ -84,7 +84,7 @@ converse.plugins.add('converse-muc', {
             const { _converse } = this.__super__,
                   groupchats = this.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
 
-            _.each(groupchats, gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
+            groupchats.forEach(gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
             this.__super__.tearDown.call(this, arguments);
         },
 
@@ -193,7 +193,7 @@ converse.plugins.add('converse-muc', {
                     'chat_state': undefined,
                     'connection_status': converse.ROOMSTATUS.DISCONNECTED,
                     'description': '',
-                    'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode),
+                    'hidden': ['mobile', 'fullscreen'].includes(_converse.view_mode),
                     'message_type': 'groupchat',
                     'name': '',
                     'nick': _converse.xmppstatus.get('nickname') || _converse.nickname,
@@ -248,16 +248,16 @@ converse.plugins.add('converse-muc', {
                  */
                 const room_jid = this.get('jid');
                 this.removeHandlers();
-                this.presence_handler = _converse.connection.addHandler((stanza) => {
-                        _.each(_.values(this.handlers.presence), (callback) => callback(stanza));
+                this.presence_handler = _converse.connection.addHandler(stanza => {
+                        Object.values(this.handlers.presence).forEach(callback => callback(stanza));
                         this.onPresence(stanza);
                         return true;
                     },
                     null, 'presence', null, null, room_jid,
                     {'ignoreNamespaceFragment': true, 'matchBareFromJid': true}
                 );
-                this.message_handler = _converse.connection.addHandler((stanza) => {
-                        _.each(_.values(this.handlers.message), (callback) => callback(stanza));
+                this.message_handler = _converse.connection.addHandler(stanza => {
+                        Object.values(this.handlers.message).forEach(callback => callback(stanza));
                         this.onMessage(stanza);
                         return true;
                     }, null, 'message', 'groupchat', null, room_jid,
@@ -720,11 +720,11 @@ converse.plugins.add('converse-muc', {
              *      groupchat configuration.
              *      The second is the response IQ from the server.
              */
-            sendConfiguration (config, callback, errback) {
+            sendConfiguration (config=[], callback, errback) {
                 const iq = $iq({to: this.get('jid'), type: "set"})
                     .c("query", {xmlns: Strophe.NS.MUC_OWNER})
                     .c("x", {xmlns: Strophe.NS.XFORM, type: "submit"});
-                _.each(config || [], function (node) { iq.cnode(node).up(); });
+                config.forEach(node => iq.cnode(node).up());
                 callback = _.isUndefined(callback) ? _.noop : _.partial(callback, iq.nodeTree);
                 errback = _.isUndefined(errback) ? _.noop : _.partial(errback, iq.nodeTree);
                 return _converse.api.sendIQ(iq).then(callback).catch(errback);
@@ -818,7 +818,7 @@ converse.plugins.add('converse-muc', {
              *      a string if only one affiliation.
              * @param { function } deltaFunc - The function to compute the delta
              *      between old and new member lists.
-             * @returns { promise } 
+             * @returns { promise }
              *  A promise which is resolved once the list has been
              *  updated or once it's been established there's no need
              *  to update the list.
@@ -952,7 +952,8 @@ converse.plugins.add('converse-muc', {
                         'states': [],
                         'show': type !== 'unavailable' ? 'online' : 'offline'
                       };
-                _.each(pres.childNodes, function (child) {
+
+                pres.childNodes.forEach(child => {
                     switch (child.nodeName) {
                         case "status":
                             data.status = child.textContent || null;
@@ -962,7 +963,7 @@ converse.plugins.add('converse-muc', {
                             break;
                         case "x":
                             if (child.getAttribute("xmlns") === Strophe.NS.MUC_USER) {
-                                _.each(child.childNodes, function (item) {
+                                child.childNodes.forEach(item => {
                                     switch (item.nodeName) {
                                         case "item":
                                             data.affiliation = item.getAttribute("affiliation");
@@ -1309,18 +1310,18 @@ converse.plugins.add('converse-muc', {
                 const new_jids = new_members.map(m => m.jid).filter(m => !_.isUndefined(m)),
                       new_nicks = new_members.map(m => !m.jid && m.nick || undefined).filter(m => !_.isUndefined(m)),
                       removed_members = this.filter(m => {
-                          return f.includes(m.get('affiliation'), ['admin', 'member', 'owner']) &&
-                              !f.includes(m.get('nick'), new_nicks) &&
-                                !f.includes(m.get('jid'), new_jids);
+                          return ['admin', 'member', 'owner'].includes(m.get('affiliation')) &&
+                                !new_nicks.includes(m.get('nick')) &&
+                                !new_jids.includes(m.get('jid'));
                       });
 
-                _.each(removed_members, (occupant) => {
+                removed_members.forEach(occupant => {
                     if (occupant.get('jid') === _converse.bare_jid) { return; }
                     if (occupant.get('show') === 'offline') {
                         occupant.destroy();
                     }
                 });
-                _.each(new_members, (attrs) => {
+                new_members.forEach(attrs => {
                     let occupant;
                     if (attrs.jid) {
                         occupant = this.findOccupant({'jid': attrs.jid});
@@ -1447,7 +1448,7 @@ converse.plugins.add('converse-muc', {
              * of strings (groupchat JIDs) or objects (with groupchat JID and other
              * settings).
              */
-            _.each(_converse.auto_join_rooms, function (groupchat) {
+            _converse.auto_join_rooms.forEach(groupchat => {
                 if (_converse.chatboxes.where({'jid': groupchat}).length) {
                     return;
                 }

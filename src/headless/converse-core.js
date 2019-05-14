@@ -11,7 +11,6 @@ import Promise from "es6-promise/dist/es6-promise.auto";
 import _ from "./lodash.noconflict";
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import dayjs from "dayjs";
-import f from "./lodash.fp";
 import i18n from "./i18n";
 import pluggable from "pluggable.js/src/pluggable";
 import polyfill from "./polyfill";
@@ -548,7 +547,7 @@ function cleanup () {
 _converse.initialize = async function (settings, callback) {
     settings = !_.isUndefined(settings) ? settings : {};
     const init_promise = u.getResolveablePromise();
-    _.each(PROMISES, addPromise);
+    PROMISES.forEach(addPromise);
     if (!_.isUndefined(_converse.connection)) {
         cleanup();
     }
@@ -941,7 +940,7 @@ _converse.initialize = async function (settings, callback) {
             _converse.tearDown();
         }
         // Recreate all the promises
-        _.each(Object.keys(_converse.promises), addPromise);
+        Object.keys(_converse.promises).forEach(addPromise);
         /**
          * Triggered once the user has logged out.
          * @event _converse#logout
@@ -1674,8 +1673,8 @@ _converse.api = {
          * @example _converse.api.promises.add('foo-completed');
          */
         'add' (promises) {
-            promises = _.isArray(promises) ? promises : [promises]
-            _.each(promises, addPromise);
+            promises = Array.isArray(promises) ? promises : [promises]
+            promises.forEach(addPromise);
         }
     },
 
@@ -1927,7 +1926,6 @@ const converse = {
      * @property {function} converse.env.Strophe   - The [Strophe](http://strophe.im/strophejs) XMPP library used by Converse.
      * @property {object} converse.env._           - The instance of [lodash](http://lodash.com) used by Converse.
      * @property {function} converse.env.f         - And instance of Lodash with its methods wrapped to produce immutable auto-curried iteratee-first data-last methods.
-     * @property {function} converse.env.b64_sha1  - Utility method from Strophe for creating base64 encoded sha1 hashes.
      * @property {object} converse.env.dayjs       - [DayJS](https://github.com/iamkun/dayjs) date manipulation library.
      * @property {function} converse.env.sizzle    - [Sizzle](https://sizzlejs.com) CSS selector engine.
      * @property {object} converse.env.utils       - Module containing common utility methods used by Converse.
@@ -1941,7 +1939,6 @@ const converse = {
         'Promise': Promise,
         'Strophe': Strophe,
         '_': _,
-        'f': f,
         'b64_sha1':  b64_sha1,
         'dayjs': dayjs,
         'sizzle': sizzle,

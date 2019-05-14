@@ -595,10 +595,7 @@ converse.plugins.add('converse-controlbox', {
                 }
             }
         });
-        window.addEventListener('resize', () => {
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        });
+
         _converse.api.listen.on('chatBoxViewsInitialized', () => {
             const that = _converse.chatboxviews;
             _converse.chatboxes.on('add', item => {
@@ -612,9 +609,17 @@ converse.plugins.add('converse-controlbox', {
                     }
                 }
             });
+
+        });
+        _converse.api.listen.on('chatBoxViewPortCalculate', () => {
             const vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
-
+        });
+        _converse.api.listen.on('chatBoxViewPortCaclulateWhenResize', () => {
+            window.addEventListener('resize', () => {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            });
         });
         _converse.api.listen.on('clearSession', () => {
             if (_converse.config.get('trusted')) {

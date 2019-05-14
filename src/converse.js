@@ -57,7 +57,7 @@ const WHITELISTED_PLUGINS = [
 const initialize = converse.initialize;
 
 converse.initialize = function (settings, callback) {
-    if (converse.env._.isArray(settings.whitelisted_plugins)) {
+    if (Array.isArray(settings.whitelisted_plugins)) {
         settings.whitelisted_plugins = settings.whitelisted_plugins.concat(WHITELISTED_PLUGINS);
     } else {
         settings.whitelisted_plugins = WHITELISTED_PLUGINS;

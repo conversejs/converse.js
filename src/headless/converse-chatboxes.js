@@ -1104,7 +1104,7 @@ converse.plugins.add('converse-chatboxes', {
                         }
                         return chatbox;
                     }
-                    if (_.isArray(jids)) {
+                    if (Array.isArray(jids)) {
                         return Promise.all(jids.forEach(async jid => {
                             const contact = await _converse.api.contacts.get(jids);
                             attrs.fullname = _.get(contact, 'attributes.fullname');
@@ -1168,7 +1168,7 @@ converse.plugins.add('converse-chatboxes', {
                     if (_.isString(jids)) {
                         const chat = await _converse.api.chats.create(jids, attrs);
                         return chat.maybeShow(force);
-                    } else if (_.isArray(jids)) {
+                    } else if (Array.isArray(jids)) {
                         return Promise.all(jids.map(j => _converse.api.chats.create(j, attrs).then(c => c.maybeShow(force))));
                     }
                     const err_msg = "chats.open: You need to provide at least one JID";

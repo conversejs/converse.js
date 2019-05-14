@@ -28,7 +28,7 @@ import tpl_user_details_modal from "templates/user_details_modal.html";
 import u from "@converse/headless/utils/emoji";
 import xss from "xss/dist/xss";
 
-const { $msg, Backbone, Promise, Strophe, _, b64_sha1, f, sizzle, dayjs } = converse.env;
+const { $msg, Backbone, Promise, Strophe, _, b64_sha1, sizzle, dayjs } = converse.env;
 
 
 converse.plugins.add('converse-chatview', {
@@ -366,13 +366,12 @@ converse.plugins.add('converse-chatview', {
             },
 
             render () {
-                // XXX: Is this still needed?
-                this.el.setAttribute('id', this.model.get('box_id'));
                 this.el.innerHTML = tpl_chatbox(
-                    Object.assign(this.model.toJSON(), {
-                            'unread_msgs': __('You have unread messages')
-                        }
-                    ));
+                    Object.assign(
+                        this.model.toJSON(),
+                        {'unread_msgs': __('You have unread messages')}
+                    )
+                );
                 this.content = this.el.querySelector('.chat-content');
                 this.renderMessageForm();
                 this.insertHeading();
@@ -402,17 +401,11 @@ converse.plugins.add('converse-chatview', {
             },
 
             renderMessageForm () {
-                let placeholder;
-                if (this.model.get('composing_spoiler')) {
-                    placeholder = __('Hidden message');
-                } else {
-                    placeholder = __('Message');
-                }
                 const form_container = this.el.querySelector('.bottom-panel');
                 form_container.innerHTML = tpl_chatbox_message_form(
                     Object.assign(this.model.toJSON(), {
                         'hint_value': _.get(this.el.querySelector('.spoiler-hint'), 'value'),
-                        'label_message': placeholder,
+                        'label_message': this.model.get('composing_spoiler') ? __('Hidden message') : __('Message'),
                         'label_send': __('Send'),
                         'label_spoiler_hint': __('Optional hint'),
                         'message_value': _.get(this.el.querySelector('.chat-textarea'), 'value'),
@@ -420,6 +413,17 @@ converse.plugins.add('converse-chatview', {
                         'show_toolbar': _converse.show_toolbar,
                         'unread_msgs': __('You have unread messages')
                     }));
+                const textarea_el = this.el.querySelector('.chat-textarea');
+                textarea_el.addEventListener('focus', () => this.emitFocused());
+                textarea_el.addEventListener('blur', () => {
+                    /**
+                     * Triggered when the focus has been removed from a particular chat.
+                     * @event _converse#chatBoxBlurred
+                     * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+                     * @example _converse.api.listen.on('chatBoxBlurred', view => { ... });
+                     */
+                    _converse.api.trigger('chatBoxBlurred', this);
+                });
                 this.renderToolbar();
             },
 
@@ -593,10 +597,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             clearSpinner () {
-                _.each(
-                    this.content.querySelectorAll('span.spinner'),
-                    (el) => el.parentNode.removeChild(el)
-                );
+                this.content.querySelectorAll('.spinner').forEach(u.removeElement);
             },
 
             /**
@@ -696,7 +697,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             showHelpMessages (msgs, type, spinner) {
-                _.each(msgs, (msg) => {
+                msgs.forEach(msg => {
                     this.content.insertAdjacentHTML(
                         'beforeend',
                         tpl_help_message({
@@ -996,7 +997,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             getOwnMessages () {
-                return f(this.model.messages.filter({'sender': 'me'}));
+                return this.model.messages.filter({'sender': 'me'});
             },
 
             onEscapePressed (ev) {
@@ -1065,7 +1066,7 @@ converse.plugins.add('converse-chatview', {
                         }
                     }
                 }
-                message = message || this.getOwnMessages().findLast((msg) => msg.get('message'));
+                message = message || _.findLast(this.getOwnMessages(), msg => msg.get('message'));
                 if (message) {
                     this.insertIntoTextArea(message.get('message'), true, true);
                     message.save('correcting', true);
@@ -1259,17 +1260,21 @@ converse.plugins.add('converse-chatview', {
                 }
             },
 
+            emitFocused: _.debounce(() => {
+                /**
+                 * Triggered when the focus has been moved to a particular chat.
+                 * @event _converse#chatBoxFocused
+                 * @type { _converse.ChatBoxView | _converse.ChatRoomView }
+                 * @example _converse.api.listen.on('chatBoxFocused', view => { ... });
+                 */
+                _converse.api.trigger('chatBoxFocused', this);
+            }, 25, {'leading': true}),
+
             focus () {
                 const textarea_el = this.el.querySelector('.chat-textarea');
                 if (!_.isNull(textarea_el)) {
                     textarea_el.focus();
-                    /**
-                     * Triggered when the focus has been moved to a particular chat.
-                     * @event _converse#chatBoxFocused
-                     * @type { _converse.ChatBoxView | _converse.ChatRoomView }
-                     * @example _converse.api.listen.on('chatBoxFocused', view => { ... });
-                     */
-                    _converse.api.trigger('chatBoxFocused', this);
+                    this.emitFocused();
                 }
                 return this;
             },

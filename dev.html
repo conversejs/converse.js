@@ -4,6 +4,7 @@
     <title>Converse.js</title>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Converse.js: A free chat client for your website" />
     <meta name="author" content="JC Brand" />
@@ -35,7 +36,22 @@
         bosh_service_url: 'https://conversejs.org/http-bind/', // Please use this connection manager only for testing purposes
         message_archiving: 'always',
         debug: true
-    });
+    }).then(function () {
+        setTimeout(function () {
+            // First we get the viewport height and we multiple it by 1% to get a value for a vh unit
+            const vh = window.innerHeight * 0.01;
+            // Then we set the value in the --vh custom property to the root of the document
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            window.addEventListener('resize', () => {
+            // We execute the same script as before
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            });
+        }, 1000);
+    });;
+</script>
+<script>
+   
 </script>
 </body>
 </html>

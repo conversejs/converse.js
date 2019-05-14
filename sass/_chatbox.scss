@@ -635,8 +635,10 @@
         .box-flyout {
             background-color: var(--chat-head-color);
             box-shadow: none;
-            height: var(--fullpage-chat-height);
-            min-height: calc(var(--fullpage-chat-height) / 2);
+            // height: var(--fullpage-chat-height);
+            height: calc(var(--vh, 1vh) * 100);
+            // min-height: calc(var(--fullpage-chat-height) / 2);
+            min-height: calc(var(--vh, 1vh) * 50);
             width: var(--fullpage-chat-width);
             overflow: hidden;
         }

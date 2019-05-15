@@ -31,13 +31,13 @@ Now use ``git`` to check out the Converse repository:
 
 ::
 
-    git clone git@github.com:conversejs/converse.js.git
+    git clone https://github.com/conversejs/converse.js.git
 
 Now go into the repository checkout and run ``make dev`` in order to set up the
 development environment.
 
 ::
-    
+
     cd converse.js
     make dev
 
@@ -61,7 +61,7 @@ The front-end dependencies are those JavaScript files on which
 Converse directly depends and which will be loaded in the browser as part of
 the bundle in ``dist/converse.js`` (or ``dist/converse.min.js``).
 
-To see the 3rd party dependencies (not just the front-end dependencies, but 
+To see the 3rd party dependencies (not just the front-end dependencies, but
 also ones necessary for development tasks like making builds), take a look at
 the list under the ``devDependencies`` in `package.json <https://github.com/jcbrand/converse.js/blob/master/package.json>`_.
 
@@ -93,7 +93,7 @@ Converse relies on the following dependencies:
   It also provides the ``Backbone.OrderedListView`` which is used to show
   alphabetically sorted lists, such as your contacts roster.
 * `backbone.vdomview <http://github.com/jcbrand/backbone.vdomview>`_ provides
-  ``Backbone.VDOMView`` that uses the `Snabbdom <https://github.com/snabbdom/snabbdom>`_ 
+  ``Backbone.VDOMView`` that uses the `Snabbdom <https://github.com/snabbdom/snabbdom>`_
   virtual DOM for rendering DOM elements.
 * `pluggable.js <https://github.com/jcbrand/pluggable.js>`_ provides the plugin
   architecture for Converse. It registers and initializes plugins and

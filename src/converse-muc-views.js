@@ -544,6 +544,7 @@ converse.plugins.add('converse-muc-views', {
 
                 this.model.on('change:affiliation', this.renderHeading, this);
                 this.model.on('change:connection_status', this.afterConnected, this);
+                this.model.on('change:hidden_occupants', this.updateOccupantsToggle, this);
                 this.model.on('change:jid', this.renderHeading, this);
                 this.model.on('change:name', this.renderHeading, this);
                 this.model.on('change:role', this.renderBottomPanel, this);
@@ -562,8 +563,9 @@ converse.plugins.add('converse-muc-views', {
                 this.model.occupants.on('change:affiliation', this.informOfOccupantsAffiliationChange, this);
 
                 this.createEmojiPicker();
+                this.render();
                 this.createOccupantsView();
-                this.render().insertIntoDOM();
+                this.insertIntoDOM();
                 this.registerHandlers();
                 this.enterRoom();
             },
@@ -622,16 +624,22 @@ converse.plugins.add('converse-muc-views', {
             renderChatArea () {
                 /* Render the UI container in which groupchat messages will appear.
                  */
-                if (_.isNull(this.el.querySelector('.chat-area'))) {
+                if (this.el.querySelector('.chat-area') === null) {
                     const container_el = this.el.querySelector('.chatroom-body');
-                    container_el.insertAdjacentHTML('beforeend', tpl_chatarea({
-                        'show_send_button': _converse.show_send_button
-                    }));
-                    container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
+                    container_el.insertAdjacentHTML(
+                        'beforeend',
+                        tpl_chatarea({'show_send_button': _converse.show_send_button})
+                    );
                     this.content = this.el.querySelector('.chat-content');
-                    this.toggleOccupants(null, true);
                 }
                 return this;
+            },
+
+            createOccupantsView () {
+                this.model.occupants.chatroomview = this;
+                this.occupantsview = new _converse.ChatRoomOccupantsView({'model': this.model.occupants});
+                const container_el = this.el.querySelector('.chatroom-body');
+                container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
             },
 
             initMentionAutoComplete () {
@@ -672,14 +680,6 @@ converse.plugins.add('converse-muc-views', {
                     return;
                 }
                 return _converse.ChatBoxView.prototype.showChatStateNotification.apply(this, arguments);
-            },
-
-            createOccupantsView () {
-                /* Create the ChatRoomOccupantsView Backbone.NativeView
-                 */
-                this.model.occupants.chatroomview = this;
-                this.occupantsview = new _converse.ChatRoomOccupantsView({'model': this.model.occupants});
-                return this;
             },
 
             informOfOccupantsAffiliationChange(occupant, changed) {
@@ -754,7 +754,6 @@ converse.plugins.add('converse-muc-views', {
                     this.model.clearUnreadMsgCounter();
                     this.model.save();
                 }
-                this.occupantsview.setOccupantsHeight();
                 this.scrollDown();
                 this.renderEmojiPicker();
             },
@@ -789,10 +788,12 @@ converse.plugins.add('converse-muc-views', {
                 );
             },
 
-            close (ev) {
-                /* Close this chat box, which implies leaving the groupchat as
-                 * well.
-                 */
+            /**
+             * Closes this chat box, which implies leaving the groupchat as well.
+             * @private
+             * @method _converse.ChatRoomView#close
+             */
+            close () {
                 this.hide();
                 if (Backbone.history.getFragment() === "converse/room?jid="+this.model.get('jid')) {
                     _converse.router.navigate('');
@@ -801,28 +802,18 @@ converse.plugins.add('converse-muc-views', {
                 _converse.ChatBoxView.prototype.close.apply(this, arguments);
             },
 
-            setOccupantsVisibility () {
+            updateOccupantsToggle () {
                 const icon_el = this.el.querySelector('.toggle-occupants');
+                const chat_area = this.el.querySelector('.chat-area');
                 if (this.model.get('hidden_occupants')) {
                     u.removeClass('fa-angle-double-right', icon_el);
                     u.addClass('fa-angle-double-left', icon_el);
-                    const chat_area = this.el.querySelector('.chat-area');
-                    u.removeClass('col-md-9', chat_area);
-                    u.removeClass('col-8', chat_area);
                     u.addClass('full', chat_area);
-                    u.addClass('col-12', chat_area);
-                    u.hideElement(this.el.querySelector('.occupants'));
                 } else {
-                    const chat_area = this.el.querySelector('.chat-area');
                     u.addClass('fa-angle-double-right', icon_el);
                     u.removeClass('fa-angle-double-left', icon_el);
-                    u.removeClass('hidden', this.el.querySelector('.occupants'));
                     u.removeClass('full', chat_area);
-                    u.removeClass('col-12', chat_area);
-                    u.addClass('col-md-9', chat_area);
-                    u.addClass('col-8', chat_area);
                 }
-                this.occupantsview.setOccupantsHeight();
             },
 
             hideOccupants (ev, preserve_state) {
@@ -834,11 +825,10 @@ converse.plugins.add('converse-muc-views', {
                     ev.stopPropagation();
                 }
                 this.model.save({'hidden_occupants': true});
-                this.setOccupantsVisibility();
                 this.scrollDown();
             },
 
-            toggleOccupants (ev, preserve_state) {
+            toggleOccupants (ev) {
                 /* Show or hide the right sidebar containing the chat
                  * occupants (and the invite widget).
                  */
@@ -846,10 +836,7 @@ converse.plugins.add('converse-muc-views', {
                     ev.preventDefault();
                     ev.stopPropagation();
                 }
-                if (!preserve_state) {
-                    this.model.set({'hidden_occupants': !this.model.get('hidden_occupants')});
-                }
-                this.setOccupantsVisibility();
+                this.model.save({'hidden_occupants': !this.model.get('hidden_occupants')});
                 this.scrollDown();
             },
 
@@ -1776,8 +1763,8 @@ converse.plugins.add('converse-muc-views', {
                 } else if (this.model.get('connection_status') == converse.ROOMSTATUS.PASSWORD_REQUIRED) {
                     this.renderPasswordForm();
                 } else {
-                    this.el.querySelector('.chat-area').classList.remove('hidden');
-                    this.setOccupantsVisibility();
+                    u.showElement(this.el.querySelector('.chat-area'));
+                    u.showElement(this.el.querySelector('.occupants'));
                     this.scrollDown();
                 }
             },
@@ -2040,9 +2027,10 @@ converse.plugins.add('converse-muc-views', {
                 Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
 
                 this.chatroomview = this.model.chatroomview;
-                this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
-                this.chatroomview.model.features.on('change:open', this.renderInviteWidget, this);
                 this.chatroomview.model.features.on('change', this.renderRoomFeatures, this);
+                this.chatroomview.model.features.on('change:open', this.renderInviteWidget, this);
+                this.chatroomview.model.on('change:affiliation', this.renderInviteWidget, this);
+                this.chatroomview.model.on('change:hidden_occupants', this.setVisibility, this);
                 this.render();
                 await this.model.fetched;
                 this.sortAndPositionAllItems();
@@ -2058,7 +2046,17 @@ converse.plugins.add('converse-muc-views', {
                 if (_converse.allow_muc_invitations) {
                     _converse.api.waitUntil('rosterContactsFetched').then(() => this.renderInviteWidget());
                 }
+                this.setVisibility();
                 return this.renderRoomFeatures();
+            },
+
+            setVisibility () {
+                if (this.chatroomview.model.get('hidden_occupants')) {
+                    u.hideElement(this.el);
+                } else {
+                    u.showElement(this.el);
+                    this.setOccupantsHeight();
+                }
             },
 
             renderInviteWidget () {

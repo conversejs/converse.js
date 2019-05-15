@@ -50,6 +50,11 @@ To only generate the minified files, you can make them individually. ::
     make dist/converse.min.js
     make css/converse.min.css
 
+.. note::
+
+   If you're on Windows or don't have GNU Make installed, you can run ``npm build``
+   to build all the distribution files.
+
 
 Creating custom bundles
 =======================

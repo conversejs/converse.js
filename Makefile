@@ -110,7 +110,7 @@ $(LERNA):
 	npm install lerna
 
 stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
-	$(LERNA) bootstrap --hoist
+	npm run lerna
 	touch stamp-npm
 
 .PHONY: clean

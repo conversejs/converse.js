@@ -9,14 +9,6 @@ Dependencies
 Installing the 3rd party dependencies
 =====================================
 
-.. note::
-    Windows environment: We recommend installing the required tools using `Chocolatey <https://chocolatey.org/>`_
-    You will need Node.js (nodejs.install), Git (git.install) and optionally to build using Makefile, GNU Make (make)
-    If you have trouble setting up a development environment on Windows,
-    please read `this post <http://librelist.com/browser//conversejs/2014/11/5/openfire-converse-and-visual-studio-questions/#b28387e7f8f126693b11598a8acbe810>`_
-    in the mailing list.:
-
-
 We use development tools which depend on Node.js and npm (the Node package manager).
 
 If you don't have Node.js installed, you can download and install the latest
@@ -41,19 +33,14 @@ development environment.
     cd converse.js
     make dev
 
-On Windows you need to specify Makefile.win to be used by running:
+If you're using Windows, or don't have GNU Make installed, you can run the
+following:
 
 ::
 
-    make -f Makefile.win dev
-
-Alternatively, if you don't have GNU Make (necessary for the ``make`` command),
-you can use NPM directly:
-
-::
-
-    npm install
-
+  cd converse.js
+  npm install
+  npm run lerna
 
 This will install the Node.js development tools and Converse's dependencies.
 

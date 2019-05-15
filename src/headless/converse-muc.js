@@ -229,11 +229,11 @@ converse.plugins.add('converse-muc', {
                 );
                 this.occupants.chatroom  = this;
                 this.occupants.fetched = new Promise(resolve => {
-                    this.fetch({
+                    this.occupants.fetch({
                         'add': true,
                         'silent': true,
                         'success': resolve,
-                        'failure': resolve
+                        'error': resolve
                     });
                 });
 

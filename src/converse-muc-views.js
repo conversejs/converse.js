@@ -637,9 +637,9 @@ converse.plugins.add('converse-muc-views', {
 
             createOccupantsView () {
                 this.model.occupants.chatroomview = this;
-                this.occupantsview = new _converse.ChatRoomOccupantsView({'model': this.model.occupants});
+                const view = new _converse.ChatRoomOccupantsView({'model': this.model.occupants});
                 const container_el = this.el.querySelector('.chatroom-body');
-                container_el.insertAdjacentElement('beforeend', this.occupantsview.el);
+                container_el.insertAdjacentElement('beforeend', view.el);
             },
 
             initMentionAutoComplete () {

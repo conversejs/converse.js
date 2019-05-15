@@ -1432,8 +1432,8 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 var name;
-                var view = _converse.chatboxviews.get('lounge@localhost'),
-                    occupants = view.el.querySelector('.occupant-list');
+                const view = _converse.chatboxviews.get('lounge@localhost');
+                const occupants = view.el.querySelector('.occupant-list');
                 var presence, role, jid, model;
                 for (var i=0; i<mock.chatroom_names.length; i++) {
                     name = mock.chatroom_names[i];
@@ -1452,8 +1452,8 @@
                     .c('status').attrs({code:'110'}).nodeTree;
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(occupants.querySelectorAll('li').length).toBe(2+i);
-                    model = view.occupantsview.model.where({'nick': name})[0];
-                    var index = view.occupantsview.model.indexOf(model);
+                    model = view.model.occupants.where({'nick': name})[0];
+                    const index = view.model.occupants.indexOf(model);
                     expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(mock.chatroom_names[i]);
                 }
 
@@ -1506,8 +1506,8 @@
                     .c('status').attrs({code:'110'}).nodeTree;
                     _converse.connection._dataRecv(test_utils.createRequest(presence));
                     expect(occupants.querySelectorAll('li').length).toBe(2+i);
-                    model = view.occupantsview.model.where({'nick': name})[0];
-                    var index = view.occupantsview.model.indexOf(model);
+                    model = view.model.occupants.where({'nick': name})[0];
+                    const index = view.model.occupants.indexOf(model);
                     expect(occupants.querySelectorAll('li .occupant-nick')[index].textContent.trim()).toBe(mock.chatroom_names[i]);
                 }
 
@@ -1801,8 +1801,7 @@
                 spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
                     sent_stanza = stanza;
                 });
-                const results_el =  view.occupantsview.el.querySelector('.suggestion-box__results');
-                const hint = results_el.firstElementChild;
+                const hint = await test_utils.waitUntil(() => view.el.querySelector('.suggestion-box__results li'));
                 expect(input.value).toBe('Felix');
                 expect(hint.textContent).toBe('Felix Amsel');
 

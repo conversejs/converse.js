@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 4.2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-05-06 13:48+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2019-05-16 22:48+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/conversejs/"
 "translations/pt/>\n"
 "Language: pt\n"
@@ -1846,9 +1846,9 @@ msgid "Remove as contact"
 msgstr "Adicionar contato"
 
 #: dist/converse-no-dependencies.js:78735
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Download audio file \"%1$s\""
-msgstr "Descarregar ficheiro de audio"
+msgstr "Descarregar ficheiro de audio \"%1$s\""
 
 #: dist/converse-no-dependencies.js:78753
 #, javascript-format
@@ -1865,6 +1865,6 @@ msgid "Download"
 msgstr "Descarregar"
 
 #: dist/converse-no-dependencies.js:78815
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Download video file \"%1$s\""
-msgstr "Descarregar ficheiro de vídeo"
+msgstr "Descarregar ficheiro de vídeo \"%1$s\""

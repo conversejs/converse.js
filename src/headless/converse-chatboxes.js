@@ -626,7 +626,7 @@ converse.plugins.add('converse-chatboxes', {
                     });
                     return;
                 }
-                files.forEach(file => {
+                Array.from(files).forEach(file => {
                     if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
                         return this.messages.create({
                             'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',

@@ -337,7 +337,6 @@ converse.plugins.add('converse-chatview', {
 
             initialize () {
                 this.initDebounced();
-
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.messages.on('rendered', this.scrollDown, this);
 
@@ -347,8 +346,7 @@ converse.plugins.add('converse-chatview', {
                 this.model.presence.on('change:show', this.onPresenceChanged, this);
                 this.model.on('showHelpMessages', this.showHelpMessages, this);
                 this.render();
-
-                this.fetchMessages();
+                this.updateAfterMessagesFetched();
                 /**
                  * Triggered once the _converse.ChatBoxView has been initialized
                  * @event _converse#chatBoxInitialized
@@ -530,27 +528,12 @@ converse.plugins.add('converse-chatview', {
                 });
             },
 
-            afterMessagesFetched () {
+            async updateAfterMessagesFetched () {
+                await this.model.messages.fetched;
+                await Promise.all(this.model.messages.map(m => this.onMessageAdded(m)));
                 this.insertIntoDOM();
                 this.scrollDown();
                 this.content.addEventListener('scroll', this.markScrolled.bind(this));
-                /**
-                 * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
-                 * `sessionStorage` but **NOT** from the server.
-                 * @event _converse#afterMessagesFetched 
-                 * @type {_converse.ChatBoxView | _converse.ChatRoomView}
-                 * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
-                 */
-                _converse.api.trigger('afterMessagesFetched', this);
-            },
-
-            fetchMessages () {
-                this.model.messages.fetch({
-                    'add': true,
-                    'success': this.afterMessagesFetched.bind(this),
-                    'error': this.afterMessagesFetched.bind(this),
-                });
-                return this;
             },
 
             insertIntoDOM () {

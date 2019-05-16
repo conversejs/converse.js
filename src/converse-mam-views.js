@@ -153,7 +153,7 @@ converse.plugins.add('converse-mam-views', {
         const { _converse } = this;
 
         /* Event handlers */
-        _converse.api.listen.on('afterMessagesFetched', view => view.model.fetchNewestMessages());
+        _converse.api.listen.on('afterMessagesFetched', chatbox => chatbox.fetchNewestMessages());
 
         _converse.api.listen.on('reconnected', () => {
             const private_chats = _converse.chatboxviews.filter(

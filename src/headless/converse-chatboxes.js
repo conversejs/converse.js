@@ -272,7 +272,6 @@ converse.plugins.add('converse-chatboxes', {
                     // from being persisted if there's no jid, but that gets
                     // called after model instantiation, so we have to deal
                     // with invalid models here also.
-                    //
                     // This happens when the controlbox is in browser storage,
                     // but we're in embedded mode.
                     return;
@@ -288,6 +287,7 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 this.on('change:chat_state', this.sendChatState, this);
                 this.initMessages();
+                this.fetchMessages();
             },
 
             initMessages () {
@@ -301,6 +301,27 @@ converse.plugins.add('converse-chatboxes', {
                     if (message.get('upload') === _converse.SUCCESS) {
                         _converse.api.send(this.createMessageStanza(message));
                     }
+                });
+            },
+
+            afterMessagesFetched () {
+                /**
+                 * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
+                 * `sessionStorage` but **NOT** from the server.
+                 * @event _converse#afterMessagesFetched
+                 * @type {_converse.ChatBox | _converse.ChatRoom}
+                 * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
+                 */
+                _converse.api.trigger('afterMessagesFetched', this);
+            },
+
+            fetchMessages () {
+                this.messages.fetched = new Promise(resolve => {
+                    this.messages.fetch({
+                        'add': true,
+                        'success': _.flow(this.afterMessagesFetched.bind(this), resolve),
+                        'error': _.flow(this.afterMessagesFetched.bind(this), resolve)
+                    });
                 });
             },
 

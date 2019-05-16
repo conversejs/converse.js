@@ -307,8 +307,8 @@
                 expect(box instanceof Object).toBeTruthy();
                 expect(box.get('box_id')).toBe(`box-${btoa(jid)}`);
 
-                const chatboxview = _converse.chatboxviews.get(jid);
-                expect(u.isVisible(chatboxview.el)).toBeTruthy();
+                const view = _converse.chatboxviews.get(jid);
+                await test_utils.waitUntil(() => u.isVisible(view.el));
                 // Test for multiple JIDs
                 test_utils.openChatBoxFor(_converse, jid2);
                 await test_utils.waitUntil(() => _converse.chatboxes.length == 2);
@@ -339,8 +339,8 @@
                     _.keys(box),
                     ['close', 'endOTR', 'focus', 'get', 'initiateOTR', 'is_chatroom', 'maximize', 'minimize', 'open', 'set']
                 );
-                const chatboxview = _converse.chatboxviews.get(jid);
-                expect(u.isVisible(chatboxview.el)).toBeTruthy();
+                const view = _converse.chatboxviews.get(jid);
+                await test_utils.waitUntil(() => u.isVisible(view.el));
                 // Test for multiple JIDs
                 const list = await _converse.api.chats.open([jid, jid2]);
                 expect(Array.isArray(list)).toBeTruthy();

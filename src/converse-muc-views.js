@@ -564,6 +564,7 @@ converse.plugins.add('converse-muc-views', {
 
                 this.createEmojiPicker();
                 this.render();
+                this.updateAfterMessagesFetched();
                 this.createOccupantsView();
                 this.insertIntoDOM();
                 this.registerHandlers();
@@ -581,7 +582,7 @@ converse.plugins.add('converse-muc-views', {
                     }
                     this.populateAndJoin();
                 } else {
-                    this.fetchMessages();
+                    this.model.fetchMessages();
                 }
                 /**
                  * Triggered once a groupchat has been opened
@@ -1195,7 +1196,7 @@ converse.plugins.add('converse-muc-views', {
             populateAndJoin () {
                 this.model.occupants.fetchMembers();
                 this.join();
-                this.fetchMessages();
+                this.model.fetchMessages();
             },
 
             /**

@@ -81,7 +81,13 @@ converse.plugins.add('converse-message-view', {
             },
 
             initialize () {
-                this.debouncedRender = _.debounce(this.render, 50);
+                this.debouncedRender = _.debounce(() => {
+                    // If the model gets destroyed in the meantime,
+                    // it no longer has a collection
+                    if (this.model.collection) {
+                        this.render();
+                    }
+                }, 50);
                 if (this.model.vcard) {
                     this.model.vcard.on('change', this.debouncedRender, this);
                 }
@@ -197,7 +203,11 @@ converse.plugins.add('converse-message-view', {
                 }
                 await promise;
                 this.replaceElement(msg);
-                this.model.collection.trigger('rendered', this);
+                if (this.model.collection) {
+                    // If the model gets destroyed in the meantime, it no
+                    // longer has a collection.
+                    this.model.collection.trigger('rendered', this);
+                }
             },
 
             renderErrorMessage () {

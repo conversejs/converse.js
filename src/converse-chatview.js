@@ -339,6 +339,7 @@ converse.plugins.add('converse-chatview', {
                 this.initDebounced();
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.messages.on('rendered', this.scrollDown, this);
+                this.model.messages.on('reset', () => (this.content.innerHTML = ''));
 
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.remove, this);
@@ -1071,9 +1072,7 @@ converse.plugins.add('converse-chatview', {
                 if (ev && ev.preventDefault) { ev.preventDefault(); }
                 const result = confirm(__("Are you sure you want to clear the messages from this conversation?"));
                 if (result === true) {
-                    this.content.innerHTML = '';
-                    this.model.messages.reset();
-                    this.model.messages.browserStorage._clear();
+                    this.model.clearMessages();
                 }
                 return this;
             },

@@ -541,6 +541,7 @@ converse.plugins.add('converse-muc-views', {
 
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.messages.on('rendered', this.scrollDown, this);
+                this.model.messages.on('reset', () => (this.content.innerHTML = ''));
 
                 this.model.on('change:affiliation', this.renderHeading, this);
                 this.model.on('change:connection_status', this.afterConnected, this);
@@ -1350,7 +1351,7 @@ converse.plugins.add('converse-muc-views', {
                     this.nickname_form.model.set('validation_message', message);
                 }
                 u.showElement(this.nickname_form.el);
-                this.model.save('connection_status', converse.ROOMSTATUS.NICKNAME_REQUIRED);
+                u.safeSave(this.model, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
             },
 
             renderPasswordForm (message='') {

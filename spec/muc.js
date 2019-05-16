@@ -54,8 +54,8 @@
 
                 test_utils.createContacts(_converse, 'current');
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group .group-toggle').length, 300);
-                await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                let jid = 'lounge@localhost';
+                await test_utils.openAndEnterChatRoom(_converse, 'chillout', 'localhost', 'dummy');
+                let jid = 'chillout@localhost';
                 let room = _converse.api.rooms.get(jid);
                 expect(room instanceof Object).toBeTruthy();
 
@@ -87,7 +87,7 @@
                 chatroomview.close();
 
                 // Non-existing room
-                jid = 'lounge2@localhost';
+                jid = 'chillout2@localhost';
                 room = _converse.api.rooms.get(jid);
                 expect(typeof room === 'undefined').toBeTruthy();
                 done();
@@ -391,6 +391,33 @@
         });
 
         describe("A Groupchat", function () {
+
+            it("clears cached messages when it gets closed",
+                mock.initConverse(
+                    null, ['rosterGroupsFetched'], {},
+                    async function (done, _converse) {
+
+                await test_utils.waitUntil(() => test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy'));
+                const view = _converse.chatboxviews.get('lounge@localhost');
+                const message = 'Hello world',
+                        nick = mock.chatroom_names[0],
+                        msg = $msg({
+                        'from': 'lounge@localhost/'+nick,
+                        'id': (new Date()).getTime(),
+                        'to': 'dummy@localhost',
+                        'type': 'groupchat'
+                    }).c('body').t(message).tree();
+
+                await view.model.onMessage(msg);
+                await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+
+                spyOn(view.model, 'clearMessages').and.callThrough();
+                view.model.close();
+                await test_utils.waitUntil(() => view.model.clearMessages.calls.count());
+                expect(view.model.messages.length).toBe(0);
+                expect(view.content.innerHTML).toBe('');
+                done()
+            }));
 
             it("is opened when an xmpp: URI is clicked inside another groupchat",
                 mock.initConverse(

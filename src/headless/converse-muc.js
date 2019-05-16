@@ -243,11 +243,10 @@ converse.plugins.add('converse-muc', {
             async onConnectionStatusChanged () {
                 if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED &&
                         _converse.auto_register_muc_nickname &&
-                        !this.get('reserved_nick')) {
+                        !this.get('reserved_nick') &&
+                        await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
 
-                    if (await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
-                        this.registerNickname()
-                    }
+                    this.registerNickname()
                 }
             },
 

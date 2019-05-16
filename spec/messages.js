@@ -2265,11 +2265,13 @@
                                id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
                                by="room@muc.example.com"/>
                 </message>`);
+            spyOn(view.model, 'updateMessage');
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => view.model.findDuplicateFromStanzaID.calls.count() === 2);
             result = await view.model.findDuplicateFromStanzaID.calls.all()[1].returnValue;
             expect(result instanceof _converse.Message).toBe(true);
             expect(view.model.messages.length).toBe(1);
+            await test_utils.waitUntil(() => view.model.updateMessage.calls.count());
             done();
         }));
 
@@ -2689,7 +2691,10 @@
                     <acknowledged xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.api.trigger.calls.count() === 3);
+
+            spyOn(view.model, "isChatMarker").and.callThrough();
+
+            await test_utils.waitUntil(() => view.model.isChatMarker.calls.count() === 1);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -2701,7 +2706,7 @@
                     <markable xmlns="urn:xmpp:chat-markers:0"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.api.trigger.calls.count() === 5);
+            await test_utils.waitUntil(() => view.model.isChatMarker.calls.count() === 2);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));

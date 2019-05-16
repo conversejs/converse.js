@@ -406,7 +406,7 @@
                 await test_utils.waitUntil(() => _converse.chatboxes.length == 7)
                 expect(_converse.chatboxviews.trimChats).toHaveBeenCalled();
                 expect(_converse.chatboxes.length).toEqual(7);
-                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxOpened', jasmine.any(Object));
+                expect(_converse.api.trigger).toHaveBeenCalledWith('chatBoxInitialized', jasmine.any(Object));
                 test_utils.closeAllChatBoxes(_converse);
 
                 expect(_converse.chatboxes.length).toEqual(1);

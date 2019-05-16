@@ -89,7 +89,6 @@ converse.plugins.add('converse-headline', {
                 this.model.on('change:minimized', this.onMinimizedChanged, this);
 
                 this.render().insertHeading().fetchMessages().insertIntoDOM().hide();
-                _converse.api.trigger('chatBoxOpened', this); // TODO: remove
                 _converse.api.trigger('chatBoxInitialized', this);
             },
 

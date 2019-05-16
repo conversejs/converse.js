@@ -349,7 +349,6 @@ converse.plugins.add('converse-chatview', {
                 this.render();
 
                 this.fetchMessages();
-                _converse.api.trigger('chatBoxOpened', this); // TODO: remove
                 /**
                  * Triggered once the _converse.ChatBoxView has been initialized
                  * @event _converse#chatBoxInitialized

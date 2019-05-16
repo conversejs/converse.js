@@ -935,7 +935,7 @@
                     'id': (new Date()).getTime()
                 }).c('body').t('😇').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-            await new Promise(resolve => _converse.on('chatBoxOpened', resolve));
+            await new Promise(resolve => _converse.on('chatBoxInitialized', resolve));
             const view = _converse.api.chatviews.get(sender_jid);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
@@ -1084,7 +1084,7 @@
                     'id': (new Date()).getTime()
                 }).c('body').t('A message').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-            await new Promise(resolve => _converse.on('chatBoxOpened', resolve));
+            await new Promise(resolve => _converse.on('chatBoxInitialized', resolve));
             const view = _converse.api.chatviews.get(sender_jid);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 

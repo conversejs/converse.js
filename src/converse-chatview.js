@@ -359,7 +359,7 @@ converse.plugins.add('converse-chatview', {
             },
 
             initDebounced () {
-                this.scrollDown = _.debounce(this._scrollDown, 250);
+                this.scrollDown = _.debounce(this._scrollDown, 100);
                 this.markScrolled = _.debounce(this._markScrolled, 100);
                 this.show = _.debounce(this._show, 250, {'leading': true});
             },

@@ -309,7 +309,7 @@ converse.plugins.add('converse-chatview', {
          * @namespace _converse.ChatBoxView
          * @memberOf _converse
          */
-        _converse.ChatBoxView = Backbone.NativeView.extend({
+        _converse.ChatBoxView = Backbone.Overview.extend({
             length: 200,
             className: 'chatbox hidden',
             is_chatroom: false,  // Leaky abstraction from MUC
@@ -804,7 +804,7 @@ converse.plugins.add('converse-chatview', {
                     // text to show.
                     return message.destroy();
                 }
-                const view = new _converse.MessageView({'model': message});
+                const view = this.add(message.get('id'), new _converse.MessageView({'model': message}));
                 await view.render();
 
                 // Clear chat state notifications
@@ -838,8 +838,12 @@ converse.plugins.add('converse-chatview', {
              * @method _converse.ChatBoxView#onMessageAdded
              * @param { object } message - The message Backbone object that was added.
              */
-            onMessageAdded (message) {
-                this.showMessage(message);
+            async onMessageAdded (message) {
+                if (this.get(message.get('id'))) {
+                    // We already have a view for this message
+                    return;
+                }
+                await this.showMessage(message);
                 if (message.get('correcting')) {
                     this.insertIntoTextArea(message.get('message'), true, true);
                 }

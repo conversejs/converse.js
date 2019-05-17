@@ -82,7 +82,7 @@ converse.plugins.add('converse-headline', {
             initialize () {
                 this.initDebounced();
 
-                this.disable_mam = true; // Don't do MAM queries for this box
+                this.model.disable_mam = true; // Don't do MAM queries for this box
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
@@ -116,7 +116,7 @@ converse.plugins.add('converse-headline', {
             /* Handler method for all incoming messages of type "headline". */
             if (utils.isHeadlineMessage(_converse, message)) {
                 const from_jid = message.getAttribute('from');
-                if (_.includes(from_jid, '@') && 
+                if (_.includes(from_jid, '@') &&
                         !_converse.roster.get(from_jid) &&
                         !_converse.allow_non_roster_messaging) {
                     return;

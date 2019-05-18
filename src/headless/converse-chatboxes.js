@@ -557,6 +557,7 @@ converse.plugins.add('converse-chatboxes', {
                 const is_spoiler = this.get('composing_spoiler');
                 const origin_id = _converse.connection.getUniqueId();
                 return {
+                    'id': origin_id,
                     'jid': this.get('jid'),
                     'nickname': this.get('nickname'),
                     'msgid': origin_id,

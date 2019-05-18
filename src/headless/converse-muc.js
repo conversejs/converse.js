@@ -1485,7 +1485,7 @@ converse.plugins.add('converse-muc', {
              * disconnected, so that they will be properly entered again
              * when fetched from session storage.
              */
-            _converse.chatboxes.each(function (model) {
+            _converse.chatboxes.each(model => {
                 if (model.get('type') === _converse.CHATROOMS_TYPE) {
                     model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                 }

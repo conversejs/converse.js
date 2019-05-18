@@ -1218,11 +1218,7 @@ converse.plugins.add('converse-chatview', {
                     this.setChatState(_converse.INACTIVE);
                     this.model.sendChatState();
                 }
-                try {
-                    this.model.destroy();
-                } catch (e) {
-                    _converse.log(e, Strophe.LogLevel.ERROR);
-                }
+                this.model.close();
                 this.remove();
                 /**
                  * Triggered once a chatbox has been closed.

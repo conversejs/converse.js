@@ -325,6 +325,14 @@ converse.plugins.add('converse-chatboxes', {
                 });
             },
 
+            close () {
+                try {
+                    this.destroy();
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                }
+            },
+
             validate (attrs, options) {
                 const { _converse } = this.__super__;
                 if (!attrs.jid) {

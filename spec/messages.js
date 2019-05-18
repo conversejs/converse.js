@@ -2656,6 +2656,8 @@
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.el.querySelector('.chat-msg .chat-msg__body').textContent.trim())
+                .toBe("But soft, what light through yonder airlock breaks?");
 
             const msg_obj = view.model.messages.at(0);
             let stanza = u.toStanza(`

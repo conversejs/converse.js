@@ -855,6 +855,7 @@
                 presence = u.toStanza(
                     `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fabio">
                         <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="INI3xjRUioclBTP/aACfWi5m9UY=" hash="sha-1"/>
+                        <status>Ready for a new day</status>
                         <x xmlns="http://jabber.org/protocol/muc#user">
                             <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
                         </x>
@@ -862,7 +863,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(sizzle('div.chat-info', chat_content).length).toBe(5);
                 expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(
-                    `fabio has entered the groupchat`);
+                    `fabio has entered the groupchat. "Ready for a new day"`);
 
                 // XXX: hack so that we can test leave/enter of occupants
                 // who were already in the room when we joined.
@@ -905,14 +906,16 @@
                 done();
             }));
 
-            it("doesn't show the disconnection status when muc_show_disconnection_status is false",
+            it("doesn't show the disconnection status when muc_show_join_leave_status is false",
                 mock.initConverse(
-                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'muc_show_disconnection_status': false},
+                    null, ['rosterGroupsFetched', 'chatBoxesFetched'], {'muc_show_join_leave_status': false},
                     async function (done, _converse) {
 
-                await test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1');
+                await test_utils.openAndEnterChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1');
                 const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 const chat_content = view.el.querySelector('.chat-content');
+                expect(sizzle('div.chat-info', chat_content).pop().textContent).toBe('some1 has entered the groupchat');
+
                 let presence = $pres({
                         to: 'dummy@localhost/resource',
                         from: 'coven@chat.shakespeare.lit/newguy'
@@ -923,12 +926,13 @@
                         'role': 'participant'
                     });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(chat_content.querySelectorAll('div.chat-info').length).toBe(0);
+                expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
+                expect(sizzle('div.chat-info', chat_content).pop().textContent).toBe('newguy has entered the groupchat');
 
                 presence = $pres({
                     to: 'dummy@localhost/resource',
-                        type: 'unavailable',
-                        from: 'coven@chat.shakespeare.lit/newguy'
+                    type: 'unavailable',
+                    from: 'coven@chat.shakespeare.lit/newguy'
                     })
                     .c('status', 'Disconnected: Replaced by new connection').up()
                     .c('x', {xmlns: Strophe.NS.MUC_USER})
@@ -938,8 +942,42 @@
                             'role': 'none'
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(chat_content.querySelectorAll('div.chat-info').length).toBe(1);
-                expect(sizzle('div.chat-info', chat_content).pop().textContent).toBe('newguy has left the groupchat');
+                expect(chat_content.querySelectorAll('div.chat-info').length).toBe(2);
+                expect(sizzle('div.chat-info', chat_content).pop().textContent).toBe('newguy has entered and left the groupchat');
+
+                presence = u.toStanza(
+                    `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/fabio">
+                        <c xmlns="http://jabber.org/protocol/caps" node="http://conversations.im" ver="INI3xjRUioclBTP/aACfWi5m9UY=" hash="sha-1"/>
+                        <status>Ready for a new day</status>
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <item affiliation="none" jid="fabio@montefuscolo.com.br/Conversations.ZvLu" role="participant"/>
+                        </x>
+                    </presence>`);
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+                expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(`fabio has entered the groupchat`);
+
+                presence = u.toStanza(
+                    `<presence xmlns="jabber:client" to="dummy@localhost/resource" from="coven@chat.shakespeare.lit/Dele Olajide">
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-39320524" role="participant"/>
+                        </x>
+                    </presence>`);
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(sizzle('div.chat-info', chat_content).length).toBe(4);
+                expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe("Dele Olajide has entered the groupchat");
+                await test_utils.sendMessage(view, 'hello world');
+
+                presence = u.toStanza(
+                    `<presence xmlns="jabber:client" to="dummy@localhost/resource" type="unavailable" from="coven@chat.shakespeare.lit/Dele Olajide">
+                        <status>Gotta go!</status>
+                        <x xmlns="http://jabber.org/protocol/muc#user">
+                            <item affiliation="none" jid="deleo@traderlynk.4ng.net/converse.js-74567907" role="none"/>
+                        </x>
+                    </presence>`);
+                _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(sizzle('div.chat-info', chat_content).length).toBe(5);
+                expect(sizzle('div.chat-info:last', chat_content).pop().textContent).toBe(`Dele Olajide has left the groupchat`);
                 done();
             }));
 

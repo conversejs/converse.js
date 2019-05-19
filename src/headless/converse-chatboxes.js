@@ -87,7 +87,13 @@ converse.plugins.add('converse-chatboxes', {
                     this.on('change:put', this.uploadFile, this);
                 }
                 if (this.isOnlyChatStateNotification()) {
-                    window.setTimeout(this.destroy.bind(this), 20000);
+                    window.setTimeout(() => {
+                        try {
+                            this.destroy()
+                        } catch (e) {
+                            _converse.log(e, Strophe.LogLevel.ERROR);
+                        }
+                    }, 20000);
                 }
             },
 

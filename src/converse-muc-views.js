@@ -572,8 +572,7 @@ converse.plugins.add('converse-muc-views', {
                 this.enterRoom();
             },
 
-            async enterRoom (ev) {
-                if (ev) { ev.preventDefault(); }
+            async enterRoom () {
                 if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
                     await this.model.getRoomFeatures();
                     if (!u.isPersistableModel(this.model)) {
@@ -582,8 +581,6 @@ converse.plugins.add('converse-muc-views', {
                         return;
                     }
                     this.populateAndJoin();
-                } else {
-                    this.model.fetchMessages();
                 }
                 /**
                  * Triggered once a groupchat has been opened
@@ -772,7 +769,9 @@ converse.plugins.add('converse-muc-views', {
             },
 
             afterConnected () {
-                if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+                if (this.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
+                    this.showSpinner();
+                } else if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                     this.hideSpinner();
                     this.setChatState(_converse.ACTIVE);
                     this.scrollDown();
@@ -1197,7 +1196,6 @@ converse.plugins.add('converse-muc-views', {
             populateAndJoin () {
                 this.model.occupants.fetchMembers();
                 this.join();
-                this.model.fetchMessages();
             },
 
             /**

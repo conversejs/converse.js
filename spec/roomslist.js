@@ -208,7 +208,7 @@
             info_el.click();
 
             const  modal = view.model.room_details_modal;
-            await test_utils.waitUntil(() => u.isVisible(modal.el), 2000);
+            await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
             let els = modal.el.querySelectorAll('p.room-info');
             expect(els[0].textContent).toBe("Name: A Dark Cave")
             expect(els[1].textContent).toBe("Groupchat address (JID): coven@chat.shakespeare.lit")

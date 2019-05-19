@@ -293,7 +293,6 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 this.on('change:chat_state', this.sendChatState, this);
                 this.initMessages();
-                this.fetchMessages();
             },
 
             initMessages () {
@@ -302,12 +301,14 @@ converse.plugins.add('converse-chatboxes', {
                 this.messages.browserStorage = new Backbone.BrowserStorage.session(
                     `converse.messages-${this.get('jid')}-${_converse.bare_jid}`);
                 this.messages.chatbox = this;
+                this.messages.fetched = u.getResolveablePromise();
 
                 this.messages.on('change:upload', (message) => {
                     if (message.get('upload') === _converse.SUCCESS) {
                         _converse.api.send(this.createMessageStanza(message));
                     }
                 });
+                this.fetchMessages();
             },
 
             afterMessagesFetched () {
@@ -322,12 +323,11 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             fetchMessages () {
-                this.messages.fetched = new Promise(resolve => {
-                    this.messages.fetch({
-                        'add': true,
-                        'success': _.flow(this.afterMessagesFetched.bind(this), resolve),
-                        'error': _.flow(this.afterMessagesFetched.bind(this), resolve)
-                    });
+                const resolve = this.messages.fetched.resolve;
+                this.messages.fetch({
+                    'add': true,
+                    'success': _.flow(this.afterMessagesFetched.bind(this), resolve),
+                    'error': _.flow(this.afterMessagesFetched.bind(this), resolve)
                 });
             },
 

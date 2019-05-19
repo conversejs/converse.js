@@ -2633,8 +2633,9 @@
                     <origin-id xmlns="urn:xmpp:sid:0" id="CE08D448-5ED8-4B6A-BB5B-07ED9DFE4FF0"/>
                 </message>`);
             spyOn(_converse.api, "trigger").and.callThrough();
+            spyOn(view.model, "isReceipt").and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.api.trigger.calls.count() === 1);
+            await test_utils.waitUntil(() => view.model.isReceipt.calls.count() === 1);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
@@ -2667,12 +2668,11 @@
                          from="lounge@localhost/some1" type="groupchat" xmlns="jabber:client">
                     <received xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
                 </message>`);
-            spyOn(_converse.api, "trigger").and.callThrough();
+            spyOn(view.model, "isChatMarker").and.callThrough();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.api.trigger.calls.count() === 1);
+            await test_utils.waitUntil(() => view.model.isChatMarker.calls.count() === 1);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
-            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
 
             stanza = u.toStanza(`
                 <message xml:lang="en" to="dummy@localhost/resource"
@@ -2680,10 +2680,9 @@
                     <displayed xmlns="urn:xmpp:chat-markers:0" id="${msg_obj.get('msgid')}"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => _converse.api.trigger.calls.count() === 2);
+            await test_utils.waitUntil(() => view.model.isChatMarker.calls.count() === 2);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
-            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
 
             stanza = u.toStanza(`
                 <message xml:lang="en" to="dummy@localhost/resource"
@@ -2692,12 +2691,9 @@
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-            spyOn(view.model, "isChatMarker").and.callThrough();
-
-            await test_utils.waitUntil(() => view.model.isChatMarker.calls.count() === 1);
+            await test_utils.waitUntil(() => view.model.isChatMarker.calls.count() === 3);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
-            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
 
             stanza = u.toStanza(`
                 <message xml:lang="en" to="dummy@localhost/resource"
@@ -2706,10 +2702,9 @@
                     <markable xmlns="urn:xmpp:chat-markers:0"/>
                 </message>`);
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
-            await test_utils.waitUntil(() => view.model.isChatMarker.calls.count() === 2);
+            await test_utils.waitUntil(() => view.model.isChatMarker.calls.count() === 4);
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
             expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
-            expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
             done();
         }));
 

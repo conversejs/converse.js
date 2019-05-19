@@ -9,6 +9,7 @@
     const $msg = converse.env.$msg;
     const dayjs = converse.env.dayjs;
     const u = converse.env.utils;
+    const sizzle = converse.env.sizzle;
     // See: https://xmpp.org/rfcs/rfc3921.html
 
     describe("Message Archive Management", function () {
@@ -215,18 +216,17 @@
                     null, [], {},
                     async function (done, _converse) {
 
-                await test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'nicky', [Strophe.NS.MAM]);
-                let sent_stanza, IQ_id;
-                const sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_stanza = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
-                _converse.api.archive.query({'with': 'coven@chat.shakespeare.lit', 'groupchat': true});
-                await test_utils.waitUntil(() => sent_stanza);
-                const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
-                expect(sent_stanza.toString()).toBe(
-                    `<iq id="${IQ_id}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
+                const room_jid = 'coven@chat.shakespeare.lit';
+                _converse.api.archive.query({'with': room_jid, 'groupchat': true});
+                await test_utils.waitUntilDiscoConfirmed(_converse, room_jid, null, [Strophe.NS.MAM]);
+
+                const sent_stanzas = _converse.connection.sent_stanzas;
+                const stanza = await test_utils.waitUntil(
+                    () => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop());
+
+                const queryid = stanza.querySelector('query').getAttribute('queryid');
+                expect(Strophe.serialize(stanza)).toBe(
+                    `<iq id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
                         `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
                             `<x type="submit" xmlns="jabber:x:data">`+
                                 `<field type="hidden" var="FORM_TYPE">`+
@@ -243,16 +243,15 @@
                     null, [], {},
                     async function (done, _converse) {
 
-                await test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'nicky', [Strophe.NS.MAM]);
-                let sent_stanza, IQ_id;
-                const sendIQ = _converse.connection.sendIQ;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_stanza = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
-                const promise = _converse.api.archive.query({'with': 'coven@chat.shakespear.lit', 'groupchat': true, 'max':'10'});
-                await test_utils.waitUntil(() => sent_stanza);
-                const queryid = sent_stanza.nodeTree.querySelector('query').getAttribute('queryid');
+                const room_jid = 'coven@chat.shakespeare.lit';
+                const promise = _converse.api.archive.query({'with': room_jid, 'groupchat': true, 'max':'10'});
+
+                await test_utils.waitUntilDiscoConfirmed(_converse, room_jid, null, [Strophe.NS.MAM]);
+
+                const sent_stanzas = _converse.connection.sent_stanzas;
+                const sent_stanza = await test_utils.waitUntil(
+                    () => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop());
+                const queryid = sent_stanza.querySelector('query').getAttribute('queryid');
 
                 /* <message id='iasd207' from='coven@chat.shakespeare.lit' to='hag66@shakespeare.lit/pda'>
                  *     <result xmlns='urn:xmpp:mam:2' queryid='g27' id='34482-21985-73620'>
@@ -297,7 +296,7 @@
                  *     </set>
                  * </iq>
                  */
-                const stanza = $iq({'type': 'result', 'id': IQ_id})
+                const stanza = $iq({'type': 'result', 'id': sent_stanza.getAttribute('id')})
                     .c('fin', {'xmlns': 'urn:xmpp:mam:2'})
                         .c('set',  {'xmlns': 'http://jabber.org/protocol/rsm'})
                             .c('first', {'index': '0'}).t('23452-4534-1').up()

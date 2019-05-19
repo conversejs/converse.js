@@ -8,8 +8,8 @@
     const Strophe = converse.env.Strophe;
     const $iq = converse.env.$iq;
     const _ = converse.env._;
+    const sizzle = converse.env.sizzle;
     const u = converse.env.utils;
-    const f = converse.env.f;
 
     describe("XEP-0363: HTTP File Upload", function () {
 
@@ -366,6 +366,11 @@
                         await test_utils.waitUntilDiscoConfirmed(_converse, _converse.domain, [], [], ['upload.montague.tld'], 'items');
                         await test_utils.waitUntilDiscoConfirmed(_converse, 'upload.montague.tld', [], [Strophe.NS.HTTPUPLOAD], []);
                         await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+
+                        // Wait until MAM query has been sent out
+                        const sent_stanzas = _converse.connection.sent_stanzas;
+                        await test_utils.waitUntil(() => sent_stanzas.filter(s => sizzle(`[xmlns="${Strophe.NS.MAM}"]`, s).length).pop());
+
                         const view = _converse.chatboxviews.get('lounge@localhost');
                         const file = {
                             'type': 'image/jpeg',

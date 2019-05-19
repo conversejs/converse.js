@@ -65,7 +65,7 @@ converse.plugins.add('converse-mam-views', {
                 } else {
                     message_handler = _converse.chatboxes.onMessage.bind(_converse.chatboxes)
                 }
-                let result;
+                let result = {};
                 try {
                     result = await _converse.api.archive.query(
                         Object.assign({

@@ -211,10 +211,26 @@ converse.plugins.add('converse-muc', {
                 }
                 this.set('box_id', `box-${btoa(this.get('jid'))}`);
 
-                this.initMessages();
                 this.on('change:chat_state', this.sendChatState, this);
                 this.on('change:connection_status', this.onConnectionStatusChanged, this);
 
+                this.initFeatures();
+                this.initOccupants();
+                this.initMessages();
+                this.registerHandlers();
+            },
+
+            async onConnectionStatusChanged () {
+                if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED &&
+                        _converse.auto_register_muc_nickname &&
+                        !this.get('reserved_nick') &&
+                        await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
+
+                    this.registerNickname()
+                }
+            },
+
+            initFeatures () {
                 const storage = _converse.config.get('storage');
                 const id = `converse.muc-features-${_converse.bare_jid}-${this.get('jid')}`;
                 this.features = new Backbone.Model(
@@ -222,7 +238,9 @@ converse.plugins.add('converse-muc', {
                 );
                 this.features.browserStorage = new Backbone.BrowserStorage.session(id);
                 this.features.fetch();
+            },
 
+            initOccupants () {
                 this.occupants = new _converse.ChatRoomOccupants();
                 this.occupants.browserStorage = new Backbone.BrowserStorage.session(
                     `converse.occupants-${_converse.bare_jid}${this.get('jid')}`
@@ -236,18 +254,6 @@ converse.plugins.add('converse-muc', {
                         'error': resolve
                     });
                 });
-
-                this.registerHandlers();
-            },
-
-            async onConnectionStatusChanged () {
-                if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED &&
-                        _converse.auto_register_muc_nickname &&
-                        !this.get('reserved_nick') &&
-                        await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
-
-                    this.registerNickname()
-                }
             },
 
             registerHandlers () {

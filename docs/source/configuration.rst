@@ -192,13 +192,6 @@ federated server), while setting it to `false` means that people not on your
 roster can't contact you unless one (or both) of you subscribe to one another's
 presence (i.e. adding as a roster contact).
 
-allow_otr
----------
-
-* Default:  ``true``
-
-Allow Off-the-record encryption of single-user chat messages.
-
 allow_public_bookmarks
 ----------------------
 
@@ -435,7 +428,6 @@ The core, and by default whitelisted, plugins are::
     converse-muc
     converse-muc-embedded
     converse-notification
-    converse-otr
     converse-ping
     converse-profile
     converse-register
@@ -478,29 +470,6 @@ For more information, read this blog post: `Which BOSH server do you need? <http
 
 A more modern alternative to BOSH is to use `websockets <https://developer.mozilla.org/en/docs/WebSockets>`_.
 Please see the :ref:`websocket-url` configuration setting.
-
-cache_otr_key
--------------
-
-* Default:  ``false``
-
-Let the `OTR (Off-the-record encryption) <https://otr.cypherpunks.ca>`_ private
-key be cached in your browser's session storage.
-
-The browser's session storage persists across page loads but is deleted once
-the tab or window is closed.
-
-If this option is set to ``false``, a new OTR private key will be generated
-for each page load. While more inconvenient, this is a much more secure option.
-
-This setting can only be used together with ``allow_otr = true``.
-
-.. note::
-    A browser window's session storage is accessible by all javascript that
-    is served from the same domain. So if there is malicious javascript served by
-    the same server (or somehow injected via an attacker), then they will be able
-    to retrieve your private key and read your all the chat messages in your
-    current session. Previous sessions however cannot be decrypted.
 
 chatstate_notification_blacklist
 --------------------------------
@@ -769,7 +738,7 @@ The translations for that locale must be available in JSON format at the
 `locales_url`_
 
 If an explicit locale is specified via the ``i18n`` setting and the
-translations for that locale are not found at the `locales_url``, then 
+translations for that locale are not found at the `locales_url``, then
 then Converse will fall back to trying to determine the browser's language
 and fetching those translations, or if that fails the default English texts
 will be used.
@@ -1064,6 +1033,17 @@ muc_show_join_leave
 
 Determines whether Converse will show info messages inside a chatroom
 whenever a user joins or leaves it.
+
+muc_show_join_leave_status
+--------------------------
+
+* Default; ``true``
+
+Determines whether Converse shows the optionally included status message when a
+user joins or leaves the MUC. This setting only has an effect if
+``muc_show_join_leave`` is set to ``true``.
+
+See https://xmpp.org/extensions/xep-0045.html#changepres
 
 .. _`nickname`:
 
@@ -1533,17 +1513,11 @@ time_format
 
 Examples: ``HH:mm``, ``hh:mm``, ``hh:mm a``.
 
-This option makes the time format for the time shown, for each message, configurable. Converse uses `moment.js <https://momentjs.com/>`_
-for showing time. This option allows the configuration of the format in which `moment` will display the time for the messages. For detailed
-description of time-format options available for `moment` you can check this `link <https://momentjs.com/docs/#/parsing/string-format/>`_.
-
-use_otr_by_default
-------------------
-
-* Default:  ``false``
-
-If set to ``true``, Converse will automatically try to initiate an OTR (off-the-record)
-encrypted chat session every time you open a chatbox.
+This option makes the time format for the time shown, for each message, configurable. Converse uses `DayJS <https://github.com/iamkun/dayjs>`_
+for showing time. This option allows the configuration of the format in which `DayJS` will display the time for the messages. For detailed
+description of time-format options available for `DayJS` you can check the
+`default formatting options <https://github.com/iamkun/dayjs/blob/dev/docs/en/API-reference.md#displaying>`_ and the
+`advanced options <https://github.com/iamkun/dayjs/blob/master/docs/en/Plugin.md#advancedformat>`_.
 
 visible_toolbar_buttons
 -----------------------
@@ -1701,7 +1675,6 @@ These are::
     converse-muc
     converse-muc-embedded
     converse-notification
-    converse-otr
     converse-ping
     converse-profile
     converse-register

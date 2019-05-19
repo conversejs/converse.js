@@ -9,7 +9,7 @@
 import converse from "./converse-core";
 import sizzle from "sizzle";
 
-const { Backbone, Promise, Strophe, $iq, utils, _, f } = converse.env;
+const { Backbone, Promise, Strophe, $iq, utils, _ } = converse.env;
 
 converse.plugins.add('converse-disco', {
 
@@ -551,6 +551,44 @@ converse.plugins.add('converse-disco', {
                 },
 
                 /**
+                 * @namespace _converse.api.disco.features
+                 * @memberOf _converse.api.disco
+                 */
+                'features': {
+                    /**
+                     * Return a given feature of a disco entity
+                     *
+                     * @method _converse.api.disco.features.get
+                     * @param {string} feature The feature that might be
+                     *     supported. In the XML stanza, this is the `var`
+                     *     attribute of the `<feature>` element. For
+                     *     example: `http://jabber.org/protocol/muc`
+                     * @param {string} jid The JID of the entity
+                     *     (and its associated items) which should be queried
+                     * @returns {promise} A promise which resolves with a list containing
+                     *     _converse.Entity instances representing the entity
+                     *     itself or those items associated with the entity if
+                     *     they support the given feature.
+                     * @example
+                     * _converse.api.disco.features.get(Strophe.NS.MAM, _converse.bare_jid);
+                     */
+                    async 'get' (feature, jid) {
+                        if (_.isNil(jid)) {
+                            throw new TypeError('You need to provide an entity JID');
+                        }
+                        await _converse.api.waitUntil('discoInitialized');
+                        let entity = await _converse.api.disco.entities.get(jid, true);
+                        entity = await entity.waitUntilFeaturesDiscovered;
+                        const promises = _.concat(
+                            entity.items.map(item => item.hasFeature(feature)),
+                            entity.hasFeature(feature)
+                        );
+                        const result = await Promise.all(promises);
+                        return _.filter(result, _.isObject);
+                    }
+                },
+
+                /**
                  * Used to determine whether an entity supports a given feature.
                  *
                  * @method _converse.api.disco.supports
@@ -560,40 +598,17 @@ converse.plugins.add('converse-disco', {
                  *     example: `http://jabber.org/protocol/muc`
                  * @param {string} jid The JID of the entity
                  *     (and its associated items) which should be queried
-                 * @returns {promise} A promise which resolves with a list containing
-                 *     _converse.Entity instances representing the entity
-                 *     itself or those items associated with the entity if
-                 *     they support the given feature.
-                 *
+                 * @returns {promise} A promise which resolves with `true` or `false`.
                  * @example
-                 * _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid)
-                 * .then(value => {
-                 *     // `value` is a map with two keys, `supported` and `feature`.
-                 *     if (value.supported) {
-                 *         // The feature is supported
-                 *     } else {
-                 *         // The feature is not supported
-                 *     }
-                 * }).catch(() => {
-                 *     _converse.log(
-                 *         "Error or timeout while checking for feature support",
-                 *         Strophe.LogLevel.ERROR
-                 *     );
-                 * });
+                 * if (await _converse.api.disco.supports(Strophe.NS.MAM, _converse.bare_jid)) {
+                 *     // The feature is supported
+                 * } else {
+                 *     // The feature is not supported
+                 * }
                  */
                 async 'supports' (feature, jid) {
-                    if (_.isNil(jid)) {
-                        throw new TypeError('api.disco.supports: You need to provide an entity JID');
-                    }
-                    await _converse.api.waitUntil('discoInitialized');
-                    let entity = await _converse.api.disco.entities.get(jid, true);
-                    entity = await entity.waitUntilFeaturesDiscovered;
-                    const promises = _.concat(
-                        entity.items.map(item => item.hasFeature(feature)),
-                        entity.hasFeature(feature)
-                    );
-                    const result = await Promise.all(promises);
-                    return f.filter(f.isObject, result);
+                    const features = await _converse.api.disco.features.get(feature, jid);
+                    return features.length > 0;
                 },
 
                 /**

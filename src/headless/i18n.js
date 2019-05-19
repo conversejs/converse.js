@@ -8,42 +8,42 @@
 //
 /*global define */
 
-import 'moment/locale/af';
-import 'moment/locale/ar';
-import 'moment/locale/bg';
-import 'moment/locale/ca';
-import 'moment/locale/cs';
-import 'moment/locale/de';
-import 'moment/locale/eo';
-import 'moment/locale/es';
-import 'moment/locale/eu';
-import 'moment/locale/fr';
-import 'moment/locale/gl';
-import 'moment/locale/he';
-import 'moment/locale/hi';
-import 'moment/locale/hu';
-import 'moment/locale/id';
-import 'moment/locale/it';
-import 'moment/locale/ja';
-import 'moment/locale/nb';
-import 'moment/locale/nl';
-import 'moment/locale/pl';
-import 'moment/locale/pt-br';
-import 'moment/locale/ro';
-import 'moment/locale/ru';
-import 'moment/locale/tr';
-import 'moment/locale/uk';
-import 'moment/locale/zh-cn';
-import 'moment/locale/zh-tw';
+import 'dayjs/locale/af';
+import 'dayjs/locale/ar';
+import 'dayjs/locale/bg';
+import 'dayjs/locale/ca';
+import 'dayjs/locale/cs';
+import 'dayjs/locale/de';
+import 'dayjs/locale/eo';
+import 'dayjs/locale/es';
+import 'dayjs/locale/eu';
+import 'dayjs/locale/fr';
+import 'dayjs/locale/gl';
+import 'dayjs/locale/he';
+import 'dayjs/locale/hi';
+import 'dayjs/locale/hu';
+import 'dayjs/locale/id';
+import 'dayjs/locale/it';
+import 'dayjs/locale/ja';
+import 'dayjs/locale/nb';
+import 'dayjs/locale/nl';
+import 'dayjs/locale/pl';
+import 'dayjs/locale/pt-br';
+import 'dayjs/locale/ro';
+import 'dayjs/locale/ru';
+import 'dayjs/locale/tr';
+import 'dayjs/locale/uk';
+import 'dayjs/locale/zh-cn';
+import 'dayjs/locale/zh-tw';
 import Jed from "jed";
 import Promise from "es6-promise/dist/es6-promise.auto";
 import _ from "./lodash.noconflict";
-import moment from "moment";
+import dayjs from "dayjs";
 
 
 function detectLocale (library_check) {
     /* Determine which locale is supported by the user's system as well
-     * as by the relevant library (e.g. converse.js or moment.js).
+     * as by the relevant library (e.g. converse.js or dayjs).
      * @param { Function } library_check - Returns a boolean indicating whether
      *   the locale is supported.
      */
@@ -66,10 +66,6 @@ function detectLocale (library_check) {
         locale = isLocaleAvailable(window.navigator.systemLanguage, library_check);
     }
     return locale || 'en';
-}
-
-function isMomentLocale (locale) {
-    return _.includes(moment.locales(), locale);
 }
 
 function isConverseLocale (locale, supported_locales) {
@@ -112,7 +108,7 @@ export default {
             preferred_locale,
             _.partial(isConverseLocale, _, _converse.locales)
         );
-        moment.locale(getLocale(preferred_locale, isMomentLocale));
+        dayjs.locale(getLocale(preferred_locale, l => dayjs.locale(l)));
     },
 
     translate (str) {

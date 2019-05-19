@@ -66,7 +66,7 @@ converse.plugins.add('converse-notification', {
             }
             const mentioned = (new RegExp(`\\b${room.get('nick')}\\b`)).test(body.textContent);
             notify_all = notify_all === true ||
-                (_.isArray(notify_all) && _.includes(notify_all, room_jid));
+                (Array.isArray(notify_all) && _.includes(notify_all, room_jid));
             if (sender === room.get('nick') || (!notify_all && !mentioned)) {
                 return false;
             }

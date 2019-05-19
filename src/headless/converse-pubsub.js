@@ -7,7 +7,7 @@
 import "./converse-disco";
 import converse from "./converse-core";
 
-const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, f, moment, _ } = converse.env;
+const { Strophe, Backbone, Promise, $iq, $build, $msg, $pres, dayjs, _ } = converse.env;
 
 Strophe.addNamespace('PUBSUB_ERROR', Strophe.NS.PUBSUB+"#errors");
 
@@ -59,8 +59,7 @@ converse.plugins.add('converse-pubsub', {
 
                     if (options) {
                         jid = jid || _converse.bare_jid;
-                        const result = await _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', jid);
-                        if (result.length) {
+                        if (await _converse.api.disco.supports(Strophe.NS.PUBSUB + '#publish-options', jid)) {
                             stanza.c('publish-options')
                                 .c('x', {'xmlns': Strophe.NS.XFORM, 'type': 'submit'})
                                     .c('field', {'var': 'FORM_TYPE', 'type': 'hidden'})

@@ -9,14 +9,6 @@ Dependencies
 Installing the 3rd party dependencies
 =====================================
 
-.. note::
-    Windows environment: We recommend installing the required tools using `Chocolatey <https://chocolatey.org/>`_
-    You will need Node.js (nodejs.install), Git (git.install) and optionally to build using Makefile, GNU Make (make)
-    If you have trouble setting up a development environment on Windows,
-    please read `this post <http://librelist.com/browser//conversejs/2014/11/5/openfire-converse-and-visual-studio-questions/#b28387e7f8f126693b11598a8acbe810>`_
-    in the mailing list.:
-
-
 We use development tools which depend on Node.js and npm (the Node package manager).
 
 If you don't have Node.js installed, you can download and install the latest
@@ -31,29 +23,24 @@ Now use ``git`` to check out the Converse repository:
 
 ::
 
-    git clone git@github.com:conversejs/converse.js.git
+    git clone https://github.com/conversejs/converse.js.git
 
 Now go into the repository checkout and run ``make dev`` in order to set up the
 development environment.
 
 ::
-    
+
     cd converse.js
     make dev
 
-On Windows you need to specify Makefile.win to be used by running:
+If you're using Windows, or don't have GNU Make installed, you can run the
+following:
 
 ::
 
-    make -f Makefile.win dev
-
-Alternatively, if you don't have GNU Make (necessary for the ``make`` command),
-you can use NPM directly:
-
-::
-
-    npm install
-
+  cd converse.js
+  npm install
+  npm run lerna
 
 This will install the Node.js development tools and Converse's dependencies.
 
@@ -61,7 +48,7 @@ The front-end dependencies are those JavaScript files on which
 Converse directly depends and which will be loaded in the browser as part of
 the bundle in ``dist/converse.js`` (or ``dist/converse.min.js``).
 
-To see the 3rd party dependencies (not just the front-end dependencies, but 
+To see the 3rd party dependencies (not just the front-end dependencies, but
 also ones necessary for development tasks like making builds), take a look at
 the list under the ``devDependencies`` in `package.json <https://github.com/jcbrand/converse.js/blob/master/package.json>`_.
 
@@ -82,7 +69,7 @@ Brief description of Converse's dependencies
 
 Converse relies on the following dependencies:
 
-* `moment.js <http://momentjs.com/>`_ provides a better API for handling dates and times.
+* `DayJS <https://github.com/iamkun/dayjs>`_ provides a better API for handling dates and times.
 * `Strophe.js <http://strophe.im/>`_ maintains the XMPP session, is used to
   build XMPP stanzas, to send them, and to register handlers for received stanzas.
 * `lodash <https://lodash.com/>`_ provides very useful utility functions.
@@ -93,7 +80,7 @@ Converse relies on the following dependencies:
   It also provides the ``Backbone.OrderedListView`` which is used to show
   alphabetically sorted lists, such as your contacts roster.
 * `backbone.vdomview <http://github.com/jcbrand/backbone.vdomview>`_ provides
-  ``Backbone.VDOMView`` that uses the `Snabbdom <https://github.com/snabbdom/snabbdom>`_ 
+  ``Backbone.VDOMView`` that uses the `Snabbdom <https://github.com/snabbdom/snabbdom>`_
   virtual DOM for rendering DOM elements.
 * `pluggable.js <https://github.com/jcbrand/pluggable.js>`_ provides the plugin
   architecture for Converse. It registers and initializes plugins and

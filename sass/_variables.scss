@@ -3,7 +3,6 @@ $mobile_portrait_length: 480px !default;
 
 #conversejs, #conversejs-bg, .converse-fullscreen {
     --subdued-color: #A8ABA1;
-    --subdued-color-lighten-25-percent: #e6e7e4; // lighten(#A8ABA1, 25%)
 
     --green: #3AA569;
     --redder-orange: #E77051;
@@ -161,7 +160,7 @@ $mobile_portrait_length: 480px !default;
     --avatar-background-color: white;
 
     --fullpage-chat-head-height: 62px;
-    --fullpage-chat-height: 100vh;
+    --fullpage-chat-height: calc(var(--vh, 1vh) * 100);
     --fullpage-chat-width: 100%;
     --fullpage-emoji-picker-height: 200px;
     --fullpage-max-chat-textarea-height: 15em;
@@ -182,8 +181,6 @@ $mobile_portrait_length: 480px !default;
     --list-item-link-hover-color: var(--dark-link-color);
     --list-item-open-color: var(--controlbox-head-color);
     --list-item-open-hover-color: var(--controlbox-head-color);
-    --list-circle-color: #89d6ab; // lighten($green, 25%)
-    --list-minus-circle-color: #f0a794; // lighten($red, 15%)
     --list-dot-circle-color: #f6dec1; // lighten($orange, 25%)
 }
 

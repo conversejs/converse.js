@@ -9,13 +9,14 @@
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="xmpp chat webchat converse.js" />
     <link rel="shortcut icon" type="image/ico" href="css/images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="/css/font-awesome.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="/css/website.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="/css/converse.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/4.2.0/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/4.2.0/css/website.min.css" />
     <script type="text/javascript" src="analytics.js"></script>
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
     <![if gte IE 11]>
-        <script src="dist/converse.js"></script>
+        <script src="https://cdn.conversejs.org/4.2.0/3rdparty/libsignal-protocol.min.js"></script>
+        <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/4.2.0/css/converse.min.css" />
+        <script src="https://cdn.conversejs.org/4.2.0/dist/converse.min.js"></script>
     <![endif]>
 </head>
 
@@ -168,7 +169,6 @@
                             <li>Hidden messages (aka Spoilers) (<a href="https://xmpp.org/extensions/xep-0382.html" target="_blank" rel="noopener">XEP 382</a>)</li>
                             <li>Client state indication (<a href="https://xmpp.org/extensions/xep-0352.html" target="_blank" rel="noopener">XEP 352</a>)</li>
                             <li>Last Message Correction (<a href="https://xmpp.org/extensions/xep-0308.html" target="_blank" rel="noopener">XEP 308</a>)</li>
-                            <li>Off-the-record encryption</li>
                             <li>OMEMO encrypted messaging (<a href="https://xmpp.org/extensions/xep-0384.html" target="_blank" rel="noopener">XEP 384</a>)</li>
                             <li>Supports anonymous logins, see the <a href="https://conversejs.org/demo/anonymous.html" target="_blank" rel="noopener">anonymous login demo</a>.</li>
                             <li>Translated into 17 languages</li>
@@ -320,7 +320,7 @@
 </body>
 
 <script>
-    /* 
+    /*
     @licstart
     This is free and unencumbered software released into the public domain.
 

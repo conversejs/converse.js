@@ -6,7 +6,7 @@
         ], factory);
 } (this, function (jasmine, mock, test_utils) {
     "use strict";
-    const { Backbone, Promise, Strophe, $iq, $msg, $pres, b64_sha1, moment, sizzle, _ } = converse.env;
+    const { Backbone, Promise, Strophe, $iq, $msg, $pres, b64_sha1, dayjs, sizzle, _ } = converse.env;
     const u = converse.env.utils;
 
 
@@ -408,7 +408,7 @@
             expect(chat_content.querySelectorAll('.date-separator').length).toEqual(4);
 
             let day = sizzle('.date-separator:first', chat_content).pop();
-            expect(day.getAttribute('data-isodate')).toEqual(moment('2017-12-31T00:00:00').format());
+            expect(day.getAttribute('data-isodate')).toEqual(dayjs('2017-12-31T00:00:00').toISOString());
 
             let time = sizzle('time:first', chat_content).pop();
             expect(time.textContent).toEqual('Sunday Dec 31st 2017')
@@ -424,7 +424,7 @@
             expect(time.textContent).toEqual("Monday Jan 1st 2018");
 
             day = sizzle('.date-separator:eq(1)', chat_content).pop();
-            expect(day.getAttribute('data-isodate')).toEqual(moment('2018-01-01T00:00:00').format());
+            expect(day.getAttribute('data-isodate')).toEqual(dayjs('2018-01-01T00:00:00').toISOString());
             expect(day.nextElementSibling.querySelector('.chat-msg__text').textContent).toBe('Inbetween message');
 
             el = sizzle('.chat-msg:eq(1)', chat_content).pop();
@@ -439,7 +439,7 @@
             expect(time.textContent).toEqual("Tuesday Jan 2nd 2018");
 
             day = sizzle('.date-separator:nth(2)', chat_content).pop();
-            expect(day.getAttribute('data-isodate')).toEqual(moment('2018-01-02T00:00:00').format());
+            expect(day.getAttribute('data-isodate')).toEqual(dayjs('2018-01-02T00:00:00').toISOString());
             expect(day.nextElementSibling.querySelector('.chat-msg__text').textContent).toBe('An earlier message on the next day');
 
             el = sizzle('.chat-msg:eq(3)', chat_content).pop();
@@ -452,7 +452,7 @@
             expect(u.hasClass('chat-msg--followup', el)).toBe(false);
 
             day = sizzle('.date-separator:last', chat_content).pop();
-            expect(day.getAttribute('data-isodate')).toEqual(moment().startOf('day').format());
+            expect(day.getAttribute('data-isodate')).toEqual(dayjs().startOf('day').toISOString());
             expect(day.nextElementSibling.querySelector('.chat-msg__text').textContent).toBe('latest message');
             expect(u.hasClass('chat-msg--followup', el)).toBe(false);
             done();
@@ -719,8 +719,7 @@
             await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group').length);
             await test_utils.openChatBoxFor(_converse, contact_jid);
             test_utils.clearChatBoxMessages(_converse, contact_jid);
-            const one_day_ago = moment();
-            one_day_ago.subtract('days', 1);
+            const one_day_ago = dayjs().subtract(1, 'day');
             const chatbox = _converse.chatboxes.get(contact_jid);
             const view = _converse.chatboxviews.get(contact_jid);
 
@@ -729,9 +728,9 @@
                 from: contact_jid,
                 to: _converse.connection.jid,
                 type: 'chat',
-                id: one_day_ago.unix()
+                id: one_day_ago.toDate().getTime()
             }).c('body').t(message).up()
-            .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: one_day_ago.format() })
+            .c('delay', { xmlns:'urn:xmpp:delay', from: 'localhost', stamp: one_day_ago.toISOString() })
             .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree();
             await _converse.chatboxes.onMessage(msg);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
@@ -753,10 +752,10 @@
             expect(chat_content.querySelectorAll('.date-separator').length).toEqual(1);
             let day = chat_content.querySelector('.date-separator');
             expect(day.getAttribute('class')).toEqual('message date-separator');
-            expect(day.getAttribute('data-isodate')).toEqual(moment(one_day_ago.startOf('day')).format());
+            expect(day.getAttribute('data-isodate')).toEqual(dayjs(one_day_ago.startOf('day')).toISOString());
 
             let time = chat_content.querySelector('time.separator-text');
-            expect(time.textContent).toEqual(moment(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
+            expect(time.textContent).toEqual(dayjs(one_day_ago.startOf('day')).format("dddd MMM Do YYYY"));
 
             message = 'This is a current message';
             msg = $msg({
@@ -770,18 +769,17 @@
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
             expect(_converse.api.trigger).toHaveBeenCalledWith('message', jasmine.any(Object));
-            // Check that there is a <time> element, with the required
-            // props.
+            // Check that there is a <time> element, with the required props.
             expect(chat_content.querySelectorAll('time.separator-text').length).toEqual(2); // There are now two time elements
 
             const message_date = new Date();
             day = sizzle('.date-separator:last', chat_content);
             expect(day.length).toEqual(1);
             expect(day[0].getAttribute('class')).toEqual('message date-separator');
-            expect(day[0].getAttribute('data-isodate')).toEqual(moment(message_date).startOf('day').format());
+            expect(day[0].getAttribute('data-isodate')).toEqual(dayjs(message_date).startOf('day').toISOString());
 
             time = sizzle('time.separator-text:last', chat_content).pop();
-            expect(time.textContent).toEqual(moment(message_date).startOf('day').format("dddd MMM Do YYYY"));
+            expect(time.textContent).toEqual(dayjs(message_date).startOf('day').format("dddd MMM Do YYYY"));
 
             // Normal checks for the 2nd message
             expect(chatbox.messages.length).toEqual(2);
@@ -937,7 +935,7 @@
                     'id': (new Date()).getTime()
                 }).c('body').t('😇').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-            await new Promise(resolve => _converse.on('chatBoxOpened', resolve));
+            await new Promise(resolve => _converse.on('chatBoxInitialized', resolve));
             const view = _converse.api.chatviews.get(sender_jid);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
@@ -1055,7 +1053,7 @@
             expect(msg_author.textContent.trim()).toBe('Max Mustermann');
 
             const msg_time = view.el.querySelector('.chat-content .chat-msg:last-child .chat-msg__time');
-            const time = moment(msg_object.get('time')).format(_converse.time_format);
+            const time = dayjs(msg_object.get('time')).format(_converse.time_format);
             expect(msg_time.textContent).toBe(time);
             done();
         }));
@@ -1086,7 +1084,7 @@
                     'id': (new Date()).getTime()
                 }).c('body').t('A message').up()
                 .c('active', {'xmlns': 'http://jabber.org/protocol/chatstates'}).tree());
-            await new Promise(resolve => _converse.on('chatBoxOpened', resolve));
+            await new Promise(resolve => _converse.on('chatBoxInitialized', resolve));
             const view = _converse.api.chatviews.get(sender_jid);
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
@@ -1159,7 +1157,7 @@
             _converse.chatboxes.onMessage($msg({'id': 'aeb218', 'to': _converse.bare_jid})
                 .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
                     .c('delay', {'xmlns': 'urn:xmpp:delay',
-                                    'stamp': moment(base_time).add(5, 'minutes').format()
+                                    'stamp': dayjs(base_time).add(5, 'minutes').toISOString()
                                 }).up()
                     .c('message', {
                         'xmlns': 'jabber:client',
@@ -1190,7 +1188,7 @@
 
             _converse.chatboxes.onMessage($msg({'id': 'aeb213', 'to': _converse.bare_jid})
                 .c('forwarded', {'xmlns': 'urn:xmpp:forward:0'})
-                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':moment(base_time).add(4, 'minutes').format()}).up()
+                    .c('delay', {'xmlns': 'urn:xmpp:delay', 'stamp':dayjs(base_time).add(4, 'minutes').toISOString()}).up()
                     .c('message', {
                         'xmlns': 'jabber:client',
                         'to': sender_jid,
@@ -1497,7 +1495,7 @@
                         vcard_fetched = true;
                         return Promise.resolve({
                             'fullname': mock.cur_names[0],
-                            'vcard_updated': moment().format(),
+                            'vcard_updated': (new Date()).toISOString(),
                             'jid': sender_jid
                         });
                     });
@@ -1636,7 +1634,7 @@
                         'msgid': '82bc02ce-9651-4336-baf0-fa04762ed8d2',
                         'fullname': fullname,
                         'sender': 'me',
-                        'time': moment().format(),
+                        'time': (new Date()).toISOString(),
                         'message': msg_text
                     });
                     view.model.sendMessage(msg_text);
@@ -1653,7 +1651,7 @@
                         'msgid': '6fcdeee3-000f-4ce8-a17e-9ce28f0ae104',
                         'fullname': fullname,
                         'sender': 'me',
-                        'time': moment().format(),
+                        'time': (new Date()).toISOString(),
                         'message': msg_text
                     });
                     view.model.sendMessage(msg_text);
@@ -1721,7 +1719,7 @@
                         'msgid': 'another-id',
                         'fullname': fullname,
                         'sender': 'me',
-                        'time': moment().format(),
+                        'time': (new Date()).toISOString(),
                         'message': msg_text
                     });
                     view.model.sendMessage(msg_text);
@@ -2275,6 +2273,76 @@
             done();
         }));
 
+        it("keeps track of the sender's role and affiliation",
+            mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+            const view = _converse.api.chatviews.get('lounge@localhost');
+            let msg = $msg({
+                from: 'lounge@localhost/dummy',
+                id: (new Date()).getTime(),
+                to: 'dummy@localhost',
+                type: 'groupchat'
+            }).c('body').t('I wrote this message!').tree();
+            await view.model.onMessage(msg);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            expect(view.model.messages.last().get('affiliation')).toBe('owner');
+            expect(view.model.messages.last().get('role')).toBe('moderator');
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author chat-msg__me moderator');
+
+            let presence = $pres({
+                    to:'dummy@localhost/resource',
+                    from:'lounge@localhost/dummy',
+                    id: u.getUniqueId()
+            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({
+                    affiliation: 'member',
+                    jid: 'dummy@localhost/resource',
+                    role: 'participant'
+                }).up()
+                .c('status').attrs({code:'110'}).up()
+                .c('status').attrs({code:'210'}).nodeTree;
+            _converse.connection._dataRecv(test_utils.createRequest(presence));
+
+            msg = $msg({
+                from: 'lounge@localhost/dummy',
+                id: (new Date()).getTime(),
+                to: 'dummy@localhost',
+                type: 'groupchat'
+            }).c('body').t('Another message!').tree();
+            await view.model.onMessage(msg);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            expect(view.model.messages.last().get('affiliation')).toBe('member');
+            expect(view.model.messages.last().get('role')).toBe('participant');
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
+            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author chat-msg__me participant');
+
+            presence = $pres({
+                    to:'dummy@localhost/resource',
+                    from:'lounge@localhost/dummy',
+                    id: u.getUniqueId()
+            }).c('x').attrs({xmlns:'http://jabber.org/protocol/muc#user'})
+                .c('item').attrs({
+                    affiliation: 'owner',
+                    jid: 'dummy@localhost/resource',
+                    role: 'moderator'
+                }).up()
+                .c('status').attrs({code:'110'}).up()
+                .c('status').attrs({code:'210'}).nodeTree;
+            _converse.connection._dataRecv(test_utils.createRequest(presence));
+            view.model.sendMessage('hello world');
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            expect(view.model.messages.last().get('affiliation')).toBe('owner');
+            expect(view.model.messages.last().get('role')).toBe('moderator');
+            expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
+            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author chat-msg__me moderator');
+            done();
+        }));
+
+
         it("keeps track whether you are the sender or not",
             mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
@@ -2289,6 +2357,7 @@
                     type: 'groupchat'
                 }).c('body').t('I wrote this message!').tree();
             await view.model.onMessage(msg);
+            await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             expect(view.model.messages.last().get('sender')).toBe('me');
             done();
         }));
@@ -2587,6 +2656,8 @@
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
+            expect(view.el.querySelector('.chat-msg .chat-msg__body').textContent.trim())
+                .toBe("But soft, what light through yonder airlock breaks?");
 
             const msg_obj = view.model.messages.at(0);
             let stanza = u.toStanza(`

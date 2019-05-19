@@ -6,7 +6,7 @@
     <div class="chat-msg__content {[ if (o.is_me_message) { ]}chat-msg__content--action{[ } ]}">
         <span class="chat-msg__heading">
             {[ if (o.is_me_message) { ]}<time timestamp="{{{o.isodate}}}" class="chat-msg__time">{{{o.pretty_time}}}</time>{[ } ]}
-            <span class="chat-msg__author chat-msg__{{{o.sender}}}">{[ if (o.is_me_message) { ]}**{[ }; ]}{{{o.username}}}</span>
+            <span class="chat-msg__author chat-msg__{{{o.sender}}} {{{o.type === 'groupchat' && o.role ? o.role : ''}}}">{[ if (o.is_me_message) { ]}**{[ }; ]}{{{o.username}}}</span>
             {[ if (!o.is_me_message) { ]}
                 {[o.roles.forEach(function (role) { ]} <span class="badge badge-secondary">{{{role}}}</span> {[ }); ]}
                 <time timestamp="{{{o.isodate}}}" class="chat-msg__time">{{{o.pretty_time}}}</time>

@@ -15,10 +15,7 @@ const config = {
         filename: 'converse.js'
     },
     devtool: 'source-map',
-    plugins: [
-        new MiniCssExtractPlugin({filename: '../css/converse.css'}),
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
-    ],
+    plugins: [new MiniCssExtractPlugin({filename: '../dist/converse.css'})],
     module: {
         rules: [
         {
@@ -63,7 +60,7 @@ const config = {
                 loader: 'file-loader',
                 options: {
                     name: '[path][name].[ext]',
-                    outputPath: '../'
+                    outputPath: '../dist/'
                 }
             }
             ]
@@ -131,8 +128,7 @@ const config = {
             "snabbdom-props":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-props"),
             "snabbdom-style":           path.resolve(__dirname, "node_modules/snabbdom/dist/snabbdom-style"),
             "tovnode":                  path.resolve(__dirname, "node_modules/snabbdom/dist/tovnode"),
-            "underscore":               path.resolve(__dirname, "src/underscore-shim"),
-            "xss":                      path.resolve(__dirname, "node_modules/xss/dist/xss")
+            "underscore":               path.resolve(__dirname, "src/underscore-shim")
         }
     }
 }
@@ -155,7 +151,7 @@ function parameterize () {
         extend(config, {
             entry: "@converse/headless/headless.js",
             output: {
-                path: path.resolve(__dirname, 'src/headless/dist'),
+                path: path.resolve(__dirname, 'dist'),
                 filename: 'converse-headless.js'
             },
         });
@@ -166,13 +162,15 @@ function parameterize () {
         extend(config, {
             entry: path.resolve(__dirname, 'src/converse.js'),
             externals: [{
+                "backbone": "backbone",
+                "backbone.nativeview": "backbone.nativeview",
+                "backbone.vdomview": "backbone.vdomview",
                 "backbone.browserStorage": "backbone.browserStorage",
                 "backbone.overview": "backbone.overview",
                 "es6-promise": "es6-promise",
                 "lodash": "lodash",
                 "lodash.converter": "lodash.converter",
                 "lodash.noconflict": "lodash.noconflict",
-                "moment": "moment",
                 "strophe": "strophe",
                 "strophe.ping": "strophe.ping",
                 "strophe.rsm": "strophe.rsm",
@@ -188,7 +186,10 @@ function parameterize () {
     if (type === 'css') {
         console.log("Building only CSS");
         config.entry = path.resolve(__dirname, 'sass/converse.scss');
-        config.output = {};
+        config.output = {
+            path: path.resolve(__dirname, 'tmp'),
+            filename: 'css-builder.js'
+        }
     }
 
     if (mode === 'production') {

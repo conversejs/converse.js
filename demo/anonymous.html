@@ -8,48 +8,66 @@
     <meta name="description" content="Converse.js: A free chat client for your website" />
     <meta name="author" content="JC Brand" />
     <meta name="keywords" content="xmpp chat webchat converse.js" />
-    <link rel="shortcut icon" type="image/ico" href="../css/images/favicon.ico"/>
-    <link type="text/css" rel="stylesheet" media="screen" href="/css/bootstrap.min.css" />
-    <link type="text/css" rel="stylesheet" media="screen" href="/css/theme.min.css" />
+    <link rel="shortcut icon" type="image/ico" href="../images/favicon.ico"/>
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/4.2.0/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/4.2.0/css/website.min.css" />
     <script type="text/javascript" src="../analytics.js"></script>
     <noscript><p><img src="//stats.opkode.com/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
-    <![if gte IE 11]>
-        <link type="text/css" rel="stylesheet" media="screen" href="/css/converse.min.css" />
-        <script src="/dist/converse.min.js"></script>
+    <![if gt IE 11]>
+        <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/4.2.0/css/converse.min.css" />
+        <script src="https://cdn.conversejs.org/4.2.0/dist/converse.min.js"></script>
     <![endif]>
 </head>
 
-<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
-    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-        <div class="container">
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-                    <i class="fa fa-bars"></i>
-                </button>
-            </div>
-            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-                <ul class="nav navbar-nav"><li> <a href="/docs/html/index.html">Documentation</a> </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<body>
+<section class="section-wrapper">
+	<nav class="navbar sticky-top navbar-expand-lg" role="navigation">
+		<div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+			<span class="page-scroll">
+				<a class="navbar-brand" href="/"><span class="converse-brand-heading">Home</span></a>
+				<a class="navbar-brand" href="/demo"><span class="converse-brand-heading">Demos</span></a>
+			</span>
+		</div>
+	</nav>
 
-    <section class="intro">
-        <div class="intro-body">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-8 col-md-offset-2">
-                        <h1 class="brand-heading"><i class="icon-conversejs"></i>Converse</h1>
-                        <p class="intro-text">Anonymous login demo</p>
-                    </div>
-                </div>
+    <section id="intro" class="intro" class="container">
+        <div class="row">
+            <div class="col-md-12 col-md-offset-2">
+                <h1 class="brand-heading fade-in">
+                    <svg class="converse-svg-logo"
+                        xmlns:svg="http://www.w3.org/2000/svg"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        viewBox="0 0 364 364">
+                    <title>Home</title>
+                    <g class="cls-1" id="g904">
+                        <g data-name="Layer 2">
+                            <g data-name="Layer 7">
+                                <path
+                                    class="cls-3"
+                                    d="M221.46,103.71c0,18.83-29.36,18.83-29.12,0C192.1,84.88,221.46,84.88,221.46,103.71Z" />
+                                <path
+                                    class="cls-4"
+                                    d="M179.9,4.15A175.48,175.48,0,1,0,355.38,179.63,175.48,175.48,0,0,0,179.9,4.15Zm-40.79,264.5c-.23-17.82,27.58-17.82,27.58,0S138.88,286.48,139.11,268.65ZM218.6,168.24A79.65,79.65,0,0,1,205.15,174a12.76,12.76,0,0,0-6.29,4.65L167.54,222a1.36,1.36,0,0,1-2.46-.8v-35.8a2.58,2.58,0,0,0-3.06-2.53c-15.43,3-30.23,7.7-42.73,19.94-38.8,38-29.42,105.69,16.09,133.16a162.25,162.25,0,0,1-91.47-67.27C-3.86,182.26,34.5,47.25,138.37,25.66c46.89-9.75,118.25,5.16,123.73,62.83C265.15,120.64,246.56,152.89,218.6,168.24Z" />
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+                <span class="brand-heading__text">
+                    <span>converse<span class="subdued">.js</span></span>
+                    <p class="byline">messaging freedom</p>
+                </span>
+                </h1>
+
+                <p class="intro-text">Anonymous login demo</p>
             </div>
         </div>
     </section>
+</section>
 </body>
 
 <script>
-    /* 
+    /*
     @licstart
     This is free and unencumbered software released into the public domain.
 

@@ -9,7 +9,7 @@ import "./utils/form";
 import converse from "./converse-core";
 import filesize from "filesize";
 
-const { $msg, Backbone, Promise, Strophe, moment, sizzle, utils, _ } = converse.env;
+const { $msg, Backbone, Promise, Strophe, dayjs, sizzle, utils, _ } = converse.env;
 const u = converse.env.utils;
 
 Strophe.addNamespace('MESSAGE_CORRECT', 'urn:xmpp:message-correct:0');
@@ -74,7 +74,7 @@ converse.plugins.add('converse-chatboxes', {
             defaults () {
                 return {
                     'msgid': _converse.connection.getUniqueId(),
-                    'time': moment().format()
+                    'time': (new Date()).toISOString()
                 };
             },
 
@@ -259,7 +259,7 @@ converse.plugins.add('converse-chatboxes', {
                     'message_type': 'chat',
                     'nickname': undefined,
                     'num_unread': 0,
-                    'time_opened': this.get('time_opened') || moment().valueOf(),
+                    'time_opened': this.get('time_opened') || (new Date()).getTime(),
                     'type': _converse.PRIVATE_CHAT_TYPE,
                     'url': ''
                 }
@@ -272,7 +272,6 @@ converse.plugins.add('converse-chatboxes', {
                     // from being persisted if there's no jid, but that gets
                     // called after model instantiation, so we have to deal
                     // with invalid models here also.
-                    //
                     // This happens when the controlbox is in browser storage,
                     // but we're in embedded mode.
                     return;
@@ -288,12 +287,13 @@ converse.plugins.add('converse-chatboxes', {
                 }
                 this.on('change:chat_state', this.sendChatState, this);
                 this.initMessages();
+                this.fetchMessages();
             },
 
             initMessages () {
                 this.messages = new _converse.Messages();
                 const storage = _converse.config.get('storage');
-                this.messages.browserStorage = new Backbone.BrowserStorage[storage](
+                this.messages.browserStorage = new Backbone.BrowserStorage.session(
                     `converse.messages-${this.get('jid')}-${_converse.bare_jid}`);
                 this.messages.chatbox = this;
 
@@ -302,6 +302,35 @@ converse.plugins.add('converse-chatboxes', {
                         _converse.api.send(this.createMessageStanza(message));
                     }
                 });
+            },
+
+            afterMessagesFetched () {
+                /**
+                 * Triggered whenever a `_converse.ChatBox` instance has fetched its messages from
+                 * `sessionStorage` but **NOT** from the server.
+                 * @event _converse#afterMessagesFetched
+                 * @type {_converse.ChatBox | _converse.ChatRoom}
+                 * @example _converse.api.listen.on('afterMessagesFetched', view => { ... });
+                 */
+                _converse.api.trigger('afterMessagesFetched', this);
+            },
+
+            fetchMessages () {
+                this.messages.fetched = new Promise(resolve => {
+                    this.messages.fetch({
+                        'add': true,
+                        'success': _.flow(this.afterMessagesFetched.bind(this), resolve),
+                        'error': _.flow(this.afterMessagesFetched.bind(this), resolve)
+                    });
+                });
+            },
+
+            close () {
+                try {
+                    this.destroy();
+                } catch (e) {
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                }
             },
 
             validate (attrs, options) {
@@ -353,7 +382,7 @@ converse.plugins.add('converse-chatboxes', {
                         'message': this.getMessageBody(stanza),
                         'references': this.getReferencesFromStanza(stanza),
                         'older_versions': older_versions,
-                        'edited': moment().format()
+                        'edited': (new Date()).toISOString()
                     });
                     return true;
                 }
@@ -383,8 +412,7 @@ converse.plugins.add('converse-chatboxes', {
                     return false;
                 }
                 const by_jid = stanza_id.getAttribute('by');
-                const result = await _converse.api.disco.supports(Strophe.NS.SID, by_jid);
-                if (!result.length) {
+                if (!(await _converse.api.disco.supports(Strophe.NS.SID, by_jid))) {
                     return false;
                 }
                 const query = {};
@@ -442,7 +470,7 @@ converse.plugins.add('converse-chatboxes', {
                             field_name = `marker_${marker.nodeName}`;
 
                         if (message && !message.get(field_name)) {
-                            message.save({field_name: moment().format()});
+                            message.save({field_name: (new Date()).toISOString()});
                         }
                         return true;
                     }
@@ -472,7 +500,7 @@ converse.plugins.add('converse-chatboxes', {
                         const msgid = receipt && receipt.getAttribute('id'),
                             message = msgid && this.messages.findWhere({msgid});
                         if (message && !message.get('received')) {
-                            message.save({'received': moment().format()});
+                            message.save({'received': (new Date()).toISOString()});
                         }
                         return true;
                     }
@@ -534,10 +562,10 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             getOutgoingMessageAttributes (text, spoiler_hint) {
-                const is_spoiler = this.get('composing_spoiler'),
-                      origin_id = _converse.connection.getUniqueId();
-
+                const is_spoiler = this.get('composing_spoiler');
+                const origin_id = _converse.connection.getUniqueId();
                 return {
+                    'id': origin_id,
                     'jid': this.get('jid'),
                     'nickname': this.get('nickname'),
                     'msgid': origin_id,
@@ -546,7 +574,7 @@ converse.plugins.add('converse-chatboxes', {
                     'from': _converse.bare_jid,
                     'is_single_emoji': text ? u.isSingleEmoji(text) : false,
                     'sender': 'me',
-                    'time': moment().format(),
+                    'time': (new Date()).toISOString(),
                     'message': text ? u.httpToGeoUri(u.shortnameToUnicode(text), _converse) : undefined,
                     'is_spoiler': is_spoiler,
                     'spoiler_hint': is_spoiler ? spoiler_hint : undefined,
@@ -576,7 +604,7 @@ converse.plugins.add('converse-chatboxes', {
                     older_versions.push(message.get('message'));
                     message.save({
                         'correcting': false,
-                        'edited': moment().format(),
+                        'edited': (new Date()).toISOString(),
                         'message': attrs.message,
                         'older_versions': older_versions,
                         'references': attrs.references
@@ -608,9 +636,8 @@ converse.plugins.add('converse-chatboxes', {
 
 
             async sendFiles (files) {
-                const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain),
-                      item = result.pop();
-
+                const result = await _converse.api.disco.features.get(Strophe.NS.HTTPUPLOAD, _converse.domain);
+                const item = result.pop();
                 if (!item) {
                     this.messages.create({
                         'message': __("Sorry, looks like file upload is not supported by your server."),
@@ -618,7 +645,6 @@ converse.plugins.add('converse-chatboxes', {
                     });
                     return;
                 }
-
                 const data = item.dataforms.where({'FORM_TYPE': {'value': Strophe.NS.HTTPUPLOAD, 'type': "hidden"}}).pop(),
                       max_file_size = window.parseInt(_.get(data, 'attributes.max-file-size.value')),
                       slot_request_url = _.get(item, 'id');
@@ -630,7 +656,7 @@ converse.plugins.add('converse-chatboxes', {
                     });
                     return;
                 }
-                _.each(files, (file) => {
+                Array.from(files).forEach(file => {
                     if (!window.isNaN(max_file_size) && window.parseInt(file.size) > max_file_size) {
                         return this.messages.create({
                             'message': __('The size of your file, %1$s, exceeds the maximum allowed by your server, which is %2$s.',
@@ -747,7 +773,7 @@ converse.plugins.add('converse-chatboxes', {
                     'references': this.getReferencesFromStanza(stanza),
                     'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
                     'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
-                    'time': delay ? delay.getAttribute('stamp') : moment().format(),
+                    'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString(),
                     'type': stanza.getAttribute('type')
                 }, this.getStanzaIDs(original_stanza));
 
@@ -766,7 +792,7 @@ converse.plugins.add('converse-chatboxes', {
                         attrs.fullname = this.get('fullname') || this.get('fullname')
                     }
                 }
-                _.each(sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza), (xform) => {
+                sizzle(`x[xmlns="${Strophe.NS.OUTOFBAND}"]`, stanza).forEach(xform => {
                     attrs['oob_url'] = xform.querySelector('url').textContent;
                     attrs['oob_desc'] = xform.querySelector('url').textContent;
                 });
@@ -1033,7 +1059,7 @@ converse.plugins.add('converse-chatboxes', {
             /* Automatically join private chats, based on the
              * "auto_join_private_chats" configuration setting.
              */
-            _.each(_converse.auto_join_private_chats, function (jid) {
+            _converse.auto_join_private_chats.forEach(jid => {
                 if (_converse.chatboxes.where({'jid': jid}).length) {
                     return;
                 }
@@ -1108,7 +1134,7 @@ converse.plugins.add('converse-chatboxes', {
                         }
                         return chatbox;
                     }
-                    if (_.isArray(jids)) {
+                    if (Array.isArray(jids)) {
                         return Promise.all(jids.forEach(async jid => {
                             const contact = await _converse.api.contacts.get(jids);
                             attrs.fullname = _.get(contact, 'attributes.fullname');
@@ -1172,7 +1198,7 @@ converse.plugins.add('converse-chatboxes', {
                     if (_.isString(jids)) {
                         const chat = await _converse.api.chats.create(jids, attrs);
                         return chat.maybeShow(force);
-                    } else if (_.isArray(jids)) {
+                    } else if (Array.isArray(jids)) {
                         return Promise.all(jids.map(j => _converse.api.chats.create(j, attrs).then(c => c.maybeShow(force))));
                     }
                     const err_msg = "chats.open: You need to provide at least one JID";
@@ -1214,7 +1240,7 @@ converse.plugins.add('converse-chatboxes', {
                     } else if (_.isString(jids)) {
                         return _converse.chatboxes.getChatBox(jids);
                     }
-                    return _.map(jids, _.partial(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _, {}, true));
+                    return jids.map(_.partial(_converse.chatboxes.getChatBox.bind(_converse.chatboxes), _, {}, true));
                 }
             }
         });

@@ -12,7 +12,7 @@ import tpl_toggle_chats from "templates/toggle_chats.html";
 import tpl_trimmed_chat from "templates/trimmed_chat.html";
 
 
-const { _ , Backbone, Promise, Strophe, moment } = converse.env;
+const { _ , Backbone, Promise, Strophe, dayjs } = converse.env;
 const u = converse.env.utils;
 
 converse.plugins.add('converse-minimize', {
@@ -51,21 +51,21 @@ converse.plugins.add('converse-minimize', {
                 }
                 this.save({
                     'minimized': this.get('minimized') || false,
-                    'time_minimized': this.get('time_minimized') || moment(),
+                    'time_minimized': this.get('time_minimized') || dayjs(),
                 });
             },
 
             maximize () {
                 u.safeSave(this, {
                     'minimized': false,
-                    'time_opened': moment().valueOf()
+                    'time_opened': (new Date()).getTime()
                 });
             },
 
             minimize () {
                 u.safeSave(this, {
                     'minimized': true,
-                    'time_minimized': moment().format()
+                    'time_minimized': (new Date()).toISOString()
                 });
             },
 

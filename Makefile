@@ -35,7 +35,7 @@ all: dev dist
 help:
 	@echo "Please use \`make <target>' where <target> is one of the following:"
 	@echo ""
-	@echo " all             Set up dev environment and create all builds
+	@echo " all             Set up dev environment and create all builds"
 	@echo " build           Create minified builds of converse.js and all its dependencies."
 	@echo " clean           Remove all NPM packages."
 	@echo " check           Run all tests."
@@ -95,26 +95,13 @@ release:
 	$(SED) -i -e "/version =/s/=.*/= '$(VERSION)'/" -e "/release =/s/=.*/= '$(VERSION)'/" docs/source/conf.py
 	$(SED) -i "s/[Uu]nreleased/`date +%Y-%m-%d`/" CHANGES.md
 	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' docs/source/quickstart.rst
+	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' *.html
+	$(SED) -ri 's,cdn.conversejs.org/$(VERSION_FORMAT),cdn.conversejs.org/$(VERSION),' demo/*.html
 	make pot
 	make po
 	make po2json
 	make build
-	mkdir -p 'converse-assets-$(VERSION)'
-	$(INSTALL) -D dist/converse.js 'converse-assets-$(VERSION)/converse.js'
-	$(INSTALL) -D dist/converse.min.js 'converse-assets-$(VERSION)/converse.min.js'
-	$(INSTALL) -D dist/converse.min.js.map 'converse-assets-$(VERSION)/converse.min.js.map'
-	$(INSTALL) -D dist/converse-headless.js 'converse-assets-$(VERSION)/converse-headless.js'
-	$(INSTALL) -D src/headless/dist/converse-headless.min.js 'converse-assets-$(VERSION)/converse-headless.min.js'
-	$(INSTALL) -D src/headless/dist/converse-headless.min.js.map 'converse-assets-$(VERSION)/converse-headless.min.js.map'
-	$(INSTALL) -D css/converse.css 'converse-assets-$(VERSION)/css/converse.css'
-	$(INSTALL) -D css/converse.min.css 'converse-assets-$(VERSION)/css/converse.min.css'
-	cp -r css/webfonts 'converse-assets-$(VERSION)/css/'
-	cp -r sounds 'converse-assets-$(VERSION)/'
-	find locale -type f -name '*.json' \
-		-exec $(INSTALL) -D '{}' 'converse-assets-$(VERSION)/{}' \;
-	zip -r 'converse-assets-$(VERSION).zip' 'converse-assets-$(VERSION)'
-	rm -rf 'converse-assets-$(VERSION)'
-
+	npm run pack
 
 ########################################################################
 ## Install dependencies
@@ -123,17 +110,12 @@ $(LERNA):
 	npm install lerna
 
 stamp-npm: $(LERNA) package.json package-lock.json src/headless/package.json
-	$(LERNA) bootstrap --hoist
+	npm run lerna
 	touch stamp-npm
 
 .PHONY: clean
 clean:
-	rm -rf node_modules stamp-npm
-	rm -f dist/*.min.js*
-	rm -f css/*.min.css
-	rm -f css/*.map
-	rm -f css/*.zip
-	rm -f *.zip
+	npm run clean
 
 .PHONY: dev
 dev: stamp-npm
@@ -142,23 +124,25 @@ dev: stamp-npm
 ## Builds
 
 .PHONY: css
-css: sass/*.scss css/converse.css css/converse.min.css css/website.css css/website.min.css css/font-awesome.css
+css: sass/*.scss dist/converse.css dist/converse.min.css dist/website.css dist/website.min.css dist/font-awesome.css
 
-css/converse.css:: stamp-npm webpack.config.js sass
-	$(NPX)  webpack --type=css --mode=development
-
-css/website.css:: stamp-npm sass
+dist/website.css:: stamp-npm sass
 	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/website.scss $@
 
-css/font-awesome.css:: stamp-npm sass
-	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@
-
-css/%.min.css:: css/%.css
-	make stamp-npm
+dist/website.min.css:: stamp-npm dist/website.css
 	$(CLEANCSS) $< > $@
 
+dist/font-awesome.css:: stamp-npm sass
+	$(SASS) --source-map true --include-path $(BOURBON) --include-path $(BOOTSTRAP) sass/font-awesome.scss $@
+
+dist/converse.css:: stamp-npm webpack.config.js sass
+	npm run converse.css
+
+dist/converse.min.css:: stamp-npm dist/converse.css
+	npm run converse.min.css
+
 .PHONY: watchcss
-watchcss: stamp-npm 
+watchcss: stamp-npm
 	$(NPX)  webpack --type=css --mode=development --watch
 
 .PHONY: watchjs
@@ -202,13 +186,13 @@ BUILDS = dist/converse.js \
 	dist/converse-no-dependencies-es2015.js
 
 dist/converse.js: src webpack.config.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=development
+	npm run converse.js
 dist/converse.min.js: src webpack.config.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=production
+	npm run converse.min.js
 src/headless/dist/converse-headless.js: src webpack.config.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=development --type=headless
+	npm run converse-headless.js
 src/headless/dist/converse-headless.min.js: src webpack.config.js stamp-npm @converse/headless
-	$(NPX)  webpack --mode=production --type=headless
+	npm run converse-headless.min.js
 dist/converse-no-dependencies.js: src webpack.config.js stamp-npm @converse/headless
 	$(NPX)  webpack --mode=development --type=nodeps
 dist/converse-no-dependencies.min.js: src webpack.config.js stamp-npm @converse/headless
@@ -236,7 +220,7 @@ eslint: stamp-npm
 	$(ESLINT) spec/
 
 .PHONY: check
-check: eslint dist/converse.js 
+check: eslint dist/converse.js
 	LOG_CR_VERBOSITY=INFO $(CHROMIUM) --disable-gpu --no-sandbox http://localhost:$(HTTPSERVE_PORT)/tests/index.html
 
 ########################################################################

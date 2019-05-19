@@ -8,7 +8,7 @@ import "converse-chatview";
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox from "templates/chatbox.html";
 
-const { _, moment, utils } = converse.env;
+const { _, dayjs, utils } = converse.env;
 
 
 converse.plugins.add('converse-headline', {
@@ -58,7 +58,7 @@ converse.plugins.add('converse-headline', {
                     'hidden': _.includes(['mobile', 'fullscreen'], _converse.view_mode),
                     'message_type': 'headline',
                     'num_unread': 0,
-                    'time_opened': this.get('time_opened') || moment().valueOf(),
+                    'time_opened': this.get('time_opened') || (new Date()).getTime(),
                     'type': _converse.HEADLINES_TYPE
                 }
             },
@@ -82,14 +82,15 @@ converse.plugins.add('converse-headline', {
             initialize () {
                 this.initDebounced();
 
-                this.disable_mam = true; // Don't do MAM queries for this box
+                this.model.disable_mam = true; // Don't do MAM queries for this box
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.hide, this);
                 this.model.on('change:minimized', this.onMinimizedChanged, this);
 
-                this.render().insertHeading().fetchMessages().insertIntoDOM().hide();
-                _converse.api.trigger('chatBoxOpened', this); // TODO: remove
+                this.render().insertHeading()
+                this.updateAfterMessagesFetched();
+                this.insertIntoDOM().hide();
                 _converse.api.trigger('chatBoxInitialized', this);
             },
 
@@ -117,7 +118,7 @@ converse.plugins.add('converse-headline', {
             /* Handler method for all incoming messages of type "headline". */
             if (utils.isHeadlineMessage(_converse, message)) {
                 const from_jid = message.getAttribute('from');
-                if (_.includes(from_jid, '@') && 
+                if (_.includes(from_jid, '@') &&
                         !_converse.roster.get(from_jid) &&
                         !_converse.allow_non_roster_messaging) {
                     return;

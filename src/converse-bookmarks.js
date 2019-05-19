@@ -356,7 +356,7 @@ converse.plugins.add('converse-bookmarks', {
 
             onBookmarksReceivedError (deferred, iq) {
                 window.sessionStorage.setItem(this.fetched_flag, true);
-                _converse.log('Error while fetching bookmarks', Strophe.LogLevel.WARN);
+                _converse.log('Error while fetching bookmarks', Strophe.LogLevel.ERROR);
                 _converse.log(iq.outerHTML, Strophe.LogLevel.DEBUG);
                 if (!_.isNil(deferred)) {
                     if (iq.querySelector('error[type="cancel"] item-not-found')) {
@@ -552,8 +552,7 @@ converse.plugins.add('converse-bookmarks', {
             if (_converse.allow_public_bookmarks) {
                 return !!identity;
             } else {
-                const supported = await _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid);
-                return !!supported.length;
+                return _converse.api.disco.supports(Strophe.NS.PUBSUB+'#publish-options', _converse.bare_jid);
             }
         }
 

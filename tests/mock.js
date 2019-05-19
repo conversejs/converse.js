@@ -4,7 +4,7 @@
     const _ = converse.env._;
     const Promise = converse.env.Promise;
     const Strophe = converse.env.Strophe;
-    const moment = converse.env.moment;
+    const dayjs = converse.env.dayjs;
     const $iq = converse.env.$iq;
     const u = converse.env.utils;
 
@@ -222,7 +222,7 @@
                     'image': _.get(vcard.querySelector('PHOTO BINVAL'), 'textContent'),
                     'image_type': _.get(vcard.querySelector('PHOTO TYPE'), 'textContent'),
                     'url': _.get(vcard.querySelector('URL'), 'textContent'),
-                    'vcard_updated': moment().format(),
+                    'vcard_updated': dayjs().format(),
                     'vcard_error': undefined
                 };
                 resolve(result);

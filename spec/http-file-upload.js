@@ -57,7 +57,7 @@
                         'var': 'http://jabber.org/protocol/disco#items'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                const entities = await _converse.api.disco.entities.get();
+                let entities = await _converse.api.disco.entities.get();
                 expect(entities.length).toBe(2);
                 expect(_.includes(entities.pluck('jid'), 'localhost')).toBe(true);
                 expect(_.includes(entities.pluck('jid'), 'dummy@localhost')).toBe(true);
@@ -85,7 +85,7 @@
                 stanza = _.find(IQ_stanzas, function (iq) {
                     return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
                 });
-                var items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
+                const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                 stanza = $iq({
                     'type': 'result',
                     'from': 'localhost',
@@ -155,17 +155,15 @@
                                 .c('value').t('5242880');
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                _converse.api.disco.entities.get().then(function (entities) {
-                    expect(entities.get('localhost').items.get('upload.localhost').identities.where({'category': 'store'}).length).toBe(1);
-                    _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain).then(
-                        function (result) {
-                            expect(result.length).toBe(1);
-                            expect(result[0].get('jid')).toBe('upload.localhost');
-                            expect(result[0].dataforms.where({'FORM_TYPE': {value: "urn:xmpp:http:upload:0", type: "hidden"}}).length).toBe(1);
-                            done();
-                        }
-                    );
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                entities = await _converse.api.disco.entities.get();
+                expect(entities.get('localhost').items.get('upload.localhost').identities.where({'category': 'store'}).length).toBe(1);
+                const supported = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
+                expect(supported).toBe(true);
+                const features = await _converse.api.disco.features.get(Strophe.NS.HTTPUPLOAD, _converse.domain);
+                expect(features.length).toBe(1);
+                expect(features[0].get('jid')).toBe('upload.localhost');
+                expect(features[0].dataforms.where({'FORM_TYPE': {value: "urn:xmpp:http:upload:0", type: "hidden"}}).length).toBe(1);
+                done();
             }));
         });
 
@@ -553,7 +551,7 @@
                         _converse.connection._dataRecv(test_utils.createRequest(stanza));
                         entities = await _converse.api.disco.entities.get();
                         expect(entities.get('localhost').items.get('upload.localhost').identities.where({'category': 'store'}).length).toBe(1);
-                        const result = await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
+                        await _converse.api.disco.supports(Strophe.NS.HTTPUPLOAD, _converse.domain);
                         test_utils.createContacts(_converse, 'current');
                         _converse.api.trigger('rosterContactsFetched');
 

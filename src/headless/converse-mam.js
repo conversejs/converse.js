@@ -13,7 +13,7 @@ import sizzle from "sizzle";
 
 
 const CHATROOMS_TYPE = 'chatroom';
-const { Promise, Strophe, $iq, _, moment } = converse.env;
+const { Promise, Strophe, $iq, _, dayjs } = converse.env;
 const u = converse.env.utils;
 
 const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
@@ -41,7 +41,7 @@ converse.plugins.add('converse-mam', {
                 }
                 const by_jid = stanza.getAttribute('from') || this.get('jid');
                 const supported = await _converse.api.disco.supports(Strophe.NS.MAM, by_jid);
-                if (!supported.length) {
+                if (!supported) {
                     return null;
                 }
                 const query = {};
@@ -341,11 +341,9 @@ converse.plugins.add('converse-mam', {
 
                     const jid = attrs.to || _converse.bare_jid;
                     const supported = await _converse.api.disco.supports(Strophe.NS.MAM, jid);
-                    if (!supported.length) {
+                    if (!supported) {
                         _converse.log(`Did not fetch MAM archive for ${jid} because it doesn't support ${Strophe.NS.MAM}`);
-                        return {
-                            'messages': []
-                        };
+                        return {'messages': []};
                     }
 
                     const queryid = _converse.connection.getUniqueId();
@@ -361,9 +359,9 @@ converse.plugins.add('converse-mam', {
                         }
                         ['start', 'end'].forEach(t => {
                             if (options[t]) {
-                                const date = moment(options[t]);
+                                const date = dayjs(options[t]);
                                 if (date.isValid()) {
-                                    stanza.c('field', {'var':t}).c('value').t(date.format()).up().up();
+                                    stanza.c('field', {'var':t}).c('value').t(date.toISOString()).up().up();
                                 } else {
                                     throw new TypeError(`archive.query: invalid date provided for: ${t}`);
                                 }

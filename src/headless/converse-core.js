@@ -748,7 +748,7 @@ _converse.initialize = async function (settings, callback) {
         _converse.connection.reconnecting = true;
         _converse.tearDown();
         _converse.logIn(null, true);
-    }, 2000, {'leading': true});
+    }, 2000);
 
 
     /**

@@ -307,7 +307,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'join').and.callThrough();
+                spyOn(view.model, 'join').and.callThrough();
 
                 /* <iq to="myroom@conference.chat.example.org"
                  *     from="jordie.langen@chat.example.org/converse.js-11659299"
@@ -344,7 +344,7 @@
                 const input = await test_utils.waitUntil(() => view.el.querySelector('input[name="nick"]'));
                 input.value = 'nicky';
                 view.el.querySelector('input[type=submit]').click();
-                expect(view.join).toHaveBeenCalled();
+                expect(view.model.join).toHaveBeenCalled();
 
                 // The user has just entered the room (because join was called)
                 // and receives their own presence from the server.
@@ -359,7 +359,7 @@
                  *    </x>
                  *  </presence>
                  */
-                var presence = $pres({
+                const presence = $pres({
                         to:'dummy@localhost/resource',
                         from:'lounge@localhost/thirdwitch',
                         id:'5025e055-036c-4bc5-a227-706e7e352053'
@@ -1752,7 +1752,7 @@
                 _converse.connection._dataRecv(test_utils.createRequest(features_stanza));
 
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'join').and.callThrough();
+                spyOn(view.model, 'join').and.callThrough();
 
                 /* <iq from='hag66@shakespeare.lit/pda'
                  *     id='getnick1'
@@ -1795,7 +1795,7 @@
                 .c('identity', {'category': 'conference', 'name': 'thirdwitch', 'type': 'text'});
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-                expect(view.join).toHaveBeenCalled();
+                expect(view.model.join).toHaveBeenCalled();
 
                 // The user has just entered the groupchat (because join was called)
                 // and receives their own presence from the server.
@@ -3617,11 +3617,11 @@
                     .toBe('This groupchat requires a password');
 
                 // Let's submit the form
-                spyOn(view, 'join');
+                spyOn(view.model, 'join');
                 const input_el = view.el.querySelector('[name="password"]');
                 input_el.value = 'secret';
                 view.el.querySelector('input[type=submit]').click();
-                expect(view.join).toHaveBeenCalledWith('dummy', 'secret');
+                expect(view.model.join).toHaveBeenCalledWith('dummy', 'secret');
                 done();
             }));
 
@@ -3734,12 +3734,12 @@
 
                 const view = _converse.chatboxviews.get(groupchat_jid);
                 spyOn(view, 'showErrorMessage').and.callThrough();
-                spyOn(view, 'join').and.callThrough();
+                spyOn(view.model, 'join').and.callThrough();
 
                 // Simulate repeatedly that there's already someone in the groupchat
                 // with that nickname
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.join).toHaveBeenCalledWith('dummy-2');
+                expect(view.model.join).toHaveBeenCalledWith('dummy-2');
 
                 attrs.from = `${groupchat_jid}/dummy-2`;
                 attrs.id = u.getUniqueId();
@@ -3749,7 +3749,7 @@
                         .c('conflict').attrs({xmlns:'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                expect(view.join).toHaveBeenCalledWith('dummy-3');
+                expect(view.model.join).toHaveBeenCalledWith('dummy-3');
 
                 attrs.from = `${groupchat_jid}/dummy-3`;
                 attrs.id = new Date().getTime();
@@ -3758,7 +3758,7 @@
                     .c('error').attrs({'by': groupchat_jid, 'type': 'cancel'})
                         .c('conflict').attrs({'xmlns':'urn:ietf:params:xml:ns:xmpp-stanzas'}).nodeTree;
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.join).toHaveBeenCalledWith('dummy-4');
+                expect(view.model.join).toHaveBeenCalledWith('dummy-4');
                 done();
             }));
 

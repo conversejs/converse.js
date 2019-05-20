@@ -226,6 +226,7 @@ converse.plugins.add('converse-muc', {
                         !this.get('reserved_nick') &&
                         await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
 
+                    this.occupants.fetchMembers();
                     this.registerNickname()
                 }
             },
@@ -320,10 +321,11 @@ converse.plugins.add('converse-muc', {
              * @param { String } nick - The user's nickname
              * @param { String } password - Optional password, if required by the groupchat.
              */
-            join (nick, password) {
-                nick = nick ? nick : this.get('nick');
+            async join (nick, password) {
+                nick = nick ? nick : await this.getNickname();
                 if (!nick) {
-                    throw new TypeError('join: You need to provide a valid nickname');
+                    u.safeSave(this, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
+                    return this;
                 }
                 if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                     // We have restored a groupchat from session storage,
@@ -843,15 +845,29 @@ converse.plugins.add('converse-muc', {
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             },
 
+            async getNickname () {
+                let nick = this.get('nick');
+                if (!nick) {
+                    try {
+                        nick = await this.getReservedNick();
+                        this.save({'reserved_nick': nick, 'nick': nick}, {'silent': true});
+                    } catch (e) {
+                        nick = _converse.getDefaultMUCNickname();
+                        this.save({'nick': nick}, {'silent': true});
+                    }
+                }
+                return nick;
+            },
+
             /**
              * Use service-discovery to ask the XMPP server whether
              * this user has a reserved nickname for this groupchat.
              * If so, we'll use that, otherwise we render the nickname form.
              * @private
-             * @method _converse.ChatRoom#checkForReservedNick
-             * @returns { promise } A promise which resolves with the response IQ
+             * @method _converse.ChatRoom#getReservedNick
+             * @returns { promise } A promise which resolves with the reserved nick or null
              */
-            async checkForReservedNick () {
+            async getReservedNick () {
                 const iq = await _converse.api.sendIQ(
                     $iq({
                         'to': this.get('jid'),
@@ -862,13 +878,8 @@ converse.plugins.add('converse-muc', {
                         'node': 'x-roomuser-item'
                     })
                 );
-                const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity'),
-                      nick = identity_el ? identity_el.getAttribute('name') : null;
-                this.save({
-                    'reserved_nick': nick,
-                    'nick': nick
-                }, {'silent': true});
-                return iq;
+                const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity');
+                return identity_el ? identity_el.getAttribute('name') : null;
             },
 
             async registerNickname () {
@@ -1417,14 +1428,8 @@ converse.plugins.add('converse-muc', {
             }
             if (result === true) {
                 const chatroom = openChatRoom(room_jid, {'password': x_el.getAttribute('password') });
-
                 if (chatroom.get('connection_status') === converse.ROOMSTATUS.DISCONNECTED) {
-                    // XXX: Leaky abstraction from views here
-                    if (_converse.chatboxviews) {
-                        _converse.chatboxviews.get(room_jid).join();
-                    } else {
-                        _converse.chatboxes.get(room_jid).join();
-                    }
+                    _converse.chatboxes.get(room_jid).join();
                 }
             }
         };
@@ -1497,24 +1502,6 @@ converse.plugins.add('converse-muc', {
             });
         }
 
-        function fetchRegistrationForm (room_jid, user_jid) {
-            _converse.api.sendIQ(
-                $iq({
-                    'from': user_jid,
-                    'to': room_jid,
-                    'type': 'get'
-                }).c('query', {'xmlns': Strophe.NS.REGISTER})
-            ).then(iq => {
-
-            }).catch(iq => {
-                if (sizzle('item-not-found[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]', iq).length) {
-                    this.feedback.set('error', __('Error: the groupchat %1$s does not exist.', this.model.getDisplayName()));
-                } else if (sizzle('not-allowed[xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]').length) {
-                    this.feedback.set('error', __("Sorry, you're not allowed to register in this groupchat"));
-                }
-            });
-        }
-
 
         /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('addClientFeatures', () => {
@@ -1539,6 +1526,20 @@ converse.plugins.add('converse-muc', {
                 }
             });
         });
+
+        function reconnectToChatRooms () {
+            /* Upon a reconnection event from converse, join again
+             * all the open groupchats.
+             */
+            _converse.chatboxes.each(model => {
+                if (model.get('type') === _converse.CHATROOMS_TYPE) {
+                    model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                    model.registerHandlers();
+                    model.join();
+                }
+            });
+        }
+        _converse.api.listen.on('reconnected', reconnectToChatRooms);
         /************************ END Event Handlers ************************/
 
 

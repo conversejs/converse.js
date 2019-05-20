@@ -544,7 +544,7 @@ converse.plugins.add('converse-muc-views', {
                 this.model.messages.on('reset', () => (this.content.innerHTML = ''));
 
                 this.model.on('change:affiliation', this.renderHeading, this);
-                this.model.on('change:connection_status', this.afterConnected, this);
+                this.model.on('change:connection_status', this.onConnectionStatusChanged, this);
                 this.model.on('change:hidden_occupants', this.updateOccupantsToggle, this);
                 this.model.on('change:jid', this.renderHeading, this);
                 this.model.on('change:name', this.renderHeading, this);
@@ -580,7 +580,7 @@ converse.plugins.add('converse-muc-views', {
                         // is a hanging chatbox (i.e. not in the collection anymore).
                         return;
                     }
-                    this.populateAndJoin();
+                    this.model.join();
                 }
                 /**
                  * Triggered once a groupchat has been opened
@@ -747,7 +747,7 @@ converse.plugins.add('converse-muc-views', {
                 /* Override from converse-chatview, specifically to avoid
                  * the 'active' chat state from being sent out prematurely.
                  *
-                 * This is instead done in `afterConnected` below.
+                 * This is instead done in `onConnectionStatusChanged` below.
                  */
                 if (u.isPersistableModel(this.model)) {
                     this.model.clearUnreadMsgCounter();
@@ -768,10 +768,13 @@ converse.plugins.add('converse-muc-views', {
                 this.afterShown();
             },
 
-            afterConnected () {
-                if (this.model.get('connection_status') === converse.ROOMSTATUS.CONNECTING) {
+            onConnectionStatusChanged () {
+                const conn_status = this.model.get('connection_status');
+                if (conn_status === converse.ROOMSTATUS.NICKNAME_REQUIRED) {
+                    this.renderNicknameForm();
+                } else if (conn_status === converse.ROOMSTATUS.CONNECTING) {
                     this.showSpinner();
-                } else if (this.model.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
+                } else if (conn_status === converse.ROOMSTATUS.ENTERED) {
                     this.hideSpinner();
                     this.setChatState(_converse.ACTIVE);
                     this.scrollDown();
@@ -1193,28 +1196,6 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            populateAndJoin () {
-                this.model.occupants.fetchMembers();
-                this.join();
-            },
-
-            /**
-             * Join the groupchat.
-             * @private
-             * @method _converse.ChatRoomView#join
-             * @param { String } nick - The user's nickname
-             * @param { String } password - Optional password, if required by the groupchat
-             */
-            join (nick, password) {
-                if (!nick && !this.model.get('nick')) {
-                    this.checkForReservedNick();
-                    return this;
-                }
-                this.showSpinner();
-                this.model.join(nick, password);
-                return this;
-            },
-
             /**
              * Renders a form given an IQ stanza containing the current
              * groupchat configuration.
@@ -1273,34 +1254,6 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            checkForReservedNick () {
-                /* User service-discovery to ask the XMPP server whether
-                 * this user has a reserved nickname for this groupchat.
-                 * If so, we'll use that, otherwise we render the nickname form.
-                 */
-                this.showSpinner();
-                this.model.checkForReservedNick()
-                    .then(this.onReservedNickFound.bind(this))
-                    .catch(this.onReservedNickNotFound.bind(this));
-            },
-
-            onReservedNickFound (iq) {
-                if (this.model.get('nick')) {
-                    this.join();
-                } else {
-                    this.onReservedNickNotFound();
-                }
-            },
-
-            onReservedNickNotFound (message) {
-                const nick = _converse.getDefaultMUCNickname();
-                if (nick) {
-                    this.join(nick);
-                } else {
-                    this.renderNicknameForm(message);
-                }
-            },
-
             onNicknameClash (presence) {
                 /* When the nickname is already taken, we either render a
                  * form for the user to choose a new nickname, or we
@@ -1313,11 +1266,11 @@ converse.plugins.add('converse-muc-views', {
                 if (_converse.muc_nickname_from_jid) {
                     const nick = presence.getAttribute('from').split('/')[1];
                     if (nick === _converse.getDefaultMUCNickname()) {
-                        this.join(nick + '-2');
+                        this.model.join(nick + '-2');
                     } else {
                         const del= nick.lastIndexOf("-");
                         const num = nick.substring(del+1, nick.length);
-                        this.join(nick.substring(0, del+1) + String(Number(num)+1));
+                        this.model.join(nick.substring(0, del+1) + String(Number(num)+1));
                     }
                 } else {
                     this.renderNicknameForm(
@@ -1930,7 +1883,7 @@ converse.plugins.add('converse-muc-views', {
             submitPassword (ev) {
                 ev.preventDefault();
                 const password = this.el.querySelector('input[type=password]').value;
-                this.chatroomview.join(this.chatroomview.model.get('nick'), password);
+                this.chatroomview.model.join(this.chatroomview.model.get('nick'), password);
                 this.model.set('validation_message', null);
             }
         });
@@ -1968,7 +1921,7 @@ converse.plugins.add('converse-muc-views', {
                 const nick_el = ev.target.nick;
                 const nick = nick_el.value.trim();
                 if (nick) {
-                    this.chatroomview.join(nick);
+                    this.chatroomview.model.join(nick);
                     this.model.set({
                         'validation_message': null,
                         'nickname': nick
@@ -2243,20 +2196,6 @@ converse.plugins.add('converse-muc-views', {
             fetchAndSetMUCDomain(view);
             view.model.on('change:connected', _.partial(fetchAndSetMUCDomain, view));
         });
-
-        function reconnectToChatRooms () {
-            /* Upon a reconnection event from converse, join again
-             * all the open groupchats.
-             */
-            _converse.chatboxviews.each(view => {
-                if (view.model.get('type') === _converse.CHATROOMS_TYPE) {
-                    view.model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                    view.model.registerHandlers();
-                    view.populateAndJoin();
-                }
-            });
-        }
-        _converse.api.listen.on('reconnected', reconnectToChatRooms);
         /************************ END Event Handlers ************************/
 
 

@@ -1490,18 +1490,6 @@ converse.plugins.add('converse-muc', {
             _converse.api.trigger('roomsAutoJoined');
         }
 
-        function disconnectChatRooms () {
-            /* When disconnecting, mark all groupchats as
-             * disconnected, so that they will be properly entered again
-             * when fetched from session storage.
-             */
-            _converse.chatboxes.each(model => {
-                if (model.get('type') === _converse.CHATROOMS_TYPE) {
-                    model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                }
-            });
-        }
-
 
         /************************ BEGIN Event Handlers ************************/
         _converse.api.listen.on('addClientFeatures', () => {
@@ -1513,13 +1501,23 @@ converse.plugins.add('converse-muc', {
             }
         });
         _converse.api.listen.on('chatBoxesFetched', autoJoinRooms);
+
+
+        function disconnectChatRooms () {
+            /* When disconnecting, mark all groupchats as
+             * disconnected, so that they will be properly entered again
+             * when fetched from session storage.
+             */
+            return _converse.chatboxes
+                .filter(m => (m.get('type') === _converse.CHATROOMS_TYPE))
+                .forEach(m => m.save('connection_status', converse.ROOMSTATUS.DISCONNECTED))
+        }
         _converse.api.listen.on('disconnecting', disconnectChatRooms);
 
         _converse.api.listen.on('statusInitialized', () => {
             // XXX: For websocket connections, we disconnect from all
             // chatrooms when the page reloads. This is a workaround for
             // issue #1111 and should be removed once we support XEP-0198
-            const options = {'once': true, 'passive': true};
             window.addEventListener(_converse.unloadevent, () => {
                 if (_converse.connection._proto instanceof Strophe.Websocket) {
                     disconnectChatRooms();
@@ -1531,13 +1529,14 @@ converse.plugins.add('converse-muc', {
             /* Upon a reconnection event from converse, join again
              * all the open groupchats.
              */
-            _converse.chatboxes.each(model => {
-                if (model.get('type') === _converse.CHATROOMS_TYPE) {
-                    model.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                    model.registerHandlers();
-                    model.join();
-                }
-            });
+            _converse.chatboxes
+                .filter(m => (m.get('type') === _converse.CHATROOMS_TYPE))
+                .forEach(m => m.save('connection_status', converse.ROOMSTATUS.DISCONNECTED))
+                .forEach(room => {
+                    room.clearMessages();
+                    room.registerHandlers();
+                    room.join();
+                });
         }
         _converse.api.listen.on('reconnected', reconnectToChatRooms);
         /************************ END Event Handlers ************************/

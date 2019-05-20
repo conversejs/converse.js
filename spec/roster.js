@@ -37,18 +37,18 @@
 
             spyOn(_converse.api, "trigger").and.callThrough();
             const IQs = _converse.connection.IQ_stanzas;
-            const node = await test_utils.waitUntil(
-                () => _.filter(IQs, iq => iq.nodeTree.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
+            const stanza = await test_utils.waitUntil(
+                () => _.filter(IQs, iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop());
             expect(_converse.api.trigger.calls.all().map(c => c.args[0]).includes('rosterContactsFetched')).toBeFalsy();
 
-            expect(node.toLocaleString()).toBe(
-                `<iq id="${node.nodeTree.getAttribute('id')}" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(stanza)).toBe(
+                `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster"/>`+
                 `</iq>`);
             const result = $iq({
                 'to': _converse.connection.jid,
                 'type': 'result',
-                'id': node.nodeTree.getAttribute('id')
+                'id': stanza.getAttribute('id')
             }).c('query', {
                 'xmlns': 'jabber:iq:roster'
             }).c('item', {'jid': 'nurse@example.com'}).up()
@@ -64,12 +64,11 @@
                 async function (done, _converse) {
 
             const IQ_stanzas = _converse.connection.IQ_stanzas;
-            let node = await test_utils.waitUntil(
-                () => _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop()
+            let stanza = await test_utils.waitUntil(
+                () => _.filter(IQ_stanzas, iq => iq.querySelector('iq query[xmlns="jabber:iq:roster"]')).pop()
             );
-            let stanza = node.nodeTree;
             expect(_converse.roster.data.get('version')).toBeUndefined();
-            expect(node.toLocaleString()).toBe(
+            expect(Strophe.serialize(stanza)).toBe(
                 `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
                     `<query xmlns="jabber:iq:roster"/>`+
                 `</iq>`);
@@ -89,9 +88,8 @@
             expect(_converse.roster.models.length).toBe(2);
 
             _converse.roster.fetchFromServer();
-            node = _converse.connection.IQ_stanzas.pop();
-            stanza = node.nodeTree;
-            expect(node.toLocaleString()).toBe(
+            stanza = _converse.connection.IQ_stanzas.pop();
+            expect(Strophe.serialize(stanza)).toBe(
                 `<iq id="${stanza.getAttribute('id')}" type="get" xmlns="jabber:client">`+
                     `<query ver="ver7" xmlns="jabber:iq:roster"/>`+
                 `</iq>`);

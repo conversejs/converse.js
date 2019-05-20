@@ -21,7 +21,7 @@
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
                 await test_utils.waitUntil(() => _.filter(
                     IQ_stanzas,
-                    iq => iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
+                    iq => iq.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
                 );
 
                 /* <iq type='result'
@@ -38,7 +38,7 @@
                  *  </iq>
                  */
                 let stanza = _.find(IQ_stanzas, function (iq) {
-                    return iq.nodeTree.querySelector(
+                    return iq.querySelector(
                         'iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                 });
                 const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
@@ -69,7 +69,7 @@
                 // so it will make a query for it.
                 await test_utils.waitUntil(() => _.filter(
                         IQ_stanzas,
-                        iq => iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]')
+                        iq => iq.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]')
                     ).length
                 );
                 /* <iq from='montague.tld'
@@ -83,7 +83,7 @@
                  *  </iq>
                  */
                 stanza = _.find(IQ_stanzas, function (iq) {
-                    return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
+                    return iq.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
                 });
                 const items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                 stanza = $iq({
@@ -105,7 +105,7 @@
                         // Converse.js sees that the entity has a disco#info feature,
                         // so it will make a query for it.
                         return _.filter(IQ_stanzas, function (iq) {
-                            return iq.nodeTree.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                            return iq.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                         }).length > 0;
                     }, 300);
                 });
@@ -113,12 +113,12 @@
                 stanza = await test_utils.waitUntil(() =>
                     _.filter(
                         IQ_stanzas,
-                        iq => iq.nodeTree.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]')
+                        iq => iq.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]')
                     ).pop()
                 );
                 const IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
 
-                expect(stanza.toLocaleString()).toBe(
+                expect(Strophe.serialize(stanza)).toBe(
                     `<iq from="dummy@localhost/resource" id="`+IQ_id+`" to="upload.localhost" type="get" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
                     `</iq>`);
@@ -274,11 +274,11 @@
                         view.model.sendFiles([file]);
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-                        await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq[to="upload.montague.tld"] request')).length);
+                        await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
                         const iq = IQ_stanzas.pop();
-                        expect(iq.toLocaleString()).toBe(
+                        expect(Strophe.serialize(iq)).toBe(
                             `<iq from="dummy@localhost/resource" `+
-                                `id="${iq.nodeTree.getAttribute("id")}" `+
+                                `id="${iq.getAttribute("id")}" `+
                                 `to="upload.montague.tld" `+
                                 `type="get" `+
                                 `xmlns="jabber:client">`+
@@ -293,7 +293,7 @@
 
                         const stanza = u.toStanza(`
                             <iq from="upload.montague.tld"
-                                id="${iq.nodeTree.getAttribute("id")}"
+                                id="${iq.getAttribute("id")}"
                                 to="dummy@localhost/resource"
                                 type="result">
                             <slot xmlns="urn:xmpp:http:upload:0">
@@ -381,11 +381,11 @@
                         view.model.sendFiles([file]);
                         await new Promise((resolve, reject) => view.once('messageInserted', resolve));
 
-                        await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.nodeTree.querySelector('iq[to="upload.montague.tld"] request')).length);
+                        await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length);
                         const iq = IQ_stanzas.pop();
-                        expect(iq.toLocaleString()).toBe(
+                        expect(Strophe.serialize(iq)).toBe(
                             `<iq from="dummy@localhost/resource" `+
-                                `id="${iq.nodeTree.getAttribute("id")}" `+
+                                `id="${iq.getAttribute("id")}" `+
                                 `to="upload.montague.tld" `+
                                 `type="get" `+
                                 `xmlns="jabber:client">`+
@@ -399,7 +399,7 @@
                         const message = base_url+"/logo/conversejs-filled.svg";
                         const stanza = u.toStanza(`
                             <iq from='upload.montague.tld'
-                                id="${iq.nodeTree.getAttribute('id')}"
+                                id="${iq.getAttribute('id')}"
                                 to='dummy@localhost/resource'
                                 type='result'>
                             <slot xmlns='urn:xmpp:http:upload:0'>
@@ -466,15 +466,14 @@
                         await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, [], []);
                         await test_utils.waitUntil(() => _.filter(
                             IQ_stanzas,
-                            iq => iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
+                            iq => iq.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]')).length
                         );
 
-                        var stanza = _.find(IQ_stanzas, function (iq) {
-                            return iq.nodeTree.querySelector(
+                        let stanza = _.find(IQ_stanzas, function (iq) {
+                            return iq.querySelector(
                                 'iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                         });
-                        var info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-
+                        const info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                         stanza = $iq({
                             'type': 'result',
                             'from': 'localhost',
@@ -502,12 +501,12 @@
                             // Converse.js sees that the entity has a disco#items feature,
                             // so it will make a query for it.
                             return _.filter(IQ_stanzas, function (iq) {
-                                return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
+                                return iq.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
                             }).length > 0;
                         }, 300);
 
                         stanza = _.find(IQ_stanzas, function (iq) {
-                            return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
+                            return iq.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
                         });
                         var items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                         stanza = $iq({
@@ -530,15 +529,13 @@
                             // Converse.js sees that the entity has a disco#info feature,
                             // so it will make a query for it.
                             return _.filter(IQ_stanzas, function (iq) {
-                                return iq.nodeTree.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                                return iq.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                             }).length > 0;
                         }, 300);
 
-                        stanza = _.find(IQ_stanzas, function (iq) {
-                            return iq.nodeTree.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
-                        });
-                        var IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
-                        expect(stanza.toLocaleString()).toBe(
+                        stanza = _.find(IQ_stanzas, iq => iq.querySelector('iq[to="upload.localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]'));
+                        const IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
+                        expect(Strophe.serialize(stanza)).toBe(
                             `<iq from="dummy@localhost/resource" id="${IQ_id}" to="upload.localhost" type="get" xmlns="jabber:client">`+
                                 `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
                             `</iq>`);
@@ -609,11 +606,11 @@
                     };
                     view.model.sendFiles([file]);
                     await new Promise((resolve, reject) => view.once('messageInserted', resolve));
-                    await test_utils.waitUntil(() => _.filter(IQ_stanzas, (iq) => iq.nodeTree.querySelector('iq[to="upload.montague.tld"] request')).length)
+                    await test_utils.waitUntil(() => _.filter(IQ_stanzas, iq => iq.querySelector('iq[to="upload.montague.tld"] request')).length)
                     const iq = IQ_stanzas.pop();
-                    expect(iq.toLocaleString()).toBe(
+                    expect(Strophe.serialize(iq)).toBe(
                         `<iq from="dummy@localhost/resource" `+
-                            `id="${iq.nodeTree.getAttribute("id")}" `+
+                            `id="${iq.getAttribute("id")}" `+
                             `to="upload.montague.tld" `+
                             `type="get" `+
                             `xmlns="jabber:client">`+
@@ -628,7 +625,7 @@
                     const message = base_url+"/logo/conversejs-filled.svg";
                     const stanza = u.toStanza(`
                         <iq from="upload.montague.tld"
-                            id="${iq.nodeTree.getAttribute("id")}"
+                            id="${iq.getAttribute("id")}"
                             to="dummy@localhost/resource"
                             type="result">
                         <slot xmlns="urn:xmpp:http:upload:0">

@@ -22,7 +22,7 @@
                 const IQ_ids =  _converse.connection.IQ_ids;
                 test_utils.waitUntil(function () {
                     return _.filter(IQ_stanzas, function (iq) {
-                        return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                        return iq.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                     }).length > 0;
                 }, 300).then(function () {
                     /* <iq type='result'
@@ -52,7 +52,7 @@
                      *  </iq>
                      */
                     var stanza = _.find(IQ_stanzas, function (iq) {
-                        return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                        return iq.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                     });
                     var info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                     stanza = $iq({
@@ -101,7 +101,7 @@
                             // Converse.js sees that the entity has a disco#items feature,
                             // so it will make a query for it.
                             return _.filter(IQ_stanzas, function (iq) {
-                                return iq.nodeTree.querySelector('query[xmlns="http://jabber.org/protocol/disco#items"]');
+                                return iq.querySelector('query[xmlns="http://jabber.org/protocol/disco#items"]');
                             }).length > 0;
                         }, 300).then(function () {
                             /* <iq type='result'
@@ -131,7 +131,7 @@
                              * </iq>
                              */
                             var stanza = _.find(IQ_stanzas, function (iq) {
-                                return iq.nodeTree.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
+                                return iq.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
                             });
                             var items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                             stanza = $iq({

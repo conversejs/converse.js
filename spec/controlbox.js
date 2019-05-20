@@ -6,7 +6,8 @@
           $msg = converse.env.$msg,
           $iq = converse.env.$iq,
           u = converse.env.utils,
-          Strophe = converse.env.Strophe;
+          Strophe = converse.env.Strophe,
+          sizzle = converse.env.sizzle;
 
 
     describe("The Controlbox", function () {
@@ -232,27 +233,26 @@
             expect(modal.name_auto_complete).toBe(undefined);
 
             await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
-            const sendIQ = _converse.connection.sendIQ;
-            let sent_stanza;
-            spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                sent_stanza = iq;
-                sendIQ.bind(this)(iq, callback, errback);
-            });
             expect(!_.isNull(modal.el.querySelector('form.add-xmpp-contact'))).toBeTruthy();
             const input_jid = modal.el.querySelector('input[name="jid"]');
             const input_name = modal.el.querySelector('input[name="name"]');
             input_jid.value = 'someone@localhost';
             modal.el.querySelector('button[type="submit"]').click();
-            await test_utils.waitUntil(() => sent_stanza.nodeTree.matches('iq'));
-            expect(sent_stanza.toLocaleString()).toEqual(
-            `<iq id="${sent_stanza.nodeTree.getAttribute('id')}" type="set" xmlns="jabber:client">`+
-                `<query xmlns="jabber:iq:roster"><item jid="someone@localhost"/></query>`+
-            `</iq>`);
+
+            const IQ_stanzas = _converse.connection.IQ_stanzas;
+            const sent_stanza = await test_utils.waitUntil(
+                () => IQ_stanzas.filter(s => sizzle(`query[xmlns="${Strophe.NS.ROSTER}"]`, s).length).pop()
+            );
+            expect(Strophe.serialize(sent_stanza)).toEqual(
+                `<iq id="${sent_stanza.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                    `<query xmlns="jabber:iq:roster"><item jid="someone@localhost"/></query>`+
+                `</iq>`
+            );
             done();
         }));
 
 
-        it("integrates with xhr_user_search_url to search for contacts", 
+        it("integrates with xhr_user_search_url to search for contacts",
             mock.initConverse(
                 null, ['rosterGroupsFetched'],
                 { 'xhr_user_search_url': 'http://example.org/?' },

@@ -117,6 +117,9 @@
             c.IQ_stanzas = [];
             c.IQ_ids = [];
             c.sendIQ = function (iq, callback, errback) {
+                if (!_.isElement(iq)) {
+                    iq = iq.nodeTree;
+                }
                 this.IQ_stanzas.push(iq);
                 const id = sendIQ.bind(this)(iq, callback, errback);
                 this.IQ_ids.push(id);

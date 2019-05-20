@@ -19,14 +19,14 @@
         const iq = await utils.waitUntil(() => {
             return _.filter(
                 _converse.connection.IQ_stanzas,
-                (iq) => sizzle(`iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`, iq.nodeTree).length
+                (iq) => sizzle(`iq[to="${entity_jid}"] query[xmlns="http://jabber.org/protocol/disco#${type}"]`, iq).length
             ).pop();
         }, 300);
         const stanza = $iq({
             'type': 'result',
             'from': entity_jid,
             'to': 'dummy@localhost/resource',
-            'id': iq.nodeTree.getAttribute('id'),
+            'id': iq.getAttribute('id'),
         }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#'+type});
 
         _.forEach(identities, function (identity) {
@@ -123,11 +123,11 @@
         const stanzas = _converse.connection.IQ_stanzas;
         await _converse.api.rooms.open(room_jid);
         const view = _converse.chatboxviews.get(room_jid);
-        let stanza = await utils.waitUntil(() => _.get(_.filter(
+        let stanza = await utils.waitUntil(() => _.filter(
             stanzas,
-            iq => iq.nodeTree.querySelector(
+            iq => iq.querySelector(
                 `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-            )).pop(), 'nodeTree'));
+            )).pop());
 
         const features_stanza = $iq({
             'from': room_jid,
@@ -164,14 +164,14 @@
 
         const iq = await utils.waitUntil(() => _.filter(
             stanzas,
-            s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s.nodeTree).length
+            s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s).length
         ).pop());
 
         // We remove the stanza, otherwise we might get stale stanzas returned in our filter above.
         stanzas.splice(stanzas.indexOf(iq), 1)
 
         // The XMPP server returns the reserved nick for this user.
-        const IQ_id = iq.nodeTree.getAttribute('id');
+        const IQ_id = iq.getAttribute('id');
         stanza = $iq({
             'type': 'result',
             'id': IQ_id,
@@ -266,13 +266,13 @@
         const iq = await utils.waitUntil(() =>
             _.filter(
                 _converse.connection.IQ_stanzas,
-                iq => sizzle(`iq[type="get"] query[xmlns="${Strophe.NS.ROSTER}"]`, iq.nodeTree).length
+                iq => sizzle(`iq[type="get"] query[xmlns="${Strophe.NS.ROSTER}"]`, iq).length
             ).pop());
 
         const result = $iq({
             'to': _converse.connection.jid,
             'type': 'result',
-            'id': iq.nodeTree.getAttribute('id')
+            'id': iq.getAttribute('id')
         }).c('query', {
             'xmlns': 'jabber:iq:roster'
         });

@@ -8,7 +8,7 @@
     async function deviceListFetched (_converse, jid) {
         const stanza = await test_utils.waitUntil(() => _.filter(
             _converse.connection.IQ_stanzas,
-            iq => iq.nodeTree.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`)
+            iq => iq.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.devicelist"]`)
         ).pop());
         await test_utils.waitUntil(() => _converse.devicelists.get(jid));
         return stanza;
@@ -17,21 +17,21 @@
     function ownDeviceHasBeenPublished (_converse) {
         return _.filter(
             _converse.connection.IQ_stanzas,
-            iq => iq.nodeTree.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]')
+            iq => iq.querySelector('iq[from="'+_converse.bare_jid+'"] publish[node="eu.siacs.conversations.axolotl.devicelist"]')
         ).pop();
     }
 
     function bundleHasBeenPublished (_converse) {
         return _.filter(
             _converse.connection.IQ_stanzas,
-            iq => iq.nodeTree.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]')
+            iq => iq.querySelector('publish[node="eu.siacs.conversations.axolotl.bundles:123456789"]')
         ).pop();
     }
 
     function bundleFetched (_converse, jid, device_id) {
         return _.filter(
             _converse.connection.IQ_stanzas,
-            iq => iq.nodeTree.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.bundles:${device_id}"]`)
+            iq => iq.querySelector(`iq[to="${jid}"] items[node="eu.siacs.conversations.axolotl.bundles:${device_id}"]`)
         ).pop();
     }
 
@@ -44,7 +44,7 @@
         let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
         let stanza = $iq({
             'from': _converse.bare_jid,
-            'id': iq_stanza.nodeTree.getAttribute('id'),
+            'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result',
         }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -57,7 +57,7 @@
 
         stanza = $iq({
             'from': _converse.bare_jid,
-            'id': iq_stanza.nodeTree.getAttribute('id'),
+            'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
         _converse.connection._dataRecv(test_utils.createRequest(stanza));
@@ -65,7 +65,7 @@
 
         stanza = $iq({
             'from': _converse.bare_jid,
-            'id': iq_stanza.nodeTree.getAttribute('id'),
+            'id': iq_stanza.getAttribute('id'),
             'to': _converse.bare_jid,
             'type': 'result'});
         _converse.connection._dataRecv(test_utils.createRequest(stanza));
@@ -106,7 +106,7 @@
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
             let stanza = $iq({
                     'from': contact_jid,
-                    'id': iq_stanza.nodeTree.getAttribute('id'),
+                    'id': iq_stanza.getAttribute('id'),
                     'to': _converse.connection.jid,
                     'type': 'result',
                 }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -132,7 +132,7 @@
             iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, contact_jid, '555'));
             stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {
@@ -151,7 +151,7 @@
             iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
             stanza = $iq({
                 'from': _converse.bare_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {
@@ -275,8 +275,8 @@
 
             // Wait for Converse to fetch newguy's device list
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
                     `</pubsub>`+
@@ -285,7 +285,7 @@
             // The server returns his device list
             stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -318,7 +318,7 @@
             console.log("Bundle fetched 4e30f35051b7b8b42abe083742187228");
             stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {
@@ -339,7 +339,7 @@
             console.log("Bundle fetched 482886413b977930064a5888b92134fe");
             stanza = $iq({
                 'from': _converse.bare_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {
@@ -397,7 +397,7 @@
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
             const stanza = $iq({
                     'from': contact_jid,
-                    'id': iq_stanza.nodeTree.getAttribute('id'),
+                    'id': iq_stanza.getAttribute('id'),
                     'to': _converse.connection.jid,
                     'type': 'result',
                 }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -464,8 +464,8 @@
                 keyCode: 13 // Enter
             });
             iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '988349631'));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${_converse.bare_jid}" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" to="${_converse.bare_jid}" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<items node="eu.siacs.conversations.axolotl.bundles:988349631"/>`+
                     `</pubsub>`+
@@ -521,8 +521,8 @@
                 keyCode: 13 // Enter
             });
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
                     `</pubsub>`+
@@ -530,7 +530,7 @@
 
             stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -551,7 +551,7 @@
             iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, _converse.bare_jid, '482886413b977930064a5888b92134fe'));
             stanza = $iq({
                 'from': _converse.bare_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {
@@ -580,7 +580,7 @@
              */
             stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': 'http://jabber.org/protocol/pubsub'})
@@ -648,7 +648,7 @@
             iq_stanza = await deviceListFetched(_converse, contact_jid);
             stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.connection.jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -665,8 +665,8 @@
             await test_utils.waitUntil(() => _converse.omemo_store);
 
             iq_stanza = await test_utils.waitUntil(() => bundleHasBeenPublished(_converse));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" type="set" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" type="set" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<publish node="eu.siacs.conversations.axolotl.bundles:123456789">`+
                             `<item>`+
@@ -719,8 +719,8 @@
 
             // Wait until own devices are fetched
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="dummy@localhost" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" to="dummy@localhost" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
                     `</pubsub>`+
@@ -728,7 +728,7 @@
 
             let stanza = $iq({
                 'from': _converse.bare_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -747,7 +747,7 @@
             iq_stanza = await test_utils.waitUntil(() => ownDeviceHasBeenPublished(_converse));
             stanza = $iq({
                 'from': _converse.bare_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result'});
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
@@ -755,7 +755,7 @@
 
             stanza = $iq({
                 'from': _converse.bare_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result'});
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
@@ -840,8 +840,8 @@
             iq_stanza = await test_utils.waitUntil(() => ownDeviceHasBeenPublished(_converse));
             // Check that our own device is added again, but that removed
             // devices are not added.
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute(`id`)}" type="set" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute(`id`)}" type="set" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<publish node="eu.siacs.conversations.axolotl.devicelist">`+
                             `<item>`+
@@ -891,8 +891,8 @@
             test_utils.createContacts(_converse, 'current');
             const contact_jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="dummy@localhost" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" to="dummy@localhost" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
                     `</pubsub>`+
@@ -900,7 +900,7 @@
 
             let stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -918,14 +918,14 @@
             iq_stanza = await test_utils.waitUntil(() => ownDeviceHasBeenPublished(_converse));
             stanza = $iq({
                 'from': _converse.bare_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result'});
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             iq_stanza = await test_utils.waitUntil(() => bundleHasBeenPublished(_converse));
             stanza = $iq({
                 'from': _converse.bare_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result'});
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
@@ -1046,7 +1046,7 @@
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
             let stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -1060,14 +1060,14 @@
             iq_stanza = await ownDeviceHasBeenPublished(_converse);
             stanza = $iq({
                 'from': _converse.bare_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result'});
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
             iq_stanza = await test_utils.waitUntil(() => bundleHasBeenPublished(_converse));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" type="set" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" type="set" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<publish node="eu.siacs.conversations.axolotl.bundles:123456789">`+
                             `<item>`+
@@ -1097,7 +1097,7 @@
 
             stanza = $iq({
                 'from': _converse.bare_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result'});
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
@@ -1122,8 +1122,8 @@
             const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
 
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, _converse.bare_jid));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="dummy@localhost" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" to="dummy@localhost" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
                     `</pubsub>`+
@@ -1131,7 +1131,7 @@
 
             let stanza = $iq({
                 'from': _converse.bare_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -1148,8 +1148,8 @@
             expect(devicelist.devices.at(1).get('id')).toBe('123456789');
             // Check that own device was published
             iq_stanza = await test_utils.waitUntil(() => ownDeviceHasBeenPublished(_converse));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute(`id`)}" type="set" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute(`id`)}" type="set" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<publish node="eu.siacs.conversations.axolotl.devicelist">`+
                             `<item>`+
@@ -1174,12 +1174,12 @@
 
             stanza = $iq({
                 'from': _converse.bare_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result'});
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
-            const iq_el = await test_utils.waitUntil(() => _.get(bundleHasBeenPublished(_converse), 'nodeTree'));
+            const iq_el = await test_utils.waitUntil(() => bundleHasBeenPublished(_converse));
             expect(iq_el.getAttributeNames().sort().join()).toBe(["from", "type", "xmlns", "id"].sort().join());
             expect(iq_el.querySelector('prekeys').childNodes.length).toBe(100);
 
@@ -1199,8 +1199,8 @@
             await _converse.api.waitUntil('OMEMOInitialized', 1000);
             await test_utils.openChatBoxFor(_converse, contact_jid);
             iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
                     `</pubsub>`+
@@ -1208,7 +1208,7 @@
 
             stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -1328,8 +1328,8 @@
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
                     `</pubsub>`+
@@ -1337,7 +1337,7 @@
 
             stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -1414,8 +1414,8 @@
                 }).tree();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" to="${contact_jid}" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<items node="eu.siacs.conversations.axolotl.devicelist"/>`+
                     `</pubsub>`+
@@ -1423,7 +1423,7 @@
 
             stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'error'
             }).c('error', {'type': 'cancel'})
@@ -1477,13 +1477,13 @@
             const modal = view.user_details_modal;
             await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
             let iq_stanza = await test_utils.waitUntil(() => deviceListFetched(_converse, contact_jid));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="max.frankfurter@localhost" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" to="max.frankfurter@localhost" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub>`+
                 `</iq>`);
             let stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {'xmlns': "http://jabber.org/protocol/pubsub"})
@@ -1494,15 +1494,15 @@
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
             iq_stanza = await test_utils.waitUntil(() => bundleFetched(_converse, contact_jid, '555'));
-            expect(iq_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost" id="${iq_stanza.nodeTree.getAttribute("id")}" to="max.frankfurter@localhost" type="get" xmlns="jabber:client">`+
+            expect(Strophe.serialize(iq_stanza)).toBe(
+                `<iq from="dummy@localhost" id="${iq_stanza.getAttribute("id")}" to="max.frankfurter@localhost" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<items node="eu.siacs.conversations.axolotl.bundles:555"/>`+
                     `</pubsub>`+
                 `</iq>`);
             stanza = $iq({
                 'from': contact_jid,
-                'id': iq_stanza.nodeTree.getAttribute('id'),
+                'id': iq_stanza.getAttribute('id'),
                 'to': _converse.bare_jid,
                 'type': 'result',
             }).c('pubsub', {

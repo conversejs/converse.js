@@ -281,11 +281,11 @@
                     }
                 });
                 await test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                let stanza = await test_utils.waitUntil(() => _.get(_.filter(
+                let stanza = await test_utils.waitUntil(() => _.filter(
                     IQ_stanzas,
-                    iq => iq.nodeTree.querySelector(
+                    iq => iq.querySelector(
                         `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-                    )).pop(), 'nodeTree'));
+                    )).pop());
                 // We pretend this is a new room, so no disco info is returned.
 
                 /* <iq from="jordie.langen@chat.example.org/converse.js-11659299" to="myroom@conference.chat.example.org" type="get">
@@ -316,13 +316,12 @@
                  *          node="x-roomuser-item"/>
                  * </iq>
                  */
-                const node = await test_utils.waitUntil(() => _.filter(
+                stanza = await test_utils.waitUntil(() => _.filter(
                         IQ_stanzas,
-                        s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s.nodeTree).length
+                        s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s).length
                     ).pop()
                 );
-                stanza = node.nodeTree;
-                expect(node.toLocaleString()).toBe(
+                expect(Strophe.serialize(stanza)).toBe(
                     `<iq from="dummy@localhost/resource" id="${stanza.getAttribute("id")}" to="lounge@localhost" `+
                         `type="get" xmlns="jabber:client">`+
                             `<query node="x-roomuser-item" xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
@@ -1734,13 +1733,12 @@
 
                 await test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
 
-                let stanza = await test_utils.waitUntil(() => _.get(_.filter(
+                let stanza = await test_utils.waitUntil(() => _.filter(
                     IQ_stanzas,
-                    iq => iq.nodeTree.querySelector(
+                    iq => iq.querySelector(
                         `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
-                    )).pop(), 'nodeTree')
+                    )).pop()
                 );
-
                 // We pretend this is a new room, so no disco info is returned.
                 const features_stanza = $iq({
                         from: 'lounge@localhost',
@@ -1762,13 +1760,12 @@
                  *         node='x-roomuser-item'/>
                  * </iq>
                  */
-                const node = await test_utils.waitUntil(() => _.filter(
+                const iq = await test_utils.waitUntil(() => _.filter(
                         IQ_stanzas,
-                        s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s.nodeTree).length
+                        s => sizzle(`iq[to="${room_jid}"] query[node="x-roomuser-item"]`, s).length
                     ).pop()
                 );
-                const iq = node.nodeTree;
-                expect(node.toLocaleString()).toBe(
+                expect(Strophe.serialize(iq)).toBe(
                     `<iq from="dummy@localhost/resource" id="${iq.getAttribute('id')}" to="lounge@localhost" `+
                         `type="get" xmlns="jabber:client">`+
                             `<query node="x-roomuser-item" xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
@@ -1788,7 +1785,7 @@
                  */
                 stanza = $iq({
                     'type': 'result',
-                    'id': node.nodeTree.getAttribute('id'),
+                    'id': iq.getAttribute('id'),
                     'from': view.model.get('jid'),
                     'to': _converse.connection.jid
                 }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info', 'node': 'x-roomuser-item'})
@@ -1863,9 +1860,7 @@
                 input.dispatchEvent(evt);
 
                 let sent_stanza;
-                spyOn(_converse.connection, 'send').and.callFake(function (stanza) {
-                    sent_stanza = stanza;
-                });
+                spyOn(_converse.connection, 'send').and.callFake(stanza => (sent_stanza = stanza));
                 const hint = await test_utils.waitUntil(() => view.el.querySelector('.suggestion-box__results li'));
                 expect(input.value).toBe('Felix');
                 expect(hint.textContent).toBe('Felix Amsel');
@@ -2214,15 +2209,14 @@
                 const room_jid = 'coven@chat.shakespeare.lit';
 
                 await _converse.api.rooms.open(room_jid, {'nick': 'some1'});
-                const node = await test_utils.waitUntil(() => _.filter(
+                const stanza = await test_utils.waitUntil(() => _.filter(
                     IQ_stanzas,
-                    iq => iq.nodeTree.querySelector(
+                    iq => iq.querySelector(
                         `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                     )).pop());
 
                 // Check that the groupchat queried for the feautures.
-                const stanza = node.nodeTree;
-                expect(node.toLocaleString()).toBe(
+                expect(Strophe.serialize(stanza)).toBe(
                     `<iq from="dummy@localhost/resource" id="${stanza.getAttribute("id")}" to="${room_jid}" type="get" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
                     `</iq>`);
@@ -2320,7 +2314,7 @@
                 const IQs = _converse.connection.IQ_stanzas;
                 let iq = await test_utils.waitUntil(() => _.filter(
                     IQs,
-                    iq => iq.nodeTree.querySelector(
+                    iq => iq.querySelector(
                         `iq[to="${jid}"] query[xmlns="${Strophe.NS.MUC_OWNER}"]`
                     )).pop());
 
@@ -2328,7 +2322,7 @@
                    `<iq xmlns="jabber:client"
                          type="result"
                          to="dummy@localhost/pda"
-                         from="room@conference.example.org" id="${iq.nodeTree.getAttribute('id')}">
+                         from="room@conference.example.org" id="${iq.getAttribute('id')}">
                      <query xmlns="http://jabber.org/protocol/muc#owner">
                          <x xmlns="jabber:x:data" type="form">
                          <title>Configuration for room@conference.example.org</title>
@@ -2396,13 +2390,13 @@
                 sizzle('[name="muc#roomconfig_roomname"]', chatroomview.el).pop().value = "New room name"
                 chatroomview.el.querySelector('.btn-primary').click();
 
-                iq = await test_utils.waitUntil(() => _.filter(IQs, iq => u.matchesSelector(iq.nodeTree, `iq[to="${jid}"][type="set"]`)).pop());
+                iq = await test_utils.waitUntil(() => _.filter(IQs, iq => u.matchesSelector(iq, `iq[to="${jid}"][type="set"]`)).pop());
                 const result = $iq({
                     "xmlns": "jabber:client",
                     "type": "result",
                     "to": "dummy@localhost/resource",
                     "from": "lounge@muc.localhost",
-                    "id": iq.nodeTree.getAttribute('id')
+                    "id": iq.getAttribute('id')
                 });
 
                 IQs.length = 0; // Empty the array
@@ -2410,13 +2404,13 @@
 
                 iq = await test_utils.waitUntil(() => _.filter(
                     IQs,
-                    iq => iq.nodeTree.querySelector(
+                    iq => iq.querySelector(
                         `iq[to="${jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                     )).pop());
 
                 const features_stanza = $iq({
                     'from': jid,
-                    'id': iq.nodeTree.getAttribute('id'),
+                    'id': iq.getAttribute('id'),
                     'to': 'dummy@localhost/desktop',
                     'type': 'result'
                 }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
@@ -2835,13 +2829,12 @@
                 });
                 _converse.connection.IQ_stanzas = [];
                 _converse.connection._dataRecv(test_utils.createRequest(result));
-                let node = await test_utils.waitUntil(() => _.filter(
+                iq_stanza = await test_utils.waitUntil(() => _.filter(
                     _converse.connection.IQ_stanzas,
-                    iq => iq.nodeTree.querySelector('iq[to="lounge@muc.localhost"][type="get"] item[affiliation="member"]')).pop()
+                    iq => iq.querySelector('iq[to="lounge@muc.localhost"][type="get"] item[affiliation="member"]')).pop()
                 );
 
-                iq_stanza = node.nodeTree;
-                expect(node.toLocaleString()).toBe(
+                expect(Strophe.serialize(iq_stanza)).toBe(
                     `<iq id="${iq_stanza.getAttribute('id')}" to="lounge@muc.localhost" type="get" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
                             `<item affiliation="member"/>`+
@@ -2860,13 +2853,12 @@
                 _converse.connection._dataRecv(test_utils.createRequest(result));
 
                 expect(view.model.occupants.length).toBe(2);
-                node = await test_utils.waitUntil(() => _.filter(
+                iq_stanza = await test_utils.waitUntil(() => _.filter(
                     _converse.connection.IQ_stanzas,
-                    (iq) => iq.nodeTree.querySelector('iq[to="lounge@muc.localhost"][type="get"] item[affiliation="owner"]')).pop()
+                    iq => iq.querySelector('iq[to="lounge@muc.localhost"][type="get"] item[affiliation="owner"]')).pop()
                 );
 
-                iq_stanza = node.nodeTree;
-                expect(node.toLocaleString()).toBe(
+                expect(Strophe.serialize(iq_stanza)).toBe(
                     `<iq id="${iq_stanza.getAttribute('id')}" to="lounge@muc.localhost" type="get" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
                             `<item affiliation="owner"/>`+
@@ -2885,13 +2877,12 @@
                 _converse.connection._dataRecv(test_utils.createRequest(result));
 
                 expect(view.model.occupants.length).toBe(2);
-                node = await test_utils.waitUntil(() => _.filter(
+                iq_stanza = await test_utils.waitUntil(() => _.filter(
                     _converse.connection.IQ_stanzas,
-                    (iq) => iq.nodeTree.querySelector('iq[to="lounge@muc.localhost"][type="get"] item[affiliation="admin"]')).pop()
+                    iq => iq.querySelector('iq[to="lounge@muc.localhost"][type="get"] item[affiliation="admin"]')).pop()
                 );
 
-                iq_stanza = node.nodeTree;
-                expect(node.toLocaleString()).toBe(
+                expect(Strophe.serialize(iq_stanza)).toBe(
                     `<iq id="${iq_stanza.getAttribute('id')}" to="lounge@muc.localhost" type="get" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
                             `<item affiliation="admin"/>`+
@@ -3875,21 +3866,20 @@
                 });
 
                 await _converse.api.rooms.open(room_jid, {'nick': 'dummy'});
-                const node = await test_utils.waitUntil(() => _.filter(
+                let stanza = await test_utils.waitUntil(() => _.filter(
                     IQ_stanzas,
-                    iq => iq.nodeTree.querySelector(
+                    iq => iq.querySelector(
                         `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
                     )).pop());
                 // Check that the groupchat queried for the feautures.
-                let stanza = node.nodeTree;
-                expect(node.toLocaleString()).toBe(
+                expect(Strophe.serialize(stanza)).toBe(
                     `<iq from="dummy@localhost/resource" id="${stanza.getAttribute("id")}" to="${room_jid}" type="get" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/disco#info"/>`+
                     `</iq>`);
 
                 const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 // State that the chat is members-only via the features IQ
-                var features_stanza = $iq({
+                const features_stanza = $iq({
                         from: 'coven@chat.shakespeare.lit',
                         'id': IQ_ids.pop(),
                         'to': 'dummy@localhost/desktop',
@@ -4001,11 +3991,11 @@
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(owner_list_stanza));
                 await test_utils.waitUntil(() => IQ_ids.length, 300);
-                stanza = await test_utils.waitUntil(() => _.get(_.filter(
+                stanza = await test_utils.waitUntil(() => _.filter(
                     IQ_stanzas,
-                    iq => iq.nodeTree.querySelector(
+                    iq => iq.querySelector(
                         `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/muc#admin"]`
-                    )).pop(), 'nodeTree'));
+                    )).pop());
                 expect(stanza.outerHTML,
                     `<iq id="${IQ_ids.pop()}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
@@ -4281,13 +4271,6 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                const sendIQ = _converse.connection.sendIQ;
-                let sent_stanza, IQ_id;
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_stanza = iq;
-                    IQ_id = sendIQ.bind(this)(iq, callback, errback);
-                });
-
                 test_utils.openControlBox();
                 const roomspanel = _converse.chatboxviews.get('controlbox').roomspanel;
                 roomspanel.el.querySelector('.show-list-muc-modal').click();
@@ -4302,19 +4285,28 @@
 
                 const server_input = modal.el.querySelector('input[name="server"]');
                 expect(server_input.placeholder).toBe('conference.example.org');
-                const input = server_input.value = 'chat.shakespear.lit';
+                const input = server_input.value = 'chat.shakespeare.lit';
                 modal.el.querySelector('input[type="submit"]').click();
                 await test_utils.waitUntil(() => _converse.chatboxes.length);
-                expect(sent_stanza.toLocaleString()).toBe(
-                    `<iq from="dummy@localhost/resource" id="${IQ_id}" to="chat.shakespear.lit" type="get" xmlns="jabber:client">`+
-                        `<query xmlns="http://jabber.org/protocol/disco#items"/>`+
+
+                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                const sent_stanza = await test_utils.waitUntil(
+                    () => IQ_stanzas.filter(s => sizzle(`query[xmlns="${Strophe.NS.DISCO_ITEMS}"]`, s).length).pop()
+                );
+                const id = sent_stanza.getAttribute('id');
+                expect(Strophe.serialize(sent_stanza)).toBe(
+                    `<iq from="dummy@localhost/resource" id="${id}" `+
+                        `to="chat.shakespeare.lit" `+
+                        `type="get" `+
+                        `xmlns="jabber:client">`+
+                            `<query xmlns="http://jabber.org/protocol/disco#items"/>`+
                     `</iq>`
                 );
                 const iq = $iq({
-                    from:'muc.localhost',
-                    to:'dummy@localhost/pda',
-                    id: IQ_id,
-                    type:'result'
+                    'from':'muc.localhost',
+                    'to':'dummy@localhost/pda',
+                    'id': id,
+                    'type':'result'
                 }).c('query')
                 .c('item', { jid:'heath@chat.shakespeare.lit', name:'A Lonely Heath'}).up()
                 .c('item', { jid:'coven@chat.shakespeare.lit', name:'A Dark Cave'}).up()

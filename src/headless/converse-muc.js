@@ -448,6 +448,7 @@ converse.plugins.add('converse-muc', {
                 const origin_id = _converse.connection.getUniqueId();
 
                 return this.addOccupantData({
+                    'id': origin_id,
                     'msgid': origin_id,
                     'origin_id': origin_id,
                     'from': `${this.get('jid')}/${this.get('nick')}`,

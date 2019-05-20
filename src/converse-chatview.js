@@ -823,7 +823,8 @@ converse.plugins.add('converse-chatview', {
              * @param { object } message - The message Backbone object that was added.
              */
             async onMessageAdded (message) {
-                if (this.get(message.get('id'))) {
+                const id = message.get('id');
+                if (id && this.get(id)) {
                     // We already have a view for this message
                     return;
                 }

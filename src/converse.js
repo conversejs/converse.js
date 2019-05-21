@@ -8,8 +8,9 @@ import "@converse/headless/converse-mam";             // XEP-0313 Message Archiv
 import "@converse/headless/converse-ping";            // XEP-0199 XMPP Ping
 import "@converse/headless/converse-pubsub";          // XEP-0060 PubSub
 import "@converse/headless/converse-vcard";           // XEP-0054 VCard-temp
+import "@converse/headless/converse-bookmarks";       // XEP-0048 Bookmarks
 import "converse-autocomplete";
-import "converse-bookmarks";       // XEP-0048 Bookmarks
+import "converse-bookmark-views";  // Views for XEP-0048 Bookmarks
 import "converse-chatview";        // Renders standalone chat boxes for single user chat
 import "converse-controlbox";      // The control box
 import "converse-dragresize";      // Allows chat boxes to be resized by dragging them
@@ -31,7 +32,7 @@ import converse from "@converse/headless/converse-core";
 
 const WHITELISTED_PLUGINS = [
     'converse-autocomplete',
-    'converse-bookmarks',
+    'converse-bookmark-views',
     'converse-chatboxviews',
     'converse-chatview',
     'converse-controlbox',

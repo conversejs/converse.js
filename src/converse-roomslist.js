@@ -48,7 +48,7 @@ converse.plugins.add('converse-roomslist', {
 
             comparator (room) {
                 if (room.get('bookmarked')) {
-                    const bookmark = _.head(_converse.bookmarksview.model.where({'jid': room.get('jid')}));
+                    const bookmark = _.head(_converse.bookmarks.where({'jid': room.get('jid')}));
                     return bookmark.get('name');
                 } else {
                     return room.get('name');
@@ -139,8 +139,8 @@ converse.plugins.add('converse-roomslist', {
             },
 
             getRoomsListElementName () {
-                if (this.model.get('bookmarked') && _converse.bookmarksview) {
-                    const bookmark = _.head(_converse.bookmarksview.model.where({'jid': this.model.get('jid')}));
+                if (this.model.get('bookmarked') && _converse.bookmarks) {
+                    const bookmark = _.head(_converse.bookmarks.where({'jid': this.model.get('jid')}));
                     return bookmark.get('name');
                 } else {
                     return this.model.get('name');

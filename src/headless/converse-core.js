@@ -86,6 +86,7 @@ pluggable.enable(_converse, '_converse', 'pluggable');
 // These are just the @converse/headless plugins, for the full converse,
 // the other plugins are whitelisted in src/converse.js
 _converse.core_plugins = [
+    'converse-bookmarks',
     'converse-caps',
     'converse-chatboxes',
     'converse-disco',
@@ -352,7 +353,7 @@ function initPlugins() {
         {'_converse': _converse},
         whitelist, _converse.blacklisted_plugins
     );
-    
+
     /**
      * Triggered once all plugins have been initialized. This is a useful event if you want to
      * register event handlers but would like your own handlers to be overridable by

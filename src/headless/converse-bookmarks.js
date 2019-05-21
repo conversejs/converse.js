@@ -1,7 +1,7 @@
 // Converse.js (A browser based XMPP chat client)
 // https://conversejs.org
 //
-// Copyright (c) 2012-2017, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) 2019, Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 /*global define */
@@ -65,6 +65,8 @@ converse.plugins.add('converse-bookmarks', {
             allow_public_bookmarks: false
         });
 
+        _converse.api.promises.add('bookmarksInitialized');
+
         /**
           * Check if the user has a bookmark with a saved nickanme
           * for this groupchat and return it.
@@ -72,7 +74,7 @@ converse.plugins.add('converse-bookmarks', {
           * @method _converse#getNicknameFromBookmark
           */
         _converse.getNicknameFromBookmark = function (jid) {
-            if (_converse.bookmarks || !_converse.allow_bookmarks) {
+            if (!_converse.bookmarks || !_converse.allow_bookmarks) {
                 return null;
             }
             const bookmark = _converse.bookmarks.findWhere({'jid': jid});

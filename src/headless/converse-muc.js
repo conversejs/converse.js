@@ -218,7 +218,21 @@ converse.plugins.add('converse-muc', {
                 this.initOccupants();
                 this.registerHandlers();
                 this.initMessages();
+                this.enterRoom();
             },
+
+            async enterRoom () {
+                if (this.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
+                    await this.getRoomFeatures();
+                    if (!u.isPersistableModel(this)) {
+                        // XXX: Happens during tests, nothing to do if this
+                        // is a hanging chatbox (i.e. not in the collection anymore).
+                        return;
+                    }
+                    this.join();
+                }
+            },
+
 
             async onConnectionStatusChanged () {
                 if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {

@@ -572,19 +572,6 @@ converse.plugins.add('converse-muc-views', {
                 this.createOccupantsView();
                 this.insertIntoDOM();
                 this.registerHandlers();
-                this.enterRoom();
-            },
-
-            async enterRoom () {
-                if (this.model.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
-                    await this.model.getRoomFeatures();
-                    if (!u.isPersistableModel(this.model)) {
-                        // XXX: Happens during tests, nothing to do if this
-                        // is a hanging chatbox (i.e. not in the collection anymore).
-                        return;
-                    }
-                    this.model.join();
-                }
                 /**
                  * Triggered once a groupchat has been opened
                  * @event _converse#chatRoomOpened

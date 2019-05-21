@@ -114,16 +114,14 @@
         return _converse.chatboxviews.get(jid);
     };
 
-    utils.openChatRoom = function (_converse, room, server, nick) {
+    utils.openChatRoom = function (_converse, room, server) {
         return _converse.api.rooms.open(`${room}@${server}`);
     };
 
-    utils.openAndEnterChatRoom = async function (_converse, room, server, nick, features=[]) {
+    utils.getRoomFeatures = async function (_converse, room, server, features=[]) {
         const room_jid = `${room}@${server}`.toLowerCase();
         const stanzas = _converse.connection.IQ_stanzas;
-        await _converse.api.rooms.open(room_jid);
-        const view = _converse.chatboxviews.get(room_jid);
-        let stanza = await utils.waitUntil(() => _.filter(
+        const stanza = await utils.waitUntil(() => _.filter(
             stanzas,
             iq => iq.querySelector(
                 `iq[to="${room_jid}"] query[xmlns="http://jabber.org/protocol/disco#info"]`
@@ -161,6 +159,13 @@
             .c('field', {'type':'text-single', 'var':'muc#roominfo_occupants', 'label':'Number of occupants'})
                 .c('value').t(0);
         _converse.connection._dataRecv(utils.createRequest(features_stanza));
+    };
+
+    utils.openAndEnterChatRoom = async function (_converse, room, server, nick, features=[]) {
+        const room_jid = `${room}@${server}`.toLowerCase();
+        const stanzas = _converse.connection.IQ_stanzas;
+        await _converse.api.rooms.open(room_jid);
+        await utils.getRoomFeatures(_converse, room, server, features);
 
         const iq = await utils.waitUntil(() => _.filter(
             stanzas,
@@ -171,8 +176,9 @@
         stanzas.splice(stanzas.indexOf(iq), 1)
 
         // The XMPP server returns the reserved nick for this user.
+        const view = _converse.chatboxviews.get(room_jid);
         const IQ_id = iq.getAttribute('id');
-        stanza = $iq({
+        const stanza = $iq({
             'type': 'result',
             'id': IQ_id,
             'from': view.model.get('jid'),

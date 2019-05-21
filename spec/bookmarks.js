@@ -21,7 +21,7 @@
         it("can be bookmarked", mock.initConverse(
             null, ['rosterGroupsFetched'], {},
             async function (done, _converse) {
-                
+
             await test_utils.waitUntilDiscoConfirmed(
                 _converse, _converse.bare_jid,
                 [{'category': 'pubsub', 'type': 'pep'}],
@@ -188,6 +188,31 @@
 
         describe("when bookmarked", function () {
 
+            it("will use the nickname from the bookmark", mock.initConverse(
+                null, ['rosterGroupsFetched'], {},
+                async function (done, _converse) {
+
+                await test_utils.waitUntilDiscoConfirmed(
+                    _converse, _converse.bare_jid,
+                    [{'category': 'pubsub', 'type': 'pep'}],
+                    ['http://jabber.org/protocol/pubsub#publish-options']
+                );
+                const room_jid = 'coven@chat.shakespeare.lit';
+                await test_utils.waitUntil(() => _converse.bookmarks);
+                _converse.bookmarks.create({
+                    'jid': room_jid,
+                    'autojoin': false,
+                    'name':  'The Play',
+                    'nick': 'Othello'
+                });
+                const model = await _converse.api.rooms.open(room_jid);
+                spyOn(model, 'join').and.callThrough();
+                await test_utils.getRoomFeatures(_converse, 'coven', 'chat.shakespeare.lit');
+                await test_utils.waitUntil(() => model.join.calls.count());
+                expect(model.get('nick')).toBe('Othello');
+                done();
+            }));
+
             it("displays that it's bookmarked through its bookmark icon", mock.initConverse(
                 null, ['rosterGroupsFetched'], {},
                 async function (done, _converse) {
@@ -197,7 +222,7 @@
                     [{'category': 'pubsub', 'type': 'pep'}],
                     ['http://jabber.org/protocol/pubsub#publish-options']
                 );
-                await test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                await _converse.api.rooms.open(`lounge@localhost`);
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 await test_utils.waitUntil(() => !_.isNull(view.el.querySelector('.toggle-bookmark')));
                 var bookmark_icon = view.el.querySelector('.toggle-bookmark');

@@ -453,7 +453,7 @@
                     null, ['rosterGroupsFetched', 'chatBoxesFetched'], {},
                     async function (done, _converse) {
 
-                await test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit', 'some1');
+                await test_utils.openChatRoom(_converse, "coven", 'chat.shakespeare.lit');
                 const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
                 const chat_content = view.el.querySelector('.chat-content');
                 /* <presence to="dummy@localhost/_converse.js-29092160"

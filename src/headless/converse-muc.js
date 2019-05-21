@@ -221,13 +221,15 @@ converse.plugins.add('converse-muc', {
             },
 
             async onConnectionStatusChanged () {
-                if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED &&
-                        _converse.auto_register_muc_nickname &&
-                        !this.get('reserved_nick') &&
-                        await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
-
+                if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                     this.occupants.fetchMembers();
-                    this.registerNickname()
+
+                    if (_converse.auto_register_muc_nickname &&
+                            !this.get('reserved_nick') &&
+                            await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
+
+                        this.registerNickname()
+                    }
                 }
             },
 
@@ -664,7 +666,7 @@ converse.plugins.add('converse-muc', {
              * Given a <field> element, return a copy with a <value> child if
              * we can find a value for it in this rooms config.
              * @private
-             * @method _converse.ChatRoom#autoConfigureChatRoom
+             * @method _converse.ChatRoom#addFieldValue
              * @returns { Element }
              */
             addFieldValue (field) {

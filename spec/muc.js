@@ -145,10 +145,8 @@
                 chatroomview.close();
 
                 _converse.muc_instant_rooms = false;
-                var sendIQ = _converse.connection.sendIQ;
+                const sendIQ = _converse.connection.sendIQ;
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
-                    sent_IQ = iq;
-                    sent_IQ_els.push(iq.nodeTree);
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 // Test with configuration
@@ -199,15 +197,18 @@
                     .c('status', {code:'201'});
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
                 expect(_converse.connection.sendIQ).toHaveBeenCalled();
-                expect(sent_IQ.toLocaleString()).toBe(
-                    `<iq id="${IQ_id}" to="room@conference.example.org" type="get" xmlns="jabber:client">`+
-                    `<query xmlns="http://jabber.org/protocol/muc#owner"/></iq>`
-                );
+
+                const IQ_stanzas = _converse.connection.IQ_stanzas;
+                const iq = IQ_stanzas.filter(s => s.querySelector(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`)).pop();
+                expect(Strophe.serialize(iq)).toBe(
+                    `<iq id="${iq.getAttribute('id')}" to="room@conference.example.org" type="get" xmlns="jabber:client">`+
+                    `<query xmlns="http://jabber.org/protocol/muc#owner"/></iq>`);
+
                 const node = u.toStanza(`
                    <iq xmlns="jabber:client"
                         type="result"
                         to="dummy@localhost/pda"
-                        from="room@conference.example.org" id="${IQ_id}">
+                        from="room@conference.example.org" id="${iq.getAttribute('id')}">
                     <query xmlns="http://jabber.org/protocol/muc#owner">
                         <x xmlns="jabber:x:data" type="form">
                         <title>Configuration for room@conference.example.org</title>
@@ -244,10 +245,8 @@
                 spyOn(chatroomview.model, 'sendConfiguration').and.callThrough();
                 _converse.connection._dataRecv(test_utils.createRequest(node));
                 await test_utils.waitUntil(() => chatroomview.model.sendConfiguration.calls.count() === 1);
-                var sent_stanza = sent_IQ_els.pop();
-                while (sent_stanza.getAttribute('type') !== 'set') {
-                    sent_stanza = sent_IQ_els.pop();
-                }
+
+                const sent_stanza = IQ_stanzas.filter(s => s.getAttribute('type') === 'set').pop();
                 expect(sizzle('field[var="muc#roomconfig_roomname"] value', sent_stanza).pop().textContent).toBe('Room');
                 expect(sizzle('field[var="muc#roomconfig_roomdesc"] value', sent_stanza).pop().textContent).toBe('Welcome to this groupchat');
                 expect(sizzle('field[var="muc#roomconfig_persistentroom"] value', sent_stanza).pop().textContent).toBe('1');
@@ -372,8 +371,9 @@
                 .c('status').attrs({code:'201'}).nodeTree;
 
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                var info_text = view.el.querySelector('.chat-content .chat-info').textContent;
+                const info_text = view.el.querySelector('.chat-content .chat-info').textContent;
                 expect(info_text).toBe('A new groupchat has been created');
+
 
                 // An instant room is created by saving the default configuratoin.
                 //
@@ -381,8 +381,9 @@
                  *   <query xmlns="http://jabber.org/protocol/muc#owner"><x xmlns="jabber:x:data" type="submit"/></query>
                  * </iq>
                  */
-                expect(sent_IQ.toLocaleString()).toBe(
-                    `<iq id="${IQ_id}" to="lounge@localhost" type="set" xmlns="jabber:client">`+
+                const iq = IQ_stanzas.filter(s => s.querySelector(`query[xmlns="${Strophe.NS.MUC_OWNER}"]`)).pop();
+                expect(Strophe.serialize(iq)).toBe(
+                    `<iq id="${iq.getAttribute('id')}" to="lounge@localhost" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#owner"><x type="submit" xmlns="jabber:x:data"/>`+
                     `</query></iq>`);
                 done();

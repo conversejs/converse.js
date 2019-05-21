@@ -301,7 +301,6 @@ converse.plugins.add('converse-chatboxes', {
                 this.messages.browserStorage = new Backbone.BrowserStorage.session(
                     `converse.messages-${this.get('jid')}-${_converse.bare_jid}`);
                 this.messages.chatbox = this;
-                this.messages.fetched = u.getResolveablePromise();
 
                 this.messages.on('change:upload', (message) => {
                     if (message.get('upload') === _converse.SUCCESS) {
@@ -323,6 +322,7 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             fetchMessages () {
+                this.messages.fetched = u.getResolveablePromise();
                 const resolve = this.messages.fetched.resolve;
                 this.messages.fetch({
                     'add': true,

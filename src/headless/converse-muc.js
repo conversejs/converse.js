@@ -216,8 +216,8 @@ converse.plugins.add('converse-muc', {
 
                 this.initFeatures();
                 this.initOccupants();
-                this.initMessages();
                 this.registerHandlers();
+                this.initMessages();
             },
 
             async onConnectionStatusChanged () {
@@ -1532,10 +1532,11 @@ converse.plugins.add('converse-muc', {
              */
             _converse.chatboxes
                 .filter(m => (m.get('type') === _converse.CHATROOMS_TYPE))
-                .forEach(m => m.save('connection_status', converse.ROOMSTATUS.DISCONNECTED))
                 .forEach(room => {
+                    room.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                     room.clearMessages();
                     room.registerHandlers();
+                    room.fetchMessages();
                     room.join();
                 });
         }

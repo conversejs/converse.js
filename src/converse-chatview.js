@@ -339,7 +339,10 @@ converse.plugins.add('converse-chatview', {
                 this.initDebounced();
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.messages.on('rendered', this.scrollDown, this);
-                this.model.messages.on('reset', () => (this.content.innerHTML = ''));
+                this.model.messages.on('reset', () => {
+                    this.content.innerHTML = '';
+                    this.removeAll();
+                });
 
                 this.model.on('show', this.show, this);
                 this.model.on('destroy', this.remove, this);

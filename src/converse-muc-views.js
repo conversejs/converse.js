@@ -541,7 +541,10 @@ converse.plugins.add('converse-muc-views', {
 
                 this.model.messages.on('add', this.onMessageAdded, this);
                 this.model.messages.on('rendered', this.scrollDown, this);
-                this.model.messages.on('reset', () => (this.content.innerHTML = ''));
+                this.model.messages.on('reset', () => {
+                    this.content.innerHTML = '';
+                    this.removeAll();
+                });
 
                 this.model.on('change:affiliation', this.renderHeading, this);
                 this.model.on('change:connection_status', this.onConnectionStatusChanged, this);

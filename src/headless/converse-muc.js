@@ -324,7 +324,7 @@ converse.plugins.add('converse-muc', {
              * @param { String } password - Optional password, if required by the groupchat.
              */
             async join (nick, password) {
-                nick = nick ? nick : await this.getNickname();
+                nick = await this.getAndPersistNickname(nick);
                 if (!nick) {
                     u.safeSave(this, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
                     return this;
@@ -848,17 +848,28 @@ converse.plugins.add('converse-muc', {
                     .catch(_.partial(_converse.log, _, Strophe.LogLevel.ERROR));
             },
 
-            async getNickname () {
-                let nick = this.get('nick');
+            /**
+             * Given a nick name, save it to the model state, otherwise, look
+             * for a server-side reserved nickname or default configured
+             * nickname and if found, persist that to the model state.
+             * @private
+             * @method _converse.ChatRoom#getAndPersistNickname
+             * @returns { promise } A promise which resolves with the nickname
+             */
+            async getAndPersistNickname (nick) {
+                nick = nick || this.get('nick');
+                const state = {'nick': nick};
                 if (!nick) {
                     try {
                         nick = await this.getReservedNick();
-                        this.save({'reserved_nick': nick, 'nick': nick}, {'silent': true});
+                        state['reserved_nick'] = nick;
                     } catch (e) {
                         nick = _converse.getDefaultMUCNickname();
-                        this.save({'nick': nick}, {'silent': true});
+                    } finally {
+                        state['nick'] = nick;
                     }
                 }
+                this.save(state, {'silent': true});
                 return nick;
             },
 

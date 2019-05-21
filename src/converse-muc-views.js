@@ -113,10 +113,8 @@ converse.plugins.add('converse-muc-views', {
         _converse.api.settings.update({
             'auto_list_rooms': false,
             'cache_muc_messages': true,
-            'locked_muc_domain': false,
             'locked_muc_nickname': false,
             'muc_disable_slash_commands': false,
-            'muc_domain': undefined,
             'muc_show_join_leave': true,
             'muc_show_join_leave_status': true,
             'roomconfig_whitelist': [],
@@ -124,11 +122,6 @@ converse.plugins.add('converse-muc-views', {
                 'toggle_occupants': true
             }
         });
-
-        if (_converse.locked_muc_domain && !_.isString(_converse.muc_domain)) {
-            throw new Error("Config Error: it makes no sense to set locked_muc_domain "+
-                            "to true when muc_domain is not set");
-        }
 
         function ___ (str) {
             /* This is part of a hack to get gettext to scan strings to be

@@ -76,8 +76,11 @@
             const corrected_message = view.model.messages.at(0);
             expect(corrected_message.get('msgid')).toBe(first_msg.get('msgid'));
             expect(corrected_message.get('correcting')).toBe(false);
-            expect(corrected_message.get('older_versions').length).toBe(1);
-            expect(corrected_message.get('older_versions')[0]).toBe('But soft, what light through yonder airlock breaks?');
+
+            const older_versions = corrected_message.get('older_versions');
+            const keys = Object.keys(older_versions);
+            expect(keys.length).toBe(1);
+            expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
 
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);
@@ -181,8 +184,11 @@
             const corrected_message = view.model.messages.at(0);
             expect(corrected_message.get('msgid')).toBe(first_msg.get('msgid'));
             expect(corrected_message.get('correcting')).toBe(false);
-            expect(corrected_message.get('older_versions').length).toBe(1);
-            expect(corrected_message.get('older_versions')[0]).toBe('But soft, what light through yonder airlock breaks?');
+
+            const older_versions = corrected_message.get('older_versions');
+            const keys = Object.keys(older_versions);
+            expect(keys.length).toBe(1);
+            expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
 
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             await test_utils.waitUntil(() => (u.hasClass('correcting', view.el.querySelector('.chat-msg')) === false), 500);
@@ -1472,8 +1478,8 @@
                 await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
                 const older_msgs = modal.el.querySelectorAll('.older-msg');
                 expect(older_msgs.length).toBe(2);
-                expect(older_msgs[0].textContent).toBe('But soft, what light through yonder airlock breaks?');
-                expect(older_msgs[1].textContent).toBe('But soft, what light through yonder chimney breaks?');
+                expect(older_msgs[0].childNodes[0].nodeName).toBe('TIME');
+                expect(older_msgs[0].childNodes[1].textContent).toBe(': But soft, what light through yonder airlock breaks?');
                 done();
             }));
 
@@ -2425,8 +2431,10 @@
             await test_utils.waitUntil(() => u.isVisible(modal.el), 1000);
             const older_msgs = modal.el.querySelectorAll('.older-msg');
             expect(older_msgs.length).toBe(2);
-            expect(older_msgs[0].textContent).toBe('But soft, what light through yonder airlock breaks?');
-            expect(older_msgs[1].textContent).toBe('But soft, what light through yonder chimney breaks?');
+            expect(older_msgs[0].childNodes[1].textContent).toBe(': But soft, what light through yonder airlock breaks?');
+            expect(older_msgs[0].childNodes[0].nodeName).toBe('TIME');
+            expect(older_msgs[1].childNodes[0].nodeName).toBe('TIME');
+            expect(older_msgs[1].childNodes[1].textContent).toBe(': But soft, what light through yonder chimney breaks?');
             done();
         }));
 
@@ -2495,8 +2503,11 @@
             const corrected_message = view.model.messages.at(0);
             expect(corrected_message.get('msgid')).toBe(first_msg.get('msgid'));
             expect(corrected_message.get('correcting')).toBe(false);
-            expect(corrected_message.get('older_versions').length).toBe(1);
-            expect(corrected_message.get('older_versions')[0]).toBe('But soft, what light through yonder airlock breaks?');
+
+            const older_versions = corrected_message.get('older_versions');
+            const keys = Object.keys(older_versions);
+            expect(keys.length).toBe(1);
+            expect(older_versions[keys[0]]).toBe('But soft, what light through yonder airlock breaks?');
 
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
             expect(u.hasClass('correcting', view.el.querySelector('.chat-msg'))).toBe(false);

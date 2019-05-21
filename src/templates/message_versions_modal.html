@@ -7,7 +7,7 @@
             </div>
             <div class="modal-body">
                 <h4>Older versions</h4>
-                {[o.older_versions.forEach(function (text) { ]} <p class="older-msg">{{{text}}}</p> {[ }); ]}
+                {[Object.keys(o.older_versions).forEach(function (k) { ]} <p class="older-msg"><time>{{{o.dayjs(k).format('MMM D, YYYY, HH:mm:ss')}}}</time>: {{{o.older_versions[k]}}}</p> {[ }); ]}
                 <hr/>
                 <h4>Current version</h4>
                 <p>{{{o.message}}}</p>

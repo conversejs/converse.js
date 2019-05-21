@@ -382,30 +382,52 @@ converse.plugins.add('converse-chatboxes', {
                 }
             },
 
-            handleMessageCorrection (stanza) {
-                const replace = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
-                if (replace) {
-                    const msgid = replace && replace.getAttribute('id') || stanza.getAttribute('id'),
-                        message = msgid && this.messages.findWhere({msgid});
-
-                    if (!message) {
-                        // XXX: Looks like we received a correction for a
-                        // non-existing message, probably due to MAM.
-                        // Not clear what can be done about this... we'll
-                        // just create it as a separate message for now.
-                        return false;
-                    }
-                    const older_versions = message.get('older_versions') || [];
-                    older_versions.push(message.get('message'));
-                    message.save({
-                        'message': this.getMessageBody(stanza),
-                        'references': this.getReferencesFromStanza(stanza),
-                        'older_versions': older_versions,
-                        'edited': (new Date()).toISOString()
-                    });
-                    return true;
+            /**
+             * If the passed in `message` stanza contains an
+             * [XEP-0308](https://xmpp.org/extensions/xep-0308.html#usecase)
+             * `<replace>` element, return its `id` attribute.
+             * @private
+             * @method _converse.ChatBox#getReplaceId
+             * @param { XMLElement } stanza
+             */
+            getReplaceId (stanza) {
+                const el = sizzle(`replace[xmlns="${Strophe.NS.MESSAGE_CORRECT}"]`, stanza).pop();
+                if (el) {
+                    return el.getAttribute('id');
                 }
-                return false;
+            },
+
+            /**
+             * Determine whether the passed in message attributes represent a
+             * message which corrects a previously received message, or an
+             * older message which has already been corrected.
+             * In both cases, update the corrected message accordingly.
+             * @private
+             * @method _converse.ChatBox#correctMessage
+             * @param { object } attrs - Attributes representing a received
+             *     message, as returned by
+             *     {@link _converse.ChatBox.getMessageAttributesFromStanza}
+             */
+            correctMessage (attrs) {
+                if (!attrs.msgid || !attrs.from) {
+                    return;
+                }
+                const message = this.messages.findWhere({'msgid': attrs.msgid, 'from': attrs.from});
+                if (!message) {
+                    return;
+                }
+                const older_versions = message.get('older_versions') || {};
+                if ((attrs.time < message.get('time')) && message.get('edited')) {
+                    // This is an older message which has been corrected already
+                    older_versions[attrs.time] = attrs['message'];
+                    message.save({'older_versions': older_versions});
+                } else {
+                    // This is a correction of an earlier message we already received
+                    older_versions[message.get('time')] = message.get('message');
+                    attrs = Object.assign(attrs, {'older_versions': older_versions});
+                    message.save(attrs);
+                }
+                return message;
             },
 
             async getDuplicateMessage (stanza) {
@@ -619,8 +641,8 @@ converse.plugins.add('converse-chatboxes', {
                 const attrs = this.getOutgoingMessageAttributes(text, spoiler_hint);
                 let message = this.messages.findWhere('correcting')
                 if (message) {
-                    const older_versions = message.get('older_versions') || [];
-                    older_versions.push(message.get('message'));
+                    const older_versions = message.get('older_versions') || {};
+                    older_versions[message.get('time')] = message.get('message');
                     message.save({
                         'correcting': false,
                         'edited': (new Date()).toISOString(),
@@ -772,15 +794,17 @@ converse.plugins.add('converse-chatboxes', {
              *  message stanza, if it was contained, otherwise it's the message stanza itself.
              */
             getMessageAttributesFromStanza (stanza, original_stanza) {
-                const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop(),
-                      delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop(),
-                      text = this.getMessageBody(stanza) || undefined,
-                      chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
+                const spoiler = sizzle(`spoiler[xmlns="${Strophe.NS.SPOILER}"]`, original_stanza).pop();
+                const delay = sizzle(`delay[xmlns="${Strophe.NS.DELAY}"]`, original_stanza).pop();
+                const text = this.getMessageBody(stanza) || undefined;
+                const chat_state = stanza.getElementsByTagName(_converse.COMPOSING).length && _converse.COMPOSING ||
                             stanza.getElementsByTagName(_converse.PAUSED).length && _converse.PAUSED ||
                             stanza.getElementsByTagName(_converse.INACTIVE).length && _converse.INACTIVE ||
                             stanza.getElementsByTagName(_converse.ACTIVE).length && _converse.ACTIVE ||
                             stanza.getElementsByTagName(_converse.GONE).length && _converse.GONE;
 
+                const replaced_id = this.getReplaceId(stanza)
+                const msgid = replaced_id || stanza.getAttribute('id') || original_stanza.getAttribute('id');
                 const attrs = Object.assign({
                     'chat_state': chat_state,
                     'is_archived': this.isArchived(original_stanza),
@@ -788,14 +812,13 @@ converse.plugins.add('converse-chatboxes', {
                     'is_spoiler': !_.isNil(spoiler),
                     'is_single_emoji': text ? u.isSingleEmoji(text) : false,
                     'message': text,
-                    'msgid': stanza.getAttribute('id'),
+                    'msgid': msgid,
                     'references': this.getReferencesFromStanza(stanza),
                     'subject': _.propertyOf(stanza.querySelector('subject'))('textContent'),
                     'thread': _.propertyOf(stanza.querySelector('thread'))('textContent'),
                     'time': delay ? dayjs(delay.getAttribute('stamp')).toISOString() : (new Date()).toISOString(),
                     'type': stanza.getAttribute('type')
                 }, this.getStanzaIDs(original_stanza));
-
 
                 if (attrs.type === 'groupchat') {
                     attrs.from = stanza.getAttribute('from');
@@ -818,8 +841,13 @@ converse.plugins.add('converse-chatboxes', {
                 if (spoiler) {
                     attrs.spoiler_hint = spoiler.textContent.length > 0 ? spoiler.textContent : '';
                 }
+                if (replaced_id) {
+                    attrs['edited'] = (new Date()).toISOString();
+                }
                 // We prefer to use one of the XEP-0359 unique and stable stanza IDs as the Model id, to avoid duplicates.
-                attrs['id'] = attrs['origin_id'] || attrs[`stanza_id ${attrs.from}`] || _converse.connection.getUniqueId();
+                attrs['id'] = attrs['origin_id'] ||
+                    attrs[`stanza_id ${attrs.from}`] ||
+                    _converse.connection.getUniqueId();
                 return attrs;
             },
 
@@ -1021,13 +1049,12 @@ converse.plugins.add('converse-chatboxes', {
                         chatbox.updateMessage(message, original_stanza);
                     }
                     if (!message &&
-                            !chatbox.handleMessageCorrection(stanza) &&
                             !chatbox.handleReceipt (stanza, from_jid, is_carbon, is_me, is_mam) &&
                             !chatbox.handleChatMarker(stanza, from_jid, is_carbon, is_roster_contact, is_mam)) {
 
                         const attrs = await chatbox.getMessageAttributesFromStanza(stanza, original_stanza);
                         if (attrs['chat_state'] || !u.isEmptyMessage(attrs)) {
-                            const msg = chatbox.messages.create(attrs);
+                            const msg = chatbox.correctMessage(attrs) || chatbox.messages.create(attrs);
                             chatbox.incrementUnreadMsgCounter(msg);
                         }
                     }

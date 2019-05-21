@@ -69,7 +69,8 @@ converse.plugins.add('converse-message-view', {
             toHTML () {
                 return tpl_message_versions_modal(Object.assign(
                     this.model.toJSON(), {
-                    '__': __
+                    '__': __,
+                    'dayjs': dayjs
                 }));
             }
         });

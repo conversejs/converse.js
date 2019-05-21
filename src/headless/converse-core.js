@@ -9,7 +9,7 @@ import Backbone from "backbone";
 import BrowserStorage from "backbone.browserStorage";
 import Promise from "es6-promise/dist/es6-promise.auto";
 import _ from "./lodash.noconflict";
-import advancedFormat from 'dayjs/plugin/advancedFormat'
+import advancedFormat from 'dayjs/plugin/advancedFormat';
 import dayjs from "dayjs";
 import i18n from "./i18n";
 import pluggable from "pluggable.js/src/pluggable";
@@ -19,7 +19,7 @@ import u from "@converse/headless/utils/core";
 
 Backbone = Backbone.noConflict();
 
-dayjs.extend(advancedFormat)
+dayjs.extend(advancedFormat);
 
 // Strophe globals
 const b64_sha1 = SHA1.b64_sha1;

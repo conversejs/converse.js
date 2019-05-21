@@ -1158,19 +1158,19 @@ converse.plugins.add('converse-muc', {
                     this.updateMessage(message, original_stanza);
                 }
                 if (message ||
-                        this.handleMessageCorrection(stanza) ||
                         this.isReceipt(stanza) ||
                         this.isChatMarker(stanza)) {
                     return _converse.api.trigger('message', {'stanza': original_stanza});
                 }
 
-                const attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
+                let attrs = await this.getMessageAttributesFromStanza(stanza, original_stanza);
                 if (attrs.nick &&
                         !this.subjectChangeHandled(attrs) &&
                         !this.ignorableCSN(attrs) &&
                         (attrs['chat_state'] || !u.isEmptyMessage(attrs))) {
 
-                    const msg = this.messages.create(this.addOccupantData(attrs));
+                    attrs = this.addOccupantData(attrs);
+                    const msg = this.correctMessage(attrs) || this.messages.create(attrs);
                     this.incrementUnreadMsgCounter(msg);
                     if (forwarded && msg && msg.get('sender')  === 'me') {
                         msg.save({'received': (new Date()).toISOString()});

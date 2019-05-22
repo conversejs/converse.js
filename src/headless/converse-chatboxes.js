@@ -352,6 +352,17 @@ converse.plugins.add('converse-chatboxes', {
                 }
             },
 
+            onReconnection () {
+                this.clearMessages();
+                /**
+                 * Triggered whenever a `_converse.ChatBox` instance has reconnected after an outage
+                 * @event _converse#onChatReconnected
+                 * @type {_converse.ChatBox | _converse.ChatRoom}
+                 * @example _converse.api.listen.on('onChatReconnected', chatbox => { ... });
+                 */
+                _converse.api.trigger('chatReconnected', this);
+            },
+
             validate (attrs, options) {
                 const { _converse } = this.__super__;
                 if (!attrs.jid) {
@@ -1150,6 +1161,8 @@ converse.plugins.add('converse-chatboxes', {
             _converse.api.trigger('chatBoxesInitialized');
         });
         _converse.api.listen.on('presencesInitialized', () => _converse.chatboxes.onConnected());
+
+        _converse.api.listen.on('reconnected', () => _converse.chatboxes.forEach(m => m.onReconnection()));
         /************************ END Event Handlers ************************/
 
 

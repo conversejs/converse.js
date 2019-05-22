@@ -199,7 +199,9 @@ converse.plugins.add('converse-controlbox', {
                     'type': _converse.CONTROLBOX_TYPE,
                     'url': ''
                 }
-            }
+            },
+
+            onReconnection: _.noop
         });
 
 

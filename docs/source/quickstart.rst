@@ -18,7 +18,7 @@ which hosts its JavaScript and CSS files.
 The latest versions of these files are available at these URLs:
 
 * https://cdn.conversejs.org/dist/converse.min.js
-* https://cdn.conversejs.org/css/converse.min.css
+* https://cdn.conversejs.org/dist/converse.min.css
 
 If you are integrating Converse into an existing website or app, then we recommend
 that you load a specific version of Converse. Otherwise your website or app
@@ -26,15 +26,15 @@ might break when a new backwards-incompatible version of Converse is released.
 
 To load a specific version of Converse you can put the version in the URL:
 
-* https://cdn.conversejs.org/4.2.0/dist/converse.min.js
-* https://cdn.conversejs.org/4.2.0/css/converse.min.css
+* https://cdn.conversejs.org/5.0.0/dist/converse.min.js
+* https://cdn.conversejs.org/5.0.0/dist/converse.min.css
 
 You can include these two URLs inside the *<head>* element of your website
 via the *script* and *link* tags:
 
 .. code-block:: html
 
-    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/4.2.0/css/converse.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="https://cdn.conversejs.org/4.2.0/dist/converse.min.css">
     <script src="https://cdn.conversejs.org/4.2.0/dist/converse.min.js" charset="utf-8"></script>
 
 

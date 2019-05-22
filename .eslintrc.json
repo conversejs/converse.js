@@ -26,6 +26,7 @@
                 "split", "trim", "forEach", "toUpperCase", "includes", "values"
             ]
         }],
+        "lodash/import-scope": "off",
         "lodash/prefer-invoke-map": "off",
         "lodash/prefer-startswith": "off",
         "lodash/prefer-constant": "off",

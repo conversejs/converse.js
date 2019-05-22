@@ -240,7 +240,6 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-
             async onConnectionStatusChanged () {
                 if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                     this.occupants.fetchMembers();
@@ -252,6 +251,14 @@ converse.plugins.add('converse-muc', {
                         this.registerNickname()
                     }
                 }
+            },
+
+            onReconnection () {
+                this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                this.clearMessages();
+                this.registerHandlers();
+                this.fetchMessages();
+                this.join();
             },
 
             initFeatures () {
@@ -1559,22 +1566,6 @@ converse.plugins.add('converse-muc', {
                 }
             });
         });
-
-        function reconnectToChatRooms () {
-            /* Upon a reconnection event from converse, join again
-             * all the open groupchats.
-             */
-            _converse.chatboxes
-                .filter(m => (m.get('type') === _converse.CHATROOMS_TYPE))
-                .forEach(room => {
-                    room.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                    room.clearMessages();
-                    room.registerHandlers();
-                    room.fetchMessages();
-                    room.join();
-                });
-        }
-        _converse.api.listen.on('reconnected', reconnectToChatRooms);
         /************************ END Event Handlers ************************/
 
 

@@ -14,6 +14,8 @@
 - New API method [\_converse.api.disco.features.get](https://conversejs.org/docs/html/api/-_converse.api.disco.features.html#.get)
 - New config setting [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
 - New event: `chatBoxBlurred`.
+- New event: [chatBoxBlurred](https://conversejs.org/docs/html/api/-_converse.html#event:chatBoxBlurred)
+- New event: [chatReconnected](https://conversejs.org/docs/html/api/-_converse.html#event:chatReconnected)
 - Properly handle message correction being received before the corrected message
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1465: When highlighting a roster contact, they're incorrectly shown as online

@@ -120,13 +120,13 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-                var filter = _converse.rosterview.el.querySelector('.roster-filter');
-                var names = mock.cur_names;
+                const filter = _converse.rosterview.el.querySelector('.roster-filter');
+                const names = mock.cur_names;
                 test_utils.openControlBox();
                 _converse.rosterview.update(); // XXX: Will normally called as event handler
                 expect(_.isNull(filter)).toBe(false);
                 await test_utils.waitUntil(() => !u.isVisible(filter));
-                for (var i=0; i<names.length; i++) {
+                for (let i=0; i<names.length; i++) {
                     _converse.roster.create({
                         ask: null,
                         fullname: names[i],
@@ -136,18 +136,12 @@
                     });
                     _converse.rosterview.update(); // XXX: Will normally called as event handler
                 }
-
                 function hasScrollBar (el) {
                     return el.isConnected && el.parentElement.offsetHeight < el.scrollHeight;
                 }
-
-                await test_utils.waitUntil(function () {
-                    if (hasScrollBar(_converse.rosterview.roster_el)) {
-                        return u.isVisible(filter);
-                    } else {
-                        return !u.isVisible(filter);
-                    }
-                });
+                await test_utils.waitUntil(
+                    () => hasScrollBar(_converse.rosterview.roster_el) ? u.isVisible(filter) : !u.isVisible(filter)
+                );
                 done();
             }));
 

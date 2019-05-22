@@ -253,12 +253,26 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            onReconnection () {
+            clearOccupants () {
+                try {
+                    this.occupants.reset();
+                } catch (e) {
+                    this.occupants.trigger('reset');
+                    _converse.log(e, Strophe.LogLevel.ERROR);
+                } finally {
+                    this.occupants.browserStorage._clear();
+                }
+            },
+
+            async onReconnection () {
                 this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                 this.clearMessages();
+                this.clearOccupants();
                 this.registerHandlers();
-                this.fetchMessages();
-                this.join();
+                // Make sure we refetch features from the XMPP server
+                await _converse.api.disco.refreshFeatures(this.get('jid'));
+                this.announceReconnection();
+                this.enterRoom();
             },
 
             initFeatures () {
@@ -352,17 +366,16 @@ converse.plugins.add('converse-muc', {
              * @param { String } password - Optional password, if required by the groupchat.
              */
             async join (nick, password) {
-                nick = await this.getAndPersistNickname(nick);
-                if (!nick) {
-                    u.safeSave(this, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
-                    return this;
-                }
                 if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
                     // We have restored a groupchat from session storage,
                     // so we don't send out a presence stanza again.
                     return this;
                 }
-
+                nick = await this.getAndPersistNickname(nick);
+                if (!nick) {
+                    u.safeSave(this, {'connection_status': converse.ROOMSTATUS.NICKNAME_REQUIRED});
+                    return this;
+                }
                 const stanza = $pres({
                     'from': _converse.connection.jid,
                     'to': this.getRoomJIDAndNick(nick)

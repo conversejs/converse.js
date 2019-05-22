@@ -297,64 +297,57 @@
             it("has a button with which its contents can be cleared",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _converse.roster_groups = true;
                 test_utils.openControlBox();
                 test_utils.createGroupedContacts(_converse);
 
-                var filter = _converse.rosterview.el.querySelector('.roster-filter');
+                const filter = _converse.rosterview.el.querySelector('.roster-filter');
                 filter.value = "xxx";
                 u.triggerEvent(filter, "keydown", "KeyboardEvent");
                 expect(_.includes(filter.classList, "x")).toBeFalsy();
                 expect(u.hasClass('hidden', _converse.rosterview.el.querySelector('.roster-filter-form .clear-input'))).toBeTruthy();
 
-                test_utils.waitUntil(function () {
-                    return !u.hasClass('hidden', _converse.rosterview.el.querySelector('.roster-filter-form .clear-input'));
-                }, 900).then(function () {
-                    var filter = _converse.rosterview.el.querySelector('.roster-filter');
-                    _converse.rosterview.el.querySelector('.clear-input').click();
-                    expect(document.querySelector('.roster-filter').value).toBe("");
-                    done();
-                });
+                const isHidden = _.partial(u.hasClass, 'hidden');
+                await test_utils.waitUntil(() => !isHidden(_converse.rosterview.el.querySelector('.roster-filter-form .clear-input')), 900);
+                _converse.rosterview.el.querySelector('.clear-input').click();
+                expect(document.querySelector('.roster-filter').value).toBe("");
+                done();
             }));
 
             it("can be used to filter contacts by their chat state",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 test_utils.createGroupedContacts(_converse);
-                var jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
+                let jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
                 _converse.roster.get(jid).presence.set('show', 'online');
                 jid = mock.cur_names[4].replace(/ /g,'.').toLowerCase() + '@localhost';
                 _converse.roster.get(jid).presence.set('show', 'dnd');
                 test_utils.openControlBox();
 
-                var button = _converse.rosterview.el.querySelector('span[data-type="state"]');
+                const button = _converse.rosterview.el.querySelector('span[data-type="state"]');
                 button.click();
 
-                var roster = _converse.rosterview.roster_el;
-                test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 15, 500).then(function () {
-                    var filter = _converse.rosterview.el.querySelector('.state-type');
-                    expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(5);
-                    filter.value = "online";
-                    u.triggerEvent(filter, 'change');
-                    return test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 1, 500);
-                }).then(function () {
-                    expect(sizzle('li', roster).filter(u.isVisible).pop().textContent.trim()).toBe('Rinse Sommer');
-                    expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(1);
+                const roster = _converse.rosterview.roster_el;
+                await test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 15, 500);
+                const filter = _converse.rosterview.el.querySelector('.state-type');
+                expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(5);
+                filter.value = "online";
+                u.triggerEvent(filter, 'change');
+                await test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 1, 500);
+                expect(sizzle('li', roster).filter(u.isVisible).pop().textContent.trim()).toBe('Rinse Sommer');
+                await test_utils.waitUntil(() => sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length === 1, 500);
+                const ul = sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).pop();
+                expect(ul.parentElement.firstElementChild.textContent.trim()).toBe('friends & acquaintences');
 
-                    var filter = _converse.rosterview.el.querySelector('.state-type');
-                    filter.value = "dnd";
-                    u.triggerEvent(filter, 'change');
-                    return test_utils.waitUntil(function () {
-                        return sizzle('li', roster).filter(u.isVisible).pop().textContent.trim() === 'Annegreet Gomez';
-                    }, 900)
-                }).then(function () {
-                    expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(1);
-                    done();
-                }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
+                filter.value = "dnd";
+                u.triggerEvent(filter, 'change');
+                await test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).pop().textContent.trim() === 'Annegreet Gomez', 900);
+                expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(1);
+                done();
             }));
         });
 
@@ -443,7 +436,7 @@
                 done();
             }));
 
-            it("can share contacts with other roster groups", 
+            it("can share contacts with other roster groups",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {'roster_groups': true},
                     async function (done, _converse) {
@@ -517,7 +510,7 @@
                 test_utils.openControlBox();
             }
 
-            it("can be collapsed under their own header", 
+            it("can be collapsed under their own header",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -548,7 +541,7 @@
                 done();
             }));
 
-            it("are shown in the roster when show_only_online_users", 
+            it("are shown in the roster when show_only_online_users",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -565,7 +558,7 @@
                 done();
             }));
 
-            it("are shown in the roster when hide_offline_users", 
+            it("are shown in the roster when hide_offline_users",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {'hide_offline_users': true},
                     async function (done, _converse) {
@@ -580,7 +573,7 @@
                 done();
             }));
 
-            it("can be removed by the user", 
+            it("can be removed by the user",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -612,7 +605,7 @@
                 done();
             }));
 
-            it("do not have a header if there aren't any", 
+            it("do not have a header if there aren't any",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -633,7 +626,7 @@
                     const el = _converse.rosterview.get('Pending contacts').el;
                     return u.isVisible(el) && _.filter(el.querySelectorAll('li'), li => u.isVisible(li)).length;
                 }, 700)
-                            
+
                 sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, _converse.rosterview.el).pop().click();
                 expect(window.confirm).toHaveBeenCalled();
                 expect(_converse.connection.sendIQ).toHaveBeenCalled();
@@ -661,9 +654,9 @@
             it("can be added to the roster and they will be sorted alphabetically",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                var i, t;
+                let i;
                 test_utils.openControlBox();
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 for (i=0; i<mock.pend_names.length; i++) {
@@ -675,17 +668,13 @@
                     });
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                 }
-                return test_utils.waitUntil(function () {
-                    return sizzle('li', _converse.rosterview.get('Pending contacts').el).filter(u.isVisible).length;
-                }, 700).then(function () {
-                    // Check that they are sorted alphabetically
-                    t = _.reduce(_converse.rosterview.get('Pending contacts').el.querySelectorAll('.pending-xmpp-contact span'),
-                        function (result, value) {
-                            return result + _.trim(value.textContent);
-                        }, '');
-                    expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
-                    done();
-                });
+                await test_utils.waitUntil(() => sizzle('li', _converse.rosterview.get('Pending contacts').el).filter(u.isVisible).length, 700);
+                // Check that they are sorted alphabetically
+                const view = _converse.rosterview.get('Pending contacts');
+                const spans = view.el.querySelectorAll('.pending-xmpp-contact span');
+                const t = _.reduce(spans, (result, value) => result + _.trim(value.textContent), '');
+                expect(t).toEqual(mock.pend_names.slice(0,i+1).sort().join(''));
+                done();
             }));
         });
 
@@ -694,57 +683,49 @@
                 test_utils.createContacts(_converse, 'current').openControlBox()
             }
 
-            it("can be collapsed under their own header", 
+            it("can be collapsed under their own header",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _addContacts(_converse);
-                test_utils.waitUntil(function () {
-                        return sizzle('li', _converse.rosterview.el).filter(u.isVisible).length;
-                }, 500).then(function () {
-                    checkHeaderToggling.apply(
-                        _converse,
-                        [_converse.rosterview.el.querySelector('.roster-group')]
-                    ).then(done);
-                });
+                await test_utils.waitUntil(() => sizzle('li', _converse.rosterview.el).filter(u.isVisible).length, 500);
+                await checkHeaderToggling.apply(_converse, [_converse.rosterview.el.querySelector('.roster-group')]);
+                done();
             }));
 
-            it("will be hidden when appearing under a collapsed group", 
+            it("will be hidden when appearing under a collapsed group",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _converse.roster_groups = false;
                 _addContacts(_converse);
-                test_utils.waitUntil(function () {
-                        return sizzle('li', _converse.rosterview.el).filter(u.isVisible).length;
-                    }, 500)
-                .then(function () {
-                    _converse.rosterview.el.querySelector('.roster-group a.group-toggle').click();
-                    var name = "Max Mustermann";
-                    var jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
-                    _converse.roster.create({
-                        ask: null,
-                        fullname: name,
-                        jid: jid,
-                        requesting: false,
-                        subscription: 'both'
-                    });
-                    var view = _converse.rosterview.get('My contacts').get(jid);
-                    expect(u.isVisible(view.el)).toBe(false);
-                    done();
+                await test_utils.waitUntil(() => sizzle('li', _converse.rosterview.el).filter(u.isVisible).length, 500);
+                _converse.rosterview.el.querySelector('.roster-group a.group-toggle').click();
+                const name = "Max Mustermann";
+                const jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                _converse.roster.create({
+                    ask: null,
+                    fullname: name,
+                    jid: jid,
+                    requesting: false,
+                    subscription: 'both'
                 });
+                const view = _converse.rosterview.get('My contacts').get(jid);
+                expect(u.isVisible(view.el)).toBe(false);
+                done();
             }));
 
-            it("can be added to the roster and they will be sorted alphabetically", 
+            it("can be added to the roster and they will be sorted alphabetically",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
+                let i;
                 test_utils.openControlBox();
                 spyOn(_converse.rosterview, 'update').and.callThrough();
-                for (var i=0; i<mock.cur_names.length; i++) {
+                for (i=0; i<mock.cur_names.length; i++) {
                     _converse.roster.create({
                         jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'both',
@@ -753,20 +734,17 @@
                     });
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                 }
-                test_utils.waitUntil(function () {
-                    return sizzle('li', _converse.rosterview.el).length;
-                }, 600).then(function () {
-                    // Check that they are sorted alphabetically
-                    const t = _.reduce(
-                        _converse.rosterview.el.querySelectorAll('.roster-group .current-xmpp-contact.offline a.open-chat'),
-                        (result, value) => (result + value.textContent.trim()), '');
+                await test_utils.waitUntil(() => sizzle('li', _converse.rosterview.el).length, 600);
+                // Check that they are sorted alphabetically
+                const t = _.reduce(
+                    _converse.rosterview.el.querySelectorAll('.roster-group .current-xmpp-contact.offline a.open-chat'),
+                    (result, value) => (result + value.textContent.trim()), '');
 
-                    expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
-                    done();
-                });
+                expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
+                done();
             }));
 
-            it("can be removed by the user", 
+            it("can be removed by the user",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -796,7 +774,7 @@
                 done();
             }));
 
-            it("do not have a header if there aren't any", 
+            it("do not have a header if there aren't any",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -825,86 +803,73 @@
                 done();
             }));
 
-            it("can change their status to online and be sorted alphabetically", 
+            it("can change their status to online and be sorted alphabetically",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _addContacts(_converse);
-                test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length, 700)
-                .then(function () {
-                    var jid, t;
-                    spyOn(_converse.rosterview, 'update').and.callThrough();
-                    const roster = _converse.rosterview.el;
-                    for (var i=0; i<mock.cur_names.length; i++) {
-                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).presence.set('show', 'online');
-                        expect(_converse.rosterview.update).toHaveBeenCalled();
-                        // Check that they are sorted alphabetically
-                        t = _.reduce(roster.querySelectorAll('.roster-group .current-xmpp-contact.online a.open-chat'), function (result, value) {
-                            return result + _.trim(value.textContent);
-                        }, '');
-                        expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
-                    }
-                    done();
-                });
+                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length, 700);
+                let jid, t;
+                spyOn(_converse.rosterview, 'update').and.callThrough();
+                const roster = _converse.rosterview.el;
+                for (let i=0; i<mock.cur_names.length; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    _converse.roster.get(jid).presence.set('show', 'online');
+                    expect(_converse.rosterview.update).toHaveBeenCalled();
+                    // Check that they are sorted alphabetically
+                    const chat_els = roster.querySelectorAll('.roster-group .current-xmpp-contact.online a.open-chat');
+                    t = _.reduce(chat_els, (result, value) => result + _.trim(value.textContent), '');
+                    expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
+                }
+                done();
             }));
 
-            it("can change their status to busy and be sorted alphabetically", 
+            it("can change their status to busy and be sorted alphabetically",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _addContacts(_converse);
-                test_utils.waitUntil(function () {
-                    return sizzle('.roster-group li', _converse.rosterview.el).length;
-                }, 700).then(function () {
-                    var jid, t;
-                    spyOn(_converse.rosterview, 'update').and.callThrough();
-                    const roster = _converse.rosterview.el;
-                    for (var i=0; i<mock.cur_names.length; i++) {
-                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).presence.set('show', 'dnd');
-                        expect(_converse.rosterview.update).toHaveBeenCalled();
-                        // Check that they are sorted alphabetically
-                        t = _.reduce(roster.querySelectorAll('.roster-group .current-xmpp-contact.dnd a.open-chat'),
-                            function (result, value) {
-                                return result + _.trim(value.textContent);
-                            }, '');
-                        expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
-                    }
-                    done();
-                });
+                await test_utils.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
+                let jid, t;
+                spyOn(_converse.rosterview, 'update').and.callThrough();
+                const roster = _converse.rosterview.el;
+                for (let i=0; i<mock.cur_names.length; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    _converse.roster.get(jid).presence.set('show', 'dnd');
+                    expect(_converse.rosterview.update).toHaveBeenCalled();
+                    // Check that they are sorted alphabetically
+                    const chat_els = roster.querySelectorAll('.roster-group .current-xmpp-contact.dnd a.open-chat');
+                    t = _.reduce(chat_els, (result, value) => result + _.trim(value.textContent), '');
+                    expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
+                }
+                done();
             }));
 
-            it("can change their status to away and be sorted alphabetically", 
+            it("can change their status to away and be sorted alphabetically",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _addContacts(_converse);
-                test_utils.waitUntil(function () {
-                    return sizzle('.roster-group li', _converse.rosterview.el).length;
-                }, 700).then(function () {
-                    var jid, t;
-                    spyOn(_converse.rosterview, 'update').and.callThrough();
-                    const roster = _converse.rosterview.el;
-                    for (var i=0; i<mock.cur_names.length; i++) {
-                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).presence.set('show', 'away');
-                        expect(_converse.rosterview.update).toHaveBeenCalled();
-                        // Check that they are sorted alphabetically
-                        t = _.reduce(roster.querySelectorAll('.roster-group .current-xmpp-contact.away a.open-chat'),
-                            function (result, value) {
-                                return result + _.trim(value.textContent);
-                            }, '');
-                        expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
-                    }
-                    done();
-                });
+                await test_utils.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
+                let jid, t;
+                spyOn(_converse.rosterview, 'update').and.callThrough();
+                const roster = _converse.rosterview.el;
+                for (let i=0; i<mock.cur_names.length; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    _converse.roster.get(jid).presence.set('show', 'away');
+                    expect(_converse.rosterview.update).toHaveBeenCalled();
+                    // Check that they are sorted alphabetically
+                    const chat_els = roster.querySelectorAll('.roster-group .current-xmpp-contact.away a.open-chat');
+                    t = _.reduce(chat_els, (result, value) => result + _.trim(value.textContent), '');
+                    expect(t).toEqual(mock.cur_names.slice(0,i+1).sort().join(''));
+                }
+                done();
             }));
 
-            it("can change their status to xa and be sorted alphabetically", 
+            it("can change their status to xa and be sorted alphabetically",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -928,7 +893,7 @@
                 done();
             }));
 
-            it("can change their status to unavailable and be sorted alphabetically", 
+            it("can change their status to unavailable and be sorted alphabetically",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -952,102 +917,92 @@
                 done();
             }));
 
-            it("are ordered according to status: online, busy, away, xa, unavailable, offline", 
+            it("are ordered according to status: online, busy, away, xa, unavailable, offline",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
                 _addContacts(_converse);
-                test_utils.waitUntil(function () {
-                    return sizzle('.roster-group li', _converse.rosterview.el).length;
-                }, 700).then(function () {
-                    var i, jid;
-                    for (i=0; i<3; i++) {
-                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).presence.set('show', 'online');
-                    }
-                    for (i=3; i<6; i++) {
-                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).presence.set('show', 'dnd');
-                    }
-                    for (i=6; i<9; i++) {
-                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).presence.set('show', 'away');
-                    }
-                    for (i=9; i<12; i++) {
-                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).presence.set('show', 'xa');
-                    }
-                    for (i=12; i<15; i++) {
-                        jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
-                        _converse.roster.get(jid).presence.set('show', 'unavailable');
-                    }
-                    return test_utils.waitUntil(function () {
-                        return _converse.rosterview.el.querySelectorAll('li.online').length
-                    })
-                }).then(function () {
-                    return test_utils.waitUntil(function () {
-                        return _converse.rosterview.el.querySelector('li:first-child').textContent.trim() === 'Candice van der Knijff'
-                    }, 900);
-                }).then(function () {
-                    var i;
-                    const contacts = _converse.rosterview.el.querySelectorAll('.current-xmpp-contact');
-                    for (i=0; i<3; i++) {
-                        expect(u.hasClass('online', contacts[i])).toBe(true);
-                        expect(u.hasClass('both', contacts[i])).toBe(true);
-                        expect(u.hasClass('dnd', contacts[i])).toBe(false);
-                        expect(u.hasClass('away', contacts[i])).toBe(false);
-                        expect(u.hasClass('xa', contacts[i])).toBe(false);
-                        expect(u.hasClass('unavailable', contacts[i])).toBe(false);
-                        expect(u.hasClass('offline', contacts[i])).toBe(false);
-                    }
-                    for (i=3; i<6; i++) {
-                        expect(u.hasClass('dnd', contacts[i])).toBe(true);
-                        expect(u.hasClass('both', contacts[i])).toBe(true);
-                        expect(u.hasClass('online', contacts[i])).toBe(false);
-                        expect(u.hasClass('away', contacts[i])).toBe(false);
-                        expect(u.hasClass('xa', contacts[i])).toBe(false);
-                        expect(u.hasClass('unavailable', contacts[i])).toBe(false);
-                        expect(u.hasClass('offline', contacts[i])).toBe(false);
-                    }
-                    for (i=6; i<9; i++) {
-                        expect(u.hasClass('away', contacts[i])).toBe(true);
-                        expect(u.hasClass('both', contacts[i])).toBe(true);
-                        expect(u.hasClass('online', contacts[i])).toBe(false);
-                        expect(u.hasClass('dnd', contacts[i])).toBe(false);
-                        expect(u.hasClass('xa', contacts[i])).toBe(false);
-                        expect(u.hasClass('unavailable', contacts[i])).toBe(false);
-                        expect(u.hasClass('offline', contacts[i])).toBe(false);
-                    }
-                    for (i=9; i<12; i++) {
-                        expect(u.hasClass('xa', contacts[i])).toBe(true);
-                        expect(u.hasClass('both', contacts[i])).toBe(true);
-                        expect(u.hasClass('online', contacts[i])).toBe(false);
-                        expect(u.hasClass('dnd', contacts[i])).toBe(false);
-                        expect(u.hasClass('away', contacts[i])).toBe(false);
-                        expect(u.hasClass('unavailable', contacts[i])).toBe(false);
-                        expect(u.hasClass('offline', contacts[i])).toBe(false);
-                    }
-                    for (i=12; i<15; i++) {
-                        expect(u.hasClass('unavailable', contacts[i])).toBe(true);
-                        expect(u.hasClass('both', contacts[i])).toBe(true);
-                        expect(u.hasClass('online', contacts[i])).toBe(false);
-                        expect(u.hasClass('dnd', contacts[i])).toBe(false);
-                        expect(u.hasClass('away', contacts[i])).toBe(false);
-                        expect(u.hasClass('xa', contacts[i])).toBe(false);
-                        expect(u.hasClass('offline', contacts[i])).toBe(false);
-                    }
-                    for (i=15; i<mock.cur_names.length; i++) {
-                        expect(u.hasClass('offline', contacts[i])).toBe(true);
-                        expect(u.hasClass('both', contacts[i])).toBe(true);
-                        expect(u.hasClass('online', contacts[i])).toBe(false);
-                        expect(u.hasClass('dnd', contacts[i])).toBe(false);
-                        expect(u.hasClass('away', contacts[i])).toBe(false);
-                        expect(u.hasClass('xa', contacts[i])).toBe(false);
-                        expect(u.hasClass('unavailable', contacts[i])).toBe(false);
-                    }
-                    done();
-                });
+                await test_utils.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
+                let i, jid;
+                for (i=0; i<3; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    _converse.roster.get(jid).presence.set('show', 'online');
+                }
+                for (i=3; i<6; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    _converse.roster.get(jid).presence.set('show', 'dnd');
+                }
+                for (i=6; i<9; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    _converse.roster.get(jid).presence.set('show', 'away');
+                }
+                for (i=9; i<12; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    _converse.roster.get(jid).presence.set('show', 'xa');
+                }
+                for (i=12; i<15; i++) {
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    _converse.roster.get(jid).presence.set('show', 'unavailable');
+                }
+                await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('li.online').length)
+                await test_utils.waitUntil(() => _converse.rosterview.el.querySelector('li:first-child').textContent.trim() === 'Candice van der Knijff', 900);
+                const contacts = _converse.rosterview.el.querySelectorAll('.current-xmpp-contact');
+                for (i=0; i<3; i++) {
+                    expect(u.hasClass('online', contacts[i])).toBe(true);
+                    expect(u.hasClass('both', contacts[i])).toBe(true);
+                    expect(u.hasClass('dnd', contacts[i])).toBe(false);
+                    expect(u.hasClass('away', contacts[i])).toBe(false);
+                    expect(u.hasClass('xa', contacts[i])).toBe(false);
+                    expect(u.hasClass('unavailable', contacts[i])).toBe(false);
+                    expect(u.hasClass('offline', contacts[i])).toBe(false);
+                }
+                for (i=3; i<6; i++) {
+                    expect(u.hasClass('dnd', contacts[i])).toBe(true);
+                    expect(u.hasClass('both', contacts[i])).toBe(true);
+                    expect(u.hasClass('online', contacts[i])).toBe(false);
+                    expect(u.hasClass('away', contacts[i])).toBe(false);
+                    expect(u.hasClass('xa', contacts[i])).toBe(false);
+                    expect(u.hasClass('unavailable', contacts[i])).toBe(false);
+                    expect(u.hasClass('offline', contacts[i])).toBe(false);
+                }
+                for (i=6; i<9; i++) {
+                    expect(u.hasClass('away', contacts[i])).toBe(true);
+                    expect(u.hasClass('both', contacts[i])).toBe(true);
+                    expect(u.hasClass('online', contacts[i])).toBe(false);
+                    expect(u.hasClass('dnd', contacts[i])).toBe(false);
+                    expect(u.hasClass('xa', contacts[i])).toBe(false);
+                    expect(u.hasClass('unavailable', contacts[i])).toBe(false);
+                    expect(u.hasClass('offline', contacts[i])).toBe(false);
+                }
+                for (i=9; i<12; i++) {
+                    expect(u.hasClass('xa', contacts[i])).toBe(true);
+                    expect(u.hasClass('both', contacts[i])).toBe(true);
+                    expect(u.hasClass('online', contacts[i])).toBe(false);
+                    expect(u.hasClass('dnd', contacts[i])).toBe(false);
+                    expect(u.hasClass('away', contacts[i])).toBe(false);
+                    expect(u.hasClass('unavailable', contacts[i])).toBe(false);
+                    expect(u.hasClass('offline', contacts[i])).toBe(false);
+                }
+                for (i=12; i<15; i++) {
+                    expect(u.hasClass('unavailable', contacts[i])).toBe(true);
+                    expect(u.hasClass('both', contacts[i])).toBe(true);
+                    expect(u.hasClass('online', contacts[i])).toBe(false);
+                    expect(u.hasClass('dnd', contacts[i])).toBe(false);
+                    expect(u.hasClass('away', contacts[i])).toBe(false);
+                    expect(u.hasClass('xa', contacts[i])).toBe(false);
+                    expect(u.hasClass('offline', contacts[i])).toBe(false);
+                }
+                for (i=15; i<mock.cur_names.length; i++) {
+                    expect(u.hasClass('offline', contacts[i])).toBe(true);
+                    expect(u.hasClass('both', contacts[i])).toBe(true);
+                    expect(u.hasClass('online', contacts[i])).toBe(false);
+                    expect(u.hasClass('dnd', contacts[i])).toBe(false);
+                    expect(u.hasClass('away', contacts[i])).toBe(false);
+                    expect(u.hasClass('xa', contacts[i])).toBe(false);
+                    expect(u.hasClass('unavailable', contacts[i])).toBe(false);
+                }
+                done();
             }));
         });
 
@@ -1056,18 +1011,17 @@
             it("can be added to the roster and they will be sorted alphabetically",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
-                    function (done, _converse) {
+                    async function (done, _converse) {
 
-                var i, children;
-                var names = [];
-                var addName = function (item) {
+                let names = [];
+                const addName = function (item) {
                     if (!u.hasClass('request-actions', item)) {
                         names.push(item.textContent.replace(/^\s+|\s+$/g, ''));
                     }
                 };
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 spyOn(_converse.controlboxtoggle, 'showControlBox').and.callThrough();
-                for (i=0; i<mock.req_names.length; i++) {
+                for (let i=0; i<mock.req_names.length; i++) {
                     _converse.roster.create({
                         jid: mock.req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
                         subscription: 'none',
@@ -1076,20 +1030,17 @@
                         fullname: mock.req_names[i]
                     });
                 }
-                test_utils.waitUntil(function () {
-                    return _converse.rosterview.get('Contact requests').el.querySelectorAll('li').length;
-                }, 700).then(function () {
-                    expect(_converse.rosterview.update).toHaveBeenCalled();
-                    // Check that they are sorted alphabetically
-                    children = _converse.rosterview.get('Contact requests').el.querySelectorAll('.requesting-xmpp-contact span');
-                    names = [];
-                    _.each(children, addName);
-                    expect(names.join('')).toEqual(mock.req_names.slice(0,mock.req_names.length+1).sort().join(''));
-                    done();
-                });
+                await test_utils.waitUntil(() => _converse.rosterview.get('Contact requests').el.querySelectorAll('li').length, 700);
+                expect(_converse.rosterview.update).toHaveBeenCalled();
+                // Check that they are sorted alphabetically
+                const children = _converse.rosterview.get('Contact requests').el.querySelectorAll('.requesting-xmpp-contact span');
+                names = [];
+                Array.from(children).forEach(addName);
+                expect(names.join('')).toEqual(mock.req_names.slice(0,mock.req_names.length+1).sort().join(''));
+                done();
             }));
 
-            it("do not have a header if there aren't any", 
+            it("do not have a header if there aren't any",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -1113,7 +1064,7 @@
                 done();
             }));
 
-            it("can be collapsed under their own header", 
+            it("can be collapsed under their own header",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -1127,7 +1078,7 @@
                 done();
             }));
 
-            it("can have their requests accepted by the user", 
+            it("can have their requests accepted by the user",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -1151,7 +1102,7 @@
                 done();
             }));
 
-            it("can have their requests denied by the user", 
+            it("can have their requests denied by the user",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -1245,7 +1196,7 @@
                 done();
             }));
 
-            it("will show fullname and jid properties on tooltip", 
+            it("will show fullname and jid properties on tooltip",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {

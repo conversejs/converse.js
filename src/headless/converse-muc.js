@@ -264,13 +264,11 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            async onReconnection () {
+            onReconnection () {
                 this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
                 this.clearMessages();
                 this.clearOccupants();
                 this.registerHandlers();
-                // Make sure we refetch features from the XMPP server
-                await _converse.api.disco.refreshFeatures(this.get('jid'));
                 this.announceReconnection();
                 this.enterRoom();
             },

@@ -204,22 +204,23 @@ converse.plugins.add('converse-mam', {
         };
 
         /************************ BEGIN Event Handlers ************************/
-        _converse.api.listen.on('serviceDiscovered', (feature) => {
+        function getMAMPrefsFromFeature (feature) {
             const prefs = feature.get('preferences') || {};
-            if (feature.get('var') === Strophe.NS.MAM &&
-                    prefs['default'] !== _converse.message_archiving && // eslint-disable-line dot-notation
-                    !_.isUndefined(_converse.message_archiving) ) {
-                // Ask the server for archiving preferences
+            if (feature.get('var') !== Strophe.NS.MAM || _.isUndefined(_converse.message_archiving)) {
+                return;
+            }
+            if (prefs['default'] !== _converse.message_archiving) {
                 _converse.api.sendIQ($iq({'type': 'get'}).c('prefs', {'xmlns': Strophe.NS.MAM}))
                     .then(_.partial(_converse.onMAMPreferences, feature))
                     .catch(_converse.onMAMError);
             }
-        });
+        }
 
+        _converse.api.listen.on('serviceDiscovered', getMAMPrefsFromFeature);
         _converse.api.listen.on('afterMessagesFetched', chat => chat.fetchNewestMessages());
         _converse.api.listen.on('chatReconnected', chat => chat.fetchNewestMessages());
         _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
-        /************************ END Event Handlers ************************/
+        /************************ END Event Handlers **************************/
 
 
         /************************ BEGIN API ************************/
@@ -410,12 +411,12 @@ converse.plugins.add('converse-mam', {
                     }
                     const attrs = {'type':'set'};
                     if (options && options.groupchat) {
-                        if (!options['with']) { // eslint-disable-line dot-notation
+                        if (!options['with']) {
                             throw new Error(
                                 'You need to specify a "with" value containing '+
                                 'the chat room JID, when querying groupchat messages.');
                         }
-                        attrs.to = options['with']; // eslint-disable-line dot-notation
+                        attrs.to = options['with'];
                     }
 
                     const jid = attrs.to || _converse.bare_jid;
@@ -432,9 +433,9 @@ converse.plugins.add('converse-mam', {
                                 .c('field', {'var':'FORM_TYPE', 'type': 'hidden'})
                                 .c('value').t(Strophe.NS.MAM).up().up();
 
-                        if (options['with'] && !options.groupchat) {  // eslint-disable-line dot-notation
+                        if (options['with'] && !options.groupchat) {
                             stanza.c('field', {'var':'with'}).c('value')
-                                .t(options['with']).up().up(); // eslint-disable-line dot-notation
+                                .t(options['with']).up().up();
                         }
                         ['start', 'end'].forEach(t => {
                             if (options[t]) {
@@ -456,7 +457,7 @@ converse.plugins.add('converse-mam', {
 
                     const messages = [];
                     const message_handler = _converse.connection.addHandler(message => {
-                        if (options.groupchat && message.getAttribute('from') !== options['with']) { // eslint-disable-line dot-notation
+                        if (options.groupchat && message.getAttribute('from') !== options['with']) {
                             return true;
                         }
                         const result = message.querySelector('result');

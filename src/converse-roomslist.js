@@ -47,7 +47,7 @@ converse.plugins.add('converse-roomslist', {
         _converse.OpenRooms = Backbone.Collection.extend({
 
             comparator (room) {
-                if (room.get('bookmarked')) {
+                if (_converse.bookmarks && room.get('bookmarked')) {
                     const bookmark = _.head(_converse.bookmarks.where({'jid': room.get('jid')}));
                     return bookmark.get('name');
                 } else {

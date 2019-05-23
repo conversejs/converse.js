@@ -4,9 +4,11 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-import "@converse/headless/converse-roster";
 import "@converse/headless/converse-chatboxes";
+import "@converse/headless/converse-roster";
 import "converse-modal";
+import BrowserStorage from "backbone.browserStorage";
+import { OrderedListView } from "backbone.overview";
 import _FormData from "formdata-polyfill";
 import converse from "@converse/headless/converse-core";
 import tpl_add_contact_modal from "templates/add_contact_modal.html";
@@ -17,6 +19,7 @@ import tpl_roster from "templates/roster.html";
 import tpl_roster_filter from "templates/roster_filter.html";
 import tpl_roster_item from "templates/roster_item.html";
 import tpl_search_contact from "templates/search_contact.html";
+
 
 const { Backbone, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
 const u = converse.env.utils;
@@ -585,7 +588,7 @@ converse.plugins.add('converse-rosterview', {
             }
         });
 
-        _converse.RosterGroupView = Backbone.OrderedListView.extend({
+        _converse.RosterGroupView = OrderedListView.extend({
             tagName: 'div',
             className: 'roster-group hidden',
             events: {
@@ -598,7 +601,7 @@ converse.plugins.add('converse-rosterview', {
             sortEvent: 'presenceChanged',
 
             initialize () {
-                Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+                OrderedListView.prototype.initialize.apply(this, arguments);
                 this.model.contacts.on("change:subscription", this.onContactSubscriptionChange, this);
                 this.model.contacts.on("change:requesting", this.onContactRequestChange, this);
                 this.model.contacts.on("remove", this.onRemove, this);
@@ -772,7 +775,7 @@ converse.plugins.add('converse-rosterview', {
         });
 
 
-        _converse.RosterView = Backbone.OrderedListView.extend({
+        _converse.RosterView = OrderedListView.extend({
             tagName: 'div',
             id: 'converse-roster',
             className: 'controlbox-section',
@@ -789,7 +792,7 @@ converse.plugins.add('converse-rosterview', {
             },
 
             initialize () {
-                Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+                OrderedListView.prototype.initialize.apply(this, arguments);
 
                 _converse.roster.on("add", this.onContactAdded, this);
                 _converse.roster.on('change:groups', this.onContactAdded, this);
@@ -842,7 +845,7 @@ converse.plugins.add('converse-rosterview', {
                 // Create a model on which we can store filter properties
                 const model = new _converse.RosterFilter();
                 model.id = `_converse.rosterfilter${_converse.bare_jid}`;
-                model.browserStorage = new Backbone.BrowserStorage.local(this.filter.id);
+                model.browserStorage = new BrowserStorage.local(this.filter.id);
                 this.filter_view = new _converse.RosterFilterView({'model': model});
                 this.filter_view.model.on('change', this.updateFilter, this);
                 this.filter_view.model.fetch();

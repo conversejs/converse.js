@@ -5,6 +5,8 @@
 // Licensed under the Mozilla Public License (MPLv2)
 
 import "converse-chatview";
+import BrowserStorage from "backbone.browserStorage";
+import { Overview } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
 import tpl_chatbox_minimize from "templates/chatbox_minimize.html";
 import tpl_chats_panel from "templates/chats_panel.html";
@@ -387,7 +389,7 @@ converse.plugins.add('converse-minimize', {
         });
 
 
-        _converse.MinimizedChats = Backbone.Overview.extend({
+        _converse.MinimizedChats = Overview.extend({
             tagName: 'div',
             id: "minimized-chats",
             className: 'hidden',
@@ -433,7 +435,7 @@ converse.plugins.add('converse-minimize', {
                 this.toggleview = new _converse.MinimizedChatsToggleView({
                     'model': new _converse.MinimizedChatsToggle({'id': id})
                 });
-                this.toggleview.model.browserStorage = new Backbone.BrowserStorage[storage](id);
+                this.toggleview.model.browserStorage = new BrowserStorage[storage](id);
                 this.toggleview.model.fetch();
             },
 

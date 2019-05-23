@@ -97,7 +97,7 @@ converse.plugins.add('converse-controlbox', {
         ChatBoxViews: {
             closeAllChatBoxes () {
                 const { _converse } = this.__super__;
-                this.each(function (view) {
+                this.forEach(function (view) {
                     if (view.model.get('id') === 'controlbox' &&
                             (_converse.disconnection_cause !== _converse.LOGOUT || _converse.show_controlbox_by_default)) {
                         return;

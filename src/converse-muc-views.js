@@ -7,9 +7,9 @@
 // XEP-0045 Multi-User Chat Views
 
 import "converse-modal";
-import "backbone.overview/backbone.orderedlistview";
-import "backbone.overview/backbone.overview";
 import "backbone.vdomview";
+import BrowserStorage from "backbone.browserStorage";
+import { OrderedListView } from "backbone.overview";
 import _FormData from "formdata-polyfill";
 import converse from "@converse/headless/converse-core";
 import muc_utils from "@converse/headless/utils/muc";
@@ -73,7 +73,7 @@ converse.plugins.add('converse-muc-views', {
                 this.roomspanel = new _converse.RoomsPanel({
                     'model': new (_converse.RoomsPanelModel.extend({
                         'id': `converse.roomspanel${_converse.bare_jid}`, // Required by web storage
-                        'browserStorage': new Backbone.BrowserStorage[_converse.config.get('storage')](
+                        'browserStorage': new BrowserStorage[_converse.config.get('storage')](
                             `converse.roomspanel${_converse.bare_jid}`)
                     }))()
                 });
@@ -1950,7 +1950,7 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        _converse.ChatRoomOccupantsView = Backbone.OrderedListView.extend({
+        _converse.ChatRoomOccupantsView = OrderedListView.extend({
             tagName: 'div',
             className: 'occupants col-md-3 col-4',
             listItems: 'model',
@@ -1960,7 +1960,7 @@ converse.plugins.add('converse-muc-views', {
             ItemView: _converse.ChatRoomOccupantView,
 
             async initialize () {
-                Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+                OrderedListView.prototype.initialize.apply(this, arguments);
 
                 this.chatroomview = this.model.chatroomview;
                 this.chatroomview.model.features.on('change', this.renderRoomFeatures, this);

@@ -6,7 +6,7 @@
 
 import "@converse/headless/converse-chatboxes";
 import "backbone.nativeview";
-import "backbone.overview";
+import { Overview } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
 import tpl_avatar from "templates/avatar.svg";
 import tpl_background_logo from "templates/background_logo.html";
@@ -79,7 +79,7 @@ converse.plugins.add('converse-chatboxviews', {
         _converse.VDOMViewWithAvatar = Backbone.VDOMView.extend(AvatarMixin);
 
 
-        _converse.ChatBoxViews = Backbone.Overview.extend({
+        _converse.ChatBoxViews = Overview.extend({
 
             _ensureElement () {
                 /* Override method from backbone.js
@@ -143,7 +143,7 @@ converse.plugins.add('converse-chatboxviews', {
                 /* This method gets overridden in src/converse-controlbox.js if
                  * the controlbox plugin is active.
                  */
-                this.each(v => v.close());
+                this.forEach(v => v.close());
                 return this;
             }
         });

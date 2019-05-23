@@ -56,11 +56,11 @@
     "@fortawesome/fontawesome-free": "5.3.1",
     "babel-loader": "^8.0.4",
     "backbone.nativeview": "conversejs/Backbone.NativeView#5997c8197ca594e6b8469447f28310c78bd1d95e",
-    "backbone.overview": "^1.0.2",
+    "backbone.overview": "jcbrand/Backbone.Overview#b3e759127d859c90e8e21700a9a5714a3b828f0a",
     "backbone.vdomview": "^1.0.1",
     "bootstrap": "^4.0.0",
     "bootstrap.native": "^2.0.26",
-    "bootstrap.native-loader": "conversejs/bootstrap.native-loader#d8fcbc059562136ffd50b305fdc6eb2bde90f006",
+    "bootstrap.native-loader": "2.0.0",
     "bourbon": "^4.3.2",
     "bytebuffer": "^3.5.5",
     "clean-css-cli": "^4.0.10",
@@ -103,5 +103,6 @@
     "webpack": "^4.28.1",
     "webpack-cli": "^3.1.2",
     "xss": "^0.3.3"
-  }
+  },
+  "dependencies": {}
 }

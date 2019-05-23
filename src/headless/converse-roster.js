@@ -4,6 +4,7 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
+import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 
 const { Backbone, Promise, Strophe, $iq, $pres, dayjs, sizzle, _ } = converse.env;
@@ -54,17 +55,17 @@ converse.plugins.add('converse-roster', {
         _converse.initRoster = function () {
             const storage = _converse.config.get('storage');
             _converse.roster = new _converse.RosterContacts();
-            _converse.roster.browserStorage = new Backbone.BrowserStorage[storage](
+            _converse.roster.browserStorage = new BrowserStorage[storage](
                 `converse.contacts-${_converse.bare_jid}`);
 
             _converse.roster.data = new Backbone.Model();
             const id = `converse-roster-model-${_converse.bare_jid}`;
             _converse.roster.data.id = id;
-            _converse.roster.data.browserStorage = new Backbone.BrowserStorage[storage](id);
+            _converse.roster.data.browserStorage = new BrowserStorage[storage](id);
             _converse.roster.data.fetch();
 
             _converse.rostergroups = new _converse.RosterGroups();
-            _converse.rostergroups.browserStorage = new Backbone.BrowserStorage[storage](
+            _converse.rostergroups.browserStorage = new BrowserStorage[storage](
                 `converse.roster.groups${_converse.bare_jid}`);
             /**
              * Triggered once the `_converse.RosterContacts` and `_converse.RosterGroups` have
@@ -138,7 +139,7 @@ converse.plugins.add('converse-roster', {
             initialize () {
                 this.resources = new Resources();
                 const id = `converse.identities-${this.get('jid')}`;
-                this.resources.browserStorage = new Backbone.BrowserStorage.session(id);
+                this.resources.browserStorage = new BrowserStorage.session(id);
                 this.resources.on('update', this.onResourcesChanged, this);
                 this.resources.on('change', this.onResourcesChanged, this);
             },
@@ -931,7 +932,7 @@ converse.plugins.add('converse-roster', {
                 _converse.presences = new _converse.Presences();
             }
             _converse.presences.browserStorage =
-                new Backbone.BrowserStorage.session(`converse.presences-${_converse.bare_jid}`);
+                new BrowserStorage.session(`converse.presences-${_converse.bare_jid}`);
             _converse.presences.fetch();
             /**
              * Triggered once the _converse.Presences collection has been

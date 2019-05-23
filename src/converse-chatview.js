@@ -4,10 +4,13 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
+import "backbone.nativeview";
 import "converse-chatboxviews";
 import "converse-message-view";
 import "converse-modal";
 import * as twemoji from "twemoji";
+import BrowserStorage from "backbone.browserStorage";
+import { Overview } from "backbone.overview";
 import bootstrap from "bootstrap.native";
 import converse from "@converse/headless/converse-core";
 import tpl_alert from "templates/alert.html";
@@ -69,7 +72,7 @@ converse.plugins.add('converse-chatview', {
 
         function onWindowStateChanged (data) {
             if (_converse.chatboxviews) {
-                _converse.chatboxviews.each(view => {
+                _converse.chatboxviews.forEach(view => {
                     if (view.model.get('id') !== 'controlbox') {
                         view.onWindowStateChanged(data.state);
                     }
@@ -309,7 +312,7 @@ converse.plugins.add('converse-chatview', {
          * @namespace _converse.ChatBoxView
          * @memberOf _converse
          */
-        _converse.ChatBoxView = Backbone.Overview.extend({
+        _converse.ChatBoxView = Overview.extend({
             length: 200,
             className: 'chatbox hidden',
             is_chatroom: false,  // Leaky abstraction from MUC
@@ -1107,7 +1110,7 @@ converse.plugins.add('converse-chatview', {
                     const storage = _converse.config.get('storage'),
                           id = `converse.emoji-${_converse.bare_jid}`;
                     _converse.emojipicker = new _converse.EmojiPicker({'id': id});
-                    _converse.emojipicker.browserStorage = new Backbone.BrowserStorage[storage](id);
+                    _converse.emojipicker.browserStorage = new BrowserStorage[storage](id);
                     _converse.emojipicker.fetch();
                 }
                 this.emoji_picker_view = new _converse.EmojiPickerView({

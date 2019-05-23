@@ -6,6 +6,7 @@
 
 /* global libsignal, ArrayBuffer, parseInt, crypto */
 
+import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 import tpl_toolbar_omemo from "templates/toolbar_omemo.html";
 
@@ -966,7 +967,7 @@ converse.plugins.add('converse-omemo', {
                 this.devices = new _converse.Devices();
                 const id = `converse.devicelist-${_converse.bare_jid}-${this.get('jid')}`;
                 const storage = _converse.config.get('storage');
-                this.devices.browserStorage = new Backbone.BrowserStorage[storage](id);
+                this.devices.browserStorage = new BrowserStorage[storage](id);
                 this.fetchDevices();
             },
 
@@ -1151,7 +1152,7 @@ converse.plugins.add('converse-omemo', {
                 const storage = _converse.config.get('storage'),
                       id = `converse.omemosession-${_converse.bare_jid}`;
                 _converse.omemo_store = new _converse.OMEMOStore({'id': id});
-                _converse.omemo_store.browserStorage = new Backbone.BrowserStorage[storage](id);
+                _converse.omemo_store.browserStorage = new BrowserStorage[storage](id);
             }
             return _converse.omemo_store.fetchSession();
         }
@@ -1163,7 +1164,7 @@ converse.plugins.add('converse-omemo', {
             _converse.devicelists = new _converse.DeviceLists();
             const storage = _converse.config.get('storage'),
                   id = `converse.devicelists-${_converse.bare_jid}`;
-            _converse.devicelists.browserStorage = new Backbone.BrowserStorage[storage](id);
+            _converse.devicelists.browserStorage = new BrowserStorage[storage](id);
 
             try {
                 await fetchOwnDevices();

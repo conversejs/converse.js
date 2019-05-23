@@ -6,6 +6,7 @@
 
 import "./utils/emoji";
 import "./utils/form";
+import BrowserStorage from "backbone.browserStorage";
 import converse from "./converse-core";
 import filesize from "filesize";
 
@@ -298,7 +299,7 @@ converse.plugins.add('converse-chatboxes', {
             initMessages () {
                 this.messages = new _converse.Messages();
                 const storage = _converse.config.get('storage');
-                this.messages.browserStorage = new Backbone.BrowserStorage.session(
+                this.messages.browserStorage = new BrowserStorage.session(
                     `converse.messages-${this.get('jid')}-${_converse.bare_jid}`);
                 this.messages.chatbox = this;
 
@@ -951,7 +952,7 @@ converse.plugins.add('converse-chatboxes', {
             },
 
             onConnected () {
-                this.browserStorage = new Backbone.BrowserStorage.session(
+                this.browserStorage = new BrowserStorage.session(
                     `converse.chatboxes-${_converse.bare_jid}`);
                 this.registerMessageHandler();
                 this.fetch({

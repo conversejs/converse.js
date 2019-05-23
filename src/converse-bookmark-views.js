@@ -10,6 +10,9 @@
  * in XEP-0048.
  */
 
+import "backbone.nativeview";
+import BrowserStorage from "backbone.browserStorage";
+import { OrderedListView } from "backbone.overview";
 import converse from "@converse/headless/converse-core";
 import muc from "@converse/headless/converse-muc";
 import tpl_bookmark from "templates/bookmark.html";
@@ -254,7 +257,7 @@ converse.plugins.add('converse-bookmark-views', {
         });
 
 
-        _converse.BookmarksView = Backbone.OrderedListView.extend({
+        _converse.BookmarksView = OrderedListView.extend({
             tagName: 'div',
             className: 'bookmarks-list list-container rooms-list-container',
             events: {
@@ -268,7 +271,7 @@ converse.plugins.add('converse-bookmark-views', {
             subviewIndex: 'jid',
 
             initialize () {
-                Backbone.OrderedListView.prototype.initialize.apply(this, arguments);
+                OrderedListView.prototype.initialize.apply(this, arguments);
 
                 this.model.on('add', this.showOrHide, this);
                 this.model.on('remove', this.showOrHide, this);
@@ -279,7 +282,7 @@ converse.plugins.add('converse-bookmark-views', {
                 const storage = _converse.config.get('storage'),
                       id = `converse.room-bookmarks${_converse.bare_jid}-list-model`;
                 this.list_model = new _converse.BookmarksList({'id': id});
-                this.list_model.browserStorage = new Backbone.BrowserStorage[storage](id);
+                this.list_model.browserStorage = new BrowserStorage[storage](id);
 
                 const render = () => {
                     this.render();

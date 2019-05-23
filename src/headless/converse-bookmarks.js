@@ -10,6 +10,7 @@
  * in XEP-0048.
  */
 
+import BrowserStorage from "backbone.browserStorage";
 import converse from "@converse/headless/converse-core";
 import muc from "@converse/headless/converse-muc";
 
@@ -97,7 +98,7 @@ converse.plugins.add('converse-bookmarks', {
                 const storage = _converse.config.get('storage'),
                       cache_key = `converse.room-bookmarks${_converse.bare_jid}`;
                 this.fetched_flag = cache_key+'fetched';
-                this.browserStorage = new Backbone.BrowserStorage[storage](cache_key);
+                this.browserStorage = new BrowserStorage[storage](cache_key);
             },
 
             openBookmarkedRoom (bookmark) {
@@ -141,7 +142,7 @@ converse.plugins.add('converse-bookmarks', {
                         .c('publish', {'node': 'storage:bookmarks'})
                             .c('item', {'id': 'current'})
                                 .c('storage', {'xmlns':'storage:bookmarks'});
-                this.each(model => {
+                this.forEach(model => {
                     stanza.c('conference', {
                         'name': model.get('name'),
                         'autojoin': model.get('autojoin'),

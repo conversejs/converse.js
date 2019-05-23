@@ -19,14 +19,6 @@ const config = {
     module: {
         rules: [
         {
-            test: path.resolve(__dirname, "node_modules/backbone.overview/backbone.orderedlistview"),
-            use: 'imports-loader?backbone.nativeview'
-        },
-        {
-            test: path.resolve(__dirname, "node_modules/backbone.overview/backbone.overview"),
-            use: 'imports-loader?backbone.nativeview'
-        },
-        {
             test: path.resolve(__dirname, "node_modules/backbone.vdomview/backbone.vdomview"),
             use: 'imports-loader?backbone.nativeview'
         },

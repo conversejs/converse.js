@@ -384,7 +384,7 @@ function initClientConfig () {
         'trusted': _converse.trusted && true || false,
         'storage': _converse.trusted ? 'local' : 'session'
     });
-    _converse.config.browserStorage = new Backbone.BrowserStorage.session(id);
+    _converse.config.browserStorage = new BrowserStorage.session(id);
     _converse.config.fetch();
     /**
      * Triggered once the XMPP-client configuration has been initialized.
@@ -430,7 +430,7 @@ _converse.initConnection = function () {
 async function initSession () {
    const id = 'converse.bosh-session';
    _converse.session = new Backbone.Model({id});
-   _converse.session.browserStorage = new Backbone.BrowserStorage.session(id);
+   _converse.session.browserStorage = new BrowserStorage.session(id);
    try {
       await new Promise((success, error) => _converse.session.fetch({success, error}));
       if (_converse.jid && _converse.session.get('jid') !== _converse.jid) {
@@ -908,7 +908,7 @@ _converse.initialize = async function (settings, callback) {
         } else {
             const id = `converse.xmppstatus-${_converse.bare_jid}`;
             _converse.xmppstatus = new this.XMPPStatus({'id': id});
-            _converse.xmppstatus.browserStorage = new Backbone.BrowserStorage.session(id);
+            _converse.xmppstatus.browserStorage = new BrowserStorage.session(id);
             _converse.xmppstatus.fetch({
                 'success': _.partial(_converse.onStatusInitialized, reconnecting),
                 'error': _.partial(_converse.onStatusInitialized, reconnecting)

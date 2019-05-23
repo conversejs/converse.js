@@ -246,7 +246,6 @@ converse.plugins.add('converse-muc', {
                     this.occupants.fetchMembers();
 
                     if (_converse.auto_register_muc_nickname &&
-                            !this.get('reserved_nick') &&
                             await _converse.api.disco.supports(Strophe.NS.MUC_REGISTER, this.get('jid'))) {
 
                         this.registerNickname()
@@ -897,19 +896,14 @@ converse.plugins.add('converse-muc', {
              * @returns { promise } A promise which resolves with the nickname
              */
             async getAndPersistNickname (nick) {
-                nick = nick || this.get('nick');
-                const state = {'nick': nick};
-                if (!nick) {
-                    try {
-                        nick = await this.getReservedNick();
-                        state['reserved_nick'] = nick;
-                    } catch (e) {
-                        nick = _converse.getDefaultMUCNickname();
-                    } finally {
-                        state['nick'] = nick;
-                    }
+                nick = nick ||
+                    this.get('nick') ||
+                    await this.getReservedNick() ||
+                    _converse.getDefaultMUCNickname();
+
+                if (nick) {
+                    this.save({'nick': nick}, {'silent': true});
                 }
-                this.save(state, {'silent': true});
                 return nick;
             },
 
@@ -922,16 +916,26 @@ converse.plugins.add('converse-muc', {
              * @returns { promise } A promise which resolves with the reserved nick or null
              */
             async getReservedNick () {
-                const iq = await _converse.api.sendIQ(
-                    $iq({
-                        'to': this.get('jid'),
-                        'from': _converse.connection.jid,
-                        'type': "get"
-                    }).c("query", {
-                        'xmlns': Strophe.NS.DISCO_INFO,
-                        'node': 'x-roomuser-item'
-                    })
-                );
+                let iq;
+                try {
+                    iq = await _converse.api.sendIQ(
+                        $iq({
+                            'to': this.get('jid'),
+                            'from': _converse.connection.jid,
+                            'type': "get"
+                        }).c("query", {
+                            'xmlns': Strophe.NS.DISCO_INFO,
+                            'node': 'x-roomuser-item'
+                        })
+                    );
+                } catch (e) {
+                    if (_.isElement(e)) {
+                        // IQ stanza of type 'error'
+                        return;
+                    } else {
+                        throw e;
+                    }
+                }
                 const identity_el = iq.querySelector('query[node="x-roomuser-item"] identity');
                 return identity_el ? identity_el.getAttribute('name') : null;
             },

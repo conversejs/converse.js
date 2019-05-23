@@ -544,7 +544,7 @@
                 test_utils.openControlBox();
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 _addContacts(_converse);
-                await test_utils.waitUntil(() => _.reduce(_converse.rosterview.el.querySelectorAll('li'), (result, el) => result && u.isVisible(el), true), 500);
+                await test_utils.waitUntil(() => sizzle('li', _converse.rosterview.el).filter(u.isVisible).length, 500)
                 expect(u.isVisible(_converse.rosterview.el)).toEqual(true);
                 expect(_converse.rosterview.update).toHaveBeenCalled();
                 expect(_converse.rosterview.el.querySelectorAll('li').length).toBe(3);

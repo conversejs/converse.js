@@ -188,7 +188,6 @@ _converse.CONTROLBOX_TYPE = 'controlbox';
 // ----------------------------
 _converse.default_settings = {
     allow_non_roster_messaging: false,
-    animate: true,
     authentication: 'login', // Available values are "login", "prebind", "anonymous" and "external".
     auto_away: 0, // Seconds after which user status is set to 'away'
     auto_login: false, // Currently only used in connection with anonymous login

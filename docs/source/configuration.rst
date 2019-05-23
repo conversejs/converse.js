@@ -219,13 +219,6 @@ Support for `XEP-0077: In band registration <https://xmpp.org/extensions/xep-007
 
 Allow XMPP account registration showing the corresponding UI register form interface.
 
-animate
--------
-
-* Default:  ``true``
-
-Show animations, for example when opening and closing chatboxes.
-
 archived_messages_page_size
 ---------------------------
 

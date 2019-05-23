@@ -867,13 +867,13 @@ converse.plugins.add('converse-rosterview', {
                 }
             }, 100),
 
-            update: _.debounce(function () {
+            update () {
                 if (!u.isVisible(this.roster_el)) {
                     u.showElement(this.roster_el);
                 }
                 this.filter_view.showOrHide();
                 return this;
-            }, _converse.animate ? 100 : 0),
+            },
 
             filter (query, type) {
                 // First we make sure the filter is restored to its

@@ -123,25 +123,17 @@
                 const filter = _converse.rosterview.el.querySelector('.roster-filter');
                 const names = mock.cur_names;
                 test_utils.openControlBox();
-                _converse.rosterview.update(); // XXX: Will normally called as event handler
                 expect(_.isNull(filter)).toBe(false);
-                await test_utils.waitUntil(() => !u.isVisible(filter));
-                for (let i=0; i<names.length; i++) {
-                    _converse.roster.create({
-                        ask: null,
-                        fullname: names[i],
-                        jid: names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
-                        requesting: 'false',
-                        subscription: 'both'
-                    });
-                    _converse.rosterview.update(); // XXX: Will normally called as event handler
-                }
+                test_utils.createContacts(_converse, 'current').openControlBox();
+
+                const view = _converse.chatboxviews.get('controlbox');
+                const flyout = view.el.querySelector('.box-flyout');
+                const panel = flyout.querySelector('.controlbox-pane');
                 function hasScrollBar (el) {
-                    return el.isConnected && el.parentElement.offsetHeight < el.scrollHeight;
+                    return el.isConnected && flyout.offsetHeight < panel.scrollHeight;
                 }
-                await test_utils.waitUntil(
-                    () => hasScrollBar(_converse.rosterview.roster_el) ? u.isVisible(filter) : !u.isVisible(filter)
-                );
+                const el = _converse.rosterview.roster_el;
+                await test_utils.waitUntil(() => hasScrollBar(el) ? u.isVisible(filter) : !u.isVisible(filter), 900);
                 done();
             }));
 
@@ -321,25 +313,25 @@
                 jid = mock.cur_names[4].replace(/ /g,'.').toLowerCase() + '@localhost';
                 _converse.roster.get(jid).presence.set('show', 'dnd');
                 test_utils.openControlBox();
-
                 const button = _converse.rosterview.el.querySelector('span[data-type="state"]');
                 button.click();
-
                 const roster = _converse.rosterview.roster_el;
-                await test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 15, 500);
+                await test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 15, 900);
+                console.log('First await')
                 const filter = _converse.rosterview.el.querySelector('.state-type');
                 expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(5);
                 filter.value = "online";
                 u.triggerEvent(filter, 'change');
-                await test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 1, 500);
+                await test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 1, 900);
                 expect(sizzle('li', roster).filter(u.isVisible).pop().textContent.trim()).toBe('Rinse Sommer');
-                await test_utils.waitUntil(() => sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length === 1, 500);
+                await test_utils.waitUntil(() => sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length === 1, 900);
+                console.log('Second await')
                 const ul = sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).pop();
                 expect(ul.parentElement.firstElementChild.textContent.trim()).toBe('friends & acquaintences');
-
                 filter.value = "dnd";
                 u.triggerEvent(filter, 'change');
                 await test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).pop().textContent.trim() === 'Annegreet Gomez', 900);
+                console.log('Third await')
                 expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(1);
                 done();
             }));

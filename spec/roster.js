@@ -613,18 +613,26 @@
                     fullname: name
                 });
                 spyOn(window, 'confirm').and.returnValue(true);
-                spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback) {
-                    if (typeof callback === "function") { return callback(); }
-                });
                 await test_utils.waitUntil(() => {
                     const el = _converse.rosterview.get('Pending contacts').el;
                     return u.isVisible(el) && _.filter(el.querySelectorAll('li'), li => u.isVisible(li)).length;
                 }, 700)
 
+                spyOn(_converse.connection, 'sendIQ').and.callThrough();
                 sizzle(`.remove-xmpp-contact[title="Click to remove ${name} as a contact"]`, _converse.rosterview.el).pop().click();
                 expect(window.confirm).toHaveBeenCalled();
                 expect(_converse.connection.sendIQ).toHaveBeenCalled();
 
+                const iq = _converse.connection.IQ_stanzas.pop();
+                expect(Strophe.serialize(iq)).toBe(
+                    `<iq id="${iq.getAttribute('id')}" type="set" xmlns="jabber:client">`+
+                        `<query xmlns="jabber:iq:roster">`+
+                            `<item jid="suleyman.van.beusichem@localhost" subscription="remove"/>`+
+                        `</query>`+
+                    `</iq>`);
+
+                const stanza = u.toStanza(`<iq id="${iq.getAttribute('id')}" to="dummy@localhost/resource" type="result"/>`);
+                _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await test_utils.waitUntil(() => !u.isVisible(_converse.rosterview.get('Pending contacts').el));
                 done();
             }));

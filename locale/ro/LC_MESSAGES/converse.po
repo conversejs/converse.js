@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Converse.js 3.3.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-05-21 12:44+0000\n"
+"PO-Revision-Date: 2019-06-18 19:04+0000\n"
 "Last-Translator: Cristiana Nicolae <eeaotly@yahoo.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/conversejs/"
 "translations/ro/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 3.7-dev\n"
+"X-Generator: Weblate 3.7\n"
 
 #: dist/converse-no-dependencies.js:30613
 #: dist/converse-no-dependencies.js:30667
@@ -1415,15 +1415,14 @@ msgid ""
 msgstr ""
 
 #: dist/converse-no-dependencies.js:50679
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Error: the groupchat %1$s does not exist."
-msgstr "Eroare: discuție de grup "
+msgstr "Eroare: grupul de discuție %1$s nu există."
 
 #: dist/converse-no-dependencies.js:50681
-#, fuzzy
 msgid "Sorry, you're not allowed to register in this groupchat"
 msgstr ""
-"Ne pare rău, nu vă este permis să vă înscrieți în acestă discuție de grup"
+"Ne pare rău, nu vă este permis să vă înscrieți în acest grup de discuții"
 
 #: dist/converse-no-dependencies.js:51759
 #, javascript-format
@@ -1451,9 +1450,8 @@ msgid "Join"
 msgstr ""
 
 #: dist/converse-no-dependencies.js:75791
-#, fuzzy
 msgid "This groupchat no longer exists"
-msgstr "Această discuție de grup de acum nu mai este anonimă"
+msgstr "Acest grup de discuții nu mai există"
 
 #: dist/converse-no-dependencies.js:75797
 msgid "The conversation has moved. Click below to enter."

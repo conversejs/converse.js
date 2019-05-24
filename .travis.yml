@@ -1,16 +1,12 @@
-dist: xenial 
+dist: xenial
 language: node_js
 cache:
     directories:
         - node_modules
 addons:
-    chrome: stable
+  chrome: unstable
 node_js:
  - "10"
-before_install:
-  - npm install -g lerna
-  - rm -rf ./node_modules
-  - export LERNA=$(which lerna)
 install: make stamp-npm
 before_script: make serve_bg
 script: make check

@@ -284,7 +284,7 @@ converse.plugins.add('converse-minimize', {
                 );
             },
 
-            async trimChats (newchat) {
+            trimChats: _.debounce(async function (newchat) {
                 /* This method is called when a newly created chat box will
                  * be shown.
                  *
@@ -292,9 +292,11 @@ converse.plugins.add('converse-minimize', {
                  * another chat box. Otherwise it minimizes the oldest chat box
                  * to create space.
                  */
-                const { _converse } = this.__super__,
-                      shown_chats = this.getShownChats(),
-                      body_width = u.getOuterWidth(document.querySelector('body'), true);
+                if (!_converse.connection.connected || _converse.view_mode !== 'overlayed') {
+                    return;
+                }
+                const shown_chats = this.getShownChats();
+                const body_width = u.getOuterWidth(document.querySelector('body'), true);
 
                 if (_converse.no_trimming || shown_chats.length <= 1) {
                     return;
@@ -333,7 +335,7 @@ converse.plugins.add('converse-minimize', {
                         }
                     }
                 }
-            },
+            }, 100),
 
             getOldestMaximizedChat (exclude_ids) {
                 // Get oldest view (if its id is not excluded)
@@ -561,24 +563,10 @@ converse.plugins.add('converse-minimize', {
         }).catch(_.partial(_converse.log, _, Strophe.LogLevel.FATAL));
 
 
-        const debouncedTrim = _.debounce(ev => {
-            if (_converse.view_mode !== 'overlayed' || !_converse.chatboxviews.trimChats) {
-                return;
-            }
-            if (_converse.connection.connected) {
-                _converse.chatboxviews.trimChats();
-            }
-        }, 200);
-        _converse.api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", debouncedTrim));
-        _converse.api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", debouncedTrim));
-
-        _converse.api.listen.on('controlBoxOpened', function (chatbox) {
-            // Wrapped in anon method because at scan time, chatboxviews
-            // attr not set yet.
-            if (_converse.connection.connected) {
-                _converse.chatboxviews.trimChats(chatbox);
-            }
-        });
+        const trimChats = () => _converse.chatboxviews.trimChats();
+        _converse.api.listen.on('controlBoxOpened', trimChats);
+        _converse.api.listen.on('registeredGlobalEventHandlers', () => window.addEventListener("resize", trimChats));
+        _converse.api.listen.on('unregisteredGlobalEventHandlers', () => window.removeEventListener("resize", trimChats));
         /************************ END Event Handlers ************************/
     }
 });

@@ -97,32 +97,32 @@ converse.plugins.add('converse-muc-views', {
         });
 
 
-        Object.assign(_converse.ControlBoxView.prototype, {
-
-            renderRoomsPanel () {
-                if (this.roomspanel && u.isVisible(this.roomspanel.el)) {
-                    return;
-                }
-                this.roomspanel = new _converse.RoomsPanel({
-                    'model': new (_converse.RoomsPanelModel.extend({
-                        'id': `converse.roomspanel${_converse.bare_jid}`, // Required by web storage
-                        'browserStorage': new BrowserStorage[_converse.config.get('storage')](
-                            `converse.roomspanel${_converse.bare_jid}`)
-                    }))()
-                });
-                this.roomspanel.model.fetch();
-                this.el.querySelector('.controlbox-pane').insertAdjacentElement(
-                    'beforeEnd', this.roomspanel.render().el);
-
-                /**
-                 * Triggered once the section of the _converse.ControlBoxView
-                 * which shows gropuchats has been rendered.
-                 * @event _converse#roomsPanelRendered
-                 * @example _converse.api.listen.on('roomsPanelRendered', () => { ... });
-                 */
-                _converse.api.trigger('roomsPanelRendered');
+        function renderRoomsPanel () {
+            if (this.roomspanel && u.isVisible(this.roomspanel.el)) {
+                return;
             }
-        });
+            this.roomspanel = new _converse.RoomsPanel({
+                'model': new (_converse.RoomsPanelModel.extend({
+                    'id': `converse.roomspanel${_converse.bare_jid}`, // Required by web storage
+                    'browserStorage': new BrowserStorage[_converse.config.get('storage')](
+                        `converse.roomspanel${_converse.bare_jid}`)
+                }))()
+            });
+            this.roomspanel.model.fetch();
+            this.el.querySelector('.controlbox-pane').insertAdjacentElement(
+                'beforeEnd', this.roomspanel.render().el);
+
+            /**
+             * Triggered once the section of the _converse.ControlBoxView
+             * which shows gropuchats has been rendered.
+             * @event _converse#roomsPanelRendered
+             * @example _converse.api.listen.on('roomsPanelRendered', () => { ... });
+             */
+            _converse.api.trigger('roomsPanelRendered');
+        }
+        if (_converse.ControlBoxView) {
+            Object.assign(_converse.ControlBoxView.prototype, { renderRoomsPanel });
+        }
 
 
         function ___ (str) {

@@ -40,13 +40,11 @@ converse.plugins.add('converse-bookmarks', {
         // New functions which don't exist yet can also be added.
 
         ChatRoom: {
-
             getAndPersistNickname(nick) {
                 const { _converse } = this.__super__;
                 nick = nick || _converse.getNicknameFromBookmark(this.get('jid'));
                 return this.__super__.getAndPersistNickname.call(this, nick);
-            },
-
+            }
         }
     },
 

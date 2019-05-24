@@ -36,6 +36,17 @@ converse.plugins.add('converse-roster', {
             'rosterInitialized',
         ]);
 
+        _converse.HEADER_CURRENT_CONTACTS =  __('My contacts');
+        _converse.HEADER_PENDING_CONTACTS = __('Pending contacts');
+        _converse.HEADER_REQUESTING_CONTACTS = __('Contact requests');
+        _converse.HEADER_UNGROUPED = __('Ungrouped');
+
+        const HEADER_WEIGHTS = {};
+        HEADER_WEIGHTS[_converse.HEADER_REQUESTING_CONTACTS] = 0;
+        HEADER_WEIGHTS[_converse.HEADER_CURRENT_CONTACTS]    = 1;
+        HEADER_WEIGHTS[_converse.HEADER_UNGROUPED]           = 2;
+        HEADER_WEIGHTS[_converse.HEADER_PENDING_CONTACTS]    = 3;
+
 
         _converse.registerPresenceHandler = function () {
             _converse.unregisterPresenceHandler();
@@ -381,6 +392,10 @@ converse.plugins.add('converse-roster', {
             model: _converse.RosterContact,
 
             comparator (contact1, contact2) {
+                /* Groups are sorted alphabetically, ignoring case.
+                 * However, Ungrouped, Requesting Contacts and Pending Contacts
+                 * appear last and in that order.
+                 */
                 const status1 = contact1.presence.get('show') || 'offline';
                 const status2 = contact2.presence.get('show') || 'offline';
                 if (_converse.STATUS_WEIGHTS[status1] === _converse.STATUS_WEIGHTS[status2]) {
@@ -853,6 +868,23 @@ converse.plugins.add('converse-roster', {
 
         _converse.RosterGroups = Backbone.Collection.extend({
             model: _converse.RosterGroup,
+
+            comparator (a, b) {
+                a = a.get('name');
+                b = b.get('name');
+                const special_groups = Object.keys(HEADER_WEIGHTS);
+                const a_is_special = _.includes(special_groups, a);
+                const b_is_special = _.includes(special_groups, b);
+                if (!a_is_special && !b_is_special ) {
+                    return a.toLowerCase() < b.toLowerCase() ? -1 : (a.toLowerCase() > b.toLowerCase() ? 1 : 0);
+                } else if (a_is_special && b_is_special) {
+                    return HEADER_WEIGHTS[a] < HEADER_WEIGHTS[b] ? -1 : (HEADER_WEIGHTS[a] > HEADER_WEIGHTS[b] ? 1 : 0);
+                } else if (!a_is_special && b_is_special) {
+                    return (b === _converse.HEADER_REQUESTING_CONTACTS) ? 1 : -1;
+                } else if (a_is_special && !b_is_special) {
+                    return (a === _converse.HEADER_REQUESTING_CONTACTS) ? -1 : 1;
+                }
+            },
 
             fetchRosterGroups () {
                 /* Fetches all the roster groups from sessionStorage.

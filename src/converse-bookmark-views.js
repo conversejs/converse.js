@@ -42,19 +42,66 @@ converse.plugins.add('converse-bookmark-views', {
         // Overrides mentioned here will be picked up by converse.js's
         // plugin architecture they will replace existing methods on the
         // relevant objects or classes.
-        //
-        // New functions which don't exist yet can also be added.
-
         ChatRoomView: {
             events: {
                 'click .toggle-bookmark': 'toggleBookmark'
             },
+            async renderHeading () {
+                this.__super__.renderHeading.apply(this, arguments);
+                const { _converse } = this.__super__;
+                if (_converse.allow_bookmarks) {
+                    const supported = await _converse.checkBookmarksSupport();
+                    if (supported) {
+                        this.renderBookmarkToggle();
+                    }
+                }
+            }
+        }
+    },
 
-            initialize () {
-                this.__super__.initialize.apply(this, arguments);
-                this.model.on('change:bookmarked', this.onBookmarked, this);
-                this.setBookmarkState();
+    initialize () {
+        /* The initialize function gets called as soon as the plugin is
+         * loaded by converse.js's plugin machinery.
+         */
+        const { _converse } = this,
+              { __ } = _converse;
+
+        // Configuration values for this plugin
+        // ====================================
+        // Refer to docs/source/configuration.rst for explanations of these
+        // configuration settings.
+        _converse.api.settings.update({
+            hide_open_bookmarks: true,
+            muc_respect_autojoin: true
+        });
+
+
+        Object.assign(_converse, {
+
+            removeBookmarkViaEvent (ev) {
+                /* Remove a bookmark as determined by the passed in
+                 * event.
+                 */
+                ev.preventDefault();
+                const name = ev.target.getAttribute('data-bookmark-name');
+                const jid = ev.target.getAttribute('data-room-jid');
+                if (confirm(__("Are you sure you want to remove the bookmark \"%1$s\"?", name))) {
+                    _.invokeMap(_converse.bookmarks.where({'jid': jid}), Backbone.Model.prototype.destroy);
+                }
             },
+
+            addBookmarkViaEvent (ev) {
+                /* Add a bookmark as determined by the passed in
+                 * event.
+                 */
+                ev.preventDefault();
+                const jid = ev.target.getAttribute('data-room-jid');
+                const chatroom = _converse.api.rooms.open(jid, {'bring_to_foreground': true});
+                _converse.chatboxviews.get(jid).renderBookmarkForm();
+            },
+        });
+
+        const bookmarkableChatRoomView = {
 
             renderBookmarkToggle () {
                 if (this.el.querySelector('.chat-head .toggle-bookmark')) {
@@ -80,21 +127,7 @@ converse.plugins.add('converse-bookmark-views', {
                 }
             },
 
-            async renderHeading () {
-                this.__super__.renderHeading.apply(this, arguments);
-                const { _converse } = this.__super__;
-                if (_converse.allow_bookmarks) {
-                    const supported = await _converse.checkBookmarksSupport();
-                    if (supported) {
-                        this.renderBookmarkToggle();
-                    }
-                }
-            },
-
             onBookmarked () {
-                const { _converse } = this.__super__,
-                      { __ } = _converse;
-
                 const icon = this.el.querySelector('.toggle-bookmark');
                 if (_.isNull(icon)) {
                     return;
@@ -111,7 +144,6 @@ converse.plugins.add('converse-bookmark-views', {
             setBookmarkState () {
                 /* Set whether the groupchat is bookmarked or not.
                  */
-                const { _converse } = this.__super__;
                 if (!_.isUndefined(_converse.bookmarks)) {
                     const models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                     if (!models.length) {
@@ -125,7 +157,6 @@ converse.plugins.add('converse-bookmark-views', {
             renderBookmarkForm () {
                 this.hideChatRoomContents();
                 if (!this.bookmark_form) {
-                    const { _converse } = this.__super__;
                     this.bookmark_form = new _converse.MUCBookmarkForm({
                         'model': this.model,
                         'chatroomview': this
@@ -141,7 +172,6 @@ converse.plugins.add('converse-bookmark-views', {
                     ev.preventDefault();
                     ev.stopPropagation();
                 }
-                const { _converse } = this.__super__;
                 const models = _converse.bookmarks.where({'jid': this.model.get('jid')});
                 if (!models.length) {
                     this.renderBookmarkForm();
@@ -151,48 +181,7 @@ converse.plugins.add('converse-bookmark-views', {
                 }
             }
         }
-    },
-
-    initialize () {
-        /* The initialize function gets called as soon as the plugin is
-         * loaded by converse.js's plugin machinery.
-         */
-        const { _converse } = this,
-              { __ } = _converse;
-
-        // Configuration values for this plugin
-        // ====================================
-        // Refer to docs/source/configuration.rst for explanations of these
-        // configuration settings.
-        _converse.api.settings.update({
-            hide_open_bookmarks: true,
-            muc_respect_autojoin: true
-        });
-
-
-        Object.assign(_converse, {
-            removeBookmarkViaEvent (ev) {
-                /* Remove a bookmark as determined by the passed in
-                 * event.
-                 */
-                ev.preventDefault();
-                const name = ev.target.getAttribute('data-bookmark-name');
-                const jid = ev.target.getAttribute('data-room-jid');
-                if (confirm(__("Are you sure you want to remove the bookmark \"%1$s\"?", name))) {
-                    _.invokeMap(_converse.bookmarks.where({'jid': jid}), Backbone.Model.prototype.destroy);
-                }
-            },
-
-            addBookmarkViaEvent (ev) {
-                /* Add a bookmark as determined by the passed in
-                 * event.
-                 */
-                ev.preventDefault();
-                const jid = ev.target.getAttribute('data-room-jid');
-                const chatroom = _converse.api.rooms.open(jid, {'bring_to_foreground': true});
-                _converse.chatboxviews.get(jid).renderBookmarkForm();
-            },
-        });
+        Object.assign(_converse.ChatRoomView.prototype, bookmarkableChatRoomView);
 
 
         _converse.MUCBookmarkForm = Backbone.VDOMView.extend({
@@ -368,6 +357,7 @@ converse.plugins.add('converse-bookmark-views', {
             }
         });
 
+        /************************ BEGIN Event Handlers ************************/
         const initBookmarkViews = async function () {
             await _converse.api.waitUntil('roomsPanelRendered');
             _converse.bookmarksview = new _converse.BookmarksView({'model': _converse.bookmarks});
@@ -381,5 +371,11 @@ converse.plugins.add('converse-bookmark-views', {
         }
 
         _converse.api.listen.on('bookmarksInitialized', initBookmarkViews);
+
+        _converse.api.listen.on('chatRoomOpened', view => {
+            view.model.on('change:bookmarked', view.onBookmarked, view);
+            view.setBookmarkState();
+        });
+        /************************ END Event Handlers ************************/
     }
 });

@@ -82,7 +82,7 @@ converse.plugins.add('converse-singleton', {
                 const { _converse } = this.__super__;
                 if (_converse.isUniView()) {
                     return false;
-                } else { 
+                } else {
                     return this.__super__.shouldShowOnTextMessage.apply(this, arguments);
                 }
             },

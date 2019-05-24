@@ -105,23 +105,6 @@ converse.plugins.add('converse-controlbox', {
                     view.close();
                 });
                 return this;
-            },
-
-            getChatBoxWidth (view) {
-                const { _converse } = this.__super__;
-                const controlbox = this.get('controlbox');
-                if (view.model.get('id') === 'controlbox') {
-                    /* We return the width of the controlbox or its toggle,
-                     * depending on which is visible.
-                     */
-                    if (!controlbox || !u.isVisible(controlbox.el)) {
-                        return u.getOuterWidth(_converse.controlboxtoggle.el, true);
-                    } else {
-                        return u.getOuterWidth(controlbox.el, true);
-                    }
-                } else {
-                    return this.__super__.getChatBoxWidth.apply(this, arguments);
-                }
             }
         },
 
@@ -232,11 +215,12 @@ converse.plugins.add('converse-controlbox', {
                  * Triggered when the _converse.ControlBoxView has been initialized and therefore
                  * exists. The controlbox contains the login and register forms when the user is
                  * logged out and a list of the user's contacts and group chats when logged in.
-                 * @event _converse#chatBoxInitialized
+                 * @event _converse#controlboxInitialized
                  * @type { _converse.ControlBoxView }
                  * @example _converse.api.listen.on('controlboxInitialized', view => { ... });
                  */
                 _converse.api.trigger('controlboxInitialized', this);
+                _converse.api.trigger('chatBoxInitialized', this);
             },
 
             render () {

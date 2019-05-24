@@ -251,7 +251,7 @@ _converse.log = function (message, level, style='') {
         message = message.outerHTML;
     }
     const prefix = style ? '%c' : '';
-    const logger = _.assign({
+    const logger = Object.assign({
             'debug': _.get(console, 'log') ? console.log.bind(console) : _.noop,
             'error': _.get(console, 'log') ? console.log.bind(console) : _.noop,
             'info': _.get(console, 'log') ? console.log.bind(console) : _.noop,

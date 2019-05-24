@@ -29,9 +29,40 @@ converse.plugins.add('converse-mam', {
         // Overrides mentioned here will be picked up by converse.js's
         // plugin architecture they will replace existing methods on the
         // relevant objects or classes.
-        //
-        // New functions which don't exist yet can also be added.
         ChatBox: {
+            async getDuplicateMessage (stanza) {
+                const message = await this.__super__.getDuplicateMessage.apply(this, arguments);
+                if (!message) {
+                    return this.findDuplicateFromArchiveID(stanza);
+                }
+                return message;
+            },
+
+            getUpdatedMessageAttributes (message, stanza) {
+                const attrs = this.__super__.getUpdatedMessageAttributes.apply(this, arguments);
+                if (message && !message.get('is_archived')) {
+                    return Object.assign(attrs, {
+                        'is_archived': this.isArchived(stanza)
+                    }, this.getStanzaIDs(stanza))
+                }
+                return attrs;
+            }
+        }
+    },
+
+    initialize () {
+        /* The initialize function gets called as soon as the plugin is
+         * loaded by Converse.js's plugin machinery.
+         */
+        const { _converse } = this;
+
+        _converse.api.settings.update({
+            archived_messages_page_size: '50',
+            message_archiving: undefined, // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
+            message_archiving_timeout: 20000, // Time (in milliseconds) to wait before aborting MAM request
+        });
+
+        const MAMEnabledChat = {
 
             fetchNewestMessages () {
                 /* Fetches messages that might have been archived *after*
@@ -40,7 +71,6 @@ converse.plugins.add('converse-mam', {
                 if (this.disable_mam) {
                     return;
                 }
-                const { _converse } = this.__super__;
                 const most_recent_msg = u.getMostRecentMessage(this);
 
                 if (_.isNil(most_recent_msg)) {
@@ -59,7 +89,6 @@ converse.plugins.add('converse-mam', {
                 if (this.disable_mam) {
                     return;
                 }
-                const { _converse } = this.__super__;
                 const is_groupchat = this.get('type') === CHATROOMS_TYPE;
                 const mam_jid = is_groupchat ? this.get('jid') : _converse.bare_jid;
                 if (!(await _converse.api.disco.supports(Strophe.NS.MAM, mam_jid))) {
@@ -92,7 +121,6 @@ converse.plugins.add('converse-mam', {
             },
 
             async findDuplicateFromArchiveID (stanza) {
-                const { _converse } = this.__super__;
                 const result = sizzle(`result[xmlns="${Strophe.NS.MAM}"]`, stanza).pop();
                 if (!result) {
                     return null;
@@ -107,32 +135,11 @@ converse.plugins.add('converse-mam', {
                 return this.messages.findWhere(query);
             },
 
-            async getDuplicateMessage (stanza) {
-                const message = await this.__super__.getDuplicateMessage.apply(this, arguments);
-                if (!message) {
-                    return this.findDuplicateFromArchiveID(stanza);
-                }
-                return message;
-            },
+        }
+        Object.assign(_converse.ChatBox.prototype, MAMEnabledChat);
 
-            getUpdatedMessageAttributes (message, stanza) {
-                const attrs = this.__super__.getUpdatedMessageAttributes.apply(this, arguments);
-                if (message && !message.get('is_archived')) {
-                    return Object.assign(attrs, {
-                        'is_archived': this.isArchived(stanza)
-                    }, this.getStanzaIDs(stanza))
-                }
-                return attrs;
-            }
-        },
 
-        ChatRoom: {
-            initialize () {
-                this.__super__.initialize.apply(this, arguments);
-                this.on('change:mam_enabled', this.fetchArchivedMessagesIfNecessary, this);
-                this.on('change:connection_status', this.fetchArchivedMessagesIfNecessary, this);
-            },
-
+        Object.assign(_converse.ChatRoom.prototype, {
             fetchArchivedMessagesIfNecessary () {
                 if (this.get('connection_status') !== converse.ROOMSTATUS.ENTERED ||
                         !this.get('mam_enabled') ||
@@ -142,21 +149,8 @@ converse.plugins.add('converse-mam', {
                 this.fetchArchivedMessages();
                 this.save({'mam_initialized': true});
             }
-        },
-
-    },
-
-    initialize () {
-        /* The initialize function gets called as soon as the plugin is
-         * loaded by Converse.js's plugin machinery.
-         */
-        const { _converse } = this;
-
-        _converse.api.settings.update({
-            archived_messages_page_size: '50',
-            message_archiving: undefined, // Supported values are 'always', 'never', 'roster' (https://xmpp.org/extensions/xep-0313.html#prefs)
-            message_archiving_timeout: 20000, // Time (in milliseconds) to wait before aborting MAM request
         });
+
 
         _converse.onMAMError = function (iq) {
             if (iq.querySelectorAll('feature-not-implemented').length) {
@@ -220,6 +214,11 @@ converse.plugins.add('converse-mam', {
         _converse.api.listen.on('afterMessagesFetched', chat => chat.fetchNewestMessages());
         _converse.api.listen.on('chatReconnected', chat => chat.fetchNewestMessages());
         _converse.api.listen.on('addClientFeatures', () => _converse.api.disco.own.features.add(Strophe.NS.MAM));
+
+        _converse.api.listen.on('chatRoomOpened', (room) => {
+            room.on('change:mam_enabled', room.fetchArchivedMessagesIfNecessary, room);
+            room.on('change:connection_status', room.fetchArchivedMessagesIfNecessary, room);
+        });
         /************************ END Event Handlers **************************/
 
 

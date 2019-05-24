@@ -45,17 +45,6 @@ converse.plugins.add('converse-register', {
         // New functions which don't exist yet can also be added.
 
         LoginPanel: {
-
-            insertRegisterLink () {
-                const { _converse } = this.__super__;
-                if (_.isUndefined(this.registerlinkview)) {
-                    this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
-                    this.registerlinkview.render();
-                    this.el.querySelector('.buttons').insertAdjacentElement('afterend', this.registerlinkview.el);
-                }
-                this.registerlinkview.render();
-            },
-
             render (cfg) {
                 const { _converse } = this.__super__;
                 this.__super__.render.apply(this, arguments);
@@ -67,43 +56,6 @@ converse.plugins.add('converse-register', {
         },
 
         ControlBoxView: {
-
-            initialize () {
-                this.__super__.initialize.apply(this, arguments);
-                this.model.on('change:active-form', this.showLoginOrRegisterForm.bind(this))
-            },
-
-            showLoginOrRegisterForm () {
-                const { _converse } = this.__super__;
-                if (_.isNil(this.registerpanel)) {
-                    return;
-                }
-                if (this.model.get('active-form') == "register") {
-                    this.loginpanel.el.classList.add('hidden');
-                    this.registerpanel.el.classList.remove('hidden');
-                } else {
-                    this.loginpanel.el.classList.remove('hidden');
-                    this.registerpanel.el.classList.add('hidden');
-                }
-            },
-
-            renderRegistrationPanel () {
-                const { _converse } = this.__super__;
-                if (_converse.allow_registration) {
-                    this.registerpanel = new _converse.RegisterPanel({
-                        'model': this.model
-                    });
-                    this.registerpanel.render();
-                    this.registerpanel.el.classList.add('hidden');
-                    this.el.querySelector('#converse-login-panel').insertAdjacentElement(
-                        'afterend',
-                        this.registerpanel.el
-                    );
-                    this.showLoginOrRegisterForm();
-                }
-                return this;
-            },
-
             renderLoginPanel () {
                 /* Also render a registration panel, when rendering the
                  * login panel.
@@ -132,6 +84,52 @@ converse.plugins.add('converse-register', {
             'domain_placeholder': __(" e.g. conversejs.org"),  // Placeholder text shown in the domain input on the registration form
             'providers_link': 'https://compliance.conversations.im/', // Link to XMPP providers shown on registration page
             'registration_domain': ''
+        });
+
+
+        Object.assign(_converse.LoginPanel.prototype, {
+
+            insertRegisterLink () {
+                if (_.isUndefined(this.registerlinkview)) {
+                    this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
+                    this.registerlinkview.render();
+                    this.el.querySelector('.buttons').insertAdjacentElement('afterend', this.registerlinkview.el);
+                }
+                this.registerlinkview.render();
+            }
+        });
+
+        Object.assign(_converse.ControlBoxView.prototype, {
+
+            showLoginOrRegisterForm () {
+                const { _converse } = this.__super__;
+                if (_.isNil(this.registerpanel)) {
+                    return;
+                }
+                if (this.model.get('active-form') == "register") {
+                    this.loginpanel.el.classList.add('hidden');
+                    this.registerpanel.el.classList.remove('hidden');
+                } else {
+                    this.loginpanel.el.classList.remove('hidden');
+                    this.registerpanel.el.classList.add('hidden');
+                }
+            },
+
+            renderRegistrationPanel () {
+                if (_converse.allow_registration) {
+                    this.registerpanel = new _converse.RegisterPanel({
+                        'model': this.model
+                    });
+                    this.registerpanel.render();
+                    this.registerpanel.el.classList.add('hidden');
+                    this.el.querySelector('#converse-login-panel').insertAdjacentElement(
+                        'afterend',
+                        this.registerpanel.el
+                    );
+                    this.showLoginOrRegisterForm();
+                }
+                return this;
+            }
         });
 
 
@@ -679,6 +677,12 @@ converse.plugins.add('converse-register', {
                 return false;
             }
         });
+
+        /************************ BEGIN Event Handlers ************************/
+        _converse.api.listen.on('controlboxInitialized', view => {
+            view.model.on('change:active-form', view.showLoginOrRegisterForm, view);
+        });
+        /************************ END Event Handlers ************************/
     }
 });
 

@@ -62,41 +62,14 @@ converse.plugins.add('converse-muc-views', {
     dependencies: ["converse-autocomplete", "converse-modal", "converse-controlbox", "converse-chatview"],
 
     overrides: {
-
         ControlBoxView: {
-
-            renderRoomsPanel () {
-                const { _converse } = this.__super__;
-                if (this.roomspanel && u.isVisible(this.roomspanel.el)) {
-                    return;
-                }
-                this.roomspanel = new _converse.RoomsPanel({
-                    'model': new (_converse.RoomsPanelModel.extend({
-                        'id': `converse.roomspanel${_converse.bare_jid}`, // Required by web storage
-                        'browserStorage': new BrowserStorage[_converse.config.get('storage')](
-                            `converse.roomspanel${_converse.bare_jid}`)
-                    }))()
-                });
-                this.roomspanel.model.fetch();
-                this.el.querySelector('.controlbox-pane').insertAdjacentElement(
-                    'beforeEnd', this.roomspanel.render().el);
-
-                /**
-                 * Triggered once the section of the _converse.ControlBoxView
-                 * which shows gropuchats has been rendered.
-                 * @event _converse#roomsPanelRendered
-                 * @example _converse.api.listen.on('roomsPanelRendered', () => { ... });
-                 */
-                _converse.api.trigger('roomsPanelRendered');
-            },
-
             renderControlBoxPane () {
                 const { _converse } = this.__super__;
                 this.__super__.renderControlBoxPane.apply(this, arguments);
                 if (_converse.allow_muc) {
                     this.renderRoomsPanel();
                 }
-            },
+            }
         }
     },
 
@@ -122,6 +95,35 @@ converse.plugins.add('converse-muc-views', {
                 'toggle_occupants': true
             }
         });
+
+
+        Object.assign(_converse.ControlBoxView.prototype, {
+
+            renderRoomsPanel () {
+                if (this.roomspanel && u.isVisible(this.roomspanel.el)) {
+                    return;
+                }
+                this.roomspanel = new _converse.RoomsPanel({
+                    'model': new (_converse.RoomsPanelModel.extend({
+                        'id': `converse.roomspanel${_converse.bare_jid}`, // Required by web storage
+                        'browserStorage': new BrowserStorage[_converse.config.get('storage')](
+                            `converse.roomspanel${_converse.bare_jid}`)
+                    }))()
+                });
+                this.roomspanel.model.fetch();
+                this.el.querySelector('.controlbox-pane').insertAdjacentElement(
+                    'beforeEnd', this.roomspanel.render().el);
+
+                /**
+                 * Triggered once the section of the _converse.ControlBoxView
+                 * which shows gropuchats has been rendered.
+                 * @event _converse#roomsPanelRendered
+                 * @example _converse.api.listen.on('roomsPanelRendered', () => { ... });
+                 */
+                _converse.api.trigger('roomsPanelRendered');
+            }
+        });
+
 
         function ___ (str) {
             /* This is part of a hack to get gettext to scan strings to be
@@ -572,6 +574,7 @@ converse.plugins.add('converse-muc-views', {
                  * @example _converse.api.listen.on('chatRoomOpened', view => { ... });
                  */
                 _converse.api.trigger('chatRoomOpened', this);
+                _converse.api.trigger('chatBoxInitialized', this);
             },
 
             render () {

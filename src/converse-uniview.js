@@ -28,12 +28,17 @@ function hideChat (view) {
     view.hide();
 }
 
+function visibleChats (_converse) {
+    return _converse.chatboxes
+        .filter(cb => (cb.get('id') !== 'controlbox' && !cb.get('hidden'))).length > 0;
+}
+
 
 converse.plugins.add('converse-uniview', {
     // It's possible however to make optional dependencies non-optional.
     // If the setting "strict_plugin_dependencies" is set to true,
     // an error will be raised if the plugin is not found.
-    dependencies: ['converse-chatboxes', 'converse-muc', 'converse-muc-views', 'converse-controlbox', 'converse-rosterview'],
+    dependencies: ['converse-chatboxes', 'converse-muc-views', 'converse-controlbox', 'converse-rosterview'],
 
     overrides: {
         // overrides mentioned here will be picked up by converse.js's
@@ -42,27 +47,6 @@ converse.plugins.add('converse-uniview', {
         //
         // new functions which don't exist yet can also be added.
         ChatBoxes: {
-
-            chatBoxMayBeShown (chatbox) {
-                const { _converse } = this.__super__;
-                if (chatbox.get('id') === 'controlbox') {
-                    return true;
-                }
-                if (_converse.isUniView()) {
-                    const any_chats_visible = _converse.chatboxes
-                        .filter(cb => cb.get('id') != 'controlbox')
-                        .filter(cb => !cb.get('hidden')).length > 0;
-
-                    if (any_chats_visible) {
-                        return !chatbox.get('hidden');
-                    } else {
-                        return true;
-                    }
-                } else {
-                    return this.__super__.chatBoxMayBeShown.apply(this, arguments);
-                }
-            },
-
             createChatBox (jid, attrs) {
                 /* Make sure new chat boxes are hidden by default. */
                 const { _converse } = this.__super__;
@@ -74,12 +58,23 @@ converse.plugins.add('converse-uniview', {
             }
         },
 
+        ChatBox: {
+            maybeShow () {
+                const { _converse } = this.__super__;
+                if (_converse.isUniView() && (!this.get('hidden') || !visibleChats(_converse))) {
+                    return this.trigger("show");
+                } else {
+                    return this.__super__.maybeShow.apply(this, arguments);
+                }
+            }
+        },
+
         ChatBoxView: {
             shouldShowOnTextMessage () {
                 const { _converse } = this.__super__;
                 if (_converse.isUniView()) {
                     return false;
-                } else { 
+                } else {
                     return this.__super__.shouldShowOnTextMessage.apply(this, arguments);
                 }
             },

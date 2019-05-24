@@ -941,16 +941,8 @@ converse.plugins.add('converse-chatboxes', {
 
             onChatBoxesFetched (collection) {
                 /* Show chat boxes upon receiving them from sessionStorage */
-                const to_destroy = [];
-                collection.each(chatbox => {
-                    if (!chatbox.isValid()) {
-                        to_destroy.push(chatbox);
-                    } else if (this.chatBoxMayBeShown(chatbox)) {
-                        chatbox.trigger('show');
-                    }
-                });
-                to_destroy.forEach(c => c.destroy());
-
+                collection.filter(c => !c.isValid()).forEach(c => c.destroy());
+                collection.forEach(c => c.maybeShow());
                 /**
                  * Triggered when a message stanza is been received and processed.
                  * @event _converse#message

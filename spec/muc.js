@@ -3145,7 +3145,7 @@
                 done();
             }));
 
-            it("takes /kick to kick a user",
+            it("accepts a /kick command to kick a user",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -3159,7 +3159,7 @@
 
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'modifyRole').and.callThrough();
+                spyOn(view.model, 'setRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'validateRoleChangeCommand').and.callThrough();
 
@@ -3176,7 +3176,7 @@
                         });
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
 
-                var textarea = view.el.querySelector('.chat-textarea')
+                const textarea = view.el.querySelector('.chat-textarea')
                 textarea.value = '/kick';
                 view.onKeyDown({
                     target: textarea,
@@ -3186,7 +3186,7 @@
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"kick\" command takes two arguments, the user's nickname and optionally a reason.");
-                expect(view.modifyRole).not.toHaveBeenCalled();
+                expect(view.model.setRole).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
@@ -3196,7 +3196,7 @@
 
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
-                expect(view.modifyRole).toHaveBeenCalled();
+                expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@localhost" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
@@ -3247,7 +3247,7 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 var view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'modifyRole').and.callThrough();
+                spyOn(view.model, 'setRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'showChatEvent').and.callThrough();
                 spyOn(view, 'validateRoleChangeCommand').and.callThrough();
@@ -3289,7 +3289,7 @@
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"op\" command takes two arguments, the user's nickname and optionally a reason.");
 
-                expect(view.modifyRole).not.toHaveBeenCalled();
+                expect(view.model.setRole).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
@@ -3299,7 +3299,7 @@
 
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
-                expect(view.modifyRole).toHaveBeenCalled();
+                expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@localhost" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
@@ -3341,7 +3341,7 @@
 
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
                 expect(view.showChatEvent.calls.count()).toBe(1);
-                expect(view.modifyRole).toHaveBeenCalled();
+                expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@localhost" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
@@ -3389,7 +3389,7 @@
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
                 var view = _converse.chatboxviews.get('lounge@localhost');
-                spyOn(view, 'modifyRole').and.callThrough();
+                spyOn(view.model, 'setRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'showChatEvent').and.callThrough();
                 spyOn(view, 'validateRoleChangeCommand').and.callThrough();
@@ -3430,7 +3430,7 @@
                 expect(view.validateRoleChangeCommand).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"mute\" command takes two arguments, the user's nickname and optionally a reason.");
-                expect(view.modifyRole).not.toHaveBeenCalled();
+                expect(view.model.setRole).not.toHaveBeenCalled();
                 // Call now with the correct amount of arguments.
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
@@ -3440,7 +3440,7 @@
 
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
-                expect(view.modifyRole).toHaveBeenCalled();
+                expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@localhost" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
@@ -3483,7 +3483,7 @@
 
                 expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
                 expect(view.showChatEvent.calls.count()).toBe(1);
-                expect(view.modifyRole).toHaveBeenCalled();
+                expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@localhost" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+

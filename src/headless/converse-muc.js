@@ -846,6 +846,41 @@ converse.plugins.add('converse-muc', {
                 return Promise.all(_.map(affiliations, _.partial(this.setAffiliation.bind(this), _, members)));
             },
 
+            /**
+             * Send an IQ stanza to modify an occupant's role
+             * @private
+             * @method _converse.ChatRoom#setRole
+             * @param { _converse.ChatRoomOccupant } occupant
+             * @param { String } role
+             * @param { String } reason
+             * @param { function } onSuccess - callback for a succesful response
+             * @param { function } onError - callback for an error response
+             */
+            setRole (occupant, role, reason, onSuccess, onError) {
+                const item = $build("item", {
+                    'nick': occupant.get('nick'),
+                    role
+                });
+                const iq = $iq({
+                    'to': this.get('jid'),
+                    'type': 'set'
+                }).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
+                if (reason !== null) {
+                    iq.c("reason", reason);
+                }
+                return _converse.api.sendIQ(iq).then(onSuccess).catch(onError);
+            },
+
+            /**
+             * @private
+             * @method _converse.ChatRoom#getOccupantByNickname
+             * @param { String } nick - The nickname of the occupant to be returned
+             * @returns { _converse.ChatRoomOccupant }
+             */
+            getOccupantByNickname (nick) {
+                return this.occupants.findWhere({'nick': nick});
+            },
+
             async getJidsWithAffiliations (affiliations) {
                 /* Returns a map of JIDs that have the affiliations
                  * as provided.

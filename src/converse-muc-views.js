@@ -96,6 +96,8 @@ converse.plugins.add('converse-muc-views', {
             }
         });
 
+        const OCCUPANT_NOT_FOUND = __("Could not find an occupant with that nickname");
+
 
         function renderRoomsPanel () {
             if (this.roomspanel && u.isVisible(this.roomspanel.el)) {
@@ -862,13 +864,6 @@ converse.plugins.add('converse-muc-views', {
                 return _converse.api.sendIQ(iq);
             },
 
-            modifyRole (groupchat, nick, role, reason, onSuccess, onError) {
-                const item = $build("item", {nick, role});
-                const iq = $iq({to: groupchat, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_ADMIN}).cnode(item.node);
-                if (reason !== null) { iq.c("reason", reason); }
-                return _converse.api.sendIQ(iq).then(onSuccess).catch(onError);
-            },
-
             verifyRoles (roles, occupant, show_error=true) {
                 if (!occupant) {
                     occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
@@ -974,8 +969,13 @@ converse.plugins.add('converse-muc-views', {
                         if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
-                        this.modifyRole(
-                            this.model.get('jid'), args[0], 'participant', args[1],
+                        const occupant = this.model.getOccupantByNickname(args[0]);
+                        if (!occupant) {
+                            this.showErrorMessage(OCCUPANT_NOT_FOUND);
+                            break;
+                        }
+                        this.model.setRole(
+                            occupant, 'participant', args[1],
                             undefined, this.onCommandError.bind(this));
                         break;
                     }
@@ -1033,18 +1033,28 @@ converse.plugins.add('converse-muc-views', {
                         if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
-                        this.modifyRole(
-                                this.model.get('jid'), args[0], 'none', args[1],
-                                undefined, this.onCommandError.bind(this));
+                        const occupant = this.model.getOccupantByNickname(args[0]);
+                        if (!occupant) {
+                            this.showErrorMessage(OCCUPANT_NOT_FOUND);
+                            break;
+                        }
+                        this.model.setRole(
+                            occupant, 'none', args[1],
+                            undefined, this.onCommandError.bind(this));
                         break;
                     }
                     case 'mute': {
                         if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
-                        this.modifyRole(
-                                this.model.get('jid'), args[0], 'visitor', args[1],
-                                undefined, this.onCommandError.bind(this));
+                        const occupant = this.model.getOccupantByNickname(args[0]);
+                        if (!occupant) {
+                            this.showErrorMessage(OCCUPANT_NOT_FOUND);
+                            break;
+                        }
+                        this.model.setRole(
+                            occupant, 'visitor', args[1],
+                            undefined, this.onCommandError.bind(this));
                         break;
                     }
                     case 'member': {
@@ -1092,9 +1102,14 @@ converse.plugins.add('converse-muc-views', {
                         if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
-                        this.modifyRole(
-                                this.model.get('jid'), args[0], 'moderator', args[1],
-                                undefined, this.onCommandError.bind(this));
+                        const occupant = this.model.getOccupantByNickname(args[0]);
+                        if (!occupant) {
+                            this.showErrorMessage();
+                            break;
+                        }
+                        this.model.setRole(
+                            occupant, 'moderator', args[1],
+                            undefined, this.onCommandError.bind(this));
                         break;
                     }
                     case 'register': {
@@ -1135,9 +1150,15 @@ converse.plugins.add('converse-muc-views', {
                         if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
                             break;
                         }
-                        this.modifyRole(
-                                this.model.get('jid'), args[0], 'participant', args[1],
-                                undefined, this.onCommandError.bind(this));
+                        const occupant = this.model.getOccupantByNickname(args[0]);
+                        if (!occupant) {
+                            this.showErrorMessage(OCCUPANT_NOT_FOUND);
+                            break;
+                        }
+                        this.model.setRole(
+                            occupant, 'participant', args[1], undefined,
+                            this.onCommandError.bind(this)
+                        );
                         break;
                     }
                     default:

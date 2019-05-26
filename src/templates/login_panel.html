@@ -4,7 +4,7 @@
             <p class="feedback-subject">{{{ o.conn_feedback_subject }}}</p>
             <p class="feedback-message {[ if (!o.conn_feedback_message) { ]} hidden {[ } ]}">{{{o.conn_feedback_message}}}</p>
         </div>
-        {[ if (o.auto_login || o._converse.CONNECTION_STATUS[o.connection_status] === 'CONNECTING') { ]}
+        {[ if (o._converse.CONNECTION_STATUS[o.connection_status] === 'CONNECTING') { ]}
             <span class="spinner fa fa-spinner centered"/>
         {[ } else { ]}
             {[ if (o.authentication == o.LOGIN || o.authentication == o.EXTERNAL) { ]}

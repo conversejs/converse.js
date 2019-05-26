@@ -1102,7 +1102,7 @@ converse.plugins.add('converse-chatview', {
                     textarea.value = '';
                     textarea.value = existing+value+' ';
                 }
-                u.putCurserAtEnd(textarea);
+                u.placeCaretAtEnd(textarea);
             },
 
             createEmojiPicker () {

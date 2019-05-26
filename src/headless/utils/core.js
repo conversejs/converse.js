@@ -348,11 +348,11 @@ u.getCurrentWord = function (input, index) {
 };
 
 u.replaceCurrentWord = function (input, new_value) {
-    const cursor = input.selectionEnd || undefined,
-          current_word = _.last(input.value.slice(0, cursor).split(' ')),
+    const caret = input.selectionEnd || undefined,
+          current_word = _.last(input.value.slice(0, caret).split(' ')),
           value = input.value;
-    input.value = value.slice(0, cursor - current_word.length) + `${new_value} ` + value.slice(cursor);
-    input.selectionEnd = cursor - current_word.length + new_value.length + 1;
+    input.value = value.slice(0, caret - current_word.length) + `${new_value} ` + value.slice(caret);
+    input.selectionEnd = caret - current_word.length + new_value.length + 1;
 };
 
 u.triggerEvent = function (el, name, type="Event", bubbles=true, cancelable=true) {
@@ -433,7 +433,7 @@ u.getRandomInt = function (max) {
     return Math.floor(Math.random() * Math.floor(max));
 };
 
-u.putCurserAtEnd = function (textarea) {
+u.placeCaretAtEnd = function (textarea) {
     if (textarea !== document.activeElement) {
         textarea.focus();
     }

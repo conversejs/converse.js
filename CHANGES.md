@@ -29,6 +29,7 @@
 - #1558: `this.get` is not a function error when `forward_messages` is set to `true`.
 - #1572: In `fullscreen` view mode the top is cut off on iOS
 - #1576: Converse gets stuck with spinner when logging out with `auto_login` set to `true`
+- #1586: Not possible to kick someone with a space in their nickname
 
 - **Breaking changes**:
 - Rename `muc_disable_moderator_commands` to [muc_disable_slash_commands](https://conversejs.org/docs/html/configuration.html#muc-disable-slash-commands).

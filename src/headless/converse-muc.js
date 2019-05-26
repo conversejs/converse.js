@@ -361,7 +361,7 @@ converse.plugins.add('converse-muc', {
              * @private
              * @method _converse.ChatRoom#join
              * @param { String } nick - The user's nickname
-             * @param { String } password - Optional password, if required by the groupchat.
+             * @param { String } [password] - Optional password, if required by the groupchat.
              */
             async join (nick, password) {
                 if (this.get('connection_status') === converse.ROOMSTATUS.ENTERED) {
@@ -388,10 +388,36 @@ converse.plugins.add('converse-muc', {
                 return this;
             },
 
-            /* Leave the groupchat.
+            /**
+             * Sends an IQ stanza to the XMPP server to destroy this groupchat. Not
+             * to be confused with the {@link _converse.ChatRoom#destroy}
+             * method, which simply removes the room from the local browser storage cache.
+             * @private
+             * @method _converse.ChatRoom#sendDestroyIQ
+             * @param { string } [reason] - The reason for destroying the groupchat
+             * @param { string } [new_jid] - The JID of the new groupchat which
+             *      replaces this one.
+             */
+            sendDestroyIQ (reason, new_jid) {
+                const destroy = $build("destroy");
+                if (new_jid) {
+                    destroy.attrs({'jid': new_jid});
+                }
+                const iq = $iq({
+                    'to': this.get('jid'),
+                    'type': "set"
+                }).c("query", {'xmlns': Strophe.NS.MUC_OWNER}).cnode(destroy.node);
+                if (reason && reason.length > 0) {
+                    iq.c("reason", reason);
+                }
+                return _converse.api.sendIQ(iq);
+            },
+
+            /**
+             * Leave the groupchat.
              * @private
              * @method _converse.ChatRoom#leave
-             * @param { string } exit_msg - Optional message to indicate your reason for leaving
+             * @param { string } [exit_msg] - Message to indicate your reason for leaving
              */
             leave (exit_msg) {
                 this.features.destroy();
@@ -550,7 +576,7 @@ converse.plugins.add('converse-muc', {
              * @private
              * @method _converse.ChatRoom#directInvite
              * @param { String } recipient - JID of the person being invited
-             * @param { String } reason - Optional reason for the invitation
+             * @param { String } [reason] - Reason for the invitation
              */
             directInvite (recipient, reason) {
                 if (this.features.get('membersonly')) {
@@ -873,12 +899,14 @@ converse.plugins.add('converse-muc', {
 
             /**
              * @private
-             * @method _converse.ChatRoom#getOccupantByNickname
-             * @param { String } nick - The nickname of the occupant to be returned
+             * @method _converse.ChatRoom#getOccupant
+             * @param { String } nick_or_jid - The nickname or JID of the occupant to be returned
              * @returns { _converse.ChatRoomOccupant }
              */
-            getOccupantByNickname (nick) {
-                return this.occupants.findWhere({'nick': nick});
+            getOccupant (nick_or_jid) {
+                return (u.isValidJID(nick_or_jid) &&
+                    this.occupants.findWhere({'jid': nick_or_jid})) ||
+                    this.occupants.findWhere({'nick': nick_or_jid});
             },
 
             async getJidsWithAffiliations (affiliations) {
@@ -1144,6 +1172,22 @@ converse.plugins.add('converse-muc', {
                     return true;
                 }
                 return false;
+            },
+
+            /**
+             * Set the subject for this {@link _converse.ChatRoom}
+             * @private
+             * @method _converse.ChatRoom#setSubject
+             * @param { String } value
+             */
+            setSubject(value='') {
+                _converse.api.send(
+                    $msg({
+                        to: this.get('jid'),
+                        from: _converse.connection.jid,
+                        type: "groupchat"
+                    }).c("subject", {xmlns: "jabber:client"}).t(value).tree()
+                );
             },
 
             /**

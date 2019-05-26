@@ -46,6 +46,21 @@ const ADMIN_COMMANDS = ['admin', 'ban', 'deop', 'destroy', 'member', 'op', 'revo
 const MODERATOR_COMMANDS = ['kick', 'mute', 'voice'];
 const VISITOR_COMMANDS = ['nick'];
 
+const COMMAND_TO_ROLE = {
+    'deop': 'participant',
+    'kick': 'none',
+    'mute': 'visitor',
+    'op': 'moderator',
+    'voice': 'participant'
+}
+const COMMAND_TO_AFFILIATION = {
+    'admin': 'admin',
+    'ban': 'outcast',
+    'member': 'member',
+    'owner': 'owner',
+    'revoke': 'none'
+}
+
 converse.plugins.add('converse-muc-views', {
     /* Dependencies are other plugins which might be
      * overridden or relied upon, and therefore need to be loaded before
@@ -95,8 +110,6 @@ converse.plugins.add('converse-muc-views', {
                 'toggle_occupants': true
             }
         });
-
-        const OCCUPANT_NOT_FOUND = __("Could not find an occupant with that nickname");
 
 
         function renderRoomsPanel () {
@@ -857,19 +870,18 @@ converse.plugins.add('converse-muc-views', {
                 }
             },
 
-            destroy (groupchat, reason, onSuccess, onError) {
-                const destroy = $build("destroy");
-                const iq = $iq({to: groupchat, type: "set"}).c("query", {xmlns: Strophe.NS.MUC_OWNER}).cnode(destroy.node);
-                if (reason && reason.length > 0) { iq.c("reason", reason); }
-                return _converse.api.sendIQ(iq);
-            },
-
             verifyRoles (roles, occupant, show_error=true) {
+                if (!Array.isArray(roles)) {
+                    throw new TypeError('roles must be an Array');
+                }
+                if (!roles.length) {
+                    return true;
+                }
                 if (!occupant) {
                     occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
                 }
                 const role = occupant.get('role');
-                if (Array.isArray(roles) && roles.includes(role) || roles === role) {
+                if (roles.includes(role)) {
                     return true;
                 }
                 if (show_error) {
@@ -879,11 +891,17 @@ converse.plugins.add('converse-muc-views', {
             },
 
             verifyAffiliations (affiliations, occupant, show_error=true) {
+                if (!Array.isArray(affiliations)) {
+                    throw new TypeError('affiliations must be an Array');
+                }
+                if (!affiliations.length) {
+                    return true;
+                }
                 if (!occupant) {
                     occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
                 }
                 const a = occupant.get('affiliation');
-                if (Array.isArray(affiliations) && affiliations.includes(a) || affiliations === a) {
+                if (affiliations.includes(a)) {
                     return true;
                 }
                 if (show_error) {
@@ -892,22 +910,81 @@ converse.plugins.add('converse-muc-views', {
                 return false;
             },
 
-            validateRoleChangeCommand (command, args) {
-                /* Check that a command to change a groupchat user's role or
-                 * affiliation has anough arguments.
-                 */
-                if (args.length < 1 || args.length > 2) {
+            validateRoleOrAffiliationChangeArgs (command, args) {
+                if (!args) {
                     this.showErrorMessage(
                         __('Error: the "%1$s" command takes two arguments, the user\'s nickname and optionally a reason.', command)
                     );
                     return false;
                 }
-                if (!(AFFILIATION_CHANGE_COMANDS.includes(command) && u.isValidJID(args[0])) &&
-                        !this.model.occupants.findWhere({'nick': args[0]}) &&
-                        !this.model.occupants.findWhere({'jid': args[0]})) {
-                    this.showErrorMessage(__('Error: couldn\'t find a groupchat participant "%1$s"', args[0]));
+                return true;
+            },
+
+            getNickOrJIDFromCommandArgs (args) {
+                const [text, references] = this.model.parseTextForReferences('@'+args);
+                if (!references.length) {
+                    this.showErrorMessage(__("Error: couldn't find a groupchat participant based on your arguments"));
                     return false;
                 }
+                return references.pop();
+            },
+
+            setAffiliation (command, args, required_affiliations) {
+                const affiliation = COMMAND_TO_AFFILIATION[command];
+                if (!affiliation) {
+                    throw Error(`ChatRoomView#setAffiliation called with invalid command: ${command}`);
+                }
+                if (!this.verifyAffiliations(required_affiliations)) {
+                    return false;
+                }
+                if (!this.validateRoleOrAffiliationChangeArgs(command, args)) {
+                    return false;
+                }
+                const nick_or_jid = _.get(this.getNickOrJIDFromCommandArgs(args), 'value', null);
+                if (!nick_or_jid) {
+                    return false;
+                }
+                const reason = args.slice(nick_or_jid.length).trim();
+                // We're guaranteed to have an occupant due to getNickOrJIDFromCommandArgs
+                const occupant = this.model.getOccupant(nick_or_jid);
+                const attrs = {
+                    'jid': occupant.get('jid'),
+                    'reason': reason
+                }
+                if (_converse.auto_register_muc_nickname && occupant) {
+                    attrs['nick'] = occupant.get('nick');
+                }
+                this.model.setAffiliation(affiliation, [attrs])
+                    .then(() => this.model.occupants.fetchMembers())
+                    .catch(err => this.onCommandError(err));
+            },
+
+            getReason (args) {
+                return args.includes(',') ? args.slice(args.indexOf(',')+1).trim() : null;
+            },
+
+            setRole (command, args, required_affiliations=[], required_roles=[]) {
+                /* Check that a command to change a groupchat user's role or
+                 * affiliation has anough arguments.
+                 */
+                const role = COMMAND_TO_ROLE[command];
+                if (!role) {
+                    throw Error(`ChatRoomView#setRole called with invalid command: ${command}`);
+                }
+                if (!this.verifyAffiliations(required_affiliations) || !this.verifyRoles(required_roles)) {
+                    return false;
+                }
+                if (!this.validateRoleOrAffiliationChangeArgs(command, args)) {
+                    return false;
+                }
+                const nick_or_jid = _.get(this.getNickOrJIDFromCommandArgs(args), 'value', null);
+                if (!nick_or_jid) {
+                    return false;
+                }
+                const reason = args.slice(nick_or_jid.length).trim();
+                // We're guaranteed to have an occupant due to getNickOrJIDFromCommandArgs
+                const occupant = this.model.getOccupant(nick_or_jid);
+                this.model.setRole(occupant, role, reason, undefined, this.onCommandError.bind(this));
                 return true;
             },
 
@@ -920,9 +997,12 @@ converse.plugins.add('converse-muc-views', {
                 if (_converse.muc_disable_slash_commands && !Array.isArray(_converse.muc_disable_slash_commands)) {
                     return _converse.ChatBoxView.prototype.parseMessageForCommands.apply(this, arguments);
                 }
-                const match = text.replace(/^\s*/, "").match(/^\/(.*?)(?: (.*))?$/) || [false, '', ''],
-                      args = match[2] && match[2].splitOnce(' ').filter(s => s) || [],
-                      command = match[1].toLowerCase();
+                text = text.replace(/^\s*/, "");
+                const command = (text.match(/^\/([a-zA-Z]*) ?/) || ['']).pop().toLowerCase();
+                if (!command) {
+                    return false;
+                }
+                const args = text.slice(('/'+command).length+1);
 
                 let disabled_commands = [];
                 if (Array.isArray(_converse.muc_disable_slash_commands)) {
@@ -934,29 +1014,11 @@ converse.plugins.add('converse-muc-views', {
 
                 switch (command) {
                     case 'admin': {
-                        if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
-                            break;
-                        }
-                        this.model.setAffiliation('admin', [{
-                            'jid': args[0],
-                            'reason': args[1]
-                        }]).then(
-                            () => this.model.occupants.fetchMembers(),
-                            (err) => this.onCommandError(err)
-                        );
+                        this.setAffiliation(command, args, ['owner']);
                         break;
                     }
                     case 'ban': {
-                        if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
-                            break;
-                        }
-                        this.model.setAffiliation('outcast', [{
-                            'jid': args[0],
-                            'reason': args[1]
-                        }]).then(
-                            () => this.model.occupants.fetchMembers(),
-                            (err) => this.onCommandError(err)
-                        );
+                        this.setAffiliation(command, args, ['admin', 'owner']);
                         break;
                     }
                     case 'deop': {
@@ -966,24 +1028,14 @@ converse.plugins.add('converse-muc-views', {
                         // to participant (e.g. visitor => participant).
                         // Currently we don't distinguish between these two
                         // cases.
-                        if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
-                            break;
-                        }
-                        const occupant = this.model.getOccupantByNickname(args[0]);
-                        if (!occupant) {
-                            this.showErrorMessage(OCCUPANT_NOT_FOUND);
-                            break;
-                        }
-                        this.model.setRole(
-                            occupant, 'participant', args[1],
-                            undefined, this.onCommandError.bind(this));
+                        this.setRole(command, args, ['admin', 'owner']);
                         break;
                     }
                     case 'destroy': {
-                        if (!this.verifyAffiliations('owner')) {
+                        if (!this.verifyAffiliations(['owner'])) {
                             break;
                         }
-                        this.destroy(this.model.get('jid'), args[0])
+                        this.model.sendDestroyIQ(args)
                             .then(() => this.close())
                             .catch(e => this.onCommandError(e));
                         break;
@@ -995,12 +1047,12 @@ converse.plugins.add('converse-muc-views', {
                         // consideration.
                         let allowed_commands = ['clear', 'help', 'me', 'nick', 'subject', 'topic', 'register'];
                         const occupant = this.model.occupants.findWhere({'jid': _converse.bare_jid});
-                        if (this.verifyAffiliations('owner', occupant, false)) {
+                        if (this.verifyAffiliations(['owner'], occupant, false)) {
                             allowed_commands = allowed_commands.concat(OWNER_COMMANDS).concat(ADMIN_COMMANDS);
-                        } else if (this.verifyAffiliations('admin', occupant, false)) {
+                        } else if (this.verifyAffiliations(['admin'], occupant, false)) {
                             allowed_commands = allowed_commands.concat(ADMIN_COMMANDS);
                         }
-                        if (this.verifyRoles('moderator', occupant, false)) {
+                        if (this.verifyRoles(['moderator'], occupant, false)) {
                             allowed_commands = allowed_commands.concat(MODERATOR_COMMANDS).concat(VISITOR_COMMANDS);
                         } else if (!this.verifyRoles(['visitor', 'participant', 'moderator'], occupant, false)) {
                             allowed_commands = allowed_commands.concat(VISITOR_COMMANDS);
@@ -1030,49 +1082,15 @@ converse.plugins.add('converse-muc-views', {
                         );
                         break;
                     } case 'kick': {
-                        if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
-                            break;
-                        }
-                        const occupant = this.model.getOccupantByNickname(args[0]);
-                        if (!occupant) {
-                            this.showErrorMessage(OCCUPANT_NOT_FOUND);
-                            break;
-                        }
-                        this.model.setRole(
-                            occupant, 'none', args[1],
-                            undefined, this.onCommandError.bind(this));
+                        this.setRole(command, args, [], ['moderator']);
                         break;
                     }
                     case 'mute': {
-                        if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
-                            break;
-                        }
-                        const occupant = this.model.getOccupantByNickname(args[0]);
-                        if (!occupant) {
-                            this.showErrorMessage(OCCUPANT_NOT_FOUND);
-                            break;
-                        }
-                        this.model.setRole(
-                            occupant, 'visitor', args[1],
-                            undefined, this.onCommandError.bind(this));
+                        this.setRole(command, args, [], ['moderator']);
                         break;
                     }
                     case 'member': {
-                        if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
-                            break;
-                        }
-                        const occupant = this.model.occupants.findWhere({'nick': args[0]}) ||
-                                         this.model.occupants.findWhere({'jid': args[0]}),
-                              attrs = {
-                                'jid': occupant ? occupant.get('jid') : args[0],
-                                'reason': args[1]
-                              };
-                        if (_converse.auto_register_muc_nickname && occupant) {
-                            attrs['nick'] = occupant.get('nick');
-                        }
-                        this.model.setAffiliation('member', [attrs])
-                            .then(() => this.model.occupants.fetchMembers())
-                            .catch(err => this.onCommandError(err));
+                        this.setAffiliation(command, args, ['admin', 'owner']);
                         break;
                     }
                     case 'nick': {
@@ -1081,35 +1099,16 @@ converse.plugins.add('converse-muc-views', {
                         }
                         _converse.api.send($pres({
                             from: _converse.connection.jid,
-                            to: this.model.getRoomJIDAndNick(match[2]),
+                            to: this.model.getRoomJIDAndNick(args),
                             id: _converse.connection.getUniqueId()
                         }).tree());
                         break;
                     }
                     case 'owner':
-                        if (!this.verifyAffiliations(['owner']) || !this.validateRoleChangeCommand(command, args)) {
-                            break;
-                        }
-                        this.model.setAffiliation('owner', [{
-                            'jid': args[0],
-                            'reason': args[1]
-                        }]).then(
-                            () => this.model.occupants.fetchMembers(),
-                            (err) => this.onCommandError(err)
-                        );
+                        this.setAffiliation(command, args, ['owner']);
                         break;
                     case 'op': {
-                        if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
-                            break;
-                        }
-                        const occupant = this.model.getOccupantByNickname(args[0]);
-                        if (!occupant) {
-                            this.showErrorMessage();
-                            break;
-                        }
-                        this.model.setRole(
-                            occupant, 'moderator', args[1],
-                            undefined, this.onCommandError.bind(this));
+                        this.setRole(command, args, ['admin', 'owner']);
                         break;
                     }
                     case 'register': {
@@ -1123,42 +1122,15 @@ converse.plugins.add('converse-muc-views', {
                         break;
                     }
                     case 'revoke': {
-                        if (!this.verifyAffiliations(['admin', 'owner']) || !this.validateRoleChangeCommand(command, args)) {
-                            break;
-                        }
-                        this.model.setAffiliation('none', [{
-                            'jid': args[0],
-                            'reason': args[1]
-                        }]).then(
-                            () => this.model.occupants.fetchMembers(),
-                            (err) => this.onCommandError(err)
-                        );
+                        this.setAffiliation(command, args, ['admin', 'owner']);
                         break;
                     }
                     case 'topic':
                     case 'subject':
-                        // TODO: should be done via API call to _converse.api.rooms
-                        _converse.api.send(
-                            $msg({
-                                to: this.model.get('jid'),
-                                from: _converse.connection.jid,
-                                type: "groupchat"
-                            }).c("subject", {xmlns: "jabber:client"}).t(match[2] || "").tree()
-                        );
+                        this.model.setSubject(args);
                         break;
                     case 'voice': {
-                        if (!this.verifyRoles(['moderator']) || !this.validateRoleChangeCommand(command, args)) {
-                            break;
-                        }
-                        const occupant = this.model.getOccupantByNickname(args[0]);
-                        if (!occupant) {
-                            this.showErrorMessage(OCCUPANT_NOT_FOUND);
-                            break;
-                        }
-                        this.model.setRole(
-                            occupant, 'participant', args[1], undefined,
-                            this.onCommandError.bind(this)
-                        );
+                        this.setRole(command, args, [], ['moderator']);
                         break;
                     }
                     default:

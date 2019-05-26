@@ -2802,7 +2802,7 @@
                 expect(_converse.connection.send).not.toHaveBeenCalled();
                 expect(view.el.querySelectorAll('.chat-error').length).toBe(1);
                 expect(view.el.querySelector('.chat-error').textContent.trim())
-                    .toBe(`Error: couldn't find a groupchat participant "chris"`)
+                    .toBe('Error: couldn\'t find a groupchat participant based on your arguments');
 
                 // Now test with an existing nick
                 textarea.value = '/member marc Welcome to the club!';
@@ -2993,7 +2993,7 @@
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 spyOn(view.model, 'setAffiliation').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
-                spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+                spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 let presence = $pres({
                         'from': 'lounge@localhost/annoyingGuy',
@@ -3015,7 +3015,7 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"owner\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
@@ -3026,7 +3026,7 @@
                 view.onFormSubmitted(new Event('submit'));
 
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
-                    'Error: couldn\'t find a groupchat participant "nobody"');
+                    "Error: couldn't find a groupchat participant based on your arguments");
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
 
                 // Call now with the correct of arguments.
@@ -3036,14 +3036,14 @@
                 textarea.value = '/owner annoyingGuy You\'re responsible';
                 view.onFormSubmitted(new Event('submit'));
 
-                expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
+                expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
                 expect(view.model.setAffiliation).toHaveBeenCalled();
                 expect(view.showErrorMessage.calls.count()).toBe(2);
                 // Check that the member list now gets updated
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@localhost" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                            `<item affiliation="owner" jid="annoyingGuy">`+
+                            `<item affiliation="owner" jid="annoyingguy@localhost">`+
                                 `<reason>You&apos;re responsible</reason>`+
                             `</item>`+
                         `</query>`+
@@ -3081,7 +3081,7 @@
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 spyOn(view.model, 'setAffiliation').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
-                spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+                spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 let presence = $pres({
                         'from': 'lounge@localhost/annoyingGuy',
@@ -3103,7 +3103,7 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"ban\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.model.setAffiliation).not.toHaveBeenCalled();
@@ -3114,14 +3114,14 @@
                 textarea.value = '/ban annoyingGuy You\'re annoying';
                 view.onFormSubmitted(new Event('submit'));
 
-                expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
+                expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.model.setAffiliation).toHaveBeenCalled();
                 // Check that the member list now gets updated
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@localhost" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                            `<item affiliation="outcast" jid="annoyingGuy">`+
+                            `<item affiliation="outcast" jid="annoyingguy@localhost">`+
                                 `<reason>You&apos;re annoying</reason>`+
                             `</item>`+
                         `</query>`+
@@ -3145,7 +3145,7 @@
                 done();
             }));
 
-            it("accepts a /kick command to kick a user",
+            it("takes a /kick command to kick a user",
                 mock.initConverse(
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
@@ -3161,10 +3161,10 @@
                 const view = _converse.chatboxviews.get('lounge@localhost');
                 spyOn(view.model, 'setRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
-                spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+                spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 let presence = $pres({
-                        'from': 'lounge@localhost/annoyingGuy',
+                        'from': 'lounge@localhost/annoying guy',
                         'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
                         'to': 'dummy@localhost/desktop'
                     })
@@ -3183,7 +3183,7 @@
                     preventDefault: _.noop,
                     keyCode: 13
                 });
-                expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"kick\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.model.setRole).not.toHaveBeenCalled();
@@ -3191,16 +3191,16 @@
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                textarea.value = '/kick annoyingGuy You\'re annoying';
+                textarea.value = '/kick annoying guy You\'re annoying';
                 view.onFormSubmitted(new Event('submit'));
 
-                expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
+                expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq id="${IQ_id}" to="lounge@localhost" type="set" xmlns="jabber:client">`+
                         `<query xmlns="http://jabber.org/protocol/muc#admin">`+
-                            `<item nick="annoyingGuy" role="none">`+
+                            `<item nick="annoying guy" role="none">`+
                                 `<reason>You&apos;re annoying</reason>`+
                             `</item>`+
                         `</query>`+
@@ -3217,7 +3217,7 @@
                  *     </presence>
                  */
                 presence = $pres({
-                        'from': 'lounge@localhost/annoyingGuy',
+                        'from': 'lounge@localhost/annoying guy',
                         'to': 'dummy@localhost/desktop',
                         'type': 'unavailable'
                     })
@@ -3228,7 +3228,7 @@
                         }).up()
                         .c('status', {'code': '307'});
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
-                expect(view.el.querySelectorAll('.chat-info')[3].textContent).toBe("annoyingGuy has been kicked out");
+                expect(view.el.querySelectorAll('.chat-info')[3].textContent).toBe("annoying guy has been kicked out");
                 expect(view.el.querySelectorAll('.chat-info').length).toBe(4);
                 done();
             }));
@@ -3246,11 +3246,11 @@
                     sent_IQ = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                var view = _converse.chatboxviews.get('lounge@localhost');
+                const view = _converse.chatboxviews.get('lounge@localhost');
                 spyOn(view.model, 'setRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'showChatEvent').and.callThrough();
-                spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+                spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 // New user enters the groupchat
                 /* <presence
@@ -3262,7 +3262,7 @@
                  * </x>
                  * </presence>
                  */
-                var presence = $pres({
+                let presence = $pres({
                         'from': 'lounge@localhost/trustworthyguy',
                         'id':'27C55F89-1C6A-459A-9EB5-77690145D624',
                         'to': 'dummy@localhost/desktop'
@@ -3285,7 +3285,7 @@
                     keyCode: 13
                 });
 
-                expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"op\" command takes two arguments, the user's nickname and optionally a reason.");
 
@@ -3297,7 +3297,7 @@
                 textarea.value = '/op trustworthyguy You\'re trustworthy';
                 view.onFormSubmitted(new Event('submit'));
 
-                expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
+                expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
@@ -3339,7 +3339,7 @@
                 textarea.value = '/deop trustworthyguy Perhaps not';
                 view.onFormSubmitted(new Event('submit'));
 
-                expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
+                expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
                 expect(view.showChatEvent.calls.count()).toBe(1);
                 expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
@@ -3392,7 +3392,7 @@
                 spyOn(view.model, 'setRole').and.callThrough();
                 spyOn(view, 'showErrorMessage').and.callThrough();
                 spyOn(view, 'showChatEvent').and.callThrough();
-                spyOn(view, 'validateRoleChangeCommand').and.callThrough();
+                spyOn(view, 'validateRoleOrAffiliationChangeArgs').and.callThrough();
 
                 // New user enters the groupchat
                 /* <presence
@@ -3427,7 +3427,7 @@
                     keyCode: 13
                 });
 
-                expect(view.validateRoleChangeCommand).toHaveBeenCalled();
+                expect(view.validateRoleOrAffiliationChangeArgs).toHaveBeenCalled();
                 expect(view.showErrorMessage).toHaveBeenCalledWith(
                     "Error: the \"mute\" command takes two arguments, the user's nickname and optionally a reason.");
                 expect(view.model.setRole).not.toHaveBeenCalled();
@@ -3438,7 +3438,7 @@
                 textarea.value = '/mute annoyingGuy You\'re annoying';
                 view.onFormSubmitted(new Event('submit'));
 
-                expect(view.validateRoleChangeCommand.calls.count()).toBe(2);
+                expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);
                 expect(view.showErrorMessage.calls.count()).toBe(1);
                 expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
@@ -3481,7 +3481,7 @@
                 textarea.value = '/voice annoyingGuy Now you can talk again';
                 view.onFormSubmitted(new Event('submit'));
 
-                expect(view.validateRoleChangeCommand.calls.count()).toBe(3);
+                expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(3);
                 expect(view.showChatEvent.calls.count()).toBe(1);
                 expect(view.model.setRole).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(

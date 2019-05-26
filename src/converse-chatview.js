@@ -333,7 +333,7 @@ converse.plugins.add('converse-chatview', {
                 'click .toggle-smiley': 'toggleEmojiMenu',
                 'click .upload-file': 'toggleFileUpload',
                 'input .chat-textarea': 'inputChanged',
-                'keydown .chat-textarea': 'keyPressed',
+                'keydown .chat-textarea': 'onKeyDown',
                 'dragover .chat-textarea': 'onDragOver',
                 'drop .chat-textarea': 'onDrop',
             },
@@ -950,7 +950,7 @@ converse.plugins.add('converse-chatview', {
                 this.setChatState(_converse.ACTIVE, {'silent': true});
             },
 
-            keyPressed (ev) {
+            onKeyDown (ev) {
                 /* Event handler for when a key is pressed in a chat box textarea.
                  */
                 if (ev.ctrlKey) {

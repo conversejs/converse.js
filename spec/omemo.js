@@ -124,7 +124,7 @@
 
             const textarea = view.el.querySelector('.chat-textarea');
             textarea.value = 'This message will be encrypted';
-            view.keyPressed({
+            view.onKeyDown({
                 target: textarea,
                 preventDefault: _.noop,
                 keyCode: 13 // Enter
@@ -309,7 +309,7 @@
 
             const textarea = view.el.querySelector('.chat-textarea');
             textarea.value = 'This message will be encrypted';
-            view.keyPressed({
+            view.onKeyDown({
                 target: textarea,
                 preventDefault: _.noop,
                 keyCode: 13 // Enter
@@ -458,7 +458,7 @@
 
             const textarea = view.el.querySelector('.chat-textarea');
             textarea.value = 'This is an encrypted message from this device';
-            view.keyPressed({
+            view.onKeyDown({
                 target: textarea,
                 preventDefault: _.noop,
                 keyCode: 13 // Enter
@@ -515,7 +515,7 @@
 
             const textarea = view.el.querySelector('.chat-textarea');
             textarea.value = 'This message will be encrypted';
-            view.keyPressed({
+            view.onKeyDown({
                 target: textarea,
                 preventDefault: _.noop,
                 keyCode: 13 // Enter
@@ -1251,7 +1251,7 @@
 
             const textarea = view.el.querySelector('.chat-textarea');
             textarea.value = 'This message will be sent encrypted';
-            view.keyPressed({
+            view.onKeyDown({
                 target: textarea,
                 preventDefault: _.noop,
                 keyCode: 13

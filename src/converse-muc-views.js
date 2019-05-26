@@ -524,8 +524,8 @@ converse.plugins.add('converse-muc-views', {
                 'click .toggle-smiley ul.emoji-picker li': 'insertEmoji',
                 'click .toggle-smiley': 'toggleEmojiMenu',
                 'click .upload-file': 'toggleFileUpload',
-                'keydown .chat-textarea': 'keyPressed',
-                'keyup .chat-textarea': 'keyUp',
+                'keydown .chat-textarea': 'onKeyDown',
+                'keyup .chat-textarea': 'onKeyUp',
                 'input .chat-textarea': 'inputChanged',
                 'dragover .chat-textarea': 'onDragOver',
                 'drop .chat-textarea': 'onDrop',
@@ -641,14 +641,14 @@ converse.plugins.add('converse-muc-views', {
                 this.mention_auto_complete.on('suggestion-box-selectcomplete', () => (this.auto_completing = false));
             },
 
-            keyPressed (ev) {
-                if (this.mention_auto_complete.keyPressed(ev)) {
+            onKeyDown (ev) {
+                if (this.mention_auto_complete.onKeyDown(ev)) {
                     return;
                 }
-                return _converse.ChatBoxView.prototype.keyPressed.apply(this, arguments);
+                return _converse.ChatBoxView.prototype.onKeyDown.apply(this, arguments);
             },
 
-            keyUp (ev) {
+            onKeyUp (ev) {
                 this.mention_auto_complete.evaluate(ev);
             },
 

@@ -46,9 +46,9 @@
                 'keyCode': 50,
                 'key': '@'
             };
-            view.keyPressed(at_event);
+            view.onKeyDown(at_event);
             textarea.value = '@';
-            view.keyUp(at_event);
+            view.onKeyUp(at_event);
 
             expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(3);
             expect(view.el.querySelector('.suggestion-box__results li:first-child').textContent).toBe('dick');
@@ -89,8 +89,8 @@
                 'keyCode': 9,
                 'key': 'Tab'
             }
-            view.keyPressed(tab_event);
-            view.keyUp(tab_event);
+            view.onKeyDown(tab_event);
+            view.onKeyUp(tab_event);
             expect(view.el.querySelector('.suggestion-box__results').hidden).toBeFalsy();
             expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(1);
             expect(view.el.querySelector('.suggestion-box__results li').textContent).toBe('some1');
@@ -102,9 +102,9 @@
             }
             for (var i=0; i<3; i++) {
                 // Press backspace 3 times to remove "som"
-                view.keyPressed(backspace_event);
+                view.onKeyDown(backspace_event);
                 textarea.value = textarea.value.slice(0, textarea.value.length-1)
-                view.keyUp(backspace_event);
+                view.onKeyUp(backspace_event);
             }
             expect(view.el.querySelector('.suggestion-box__results').hidden).toBeTruthy();
 
@@ -121,8 +121,8 @@
             _converse.connection._dataRecv(test_utils.createRequest(presence));
 
             textarea.value = "hello s s";
-            view.keyPressed(tab_event);
-            view.keyUp(tab_event);
+            view.onKeyDown(tab_event);
+            view.onKeyUp(tab_event);
             expect(view.el.querySelector('.suggestion-box__results').hidden).toBeFalsy();
             expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(2);
 
@@ -132,13 +132,13 @@
                 'stopPropagation': _.noop,
                 'keyCode': 38
             }
-            view.keyPressed(up_arrow_event);
-            view.keyUp(up_arrow_event);
+            view.onKeyDown(up_arrow_event);
+            view.onKeyUp(up_arrow_event);
             expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(2);
             expect(view.el.querySelector('.suggestion-box__results li[aria-selected="false"]').textContent).toBe('some1');
             expect(view.el.querySelector('.suggestion-box__results li[aria-selected="true"]').textContent).toBe('some2');
 
-            view.keyPressed({
+            view.onKeyDown({
                 'target': textarea,
                 'preventDefault': _.noop,
                 'stopPropagation': _.noop,
@@ -159,11 +159,11 @@
                 });
             _converse.connection._dataRecv(test_utils.createRequest(presence));
             textarea.value = "hello z";
-            view.keyPressed(tab_event);
-            view.keyUp(tab_event);
+            view.onKeyDown(tab_event);
+            view.onKeyUp(tab_event);
 
-            view.keyPressed(tab_event);
-            view.keyUp(tab_event);
+            view.onKeyDown(tab_event);
+            view.onKeyUp(tab_event);
             expect(textarea.value).toBe('hello @z3r0 ');
             done();
         }));
@@ -200,9 +200,9 @@
                 'keyCode': 8,
                 'key': 'Backspace'
             }
-            view.keyPressed(backspace_event);
+            view.onKeyDown(backspace_event);
             textarea.value = "hello @some1"; // Mimic backspace
-            view.keyUp(backspace_event);
+            view.onKeyUp(backspace_event);
             expect(view.el.querySelector('.suggestion-box__results').hidden).toBeFalsy();
             expect(view.el.querySelectorAll('.suggestion-box__results li').length).toBe(1);
             expect(view.el.querySelector('.suggestion-box__results li').textContent).toBe('some1');

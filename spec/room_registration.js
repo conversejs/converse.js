@@ -25,7 +25,7 @@
                     view = _converse.chatboxviews.get(room_jid);
                     const textarea = view.el.querySelector('.chat-textarea')
                     textarea.value = '/register';
-                    view.keyPressed({
+                    view.onKeyDown({
                         target: textarea,
                         preventDefault: _.noop,
                         keyCode: 13

@@ -1962,7 +1962,7 @@
                 const text = 'This is a sent message';
                 const textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = text;
-                view.keyPressed({
+                view.onKeyDown({
                     target: textarea,
                     preventDefault: _.noop,
                     keyCode: 13
@@ -2661,9 +2661,9 @@
                 textarea.value = '/clear';
 
                 const enter = { 'target': textarea, 'preventDefault': _.noop, 'keyCode': 13 };
-                view.keyPressed(enter);
+                view.onKeyDown(enter);
                 textarea.value = '/help';
-                view.keyPressed(enter);
+                view.onKeyDown(enter);
 
                 let info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_messages.length).toBe(19);
@@ -2690,9 +2690,9 @@
                 const occupant = view.model.occupants.findWhere({'jid': _converse.bare_jid});
                 occupant.set('affiliation', 'admin');
                 textarea.value = '/clear';
-                view.keyPressed(enter);
+                view.onKeyDown(enter);
                 textarea.value = '/help';
-                view.keyPressed(enter);
+                view.onKeyDown(enter);
                 info_messages = sizzle('.chat-info', view.el).slice(1);
                 expect(info_messages.length).toBe(17);
                 let commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
@@ -2703,9 +2703,9 @@
                 ]);
                 occupant.set('affiliation', 'member');
                 textarea.value = '/clear';
-                view.keyPressed(enter);
+                view.onKeyDown(enter);
                 textarea.value = '/help';
-                view.keyPressed(enter);
+                view.onKeyDown(enter);
                 info_messages = sizzle('.chat-info', view.el).slice(1);
                 expect(info_messages.length).toBe(10);
                 commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
@@ -2713,9 +2713,9 @@
 
                 occupant.set('role', 'participant');
                 textarea.value = '/clear';
-                view.keyPressed(enter);
+                view.onKeyDown(enter);
                 textarea.value = '/help';
-                view.keyPressed(enter);
+                view.onKeyDown(enter);
                 info_messages = sizzle('.chat-info', view.el).slice(1);
                 expect(info_messages.length).toBe(7);
                 commands = info_messages.map(m => m.textContent.replace(/:.*$/, ''));
@@ -2734,9 +2734,9 @@
                 const enter = { 'target': textarea, 'preventDefault': _.noop, 'keyCode': 13 };
                 spyOn(window, 'confirm').and.callFake(() => true);
                 textarea.value = '/clear';
-                view.keyPressed(enter);
+                view.onKeyDown(enter);
                 textarea.value = '/help';
-                view.keyPressed(enter);
+                view.onKeyDown(enter);
 
                 const info_messages = Array.prototype.slice.call(view.el.querySelectorAll('.chat-info'), 0);
                 expect(info_messages.length).toBe(17);
@@ -2794,7 +2794,7 @@
                 // First check that an error message appears when a
                 // non-existent nick is used.
                 textarea.value = '/member chris Welcome to the club!';
-                view.keyPressed({
+                view.onKeyDown({
                     target: textarea,
                     preventDefault: _.noop,
                     keyCode: 13
@@ -2806,7 +2806,7 @@
 
                 // Now test with an existing nick
                 textarea.value = '/member marc Welcome to the club!';
-                view.keyPressed({
+                view.onKeyDown({
                     target: textarea,
                     preventDefault: _.noop,
                     keyCode: 13
@@ -2921,7 +2921,7 @@
                 // Check the alias /topic
                 const textarea = view.el.querySelector('.chat-textarea');
                 textarea.value = '/topic This is the groupchat subject';
-                view.keyPressed({
+                view.onKeyDown({
                     target: textarea,
                     preventDefault: _.noop,
                     keyCode: 13
@@ -2931,7 +2931,7 @@
 
                 // Check /subject
                 textarea.value = '/subject This is a new subject';
-                view.keyPressed({
+                view.onKeyDown({
                     target: textarea,
                     preventDefault: _.noop,
                     keyCode: 13
@@ -2945,7 +2945,7 @@
 
                 // Check case insensitivity
                 textarea.value = '/Subject This is yet another subject';
-                view.keyPressed({
+                view.onKeyDown({
                     target: textarea,
                     preventDefault: _.noop,
                     keyCode: 13
@@ -2968,7 +2968,7 @@
                 spyOn(view, 'clearMessages');
                 const textarea = view.el.querySelector('.chat-textarea')
                 textarea.value = '/clear';
-                view.keyPressed({
+                view.onKeyDown({
                     target: textarea,
                     preventDefault: _.noop,
                     keyCode: 13
@@ -3010,7 +3010,7 @@
 
                 var textarea = view.el.querySelector('.chat-textarea')
                 textarea.value = '/owner';
-                view.keyPressed({
+                view.onKeyDown({
                     target: textarea,
                     preventDefault: _.noop,
                     keyCode: 13
@@ -3098,7 +3098,7 @@
 
                 const textarea = view.el.querySelector('.chat-textarea')
                 textarea.value = '/ban';
-                view.keyPressed({
+                view.onKeyDown({
                     target: textarea,
                     preventDefault: _.noop,
                     keyCode: 13
@@ -3178,7 +3178,7 @@
 
                 var textarea = view.el.querySelector('.chat-textarea')
                 textarea.value = '/kick';
-                view.keyPressed({
+                view.onKeyDown({
                     target: textarea,
                     preventDefault: _.noop,
                     keyCode: 13
@@ -3279,7 +3279,7 @@
 
                 var textarea = view.el.querySelector('.chat-textarea')
                 textarea.value = '/op';
-                view.keyPressed({
+                view.onKeyDown({
                     target: textarea,
                     preventDefault: _.noop,
                     keyCode: 13
@@ -3421,7 +3421,7 @@
 
                 const textarea = view.el.querySelector('.chat-textarea')
                 textarea.value = '/mute';
-                view.keyPressed({
+                view.onKeyDown({
                     target: textarea,
                     preventDefault: _.noop,
                     keyCode: 13

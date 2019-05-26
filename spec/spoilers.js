@@ -110,7 +110,7 @@
 
             const textarea = view.el.querySelector('.chat-textarea');
             textarea.value = 'This is the spoiler';
-            view.keyPressed({
+            view.onKeyDown({
                 target: textarea,
                 preventDefault: _.noop,
                 keyCode: 13
@@ -187,7 +187,7 @@
             const hint_input = view.el.querySelector('.spoiler-hint');
             hint_input.value = 'This is the hint';
 
-            view.keyPressed({
+            view.onKeyDown({
                 target: textarea,
                 preventDefault: _.noop,
                 keyCode: 13

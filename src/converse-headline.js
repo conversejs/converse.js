@@ -76,7 +76,7 @@ converse.plugins.add('converse-headline', {
             events: {
                 'click .close-chatbox-button': 'close',
                 'click .toggle-chatbox-button': 'minimize',
-                'keypress textarea.chat-textarea': 'keyPressed'
+                'keypress textarea.chat-textarea': 'onKeyDown'
             },
 
             initialize () {

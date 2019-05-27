@@ -3191,7 +3191,7 @@
                 // XXX: Calling onFormSubmitted directly, trying
                 // again via triggering Event doesn't work for some weird
                 // reason.
-                textarea.value = '/kick annoying guy You\'re annoying';
+                textarea.value = '/kick @annoying guy You\'re annoying';
                 view.onFormSubmitted(new Event('submit'));
 
                 expect(view.validateRoleOrAffiliationChangeArgs.calls.count()).toBe(2);

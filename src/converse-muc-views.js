@@ -921,7 +921,10 @@ converse.plugins.add('converse-muc-views', {
             },
 
             getNickOrJIDFromCommandArgs (args) {
-                const [text, references] = this.model.parseTextForReferences('@'+args);
+                if (!args.startsWith('@')) {
+                    args = '@'+ args;
+                }
+                const [text, references] = this.model.parseTextForReferences(args);
                 if (!references.length) {
                     this.showErrorMessage(__("Error: couldn't find a groupchat participant based on your arguments"));
                     return false;
@@ -944,7 +947,7 @@ converse.plugins.add('converse-muc-views', {
                 if (!nick_or_jid) {
                     return false;
                 }
-                const reason = args.slice(nick_or_jid.length).trim();
+                const reason = args.split(nick_or_jid, 2)[1].trim();
                 // We're guaranteed to have an occupant due to getNickOrJIDFromCommandArgs
                 const occupant = this.model.getOccupant(nick_or_jid);
                 const attrs = {
@@ -981,7 +984,7 @@ converse.plugins.add('converse-muc-views', {
                 if (!nick_or_jid) {
                     return false;
                 }
-                const reason = args.slice(nick_or_jid.length).trim();
+                const reason = args.split(nick_or_jid, 2)[1].trim();
                 // We're guaranteed to have an occupant due to getNickOrJIDFromCommandArgs
                 const occupant = this.model.getOccupant(nick_or_jid);
                 this.model.setRole(occupant, role, reason, undefined, this.onCommandError.bind(this));

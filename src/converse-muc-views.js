@@ -642,13 +642,17 @@ converse.plugins.add('converse-muc-views', {
                 container_el.insertAdjacentElement('beforeend', view.el);
             },
 
+            getAutoCompleteList () {
+                return this.model.occupants.filter('nick').map(o => ({'label': o.get('nick'), 'value': `@${o.get('nick')}`}));
+            },
+
             initMentionAutoComplete () {
                 this.mention_auto_complete = new _converse.AutoComplete(this.el, {
                     'auto_first': true,
                     'auto_evaluate': false,
                     'min_chars': 1,
                     'match_current_word': true,
-                    'list': () => this.model.occupants.map(o => ({'label': o.getDisplayName(), 'value': `@${o.getDisplayName()}`})),
+                    'list': () => this.getAutoCompleteList(),
                     'filter': _converse.FILTER_STARTSWITH,
                     'ac_triggers': ["Tab", "@"],
                     'include_triggers': []

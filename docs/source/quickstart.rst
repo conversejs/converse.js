@@ -9,8 +9,40 @@ Quickstart
 Getting a demo up and running
 =============================
 
+You can try out the latest version of Converse on `conversejs.org <https://conversejs.org>`_
+for the overlayed version and `conversejs.org/fullscreen.html <https://conversejs.org/fullscreen.html>`_
+for the full page version.
+
+If you want to host Converse yourself, there are a few options available to
+you.
+
+Let your XMPP server serve Converse for you
+-------------------------------------------
+
+If you run your own XMPP server, you might first want to check whether it has
+a plugin or module for hosting Converse for you.
+
+* OpenFire has the `inverse <https://www.igniterealtime.org/projects/openfire/plugin-archive.jsp?plugin=inverse>`_ plugin.
+* Prosody has `mod_conversejs <https://modules.prosody.im/mod_conversejs.html>`_.
+
+
+Serving Converse yourself
+-------------------------
+
+Alternative you can serve only Converse without requiring any particular
+XMPP server.
+
+To do so, you'll need to get the right files to host, for which you have four
+options.
+
+.. note::
+
+    Pro-tip, if you just want to quickly test things locally, you can quickly start
+    up an HTTP server with Python by running ``python -m SimpleHTTPServer``
+
+
 Option 1: Use the content delivery network
-------------------------------------------
+******************************************
 
 Converse has a `CDN <https://en.wikipedia.org/wiki/Content_delivery_network>`_, provided by `KeyCDN <http://keycdn.com/>`_,
 which hosts its JavaScript and CSS files.
@@ -39,7 +71,7 @@ via the *script* and *link* tags:
 
 
 Option 2: Download the builds from Github
------------------------------------------
+*****************************************
 
 The `Converse releases page on Github <https://github.com/conversejs/converse.js/releases>`_
 has the release notes for every release as well as links to downloadable zip files
@@ -50,7 +82,7 @@ the *<head>* element of your page, similar as shown in option 1 above.
 
 
 Option 3: Building the files yourself
--------------------------------------
+*************************************
 
 Instead of using the CDN, you can also create your own builds and host them yourself.
 
@@ -61,13 +93,15 @@ checkout of the `Converse repo <http://github.com/conversejs/converse.js/>`_.
 
 .. note::
 
-    When hosting Converse yourself without using the CDN (options 2 and 3),
+    When hosting Converse yourself without using the CDN (options 2 and 4),
     you'll need to need to make sure that the ``webfonts`` directory is available in
     the same location as ``converse.min.css``.
 
 
+
+
 Initializing Converse
----------------------
+=====================
 
 You'll need to initialize Converse with configuration settings relevant to your requirements.
 Take a look at the :ref:`configuration-settings` section for info on all the available settings.

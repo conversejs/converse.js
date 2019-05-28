@@ -46,12 +46,7 @@ has the release notes for every release as well as links to downloadable zip fil
 containing all the files you need to host Converse yourself.
 
 Extract the zip file and include converse.min.js and converse.min.css files in
-your webpage:
-
-.. code-block:: html
-
-    <link rel="stylesheet" type="text/css" media="screen" href="converse.min.css">
-    <script src="converse.min.js" charset="utf-8"></script>
+the *<head>* element of your page, similar as shown in option 1 above.
 
 
 Option 3: Building the files yourself

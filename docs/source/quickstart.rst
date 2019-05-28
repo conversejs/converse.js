@@ -38,7 +38,23 @@ via the *script* and *link* tags:
     <script src="https://cdn.conversejs.org/4.2.0/dist/converse.min.js" charset="utf-8"></script>
 
 
-Option 2: Building the files yourself
+Option 2: Download the builds from Github
+-----------------------------------------
+
+The `Converse releases page on Github <https://github.com/conversejs/converse.js/releases>`_
+has the release notes for every release as well as links to downloadable zip files
+containing all the files you need to host Converse yourself.
+
+Extract the zip file and include converse.min.js and converse.min.css files in
+your webpage:
+
+.. code-block:: html
+
+    <link rel="stylesheet" type="text/css" media="screen" href="converse.min.css">
+    <script src="converse.min.js" charset="utf-8"></script>
+
+
+Option 3: Building the files yourself
 -------------------------------------
 
 Instead of using the CDN, you can also create your own builds and host them yourself.
@@ -48,9 +64,11 @@ Have a look at the :ref:`creating_builds` section on how to create your own buil
 In short, you should be able to do it by running ``make dist`` inside a
 checkout of the `Converse repo <http://github.com/conversejs/converse.js/>`_.
 
-Besides including the ``converse.min.js`` and ``converse.min.css`` files,
-you'll also need to make sure that the ``webfonts`` directory is available in
-the same location as ``converse.min.css``.
+.. note::
+
+    When hosting Converse yourself without using the CDN (options 2 and 3),
+    you'll need to need to make sure that the ``webfonts`` directory is available in
+    the same location as ``converse.min.css``.
 
 
 Initializing Converse

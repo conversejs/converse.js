@@ -2138,6 +2138,7 @@
                 const __ = _converse.__;
                 await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'oldnick');
                 const view = _converse.chatboxviews.get('lounge@localhost');
+                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
                 const chat_content = view.el.querySelector('.chat-content');
 
                 let occupants = view.el.querySelector('.occupant-list');
@@ -2169,6 +2170,7 @@
                 expect(sizzle('div.chat-info:last').pop().textContent).toBe(
                     __(_converse.muc.new_nickname_messages["303"], "newnick")
                 );
+                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.DISCONNECTED);
 
                 occupants = view.el.querySelector('.occupant-list');
                 expect(occupants.childNodes.length).toBe(1);
@@ -2187,6 +2189,7 @@
                     .c('status').attrs({code:'110'}).nodeTree;
 
                 _converse.connection._dataRecv(test_utils.createRequest(presence));
+                expect(view.model.get('connection_status')).toBe(converse.ROOMSTATUS.ENTERED);
                 // XXX: currently we still have an additional "has entered the groupchat"
                 // notification for the new nickname. Ideally we'd not have
                 // that, but that's probably not possible without some

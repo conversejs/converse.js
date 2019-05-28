@@ -231,6 +231,11 @@ converse.plugins.add('converse-muc', {
 
             async enterRoom () {
                 if (this.get('connection_status') !==  converse.ROOMSTATUS.ENTERED) {
+                    // We're not restoring a room from cache, so let's clear
+                    // the cache (which might be stale).
+                    this.clearMessages();
+                    this.clearOccupants();
+
                     await this.getRoomFeatures();
                     if (!u.isPersistableModel(this)) {
                         // XXX: Happens during tests, nothing to do if this
@@ -264,13 +269,11 @@ converse.plugins.add('converse-muc', {
                 }
             },
 
-            onReconnection () {
+            async onReconnection () {
                 this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
-                this.clearMessages();
-                this.clearOccupants();
                 this.registerHandlers();
+                await this.enterRoom();
                 this.announceReconnection();
-                this.enterRoom();
             },
 
             initFeatures () {

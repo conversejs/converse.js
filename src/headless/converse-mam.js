@@ -12,7 +12,6 @@ import converse from "./converse-core";
 import sizzle from "sizzle";
 
 
-const CHATROOMS_TYPE = 'chatroom';
 const { Promise, Strophe, $iq, _, dayjs } = converse.env;
 const u = converse.env.utils;
 
@@ -89,7 +88,7 @@ converse.plugins.add('converse-mam', {
                 if (this.disable_mam) {
                     return;
                 }
-                const is_groupchat = this.get('type') === CHATROOMS_TYPE;
+                const is_groupchat = this.get('type') === _converse.CHATROOMS_TYPE;
                 const mam_jid = is_groupchat ? this.get('jid') : _converse.bare_jid;
                 if (!(await _converse.api.disco.supports(Strophe.NS.MAM, mam_jid))) {
                     return;

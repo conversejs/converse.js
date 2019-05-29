@@ -24,7 +24,7 @@
              *  </message
              */
             sinon.spy(utils, 'isHeadlineMessage');
-            var stanza = $msg({
+            const stanza = $msg({
                     'xmlns': 'jabber:client',
                     'to': 'dummy@localhost',
                     'type': 'chat',
@@ -56,7 +56,7 @@
              *  </message>
              */
             sinon.spy(utils, 'isHeadlineMessage');
-            var stanza = $msg({
+            const stanza = $msg({
                     'type': 'headline',
                     'from': 'notify.example.com',
                     'to': 'dummy@localhost',
@@ -77,7 +77,7 @@
             expect(utils.isHeadlineMessage.returned(true)).toBeTruthy();
             utils.isHeadlineMessage.restore(); // unwraps
             // Headlines boxes don't show an avatar
-            var view = _converse.chatboxviews.get('notify.example.com');
+            const view = _converse.chatboxviews.get('notify.example.com');
             expect(view.model.get('show_avatar')).toBeFalsy();
             expect(view.el.querySelector('img.avatar')).toBe(null);
             done();

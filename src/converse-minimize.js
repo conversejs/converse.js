@@ -173,19 +173,10 @@ converse.plugins.add('converse-minimize', {
         /* The initialize function gets called as soon as the plugin is
          * loaded by Converse.js's plugin machinery.
          */
-        const { _converse } = this,
-              { __ } = _converse;
+        const { _converse } = this;
+        const { __ } = _converse;
 
-        // Add new HTML templates.
-        _converse.templates.chatbox_minimize = tpl_chatbox_minimize;
-        _converse.templates.toggle_chats = tpl_toggle_chats;
-        _converse.templates.trimmed_chat = tpl_trimmed_chat;
-        _converse.templates.chats_panel = tpl_chats_panel;
-
-        _converse.api.settings.update({
-            'no_trimming': false, // Set to true for tests
-        });
-
+        _converse.api.settings.update({'no_trimming': false});
 
         const minimizableChatBox = {
             maximize () {
@@ -360,7 +351,6 @@ converse.plugins.add('converse-minimize', {
 
         _converse.MinimizedChatBoxView = Backbone.NativeView.extend({
             tagName: 'div',
-            className: 'chat-head row no-gutters',
             events: {
                 'click .close-chatbox-button': 'close',
                 'click .restore-chat': 'restore'
@@ -368,21 +358,20 @@ converse.plugins.add('converse-minimize', {
 
             initialize () {
                 this.model.on('change:num_unread', this.render, this);
+                this.model.on('change:name', this.render, this);
+                this.model.on('change:fullname', this.render, this);
+                this.model.on('change:jid', this.render, this);
+                this.model.on('destroy', this.remove, this);
             },
 
             render () {
                 const data = Object.assign(
-                    this.model.toJSON(),
-                    { 'tooltip': __('Click to restore this chat') }
-                );
-                if (this.model.get('type') === 'chatroom') {
-                    data.title = this.model.get('name');
-                    u.addClass('chat-head-chatroom', this.el);
-                } else {
-                    data.title = this.model.get('fullname');
-                    u.addClass('chat-head-chatbox', this.el);
-                }
+                    this.model.toJSON(), {
+                        'tooltip': __('Click to restore this chat'),
+                        'title': this.model.getDisplayName()
+                    });
                 this.el.innerHTML = tpl_trimmed_chat(data);
+                this.setElement(this.el.firstElementChild);
                 return this.el;
             },
 

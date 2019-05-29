@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Converse.js 0.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-04 12:29+0200\n"
-"PO-Revision-Date: 2019-02-22 15:30+0000\n"
-"Last-Translator: Murilo Venturoso <muriloventuroso@gmail.com>\n"
+"PO-Revision-Date: 2019-06-18 19:04+0000\n"
+"Last-Translator: Fabiano Lucio Barbosa <dell_system@hotmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "conversejs/translations/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.5-dev\n"
+"X-Generator: Weblate 3.7\n"
 "domain: converse\n"
 "lang: pt_BR\n"
 "plural_forms: nplurals=2; plural=(n != 1);\n"
@@ -829,11 +829,11 @@ msgstr "Moderado"
 
 #: dist/converse-no-dependencies.js:37960
 msgid "Visitor"
-msgstr ""
+msgstr "Visitante"
 
 #: dist/converse-no-dependencies.js:37961
 msgid "Owner"
-msgstr ""
+msgstr "Dono"
 
 #: dist/converse-no-dependencies.js:37962
 #, fuzzy
@@ -842,11 +842,11 @@ msgstr "Apenas membros"
 
 #: dist/converse-no-dependencies.js:37963
 msgid "Admin"
-msgstr ""
+msgstr "Admin"
 
 #: dist/converse-no-dependencies.js:37997
 msgid "Participants"
-msgstr ""
+msgstr "Participantes"
 
 #: dist/converse-no-dependencies.js:38015
 #: dist/converse-no-dependencies.js:38077
@@ -879,9 +879,8 @@ msgstr "%1$s diz"
 #. TODO: we should suppress notifications if we cannot decrypt
 #. the message...
 #: dist/converse-no-dependencies.js:38509
-#, fuzzy
 msgid "OMEMO Message received"
-msgstr "Arquivando mensagem"
+msgstr "OMEMO Mensagem recebida"
 
 #: dist/converse-no-dependencies.js:38540
 msgid "has gone offline"
@@ -904,9 +903,8 @@ msgid "wants to be your contact"
 msgstr "Quer ser seu contato"
 
 #: dist/converse-no-dependencies.js:38800
-#, fuzzy
 msgid "Sorry, an error occurred while trying to remove the devices."
-msgstr "Ocorreu um erro enquanto tentava salvar o formulário"
+msgstr "Desculpe, ocorreu um erro enquanto tentava remover os dispositivos."
 
 #: dist/converse-no-dependencies.js:38810
 msgid ""
@@ -914,6 +912,9 @@ msgid ""
 "keys and all previously encrypted messages will no longer be decryptable on "
 "this device."
 msgstr ""
+"Tem certeza de que deseja gerar novas chaves OMEMO? Isso removerá suas "
+"chaves antigas e todas as mensagens criptografadas anteriormente não poderão "
+"mais ser descriptografadas neste dispositivo."
 
 #: dist/converse-no-dependencies.js:38889
 msgid "Sorry, could not decrypt a received OMEMO message due to an error."
@@ -1784,31 +1785,31 @@ msgstr "Apelido"
 
 #: dist/converse-no-dependencies.js:78440
 msgid "URL:"
-msgstr ""
+msgstr "Link:"
 
 #: dist/converse-no-dependencies.js:78450
 msgid "Email:"
-msgstr ""
+msgstr "Email:"
 
 #: dist/converse-no-dependencies.js:78460
 msgid "Role:"
-msgstr ""
+msgstr "Função:"
 
 #: dist/converse-no-dependencies.js:78468
 msgid "OMEMO Fingerprints"
-msgstr ""
+msgstr "OMEMO Impressões digitais"
 
 #: dist/converse-no-dependencies.js:78492
 msgid "Trusted"
-msgstr ""
+msgstr "Confiável"
 
 #: dist/converse-no-dependencies.js:78506
 msgid "Untrusted"
-msgstr ""
+msgstr "Não confiável"
 
 #: dist/converse-no-dependencies.js:78520
 msgid "Refresh"
-msgstr ""
+msgstr "Atualizar"
 
 #: dist/converse-no-dependencies.js:78524
 #, fuzzy
@@ -1835,9 +1836,9 @@ msgid "Download"
 msgstr "Baixar"
 
 #: dist/converse-no-dependencies.js:78815
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Download video file \"%1$s\""
-msgstr "Baixar arquivo de vídeo"
+msgstr "Baixar arquivo de vídeo  \"%1$s\""
 
 #, fuzzy
 #~ msgid "Destroy groupchat"

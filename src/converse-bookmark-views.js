@@ -127,20 +127,6 @@ converse.plugins.add('converse-bookmark-views', {
                 }
             },
 
-            onBookmarked () {
-                const icon = this.el.querySelector('.toggle-bookmark');
-                if (_.isNull(icon)) {
-                    return;
-                }
-                if (this.model.get('bookmarked')) {
-                    icon.classList.add('button-on');
-                    icon.title = __('Unbookmark this groupchat');
-                } else {
-                    icon.classList.remove('button-on');
-                    icon.title = __('Bookmark this groupchat');
-                }
-            },
-
             setBookmarkState () {
                 /* Set whether the groupchat is bookmarked or not.
                  */
@@ -177,7 +163,6 @@ converse.plugins.add('converse-bookmark-views', {
                     this.renderBookmarkForm();
                 } else {
                     models.forEach(model => model.destroy());
-                    this.el.querySelector('.toggle-bookmark').classList.remove('button-on');
                 }
             }
         }
@@ -372,10 +357,7 @@ converse.plugins.add('converse-bookmark-views', {
 
         _converse.api.listen.on('bookmarksInitialized', initBookmarkViews);
 
-        _converse.api.listen.on('chatRoomOpened', view => {
-            view.model.on('change:bookmarked', view.onBookmarked, view);
-            view.setBookmarkState();
-        });
+        _converse.api.listen.on('chatRoomOpened', view => view.setBookmarkState());
         /************************ END Event Handlers ************************/
     }
 });

@@ -134,7 +134,7 @@
             });
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
             await test_utils.waitUntil(() => view.model.get('bookmarked'));
-            toggle = view.el.querySelector('.toggle-bookmark');
+            toggle = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
             expect(view.model.get('bookmarked')).toBeTruthy();
             expect(toggle.title).toBe('Unbookmark this groupchat');
             expect(u.hasClass('on-button', toggle), true);
@@ -224,12 +224,19 @@
                 );
                 await _converse.api.rooms.open(`lounge@localhost`);
                 const view = _converse.chatboxviews.get('lounge@localhost');
-                await test_utils.waitUntil(() => !_.isNull(view.el.querySelector('.toggle-bookmark')));
-                var bookmark_icon = view.el.querySelector('.toggle-bookmark');
+                let bookmark_icon = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(_.includes(bookmark_icon.classList, 'button-on')).toBeFalsy();
+                _converse.bookmarks.create({
+                    'jid': view.model.get('jid'),
+                    'autojoin': false,
+                    'name':  'The lounge',
+                    'nick': ' some1'
+                });
                 view.model.set('bookmarked', true);
+                bookmark_icon = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(_.includes(bookmark_icon.classList, 'button-on')).toBeTruthy();
                 view.model.set('bookmarked', false);
+                bookmark_icon = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(_.includes(bookmark_icon.classList, 'button-on')).toBeFalsy();
                 done();
             }));
@@ -264,7 +271,7 @@
                 });
                 expect(_converse.bookmarks.length).toBe(1);
                 expect(view.model.get('bookmarked')).toBeTruthy();
-                var bookmark_icon = view.el.querySelector('.toggle-bookmark');
+                let bookmark_icon = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(u.hasClass('button-on', bookmark_icon)).toBeTruthy();
 
                 spyOn(_converse.connection, 'sendIQ').and.callFake(function (iq, callback, errback) {
@@ -273,6 +280,7 @@
                 });
                 spyOn(_converse.connection, 'getUniqueId').and.callThrough();
                 bookmark_icon.click();
+                bookmark_icon = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(view.toggleBookmark).toHaveBeenCalled();
                 expect(u.hasClass('button-on', bookmark_icon)).toBeFalsy();
                 expect(_converse.bookmarks.length).toBe(0);

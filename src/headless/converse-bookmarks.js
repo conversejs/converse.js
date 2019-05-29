@@ -40,7 +40,17 @@ converse.plugins.add('converse-bookmarks', {
         // New functions which don't exist yet can also be added.
 
         ChatRoom: {
-            getAndPersistNickname(nick) {
+            getDisplayName () {
+                const { _converse } = this.__super__;
+                if (this.get('bookmarked') && _converse.bookmarks) {
+                    const bookmark = _converse.bookmarks.findWhere({'jid': this.get('jid')});
+                    return bookmark.get('name');
+                } else {
+                    return this.__super__.getDisplayName.apply(this, arguments);
+                }
+            },
+
+            getAndPersistNickname (nick) {
                 const { _converse } = this.__super__;
                 nick = nick || _converse.getNicknameFromBookmark(this.get('jid'));
                 return this.__super__.getAndPersistNickname.call(this, nick);

@@ -356,7 +356,14 @@ converse.plugins.add('converse-muc', {
             },
 
             getDisplayName () {
-                return this.get('name') || this.get('jid');
+                const name = this.get('name');
+                if (name) {
+                    return name;
+                } else if (_converse.locked_muc_domain === 'hidden') {
+                    return Strophe.getNodeFromJid(this.get('jid'));
+                } else {
+                    return this.get('jid');
+                }
             },
 
             /**

@@ -559,6 +559,7 @@ converse.plugins.add('converse-muc-views', {
                 this.model.on('change:affiliation', this.renderHeading, this);
                 this.model.on('change:connection_status', this.onConnectionStatusChanged, this);
                 this.model.on('change:hidden_occupants', this.updateOccupantsToggle, this);
+                this.model.on('change:bookmarked', this.renderHeading, this);
                 this.model.on('change:jid', this.renderHeading, this);
                 this.model.on('change:name', this.renderHeading, this);
                 this.model.on('change:role', this.renderBottomPanel, this);
@@ -739,6 +740,7 @@ converse.plugins.add('converse-muc-views', {
                  */
                 return tpl_chatroom_head(
                     Object.assign(this.model.toJSON(), {
+                        'title': this.model.getDisplayName(),
                         'Strophe': Strophe,
                         '_converse': _converse,
                         'info_close': __('Close and leave this groupchat'),

@@ -1,28 +1,26 @@
 // Converse.js (A browser based XMPP chat client)
 // https://conversejs.org
 //
-// Copyright (c) 2012-2019, Jan-Carel Brand <jc@opkode.com>
+// Copyright (c) Jan-Carel Brand <jc@opkode.com>
 // Licensed under the Mozilla Public License (MPLv2)
 //
 // XEP-0313 Message Archive Management
 
 import "./converse-disco";
-import "strophejs-plugin-rsm";
 import converse from "./converse-core";
 import sizzle from "sizzle";
 
 
-const { Promise, Strophe, $iq, _, dayjs } = converse.env;
+const { Strophe, $iq, $build, _, dayjs } = converse.env;
 const u = converse.env.utils;
 
-const RSM_ATTRIBUTES = ['max', 'first', 'last', 'after', 'before', 'index', 'count'];
 // XEP-0313 Message Archive Management
 const MAM_ATTRIBUTES = ['with', 'start', 'end'];
 
 
 converse.plugins.add('converse-mam', {
 
-    dependencies: ['converse-disco', 'converse-muc'],
+    dependencies: ['converse-rsm', 'converse-disco', 'converse-muc'],
 
     overrides: {
         // Overrides mentioned here will be picked up by converse.js's
@@ -240,12 +238,12 @@ converse.plugins.add('converse-mam', {
                   * Query for archived messages.
                   *
                   * The options parameter can also be an instance of
-                  * Strophe.RSM to enable easy querying between results pages.
+                  * _converse.RSM to enable easy querying between results pages.
                   *
                   * @method _converse.api.archive.query
-                  * @param {(Object|Strophe.RSM)} options Query parameters, either
+                  * @param {(Object|_converse.RSM)} options Query parameters, either
                   *      MAM-specific or also for Result Set Management.
-                  *      Can be either an object or an instance of Strophe.RSM.
+                  *      Can be either an object or an instance of _converse.RSM.
                   *      Valid query parameters are:
                   * * `with`
                   * * `start`
@@ -258,7 +256,7 @@ converse.plugins.add('converse-mam', {
                   * * `count`
                   * @throws {Error} An error is thrown if the XMPP server responds with an error.
                   * @returns {Promise<Object>} A promise which resolves to an object which
-                  * will have keys `messages` and `rsm` which contains a Strophe.RSM object
+                  * will have keys `messages` and `rsm` which contains a _converse.RSM object
                   * on which "next" or "previous" can be called before passing it in again
                   * to this method, to get the next or previous page in the result set.
                   *
@@ -347,7 +345,7 @@ converse.plugins.add('converse-mam', {
                   * // repeatedly make a further query to fetch the next batch of messages.
                   * //
                   * // To simplify this usecase for you, the callback method receives not only an array
-                  * // with the returned archived messages, but also a special Strophe.RSM (*Result Set Management*)
+                  * // with the returned archived messages, but also a special _converse.RSM (*Result Set Management*)
                   * // object which contains the query parameters you passed in, as well
                   * // as two utility methods `next`, and `previous`.
                   * //
@@ -446,10 +444,10 @@ converse.plugins.add('converse-mam', {
                             }
                         });
                         stanza.up();
-                        if (options instanceof Strophe.RSM) {
+                        if (options instanceof _converse.RSM) {
                             stanza.cnode(options.toXML());
-                        } else if (_.intersection(RSM_ATTRIBUTES, Object.keys(options)).length) {
-                            stanza.cnode(new Strophe.RSM(options).toXML());
+                        } else if (_.intersection(_converse.RSM_ATTRIBUTES, Object.keys(options)).length) {
+                            stanza.cnode(new _converse.RSM(options).toXML());
                         }
                     }
 
@@ -476,7 +474,7 @@ converse.plugins.add('converse-mam', {
                     const set = iq.querySelector('set');
                     let rsm;
                     if (!_.isNull(set)) {
-                        rsm = new Strophe.RSM({'xml': set});
+                        rsm = new _converse.RSM({'xml': set});
                         Object.assign(rsm, _.pick(options, _.concat(MAM_ATTRIBUTES, ['max'])));
                     }
                     return {

@@ -2,7 +2,8 @@
   "name": "converse.js",
   "version": "4.2.0",
   "description": "Browser based XMPP chat client",
-  "main": "dist/converse.min.js",
+  "browser": "dist/converse.js",
+  "module": "src/converse.js",
   "files": [
     "CHANGES.md",
     "LICENSE.txt",
@@ -95,7 +96,6 @@
     "sinon": "^2.1.0",
     "sizzle": "^2.3.3",
     "snabbdom": "0.7.2",
-    "strophejs-plugin-register": "0.0.1",
     "style-loader": "^0.23.1",
     "uglify-es": "^3.0.24",
     "urijs": "^1.19.1",

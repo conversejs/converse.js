@@ -9,6 +9,7 @@ import "@converse/headless/converse-roster";
 import "converse-modal";
 import BrowserStorage from "backbone.browserStorage";
 import { OrderedListView } from "backbone.overview";
+import SHA1 from 'strophe.js/src/sha1';
 import _FormData from "formdata-polyfill";
 import converse from "@converse/headless/converse-core";
 import tpl_add_contact_modal from "templates/add_contact_modal.html";
@@ -20,8 +21,7 @@ import tpl_roster_filter from "templates/roster_filter.html";
 import tpl_roster_item from "templates/roster_item.html";
 import tpl_search_contact from "templates/search_contact.html";
 
-
-const { Backbone, Strophe, $iq, b64_sha1, sizzle, _ } = converse.env;
+const { Backbone, Strophe, $iq, sizzle, _ } = converse.env;
 const u = converse.env.utils;
 
 
@@ -897,7 +897,7 @@ converse.plugins.add('converse-rosterview', {
                 if (view) {
                     return view.model;
                 }
-                return this.model.create({name, 'id': b64_sha1(name)});
+                return this.model.create({name, 'id': SHA1.b64_sha1(name)});
             },
 
             addContactToGroup (contact, name, options) {

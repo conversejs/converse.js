@@ -4,7 +4,10 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-import { $build, $iq, $msg, $pres, SHA1, Strophe } from "strophe.js";
+import * as bosh from 'strophe.js/src/bosh';
+import * as strophe from 'strophe.js/src/core';
+import * as websocket from 'strophe.js/src/websocket';
+
 import Backbone from "backbone";
 import BrowserStorage from "backbone.browserStorage";
 import Promise from "es6-promise/dist/es6-promise.auto";
@@ -17,12 +20,15 @@ import polyfill from "./polyfill";
 import sizzle from "sizzle";
 import u from "@converse/headless/utils/core";
 
+const Strophe = strophe.default.Strophe;
+const $build = strophe.default.$build;
+const $iq = strophe.default.$iq;
+const $msg = strophe.default.$msg;
+const $pres = strophe.default.$pres;
+
 Backbone = Backbone.noConflict();
 
 dayjs.extend(advancedFormat);
-
-// Strophe globals
-const b64_sha1 = SHA1.b64_sha1;
 
 // Add Strophe Namespaces
 Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
@@ -95,6 +101,7 @@ _converse.core_plugins = [
     'converse-ping',
     'converse-pubsub',
     'converse-roster',
+    'converse-rsm',
     'converse-vcard'
 ];
 
@@ -433,7 +440,7 @@ async function initSession () {
    _converse.session.browserStorage = new BrowserStorage.session(id);
    try {
       await new Promise((success, error) => _converse.session.fetch({success, error}));
-      if (_converse.jid && _converse.session.get('jid') !== _converse.jid) {
+      if (_converse.jid && !u.isSameBareJID(_converse.session.get('jid'), _converse.jid)) {
          _converse.session.clear({'silent': true});
          _converse.session.save({'jid': _converse.jid, id});
       }
@@ -1211,6 +1218,9 @@ _converse.initialize = async function (settings, callback) {
     };
 
     this.restoreBOSHSession = function (jid_is_required) {
+        if (!(_converse.connection._proto instanceof Strophe.Bosh)) {
+            return false;
+        }
         /* Tries to restore a cached BOSH session. */
         const jid = _converse.session.get('jid');
         if (!jid) {
@@ -1940,7 +1950,6 @@ const converse = {
         'Promise': Promise,
         'Strophe': Strophe,
         '_': _,
-        'b64_sha1':  b64_sha1,
         'dayjs': dayjs,
         'sizzle': sizzle,
         'utils': u

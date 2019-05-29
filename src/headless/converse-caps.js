@@ -4,10 +4,10 @@
 // Copyright (c) 2013-2019, the Converse.js developers
 // Licensed under the Mozilla Public License (MPLv2)
 
-
+import SHA1 from 'strophe.js/src/sha1';
 import converse from "@converse/headless/converse-core";
 
-const { Strophe, $build, _, b64_sha1 } = converse.env;
+const { Strophe, $build, _ } = converse.env;
 
 Strophe.addNamespace('CAPS', "http://jabber.org/protocol/caps");
 
@@ -32,7 +32,7 @@ function generateVerificationString (_converse) {
 
     features.sort();
     S = _.reduce(features, (result, feature) => `${result}${feature}<`, S);
-    return b64_sha1(S);
+    return SHA1.b64_sha1(S);
 }
 
 function createCapsNode (_converse) {

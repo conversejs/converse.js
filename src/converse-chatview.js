@@ -31,7 +31,7 @@ import tpl_user_details_modal from "templates/user_details_modal.html";
 import u from "@converse/headless/utils/emoji";
 import xss from "xss/dist/xss";
 
-const { $msg, Backbone, Promise, Strophe, _, b64_sha1, sizzle, dayjs } = converse.env;
+const { $msg, Backbone, Promise, Strophe, _, sizzle, dayjs } = converse.env;
 
 
 converse.plugins.add('converse-chatview', {

@@ -8,11 +8,13 @@
  * as specified in XEP-0199 XMPP Ping.
  */
 
-import "strophejs-plugin-ping";
 import converse from "./converse-core";
 
 // Strophe methods for building stanzas
-const { Strophe, _ } = converse.env;
+const { Strophe, $iq, _ } = converse.env;
+
+Strophe.addNamespace('PING', "urn:xmpp:ping");
+
 
 converse.plugins.add('converse-ping', {
 
@@ -41,7 +43,13 @@ converse.plugins.add('converse-ping', {
             if (_.isUndefined(success) ) { success = null; }
             if (_.isUndefined(error) ) { error = null; }
             if (_converse.connection) {
-                _converse.connection.ping.ping(jid, success, error, timeout);
+                const id = _converse.connection.getUniqueId('ping');
+                const iq = $iq({
+                    'type': 'get',
+                    'to': jid,
+                    'id': id
+                }).c('ping', {'xmlns': Strophe.NS.PING});
+                _converse.connection.sendIQ(iq, success, error, timeout);
                 return true;
             }
             return false;
@@ -49,7 +57,10 @@ converse.plugins.add('converse-ping', {
 
         _converse.pong = function (ping) {
             _converse.lastStanzaDate = new Date();
-            _converse.connection.ping.pong(ping);
+            const from = ping.getAttribute('from');
+            const id = ping.getAttribute('id');
+            const iq = $iq({type: 'result', to: from,id: id});
+            _converse.connection.sendIQ(iq);
             return true;
         };
 
@@ -57,7 +68,7 @@ converse.plugins.add('converse-ping', {
             if (!_.isUndefined(_converse.connection.disco)) {
                 _converse.api.disco.own.features.add(Strophe.NS.PING);
             }
-            _converse.connection.ping.addPingHandler(_converse.pong);
+            return _converse.connection.addHandler(_converse.pong, Strophe.NS.PING, "iq", "get");
         };
 
         _converse.registerPingHandler = function () {

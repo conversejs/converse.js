@@ -507,7 +507,7 @@
                 done();
            }));
 
-           it("accepts a Strophe.RSM object for the query options",
+           it("accepts a _converse.RSM object for the query options",
                 mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {
@@ -519,11 +519,11 @@
                     sent_stanza = iq;
                     IQ_id = sendIQ.bind(this)(iq, callback, errback);
                 });
-                // Normally the user wouldn't manually make a Strophe.RSM object
+                // Normally the user wouldn't manually make a _converse.RSM object
                 // and pass it in. However, in the callback method an RSM object is
                 // returned which can be reused for easy paging. This test is
                 // more for that usecase.
-                const rsm =  new Strophe.RSM({'max': '10'});
+                const rsm =  new _converse.RSM({'max': '10'});
                 rsm['with'] = 'romeo@montague.lit'; // eslint-disable-line dot-notation
                 rsm.start = '2010-06-07T00:00:00Z';
                 _converse.api.archive.query(rsm);
@@ -551,7 +551,7 @@
                 done();
            }));
 
-           it("returns an object which includes the messages and a Strophe.RSM object",
+           it("returns an object which includes the messages and a _converse.RSM object",
                 mock.initConverse(
                     null, [], {},
                     async function (done, _converse) {

@@ -849,6 +849,8 @@ _converse.initialize = async function (settings, callback) {
         } else if (status === Strophe.Status.DISCONNECTED) {
             _converse.setDisconnectionCause(status, message);
             _converse.onDisconnected();
+        } else if (status === Strophe.Status.BINDREQUIRED) {
+            _converse.bindResource();
         } else if (status === Strophe.Status.ERROR) {
             _converse.setConnectionStatus(
                 status,
@@ -1087,6 +1089,16 @@ _converse.initialize = async function (settings, callback) {
          * @event _converse#setUserJID
          */
         _converse.api.trigger('setUserJID');
+    };
+
+    this.bindResource = async function () {
+        /**
+         * Synchronous event triggered before we send an IQ to bind the user's
+         * JID resource for this session.
+         * @event _converse#beforeResourceBinding
+         */
+        await _converse.api.trigger('beforeResourceBinding', {'synchronous': true});
+        _converse.connection.bind();
     };
 
     this.onConnected = function (reconnecting) {

@@ -1,6 +1,10 @@
 # Changelog
 
 ## 5.0.0 (Unreleased)
+- Allow for synchronous events. When a synchronous event is fired, Converse will
+  wait for all promises returned by the event's handlers to finish before continuing.
+- Properly handle message correction being received before the corrected message
+- Properly handle message correction being received before the corrected message
 - Groupchat default configuration now supports `list-multi` fields
 - Bugfix: Don't set `muc_domain` for roomspanel if `locked_muc_domain` is `true`.
 - Bugfix: Modal auto-closes when you open it for a second time.
@@ -15,12 +19,11 @@
 - New config setting [muc_show_join_leave_status](https://conversejs.org/docs/html/configuration.html#muc-show-join-leave-status)
 - New config option [singleton](https://conversejs.org/docs/html/configuration.html#singleton).
   By setting this option to `false` and `view_mode` to `'embedded'`, it's now possible to
-  "embed" the full app and not just a single chat. To embed just a single chat,
-  it's now necessary to explicitly set `singleton` to `true`.
+  "embed" the full app and not just a single chat. To embed just a single chat, it's now
+  necessary to explicitly set `singleton` to `true`.
 - New event: `chatBoxBlurred`.
 - New event: [chatBoxBlurred](https://conversejs.org/docs/html/api/-_converse.html#event:chatBoxBlurred)
 - New event: [chatReconnected](https://conversejs.org/docs/html/api/-_converse.html#event:chatReconnected)
-- Properly handle message correction being received before the corrected message
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1465: When highlighting a roster contact, they're incorrectly shown as online
 - #1532: Converse reloads on enter pressed in the filter box

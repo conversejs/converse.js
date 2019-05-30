@@ -254,6 +254,26 @@ For example, in your webpack config file, you could add the following to the
 
 .. code-block:: javascript
 
+    module: {
+        {
+            test: /templates\/.*\.(html|svg)$/,
+            use: [{
+                loader: 'lodash-template-webpack-loader',
+                options: {
+                    escape: /\{\{\{([\s\S]+?)\}\}\}/g,
+                    evaluate: /\{\[([\s\S]+?)\]\}/g,
+                    interpolate: /\{\{([\s\S]+?)\}\}/g,
+                    // By default, template places the values from your data in the
+                    // local scope via the with statement. However, you can specify
+                    // a single variable name with the variable setting. This can
+                    // significantly improve the speed at which a template is able
+                    // to render.
+                    variable: 'o',
+                    prependFilenameComment: __dirname
+                }
+            }]
+        }
+    },
     resolve: {
         extensions: ['.js'],
         modules: [
@@ -264,6 +284,14 @@ For example, in your webpack config file, you could add the following to the
             'templates/profile_view.html$': path.resolve(__dirname, 'templates/profile_view.html')
         }
     }
+
+
+You'll need to install ``lodash-template-webpack-loader``.
+
+Currently Converse uses a fork of `lodash-template-webpack-loader <https://github.com/jcbrand/lodash-template-webpack-loader>`_.
+
+To install it, you can add ``"lodash-template-webpack-loader": "jcbrand/lodash-template-webpack-loader"``
+to your package.json's ``devDependencies``.
 
 
 .. _`dependencies`:

@@ -571,15 +571,15 @@ converse.plugins.add('converse-controlbox', {
         });
 
         _converse.api.listen.on('chatBoxViewsInitialized', () => {
-            const that = _converse.chatboxviews;
             _converse.chatboxes.on('add', item => {
                 if (item.get('type') === _converse.CONTROLBOX_TYPE) {
-                    const view = that.get(item.get('id'));
+                    const views = _converse.chatboxviews;
+                    const view = views.get(item.get('id'));
                     if (view) {
                         view.model = item;
                         view.initialize();
                     } else {
-                        that.add(item.get('id'), new _converse.ControlBoxView({model: item}));
+                        views.add(item.get('id'), new _converse.ControlBoxView({model: item}));
                     }
                 }
             });

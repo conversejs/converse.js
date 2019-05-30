@@ -190,6 +190,7 @@ _converse.CHATROOMS_TYPE = 'chatroom';
 _converse.HEADLINES_TYPE = 'headline';
 _converse.CONTROLBOX_TYPE = 'controlbox';
 
+_converse.default_connection_options = {};
 
 // Default configuration values
 // ----------------------------
@@ -412,11 +413,14 @@ _converse.initConnection = function () {
             throw new Error("initConnection: you must supply a value for either the bosh_service_url or websocket_url or both.");
         }
         if (('WebSocket' in window || 'MozWebSocket' in window) && _converse.websocket_url) {
-            _converse.connection = new Strophe.Connection(_converse.websocket_url, _converse.connection_options);
+            _converse.connection = new Strophe.Connection(
+                _converse.websocket_url,
+                Object.assign(_converse.default_connection_options, _converse.connection_options)
+            );
         } else if (_converse.bosh_service_url) {
             _converse.connection = new Strophe.Connection(
                 _converse.bosh_service_url,
-                _.assignIn(_converse.connection_options, {'keepalive': _converse.keepalive})
+                Object.assign(_converse.default_connection_options, _converse.connection_options, {'keepalive': _converse.keepalive})
             );
         } else {
             throw new Error("initConnection: this browser does not support websockets and bosh_service_url wasn't specified.");

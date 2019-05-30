@@ -10,30 +10,30 @@ Writing a plugin
 Introduction
 ------------
 
-Converse.js exposes a plugin architecture through which developers can modify
+Converse exposes a plugin architecture through which developers can modify
 and extend its functionality.
 
 Using plugins is good engineering practice, and using them is the *only* recommended
-way of changing converse.js or adding new features to it.
+way of changing Converse or adding new features to it.
 
 In particular, plugins have the following advantages:
 
 The main benefit of plugins is their *isolation of concerns* (and features).
 From this benefit flows various 2nd degree advantages, such as the ability to
 make smaller production builds (by excluding unused plugins) and an easier
-upgrade path by avoiding touching converse.js's internals.
+upgrade path by avoiding touching Converse's internals.
 
-Each plugin comes in its own file, and converse.js's plugin architecture,
+Each plugin comes in its own file, and Converse's plugin architecture,
 called `pluggable.js <https://github.com/jcbrand/pluggable.js/>`_, provides you
 with the ability to "hook in" to the core code and other plugins.
 
-Converse.js itself is composed out of plugins and uses pluggable.js. Take a look at the
+Converse itself is composed out of plugins and uses pluggable.js. Take a look at the
 `src <https://github.com/jcbrand/converse.js/tree/master/src>`_ directory. All
 the files that follow the pattern `converse-*.js` are plugins.
 
 Plugins (by way of Pluggable.js) enable developers to extend and override existing objects,
 functions and the `Backbone <http://backbonejs.org/>`_ models and views that make up
-Converse.js.
+Converse.
 
 Besides that, in plugins you can also write new Backbone (or other) models and views,
 in order to add a new functionality.
@@ -45,16 +45,16 @@ and to understand its inner workings, please refer to the `annotated source code
 
 .. note:: **Trying out a plugin in JSFiddle**
 
-    Because Converse.js consists only of JavaScript, HTML and CSS (with no backend
+    Because Converse consists only of JavaScript, HTML and CSS (with no backend
     code required like PHP, Python or Ruby) it runs fine in JSFiddle.
 
-    Here's a Fiddle with a Converse.js plugin that calls ``alert`` once it gets
+    Here's a Fiddle with a Converse plugin that calls ``alert`` once it gets
     initialized and also when a chat message gets rendered: https://jsfiddle.net/4drfaok0/15/
 
 
 .. note:: **Generating a plugin with Yeoman**
 
-    The rest of this document explains how to write a plugin for Converse.js and
+    The rest of this document explains how to write a plugin for Converse and
     ends with a documented example of a plugin.
 
     There is a `Yeoman <http://yeoman.io/>`_ code generator, called
@@ -71,12 +71,12 @@ Registering a plugin
 Plugins need to be registered (and whitelisted) before they can be loaded and
 initialized.
 
-You register a converse.js plugin by calling ``converse.plugins.add``.
+You register a Converse plugin by calling ``converse.plugins.add``.
 
 The plugin itself is a JavaScript object which usually has at least an
 ``initialize`` method, which gets called at the end of the
 ``converse.initialize`` method which is the top-level method that gets called
-by the website to configure and initialize Converse.js itself.
+by the website to configure and initialize Converse itself.
 
 Here's an example code snippet:
 
@@ -101,7 +101,7 @@ Here's an example code snippet:
 Whitelisting of plugins
 -----------------------
 
-As of converse.js 3.0.0 and higher, plugins need to be whitelisted before they
+As of Converse 3.0.0 and higher, plugins need to be whitelisted before they
 can be used. This is because plugins have access to a powerful API. For
 example, they can read all messages and send messages on the user's behalf.
 
@@ -112,7 +112,7 @@ To whitelist a plugin simply means to specify :ref:`whitelisted_plugins` when
 you call ``converse.initialize``.
 
 If you're adding a "core" plugin, which means a plugin that will be
-included in the default, open-source version of converse.js, then you'll
+included in the default, open-source version of Converse, then you'll
 instead whitelist the plugin by adding its name to the `core_plugins` array in
 `./src/headless/converse-core.js <https://github.com/jcbrand/converse.js/blob/master/src/headless/converse-core.js>`_.
 or the `WHITELISTED_PLUGINS` array in `./src/converse.js <https://github.com/jcbrand/converse.js/blob/master/src/converse.js>`_.
@@ -138,43 +138,6 @@ The inner ``_converse`` object is made private in order to safely hide and
 encapsulate sensitive information and methods which should not be exposed
 to any 3rd-party scripts that might be running in the same page.
 
-Loading a plugin module
------------------------
-
-Converse.js uses the UMD (Universal Modules Definition) as its module syntax.
-This makes modules loadable via `require.js`, `webpack` or other module
-loaders, but also includable as old-school `<script>` tags in your HTML.
-
-Here's an example of the plugin shown above wrapped inside a UMD module:
-
-.. code-block:: javascript
-
-    (function (root, factory) {
-        if (typeof define === 'function' && define.amd) {
-            // AMD. Register as a module called "myplugin"
-            define(["converse"], factory);
-        } else {
-            // Browser globals. If you're not using a module loader such as require.js,
-            // then this line below executes. Make sure that your plugin's <script> tag
-            // appears after the one from converse.js.
-            factory(converse);
-        }
-    }(this, function (converse) {
-
-        converse.plugins.add('myplugin', {
-
-            initialize: function () {
-                // This method gets called once converse.initialize has been called
-                // and the plugin itself has been loaded.
-
-                // Inside this method, you have access to the closured
-                // _converse object as an attribute on "this".
-                // E.g. this._converse
-            },
-        });
-
-    });
-
 
 Accessing 3rd party libraries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -182,20 +145,13 @@ Accessing 3rd party libraries
 Immediately inside the module shown above you can access 3rd party libraries (such
 dayjs and lodash) via the ``converse.env`` map.
 
-The code for it would look something like this:
-
+The code for it could look something like this:
 
 .. code-block:: javascript
 
     // Commonly used utilities and variables can be found under the "env"
     // namespace of the "converse" global.
-    const Strophe = converse.env.Strophe,
-          $iq = converse.env.$iq,
-          $msg = converse.env.$msg,
-          $pres = converse.env.$pres,
-          $build = converse.env.$build,
-          _ = converse.env._,
-          dayjs = converse.env.dayjs;
+    const { Backbone, Promise, Strophe, dayjs, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
 
 These dependencies are closured so that they don't pollute the global
 namespace, that's why you need to access them in such a way inside the module.
@@ -203,22 +159,117 @@ namespace, that's why you need to access them in such a way inside the module.
 Overrides
 ---------
 
-Plugins can override core code or code from other plugins. Refer to the full
-example at the bottom for code details.
+Plugins can override core code or code from other plugins. You can specify
+overrides in the object passed to  ``converse.plugins.add``.
 
-Use the ``overrides`` functionality with caution. It basically resorts to
+In an override you can still call the overridden function, by calling
+``this.__super__.methodName.apply(this, arguments);`` where ``methodName`` is
+the name of the function or method you're overriding.
+
+The following code snippet provides an example of two different overrides:
+
+.. code-block:: javascript
+
+    overrides: {
+        /* The *_converse* object has a method "onConnected".
+         * You can override that method as follows:
+         */
+        onConnected: function () {
+            // Overrides the onConnected method in Converse
+
+            // Top-level functions in "overrides" are bound to the
+            // inner "_converse" object.
+            const _converse = this;
+
+            // Your custom code can come here ...
+
+            // You can access the original function being overridden
+            // via the __super__ attribute.
+            // Make sure to pass on the arguments supplied to this
+            // function and also to apply the proper "this" object.
+            _converse.__super__.onConnected.apply(this, arguments);
+
+            // Your custom code can come here ...
+        },
+
+        /* On the XMPPStatus Backbone model is a method sendPresence.
+         * We can override is as follows:
+         */
+        XMPPStatus: {
+            sendPresence: function (type, status_message, jid) {
+                // The "_converse" object is available via the __super__
+                // attribute.
+                const _converse = this.__super__._converse;
+
+                // Custom code can come here ...
+
+                // You can call the original overridden method, by
+                // accessing it via the __super__ attribute.
+                // When calling it, you need to apply the proper
+                // context as reference by the "this" variable.
+                this.__super__.sendPresence.apply(this, arguments);
+            }
+        }
+    }
+
+
+Use the ``overrides`` feature with caution. It basically resorts to
 monkey patching which pollutes the call stack and can make your code fragile
-and prone to bugs when Converse.js gets updated. Too much use of ``overrides``
+and prone to bugs when Converse gets updated. Too much use of ``overrides``
 is therefore a "code smell" which should ideally be avoided.
 
-A better approach is to listen to the events emitted by Converse.js, and to add
+A better approach is to listen to the events emitted by Converse, and to add
 your code in event handlers. This is however not always possible, in which case
 the overrides are a powerful tool.
+
+Also, while it's possible to add new methods to classes via the ``overrides``
+feature, it's better and more explicit to use composition with
+``Object.assign``.
+
+For example:
+
+.. code-block:: javascript
+
+        function doSomething () {
+            // Your code comes here
+        }
+        Object.assign(_converse.ChatBoxView.prototype, { doSomething });
+
+
+Overriding a template
+~~~~~~~~~~~~~~~~~~~~~
+
+Converse uses various templates, loaded with lodash, to generate its HTML.
+
+It's not possible to override a template with the plugin's ``overrides``
+feature, instead you should configure a new path to your own template via your
+module bundler.
+
+For example, with Webpack (which Converse uses internall), you can specify an
+``alias`` for the template you want to override. This alias then points to your
+own custom template.
+
+For example, in your webpack config file, you could add the following to the
+``config`` object that gets exported:
+
+.. code-block:: javascript
+
+    resolve: {
+        extensions: ['.js'],
+        modules: [
+            path.join(__dirname, 'node_modules'),
+            path.join(__dirname, 'node_modules/converse.js/src')
+        ],
+        alias: {
+            'templates/profile_view.html$': path.resolve(__dirname, 'templates/profile_view.html')
+        }
+    }
+
 
 .. _`dependencies`:
 
 Plugin dependencies
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 When using ``overrides``, the code that you want to override (which is either
 in ``converse-core`` or in other plugins), needs to be parsed already by the
@@ -246,10 +297,10 @@ In this case, you can't specify the plugin as a dependency in the ``define``
 statement at the top of the plugin, since it might not always be available,
 which would cause ``require.js`` to throw an error.
 
-Extending converse.js's configuration settings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Extending Converse's configuration settings
+----------------------------------------------
 
-Converse.js comes with various :ref:`configuration-settings` that can be used to
+Converse comes with various :ref:`configuration-settings` that can be used to
 modify its functionality and behavior.
 
 All configuration settings have default values which can be overridden when
@@ -260,9 +311,9 @@ these settings with the `_converse.api.settings.update` method (see
 :ref:`settings-update`).
 
 Exposing promises
-~~~~~~~~~~~~~~~~~
+-----------------
 
-Converse.js has a ``waitUntil`` API method (see :ref:`waituntil-grouping`)
+Converse has a ``waitUntil`` API method (see :ref:`waituntil-grouping`)
 which allows you to wait for various promises to resolve before executing a
 piece of code.
 
@@ -276,7 +327,7 @@ only resolves the plugin but will also emit an event with the same name.
 Dealing with asynchronicity
 ---------------------------
 
-Due to the asynchronous nature of XMPP, many subroutines in Converse.js execute
+Due to the asynchronous nature of XMPP, many subroutines in Converse execute
 at different times and not necessarily in the same order.
 
 In many cases, when you want to execute a piece of code in a plugin, you first
@@ -366,13 +417,7 @@ generated by `generator-conversejs <https://github.com/jcbrand/generator-convers
 
     // Commonly used utilities and variables can be found under the "env"
     // namespace of the "converse" global.
-    const Strophe = converse.env.Strophe,
-          $iq = converse.env.$iq,
-          $msg = converse.env.$msg,
-          $pres = converse.env.$pres,
-          $build = converse.env.$build,
-          _ = converse.env._,
-          dayjs = converse.env.dayjs;
+    const { Backbone, Promise, Strophe, dayjs, sizzle, _, $build, $iq, $msg, $pres } = converse.env;
 
     // The following line registers your plugin.
     converse.plugins.add("myplugin", {
@@ -390,13 +435,13 @@ generated by `generator-conversejs <https://github.com/jcbrand/generator-convers
          * If the setting "strict_plugin_dependencies" is set to true,
          * an error will be raised if the plugin is not found.
          */
-        'dependencies': [],
+        dependencies: [],
 
-        /* Converse.js's plugin mechanism will call the initialize
+        /* Converse's plugin mechanism will call the initialize
          * method on any plugin (if it exists) as soon as the plugin has
          * been loaded.
          */
-        'initialize': function () {
+        initialize: function () {
             /* Inside this method, you have access to the private
              * `_converse` object.
              */
@@ -453,15 +498,15 @@ generated by `generator-conversejs <https://github.com/jcbrand/generator-convers
         },
 
         /* If you want to override some function or a Backbone model or
-         * view defined elsewhere in converse.js, then you do that under
+         * view defined elsewhere in Converse, then you do that under
          * the "overrides" namespace.
          */
-        'overrides': {
+        overrides: {
             /* For example, the private *_converse* object has a
              * method "onConnected". You can override that method as follows:
              */
-            'onConnected': function () {
-                // Overrides the onConnected method in converse.js
+            onConnected: function () {
+                // Overrides the onConnected method in Converse
 
                 // Top-level functions in "overrides" are bound to the
                 // inner "_converse" object.
@@ -478,11 +523,11 @@ generated by `generator-conversejs <https://github.com/jcbrand/generator-convers
                 // Your custom code can come here ...
             },
 
-            /* Override converse.js's XMPPStatus Backbone model so that we can override the
+            /* Override Converse's XMPPStatus Backbone model so that we can override the
              * function that sends out the presence stanza.
              */
-            'XMPPStatus': {
-                'sendPresence': function (type, status_message, jid) {
+            XMPPStatus: {
+                sendPresence: function (type, status_message, jid) {
                     // The "_converse" object is available via the __super__
                     // attribute.
                     const _converse = this.__super__._converse;

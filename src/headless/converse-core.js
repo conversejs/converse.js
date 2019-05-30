@@ -1446,10 +1446,23 @@ _converse.api = {
      * (see [_converse.api.listen](http://localhost:8000/docs/html/api/-_converse.api.listen.html)).
      *
      * @method _converse.api.trigger
+     * @param {string} name - The event name
+     * @param {...any} [argument] - Argument to be passed to the event handler
+     * @param {object} [options]
+     * @param {boolean} [options.synchronous] - Whether the event is synchronous or not.
+     *    When a synchronous event is fired, Converse will wait for all
+     *    promises returned by the event's handlers to finish before continuing.
      */
-    'trigger' (name) {
+    async trigger (name) {
          /* Event emitter and promise resolver */
-         _converse.trigger.apply(_converse, arguments);
+         const args = Array.from(arguments);
+         const options = args.pop();
+         if (options.synchronous) {
+            const events = _converse._events[name] || [];
+            await Promise.all(events.map(e => e.callback.call(e.ctx, args)));
+         } else {
+            _converse.trigger.apply(_converse, arguments);
+         }
          const promise = _converse.promises[name];
          if (!_.isUndefined(promise)) {
             promise.resolve();

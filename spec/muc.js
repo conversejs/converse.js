@@ -114,7 +114,7 @@
                 expect(room instanceof Backbone.Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(jid);
                 expect(chatroomview.is_chatroom).toBeTruthy();
-                expect(u.isVisible(chatroomview.el)).toBeTruthy();
+                await test_utils.waitUntil(() => u.isVisible(chatroomview.el));
 
                 // Test again, now that the room exists.
                 room = await _converse.api.rooms.open(jid);
@@ -129,19 +129,19 @@
                 room = await _converse.api.rooms.open(jid);
                 expect(room instanceof Backbone.Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
-                expect(u.isVisible(chatroomview.el)).toBeTruthy();
+                await test_utils.waitUntil(() => u.isVisible(chatroomview.el));
 
                 jid = 'leisure@localhost';
                 room = await _converse.api.rooms.open(jid);
                 expect(room instanceof Backbone.Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
-                expect(u.isVisible(chatroomview.el)).toBeTruthy();
+                await test_utils.waitUntil(() => u.isVisible(chatroomview.el));
 
                 jid = 'leiSure@localhost';
                 room = await _converse.api.rooms.open(jid);
                 expect(room instanceof Backbone.Model).toBeTruthy();
                 chatroomview = _converse.chatboxviews.get(jid.toLowerCase());
-                expect(u.isVisible(chatroomview.el)).toBeTruthy();
+                await test_utils.waitUntil(() => u.isVisible(chatroomview.el));
                 chatroomview.close();
 
                 _converse.muc_instant_rooms = false;
@@ -1286,6 +1286,7 @@
 
                 await _converse.api.rooms.open('coven@chat.shakespeare.lit', {'nick': 'some1'});
                 const view = _converse.chatboxviews.get('coven@chat.shakespeare.lit');
+                await test_utils.waitUntil(() => u.isVisible(view.el));
                 spyOn(view.model, 'saveAffiliationAndRole').and.callThrough();
                 // We pretend this is a new room, so no disco info is returned.
                 const features_stanza = $iq({
@@ -1305,7 +1306,7 @@
                  *      </x>
                  *  </presence></body>
                  */
-                var presence = $pres({
+                const presence = $pres({
                         to: 'dummy@localhost/_converse.js-29092160',
                         from: 'coven@chat.shakespeare.lit/some1'
                     }).c('x', {xmlns: Strophe.NS.MUC_USER})

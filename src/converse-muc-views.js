@@ -581,7 +581,6 @@ converse.plugins.add('converse-muc-views', {
                 this.render();
                 this.updateAfterMessagesFetched();
                 this.createOccupantsView();
-                this.insertIntoDOM();
                 this.registerHandlers();
                 /**
                  * Triggered once a groupchat has been opened

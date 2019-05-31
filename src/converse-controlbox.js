@@ -134,18 +134,6 @@ converse.plugins.add('converse-controlbox', {
                 } else {
                     this.__super__.initialize.apply(this, arguments);
                 }
-            },
-        },
-
-        ChatBoxView: {
-            insertIntoDOM () {
-                const view = this.__super__._converse.chatboxviews.get("controlbox");
-                if (view) {
-                    view.el.insertAdjacentElement('afterend', this.el)
-                } else {
-                    this.__super__.insertIntoDOM.apply(this, arguments);
-                }
-                return this;
             }
         }
     },

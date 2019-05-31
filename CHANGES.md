@@ -35,6 +35,8 @@
 - Rename `muc_disable_moderator_commands` to [muc_disable_slash_commands](https://conversejs.org/docs/html/configuration.html#muc-disable-slash-commands).
 - `_converse.api.archive.query` now returns a Promise instead of accepting a callback functions.
 - `_converse.api.disco.supports` now returns a Promise which resolves to a Boolean instead of an Array.
+- The `forward_messages` config option (which was set to `false` by default) has been removed.
+  Use [message_carbons](https://conversejs.org/docs/html/configuration.html#message-carbons) instead.
 
 
 ### API changes

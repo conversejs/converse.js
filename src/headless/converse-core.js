@@ -421,6 +421,28 @@ function tearDown () {
 }
 
 
+function reconnect () {
+    _converse.log('RECONNECTING: the connection has dropped, attempting to reconnect.');
+    _converse.setConnectionStatus(
+        Strophe.Status.RECONNECTING,
+        __('The connection has dropped, attempting to reconnect.')
+    );
+    /**
+     * Triggered when the connection has dropped, but Converse will attempt
+     * to reconnect again.
+     *
+     * @event _converse#will-reconnect
+     */
+    _converse.api.trigger('will-reconnect');
+
+    _converse.connection.reconnecting = true;
+    tearDown();
+    _converse.api.user.login(null, null, true);
+}
+
+const debouncedReconnect = _.debounce(reconnect, 2000);
+
+
 function clearSession  () {
     if (!_.isUndefined(_converse.bosh_session)) {
        _converse.bosh_session.destroy();
@@ -835,33 +857,6 @@ _converse.initialize = async function (settings, callback) {
 
 
     /**
-     * Called once the XMPP connection has dropped and we want to attempt
-     * reconnection.
-     * @method reconnect
-     * @private
-     * @memberOf _converse
-     */
-    this.reconnect = _.debounce(() => {
-        _converse.log('RECONNECTING: the connection has dropped, attempting to reconnect.');
-        _converse.setConnectionStatus(
-            Strophe.Status.RECONNECTING,
-            __('The connection has dropped, attempting to reconnect.')
-        );
-        /**
-         * Triggered when the connection has dropped, but Converse will attempt
-         * to reconnect again.
-         *
-         * @event _converse#will-reconnect
-         */
-        _converse.api.trigger('will-reconnect');
-
-        _converse.connection.reconnecting = true;
-        tearDown();
-        _converse.api.user.login(null, null, true);
-    }, 2000);
-
-
-    /**
      * Properly tear down the session so that it's possible to manually connect again.
      * @method finishDisconnection
      * @private
@@ -898,7 +893,7 @@ _converse.initialize = async function (settings, callback) {
                 /* In this case, we reconnect, because we might be receiving
                  * expirable tokens from the credentials_url.
                  */
-                return _converse.reconnect();
+                return _converse.api.connection.reconnect();
             } else {
                 return _converse.finishDisconnection();
             }
@@ -909,7 +904,7 @@ _converse.initialize = async function (settings, callback) {
                 !_converse.auto_reconnect) {
             return _converse.finishDisconnection();
         }
-        _converse.reconnect();
+        _converse.api.connection.reconnect();
     };
 
 
@@ -1426,22 +1421,23 @@ _converse.api = {
      * @namespace _converse.api.connection
      * @memberOf _converse.api
      */
-    'connection': {
+    connection: {
         /**
          * @method _converse.api.connection.connected
          * @memberOf _converse.api.connection
          * @returns {boolean} Whether there is an established connection or not.
          */
-        'connected' () {
+        connected () {
             return _converse.connection && _converse.connection.connected || false;
         },
+
         /**
          * Terminates the connection.
          *
          * @method _converse.api.connection.disconnect
          * @memberOf _converse.api.connection
          */
-        'disconnect' () {
+        disconnect () {
             if (_converse.connection) {
                _converse.connection.disconnect();
             } else {
@@ -1449,6 +1445,22 @@ _converse.api = {
                clearSession();
             }
         },
+
+        /**
+         * Can be called once the XMPP connection has dropped and we want
+         * to attempt reconnection.
+         * Only needs to be called once, if reconnect fails Converse will
+         * attempt to reconnect every two seconds.
+         * @method reconnect
+         * @memberOf _converse.api.connection
+         */
+        reconnect () {
+            if (_converse.connfeedback.get('connection_status') === Strophe.Status.RECONNECTING) {
+               debouncedReconnect();
+            } else {
+               reconnect();
+            }
+        }
     },
 
     /**
@@ -1495,6 +1507,7 @@ _converse.api = {
         'jid' () {
             return _converse.connection.jid;
         },
+
         /**
          * Logs the user in.
          *

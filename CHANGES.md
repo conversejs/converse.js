@@ -52,6 +52,7 @@
 - `_converse.updateSettings` has been removed in favor of [\_converse.api.settings.update](https://conversejs.org/docs/html/api/-_converse.api.settings.html#.update)
 - `_converse.api.roster.get` now returns a promise.
 - New API method [\_converse.api.disco.features.get](https://conversejs.org/docs/html/api/-_converse.api.disco.features.html#.get)
+- New API method [\_converse.api.connection.reconnect](https://conversejs.org/docs/html/api/-_converse.api.connection.html#.reconnect)
 
 ## 4.2.0 (2019-04-04)
 

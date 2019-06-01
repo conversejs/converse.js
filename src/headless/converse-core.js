@@ -410,14 +410,6 @@ function initClientConfig () {
 
 function tearDown () {
    _converse.api.trigger('beforeTearDown');
-   if (!_.isUndefined(_converse.bosh_session)) {
-      _converse.bosh_session.destroy();
-      delete _converse.bosh_session;
-   }
-   if (!_.isUndefined(_converse.session)) {
-      _converse.session.destroy();
-      delete _converse.session;
-   }
    window.removeEventListener('click', _converse.onUserActivity);
    window.removeEventListener('focus', _converse.onUserActivity);
    window.removeEventListener('keypress', _converse.onUserActivity);
@@ -444,6 +436,14 @@ function clearSession  () {
         window.localStorage.clear();
         window.sessionStorage.clear();
     } else {
+         if (!_.isUndefined(_converse.bosh_session)) {
+            _converse.bosh_session.destroy();
+            delete _converse.bosh_session;
+         }
+         if (!_.isUndefined(_converse.session)) {
+            _converse.session.destroy();
+            delete _converse.session;
+         }
         _.get(_converse, 'bosh_session.browserStorage', {'_clear': _.noop})._clear();
         _.get(_converse, 'session.browserStorage', {'_clear': _.noop})._clear();
     }

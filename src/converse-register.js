@@ -93,7 +93,12 @@ converse.plugins.add('converse-register', {
                 if (_.isUndefined(this.registerlinkview)) {
                     this.registerlinkview = new _converse.RegisterLinkView({'model': this.model});
                     this.registerlinkview.render();
-                    this.el.querySelector('.buttons').insertAdjacentElement('afterend', this.registerlinkview.el);
+                    const buttons = this.el.querySelector('.buttons');
+                    // Might not exist, if the spinner is currently
+                    // showing...
+                    if (buttons) {
+                        buttons.insertAdjacentElement('afterend', this.registerlinkview.el);
+                    }
                 }
                 this.registerlinkview.render();
             }
@@ -122,10 +127,10 @@ converse.plugins.add('converse-register', {
                     });
                     this.registerpanel.render();
                     this.registerpanel.el.classList.add('hidden');
-                    this.el.querySelector('#converse-login-panel').insertAdjacentElement(
-                        'afterend',
-                        this.registerpanel.el
-                    );
+                    const login_panel = this.el.querySelector('#converse-login-panel');
+                    if (login_panel) {
+                        login_panel.insertAdjacentElement('afterend', this.registerpanel.el);
+                    }
                     this.showLoginOrRegisterForm();
                 }
                 return this;

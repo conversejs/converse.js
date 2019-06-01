@@ -81,14 +81,6 @@ converse.plugins.add('converse-muc', {
     dependencies: ["converse-chatboxes", "converse-disco", "converse-controlbox"],
 
     overrides: {
-        tearDown () {
-            const { _converse } = this.__super__,
-                  groupchats = this.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
-
-            groupchats.forEach(gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
-            this.__super__.tearDown.call(this, arguments);
-        },
-
         ChatBoxes: {
             model (attrs, options) {
                 const { _converse } = this.__super__;
@@ -1646,6 +1638,12 @@ converse.plugins.add('converse-muc', {
 
 
         /************************ BEGIN Event Handlers ************************/
+        _converse.api.listen.on('beforeTearDown', () => {
+            const groupchats = _converse.chatboxes.where({'type': _converse.CHATROOMS_TYPE});
+            groupchats.forEach(gc => u.safeSave(gc, {'connection_status': converse.ROOMSTATUS.DISCONNECTED}));
+        });
+
+
         _converse.api.listen.on('addClientFeatures', () => {
             if (_converse.allow_muc) {
                 _converse.api.disco.own.features.add(Strophe.NS.MUC);

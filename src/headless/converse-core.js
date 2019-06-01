@@ -408,6 +408,27 @@ function initClientConfig () {
 }
 
 
+function tearDown () {
+   _converse.api.trigger('beforeTearDown');
+   if (!_.isUndefined(_converse.bosh_session)) {
+      _converse.bosh_session.destroy();
+      delete _converse.bosh_session;
+   }
+   if (!_.isUndefined(_converse.session)) {
+      _converse.session.destroy();
+      delete _converse.session;
+   }
+   window.removeEventListener('click', _converse.onUserActivity);
+   window.removeEventListener('focus', _converse.onUserActivity);
+   window.removeEventListener('keypress', _converse.onUserActivity);
+   window.removeEventListener('mousemove', _converse.onUserActivity);
+   window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
+   window.clearInterval(_converse.everySecondTrigger);
+   _converse.api.trigger('afterTearDown');
+   return _converse;
+}
+
+
 function clearSession  () {
     if (!_.isUndefined(_converse.bosh_session)) {
        _converse.bosh_session.destroy();
@@ -835,7 +856,7 @@ _converse.initialize = async function (settings, callback) {
         _converse.api.trigger('will-reconnect');
 
         _converse.connection.reconnecting = true;
-        _converse.tearDown();
+        tearDown();
         _converse.api.user.login(null, null, true);
     }, 2000);
 
@@ -850,7 +871,7 @@ _converse.initialize = async function (settings, callback) {
         _converse.log('DISCONNECTED');
         delete _converse.connection.reconnecting;
         _converse.connection.reset();
-        _converse.tearDown();
+        tearDown();
         clearSession();
         /**
          * Triggered after converse.js has disconnected from the XMPP server.
@@ -1363,22 +1384,6 @@ _converse.initialize = async function (settings, callback) {
         }
     };
 
-    this.tearDown = function () {
-        _converse.api.trigger('beforeTearDown');
-        if (!_.isUndefined(_converse.bosh_session)) {
-            _converse.bosh_session.destroy();
-        }
-        window.removeEventListener('click', _converse.onUserActivity);
-        window.removeEventListener('focus', _converse.onUserActivity);
-        window.removeEventListener('keypress', _converse.onUserActivity);
-        window.removeEventListener('mousemove', _converse.onUserActivity);
-        window.removeEventListener(_converse.unloadevent, _converse.onUserActivity);
-        window.clearInterval(_converse.everySecondTrigger);
-        _converse.api.trigger('afterTearDown');
-        return _converse;
-    };
-
-
     // Initialization
     // --------------
     // This is the end of the initialize method.
@@ -1440,7 +1445,7 @@ _converse.api = {
             if (_converse.connection) {
                _converse.connection.disconnect();
             } else {
-               _converse.tearDown();
+               tearDown();
                clearSession();
             }
         },
@@ -1541,7 +1546,7 @@ _converse.api = {
             if (!_.isUndefined(_converse.connection)) {
                   _converse.connection.disconnect();
             } else {
-                  _converse.tearDown();
+                  tearDown();
             }
             // Recreate all the promises
             Object.keys(_converse.promises).forEach(addPromise);

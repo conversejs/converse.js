@@ -431,14 +431,6 @@ converse.plugins.add('converse-minimize', {
                 return this.el;
             },
 
-            tearDown () {
-                this.model.off("add", this.onChanged);
-                this.model.off("destroy", this.removeChat);
-                this.model.off("change:minimized", this.onChanged);
-                this.model.off('change:num_unread', this.updateUnreadMessagesCounter);
-                return this;
-            },
-
             initToggle () {
                 const storage = _converse.config.get('storage'),
                       id = `converse.minchatstoggle${_converse.bare_jid}`;

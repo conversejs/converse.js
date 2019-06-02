@@ -33,8 +33,16 @@ u.isTagEqual = function (stanza, name) {
     }
 }
 
+const parser = new DOMParser();
+const parserErrorNS = parser.parseFromString('invalid', 'text/xml')
+                            .getElementsByTagName("parsererror")[0].namespaceURI;
+
 u.toStanza = function (string) {
-    return Strophe.xmlHtmlNode(string).firstElementChild;
+    const node = parser.parseFromString(string, "text/xml");
+    if (node.getElementsByTagNameNS(parserErrorNS, 'parsererror').length) {
+        throw new Error(`Parser Error: ${string}`);
+    }
+    return node.firstElementChild;
 }
 
 u.getLongestSubstring = function (string, candidates) {

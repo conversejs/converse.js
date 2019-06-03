@@ -78,12 +78,12 @@
                     `<enable jid="push-5@client.example" node="yxs32uqsflafdk3iuqo" xmlns="urn:xmpp:push:0"/>`+
                 `</iq>`
             );
-            const result = u.toStanza(`<iq type="result" id="${iq.getAttribute('id')}" to="dummy@localhost" />`);
+            const result = u.toStanza(`<iq type="result" id="${iq.getAttribute('id')}" to="romeo@montague.lit" />`);
             _converse.connection._dataRecv(test_utils.createRequest(result));
 
             await test_utils.waitUntil(() => _converse.session.get('push_enabled'));
             expect(_converse.session.get('push_enabled').length).toBe(1);
-            expect(_.includes(_converse.session.get('push_enabled'), 'dummy@localhost')).toBe(true);
+            expect(_.includes(_converse.session.get('push_enabled'), 'romeo@montague.lit')).toBe(true);
 
             test_utils.openAndEnterChatRoom(_converse, 'coven', 'chat.shakespeare.lit', 'oldhag');
             await test_utils.waitUntilDiscoConfirmed(

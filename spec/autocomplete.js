@@ -20,19 +20,19 @@
                 null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'tom');
-            const view = _converse.chatboxviews.get('lounge@localhost');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'tom');
+            const view = _converse.chatboxviews.get('lounge@montague.lit');
 
             ['dick', 'harry'].forEach((nick) => {
                 _converse.connection._dataRecv(test_utils.createRequest(
                     $pres({
-                        'to': 'tom@localhost/resource',
-                        'from': `lounge@localhost/${nick}`
+                        'to': 'tom@montague.lit/resource',
+                        'from': `lounge@montague.lit/${nick}`
                     })
                     .c('x', {xmlns: Strophe.NS.MUC_USER})
                     .c('item', {
                         'affiliation': 'none',
-                        'jid': `${nick}@localhost/resource`,
+                        'jid': `${nick}@montague.lit/resource`,
                         'role': 'participant'
                     })));
             });
@@ -62,17 +62,17 @@
                 null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-            const view = _converse.chatboxviews.get('lounge@localhost');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+            const view = _converse.chatboxviews.get('lounge@montague.lit');
             expect(view.model.occupants.length).toBe(1);
             let presence = $pres({
-                    'to': 'dummy@localhost/resource',
-                    'from': 'lounge@localhost/some1'
+                    'to': 'romeo@montague.lit/orchard',
+                    'from': 'lounge@montague.lit/some1'
                 })
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {
                     'affiliation': 'none',
-                    'jid': 'some1@localhost/resource',
+                    'jid': 'some1@montague.lit/resource',
                     'role': 'participant'
                 });
             _converse.connection._dataRecv(test_utils.createRequest(presence));
@@ -109,13 +109,13 @@
             expect(view.el.querySelector('.suggestion-box__results').hidden).toBeTruthy();
 
             presence = $pres({
-                    'to': 'dummy@localhost/resource',
-                    'from': 'lounge@localhost/some2'
+                    'to': 'romeo@montague.lit/orchard',
+                    'from': 'lounge@montague.lit/some2'
                 })
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {
                     'affiliation': 'none',
-                    'jid': 'some2@localhost/resource',
+                    'jid': 'some2@montague.lit/resource',
                     'role': 'participant'
                 });
             _converse.connection._dataRecv(test_utils.createRequest(presence));
@@ -148,13 +148,13 @@
 
             // Test that pressing tab twice selects
             presence = $pres({
-                    'to': 'dummy@localhost/resource',
-                    'from': 'lounge@localhost/z3r0'
+                    'to': 'romeo@montague.lit/orchard',
+                    'from': 'lounge@montague.lit/z3r0'
                 })
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {
                     'affiliation': 'none',
-                    'jid': 'z3r0@localhost/resource',
+                    'jid': 'z3r0@montague.lit/resource',
                     'role': 'participant'
                 });
             _converse.connection._dataRecv(test_utils.createRequest(presence));
@@ -173,17 +173,17 @@
                 null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-            const view = _converse.chatboxviews.get('lounge@localhost');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+            const view = _converse.chatboxviews.get('lounge@montague.lit');
             expect(view.model.occupants.length).toBe(1);
             const presence = $pres({
-                    'to': 'dummy@localhost/resource',
-                    'from': 'lounge@localhost/some1'
+                    'to': 'romeo@montague.lit/orchard',
+                    'from': 'lounge@montague.lit/some1'
                 })
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {
                     'affiliation': 'none',
-                    'jid': 'some1@localhost/resource',
+                    'jid': 'some1@montague.lit/resource',
                     'role': 'participant'
                 });
             _converse.connection._dataRecv(test_utils.createRequest(presence));

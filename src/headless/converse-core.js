@@ -1524,7 +1524,7 @@ _converse.api = {
          * @example
          * converse.plugins.add('myplugin', {
          *     initialize: function () {
-         *         this._converse.api.user.login('dummy@example.com', 'secret');
+         *         this._converse.api.user.login('romeo@montague.lit', 'secret');
          *     }
          * });
          */

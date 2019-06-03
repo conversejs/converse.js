@@ -36,7 +36,7 @@
                     ).pop());
                 }).then(stanza => {
                     expect(Strophe.serialize(stanza))
-                    .toBe(`<iq from="dummy@localhost/resource" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" `+
+                    .toBe(`<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" `+
                                 `type="get" xmlns="jabber:client">`+
                             `<query xmlns="jabber:iq:register"/></iq>`);
                     view = _converse.chatboxviews.get(room_jid);
@@ -59,7 +59,7 @@
                     ).pop());
                 }).then(stanza => {
                     expect(Strophe.serialize(stanza)).toBe(
-                        `<iq from="dummy@localhost/resource" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
+                        `<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
                             `<query xmlns="jabber:iq:register">`+
                                 `<x type="submit" xmlns="jabber:x:data">`+
                                     `<field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#register</value></field>`+
@@ -94,7 +94,7 @@
                     const features_stanza = $iq({
                         'from': room_jid,
                         'id': stanza.getAttribute('id'),
-                        'to': 'dummy@localhost/desktop',
+                        'to': 'romeo@montague.lit/desktop',
                         'type': 'result'
                     }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
                         .c('identity', {
@@ -129,7 +129,7 @@
                     ).pop());
                 }).then(stanza => {
                     expect(Strophe.serialize(stanza))
-                    .toBe(`<iq from="dummy@localhost/resource" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" `+
+                    .toBe(`<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" `+
                                 `type="get" xmlns="jabber:client">`+
                             `<query xmlns="jabber:iq:register"/></iq>`);
                     view = _converse.chatboxviews.get(room_jid);
@@ -152,7 +152,7 @@
                     ).pop());
                 }).then(stanza => {
                     expect(Strophe.serialize(stanza)).toBe(
-                        `<iq from="dummy@localhost/resource" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
+                        `<iq from="romeo@montague.lit/orchard" id="${stanza.getAttribute('id')}" to="coven@chat.shakespeare.lit" type="set" xmlns="jabber:client">`+
                             `<query xmlns="jabber:iq:register">`+
                                 `<x type="submit" xmlns="jabber:x:data">`+
                                     `<field var="FORM_TYPE"><value>http://jabber.org/protocol/muc#register</value></field>`+

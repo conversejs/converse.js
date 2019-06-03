@@ -21,7 +21,7 @@
             expect(label.textContent).toBe('This is a trusted device');
             expect(checkbox.checked).toBe(true);
 
-            cbview.el.querySelector('input[name="jid"]').value = 'dummy@localhost';
+            cbview.el.querySelector('input[name="jid"]').value = 'romeo@montague.lit';
             cbview.el.querySelector('input[name="password"]').value = 'secret';
 
             spyOn(cbview.loginpanel, 'connect');
@@ -58,7 +58,7 @@
                 expect(label.textContent).toBe('This is a trusted device');
                 expect(checkbox.checked).toBe(false);
 
-                cbview.el.querySelector('input[name="jid"]').value = 'dummy@localhost';
+                cbview.el.querySelector('input[name="jid"]').value = 'romeo@montague.lit';
                 cbview.el.querySelector('input[name="password"]').value = 'secret';
 
                 spyOn(cbview.loginpanel, 'connect');

@@ -150,32 +150,30 @@
 
                 const contacts = await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 15), 600);
                 expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(5);
-                filter.value = "candice";
+                filter.value = "juliet";
                 u.triggerEvent(filter, "keydown", "KeyboardEvent");
                 await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 1), 600);
                 // Only one roster contact is now visible
                 let visible_contacts = sizzle('li', roster).filter(u.isVisible);
                 expect(visible_contacts.length).toBe(1);
-                expect(visible_contacts.pop().textContent.trim()).toBe('Candice van der Knijff');
+                expect(visible_contacts.pop().textContent.trim()).toBe('Juliet Capulet');
                 // Only one foster group is still visible
                 expect(sizzle('.roster-group', roster).filter(u.isVisible).length).toBe(1);
                 const visible_group = sizzle('.roster-group', roster).filter(u.isVisible).pop();
                 expect(visible_group.querySelector('a.group-toggle').textContent.trim()).toBe('colleagues');
 
                 filter = _converse.rosterview.el.querySelector('.roster-filter');
-                filter.value = "an";
+                filter.value = "j";
                 u.triggerEvent(filter, "keydown", "KeyboardEvent");
-                await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 5), 600);
+                await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 2), 700);
 
                 visible_contacts = sizzle('li', roster).filter(u.isVisible);
-                expect(visible_contacts.length).toBe(5);
+                expect(visible_contacts.length).toBe(2);
 
                 let visible_groups = sizzle('.roster-group', roster).filter(u.isVisible).map(el => el.querySelector('a.group-toggle'));
-                expect(visible_groups.length).toBe(4);
+                expect(visible_groups.length).toBe(2);
                 expect(visible_groups[0].textContent.trim()).toBe('colleagues');
-                expect(visible_groups[1].textContent.trim()).toBe('Family');
-                expect(visible_groups[2].textContent.trim()).toBe('friends & acquaintences');
-                expect(visible_groups[3].textContent.trim()).toBe('ænemies');
+                expect(visible_groups[1].textContent.trim()).toBe('Ungrouped');
 
                 filter = _converse.rosterview.el.querySelector('.roster-filter');
                 filter.value = "xxx";
@@ -205,35 +203,33 @@
                 _converse.rosterview.filter_view.delegateEvents();
 
                 await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 15), 600);
-                filter.value = "an";
+                filter.value = "la";
                 u.triggerEvent(filter, "keydown", "KeyboardEvent");
-                await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 5), 600);
+                await test_utils.waitUntil(() => (sizzle('li', roster).filter(u.isVisible).length === 3), 600);
 
                 // Five roster contact is now visible
                 const visible_contacts = sizzle('li', roster).filter(u.isVisible);
-                expect(visible_contacts.length).toBe(5);
+                expect(visible_contacts.length).toBe(3);
                 let visible_groups = sizzle('.roster-group', roster).filter(u.isVisible).map(el => el.querySelector('a.group-toggle'));
-                expect(visible_groups.length).toBe(4);
+                expect(visible_groups.length).toBe(3);
                 expect(visible_groups[0].textContent.trim()).toBe('colleagues');
                 expect(visible_groups[1].textContent.trim()).toBe('Family');
                 expect(visible_groups[2].textContent.trim()).toBe('friends & acquaintences');
-                expect(visible_groups[3].textContent.trim()).toBe('ænemies');
 
                 _converse.roster.create({
-                    jid: 'latecomer@localhost',
+                    jid: 'valentine@montague.lit',
                     subscription: 'both',
                     ask: null,
                     groups: ['newgroup'],
-                    fullname: 'Marty McLatecomer'
+                    fullname: 'Valentine'
                 });
                 await test_utils.waitUntil(() => sizzle('.roster-group[data-group="newgroup"] li', roster).length, 300);
                 visible_groups = sizzle('.roster-group', roster).filter(u.isVisible).map(el => el.querySelector('a.group-toggle'));
                 // The "newgroup" group doesn't appear
-                expect(visible_groups.length).toBe(4);
+                expect(visible_groups.length).toBe(3);
                 expect(visible_groups[0].textContent.trim()).toBe('colleagues');
                 expect(visible_groups[1].textContent.trim()).toBe('Family');
                 expect(visible_groups[2].textContent.trim()).toBe('friends & acquaintences');
-                expect(visible_groups[3].textContent.trim()).toBe('ænemies');
                 expect(roster.querySelectorAll('.roster-group').length).toBe(6);
                 done();
             }));
@@ -310,9 +306,9 @@
                     async function (done, _converse) {
 
                 test_utils.createGroupedContacts(_converse);
-                let jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@localhost';
+                let jid = mock.cur_names[3].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 _converse.roster.get(jid).presence.set('show', 'online');
-                jid = mock.cur_names[4].replace(/ /g,'.').toLowerCase() + '@localhost';
+                jid = mock.cur_names[4].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 _converse.roster.get(jid).presence.set('show', 'dnd');
                 test_utils.openControlBox();
                 const button = _converse.rosterview.el.querySelector('span[data-type="state"]');
@@ -325,13 +321,13 @@
                 u.triggerEvent(filter, 'change');
 
                 await test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).length === 1, 900);
-                expect(sizzle('li', roster).filter(u.isVisible).pop().textContent.trim()).toBe('Rinse Sommer');
+                expect(sizzle('li', roster).filter(u.isVisible).pop().textContent.trim()).toBe('Lord Montague');
                 await test_utils.waitUntil(() => sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length === 1, 900);
                 const ul = sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).pop();
                 expect(ul.parentElement.firstElementChild.textContent.trim()).toBe('friends & acquaintences');
                 filter.value = "dnd";
                 u.triggerEvent(filter, 'change');
-                await test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).pop().textContent.trim() === 'Annegreet Gomez', 900);
+                await test_utils.waitUntil(() => sizzle('li', roster).filter(u.isVisible).pop().textContent.trim() === 'Friar Laurence', 900);
                 expect(sizzle('ul.roster-group-contacts', roster).filter(u.isVisible).length).toBe(1);
                 done();
             }));
@@ -389,7 +385,7 @@
                 test_utils.openControlBox();
 
                 _converse.roster.create({
-                    jid: 'groupchanger@localhost',
+                    jid: 'groupchanger@montague.lit',
                     subscription: 'both',
                     ask: null,
                     groups: ['firstgroup'],
@@ -408,7 +404,7 @@
                 }, 1000);
                 expect(group_titles).toEqual(['firstgroup']);
 
-                const contact = _converse.roster.get('groupchanger@localhost');
+                const contact = _converse.roster.get('groupchanger@montague.lit');
                 contact.set({'groups': ['secondgroup']});
                 group_titles = await test_utils.waitUntil(() => {
                     const toggles = sizzle('.roster-group[data-group="secondgroup"] a.group-toggle', _converse.rosterview.el);
@@ -433,7 +429,7 @@
                 _converse.rosterview.render();
                 for (var i=0; i<mock.cur_names.length; i++) {
                     _converse.roster.create({
-                        jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                        jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                         subscription: 'both',
                         ask: null,
                         groups: groups,
@@ -469,7 +465,7 @@
                     j = i;
                     for (i=j; i<j+groups[name]; i++) {
                         _converse.roster.create({
-                            jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                            jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                             subscription: 'both',
                             ask: null,
                             groups: name === 'ungrouped'? [] : [name],
@@ -518,7 +514,7 @@
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 test_utils.openControlBox();
                 _converse.roster.create({
-                    jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
+                    jid: mock.pend_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                     subscription: 'none',
                     ask: 'subscribe',
                     fullname: mock.pend_names[0]
@@ -566,7 +562,7 @@
 
                 _addContacts(_converse);
                 const name = mock.pend_names[0];
-                const jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const contact = _converse.roster.get(jid);
                 var sent_IQ;
                 spyOn(window, 'confirm').and.returnValue(true);
@@ -585,7 +581,7 @@
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq type="set" xmlns="jabber:client">`+
                         `<query xmlns="jabber:iq:roster">`+
-                            `<item jid="suleyman.van.beusichem@localhost" subscription="remove"/>`+
+                            `<item jid="lord.capulet@montague.lit" subscription="remove"/>`+
                         `</query>`+
                     `</iq>`);
                 done();
@@ -599,7 +595,7 @@
                 test_utils.openControlBox();
                 const name = mock.pend_names[0];
                 _converse.roster.create({
-                    jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                    jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                     subscription: 'none',
                     ask: 'subscribe',
                     fullname: name
@@ -619,11 +615,11 @@
                 expect(Strophe.serialize(iq)).toBe(
                     `<iq id="${iq.getAttribute('id')}" type="set" xmlns="jabber:client">`+
                         `<query xmlns="jabber:iq:roster">`+
-                            `<item jid="suleyman.van.beusichem@localhost" subscription="remove"/>`+
+                            `<item jid="lord.capulet@montague.lit" subscription="remove"/>`+
                         `</query>`+
                     `</iq>`);
 
-                const stanza = u.toStanza(`<iq id="${iq.getAttribute('id')}" to="dummy@localhost/resource" type="result"/>`);
+                const stanza = u.toStanza(`<iq id="${iq.getAttribute('id')}" to="romeo@montague.lit/orchard" type="result"/>`);
                 _converse.connection._dataRecv(test_utils.createRequest(stanza));
                 await test_utils.waitUntil(() => !u.isVisible(_converse.rosterview.get('Pending contacts').el));
                 done();
@@ -655,7 +651,7 @@
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 for (i=0; i<mock.pend_names.length; i++) {
                     _converse.roster.create({
-                        jid: mock.pend_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                        jid: mock.pend_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                         subscription: 'none',
                         ask: 'subscribe',
                         fullname: mock.pend_names[i]
@@ -697,8 +693,8 @@
                 _addContacts(_converse);
                 await test_utils.waitUntil(() => sizzle('li', _converse.rosterview.el).filter(u.isVisible).length, 500);
                 _converse.rosterview.el.querySelector('.roster-group a.group-toggle').click();
-                const name = "Max Mustermann";
-                const jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                const name = "Romeo Montague";
+                const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 _converse.roster.create({
                     ask: null,
                     fullname: name,
@@ -721,7 +717,7 @@
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 for (i=0; i<mock.cur_names.length; i++) {
                     _converse.roster.create({
-                        jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                        jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                         subscription: 'both',
                         ask: null,
                         fullname: mock.cur_names[i]
@@ -746,7 +742,7 @@
                 _addContacts(_converse);
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('li').length);
                 const name = mock.cur_names[0];
-                const jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const contact = _converse.roster.get(jid);
                 spyOn(window, 'confirm').and.returnValue(true);
                 spyOn(contact, 'removeFromRoster').and.callThrough();
@@ -761,7 +757,7 @@
                 expect(window.confirm).toHaveBeenCalled();
                 expect(sent_IQ.toLocaleString()).toBe(
                     `<iq type="set" xmlns="jabber:client">`+
-                        `<query xmlns="jabber:iq:roster"><item jid="max.frankfurter@localhost" subscription="remove"/></query>`+
+                        `<query xmlns="jabber:iq:roster"><item jid="mercutio@montague.lit" subscription="remove"/></query>`+
                     `</iq>`);
                 expect(contact.removeFromRoster).toHaveBeenCalled();
                 await test_utils.waitUntil(() => sizzle(".open-chat:contains('"+name+"')", _converse.rosterview.el).length === 0);
@@ -777,7 +773,7 @@
                 var name = mock.cur_names[0];
                 var contact;
                 contact = _converse.roster.create({
-                    jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                    jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                     subscription: 'both',
                     ask: null,
                     fullname: name
@@ -808,7 +804,7 @@
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 const roster = _converse.rosterview.el;
                 for (let i=0; i<mock.cur_names.length; i++) {
-                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     _converse.roster.get(jid).presence.set('show', 'online');
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
@@ -830,7 +826,7 @@
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 const roster = _converse.rosterview.el;
                 for (let i=0; i<mock.cur_names.length; i++) {
-                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     _converse.roster.get(jid).presence.set('show', 'dnd');
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
@@ -852,7 +848,7 @@
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 const roster = _converse.rosterview.el;
                 for (let i=0; i<mock.cur_names.length; i++) {
-                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     _converse.roster.get(jid).presence.set('show', 'away');
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
@@ -874,7 +870,7 @@
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 const roster = _converse.rosterview.el;
                 for (var i=0; i<mock.cur_names.length; i++) {
-                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     _converse.roster.get(jid).presence.set('show', 'xa');
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
@@ -898,7 +894,7 @@
                 spyOn(_converse.rosterview, 'update').and.callThrough();
                 var roster = _converse.rosterview.el;
                 for (var i=0; i<mock.cur_names.length; i++) {
-                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     _converse.roster.get(jid).presence.set('show', 'unavailable');
                     expect(_converse.rosterview.update).toHaveBeenCalled();
                     // Check that they are sorted alphabetically
@@ -920,27 +916,27 @@
                 await test_utils.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
                 let i, jid;
                 for (i=0; i<3; i++) {
-                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     _converse.roster.get(jid).presence.set('show', 'online');
                 }
                 for (i=3; i<6; i++) {
-                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     _converse.roster.get(jid).presence.set('show', 'dnd');
                 }
                 for (i=6; i<9; i++) {
-                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     _converse.roster.get(jid).presence.set('show', 'away');
                 }
                 for (i=9; i<12; i++) {
-                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     _converse.roster.get(jid).presence.set('show', 'xa');
                 }
                 for (i=12; i<15; i++) {
-                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                    jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     _converse.roster.get(jid).presence.set('show', 'unavailable');
                 }
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('li.online').length)
-                await test_utils.waitUntil(() => _converse.rosterview.el.querySelector('li:first-child').textContent.trim() === 'Candice van der Knijff', 900);
+                await test_utils.waitUntil(() => _converse.rosterview.el.querySelector('li:first-child').textContent.trim() === 'Juliet Capulet', 900);
                 const contacts = _converse.rosterview.el.querySelectorAll('.current-xmpp-contact');
                 for (i=0; i<3; i++) {
                     expect(u.hasClass('online', contacts[i])).toBe(true);
@@ -1007,6 +1003,7 @@
                     null, ['rosterGroupsFetched'], {},
                     async function (done, _converse) {
 
+                test_utils.openControlBox();
                 let names = [];
                 const addName = function (item) {
                     if (!u.hasClass('request-actions', item)) {
@@ -1014,14 +1011,13 @@
                     }
                 };
                 spyOn(_converse.rosterview, 'update').and.callThrough();
-                spyOn(_converse.controlboxtoggle, 'showControlBox').and.callThrough();
                 for (let i=0; i<mock.req_names.length; i++) {
                     _converse.roster.create({
-                        jid: mock.req_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
+                        jid: mock.req_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                         subscription: 'none',
                         ask: null,
                         requesting: true,
-                        fullname: mock.req_names[i]
+                        nickname: mock.req_names[i]
                     });
                 }
                 await test_utils.waitUntil(() => _converse.rosterview.get('Contact requests').el.querySelectorAll('li').length, 700);
@@ -1043,11 +1039,11 @@
                 const name = mock.req_names[0];
                 spyOn(window, 'confirm').and.returnValue(true);
                 _converse.roster.create({
-                    jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
-                    subscription: 'none',
-                    ask: null,
-                    requesting: true,
-                    fullname: name
+                    'jid': name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
+                    'subscription': 'none',
+                    'ask': null,
+                    'requesting': true,
+                    'nickname': name
                 });
                 await test_utils.waitUntil(() => sizzle('.roster-group', _converse.rosterview.el).filter(u.isVisible).length, 900);
                 expect(u.isVisible(_converse.rosterview.get('Contact requests').el)).toEqual(true);
@@ -1080,7 +1076,7 @@
                 test_utils.openControlBox();
                 test_utils.createContacts(_converse, 'requesting').openControlBox();
                 const name = mock.req_names.sort()[0];
-                const jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid =  name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const contact = _converse.roster.get(jid);
                 spyOn(contact, 'authorize').and.callFake(() => contact);
                 await test_utils.waitUntil(() => _converse.rosterview.el.querySelectorAll('.roster-group li').length)
@@ -1088,7 +1084,7 @@
                 // actually not accepted/authorized because of
                 // mock_connection.
                 spyOn(_converse.roster, 'sendContactAddIQ').and.callFake(() => Promise.resolve());
-                const req_contact = sizzle(".req-contact-name:contains('"+name+"')", _converse.rosterview.el).pop();
+                const req_contact = sizzle(`.req-contact-name:contains("${contact.getDisplayName()}")`, _converse.rosterview.el).pop();
                 req_contact.parentElement.parentElement.querySelector('.accept-xmpp-request').click();
                 expect(_converse.roster.sendContactAddIQ).toHaveBeenCalled();
                 await test_utils.waitUntil(() => contact.authorize.calls.count());
@@ -1105,7 +1101,7 @@
                 await test_utils.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
                 _converse.rosterview.update(); // XXX: Hack to make sure $roster element is attaced.
                 const name = mock.req_names.sort()[1];
-                const jid =  name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid =  name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 const contact = _converse.roster.get(jid);
                 spyOn(window, 'confirm').and.returnValue(true);
                 spyOn(contact, 'unauthorize').and.callFake(function () { return contact; });
@@ -1199,7 +1195,7 @@
                 await test_utils.waitUntil(() => sizzle('.roster-group li', _converse.rosterview.el).length, 700);
                 for (let i=0; i<mock.cur_names.length; i++) {
                     const name = mock.cur_names[i];
-                    const jid = name.replace(/ /g,'.').toLowerCase() + '@localhost';
+                    const jid = name.replace(/ /g,'.').toLowerCase() + '@montague.lit';
                     const child = sizzle("li:contains('"+name+"')", _converse.rosterview.el).pop().firstElementChild;
                     expect(child.textContent.trim()).toBe(name);
                     expect(child.getAttribute('title')).toContain(name);

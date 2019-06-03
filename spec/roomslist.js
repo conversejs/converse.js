@@ -23,7 +23,7 @@
             let room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(1);
             expect(room_els[0].innerText).toBe('room@conference.shakespeare.lit');
-            await test_utils.openChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+            await test_utils.openChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(2);
 
@@ -31,11 +31,11 @@
             view.close();
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(1);
-            expect(room_els[0].innerText).toBe('lounge@localhost');
+            expect(room_els[0].innerText).toBe('lounge@montague.lit');
             list = controlbox.el.querySelector('div.rooms-list-container');
             test_utils.waitUntil(() => _.includes(list.classList, 'hidden'));
 
-            view = _converse.chatboxviews.get('lounge@localhost');
+            view = _converse.chatboxviews.get('lounge@montague.lit');
             view.close();
             room_els = _converse.rooms_list_view.el.querySelectorAll(".open-room");
             expect(room_els.length).toBe(0);
@@ -51,18 +51,18 @@
                 {'connection': ['send']}, ['rosterGroupsFetched', 'chatBoxesFetched'], {'view_mode': 'fullscreen'},
                 async function (done, _converse) {
 
-            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-            const view = _converse.chatboxviews.get('lounge@localhost');
+            await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+            const view = _converse.chatboxviews.get('lounge@montague.lit');
 
-            const contact_jid = 'newguy@localhost';
+            const contact_jid = 'newguy@montague.lit';
             let stanza = $pres({
-                    to: 'dummy@localhost/resource',
-                    from: 'lounge@localhost/newguy'
+                    to: 'romeo@montague.lit/orchard',
+                    from: 'lounge@montague.lit/newguy'
                 })
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {
                     'affiliation': 'none',
-                    'jid': 'newguy@localhost/_converse.js-290929789',
+                    'jid': 'newguy@montague.lit/_converse.js-290929789',
                     'role': 'participant'
                 }).tree();
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
@@ -82,7 +82,7 @@
                 ).pop()
             );
             expect(Strophe.serialize(call.args[0])).toBe(
-                `<iq from="dummy@localhost/resource" id="${call.args[0].getAttribute('id')}" type="get" xmlns="jabber:client">`+
+                `<iq from="romeo@montague.lit/orchard" id="${call.args[0].getAttribute('id')}" type="get" xmlns="jabber:client">`+
                 '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                     '<items node="storage:bookmarks"/>'+
                 '</pubsub>'+
@@ -95,7 +95,7 @@
                             .c('storage', {'xmlns': 'storage:bookmarks'})
                                 .c('conference', {
                                     'name': 'Bookmarked Lounge',
-                                    'jid': 'lounge@localhost'
+                                    'jid': 'lounge@montague.lit'
                                 });
             _converse.connection._dataRecv(test_utils.createRequest(stanza));
 
@@ -161,7 +161,7 @@
             const features_stanza = $iq({
                     'from': 'coven@chat.shakespeare.lit',
                     'id': IQ_id,
-                    'to': 'dummy@localhost/desktop',
+                    'to': 'romeo@montague.lit/desktop',
                     'type': 'result'
                 })
                 .c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
@@ -222,13 +222,13 @@
                 'Not moderated - Participants entering this groupchat can write right away'
             );
             presence = $pres({
-                    to: 'dummy@localhost/_converse.js-29092160',
+                    to: 'romeo@montague.lit/_converse.js-29092160',
                     from: 'coven@chat.shakespeare.lit/newguy'
                 })
                 .c('x', {xmlns: Strophe.NS.MUC_USER})
                 .c('item', {
                     'affiliation': 'none',
-                    'jid': 'newguy@localhost/_converse.js-290929789',
+                    'jid': 'newguy@montague.lit/_converse.js-290929789',
                     'role': 'participant'
                 });
             _converse.connection._dataRecv(test_utils.createRequest(presence));
@@ -282,13 +282,13 @@
             await  test_utils.openAndEnterChatRoom(_converse, 'kitchen', 'conference.shakespeare.lit', 'romeo');
             const view = _converse.chatboxviews.get(room_jid);
             view.model.set({'minimized': true});
-            const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const nick = mock.chatroom_names[0];
             await view.model.onMessage(
                 $msg({
                     from: room_jid+'/'+nick,
                     id: (new Date()).getTime(),
-                    to: 'dummy@localhost',
+                    to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('foo').tree());
 
@@ -301,7 +301,7 @@
                 $msg({
                     from: room_jid+'/'+nick,
                     id: (new Date()).getTime(),
-                    to: 'dummy@localhost',
+                    to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('romeo: Your attention is required').tree()
             );
@@ -313,7 +313,7 @@
                 $msg({
                     from: room_jid+'/'+nick,
                     id: (new Date()).getTime(),
-                    to: 'dummy@localhost',
+                    to: 'romeo@montague.lit',
                     type: 'groupchat'
                 }).c('body').t('romeo: and another thing...').tree()
             );

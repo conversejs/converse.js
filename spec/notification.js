@@ -26,7 +26,7 @@
                         spyOn(_converse, 'isMessageToHiddenChat').and.returnValue(true);
 
                         const message = 'This message will show a desktop notification';
-                        const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost',
+                        const sender_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit',
                             msg = $msg({
                                 from: sender_jid,
                                 to: _converse.connection.jid,
@@ -47,8 +47,8 @@
                             async (done, _converse) => {
 
                         await test_utils.createContacts(_converse, 'current');
-                        await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
-                        const view = _converse.api.chatviews.get('lounge@localhost');
+                        await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
+                        const view = _converse.api.chatviews.get('lounge@montague.lit');
                         if (!view.el.querySelectorAll('.chat-area').length) {
                             view.renderChatArea();
                         }
@@ -64,12 +64,12 @@
                         spyOn(_converse, 'showMessageNotification').and.callThrough();
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
 
-                        const message = 'dummy: This message will show a desktop notification';
+                        const message = 'romeo: This message will show a desktop notification';
                         const nick = mock.chatroom_names[0],
                             msg = $msg({
-                                from: 'lounge@localhost/'+nick,
+                                from: 'lounge@montague.lit/'+nick,
                                 id: (new Date()).getTime(),
-                                to: 'dummy@localhost',
+                                to: 'romeo@montague.lit',
                                 type: 'groupchat'
                             }).c('body').t(message).tree();
 
@@ -94,7 +94,7 @@
                         const stanza = $msg({
                                 'type': 'headline',
                                 'from': 'notify.example.com',
-                                'to': 'dummy@localhost',
+                                'to': 'romeo@montague.lit',
                                 'xml:lang': 'en'
                             })
                             .c('subject').t('SIEVE').up()
@@ -120,7 +120,7 @@
                         const stanza = $msg({
                                 'type': 'headline',
                                 'from': 'someone@notify.example.com',
-                                'to': 'dummy@localhost',
+                                'to': 'romeo@montague.lit',
                                 'xml:lang': 'en'
                             })
                             .c('subject').t('SIEVE').up()
@@ -143,7 +143,7 @@
                         test_utils.createContacts(_converse, 'current');
                         spyOn(_converse, 'areDesktopNotificationsEnabled').and.returnValue(true);
                         spyOn(_converse, 'showChatStateNotification');
-                        const jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@localhost';
+                        const jid = mock.cur_names[2].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                         _converse.roster.get(jid).presence.set('show', 'busy'); // This will emit 'contactStatusChanged'
                         expect(_converse.areDesktopNotificationsEnabled).toHaveBeenCalled();
                         expect(_converse.showChatStateNotification).toHaveBeenCalled();
@@ -173,18 +173,18 @@
                         async (done, _converse) => {
 
                     test_utils.createContacts(_converse, 'current');
-                    await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'localhost', 'dummy');
+                    await test_utils.openAndEnterChatRoom(_converse, 'lounge', 'montague.lit', 'romeo');
                     _converse.play_sounds = true;
                     spyOn(_converse, 'playSoundNotification');
-                    const view = _converse.chatboxviews.get('lounge@localhost');
+                    const view = _converse.chatboxviews.get('lounge@montague.lit');
                     if (!view.el.querySelectorAll('.chat-area').length) {
                         view.renderChatArea();
                     }
-                    let text = 'This message will play a sound because it mentions dummy';
+                    let text = 'This message will play a sound because it mentions romeo';
                     let message = $msg({
-                        from: 'lounge@localhost/otheruser',
+                        from: 'lounge@montague.lit/otheruser',
                         id: '1',
-                        to: 'dummy@localhost',
+                        to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').t(text);
                     await view.model.onMessage(message.nodeTree);
@@ -193,20 +193,20 @@
 
                     text = "This message won't play a sound";
                     message = $msg({
-                        from: 'lounge@localhost/otheruser',
+                        from: 'lounge@montague.lit/otheruser',
                         id: '2',
-                        to: 'dummy@localhost',
+                        to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').t(text);
                     await view.model.onMessage(message.nodeTree);
                     expect(_converse.playSoundNotification, 1);
                     _converse.play_sounds = false;
 
-                    text = "This message won't play a sound because it is sent by dummy";
+                    text = "This message won't play a sound because it is sent by romeo";
                     message = $msg({
-                        from: 'lounge@localhost/dummy',
+                        from: 'lounge@montague.lit/romeo',
                         id: '3',
-                        to: 'dummy@localhost',
+                        to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').t(text);
                     await view.model.onMessage(message.nodeTree);

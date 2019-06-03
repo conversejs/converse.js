@@ -29,7 +29,7 @@
     "jed": "1.1.1",
     "lodash": "^4.17.11",
     "pluggable.js": "2.0.1",
-    "strophe.js": "strophe/strophejs#bc8a6b62203a17ada6bd78945c993c6f7dccd1de",
+    "strophe.js": "strophe/strophejs#c675bcfcf44527ba1cf844a1aaa68fe7003c6140",
     "twemoji": "^11.0.1",
     "urijs": "^1.19.1"
   }

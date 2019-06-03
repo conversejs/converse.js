@@ -1,6 +1,7 @@
 # Changelog
 
 ## 5.0.0 (Unreleased)
+- Support for XEP-0410 to check whether we're still present in a room
 - Initial support for the [CredentialsContainer](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer) web API
 - Allow for synchronous events. When a synchronous event is fired, Converse will
   wait for all promises returned by the event's handlers to finish before continuing.

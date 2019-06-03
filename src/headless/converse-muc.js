@@ -1224,9 +1224,66 @@ converse.plugins.add('converse-muc', {
                 return attrs;
             },
 
+            /**
+             * Send a MUC-0410 MUC Self-Ping stanza to room to determine
+             * whether we're still joined.
+             * @async
+             * @private
+             * @method _converse.ChatRoom#isJoined
+             * @returns {Promise<boolean>}
+             */
+            async isJoined () {
+                const ping = $iq({
+                    'to': `${this.get('jid')}/${this.get('nick')}`,
+                    'type': "get"
+                }).c("ping", {'xmlns': Strophe.NS.PING});
+                let result;
+                try {
+                    result = await _converse.api.sendIQ(ping);
+                } catch (e) {
+                    const sel = `error[type="cancel"] not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`;
+                    if (_.isElement(e) && sizzle(sel, e).length) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+
+            /**
+             * Check whether we're still joined and re-join if not
+             * @async
+             * @private
+             * @method _converse.ChatRoom#rejoinIfNecessary
+             */
+            async rejoinIfNecessary () {
+                const is_joined = await this.isJoined();
+                if (!is_joined) {
+                    this.save('connection_status', converse.ROOMSTATUS.DISCONNECTED);
+                    this.enterRoom();
+                    return true;
+                }
+            },
+
+            /**
+             * @async
+             * @private
+             * @method _converse.ChatRoom#shouldShowErrorMessage
+             * @returns {Promise<boolean>}
+             */
+            async shouldShowErrorMessage (stanza) {
+                if (sizzle(`not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
+                    if (await this.rejoinIfNecessary()) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+
             getErrorMessage (stanza) {
                 if (sizzle(`forbidden[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
                     return __("Your message was not delivered because you're not allowed to send messages in this groupchat.");
+                } else if (sizzle(`not-acceptable[xmlns="${Strophe.NS.STANZAS}"]`, stanza).length) {
+                    return __("Your message was not delivered because you're not present in the groupchat.");
                 } else {
                     return _converse.ChatBox.prototype.getErrorMessage.apply(this, arguments);
                 }

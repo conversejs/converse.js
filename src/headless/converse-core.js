@@ -1350,7 +1350,7 @@ _converse.initialize = async function (settings, callback) {
             }
         } else if (reconnecting) {
             this.autoLogin();
-        } else if (window.PasswordCredential) {
+        } else if (!isTestEnv() && window.PasswordCredential) {
             const creds = await navigator.credentials.get({'password': true});
             if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
                 setUserJID(creds.id);
@@ -1514,7 +1514,7 @@ _converse.api = {
          * @returns {string} The current user's full JID (Jabber ID)
          * @example _converse.api.user.jid())
          */
-        'jid' () {
+        jid () {
             return _converse.connection.jid;
         },
 
@@ -1577,19 +1577,20 @@ _converse.api = {
              */
             _converse.api.trigger('logout');
         },
+
         /**
          * Set and get the user's chat status, also called their *availability*.
          *
          * @namespace _converse.api.user.status
          * @memberOf _converse.api.user
          */
-        'status': {
+        status: {
             /** Return the current user's availability status.
              *
              * @method _converse.api.user.status.get
              * @example _converse.api.user.status.get();
              */
-            'get' () {
+            get () {
                 return _converse.xmppstatus.get('status');
             },
             /**
@@ -1602,7 +1603,7 @@ _converse.api = {
              * @example this._converse.api.user.status.set('dnd');
              * @example this._converse.api.user.status.set('dnd', 'In a meeting');
              */
-            'set' (value, message) {
+            set (value, message) {
                 const data = {'status': value};
                 if (!_.includes(Object.keys(_converse.STATUS_WEIGHTS), value)) {
                     throw new Error('Invalid availability value. See https://xmpp.org/rfcs/rfc3921.html#rfc.section.2.2.2.1');
@@ -1626,7 +1627,7 @@ _converse.api = {
                  * @returns {string} The status message
                  * @example const message = _converse.api.user.status.message.get()
                  */
-                'get' () {
+                get () {
                     return _converse.xmppstatus.get('status_message');
                 },
                 /**
@@ -1634,7 +1635,7 @@ _converse.api = {
                  * @param {string} status The status message
                  * @example _converse.api.user.status.message.set('In a meeting');
                  */
-                'set' (status) {
+                set (status) {
                     _converse.xmppstatus.save({'status_message': status});
                 }
             }

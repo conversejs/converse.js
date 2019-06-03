@@ -401,6 +401,11 @@ converse.plugins.add('converse-chatboxes', {
                 }
             },
 
+            shouldShowErrorMessage () {
+                // Gets overridden in ChatRoom
+                return true;
+            },
+
             /**
              * If the passed in `message` stanza contains an
              * [XEP-0308](https://xmpp.org/extensions/xep-0308.html#usecase)
@@ -987,11 +992,10 @@ converse.plugins.add('converse-chatboxes', {
                         // We also ignore duplicate error messages.
                         return;
                     }
-                } else {
-                    // An error message without id likely means that we
-                    // sent a message without id (which shouldn't happen).
-                    _converse.log('Received an error message without id attribute!', Strophe.LogLevel.ERROR);
-                    _converse.log(message, Strophe.LogLevel.ERROR);
+                }
+                const should_show = await chatbox.shouldShowErrorMessage(message);
+                if (!should_show) {
+                    return;
                 }
                 const attrs = await chatbox.getMessageAttributesFromStanza(message, message);
                 chatbox.messages.create(attrs);

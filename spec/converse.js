@@ -254,16 +254,16 @@
                 let contact = await _converse.api.contacts.get('non-existing@jabber.org');
                 expect(contact).toBeFalsy();
                 // Check when a single jid is given
-                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 contact = await _converse.api.contacts.get(jid);
-                expect(contact.get('fullname')).toBe(mock.cur_names[0]);
+                expect(contact.getDisplayName()).toBe(mock.cur_names[0]);
                 expect(contact.get('jid')).toBe(jid);
                 // You can retrieve multiple contacts by passing in an array
-                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 let list = await _converse.api.contacts.get([jid, jid2]);
                 expect(Array.isArray(list)).toBeTruthy();
-                expect(list[0].get('fullname')).toBe(mock.cur_names[0]);
-                expect(list[1].get('fullname')).toBe(mock.cur_names[1]);
+                expect(list[0].getDisplayName()).toBe(mock.cur_names[0]);
+                expect(list[1].getDisplayName()).toBe(mock.cur_names[1]);
                 // Check that all JIDs are returned if you call without any parameters
                 list = await _converse.api.contacts.get();
                 expect(list.length).toBe(mock.cur_names.length);
@@ -294,8 +294,8 @@
 
                 // Test on chat that doesn't exist.
                 expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
-                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
 
                 // Test on chat that's not open
                 let box = _converse.api.chats.get(jid);
@@ -327,8 +327,8 @@
                 test_utils.createContacts(_converse, 'current', 2);
                 _converse.api.trigger('rosterContactsFetched');
 
-                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
-                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
+                const jid2 = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 // Test on chat that doesn't exist.
                 expect(_converse.api.chats.get('non-existing@jabber.org')).toBeFalsy();
 

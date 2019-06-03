@@ -25,7 +25,7 @@
         const stanza = $iq({
             'type': 'result',
             'from': entity_jid,
-            'to': 'dummy@localhost/resource',
+            'to': 'romeo@montague.lit/orchard',
             'id': iq.getAttribute('id'),
         }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#'+type});
 
@@ -86,7 +86,7 @@
     utils.openChatBoxes = function (converse, amount) {
         var i = 0, jid, views = [];
         for (i; i<amount; i++) {
-            jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+            jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             views[i] = converse.roster.get(jid).trigger("open");
         }
         return views;
@@ -130,7 +130,7 @@
         const features_stanza = $iq({
             'from': room_jid,
             'id': stanza.getAttribute('id'),
-            'to': 'dummy@localhost/desktop',
+            'to': 'romeo@montague.lit/desktop',
             'type': 'result'
         }).c('query', { 'xmlns': 'http://jabber.org/protocol/disco#info'})
             .c('identity', {
@@ -254,11 +254,11 @@
             length = names.length;
         }
         for (var i=0; i<length; i++) {
-            jid = names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+            jid = names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             if (!converse.roster.get(jid)) {
                 converse.roster.create({
                     'ask': ask,
-                    'fullname': names[i],
+                    'name': names[i],
                     'jid': jid,
                     'requesting': requesting,
                     'subscription': subscription
@@ -285,7 +285,7 @@
         if (type === 'pending' || type === 'all') {
             mock.pend_names.slice(0, length).map(name =>
                 result.c('item', {
-                    jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                    jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                     name: include_nick ? name : undefined,
                     subscription: 'to'
                 }).up()
@@ -293,7 +293,7 @@
         } else if (type === 'current' || type === 'all') {
             mock.cur_names.slice(0, length).map(name =>
                 result.c('item', {
-                    jid: name.replace(/ /g,'.').toLowerCase() + '@localhost',
+                    jid: name.replace(/ /g,'.').toLowerCase() + '@montague.lit',
                     name: include_nick ? name : undefined,
                     subscription: 'both'
                 }).up()
@@ -311,11 +311,11 @@
             j = i;
             for (i=j; i<j+mock.groups[name]; i++) {
                 converse.roster.create({
-                    jid: mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost',
-                    subscription: 'both',
-                    ask: null,
-                    groups: name === 'ungrouped'? [] : [name],
-                    fullname: mock.cur_names[i]
+                    'jid': mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit',
+                    'subscription': 'both',
+                    'ask': null,
+                    'groups': name === 'ungrouped'? [] : [name],
+                    'name': mock.cur_names[i]
                 });
             }
         });

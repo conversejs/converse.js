@@ -24,11 +24,11 @@
                         null, ['discoInitialized'], {},
                         async function (done, _converse) {
 
-                    await test_utils.openAndEnterChatRoom(_converse, 'trek-radio', 'conference.lightwitch.org', 'dummy');
+                    await test_utils.openAndEnterChatRoom(_converse, 'trek-radio', 'conference.lightwitch.org', 'romeo');
 
                     const view = _converse.chatboxviews.get('trek-radio@conference.lightwitch.org');
                     let stanza = u.toStanza(
-                        `<message xmlns="jabber:client" to="dummy@localhost/resource" type="groupchat" from="trek-radio@conference.lightwitch.org/some1">
+                        `<message xmlns="jabber:client" to="romeo@montague.lit/orchard" type="groupchat" from="trek-radio@conference.lightwitch.org/some1">
                             <body>Hello</body>
                             <stanza-id xmlns="urn:xmpp:sid:0" id="45fbbf2a-1059-479d-9283-c8effaf05621" by="trek-radio@conference.lightwitch.org"/>
                         </message>`);
@@ -40,7 +40,7 @@
 
                     stanza = u.toStanza(
                         `<message xmlns="jabber:client"
-                                to="dummy@localhost/resource"
+                                to="romeo@montague.lit/orchard"
                                 from="trek-radio@conference.lightwitch.org">
                             <result xmlns="urn:xmpp:mam:2" queryid="82d9db27-6cf8-4787-8c2c-5a560263d823" id="45fbbf2a-1059-479d-9283-c8effaf05621">
                                 <forwarded xmlns="urn:xmpp:forward:0">
@@ -111,10 +111,10 @@
                         null, ['discoInitialized'], {},
                         async function (done, _converse) {
 
-                    await test_utils.openAndEnterChatRoom(_converse, 'discuss', 'conference.conversejs.org', 'dummy');
+                    await test_utils.openAndEnterChatRoom(_converse, 'discuss', 'conference.conversejs.org', 'romeo');
                     const view = _converse.chatboxviews.get('discuss@conference.conversejs.org');
                     let stanza = u.toStanza(
-                        `<message xmlns="jabber:client" to="dummy@localhost/resource" from="discuss@conference.conversejs.org">
+                        `<message xmlns="jabber:client" to="romeo@montague.lit/orchard" from="discuss@conference.conversejs.org">
                             <result xmlns="urn:xmpp:mam:2" queryid="06fea9ca-97c9-48c4-8583-009ff54ea2e8" id="7a9fde91-4387-4bf8-b5d3-978dab8f6bf3">
                                 <forwarded xmlns="urn:xmpp:forward:0">
                                     <delay xmlns="urn:xmpp:delay" stamp="2018-12-05T04:53:12Z"/>
@@ -132,7 +132,7 @@
                     expect(view.content.querySelectorAll('.chat-msg').length).toBe(1);
 
                     stanza = u.toStanza(
-                        `<message xmlns="jabber:client" to="dummy@localhost/resource" from="discuss@conference.conversejs.org">
+                        `<message xmlns="jabber:client" to="romeo@montague.lit/orchard" from="discuss@conference.conversejs.org">
                             <result xmlns="urn:xmpp:mam:2" queryid="06fea9ca-97c9-48c4-8583-009ff54ea2e8" id="7a9fde91-4387-4bf8-b5d3-978dab8f6bf3">
                                 <forwarded xmlns="urn:xmpp:forward:0">
                                     <delay xmlns="urn:xmpp:delay" stamp="2018-12-05T04:53:12Z"/>
@@ -272,13 +272,13 @@
                  *     </result>
                  * </message>
                  */
-                const msg1 = $msg({'id':'iasd207', 'from': 'other@chat.shakespear.lit', 'to': 'dummy@localhost'})
+                const msg1 = $msg({'id':'iasd207', 'from': 'other@chat.shakespear.lit', 'to': 'romeo@montague.lit'})
                             .c('result',  {'xmlns': 'urn:xmpp:mam:2', 'queryid':queryid, 'id':'34482-21985-73620'})
                                 .c('forwarded', {'xmlns':'urn:xmpp:forward:0'})
                                     .c('delay', {'xmlns':'urn:xmpp:delay', 'stamp':'2010-07-10T23:08:25Z'}).up()
                                     .c('message', {
                                         'xmlns':'jabber:client',
-                                        'to':'dummy@localhost',
+                                        'to':'romeo@montague.lit',
                                         'id':'162BEBB1-F6DB-4D9A-9BD8-CFDCC801A0B2',
                                         'from':'coven@chat.shakespeare.lit/firstwitch',
                                         'type':'groupchat' })
@@ -728,7 +728,7 @@
                     async function (done, _converse) {
 
                 await test_utils.waitForRoster(_converse, 'current', 1);
-                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+                const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 await test_utils.openChatBoxFor(_converse, contact_jid);
                 await test_utils.waitUntilDiscoConfirmed(_converse, _converse.bare_jid, null, [Strophe.NS.MAM]);
 
@@ -747,7 +747,7 @@
                         `<query queryid="${queryid}" xmlns="urn:xmpp:mam:2">`+
                             `<x type="submit" xmlns="jabber:x:data">`+
                                 `<field type="hidden" var="FORM_TYPE"><value>urn:xmpp:mam:2</value></field>`+
-                                `<field var="with"><value>max.frankfurter@localhost</value></field>`+
+                                `<field var="with"><value>mercutio@montague.lit</value></field>`+
                             `</x>`+
                             `<set xmlns="http://jabber.org/protocol/rsm"><max>50</max><before></before></set>`+
                         `</query>`+

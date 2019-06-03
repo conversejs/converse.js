@@ -16,7 +16,7 @@
             /* XMPP spam message:
              *
              *  <message xmlns="jabber:client"
-             *          to="dummy@localhost"
+             *          to="romeo@montague.lit"
              *          type="chat"
              *          from="gapowa20102106@rds-rostov.ru/Adium">
              *      <nick xmlns="http://jabber.org/protocol/nick">-wwdmz</nick>
@@ -26,7 +26,7 @@
             sinon.spy(utils, 'isHeadlineMessage');
             const stanza = $msg({
                     'xmlns': 'jabber:client',
-                    'to': 'dummy@localhost',
+                    'to': 'romeo@montague.lit',
                     'type': 'chat',
                     'from': 'gapowa20102106@rds-rostov.ru/Adium',
                 })
@@ -59,7 +59,7 @@
             const stanza = $msg({
                     'type': 'headline',
                     'from': 'notify.example.com',
-                    'to': 'dummy@localhost',
+                    'to': 'romeo@montague.lit',
                     'xml:lang': 'en'
                 })
                 .c('subject').t('SIEVE').up()
@@ -91,7 +91,7 @@
             var stanza = $msg({
                     'type': 'headline',
                     'from': 'andre5114@jabber.snc.ru/Spark',
-                    'to': 'dummy@localhost',
+                    'to': 'romeo@montague.lit',
                     'xml:lang': 'en'
                 })
                 .c('nick').t('gpocy').up()

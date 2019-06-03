@@ -22,7 +22,7 @@
             const view = _converse.chatboxviews.get('controlbox');
             spyOn(view, 'renderControlBoxPane').and.callThrough();
 
-            _converse.api.user.login('dummy@localhost', 'secret');
+            _converse.api.user.login('romeo@montague.lit', 'secret');
             const sent_stanzas = _converse.connection.sent_stanzas;
             let stanza = await test_utils.waitUntil(() =>
                 sent_stanzas.filter(s => (s.tagName === 'enable')).pop());
@@ -41,7 +41,7 @@
 
             let iq = IQ_stanzas.pop();
             expect(Strophe.serialize(iq)).toBe(
-                `<iq from="dummy@localhost/resource" id="${iq.getAttribute('id')}" to="dummy@localhost" type="get" xmlns="jabber:client">`+
+                `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
             iq = IQ_stanzas.pop();
@@ -50,12 +50,12 @@
 
             iq = IQ_stanzas.pop();
             expect(Strophe.serialize(iq)).toBe(
-                `<iq from="dummy@localhost/resource" id="${iq.getAttribute('id')}" to="localhost" type="get" xmlns="jabber:client">`+
+                `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="montague.lit" type="get" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
             const disco_iq = IQ_stanzas.pop();
             expect(Strophe.serialize(disco_iq)).toBe(
-                `<iq from="dummy@localhost" id="${disco_iq.getAttribute('id')}" to="dummy@localhost" type="get" xmlns="jabber:client">`+
+                `<iq from="romeo@montague.lit" id="${disco_iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub"><items node="eu.siacs.conversations.axolotl.devicelist"/></pubsub></iq>`);
 
             expect(sent_stanzas.filter(s => (s.nodeName === 'r')).length).toBe(2);
@@ -74,8 +74,8 @@
 
             const disco_result = $iq({
                 'type': 'result',
-                'from': 'localhost',
-                'to': 'dummy@localhost/resource',
+                'from': 'montague.lit',
+                'to': 'romeo@montague.lit/orchard',
                 'id': disco_iq.getAttribute('id'),
             }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
                 .c('identity', {
@@ -115,7 +115,7 @@
             // Test that unacked stanzas get resent out
             iq = IQ_stanzas.pop();
             expect(Strophe.serialize(iq)).toBe(
-                `<iq from="dummy@localhost/resource" id="${iq.getAttribute('id')}" to="dummy@localhost" type="get" xmlns="jabber:client">`+
+                `<iq from="romeo@montague.lit/orchard" id="${iq.getAttribute('id')}" to="romeo@montague.lit" type="get" xmlns="jabber:client">`+
                     `<query xmlns="http://jabber.org/protocol/disco#info"/></iq>`);
 
             iq = IQ_stanzas.pop();

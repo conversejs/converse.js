@@ -22,7 +22,7 @@
                 const IQ_ids =  _converse.connection.IQ_ids;
                 test_utils.waitUntil(function () {
                     return _.filter(IQ_stanzas, function (iq) {
-                        return iq.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                        return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                     }).length > 0;
                 }, 300).then(function () {
                     /* <iq type='result'
@@ -52,13 +52,13 @@
                      *  </iq>
                      */
                     var stanza = _.find(IQ_stanzas, function (iq) {
-                        return iq.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#info"]');
+                        return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#info"]');
                     });
                     var info_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                     stanza = $iq({
                         'type': 'result',
-                        'from': 'localhost',
-                        'to': 'dummy@localhost/resource',
+                        'from': 'montague.lit',
+                        'to': 'romeo@montague.lit/orchard',
                         'id': info_IQ_id
                     }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#info'})
                         .c('identity', {
@@ -88,12 +88,12 @@
                         expect(entities.length).toBe(2); // We have an extra entity, which is the user's JID
                         expect(entities.get(_converse.domain).features.length).toBe(5);
                         expect(entities.get(_converse.domain).identities.length).toBe(3);
-                        expect(entities.get('localhost').features.where({'var': 'jabber:iq:version'}).length).toBe(1);
-                        expect(entities.get('localhost').features.where({'var': 'jabber:iq:time'}).length).toBe(1);
-                        expect(entities.get('localhost').features.where({'var': 'jabber:iq:register'}).length).toBe(1);
-                        expect(entities.get('localhost').features.where(
+                        expect(entities.get('montague.lit').features.where({'var': 'jabber:iq:version'}).length).toBe(1);
+                        expect(entities.get('montague.lit').features.where({'var': 'jabber:iq:time'}).length).toBe(1);
+                        expect(entities.get('montague.lit').features.where({'var': 'jabber:iq:register'}).length).toBe(1);
+                        expect(entities.get('montague.lit').features.where(
                             {'var': 'http://jabber.org/protocol/disco#items'}).length).toBe(1);
-                        expect(entities.get('localhost').features.where(
+                        expect(entities.get('montague.lit').features.where(
                             {'var': 'http://jabber.org/protocol/disco#info'}).length).toBe(1);
 
 
@@ -131,13 +131,13 @@
                              * </iq>
                              */
                             var stanza = _.find(IQ_stanzas, function (iq) {
-                                return iq.querySelector('iq[to="localhost"] query[xmlns="http://jabber.org/protocol/disco#items"]');
+                                return iq.querySelector('iq[to="montague.lit"] query[xmlns="http://jabber.org/protocol/disco#items"]');
                             });
                             var items_IQ_id = IQ_ids[IQ_stanzas.indexOf(stanza)];
                             stanza = $iq({
                                 'type': 'result',
-                                'from': 'localhost',
-                                'to': 'dummy@localhost/resource',
+                                'from': 'montague.lit',
+                                'to': 'romeo@montague.lit/orchard',
                                 'id': items_IQ_id
                             }).c('query', {'xmlns': 'http://jabber.org/protocol/disco#items'})
                                 .c('item', {
@@ -151,14 +151,14 @@
                                     'name': 'Gateway to Marlowe IM'}).up()
 
                                 .c('item', {
-                                    'jid': 'localhost',
+                                    'jid': 'montague.lit',
                                     'node': 'books',
                                     'name': 'Books by and about Shakespeare'}).up()
                                 .c('item', {
-                                    'node': 'localhost',
+                                    'node': 'montague.lit',
                                     'name': 'Wear your literary taste with pride'}).up()
                                 .c('item', {
-                                    'jid': 'localhost',
+                                    'jid': 'montague.lit',
                                     'node': 'music',
                                     'name': 'Music from the time of Shakespeare'
                                 });

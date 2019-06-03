@@ -96,7 +96,7 @@
 
             await test_utils.waitUntil(() => sent_stanza);
             expect(sent_stanza.toLocaleString()).toBe(
-                `<iq from="dummy@localhost/resource" id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="set" xmlns="jabber:client">`+
                     `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                         `<publish node="storage:bookmarks">`+
                             `<item id="current">`+
@@ -154,7 +154,7 @@
                 ['http://jabber.org/protocol/pubsub#publish-options']
             );
             await test_utils.waitUntil(() => _converse.bookmarks);
-            let jid = 'lounge@localhost';
+            let jid = 'lounge@montague.lit';
             _converse.bookmarks.create({
                 'jid': jid,
                 'autojoin': false,
@@ -222,8 +222,8 @@
                     [{'category': 'pubsub', 'type': 'pep'}],
                     ['http://jabber.org/protocol/pubsub#publish-options']
                 );
-                await _converse.api.rooms.open(`lounge@localhost`);
-                const view = _converse.chatboxviews.get('lounge@localhost');
+                await _converse.api.rooms.open(`lounge@montague.lit`);
+                const view = _converse.chatboxviews.get('lounge@montague.lit');
                 let bookmark_icon = await test_utils.waitUntil(() => view.el.querySelector('.toggle-bookmark'));
                 expect(_.includes(bookmark_icon.classList, 'button-on')).toBeFalsy();
                 _converse.bookmarks.create({
@@ -289,7 +289,7 @@
                 // conferences to bookmark (since we removed the one and
                 // only bookmark).
                 expect(sent_stanza.toLocaleString()).toBe(
-                    `<iq from="dummy@localhost/resource" id="${IQ_id}" type="set" xmlns="jabber:client">`+
+                    `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="set" xmlns="jabber:client">`+
                         `<pubsub xmlns="http://jabber.org/protocol/pubsub">`+
                             `<publish node="storage:bookmarks">`+
                                 `<item id="current">`+
@@ -389,8 +389,8 @@
              * </message>
              */
             var stanza = $msg({
-                'from': 'dummy@localhost',
-                'to': 'dummy@localhost/resource',
+                'from': 'romeo@montague.lit',
+                'to': 'romeo@montague.lit/orchard',
                 'type': 'headline',
                 'id': 'rnfoo1'
             }).c('event', {'xmlns': 'http://jabber.org/protocol/pubsub#event'})
@@ -445,7 +445,7 @@
             );
 
             expect(Strophe.serialize(call.args[0])).toBe(
-                `<iq from="dummy@localhost/resource" id="${IQ_id}" type="get" xmlns="jabber:client">`+
+                `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="get" xmlns="jabber:client">`+
                 '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                     '<items node="storage:bookmarks"/>'+
                 '</pubsub>'+
@@ -528,7 +528,7 @@
                     ).pop()
                 );
                 expect(Strophe.serialize(call.args[0])).toBe(
-                    `<iq from="dummy@localhost/resource" id="${IQ_id}" type="get" xmlns="jabber:client">`+
+                    `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="get" xmlns="jabber:client">`+
                     '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                         '<items node="storage:bookmarks"/>'+
                     '</pubsub>'+
@@ -616,7 +616,7 @@
                     ).pop()
                 );
                 expect(Strophe.serialize(call.args[0])).toBe(
-                    `<iq from="dummy@localhost/resource" id="${IQ_id}" type="get" xmlns="jabber:client">`+
+                    `<iq from="romeo@montague.lit/orchard" id="${IQ_id}" type="get" xmlns="jabber:client">`+
                     '<pubsub xmlns="http://jabber.org/protocol/pubsub">'+
                         '<items node="storage:bookmarks"/>'+
                     '</pubsub>'+

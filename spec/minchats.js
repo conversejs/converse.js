@@ -20,7 +20,7 @@
             _converse.minimized_chats.toggleview.model.browserStorage._clear();
             _converse.minimized_chats.initToggle();
 
-            let contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            let contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await test_utils.openChatBoxFor(_converse, contact_jid)
             let chatview = _converse.chatboxviews.get(contact_jid);
             expect(chatview.model.get('minimized')).toBeFalsy();
@@ -31,7 +31,7 @@
             expect(_converse.minimized_chats.keys().length).toBe(1);
             expect(_converse.minimized_chats.keys()[0]).toBe(contact_jid);
 
-            contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@localhost';
+            contact_jid = mock.cur_names[1].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await test_utils.openChatBoxFor(_converse, contact_jid);
             chatview = _converse.chatboxviews.get(contact_jid);
             expect(chatview.model.get('minimized')).toBeFalsy();
@@ -55,7 +55,7 @@
             _converse.minimized_chats.toggleview.model.browserStorage._clear();
             _converse.minimized_chats.initToggle();
 
-            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const contact_jid = mock.cur_names[0].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             await test_utils.openChatBoxFor(_converse, contact_jid);
             const chatview = _converse.chatboxviews.get(contact_jid);
             expect(u.isVisible(_converse.minimized_chats.el)).toBeFalsy();
@@ -90,7 +90,7 @@
             expect(_.isNull(unread_el)).toBe(true);
 
             for (i=0; i<3; i++) {
-                contact_jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@localhost';
+                contact_jid = mock.cur_names[i].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 test_utils.openChatBoxFor(_converse, contact_jid);
             }
             test_utils.waitUntil(() => _converse.chatboxes.length == 4).then(() => {
@@ -161,13 +161,13 @@
                 var view = _converse.chatboxviews.get(room_jid);
                 view.model.set({'minimized': true});
 
-                var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@localhost';
+                var contact_jid = mock.cur_names[5].replace(/ /g,'.').toLowerCase() + '@montague.lit';
                 var message = 'fires: Your attention is required';
                 var nick = mock.chatroom_names[0],
                     msg = $msg({
                         from: room_jid+'/'+nick,
                         id: (new Date()).getTime(),
-                        to: 'dummy@localhost',
+                        to: 'romeo@montague.lit',
                         type: 'groupchat'
                     }).c('body').t(message).tree();
                 view.model.onMessage(msg);

@@ -120,11 +120,11 @@
 
             test_utils.openControlBox();
             test_utils.createContacts(_converse, 'current'); // Create some contacts so that we can test positioning
-            const contact_jid = mock.cur_names[8].replace(/ /g,'.').toLowerCase() + '@localhost';
+            const contact_jid = mock.cur_names[8].replace(/ /g,'.').toLowerCase() + '@montague.lit';
             const contact = _converse.roster.get(contact_jid);
             let stanza = u.toStanza(`
                 <presence xmlns="jabber:client"
-                        to="dummy@localhost/converse.js-21770972"
+                        to="romeo@montague.lit/converse.js-21770972"
                         from="${contact_jid}/priority-1-resource">
                     <priority>1</priority>
                     <c xmlns="http://jabber.org/protocol/caps" hash="sha-1" ext="voice-v1 camera-v1 video-v1"
@@ -142,7 +142,7 @@
 
             stanza = u.toStanza(
             '<presence xmlns="jabber:client"'+
-            '          to="dummy@localhost/converse.js-21770972"'+
+            '          to="romeo@montague.lit/converse.js-21770972"'+
             '          from="'+contact_jid+'/priority-0-resource">'+
             '    <status/>'+
             '    <priority>0</priority>'+
@@ -162,7 +162,7 @@
 
             stanza = u.toStanza(
             '<presence xmlns="jabber:client"'+
-            '          to="dummy@localhost/converse.js-21770972"'+
+            '          to="romeo@montague.lit/converse.js-21770972"'+
             '          from="'+contact_jid+'/priority-2-resource">'+
             '    <priority>2</priority>'+
             '    <show>dnd</show>'+
@@ -179,7 +179,7 @@
 
             stanza = u.toStanza(
             '<presence xmlns="jabber:client"'+
-            '          to="dummy@localhost/converse.js-21770972"'+
+            '          to="romeo@montague.lit/converse.js-21770972"'+
             '          from="'+contact_jid+'/priority-3-resource">'+
             '    <priority>3</priority>'+
             '    <show>away</show>'+
@@ -198,7 +198,7 @@
 
             stanza = u.toStanza(
             '<presence xmlns="jabber:client"'+
-            '          to="dummy@localhost/converse.js-21770972"'+
+            '          to="romeo@montague.lit/converse.js-21770972"'+
             '          from="'+contact_jid+'/older-priority-1-resource">'+
             '    <priority>1</priority>'+
             '    <show>dnd</show>'+
@@ -220,7 +220,7 @@
 
             stanza = u.toStanza(
             '<presence xmlns="jabber:client"'+
-            '          to="dummy@localhost/converse.js-21770972"'+
+            '          to="romeo@montague.lit/converse.js-21770972"'+
             '          type="unavailable"'+
             '          from="'+contact_jid+'/priority-3-resource">'+
             '</presence>');
@@ -238,7 +238,7 @@
 
             stanza = u.toStanza(
             '<presence xmlns="jabber:client"'+
-            '          to="dummy@localhost/converse.js-21770972"'+
+            '          to="romeo@montague.lit/converse.js-21770972"'+
             '          type="unavailable"'+
             '          from="'+contact_jid+'/priority-2-resource">'+
             '</presence>');
@@ -254,7 +254,7 @@
 
             stanza = u.toStanza(
             '<presence xmlns="jabber:client"'+
-            '          to="dummy@localhost/converse.js-21770972"'+
+            '          to="romeo@montague.lit/converse.js-21770972"'+
             '          type="unavailable"'+
             '          from="'+contact_jid+'/priority-1-resource">'+
             '</presence>');
@@ -268,7 +268,7 @@
 
             stanza = u.toStanza(
             '<presence xmlns="jabber:client"'+
-            '          to="dummy@localhost/converse.js-21770972"'+
+            '          to="romeo@montague.lit/converse.js-21770972"'+
             '          type="unavailable"'+
             '          from="'+contact_jid+'/older-priority-1-resource">'+
             '</presence>');
@@ -280,7 +280,7 @@
 
             stanza = u.toStanza(
             '<presence xmlns="jabber:client"'+
-            '          to="dummy@localhost/converse.js-21770972"'+
+            '          to="romeo@montague.lit/converse.js-21770972"'+
             '          type="unavailable"'+
             '          from="'+contact_jid+'/priority-0-resource">'+
             '</presence>');

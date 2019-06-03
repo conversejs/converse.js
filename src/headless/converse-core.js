@@ -552,6 +552,10 @@ async function initUserSession (jid) {
 }
 
 function setUserJID (jid) {
+   if (!Strophe.getResourceFromJid(jid)) {
+      jid = jid.toLowerCase() + _converse.generateResource();
+   }
+   jid = jid.toLowerCase();
    initUserSession(jid);
    _converse.jid = jid;
    _converse.bare_jid = Strophe.getBareJidFromJid(jid);
@@ -1539,15 +1543,13 @@ _converse.api = {
                _converse.attemptPreboundSession(reconnecting);
             } else {
                let credentials;
-               if (jid) {
-                  const resource = Strophe.getResourceFromJid(jid);
-                  if (!resource) {
-                     jid = jid.toLowerCase() + _converse.generateResource();
-                  } else {
-                     jid = Strophe.getBareJidFromJid(jid).toLowerCase()+'/'+resource;
-                  }
-                  setUserJID(jid);
+               if (jid && password) {
                   credentials = {'jid': jid, 'password': password};
+               } else if (u.isValidJID(_converse.jid) && _converse.password) {
+                  credentials = {'jid': _converse.jid, 'password': _converse.password};
+               }
+               if (credentials && credentials.jid) {
+                  setUserJID(credentials.jid);
                }
                _converse.attemptNonPreboundSession(credentials, reconnecting);
             }

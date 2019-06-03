@@ -74,7 +74,10 @@ u.prefixMentions = function (message) {
 };
 
 u.isValidJID = function (jid) {
-    return _.compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+    if (_.isString(jid)) {
+        return _.compact(jid.split('@')).length === 2 && !jid.startsWith('@') && !jid.endsWith('@');
+    }
+    return false;
 };
 
 u.isValidMUCJID = function (jid) {

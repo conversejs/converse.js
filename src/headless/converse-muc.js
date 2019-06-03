@@ -1308,9 +1308,8 @@ converse.plugins.add('converse-muc', {
              */
             async onMessage (stanza) {
                 this.fetchFeaturesIfConfigurationChanged(stanza);
-
-                const original_stanza = stanza,
-                      forwarded = sizzle(`forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).pop();
+                const original_stanza = stanza;
+                const forwarded = sizzle(`forwarded[xmlns="${Strophe.NS.FORWARD}"]`, stanza).pop();
                 if (forwarded) {
                     stanza = forwarded.querySelector('message');
                 }

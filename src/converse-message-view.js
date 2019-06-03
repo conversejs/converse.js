@@ -164,6 +164,7 @@ converse.plugins.add('converse-message-view', {
                     Object.assign(
                         this.model.toJSON(), {
                         '__': __,
+                        'is_groupchat_message': this.model.get('type') === 'groupchat',
                         'is_me_message': is_me_message,
                         'roles': roles,
                         'pretty_time': time.format(_converse.time_format),

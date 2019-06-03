@@ -397,7 +397,7 @@ converse.plugins.add('converse-chatboxes', {
                 // Overridden in converse-muc and converse-mam
                 const attrs = this.getUpdatedMessageAttributes(message, stanza);
                 if (attrs) {
-                    message.save(attrs, {'patch': true});
+                    message.save(attrs);
                 }
             },
 

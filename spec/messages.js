@@ -2301,7 +2301,7 @@
             expect(view.model.messages.last().get('affiliation')).toBe('owner');
             expect(view.model.messages.last().get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(1);
-            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author chat-msg__me moderator');
+            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author moderator');
 
             let presence = $pres({
                     to:'romeo@montague.lit/orchard',
@@ -2328,7 +2328,7 @@
             expect(view.model.messages.last().get('affiliation')).toBe('member');
             expect(view.model.messages.last().get('role')).toBe('participant');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(2);
-            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author chat-msg__me participant');
+            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author participant');
 
             presence = $pres({
                     to:'romeo@montague.lit/orchard',
@@ -2348,7 +2348,7 @@
             expect(view.model.messages.last().get('affiliation')).toBe('owner');
             expect(view.model.messages.last().get('role')).toBe('moderator');
             expect(view.el.querySelectorAll('.chat-msg').length).toBe(3);
-            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author chat-msg__me moderator');
+            expect(sizzle('.chat-msg__author', view.el).pop().classList.value.trim()).toBe('chat-msg__author moderator');
             done();
         }));
 
@@ -2562,21 +2562,24 @@
                 keyCode: 13 // Enter
             });
             await new Promise((resolve, reject) => view.once('messageInserted', resolve));
+            expect(view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length).toBe(0);
+
             const msg_obj = view.model.messages.at(0);
             const stanza = u.toStanza(`
                 <message xmlns="jabber:client"
                          from="${msg_obj.get('from')}"
                          to="${_converse.connection.jid}"
                          type="groupchat">
-                    <body>${msg_obj.get('message')}</body>
+                    <msg_body>${msg_obj.get('message')}</msg_body>
                     <stanza-id xmlns="urn:xmpp:sid:0"
                                id="5f3dbc5e-e1d3-4077-a492-693f3769c7ad"
                                by="lounge@montague.lit"/>
                     <origin-id xmlns="urn:xmpp:sid:0" id="${msg_obj.get('origin_id')}"/>
                 </message>`);
             await view.model.onMessage(stanza);
-            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-msg__receipt').length, 500);
-            expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(1);
+            await test_utils.waitUntil(() => view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length, 500);
+            expect(view.el.querySelectorAll('.chat-msg__receipt').length).toBe(0);
+            expect(view.el.querySelectorAll('.chat-msg__body.chat-msg__body--received').length).toBe(1);
             expect(view.model.messages.length).toBe(1);
 
             const message = view.model.messages.at(0);

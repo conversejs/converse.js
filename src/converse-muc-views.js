@@ -2093,7 +2093,7 @@ converse.plugins.add('converse-muc-views', {
                     return;
                 }
                 form.addEventListener('submit', this.inviteFormSubmitted.bind(this), false);
-                const list = _converse.roster.map(i => ({'label': i.get('fullname') || i.get('jid'), 'value': i.get('jid')}));
+                const list = _converse.roster.map(i => ({'label': i.getDisplayName(), 'value': i.get('jid')}));
                 const el = this.el.querySelector('.suggestion-box').parentElement;
 
                 if (this.invite_auto_complete) {

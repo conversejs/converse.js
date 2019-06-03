@@ -1346,6 +1346,12 @@ _converse.initialize = async function (settings, callback) {
             }
         } else if (reconnecting) {
             this.autoLogin();
+        } else if (window.PasswordCredential) {
+            const creds = await navigator.credentials.get({'password': true});
+            if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
+                setUserJID(creds.id);
+                this.autoLogin({'jid': creds.id, 'password': creds.password});
+            }
         }
     };
 

@@ -1724,7 +1724,7 @@ converse.plugins.add('converse-muc', {
 
         _converse.api.listen.on('statusInitialized', () => {
             window.addEventListener(_converse.unloadevent, () => {
-                const using_websocket = _converse.connection._proto instanceof Strophe.Websocket;
+                const using_websocket = _converse.api.connection.isType('websocket');
                 if (using_websocket && !_converse.enable_smacks) {
                     // For non-SMACKS websocket connections, we disconnect all
                     // chatrooms when the page unloads.

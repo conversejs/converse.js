@@ -1460,16 +1460,41 @@ _converse.api = {
          * Can be called once the XMPP connection has dropped and we want
          * to attempt reconnection.
          * Only needs to be called once, if reconnect fails Converse will
-         * attempt to reconnect every two seconds.
+         * attempt to reconnect every two seconds, alternating between BOSH and
+         * Websocket if URLs for both were provided.
          * @method reconnect
          * @memberOf _converse.api.connection
          */
         reconnect () {
-            if (_converse.connfeedback.get('connection_status') === Strophe.Status.RECONNECTING) {
+            const conn_status = _converse.connfeedback.get('connection_status');
+            if (conn_status === Strophe.Status.CONNFAIL) {
+               if (_converse.api.connection.isType('websocket') && _converse.bosh_service_url) {
+                  _converse.connection._proto = new Strophe.Bosh(_converse.connection);
+                  _converse.connection.service = _converse.bosh_service_url;
+               } else if (_converse.api.connection.isType('bosh') && _converse.websocket_url) {
+                  _converse.connection._proto = new Strophe.Websocket(_converse.connection);
+                  _converse.connection.service = _converse.websocket_url;
+               }
+            }
+            if ([Strophe.Status.RECONNECTING, Strophe.Status.CONNFAIL].includes(conn_status)) {
                debouncedReconnect();
             } else {
                reconnect();
             }
+        },
+
+        /**
+         * Utility method to determine the type of connection we have
+         * @method isType
+         * @memberOf _converse.api.connection
+         * @returns {boolean}
+         */
+        isType (type) {
+           if (type.toLowerCase() === 'websocket') {
+               return _converse.connection._proto instanceof Strophe.Websocket;
+           } else if (type.toLowerCase() === 'bosh') {
+               return _converse.connection._proto instanceof Strophe.Bosh;
+           }
         }
     },
 

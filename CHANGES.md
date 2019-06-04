@@ -26,6 +26,7 @@
 - New event: [chatBoxBlurred](https://conversejs.org/docs/html/api/-_converse.html#event:chatBoxBlurred)
 - New event: [chatReconnected](https://conversejs.org/docs/html/api/-_converse.html#event:chatReconnected)
 - #316: Add support for XEP-0198 Stream Management
+- #1196: Use alternative connection method upon connfail
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1330: Missing room name in MUC invitation popup
 - #1445: Participants list uses big font in embedded mode

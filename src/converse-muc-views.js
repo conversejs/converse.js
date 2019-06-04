@@ -2046,7 +2046,7 @@ converse.plugins.add('converse-muc-views', {
                     reason = prompt(
                         __('You are about to invite %1$s to the groupchat "%2$s". '+
                            'You may optionally include a message, explaining the reason for the invitation.',
-                           suggestion.text.label, this.model.get('id'))
+                           suggestion.text.label, this.chatroomview.model.getDisplayName())
                     );
                 }
                 if (reason !== null) {

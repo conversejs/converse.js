@@ -28,6 +28,7 @@
 - #316: Add support for XEP-0198 Stream Management
 - #1296: `embedded` view mode shows `chatbox-navback` arrow in header
 - #1330: Missing room name in MUC invitation popup
+- #1445: Participants list uses big font in embedded mode
 - #1465: When highlighting a roster contact, they're incorrectly shown as online
 - #1532: Converse reloads on enter pressed in the filter box
 - #1550: Legitimate carbons being blocked due to erroneous forgery check

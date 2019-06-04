@@ -70,6 +70,25 @@ _.templateSettings = {
 // return a 504 error page instead of passing through to the BOSH proxy.
 const BOSH_WAIT = 59;
 
+// Core plugins are whitelisted automatically
+// These are just the @converse/headless plugins, for the full converse,
+// the other plugins are whitelisted in src/converse.js
+const CORE_PLUGINS = [
+    'converse-bookmarks',
+    'converse-caps',
+    'converse-chatboxes',
+    'converse-disco',
+    'converse-mam',
+    'converse-muc',
+    'converse-ping',
+    'converse-pubsub',
+    'converse-roster',
+    'converse-rsm',
+    'converse-smacks',
+    'converse-vcard'
+];
+
+
 /**
  * A private, closured object containing the private api (via {@link _converse.api})
  * as well as private methods and internal data-structures.
@@ -87,24 +106,6 @@ Object.assign(_converse, Backbone.Events);
 
 // Make converse pluggable
 pluggable.enable(_converse, '_converse', 'pluggable');
-
-// Core plugins are whitelisted automatically
-// These are just the @converse/headless plugins, for the full converse,
-// the other plugins are whitelisted in src/converse.js
-_converse.core_plugins = [
-    'converse-bookmarks',
-    'converse-caps',
-    'converse-chatboxes',
-    'converse-disco',
-    'converse-mam',
-    'converse-muc',
-    'converse-ping',
-    'converse-pubsub',
-    'converse-roster',
-    'converse-rsm',
-    'converse-smacks',
-    'converse-vcard'
-];
 
 _converse.keycodes = {
     TAB: 9,
@@ -344,8 +345,7 @@ function initPlugins() {
     // If initialize is called for the first time, then this array is empty
     // in any case.
     _converse.pluggable.initialized_plugins = [];
-    const whitelist = _converse.core_plugins.concat(
-        _converse.whitelisted_plugins);
+    const whitelist = CORE_PLUGINS.concat(_converse.whitelisted_plugins);
 
     if (_converse.singleton) {
         _.forEach([ // eslint-disable-line lodash/prefer-map

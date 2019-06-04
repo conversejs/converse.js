@@ -1720,14 +1720,15 @@ converse.plugins.add('converse-muc', {
                 .filter(m => (m.get('type') === _converse.CHATROOMS_TYPE))
                 .forEach(m => m.save('connection_status', converse.ROOMSTATUS.DISCONNECTED))
         }
-        _converse.api.listen.on('disconnecting', disconnectChatRooms);
+        _converse.api.listen.on('disconnected', disconnectChatRooms);
 
         _converse.api.listen.on('statusInitialized', () => {
-            // XXX: For websocket connections, we disconnect from all
-            // chatrooms when the page reloads. This is a workaround for
-            // issue #1111 and should be removed once we support XEP-0198
             window.addEventListener(_converse.unloadevent, () => {
-                if (_converse.connection._proto instanceof Strophe.Websocket) {
+                const using_websocket = _converse.connection._proto instanceof Strophe.Websocket;
+                if (using_websocket && !_converse.enable_smacks) {
+                    // For non-SMACKS websocket connections, we disconnect all
+                    // chatrooms when the page unloads.
+                    // See issue #1111
                     disconnectChatRooms();
                 }
             });

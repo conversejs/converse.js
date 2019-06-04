@@ -164,8 +164,6 @@ function parameterize () {
                 "lodash.converter": "lodash.converter",
                 "lodash.noconflict": "lodash.noconflict",
                 "strophe": "strophe",
-                "strophe.ping": "strophe.ping",
-                "strophe.rsm": "strophe.rsm",
                 "window": "window"
             }],
             output: {

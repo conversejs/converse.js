@@ -8,11 +8,13 @@
 //
 /*global escape, Uint8Array */
 
+import * as strophe from 'strophe.js/src/core';
 import Backbone from "backbone";
 import Promise from "es6-promise/dist/es6-promise.auto";
-import { Strophe } from "strophe.js";
 import _ from "../lodash.noconflict";
 import sizzle from "sizzle";
+
+const Strophe = strophe.default.Strophe;
 
 
 /**

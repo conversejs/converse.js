@@ -48,7 +48,7 @@ The Converse repository does not include the minified files in the ``dist`` or
 To only generate the minified files, you can make them individually. ::
 
     make dist/converse.min.js
-    make css/converse.min.css
+    make dist/converse.min.css
 
 .. note::
 

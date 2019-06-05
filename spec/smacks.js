@@ -122,6 +122,7 @@
             expect(Strophe.serialize(iq)).toBe(
                 `<iq id="${iq.getAttribute('id')}" type="get" xmlns="jabber:client"><query xmlns="jabber:iq:roster"/></iq>`);
 
+            await _converse.api.waitUntil('statusInitialized');
             done();
         }));
     });

@@ -512,12 +512,12 @@ async function initUserSession (jid) {
     }
 }
 
-function setUserJID (jid) {
+async function setUserJID (jid) {
     if (!Strophe.getResourceFromJid(jid)) {
         jid = jid.toLowerCase() + _converse.generateResource();
     }
     jid = jid.toLowerCase();
-    initUserSession(jid);
+    await initUserSession(jid);
     _converse.jid = jid;
     _converse.bare_jid = Strophe.getBareJidFromJid(jid);
     _converse.resource = Strophe.getResourceFromJid(jid);
@@ -541,7 +541,7 @@ async function onConnected (reconnecting) {
      * by logging in or by attaching to an existing BOSH session.
      */
     _converse.connection.flush(); // Solves problem of returned PubSub BOSH response not received by browser
-    setUserJID(_converse.connection.jid);
+    await setUserJID(_converse.connection.jid);
     /**
      * Synchronous event triggered after we've sent an IQ to bind the
      * user's JID resource for this session.
@@ -1230,7 +1230,7 @@ _converse.initialize = async function (settings, callback) {
         } else if (!isTestEnv() && window.PasswordCredential) {
             const creds = await navigator.credentials.get({'password': true});
             if (creds && creds.type == 'password' && u.isValidJID(creds.id)) {
-                setUserJID(creds.id);
+                await setUserJID(creds.id);
                 this.autoLogin({'jid': creds.id, 'password': creds.password});
             }
         }
@@ -1454,12 +1454,15 @@ _converse.api = {
             }
             let credentials;
             if (jid && password) {
-                credentials = { jid: jid, password: password };
+                credentials = { jid, password };
             } else if (u.isValidJID(_converse.jid) && _converse.password) {
-                credentials = { jid: _converse.jid, password: _converse.password };
+                credentials = {
+                    jid: _converse.jid,
+                    password: _converse.password
+                };
             }
             if (credentials && credentials.jid) {
-                setUserJID(credentials.jid);
+                await setUserJID(jid || _converse.jid);
             }
             _converse.attemptNonPreboundSession(credentials, reconnecting);
         },
